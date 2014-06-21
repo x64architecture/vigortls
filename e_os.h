@@ -93,20 +93,6 @@ extern "C" {
 #  define NO_CHMOD
 #  define NO_SYSLOG
 #endif
-  
-#if defined(OPENSSL_SYS_MACINTOSH_CLASSIC)
-# if macintosh==1
-#  ifndef MAC_OS_GUSI_SOURCE
-#    define MAC_OS_pre_X
-#    define NO_SYS_TYPES_H
-#  endif
-#  define NO_SYS_PARAM_H
-#  define NO_CHMOD
-#  define NO_SYSLOG
-#  undef  DEVRANDOM
-#  define GETPID_IS_MEANINGLESS
-# endif
-#endif
 
 /********************************************************************
  The Microsoft section

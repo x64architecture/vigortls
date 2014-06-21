@@ -37,8 +37,6 @@ typedef unsigned long     SW_U32;                 /* 32 bit integer   */
       SW_U32 low32;
       SW_U32 high32;
   } SW_U64;                                         /* 64 bit integer   */
-#elif defined(OPENSSL_SYS_MACINTOSH_CLASSIC)
-  typedef longlong SW_U64
 #else /* Unix variants */
   typedef struct _SW_U64 {
       SW_U32 low32;
