@@ -153,9 +153,6 @@
 #include <string.h>
 
 #include <openssl/e_os2.h>
-#ifdef OPENSSL_NO_STDIO
-#define APPS_WIN16
-#endif
 
 #if !defined(OPENSSL_SYS_NETWARE)  /* conflicts with winsock2 stuff on netware */
 #include <sys/types.h>

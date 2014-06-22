@@ -205,11 +205,6 @@ extern "C" {
 #  define MS_FAR
 #endif
 
-#ifdef OPENSSL_NO_STDIO
-#  undef OPENSSL_NO_FP_API
-#  define OPENSSL_NO_FP_API
-#endif
-
 #if (defined(WINDOWS) || defined(MSDOS))
 
 #  ifdef __DJGPP__

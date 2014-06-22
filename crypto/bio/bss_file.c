@@ -93,8 +93,6 @@
 #include <nwfileio.h>
 #endif
 
-#if !defined(OPENSSL_NO_STDIO)
-
 static int MS_CALLBACK file_write(BIO *h, const char *buf, int num);
 static int MS_CALLBACK file_read(BIO *h, char *buf, int size);
 static int MS_CALLBACK file_puts(BIO *h, const char *str);
@@ -469,8 +467,6 @@ static int MS_CALLBACK file_puts(BIO *bp, const char *str)
 	ret=file_write(bp,str,n);
 	return(ret);
 	}
-
-#endif /* OPENSSL_NO_STDIO */
 
 #endif /* HEADER_BSS_FILE_C */
 

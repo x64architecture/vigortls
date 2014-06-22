@@ -141,9 +141,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <openssl/e_os2.h>
-#ifdef OPENSSL_NO_STDIO
-#define APPS_WIN16
-#endif
 
 /* With IPv6, it looks like Digital has mixed up the proper order of
    recursive header file inclusion, resulting in the compiler complaining

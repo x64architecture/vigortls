@@ -66,8 +66,6 @@
 #include <openssl/x509.h>
 #include <openssl/pem.h>
 
-#ifndef OPENSSL_NO_STDIO
-
 static int by_file_ctrl(X509_LOOKUP *ctx, int cmd, const char *argc,
 	long argl, char **ret);
 X509_LOOKUP_METHOD x509_file_lookup=
@@ -294,7 +292,4 @@ int X509_load_cert_crl_file(X509_LOOKUP *ctx, const char *file, int type)
 	sk_X509_INFO_pop_free(inf, X509_INFO_free);
 	return count;
 }
-
-
-#endif /* OPENSSL_NO_STDIO */
 
