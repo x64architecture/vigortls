@@ -680,6 +680,7 @@ static int aes_gcm_cleanup(EVP_CIPHER_CTX *c)
 	OPENSSL_cleanse(&gctx->gcm, sizeof(gctx->gcm));
 	if (gctx->iv != c->iv)
 		OPENSSL_free(gctx->iv);
+	OPENSSL_cleanse(gctx, sizeof(*gctx));
 	return 1;
 	}
 
