@@ -709,7 +709,7 @@ dtls1_process_out_of_seq_message(SSL *s, struct hm_header_st* msg_hdr, int *ok)
         {
         unsigned char devnull [256];
 
-        while (frag_len {
+        while (frag_len) {
             i = s->method->ssl_read_bytes(s,SSL3_RT_HANDSHAKE,
                 devnull, frag_len > sizeof(devnull) ?
                 sizeof(devnull) : frag_len, 0);
