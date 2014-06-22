@@ -83,11 +83,7 @@ int main(int argc, char *argv[])
 #else
 #include <openssl/dh.h>
 
-#ifdef OPENSSL_SYS_WIN16
-#define MS_CALLBACK	_far _loadds
-#else
 #define MS_CALLBACK
-#endif
 
 static int MS_CALLBACK cb(int p, int n, BN_GENCB *arg);
 

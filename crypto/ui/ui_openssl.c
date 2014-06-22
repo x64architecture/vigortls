@@ -154,13 +154,6 @@
 # endif
 #endif
 
-#ifdef WIN16TTY
-# undef OPENSSL_SYS_WIN16
-# undef WIN16
-# undef _WINDOWS
-# include <graph.h>
-#endif
-
 /* 06-Apr-92 Luke Brennan    Support for VMS */
 #include "ui_locl.h"
 #include "cryptlib.h"
@@ -304,12 +297,10 @@ static FILE *tty_in, *tty_out;
 static int is_a_tty;
 
 /* Declare static functions */
-#if !defined(OPENSSL_SYS_WIN16) && !defined(OPENSSL_SYS_WINCE)
 static int read_till_nl(FILE *);
 static void recsig(int);
 static void pushsig(void);
 static void popsig(void);
-#endif
 #if defined(OPENSSL_SYS_MSDOS) && !defined(OPENSSL_SYS_WIN16)
 static int noecho_fgets(char *buf, int size, FILE *tty);
 #endif

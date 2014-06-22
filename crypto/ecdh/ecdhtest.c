@@ -92,11 +92,7 @@ int main(int argc, char *argv[])
 #include <openssl/ec.h>
 #include <openssl/ecdh.h>
 
-#ifdef OPENSSL_SYS_WIN16
-#define MS_CALLBACK	_far _loadds
-#else
 #define MS_CALLBACK
-#endif
 
 #if 0
 static void MS_CALLBACK cb(int p, int n, void *arg);

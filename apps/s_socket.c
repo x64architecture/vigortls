@@ -68,15 +68,6 @@
 #include "../e_os2.h"
 #endif
 
-/* With IPv6, it looks like Digital has mixed up the proper order of
-   recursive header file inclusion, resulting in the compiler complaining
-   that u_int isn't defined, but only if _POSIX_C_SOURCE is defined, which
-   is needed to have fileno() declared correctly...  So let's define u_int */
-#if defined(OPENSSL_SYS_VMS_DECC) && !defined(__U_INT)
-#define __U_INT
-typedef unsigned int u_int;
-#endif
-
 #define USE_SOCKETS
 #define NON_MAIN
 #include "apps.h"
@@ -108,11 +99,7 @@ static int init_server_long(int *sock, int port,char *ip, int type);
 static int do_accept(int acc_sock, int *sock, char **host);
 static int host_ip(char *str, unsigned char ip[4]);
 
-#ifdef OPENSSL_SYS_WIN16
-#define SOCKET_PROTOCOL	0 /* more microsoft stupidity */
-#else
 #define SOCKET_PROTOCOL	IPPROTO_TCP
-#endif
 
 #if defined(OPENSSL_SYS_NETWARE) && !defined(NETWARE_BSDSOCK)
 static int wsa_init_done=0;
@@ -200,14 +187,6 @@ static int ssl_sock_init(void)
 			BIO_printf(bio_err,"unable to start WINSOCK, error code=%d\n",err);
 			return(0);
 			}
-
-#ifdef OPENSSL_SYS_WIN16
-		EnumTaskWindows(GetCurrentTask(),enumproc,0L);
-		lpTopWndProc=(FARPROC)GetWindowLong(topWnd,GWL_WNDPROC);
-		lpTopHookProc=MakeProcInstance((FARPROC)topHookProc,_hInstance);
-
-		SetWindowLong(topWnd,GWL_WNDPROC,(LONG)lpTopHookProc);
-#endif /* OPENSSL_SYS_WIN16 */
 		}
 #elif defined(OPENSSL_SYS_NETWARE) && !defined(NETWARE_BSDSOCK)
    WORD wVerReq;
