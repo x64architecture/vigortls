@@ -1814,7 +1814,7 @@ int SSL_COMP_add_compression_method(int id, COMP_METHOD *cm)
 	MemCheck_off();
 	comp=(SSL_COMP *)OPENSSL_malloc(sizeof(SSL_COMP));
     if (comp == NULL) {
-        SSLerr(SSL_F_SSL_COMP_ADD_COMPRESSION_METHOD,ERR_R_MALLOC_FAILURE);
+        SSLerr(SSL_F_SSL_COMP_ADD_COMPRESSION_METHOD, ERR_R_MALLOC_FAILURE);
         return 0;
     }
 	comp->id=id;
