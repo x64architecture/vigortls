@@ -65,9 +65,7 @@
 #include <openssl/objects.h>
 #include <openssl/x509.h>
 #include <openssl/mdc2.h>
-#ifndef OPENSSL_NO_RSA
 #include <openssl/rsa.h>
-#endif
 
 #include "evp_locl.h"
 

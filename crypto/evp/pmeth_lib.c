@@ -77,9 +77,7 @@ extern const EVP_PKEY_METHOD ec_pkey_meth, hmac_pkey_meth, cmac_pkey_meth;
 
 static const EVP_PKEY_METHOD *standard_methods[] =
 	{
-#ifndef OPENSSL_NO_RSA
 	&rsa_pkey_meth,
-#endif
 	&dh_pkey_meth,
 #ifndef OPENSSL_NO_DSA
 	&dsa_pkey_meth,

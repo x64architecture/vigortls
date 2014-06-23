@@ -103,7 +103,7 @@ and [options] can be one of
 	no-ripemd
 	no-rc2 no-rc4 no-rc5 no-idea no-des     - Skip this symetric cipher
 	no-bf no-cast no-aes no-camellia no-seed
-	no-rsa no-dsa no-dh			- Skip this public key cipher
+	no-dsa no-dh			- Skip this public key cipher
 	no-ssl2 no-ssl3				- Skip this version of SSL
 	just-ssl				- remove all non-ssl keys/digest
 	no-asm 					- No x86 asm
@@ -146,10 +146,8 @@ $no_static_engine = 0 if (!$shlib);
 $no_mdc2=1 if ($no_des);
 
 $no_ssl3=1 if ($no_md5 || $no_sha);
-$no_ssl3=1 if ($no_rsa);
 
 $no_ssl2=1 if ($no_md5);
-$no_ssl2=1 if ($no_rsa);
 
 $out_def="out";
 $inc_def="outinc";
@@ -260,7 +258,6 @@ $cflags.=" -DOPENSSL_NO_MDC2" if $no_mdc2;
 $cflags.=" -DOPENSSL_NO_BF"  if $no_bf;
 $cflags.=" -DOPENSSL_NO_CAST" if $no_cast;
 $cflags.=" -DOPENSSL_NO_DES"  if $no_des;
-$cflags.=" -DOPENSSL_NO_RSA"  if $no_rsa;
 $cflags.=" -DOPENSSL_NO_DSA"  if $no_dsa;
 $cflags.=" -DOPENSSL_NO_WHIRLPOOL"   if $no_whirlpool;
 $cflags.=" -DOPENSSL_NO_SOCK" if $no_sock;
@@ -776,8 +773,6 @@ sub var_add
 	return("") if $no_rc2  && $dir =~ /\/rc2/;
 	return("") if $no_rc4  && $dir =~ /\/rc4/;
 	return("") if $no_rc5  && $dir =~ /\/rc5/;
-	return("") if $no_rsa  && $dir =~ /\/rsa/;
-	return("") if $no_rsa  && $dir =~ /^rsaref/;
 	return("") if $no_dsa  && $dir =~ /\/dsa/;
 	return("") if $no_ec   && $dir =~ /\/ec/;
 	return("") if $no_gost   && $dir =~ /\/ccgost/;
@@ -822,14 +817,10 @@ sub var_add
 	@a=grep(!/(^md5)|(_md5$)/,@a) if $no_md5;
 	@a=grep(!/(rmd)|(ripemd)/,@a) if $no_ripemd;
 
-	@a=grep(!/(^d2i_r_)|(^i2d_r_)/,@a) if $no_rsa;
-	@a=grep(!/(^p_open$)|(^p_seal$)/,@a) if $no_rsa;
-	@a=grep(!/(^pem_seal$)/,@a) if $no_rsa;
-
 	@a=grep(!/(m_dss$)|(m_dss1$)/,@a) if $no_dsa;
 	@a=grep(!/(^d2i_s_)|(^i2d_s_)|(_dsap$)/,@a) if $no_dsa;
 
-	@a=grep(!/^n_pkey$/,@a) if $no_rsa || $no_rc4;
+	@a=grep(!/^n_pkey$/,@a) if $no_rc4;
 
 	@a=grep(!/(^sha[^1])|(_sha$)|(m_dss$)/,@a) if $no_sha;
 	@a=grep(!/(^sha1)|(_sha1$)|(m_dss1$)/,@a) if $no_sha1;
@@ -839,7 +830,6 @@ sub var_add
 
 	@a=grep(!/^engine$/,@a) if $no_engine;
 	@a=grep(!/^hw$/,@a) if $no_hw;
-	@a=grep(!/(^rsa$)|(^genrsa$)/,@a) if $no_rsa;
 	@a=grep(!/(^dsa$)|(^gendsa$)|(^dsaparam$)/,@a) if $no_dsa;
 	@a=grep(!/^gendsa$/,@a) if $no_sha1;
 
@@ -1099,8 +1089,7 @@ sub read_options
 		"no-mdc2" => \$no_mdc2,
 		"no-whirlpool" => \$no_whirlpool,
 		"no-patents" => 
-			[\$no_rc2, \$no_rc4, \$no_rc5, \$no_idea, \$no_rsa],
-		"no-rsa" => \$no_rsa,
+			[\$no_rc2, \$no_rc4, \$no_rc5, \$no_idea],
 		"no-dsa" => \$no_dsa,
 		"no-hmac" => \$no_hmac,
 		"no-asm" => \$no_asm,

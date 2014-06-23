@@ -62,9 +62,7 @@
 #include <openssl/evp.h>
 #include <openssl/objects.h>
 #include <openssl/asn1.h>
-#ifndef OPENSSL_NO_RSA
 #include <openssl/rsa.h>
-#endif
 #ifndef OPENSSL_NO_DSA
 #include <openssl/dsa.h>
 #endif
@@ -95,7 +93,6 @@ EVP_PKEY *d2i_PublicKey(int type, EVP_PKEY **a, const unsigned char **pp,
 
 	switch (EVP_PKEY_id(ret))
 		{
-#ifndef OPENSSL_NO_RSA
 	case EVP_PKEY_RSA:
 		if ((ret->pkey.rsa=d2i_RSAPublicKey(NULL,
 			(const unsigned char **)pp,length)) == NULL) /* TMP UGLY CAST */
@@ -104,7 +101,6 @@ EVP_PKEY *d2i_PublicKey(int type, EVP_PKEY **a, const unsigned char **pp,
 			goto err;
 			}
 		break;
-#endif
 #ifndef OPENSSL_NO_DSA
 	case EVP_PKEY_DSA:
 		if (!d2i_DSAPublicKey(&(ret->pkey.dsa),

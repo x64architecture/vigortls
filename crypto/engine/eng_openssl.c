@@ -70,9 +70,7 @@
 #include <openssl/pem.h>
 #include <openssl/evp.h>
 #include <openssl/rand.h>
-#ifndef OPENSSL_NO_RSA
 #include <openssl/rsa.h>
-#endif
 #ifndef OPENSSL_NO_DSA
 #include <openssl/dsa.h>
 #endif
@@ -132,9 +130,7 @@ static int bind_helper(ENGINE *e)
 	if(!ENGINE_set_id(e, engine_openssl_id)
 			|| !ENGINE_set_name(e, engine_openssl_name)
 #ifndef TEST_ENG_OPENSSL_NO_ALGORITHMS
-#ifndef OPENSSL_NO_RSA
 			|| !ENGINE_set_RSA(e, RSA_get_default_method())
-#endif
 #ifndef OPENSSL_NO_DSA
 			|| !ENGINE_set_DSA(e, DSA_get_default_method())
 #endif

@@ -57,9 +57,7 @@
 #include <openssl/dso.h>
 #include <openssl/engine.h>
 #include <openssl/rand.h>
-#ifndef OPENSSL_NO_RSA
 #include <openssl/rsa.h>
-#endif
 #ifndef OPENSSL_NO_DSA
 #include <openssl/dsa.h>
 #endif
@@ -86,12 +84,10 @@ static int surewarehk_modexp(BIGNUM *r, const BIGNUM *a, const BIGNUM *p,
 	const BIGNUM *m, BN_CTX *ctx);
 
 /* RSA stuff */
-#ifndef OPENSSL_NO_RSA
 static int surewarehk_rsa_priv_dec(int flen,const unsigned char *from,unsigned char *to,
 			RSA *rsa,int padding);
 static int surewarehk_rsa_sign(int flen,const unsigned char *from,unsigned char *to,
 			    RSA *rsa,int padding);
-#endif
 
 /* RAND stuff */
 static int surewarehk_rand_bytes(unsigned char *buf, int num);
@@ -110,7 +106,6 @@ static void surewarehk_dh_ex_free(void *obj, void *item, CRYPTO_EX_DATA *ad,
 	int idx,long argl, void *argp);
 #endif
 
-#ifndef OPENSSL_NO_RSA
 /* This function is aliased to mod_exp (with the mont stuff dropped). */
 static int surewarehk_mod_exp_mont(BIGNUM *r, const BIGNUM *a, const BIGNUM *p,
 		const BIGNUM *m, BN_CTX *ctx, BN_MONT_CTX *m_ctx)
@@ -136,7 +131,6 @@ static RSA_METHOD surewarehk_rsa =
 	NULL, /* OpenSSL verify*/
 	NULL  /* keygen */
 	};
-#endif
 
 /* Our internal DH_METHOD that we provide pointers to */
 /* This function is aliased to mod_exp (with the dh and mont dropped). */
@@ -218,9 +212,7 @@ static const char *engine_sureware_name = "SureWare hardware engine support";
  * (indeed - the lock will already be held by our caller!!!) */
 static int bind_sureware(ENGINE *e)
 {
-#ifndef OPENSSL_NO_RSA
 	const RSA_METHOD *meth1;
-#endif
 #ifndef OPENSSL_NO_DSA
 	const DSA_METHOD *meth2;
 #endif
@@ -228,9 +220,7 @@ static int bind_sureware(ENGINE *e)
 
 	if(!ENGINE_set_id(e, engine_sureware_id) ||
 	   !ENGINE_set_name(e, engine_sureware_name) ||
-#ifndef OPENSSL_NO_RSA
 	   !ENGINE_set_RSA(e, &surewarehk_rsa) ||
-#endif
 #ifndef OPENSSL_NO_DSA
 	   !ENGINE_set_DSA(e, &surewarehk_dsa) ||
 #endif
@@ -244,7 +234,6 @@ static int bind_sureware(ENGINE *e)
 	   !ENGINE_set_load_pubkey_function(e, surewarehk_load_pubkey))
 	  return 0;
 
-#ifndef OPENSSL_NO_RSA
 	/* We know that the "PKCS1_SSLeay()" functions hook properly
 	 * to the cswift-specific mod_exp and mod_exp_crt so we use
 	 * those functions. NB: We don't use ENGINE_openssl() or
@@ -258,7 +247,6 @@ static int bind_sureware(ENGINE *e)
 		surewarehk_rsa.rsa_pub_enc = meth1->rsa_pub_enc;
 		surewarehk_rsa.rsa_pub_dec = meth1->rsa_pub_dec;
 	}
-#endif
 
 #ifndef OPENSSL_NO_DSA
 	/* Use the DSA_OpenSSL() method and just hook the mod_exp-ish
@@ -325,9 +313,7 @@ void ENGINE_load_sureware(void)
  * operating with global locks, so this should be thread-safe
  * implicitly. */
 static DSO *surewarehk_dso = NULL;
-#ifndef OPENSSL_NO_RSA
 static int rsaHndidx = -1;	/* Index for KM handle.  Not really used yet. */
-#endif
 #ifndef OPENSSL_NO_DSA
 static int dsaHndidx = -1;	/* Index for KM handle.  Not really used yet. */
 #endif
@@ -499,12 +485,10 @@ static int surewarehk_init(ENGINE *e)
 	surewarehk_load_privkey(e,NULL,NULL,NULL);
 
 	/* Everything's fine. */
-#ifndef OPENSSL_NO_RSA
 	if (rsaHndidx == -1)
 		rsaHndidx = RSA_get_ex_new_index(0,
 						"SureWareHook RSA key handle",
 						NULL, NULL, surewarehk_ex_free);
-#endif
 #ifndef OPENSSL_NO_DSA
 	if (dsaHndidx == -1)
 		dsaHndidx = DSA_get_ex_new_index(0,
@@ -642,9 +626,7 @@ static void surewarehk_rand_add(const void *buf, int num, double entropy)
 static EVP_PKEY* sureware_load_public(ENGINE *e,const char *key_id,char *hptr,unsigned long el,char keytype)
 {
 	EVP_PKEY *res = NULL;
-#ifndef OPENSSL_NO_RSA
 	RSA *rsatmp = NULL;
-#endif
 #ifndef OPENSSL_NO_DSA
 	DSA *dsatmp=NULL;
 #endif
@@ -657,7 +639,6 @@ static EVP_PKEY* sureware_load_public(ENGINE *e,const char *key_id,char *hptr,un
 	}
 	switch (keytype)
 	{
-#ifndef OPENSSL_NO_RSA
 	case 1: /*RSA*/
 		/* set private external reference */
 		rsatmp = RSA_new_method(e);
@@ -690,7 +671,6 @@ static EVP_PKEY* sureware_load_public(ENGINE *e,const char *key_id,char *hptr,un
 		res = EVP_PKEY_new();
 		EVP_PKEY_assign_RSA(res, rsatmp);
 		break;
-#endif
 
 #ifndef OPENSSL_NO_DSA
 	case 2:/*DSA*/
@@ -748,10 +728,8 @@ static EVP_PKEY* sureware_load_public(ENGINE *e,const char *key_id,char *hptr,un
 	}
 	return res;
  err:
-#ifndef OPENSSL_NO_RSA
 	if (rsatmp)
 		RSA_free(rsatmp);
-#endif
 #ifndef OPENSSL_NO_DSA
 	if (dsatmp)
 		DSA_free(dsatmp);
@@ -848,7 +826,6 @@ static void surewarehk_dh_ex_free(void *obj, void *item, CRYPTO_EX_DATA *ad,
 /*
 * return number of decrypted bytes
 */
-#ifndef OPENSSL_NO_RSA
 static int surewarehk_rsa_priv_dec(int flen,const unsigned char *from,unsigned char *to,
 			RSA *rsa,int padding)
 {
@@ -951,7 +928,6 @@ static int surewarehk_rsa_sign(int flen,const unsigned char *from,unsigned char 
 	return ret==1 ? tlen : ret;
 }
 
-#endif
 
 #ifndef OPENSSL_NO_DSA
 /* DSA sign and verify */

@@ -58,7 +58,6 @@
 
 #include <stdio.h>
 #include "cryptlib.h"
-#ifndef OPENSSL_NO_RSA
 #include <openssl/rsa.h>
 #include <openssl/objects.h>
 #include <openssl/asn1t.h>
@@ -343,11 +342,3 @@ err:
 	}
 
 #endif /* OPENSSL_NO_RC4 */
-
-#else /* !OPENSSL_NO_RSA */
-
-# if PEDANTIC
-static void *dummy=&dummy;
-# endif
-
-#endif

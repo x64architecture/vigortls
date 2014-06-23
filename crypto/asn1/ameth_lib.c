@@ -74,10 +74,8 @@ extern const EVP_PKEY_ASN1_METHOD cmac_asn1_meth;
 /* Keep this sorted in type order !! */
 static const EVP_PKEY_ASN1_METHOD *standard_methods[] = 
 	{
-#ifndef OPENSSL_NO_RSA
 	&rsa_asn1_meths[0],
 	&rsa_asn1_meths[1],
-#endif
 	&dh_asn1_meth,
 #ifndef OPENSSL_NO_DSA
 	&dsa_asn1_meths[0],

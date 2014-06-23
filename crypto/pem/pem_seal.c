@@ -56,8 +56,6 @@
  * [including the GNU Public Licence.]
  */
 
-#include <openssl/opensslconf.h>	/* for OPENSSL_NO_RSA */
-#ifndef OPENSSL_NO_RSA
 #include <stdio.h>
 #include "cryptlib.h"
 #include <openssl/evp.h>
@@ -182,10 +180,3 @@ err:
 	if (s != NULL) OPENSSL_free(s);
 	return(ret);
 	}
-#else /* !OPENSSL_NO_RSA */
-
-# if PEDANTIC
-static void *dummy=&dummy;
-# endif
-
-#endif

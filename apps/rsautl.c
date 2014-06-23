@@ -57,7 +57,6 @@
  */
 
 #include <openssl/opensslconf.h>
-#ifndef OPENSSL_NO_RSA
 
 #include "apps.h"
 #include <string.h>
@@ -341,11 +340,3 @@ static void usage()
 #endif
 
 }
-
-#else /* !OPENSSL_NO_RSA */
-
-# if PEDANTIC
-static void *dummy=&dummy;
-# endif
-
-#endif

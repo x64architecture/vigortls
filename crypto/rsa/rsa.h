@@ -70,10 +70,6 @@
 #include <openssl/bn.h>
 #endif
 
-#ifdef OPENSSL_NO_RSA
-#error RSA is disabled.
-#endif
-
 #ifdef  __cplusplus
 extern "C" {
 #endif

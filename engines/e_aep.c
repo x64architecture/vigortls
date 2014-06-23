@@ -76,9 +76,7 @@ extern int GetThreadID(void);
 #include <openssl/dso.h>
 #include <openssl/engine.h>
 #include <openssl/buffer.h>
-#ifndef OPENSSL_NO_RSA
 #include <openssl/rsa.h>
-#endif
 #ifndef OPENSSL_NO_DSA
 #include <openssl/dsa.h>
 #endif
@@ -108,25 +106,19 @@ static AEP_RV aep_close_connection(AEP_CONNECTION_HNDL hConnection);
 static AEP_RV aep_close_all_connections(int use_engine_lock, int *in_use);
 
 /* BIGNUM stuff */
-#ifndef OPENSSL_NO_RSA
 static int aep_mod_exp(BIGNUM *r, const BIGNUM *a, const BIGNUM *p,
 	const BIGNUM *m, BN_CTX *ctx);
 
 static AEP_RV aep_mod_exp_crt(BIGNUM *r,const  BIGNUM *a, const BIGNUM *p,
 	const BIGNUM *q, const BIGNUM *dmp1,const BIGNUM *dmq1,
 	const BIGNUM *iqmp, BN_CTX *ctx);
-#endif
 
 /* RSA stuff */
-#ifndef OPENSSL_NO_RSA
 static int aep_rsa_mod_exp(BIGNUM *r0, const BIGNUM *I, RSA *rsa, BN_CTX *ctx);
-#endif
 
 /* This function is aliased to mod_exp (with the mont stuff dropped). */
-#ifndef OPENSSL_NO_RSA
 static int aep_mod_exp_mont(BIGNUM *r, const BIGNUM *a, const BIGNUM *p,
 	const BIGNUM *m, BN_CTX *ctx, BN_MONT_CTX *m_ctx);
-#endif
 
 /* DSA stuff */
 #ifndef OPENSSL_NO_DSA
@@ -169,7 +161,6 @@ static const ENGINE_CMD_DEFN aep_cmd_defns[] =
 	{0, NULL, NULL, 0}
 	};
 
-#ifndef OPENSSL_NO_RSA
 /* Our internal RSA_METHOD that we provide pointers to */
 static RSA_METHOD aep_rsa =
 	{
@@ -188,7 +179,6 @@ static RSA_METHOD aep_rsa =
 	NULL,                /*rsa_verify*/
 	NULL                 /*rsa_keygen*/
 	};
-#endif
 
 #ifndef OPENSSL_NO_DSA
 /* Our internal DSA_METHOD that we provide pointers to */
@@ -259,9 +249,7 @@ static int max_key_len = 2176;
  * "dynamic" ENGINE support too */
 static int bind_aep(ENGINE *e)
 	{
-#ifndef OPENSSL_NO_RSA
 	const RSA_METHOD  *meth1;
-#endif
 #ifndef OPENSSL_NO_DSA
 	const DSA_METHOD  *meth2;
 #endif
@@ -269,9 +257,7 @@ static int bind_aep(ENGINE *e)
 
 	if(!ENGINE_set_id(e, engine_aep_id) ||
 		!ENGINE_set_name(e, engine_aep_name) ||
-#ifndef OPENSSL_NO_RSA
 		!ENGINE_set_RSA(e, &aep_rsa) ||
-#endif
 #ifndef OPENSSL_NO_DSA
 		!ENGINE_set_DSA(e, &aep_dsa) ||
 #endif
@@ -286,7 +272,6 @@ static int bind_aep(ENGINE *e)
 		!ENGINE_set_cmd_defns(e, aep_cmd_defns))
 		return 0;
 
-#ifndef OPENSSL_NO_RSA
 	/* We know that the "PKCS1_SSLeay()" functions hook properly
 	 * to the aep-specific mod_exp and mod_exp_crt so we use
 	 * those functions. NB: We don't use ENGINE_openssl() or
@@ -299,7 +284,6 @@ static int bind_aep(ENGINE *e)
 	aep_rsa.rsa_pub_dec = meth1->rsa_pub_dec;
 	aep_rsa.rsa_priv_enc = meth1->rsa_priv_enc;
 	aep_rsa.rsa_priv_dec = meth1->rsa_priv_dec;
-#endif
 
 
 #ifndef OPENSSL_NO_DSA
@@ -633,8 +617,7 @@ static int aep_mod_exp(BIGNUM *r, const BIGNUM *a, const BIGNUM *p,
  err:
 	return to_return;
 	}
-	
-#ifndef OPENSSL_NO_RSA
+
 static AEP_RV aep_mod_exp_crt(BIGNUM *r, const BIGNUM *a, const BIGNUM *p,
 	const BIGNUM *q, const BIGNUM *dmp1,
 	const BIGNUM *dmq1,const BIGNUM *iqmp, BN_CTX *ctx)
@@ -671,7 +654,6 @@ static AEP_RV aep_mod_exp_crt(BIGNUM *r, const BIGNUM *a, const BIGNUM *p,
  err:
 	return rv;
 	}
-#endif
 	
 
 #ifdef AEPRAND
@@ -752,7 +734,6 @@ static int aep_rand_status(void)
 }
 #endif
 
-#ifndef OPENSSL_NO_RSA
 static int aep_rsa_mod_exp(BIGNUM *r0, const BIGNUM *I, RSA *rsa, BN_CTX *ctx)
 	{
 	int to_return = 0;
@@ -796,7 +777,6 @@ static int aep_rsa_mod_exp(BIGNUM *r0, const BIGNUM *I, RSA *rsa, BN_CTX *ctx)
  err:
 	return to_return;
 }
-#endif
 
 #ifndef OPENSSL_NO_DSA
 static int aep_dsa_mod_exp(DSA *dsa, BIGNUM *rr, BIGNUM *a1,
@@ -827,14 +807,12 @@ static int aep_mod_exp_dsa(DSA *dsa, BIGNUM *r, BIGNUM *a,
 	}
 #endif
 
-#ifndef OPENSSL_NO_RSA
 /* This function is aliased to mod_exp (with the mont stuff dropped). */
 static int aep_mod_exp_mont(BIGNUM *r, const BIGNUM *a, const BIGNUM *p,
 	const BIGNUM *m, BN_CTX *ctx, BN_MONT_CTX *m_ctx)
 	{
 	return aep_mod_exp(r, a, p, m, ctx);
 	}
-#endif
 
 /* This function is aliased to mod_exp (with the dh and mont dropped). */
 static int aep_mod_exp_dh(const DH *dh, BIGNUM *r, const BIGNUM *a,

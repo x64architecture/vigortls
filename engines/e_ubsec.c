@@ -64,9 +64,7 @@
 #include <openssl/buffer.h>
 #include <openssl/dso.h>
 #include <openssl/engine.h>
-#ifndef OPENSSL_NO_RSA
 #include <openssl/rsa.h>
-#endif
 #ifndef OPENSSL_NO_DSA
 #include <openssl/dsa.h>
 #endif
@@ -93,14 +91,12 @@ static int ubsec_finish(ENGINE *e);
 static int ubsec_ctrl(ENGINE *e, int cmd, long i, void *p, void (*f)(void));
 static int ubsec_mod_exp(BIGNUM *r, const BIGNUM *a, const BIGNUM *p,
 		const BIGNUM *m, BN_CTX *ctx);
-#ifndef OPENSSL_NO_RSA
 static int ubsec_mod_exp_crt(BIGNUM *r, const BIGNUM *a, const BIGNUM *p,
 			const BIGNUM *q, const BIGNUM *dp,
 			const BIGNUM *dq, const BIGNUM *qinv, BN_CTX *ctx);
 static int ubsec_rsa_mod_exp(BIGNUM *r0, const BIGNUM *I, RSA *rsa, BN_CTX *ctx);
 static int ubsec_mod_exp_mont(BIGNUM *r, const BIGNUM *a, const BIGNUM *p,
 		const BIGNUM *m, BN_CTX *ctx, BN_MONT_CTX *m_ctx);
-#endif
 #ifndef OPENSSL_NO_DSA
 #ifdef NOT_USED
 static int ubsec_dsa_mod_exp(DSA *dsa, BIGNUM *rr, BIGNUM *a1,
@@ -134,7 +130,6 @@ static const ENGINE_CMD_DEFN ubsec_cmd_defns[] = {
 	{0, NULL, NULL, 0}
 	};
 
-#ifndef OPENSSL_NO_RSA
 /* Our internal RSA_METHOD that we provide pointers to */
 static RSA_METHOD ubsec_rsa =
 	{
@@ -153,7 +148,6 @@ static RSA_METHOD ubsec_rsa =
 	NULL,
 	NULL
 	};
-#endif
 
 #ifndef OPENSSL_NO_DSA
 /* Our internal DSA_METHOD that we provide pointers to */
@@ -196,17 +190,13 @@ static const char *engine_ubsec_name = "UBSEC hardware engine support";
  * "dynamic" ENGINE support too */
 static int bind_helper(ENGINE *e)
 	{
-#ifndef OPENSSL_NO_RSA
 	const RSA_METHOD *meth1;
-#endif
 #ifndef HAVE_UBSEC_DH
 	const DH_METHOD *meth3;
 #endif /* HAVE_UBSEC_DH */
 	if(!ENGINE_set_id(e, engine_ubsec_id) ||
 			!ENGINE_set_name(e, engine_ubsec_name) ||
-#ifndef OPENSSL_NO_RSA
 			!ENGINE_set_RSA(e, &ubsec_rsa) ||
-#endif
 #ifndef OPENSSL_NO_DSA
 			!ENGINE_set_DSA(e, &ubsec_dsa) ||
 #endif
@@ -218,7 +208,6 @@ static int bind_helper(ENGINE *e)
 			!ENGINE_set_cmd_defns(e, ubsec_cmd_defns))
 		return 0;
 
-#ifndef OPENSSL_NO_RSA
 	/* We know that the "PKCS1_SSLeay()" functions hook properly
 	 * to the Broadcom-specific mod_exp and mod_exp_crt so we use
 	 * those functions. NB: We don't use ENGINE_openssl() or
@@ -231,7 +220,6 @@ static int bind_helper(ENGINE *e)
 	ubsec_rsa.rsa_pub_dec = meth1->rsa_pub_dec;
 	ubsec_rsa.rsa_priv_enc = meth1->rsa_priv_enc;
 	ubsec_rsa.rsa_priv_dec = meth1->rsa_priv_dec;
-#endif
 
 #ifndef HAVE_UBSEC_DH
 	/* Much the same for Diffie-Hellman */
@@ -288,10 +276,8 @@ static t_UBSEC_ubsec_close *p_UBSEC_ubsec_close = NULL;
 static t_UBSEC_diffie_hellman_generate_ioctl 
 	*p_UBSEC_diffie_hellman_generate_ioctl = NULL;
 static t_UBSEC_diffie_hellman_agree_ioctl *p_UBSEC_diffie_hellman_agree_ioctl = NULL;
-#ifndef OPENSSL_NO_RSA
 static t_UBSEC_rsa_mod_exp_ioctl *p_UBSEC_rsa_mod_exp_ioctl = NULL;
 static t_UBSEC_rsa_mod_exp_crt_ioctl *p_UBSEC_rsa_mod_exp_crt_ioctl = NULL;
-#endif
 #ifndef OPENSSL_NO_DSA
 static t_UBSEC_dsa_sign_ioctl *p_UBSEC_dsa_sign_ioctl = NULL;
 static t_UBSEC_dsa_verify_ioctl *p_UBSEC_dsa_verify_ioctl = NULL;
@@ -331,10 +317,8 @@ static const char *UBSEC_F3 = "ubsec_open";
 static const char *UBSEC_F4 = "ubsec_close";
 static const char *UBSEC_F5 = "diffie_hellman_generate_ioctl";
 static const char *UBSEC_F6 = "diffie_hellman_agree_ioctl";
-/* #ifndef OPENSSL_NO_RSA */
 static const char *UBSEC_F7 = "rsa_mod_exp_ioctl";
 static const char *UBSEC_F8 = "rsa_mod_exp_crt_ioctl";
-/* #endif */
 #ifndef OPENSSL_NO_DSA
 static const char *UBSEC_F9 = "dsa_sign_ioctl";
 static const char *UBSEC_F10 = "dsa_verify_ioctl";
@@ -360,10 +344,8 @@ static int ubsec_init(ENGINE *e)
 	t_UBSEC_ubsec_close *p4;
 	t_UBSEC_diffie_hellman_generate_ioctl *p5;
 	t_UBSEC_diffie_hellman_agree_ioctl *p6;
-/* #ifndef OPENSSL_NO_RSA */
 	t_UBSEC_rsa_mod_exp_ioctl *p7;
 	t_UBSEC_rsa_mod_exp_crt_ioctl *p8;
-/* #endif */
 	t_UBSEC_dsa_sign_ioctl *p9;
 	t_UBSEC_dsa_verify_ioctl *p10;
 	t_UBSEC_math_accelerate_ioctl *p11;
@@ -395,10 +377,8 @@ static int ubsec_init(ENGINE *e)
 				DSO_bind_func(ubsec_dso, UBSEC_F5)) ||
 	!(p6 = (t_UBSEC_diffie_hellman_agree_ioctl *) 
 				DSO_bind_func(ubsec_dso, UBSEC_F6)) ||
-/* #ifndef OPENSSL_NO_RSA */
 	!(p7 = (t_UBSEC_rsa_mod_exp_ioctl *) DSO_bind_func(ubsec_dso, UBSEC_F7)) ||
 	!(p8 = (t_UBSEC_rsa_mod_exp_crt_ioctl *) DSO_bind_func(ubsec_dso, UBSEC_F8)) ||
-/* #endif */
 #ifndef OPENSSL_NO_DSA
 	!(p9 = (t_UBSEC_dsa_sign_ioctl *) DSO_bind_func(ubsec_dso, UBSEC_F9)) ||
 	!(p10 = (t_UBSEC_dsa_verify_ioctl *) DSO_bind_func(ubsec_dso, UBSEC_F10)) ||
@@ -419,10 +399,8 @@ static int ubsec_init(ENGINE *e)
 	p_UBSEC_ubsec_close = p4;
 	p_UBSEC_diffie_hellman_generate_ioctl = p5;
 	p_UBSEC_diffie_hellman_agree_ioctl = p6;
-#ifndef OPENSSL_NO_RSA
 	p_UBSEC_rsa_mod_exp_ioctl = p7;
 	p_UBSEC_rsa_mod_exp_crt_ioctl = p8;
-#endif
 #ifndef OPENSSL_NO_DSA
 	p_UBSEC_dsa_sign_ioctl = p9;
 	p_UBSEC_dsa_verify_ioctl = p10;
@@ -452,10 +430,8 @@ err:
 	p_UBSEC_ubsec_close = NULL;
 	p_UBSEC_diffie_hellman_generate_ioctl = NULL;
 	p_UBSEC_diffie_hellman_agree_ioctl = NULL;
-#ifndef OPENSSL_NO_RSA
 	p_UBSEC_rsa_mod_exp_ioctl = NULL;
 	p_UBSEC_rsa_mod_exp_crt_ioctl = NULL;
-#endif
 #ifndef OPENSSL_NO_DSA
 	p_UBSEC_dsa_sign_ioctl = NULL;
 	p_UBSEC_dsa_verify_ioctl = NULL;
@@ -487,10 +463,8 @@ static int ubsec_finish(ENGINE *e)
 	p_UBSEC_ubsec_close = NULL;
 	p_UBSEC_diffie_hellman_generate_ioctl = NULL;
 	p_UBSEC_diffie_hellman_agree_ioctl = NULL;
-#ifndef OPENSSL_NO_RSA
 	p_UBSEC_rsa_mod_exp_ioctl = NULL;
 	p_UBSEC_rsa_mod_exp_crt_ioctl = NULL;
-#endif
 #ifndef OPENSSL_NO_DSA
 	p_UBSEC_dsa_sign_ioctl = NULL;
 	p_UBSEC_dsa_verify_ioctl = NULL;
@@ -572,7 +546,6 @@ static int ubsec_mod_exp(BIGNUM *r, const BIGNUM *a, const BIGNUM *p,
 	return 1;
 	}
 
-#ifndef OPENSSL_NO_RSA
 static int ubsec_rsa_mod_exp(BIGNUM *r0, const BIGNUM *I, RSA *rsa, BN_CTX *ctx)
 	{
 	int to_return = 0;
@@ -641,7 +614,6 @@ static int ubsec_mod_exp_crt(BIGNUM *r, const BIGNUM *a, const BIGNUM *p,
 	r->top = (BN_num_bits(p) + BN_num_bits(q) + BN_BITS2 - 1)/BN_BITS2;
 	return 1;
 }
-#endif
 
 #ifndef OPENSSL_NO_DSA
 #ifdef NOT_USED
@@ -674,7 +646,6 @@ static int ubsec_mod_exp_dsa(DSA *dsa, BIGNUM *r, BIGNUM *a,
 #endif
 #endif
 
-#ifndef OPENSSL_NO_RSA
 
 /*
  * This function is aliased to mod_exp (with the mont stuff dropped).
@@ -697,7 +668,6 @@ static int ubsec_mod_exp_mont(BIGNUM *r, const BIGNUM *a, const BIGNUM *p,
 	
 	return ret;
         }
-#endif
 
 /* This function is aliased to mod_exp (with the dh and mont dropped). */
 static int ubsec_mod_exp_dh(const DH *dh, BIGNUM *r, const BIGNUM *a,

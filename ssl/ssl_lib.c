@@ -2031,13 +2031,9 @@ void ssl_set_cert_masks(CERT *c, const SSL_CIPHER *cipher)
 
 	kl=SSL_C_EXPORT_PKEYLENGTH(cipher);
 
-#ifndef OPENSSL_NO_RSA
 	rsa_tmp=(c->rsa_tmp != NULL || c->rsa_tmp_cb != NULL);
 	rsa_tmp_export=(c->rsa_tmp_cb != NULL ||
 		(rsa_tmp && RSA_size(c->rsa_tmp)*8 <= kl));
-#else
-	rsa_tmp=rsa_tmp_export=0;
-#endif
 	dh_tmp=(c->dh_tmp != NULL || c->dh_tmp_cb != NULL);
 	dh_tmp_export=(c->dh_tmp_cb != NULL ||
 		(dh_tmp && DH_size(c->dh_tmp)*8 <= kl));
@@ -3055,7 +3051,6 @@ int SSL_want(const SSL *s)
  * \param cb the callback
  */
 
-#ifndef OPENSSL_NO_RSA
 void SSL_CTX_set_tmp_rsa_callback(SSL_CTX *ctx,RSA *(*cb)(SSL *ssl,
 							  int is_export,
 							  int keylength))
@@ -3069,7 +3064,6 @@ void SSL_set_tmp_rsa_callback(SSL *ssl,RSA *(*cb)(SSL *ssl,
     {
     SSL_callback_ctrl(ssl,SSL_CTRL_SET_TMP_RSA_CB,(void (*)(void))cb);
     }
-#endif
 
 #ifdef DOXYGEN
 /*!

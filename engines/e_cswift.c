@@ -62,9 +62,7 @@
 #include <openssl/buffer.h>
 #include <openssl/dso.h>
 #include <openssl/engine.h>
-#ifndef OPENSSL_NO_RSA
 #include <openssl/rsa.h>
-#endif
 #ifndef OPENSSL_NO_DSA
 #include <openssl/dsa.h>
 #endif
@@ -102,26 +100,20 @@ static int cswift_destroy(ENGINE *e);
 static int cswift_init(ENGINE *e);
 static int cswift_finish(ENGINE *e);
 static int cswift_ctrl(ENGINE *e, int cmd, long i, void *p, void (*f)(void));
-#ifndef OPENSSL_NO_RSA
 static int cswift_bn_32copy(SW_LARGENUMBER * out, const BIGNUM * in);
-#endif
 
 /* BIGNUM stuff */
 static int cswift_mod_exp(BIGNUM *r, const BIGNUM *a, const BIGNUM *p,
 		const BIGNUM *m, BN_CTX *ctx);
-#ifndef OPENSSL_NO_RSA
 static int cswift_mod_exp_crt(BIGNUM *r, const BIGNUM *a, const BIGNUM *p,
 		const BIGNUM *q, const BIGNUM *dmp1, const BIGNUM *dmq1,
 		const BIGNUM *iqmp, BN_CTX *ctx);
-#endif
 
-#ifndef OPENSSL_NO_RSA
 /* RSA stuff */
 static int cswift_rsa_mod_exp(BIGNUM *r0, const BIGNUM *I, RSA *rsa, BN_CTX *ctx);
 /* This function is aliased to mod_exp (with the mont stuff dropped). */
 static int cswift_mod_exp_mont(BIGNUM *r, const BIGNUM *a, const BIGNUM *p,
 		const BIGNUM *m, BN_CTX *ctx, BN_MONT_CTX *m_ctx);
-#endif
 
 #ifndef OPENSSL_NO_DSA
 /* DSA stuff */
@@ -150,7 +142,6 @@ static const ENGINE_CMD_DEFN cswift_cmd_defns[] = {
 	{0, NULL, NULL, 0}
 	};
 
-#ifndef OPENSSL_NO_RSA
 /* Our internal RSA_METHOD that we provide pointers to */
 static RSA_METHOD cswift_rsa =
 	{
@@ -169,7 +160,6 @@ static RSA_METHOD cswift_rsa =
 	NULL,
 	NULL
 	};
-#endif
 
 #ifndef OPENSSL_NO_DSA
 /* Our internal DSA_METHOD that we provide pointers to */
@@ -224,15 +214,11 @@ static const char *engine_cswift_name = "CryptoSwift hardware engine support";
  * "dynamic" ENGINE support too */
 static int bind_helper(ENGINE *e)
 	{
-#ifndef OPENSSL_NO_RSA
 	const RSA_METHOD *meth1;
-#endif
 	const DH_METHOD *meth2;
 	if(!ENGINE_set_id(e, engine_cswift_id) ||
 			!ENGINE_set_name(e, engine_cswift_name) ||
-#ifndef OPENSSL_NO_RSA
 			!ENGINE_set_RSA(e, &cswift_rsa) ||
-#endif
 #ifndef OPENSSL_NO_DSA
 			!ENGINE_set_DSA(e, &cswift_dsa) ||
 #endif
@@ -245,7 +231,6 @@ static int bind_helper(ENGINE *e)
 			!ENGINE_set_cmd_defns(e, cswift_cmd_defns))
 		return 0;
 
-#ifndef OPENSSL_NO_RSA
 	/* We know that the "PKCS1_SSLeay()" functions hook properly
 	 * to the cswift-specific mod_exp and mod_exp_crt so we use
 	 * those functions. NB: We don't use ENGINE_openssl() or
@@ -258,7 +243,6 @@ static int bind_helper(ENGINE *e)
 	cswift_rsa.rsa_pub_dec = meth1->rsa_pub_dec;
 	cswift_rsa.rsa_priv_enc = meth1->rsa_priv_enc;
 	cswift_rsa.rsa_priv_dec = meth1->rsa_priv_dec;
-#endif
 
 	/* Much the same for Diffie-Hellman */
 	meth2 = DH_OpenSSL();
@@ -567,8 +551,6 @@ err:
 	return to_return;
 	}
 
-
-#ifndef OPENSSL_NO_RSA
 int cswift_bn_32copy(SW_LARGENUMBER * out, const BIGNUM * in)
 {
 	int mod;
@@ -590,9 +572,7 @@ int cswift_bn_32copy(SW_LARGENUMBER * out, const BIGNUM * in)
 
 	return 1;
 }
-#endif
 
-#ifndef OPENSSL_NO_RSA
 /* Un petit mod_exp chinois */
 static int cswift_mod_exp_crt(BIGNUM *r, const BIGNUM *a, const BIGNUM *p,
 			const BIGNUM *q, const BIGNUM *dmp1,
@@ -724,9 +704,7 @@ err:
 		release_context(hac);
 	return to_return;
 	}
-#endif
  
-#ifndef OPENSSL_NO_RSA
 static int cswift_rsa_mod_exp(BIGNUM *r0, const BIGNUM *I, RSA *rsa, BN_CTX *ctx)
 	{
 	int to_return = 0;
@@ -790,7 +768,6 @@ static int cswift_mod_exp_mont(BIGNUM *r, const BIGNUM *a, const BIGNUM *p,
 
 	return cswift_mod_exp(r, a, p, m, ctx);
 	}
-#endif	/* OPENSSL_NO_RSA */
 
 #ifndef OPENSSL_NO_DSA
 static DSA_SIG *cswift_dsa_sign(const unsigned char *dgst, int dlen, DSA *dsa)

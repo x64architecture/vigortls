@@ -85,9 +85,7 @@
 #include <openssl/crypto.h>
 #include <openssl/buffer.h>
 #include <openssl/engine.h>
-#ifndef OPENSSL_NO_RSA
 #include <openssl/rsa.h>
-#endif
 #include <openssl/bn.h>
 
 #ifndef OPENSSL_NO_HW
@@ -103,11 +101,9 @@ static int e_gmp_init(ENGINE *e);
 static int e_gmp_finish(ENGINE *e);
 static int e_gmp_ctrl(ENGINE *e, int cmd, long i, void *p, void (*f)(void)); 
 
-#ifndef OPENSSL_NO_RSA
 /* RSA stuff */
 static int e_gmp_rsa_mod_exp(BIGNUM *r, const BIGNUM *I, RSA *rsa, BN_CTX *ctx);
 static int e_gmp_rsa_finish(RSA *r);
-#endif
 
 /* The definitions for control commands specific to this engine */
 /* #define E_GMP_CMD_SO_PATH		ENGINE_CMD_BASE */
@@ -121,7 +117,6 @@ static const ENGINE_CMD_DEFN e_gmp_cmd_defns[] = {
 	{0, NULL, NULL, 0}
 	};
 
-#ifndef OPENSSL_NO_RSA
 /* Our internal RSA_METHOD that we provide pointers to */
 static RSA_METHOD e_gmp_rsa =
 	{
@@ -142,7 +137,6 @@ static RSA_METHOD e_gmp_rsa =
 	NULL,
 	NULL
 	};
-#endif
 
 /* Constants used when creating the ENGINE */
 static const char *engine_e_gmp_id = "gmp";
@@ -152,14 +146,10 @@ static const char *engine_e_gmp_name = "GMP engine support";
  * "dynamic" ENGINE support too */
 static int bind_helper(ENGINE *e)
 	{
-#ifndef OPENSSL_NO_RSA
 	const RSA_METHOD *meth1;
-#endif
 	if(!ENGINE_set_id(e, engine_e_gmp_id) ||
 			!ENGINE_set_name(e, engine_e_gmp_name) ||
-#ifndef OPENSSL_NO_RSA
 			!ENGINE_set_RSA(e, &e_gmp_rsa) ||
-#endif
 			!ENGINE_set_destroy_function(e, e_gmp_destroy) ||
 			!ENGINE_set_init_function(e, e_gmp_init) ||
 			!ENGINE_set_finish_function(e, e_gmp_finish) ||
@@ -167,14 +157,12 @@ static int bind_helper(ENGINE *e)
 			!ENGINE_set_cmd_defns(e, e_gmp_cmd_defns))
 		return 0;
 
-#ifndef OPENSSL_NO_RSA
 	meth1 = RSA_PKCS1_SSLeay();
 	e_gmp_rsa.rsa_pub_enc = meth1->rsa_pub_enc;
 	e_gmp_rsa.rsa_pub_dec = meth1->rsa_pub_dec;
 	e_gmp_rsa.rsa_priv_enc = meth1->rsa_priv_enc;
 	e_gmp_rsa.rsa_priv_dec = meth1->rsa_priv_dec;
 	e_gmp_rsa.bn_mod_exp = meth1->bn_mod_exp;
-#endif
 
 	/* Ensure the e_gmp error handling is set up */
 	ERR_load_GMP_strings();
@@ -204,10 +192,8 @@ void ENGINE_load_gmp(void)
 	ERR_clear_error();
 	}
 
-#ifndef OPENSSL_NO_RSA
 /* Used to attach our own key-data to an RSA structure */
 static int hndidx_rsa = -1;
-#endif
 
 static int e_gmp_destroy(ENGINE *e)
 	{
@@ -218,12 +204,10 @@ static int e_gmp_destroy(ENGINE *e)
 /* (de)initialisation functions. */
 static int e_gmp_init(ENGINE *e)
 	{
-#ifndef OPENSSL_NO_RSA
 	if (hndidx_rsa == -1)
 		hndidx_rsa = RSA_get_ex_new_index(0,
 			"GMP-based RSA key handle",
 			NULL, NULL, NULL);
-#endif
 	if (hndidx_rsa == -1)
 		return 0;
 	return 1;
@@ -311,8 +295,7 @@ static int gmp2bn(mpz_t g, BIGNUM *bn)
 		return toret;
 		}
 	}
-
-#ifndef OPENSSL_NO_RSA 
+ 
 typedef struct st_e_gmp_rsa_ctx
 	{
 	int public_only;
@@ -451,7 +434,6 @@ static int e_gmp_rsa_mod_exp(BIGNUM *r, const BIGNUM *I, RSA *rsa, BN_CTX *ctx)
 
 	return 1;
 	}
-#endif
 
 #endif /* !OPENSSL_NO_GMP */
 

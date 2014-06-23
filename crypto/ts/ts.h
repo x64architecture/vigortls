@@ -74,9 +74,7 @@
 #include <openssl/asn1.h>
 #include <openssl/safestack.h>
 
-#ifndef OPENSSL_NO_RSA
 #include <openssl/rsa.h>
-#endif
 
 #ifndef OPENSSL_NO_DSA
 #include <openssl/dsa.h>

@@ -63,9 +63,7 @@
 #include <openssl/evp.h>
 #include <openssl/x509.h>
 #include <openssl/pem.h>
-#ifndef OPENSSL_NO_RSA
 #include <openssl/rsa.h>
-#endif
 #ifndef OPENSSL_NO_DSA
 #include <openssl/dsa.h>
 #endif
@@ -164,7 +162,6 @@ start:
 			pp=&(xi->crl);
 			}
 		else
-#ifndef OPENSSL_NO_RSA
 			if (strcmp(name,PEM_STRING_RSA) == 0)
 			{
 			d2i=(D2I_OF(void))d2i_RSAPrivateKey;
@@ -185,7 +182,6 @@ start:
 				raw=1;
 			}
 		else
-#endif
 #ifndef OPENSSL_NO_DSA
 			if (strcmp(name,PEM_STRING_DSA) == 0)
 			{
@@ -377,13 +373,11 @@ int PEM_X509_INFO_write_bio(BIO *bp, X509_INFO *xi, EVP_CIPHER *enc,
 		else
 			{
 			/* Add DSA/DH */
-#ifndef OPENSSL_NO_RSA
 			/* normal optionally encrypted stuff */
 			if (PEM_write_bio_RSAPrivateKey(bp,
 				xi->x_pkey->dec_pkey->pkey.rsa,
 				enc,kstr,klen,cb,u)<=0)
 				goto err;
-#endif
 			}
 		}
 

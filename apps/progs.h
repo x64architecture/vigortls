@@ -75,12 +75,8 @@ FUNCTION functions[] = {
 	{FUNC_TYPE_GENERAL,"errstr",errstr_main},
 	{FUNC_TYPE_GENERAL,"ca",ca_main},
 	{FUNC_TYPE_GENERAL,"crl",crl_main},
-#ifndef OPENSSL_NO_RSA
 	{FUNC_TYPE_GENERAL,"rsa",rsa_main},
-#endif
-#ifndef OPENSSL_NO_RSA
 	{FUNC_TYPE_GENERAL,"rsautl",rsautl_main},
-#endif
 #ifndef OPENSSL_NO_DSA
 	{FUNC_TYPE_GENERAL,"dsa",dsa_main},
 #endif
@@ -94,9 +90,7 @@ FUNCTION functions[] = {
 	{FUNC_TYPE_GENERAL,"ecparam",ecparam_main},
 #endif
 	{FUNC_TYPE_GENERAL,"x509",x509_main},
-#ifndef OPENSSL_NO_RSA
 	{FUNC_TYPE_GENERAL,"genrsa",genrsa_main},
-#endif
 #ifndef OPENSSL_NO_DSA
 	{FUNC_TYPE_GENERAL,"gendsa",gendsa_main},
 #endif

@@ -70,9 +70,7 @@
 #include <openssl/x509v3.h>
 #include <openssl/objects.h>
 #include <openssl/pem.h>
-#ifndef OPENSSL_NO_RSA
 #include <openssl/rsa.h>
-#endif
 #ifndef OPENSSL_NO_DSA
 #include <openssl/dsa.h>
 #endif
@@ -822,11 +820,9 @@ bad:
 					goto end;
 					}
 				BIO_printf(STDout,"Modulus=");
-#ifndef OPENSSL_NO_RSA
 				if (pkey->type == EVP_PKEY_RSA)
 					BN_print(STDout,pkey->pkey.rsa->n);
 				else
-#endif
 #ifndef OPENSSL_NO_DSA
 				if (pkey->type == EVP_PKEY_DSA)
 					BN_print(STDout,pkey->pkey.dsa->pub_key);

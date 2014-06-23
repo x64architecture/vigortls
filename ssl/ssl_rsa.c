@@ -146,7 +146,6 @@ int SSL_use_certificate_ASN1(SSL *ssl, const unsigned char *d, int len)
 	return(ret);
 	}
 
-#ifndef OPENSSL_NO_RSA
 int SSL_use_RSAPrivateKey(SSL *ssl, RSA *rsa)
 	{
 	EVP_PKEY *pkey;
@@ -175,7 +174,6 @@ int SSL_use_RSAPrivateKey(SSL *ssl, RSA *rsa)
 	EVP_PKEY_free(pkey);
 	return(ret);
 	}
-#endif
 
 static int ssl_set_pkey(CERT *c, EVP_PKEY *pkey)
 	{
@@ -196,14 +194,12 @@ static int ssl_set_pkey(CERT *c, EVP_PKEY *pkey)
 		EVP_PKEY_free(pktmp);
 		ERR_clear_error();
 
-#ifndef OPENSSL_NO_RSA
 		/* Don't check the public/private key, this is mostly
 		 * for smart cards. */
 		if ((pkey->type == EVP_PKEY_RSA) &&
 			(RSA_flags(pkey->pkey.rsa) & RSA_METHOD_FLAG_NO_CHECK))
 			;
 		else
-#endif
 		if (!X509_check_private_key(c->pkeys[i].x509,pkey))
 			{
 			X509_free(c->pkeys[i].x509);
@@ -222,7 +218,6 @@ static int ssl_set_pkey(CERT *c, EVP_PKEY *pkey)
 	return(1);
 	}
 
-#ifndef OPENSSL_NO_RSA
 int SSL_use_RSAPrivateKey_file(SSL *ssl, const char *file, int type)
 	{
 	int j,ret=0;
@@ -286,7 +281,6 @@ int SSL_use_RSAPrivateKey_ASN1(SSL *ssl, unsigned char *d, long len)
 	RSA_free(rsa);
 	return(ret);
 	}
-#endif /* !OPENSSL_NO_RSA */
 
 int SSL_use_PrivateKey(SSL *ssl, EVP_PKEY *pkey)
 	{
@@ -410,7 +404,6 @@ static int ssl_set_cert(CERT *c, X509 *x)
 		EVP_PKEY_copy_parameters(pkey,c->pkeys[i].privatekey);
 		ERR_clear_error();
 
-#ifndef OPENSSL_NO_RSA
 		/* Don't check the public/private key, this is mostly
 		 * for smart cards. */
 		if ((c->pkeys[i].privatekey->type == EVP_PKEY_RSA) &&
@@ -418,7 +411,6 @@ static int ssl_set_cert(CERT *c, X509 *x)
 			 RSA_METHOD_FLAG_NO_CHECK))
 			 ;
 		else
-#endif /* OPENSSL_NO_RSA */
 		if (!X509_check_private_key(x,c->pkeys[i].privatekey))
 			{
 			/* don't fail for a cert/key mismatch, just free
@@ -509,7 +501,6 @@ int SSL_CTX_use_certificate_ASN1(SSL_CTX *ctx, int len, const unsigned char *d)
 	return(ret);
 	}
 
-#ifndef OPENSSL_NO_RSA
 int SSL_CTX_use_RSAPrivateKey(SSL_CTX *ctx, RSA *rsa)
 	{
 	int ret;
@@ -602,7 +593,6 @@ int SSL_CTX_use_RSAPrivateKey_ASN1(SSL_CTX *ctx, const unsigned char *d, long le
 	RSA_free(rsa);
 	return(ret);
 	}
-#endif /* !OPENSSL_NO_RSA */
 
 int SSL_CTX_use_PrivateKey(SSL_CTX *ctx, EVP_PKEY *pkey)
 	{

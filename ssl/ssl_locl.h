@@ -155,9 +155,7 @@
 #endif
 #include <openssl/bio.h>
 #include <openssl/stack.h>
-#ifndef OPENSSL_NO_RSA
 #include <openssl/rsa.h>
-#endif
 #ifndef OPENSSL_NO_DSA
 #include <openssl/dsa.h>
 #endif
@@ -499,10 +497,8 @@ typedef struct cert_st
 	unsigned long mask_a;
 	unsigned long export_mask_k;
 	unsigned long export_mask_a;
-#ifndef OPENSSL_NO_RSA
 	RSA *rsa_tmp;
 	RSA *(*rsa_tmp_cb)(SSL *ssl,int is_export,int keysize);
-#endif
 	DH *dh_tmp;
 	DH *(*dh_tmp_cb)(SSL *ssl,int is_export,int keysize);
 #ifndef OPENSSL_NO_ECDH
@@ -529,9 +525,7 @@ typedef struct sess_cert_st
 	/* Obviously we don't have the private keys of these,
 	 * so maybe we shouldn't even use the CERT_PKEY type here. */
 
-#ifndef OPENSSL_NO_RSA
 	RSA *peer_rsa_tmp; /* not used for SSL 2 */
-#endif
 	DH *peer_dh_tmp; /* not used for SSL 2 */
 #ifndef OPENSSL_NO_ECDH
 	EC_KEY *peer_ecdh_tmp;

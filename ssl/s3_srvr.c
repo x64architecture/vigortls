@@ -1537,13 +1537,11 @@ int ssl3_send_server_done(SSL *s)
 
 int ssl3_send_server_key_exchange(SSL *s)
 	{
-#ifndef OPENSSL_NO_RSA
 	unsigned char *q;
 	int j,num;
 	RSA *rsa;
 	unsigned char md_buf[MD5_DIGEST_LENGTH+SHA_DIGEST_LENGTH];
 	unsigned int u;
-#endif
 	DH *dh=NULL,*dhp;
 #ifndef OPENSSL_NO_ECDH
 	EC_KEY *ecdh=NULL, *ecdhp;
@@ -1574,7 +1572,6 @@ int ssl3_send_server_key_exchange(SSL *s)
 
 		r[0]=r[1]=r[2]=r[3]=NULL;
 		n=0;
-#ifndef OPENSSL_NO_RSA
 		if (type & SSL_kRSA)
 			{
 			rsa=cert->rsa_tmp;
@@ -1603,7 +1600,6 @@ int ssl3_send_server_key_exchange(SSL *s)
 			s->s3->tmp.use_rsa_tmp=1;
 			}
 		else
-#endif
 			if (type & SSL_kEDH)
 			{
 			dhp=cert->dh_tmp;
@@ -1907,7 +1903,6 @@ int ssl3_send_server_key_exchange(SSL *s)
 			{
 			/* n is the length of the params, they start at &(d[4])
 			 * and p points to the space at the end. */
-#ifndef OPENSSL_NO_RSA
 			if (pkey->type == EVP_PKEY_RSA
 					&& TLS1_get_version(s) < TLS1_2_VERSION)
 				{
@@ -1937,7 +1932,6 @@ int ssl3_send_server_key_exchange(SSL *s)
 				n+=u+2;
 				}
 			else
-#endif
 			if (md)
 				{
 				/* For TLS1.2 and later send signature
@@ -2112,10 +2106,8 @@ int ssl3_get_client_key_exchange(SSL *s)
 	long n;
 	unsigned long alg_k;
 	unsigned char *p;
-#ifndef OPENSSL_NO_RSA
 	RSA *rsa=NULL;
 	EVP_PKEY *pkey=NULL;
-#endif
 	BIGNUM *pub=NULL;
 	DH *dh_srvr;
 #ifndef OPENSSL_NO_KRB5
@@ -2141,7 +2133,6 @@ int ssl3_get_client_key_exchange(SSL *s)
 
 	alg_k=s->s3->tmp.new_cipher->algorithm_mkey;
 
-#ifndef OPENSSL_NO_RSA
 	if (alg_k & SSL_kRSA)
 		{
 		/* FIX THIS UP EAY EAY EAY EAY */
@@ -2246,7 +2237,6 @@ int ssl3_get_client_key_exchange(SSL *s)
 		OPENSSL_cleanse(p,i);
 		}
 	else
-#endif
 		if (alg_k & (SSL_kEDH|SSL_kDHr|SSL_kDHd))
 		{
 		n2s(p,i);
@@ -3035,7 +3025,6 @@ fprintf(stderr, "USING TLSv1.2 HASH %s\n", EVP_MD_name(md));
 			}
 		}
 	else
-#ifndef OPENSSL_NO_RSA 
 	if (pkey->type == EVP_PKEY_RSA)
 		{
 		i=RSA_verify(NID_md5_sha1, s->s3->tmp.cert_verify_md,
@@ -3055,7 +3044,6 @@ fprintf(stderr, "USING TLSv1.2 HASH %s\n", EVP_MD_name(md));
 			}
 		}
 	else
-#endif
 #ifndef OPENSSL_NO_DSA
 		if (pkey->type == EVP_PKEY_DSA)
 		{

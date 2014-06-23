@@ -67,9 +67,7 @@
 #ifndef OPENSSL_NO_COMP
 #include <openssl/comp.h>
 #endif
-#ifndef OPENSSL_NO_RSA
 #include <openssl/rsa.h>
-#endif
 #include <openssl/dh.h>
 #ifndef OPENSSL_NO_DSA
 #include <openssl/dsa.h>
@@ -111,9 +109,7 @@ void ERR_load_crypto_strings(void)
 #ifndef OPENSSL_NO_ERR
 	ERR_load_ERR_strings(); /* include error strings for SYSerr */
 	ERR_load_BN_strings();
-#ifndef OPENSSL_NO_RSA
 	ERR_load_RSA_strings();
-#endif
 	ERR_load_DH_strings();
 	ERR_load_EVP_strings();
 	ERR_load_BUF_strings();

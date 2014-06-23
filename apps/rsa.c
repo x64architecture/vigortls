@@ -57,7 +57,6 @@
  */
 
 #include <openssl/opensslconf.h>
-#ifndef OPENSSL_NO_RSA
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -441,10 +440,3 @@ end:
 	apps_shutdown();
 	OPENSSL_EXIT(ret);
 	}
-#else /* !OPENSSL_NO_RSA */
-
-# if PEDANTIC
-static void *dummy=&dummy;
-# endif
-
-#endif

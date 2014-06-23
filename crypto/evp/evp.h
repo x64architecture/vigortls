@@ -134,9 +134,7 @@ struct evp_pkey_st
 	ENGINE *engine;
 	union	{
 		char *ptr;
-#ifndef OPENSSL_NO_RSA
 		struct rsa_st *rsa;	/* RSA */
-#endif
 #ifndef OPENSSL_NO_DSA
 		struct dsa_st *dsa;	/* DSA */
 #endif
@@ -245,7 +243,6 @@ typedef int evp_verify_method(int type,const unsigned char *m,
 #define EVP_PKEY_ECDSA_method   EVP_PKEY_NULL_method
 #endif
 
-#ifndef OPENSSL_NO_RSA
 #define EVP_PKEY_RSA_method	(evp_sign_method *)RSA_sign, \
 				(evp_verify_method *)RSA_verify, \
 				{EVP_PKEY_RSA,EVP_PKEY_RSA2,0,0}
@@ -253,10 +250,6 @@ typedef int evp_verify_method(int type,const unsigned char *m,
 				(evp_sign_method *)RSA_sign_ASN1_OCTET_STRING, \
 				(evp_verify_method *)RSA_verify_ASN1_OCTET_STRING, \
 				{EVP_PKEY_RSA,EVP_PKEY_RSA2,0,0}
-#else
-#define EVP_PKEY_RSA_method	EVP_PKEY_NULL_method
-#define EVP_PKEY_RSA_ASN1_OCTET_STRING_method EVP_PKEY_NULL_method
-#endif
 
 #endif /* !EVP_MD */
 
@@ -445,10 +438,8 @@ typedef int (EVP_PBE_KEYGEN)(EVP_CIPHER_CTX *ctx, const char *pass, int passlen,
 		ASN1_TYPE *param, const EVP_CIPHER *cipher,
                 const EVP_MD *md, int en_de);
 
-#ifndef OPENSSL_NO_RSA
 #define EVP_PKEY_assign_RSA(pkey,rsa) EVP_PKEY_assign((pkey),EVP_PKEY_RSA,\
 					(char *)(rsa))
-#endif
 
 #ifndef OPENSSL_NO_DSA
 #define EVP_PKEY_assign_DSA(pkey,dsa) EVP_PKEY_assign((pkey),EVP_PKEY_DSA,\
@@ -895,11 +886,9 @@ int		EVP_PKEY_set_type_str(EVP_PKEY *pkey, const char *str, int len);
 int 		EVP_PKEY_assign(EVP_PKEY *pkey,int type,void *key);
 void *		EVP_PKEY_get0(EVP_PKEY *pkey);
 
-#ifndef OPENSSL_NO_RSA
 struct rsa_st;
 int EVP_PKEY_set1_RSA(EVP_PKEY *pkey,struct rsa_st *key);
 struct rsa_st *EVP_PKEY_get1_RSA(EVP_PKEY *pkey);
-#endif
 #ifndef OPENSSL_NO_DSA
 struct dsa_st;
 int EVP_PKEY_set1_DSA(EVP_PKEY *pkey,struct dsa_st *key);

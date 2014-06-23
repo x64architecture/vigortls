@@ -171,10 +171,8 @@
 #ifndef OPENSSL_NO_CAST
 #include <openssl/cast.h>
 #endif
-#ifndef OPENSSL_NO_RSA
 #include <openssl/rsa.h>
 #include "./testrsa.h"
-#endif
 #include <openssl/x509.h>
 #ifndef OPENSSL_NO_DSA
 #include <openssl/dsa.h>
@@ -254,9 +252,7 @@ static const char *names[ALGOR_NUM]={
   "aes-128 ige","aes-192 ige","aes-256 ige","ghash" };
 static double results[ALGOR_NUM][SIZE_NUM];
 static int lengths[SIZE_NUM]={16,64,256,1024,8*1024};
-#ifndef OPENSSL_NO_RSA
 static double rsa_results[RSA_NUM][2];
-#endif
 #ifndef OPENSSL_NO_DSA
 static double dsa_results[DSA_NUM][2];
 #endif
@@ -366,9 +362,7 @@ int MAIN(int argc, char **argv)
 #if !defined(OPENSSL_NO_RSA) || !defined(OPENSSL_NO_DSA)
 	long rsa_count;
 #endif
-#ifndef OPENSSL_NO_RSA
 	unsigned rsa_num;
-#endif
 	unsigned char md[EVP_MAX_MD_SIZE];
 #ifndef OPENSSL_NO_MD2
 	unsigned char md2[MD2_DIGEST_LENGTH];
@@ -522,7 +516,6 @@ int MAIN(int argc, char **argv)
 #define R_EC_B409    14
 #define R_EC_B571    15
 
-#ifndef OPENSSL_NO_RSA
 	RSA *rsa_key[RSA_NUM];
 	long rsa_c[RSA_NUM][2];
 	static unsigned int rsa_bits[RSA_NUM]={512,1024,2048,4096};
@@ -531,7 +524,6 @@ int MAIN(int argc, char **argv)
 	static int rsa_data_length[RSA_NUM]={
 		sizeof(test512),sizeof(test1024),
 		sizeof(test2048),sizeof(test4096)};
-#endif
 #ifndef OPENSSL_NO_DSA
 	DSA *dsa_key[DSA_NUM];
 	long dsa_c[DSA_NUM][2];
@@ -655,11 +647,9 @@ int MAIN(int argc, char **argv)
 	if (!load_config(bio_err, NULL))
 		goto end;
 
-#ifndef OPENSSL_NO_RSA
 	memset(rsa_key,0,sizeof(rsa_key));
 	for (i=0; i<RSA_NUM; i++)
 		rsa_key[i]=NULL;
-#endif
 
 	if ((buf=(unsigned char *)OPENSSL_malloc((int)BUFSIZE)) == NULL)
 		{
@@ -847,15 +837,6 @@ int MAIN(int argc, char **argv)
 		else    if (strcmp(*argv,"camellia-256-cbc") == 0) doit[D_CBC_256_CML]=1;
 		else
 #endif
-#ifndef OPENSSL_NO_RSA
-#if 0 /* was: #ifdef RSAref */
-			if (strcmp(*argv,"rsaref") == 0) 
-			{
-			RSA_set_default_openssl_method(RSA_PKCS1_RSAref());
-			j--;
-			}
-		else
-#endif
 #ifndef RSA_NULL
 			if (strcmp(*argv,"openssl") == 0) 
 			{
@@ -864,7 +845,6 @@ int MAIN(int argc, char **argv)
 			}
 		else
 #endif
-#endif /* !OPENSSL_NO_RSA */
 		     if (strcmp(*argv,"dsa512") == 0) dsa_doit[R_DSA_512]=2;
 		else if (strcmp(*argv,"dsa1024") == 0) dsa_doit[R_DSA_1024]=2;
 		else if (strcmp(*argv,"dsa2048") == 0) dsa_doit[R_DSA_2048]=2;
@@ -935,7 +915,6 @@ int MAIN(int argc, char **argv)
 			}
 		else
 #endif
-#ifndef OPENSSL_NO_RSA
 			if (strcmp(*argv,"rsa") == 0)
 			{
 			rsa_doit[R_RSA_512]=1;
@@ -944,7 +923,6 @@ int MAIN(int argc, char **argv)
 			rsa_doit[R_RSA_4096]=1;
 			}
 		else
-#endif
 #ifndef OPENSSL_NO_DSA
 			if (strcmp(*argv,"dsa") == 0)
 			{
@@ -1078,9 +1056,7 @@ int MAIN(int argc, char **argv)
 #endif
 			BIO_printf(bio_err,"\n");
 
-#ifndef OPENSSL_NO_RSA
 			BIO_printf(bio_err,"rsa512   rsa1024  rsa2048  rsa4096\n");
-#endif
 
 #ifndef OPENSSL_NO_DSA
 			BIO_printf(bio_err,"dsa512   dsa1024  dsa2048\n");
@@ -1116,9 +1092,7 @@ int MAIN(int argc, char **argv)
 #ifndef OPENSSL_NO_CAMELLIA
 			BIO_printf(bio_err,"camellia ");
 #endif
-#ifndef OPENSSL_NO_RSA
 			BIO_printf(bio_err,"rsa      ");
-#endif
 #ifndef OPENSSL_NO_BF
 			BIO_printf(bio_err,"blowfish");
 #endif
@@ -1181,7 +1155,6 @@ int MAIN(int argc, char **argv)
 	if (usertime == 0 && !mr)
 		BIO_printf(bio_err,"You have chosen to measure elapsed time instead of user CPU time.\n");
 
-#ifndef OPENSSL_NO_RSA
 	for (i=0; i<RSA_NUM; i++)
 		{
 		const unsigned char *p;
@@ -1193,18 +1166,7 @@ int MAIN(int argc, char **argv)
 			BIO_printf(bio_err,"internal error loading RSA key number %d\n",i);
 			goto end;
 			}
-#if 0
-		else
-			{
-			BIO_printf(bio_err,mr ? "+RK:%d:"
-				   : "Loaded RSA key, %d bit modulus and e= 0x",
-				   BN_num_bits(rsa_key[i]->n));
-			BN_print(bio_err,rsa_key[i]->e);
-			BIO_printf(bio_err,"\n");
-			}
-#endif
 		}
-#endif
 
 #ifndef OPENSSL_NO_DSA
 	dsa_key[0]=get_dsa512();
@@ -1248,9 +1210,7 @@ int MAIN(int argc, char **argv)
 #ifndef OPENSSL_NO_CAST
 	CAST_set_key(&cast_ks,16,key16);
 #endif
-#ifndef OPENSSL_NO_RSA
 	memset(rsa_c,0,sizeof(rsa_c));
-#endif
 #ifndef SIGALRM
 #ifndef OPENSSL_NO_DES
 	BIO_printf(bio_err,"First we calculate the approximate speed ...\n");
@@ -1334,7 +1294,6 @@ int MAIN(int argc, char **argv)
 		c[D_IGE_192_AES][i]=c[D_IGE_192_AES][i-1]*l0/l1;
 		c[D_IGE_256_AES][i]=c[D_IGE_256_AES][i-1]*l0/l1;
 		}
-#ifndef OPENSSL_NO_RSA
 	rsa_c[R_RSA_512][0]=count/2000;
 	rsa_c[R_RSA_512][1]=count/400;
 	for (i=1; i<RSA_NUM; i++)
@@ -1352,7 +1311,6 @@ int MAIN(int argc, char **argv)
 				}
 			}				
 		}
-#endif
 
 #ifndef OPENSSL_NO_DSA
 	dsa_c[R_DSA_512][0]=count/1000;
@@ -1998,7 +1956,6 @@ int MAIN(int argc, char **argv)
 		}
 
 	RAND_pseudo_bytes(buf,36);
-#ifndef OPENSSL_NO_RSA
 	for (j=0; j<RSA_NUM; j++)
 		{
 		int ret;
@@ -2080,7 +2037,6 @@ int MAIN(int argc, char **argv)
 				rsa_doit[j]=0;
 			}
 		}
-#endif
 
 	RAND_pseudo_bytes(buf,20);
 #ifndef OPENSSL_NO_DSA
@@ -2446,7 +2402,6 @@ show_res:
 			}
 		fprintf(stdout,"\n");
 		}
-#ifndef OPENSSL_NO_RSA
 	j=1;
 	for (k=0; k<RSA_NUM; k++)
 		{
@@ -2465,7 +2420,6 @@ show_res:
 				rsa_bits[k],rsa_results[k][0],rsa_results[k][1],
 				1.0/rsa_results[k][0],1.0/rsa_results[k][1]);
 		}
-#endif
 #ifndef OPENSSL_NO_DSA
 	j=1;
 	for (k=0; k<DSA_NUM; k++)
@@ -2540,11 +2494,9 @@ end:
 	ERR_print_errors(bio_err);
 	if (buf != NULL) OPENSSL_free(buf);
 	if (buf2 != NULL) OPENSSL_free(buf2);
-#ifndef OPENSSL_NO_RSA
 	for (i=0; i<RSA_NUM; i++)
 		if (rsa_key[i] != NULL)
 			RSA_free(rsa_key[i]);
-#endif
 #ifndef OPENSSL_NO_DSA
 	for (i=0; i<DSA_NUM; i++)
 		if (dsa_key[i] != NULL)

@@ -69,9 +69,7 @@
 #include <openssl/crypto.h>
 #include <openssl/buffer.h>
 #include <openssl/engine.h>
-#ifndef OPENSSL_NO_RSA
 #include <openssl/rsa.h>
-#endif
 #include <openssl/bn.h>
 #include <openssl/err.h>
 
@@ -104,17 +102,14 @@ static int e_rsax_init(ENGINE *e);
 static int e_rsax_finish(ENGINE *e);
 static int e_rsax_ctrl(ENGINE *e, int cmd, long i, void *p, void (*f)(void));
 
-#ifndef OPENSSL_NO_RSA
 /* RSA stuff */
 static int e_rsax_rsa_mod_exp(BIGNUM *r, const BIGNUM *I, RSA *rsa, BN_CTX *ctx);
 static int e_rsax_rsa_finish(RSA *r);
-#endif
 
 static const ENGINE_CMD_DEFN e_rsax_cmd_defns[] = {
 	{0, NULL, NULL, 0}
 	};
 
-#ifndef OPENSSL_NO_RSA
 /* Our internal RSA_METHOD that we provide pointers to */
 static RSA_METHOD e_rsax_rsa =
 	{
@@ -132,7 +127,6 @@ static RSA_METHOD e_rsax_rsa =
 	NULL,
 	NULL
 	};
-#endif
 
 /* Constants used when creating the ENGINE */
 static const char *engine_e_rsax_id = "rsax";
@@ -141,14 +135,10 @@ static const char *engine_e_rsax_name = "RSAX engine support";
 /* This internal function is used by ENGINE_rsax() */
 static int bind_helper(ENGINE *e)
 	{
-#ifndef OPENSSL_NO_RSA
 	const RSA_METHOD *meth1;
-#endif
 	if(!ENGINE_set_id(e, engine_e_rsax_id) ||
 			!ENGINE_set_name(e, engine_e_rsax_name) ||
-#ifndef OPENSSL_NO_RSA
 			!ENGINE_set_RSA(e, &e_rsax_rsa) ||
-#endif
 			!ENGINE_set_destroy_function(e, e_rsax_destroy) ||
 			!ENGINE_set_init_function(e, e_rsax_init) ||
 			!ENGINE_set_finish_function(e, e_rsax_finish) ||
@@ -156,14 +146,12 @@ static int bind_helper(ENGINE *e)
 			!ENGINE_set_cmd_defns(e, e_rsax_cmd_defns))
 		return 0;
 
-#ifndef OPENSSL_NO_RSA
 	meth1 = RSA_PKCS1_SSLeay();
 	e_rsax_rsa.rsa_pub_enc = meth1->rsa_pub_enc;
 	e_rsax_rsa.rsa_pub_dec = meth1->rsa_pub_dec;
 	e_rsax_rsa.rsa_priv_enc = meth1->rsa_priv_enc;
 	e_rsax_rsa.rsa_priv_dec = meth1->rsa_priv_dec;
 	e_rsax_rsa.bn_mod_exp = meth1->bn_mod_exp;
-#endif
 	return 1;
 	}
 
@@ -180,10 +168,8 @@ static ENGINE *ENGINE_rsax(void)
 	return ret;
 	}
 
-#ifndef OPENSSL_NO_RSA
 /* Used to attach our own key-data to an RSA structure */
 static int rsax_ex_data_idx = -1;
-#endif
 
 static int e_rsax_destroy(ENGINE *e)
 	{
@@ -193,12 +179,10 @@ static int e_rsax_destroy(ENGINE *e)
 /* (de)initialisation functions. */
 static int e_rsax_init(ENGINE *e)
 	{
-#ifndef OPENSSL_NO_RSA
 	if (rsax_ex_data_idx == -1)
 		rsax_ex_data_idx = RSA_get_ex_new_index(0,
 			NULL,
 			NULL, NULL, NULL);
-#endif
 	if (rsax_ex_data_idx  == -1)
 		return 0;
 	return 1;
@@ -223,9 +207,6 @@ static int e_rsax_ctrl(ENGINE *e, int cmd, long i, void *p, void (*f)(void))
 
 	return to_return;
 	}
-
-
-#ifndef OPENSSL_NO_RSA
 
 #ifdef _WIN32
 typedef unsigned __int64 UINT64;
@@ -664,5 +645,4 @@ err:
 
 	return ret;
 	}
-#endif /* !OPENSSL_NO_RSA */
 #endif /* !COMPILE_RSAX */

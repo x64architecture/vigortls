@@ -63,7 +63,6 @@
 #undef OPENSSL_NO_DEPRECATED
 #endif
 
-#ifndef OPENSSL_NO_RSA
 #include <stdio.h>
 #include <string.h>
 #include <sys/types.h>
@@ -326,10 +325,3 @@ static int MS_CALLBACK genrsa_cb(int p, int n, BN_GENCB *cb)
 #endif
 	return 1;
 	}
-#else /* !OPENSSL_NO_RSA */
-
-# if PEDANTIC
-static void *dummy=&dummy;
-# endif
-
-#endif

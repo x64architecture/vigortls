@@ -64,9 +64,7 @@
 #include <openssl/evp.h>
 #include <openssl/asn1_mac.h>
 #include <openssl/x509.h>
-#ifndef OPENSSL_NO_RSA
 #include <openssl/rsa.h>
-#endif
 #ifndef OPENSSL_NO_DSA
 #include <openssl/dsa.h>
 #endif
@@ -271,7 +269,6 @@ void *EVP_PKEY_get0(EVP_PKEY *pkey)
 	return pkey->pkey.ptr;
 	}
 
-#ifndef OPENSSL_NO_RSA
 int EVP_PKEY_set1_RSA(EVP_PKEY *pkey, RSA *key)
 {
 	int ret = EVP_PKEY_assign_RSA(pkey, key);
@@ -289,7 +286,6 @@ RSA *EVP_PKEY_get1_RSA(EVP_PKEY *pkey)
 	RSA_up_ref(pkey->pkey.rsa);
 	return pkey->pkey.rsa;
 }
-#endif
 
 #ifndef OPENSSL_NO_DSA
 int EVP_PKEY_set1_DSA(EVP_PKEY *pkey, DSA *key)

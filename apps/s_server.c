@@ -178,9 +178,7 @@ typedef unsigned int u_int;
 #include <openssl/rand.h>
 #include <openssl/ocsp.h>
 #include <openssl/dh.h>
-#ifndef OPENSSL_NO_RSA
 #include <openssl/rsa.h>
-#endif
 #ifndef OPENSSL_NO_SRP
 #include <openssl/srp.h>
 #endif
@@ -196,9 +194,7 @@ typedef unsigned int u_int;
 #include <fcntl.h>
 #endif
 
-#ifndef OPENSSL_NO_RSA
 static RSA MS_CALLBACK *tmp_rsa_cb(SSL *s, int is_export, int keylength);
-#endif
 static int sv_body(char *hostname, int s, unsigned char *context);
 static int www_body(char *hostname, int s, unsigned char *context);
 static void close_accept_socket(void );
@@ -1736,7 +1732,6 @@ bad:
 			goto end;
 		}
 
-#ifndef OPENSSL_NO_RSA
 #if 1
 	if (!no_tmp_rsa)
 		{
@@ -1774,7 +1769,6 @@ bad:
 		RSA_free(rsa);
 		BIO_printf(bio_s_out,"\n");
 		}
-#endif
 #endif
 
 #ifndef OPENSSL_NO_PSK
@@ -2929,7 +2923,6 @@ err:
 	return(ret);
 	}
 
-#ifndef OPENSSL_NO_RSA
 static RSA MS_CALLBACK *tmp_rsa_cb(SSL *s, int is_export, int keylength)
 	{
 	BIGNUM *bn = NULL;
@@ -2959,7 +2952,6 @@ static RSA MS_CALLBACK *tmp_rsa_cb(SSL *s, int is_export, int keylength)
 		}
 	return(rsa_tmp);
 	}
-#endif
 
 #define MAX_SESSION_ID_ATTEMPTS 10
 static int generate_session_id(const SSL *ssl, unsigned char *id,

@@ -135,9 +135,7 @@
 #ifndef OPENSSL_NO_ENGINE
 #include <openssl/engine.h>
 #endif
-#ifndef OPENSSL_NO_RSA
 #include <openssl/rsa.h>
-#endif
 #include <openssl/bn.h>
 #ifndef OPENSSL_NO_JPAKE
 #include <openssl/jpake.h>
@@ -1010,7 +1008,6 @@ EVP_PKEY *load_pubkey(BIO *err, const char *file, int format, int maybe_stdin,
 		{
 		pkey=d2i_PUBKEY_bio(key, NULL);
 		}
-#ifndef OPENSSL_NO_RSA
 	else if (format == FORMAT_ASN1RSA)
 		{
 		RSA *rsa;
@@ -1040,7 +1037,6 @@ EVP_PKEY *load_pubkey(BIO *err, const char *file, int format, int maybe_stdin,
 		else
 			pkey = NULL;
 		}
-#endif
 	else if (format == FORMAT_PEM)
 		{
 		pkey=PEM_read_bio_PUBKEY(key,NULL,

@@ -944,10 +944,8 @@ int dtls1_send_client_key_exchange(SSL *s)
 	unsigned char *p,*d;
 	int n;
 	unsigned long alg_k;
-#ifndef OPENSSL_NO_RSA
 	unsigned char *q;
 	EVP_PKEY *pkey=NULL;
-#endif
 #ifndef OPENSSL_NO_KRB5
         KSSL_ERR kssl_err;
 #endif /* OPENSSL_NO_KRB5 */
@@ -969,7 +967,6 @@ int dtls1_send_client_key_exchange(SSL *s)
 
                 /* Fool emacs indentation */
                 if (0) {}
-#ifndef OPENSSL_NO_RSA
 		else if (alg_k & SSL_kRSA)
 			{
 			RSA *rsa;
@@ -1027,7 +1024,6 @@ int dtls1_send_client_key_exchange(SSL *s)
 					tmp_buf,sizeof tmp_buf);
 			OPENSSL_cleanse(tmp_buf,sizeof tmp_buf);
 			}
-#endif
 #ifndef OPENSSL_NO_KRB5
 		else if (alg_k & SSL_kKRB5)
                         {
@@ -1525,9 +1521,7 @@ int dtls1_send_client_verify(SSL *s)
 	unsigned char *p,*d;
 	unsigned char data[MD5_DIGEST_LENGTH+SHA_DIGEST_LENGTH];
 	EVP_PKEY *pkey;
-#ifndef OPENSSL_NO_RSA
 	unsigned u=0;
-#endif
 	unsigned long n;
 #if !defined(OPENSSL_NO_DSA) || !defined(OPENSSL_NO_ECDSA)
 	int j;
@@ -1543,7 +1537,6 @@ int dtls1_send_client_verify(SSL *s)
 		NID_sha1,
 			&(data[MD5_DIGEST_LENGTH]));
 
-#ifndef OPENSSL_NO_RSA
 		if (pkey->type == EVP_PKEY_RSA)
 			{
 			s->method->ssl3_enc->cert_verify_mac(s,
@@ -1560,7 +1553,6 @@ int dtls1_send_client_verify(SSL *s)
 			n=u+2;
 			}
 		else
-#endif
 #ifndef OPENSSL_NO_DSA
 			if (pkey->type == EVP_PKEY_DSA)
 			{
