@@ -710,10 +710,6 @@ static void ssl_cipher_get_disabled(unsigned long *mkey, unsigned long *auth, un
 #endif
 	*mkey |= SSL_kDHr|SSL_kDHd; /* no such ciphersuites supported! */
 	*auth |= SSL_aDH;
-#ifdef OPENSSL_NO_DH
-	*mkey |= SSL_kDHr|SSL_kDHd|SSL_kEDH;
-	*auth |= SSL_aDH;
-#endif
 #ifdef OPENSSL_NO_KRB5
 	*mkey |= SSL_kKRB5;
 	*auth |= SSL_aKRB5;

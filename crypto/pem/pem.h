@@ -500,11 +500,7 @@ DECLARE_PEM_rw_cb(ECPrivateKey, EC_KEY)
 DECLARE_PEM_rw(EC_PUBKEY, EC_KEY)
 #endif
 
-#ifndef OPENSSL_NO_DH
-
 DECLARE_PEM_rw_const(DHparams, DH)
-
-#endif
 
 DECLARE_PEM_rw_cb(PrivateKey, EVP_PKEY)
 

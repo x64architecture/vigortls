@@ -66,9 +66,7 @@
 #ifndef OPENSSL_NO_ENGINE
 #include <openssl/engine.h>
 #endif
-#ifndef OPENSSL_NO_DH
 #include <openssl/dh.h>
-#endif
 
 #ifdef OPENSSL_FIPS
 #include <openssl/fips.h>
@@ -285,7 +283,6 @@ void *DSA_get_ex_data(DSA *d, int idx)
 	return(CRYPTO_get_ex_data(&d->ex_data,idx));
 	}
 
-#ifndef OPENSSL_NO_DH
 DH *DSA_dup_DH(const DSA *r)
 	{
 	/* DSA has p, q, g, optional pub_key, optional priv_key.
@@ -326,4 +323,3 @@ DH *DSA_dup_DH(const DSA *r)
 		DH_free(ret);
 	return NULL;
 	}
-#endif

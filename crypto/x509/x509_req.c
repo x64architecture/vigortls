@@ -139,14 +139,12 @@ int X509_REQ_check_private_key(X509_REQ *x, EVP_PKEY *k)
 			break;
 			}
 #endif
-#ifndef OPENSSL_NO_DH
 		if (k->type == EVP_PKEY_DH)
 			{
 			/* No idea */
 			X509err(X509_F_X509_REQ_CHECK_PRIVATE_KEY,X509_R_CANT_CHECK_DH_KEY);
 			break;
 			}
-#endif
 	        X509err(X509_F_X509_REQ_CHECK_PRIVATE_KEY,X509_R_UNKNOWN_KEY_TYPE);
 		}
 

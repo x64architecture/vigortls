@@ -68,9 +68,7 @@
 #ifndef OPENSSL_NO_DSA
 #include <openssl/dsa.h>
 #endif
-#ifndef OPENSSL_NO_DH
 #include <openssl/dh.h>
-#endif
 #include <openssl/bn.h>
 
 #ifndef OPENSSL_NO_HW
@@ -256,7 +254,6 @@ static int nuron_mod_exp_mont(BIGNUM *r, const BIGNUM *a, const BIGNUM *p,
 	}
 #endif
 
-#ifndef OPENSSL_NO_DH
 /* This function is aliased to mod_exp (with the dh and mont dropped). */
 static int nuron_mod_exp_dh(const DH *dh, BIGNUM *r,
 		const BIGNUM *a, const BIGNUM *p,
@@ -264,7 +261,6 @@ static int nuron_mod_exp_dh(const DH *dh, BIGNUM *r,
 	{
 	return nuron_mod_exp(r, a, p, m, ctx);
 	}
-#endif
 
 #ifndef OPENSSL_NO_RSA
 static RSA_METHOD nuron_rsa =
@@ -304,7 +300,6 @@ static DSA_METHOD nuron_dsa =
 	};
 #endif
 
-#ifndef OPENSSL_NO_DH
 static DH_METHOD nuron_dh =
 	{
 	"Nuron DH method",
@@ -317,7 +312,6 @@ static DH_METHOD nuron_dh =
 	NULL,
 	NULL
 	};
-#endif
 
 /* Constants used when creating the ENGINE */
 static const char *engine_nuron_id = "nuron";
@@ -333,9 +327,7 @@ static int bind_helper(ENGINE *e)
 #ifndef OPENSSL_NO_DSA
 	const DSA_METHOD *meth2;
 #endif
-#ifndef OPENSSL_NO_DH
 	const DH_METHOD *meth3;
-#endif
 	if(!ENGINE_set_id(e, engine_nuron_id) ||
 			!ENGINE_set_name(e, engine_nuron_name) ||
 #ifndef OPENSSL_NO_RSA
@@ -344,9 +336,7 @@ static int bind_helper(ENGINE *e)
 #ifndef OPENSSL_NO_DSA
 			!ENGINE_set_DSA(e, &nuron_dsa) ||
 #endif
-#ifndef OPENSSL_NO_DH
 			!ENGINE_set_DH(e, &nuron_dh) ||
-#endif
 			!ENGINE_set_destroy_function(e, nuron_destroy) ||
 			!ENGINE_set_init_function(e, nuron_init) ||
 			!ENGINE_set_finish_function(e, nuron_finish) ||
@@ -378,12 +368,10 @@ static int bind_helper(ENGINE *e)
 	nuron_dsa.dsa_do_verify=meth2->dsa_do_verify;
 #endif
 
-#ifndef OPENSSL_NO_DH
 	/* Much the same for Diffie-Hellman */
 	meth3=DH_OpenSSL();
 	nuron_dh.generate_key=meth3->generate_key;
 	nuron_dh.compute_key=meth3->compute_key;
-#endif
 
 	/* Ensure the nuron error handling is set up */
 	ERR_load_NURON_strings();

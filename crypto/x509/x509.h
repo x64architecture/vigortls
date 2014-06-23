@@ -98,9 +98,7 @@
 #ifndef OPENSSL_NO_DSA
 #include <openssl/dsa.h>
 #endif
-#ifndef OPENSSL_NO_DH
 #include <openssl/dh.h>
-#endif
 #endif
 
 #ifndef OPENSSL_NO_SHA

@@ -68,9 +68,7 @@
 #ifndef OPENSSL_NO_RSA
 #include <openssl/rsa.h>
 #endif
-#ifndef OPENSSL_NO_DH
 #include <openssl/dh.h>
-#endif
 #include <openssl/bn.h>
 
 #ifndef OPENSSL_NO_HW
@@ -117,13 +115,11 @@ static int hwcrhk_mod_exp_mont(BIGNUM *r, const BIGNUM *a, const BIGNUM *p,
 static int hwcrhk_rsa_finish(RSA *rsa);
 #endif
 
-#ifndef OPENSSL_NO_DH
 /* DH stuff */
 /* This function is alised to mod_exp (with the DH and mont dropped). */
 static int hwcrhk_mod_exp_dh(const DH *dh, BIGNUM *r,
 	const BIGNUM *a, const BIGNUM *p,
 	const BIGNUM *m, BN_CTX *ctx, BN_MONT_CTX *m_ctx);
-#endif
 
 /* RAND stuff */
 static int hwcrhk_rand_bytes(unsigned char *buf, int num);
@@ -197,7 +193,6 @@ static RSA_METHOD hwcrhk_rsa =
 	};
 #endif
 
-#ifndef OPENSSL_NO_DH
 /* Our internal DH_METHOD that we provide pointers to */
 static DH_METHOD hwcrhk_dh =
 	{
@@ -211,7 +206,6 @@ static DH_METHOD hwcrhk_dh =
 	NULL,
 	NULL
 	};
-#endif
 
 static RAND_METHOD hwcrhk_rand =
 	{
@@ -337,17 +331,13 @@ static int bind_helper(ENGINE *e)
 #ifndef OPENSSL_NO_RSA
 	const RSA_METHOD *meth1;
 #endif
-#ifndef OPENSSL_NO_DH
 	const DH_METHOD *meth2;
-#endif
 	if(!ENGINE_set_id(e, engine_hwcrhk_id) ||
 			!ENGINE_set_name(e, engine_hwcrhk_name) ||
 #ifndef OPENSSL_NO_RSA
 			!ENGINE_set_RSA(e, &hwcrhk_rsa) ||
 #endif
-#ifndef OPENSSL_NO_DH
 			!ENGINE_set_DH(e, &hwcrhk_dh) ||
-#endif
 			!ENGINE_set_RAND(e, &hwcrhk_rand) ||
 			!ENGINE_set_destroy_function(e, hwcrhk_destroy) ||
 			!ENGINE_set_init_function(e, hwcrhk_init) ||
@@ -373,12 +363,10 @@ static int bind_helper(ENGINE *e)
 	hwcrhk_rsa.rsa_priv_dec = meth1->rsa_priv_dec;
 #endif
 
-#ifndef OPENSSL_NO_DH
 	/* Much the same for Diffie-Hellman */
 	meth2 = DH_OpenSSL();
 	hwcrhk_dh.generate_key = meth2->generate_key;
 	hwcrhk_dh.compute_key = meth2->compute_key;
-#endif
 
 	/* Ensure the hwcrhk error handling is set up */
 	ERR_load_HWCRHK_strings();
@@ -1090,7 +1078,6 @@ static int hwcrhk_rsa_finish(RSA *rsa)
 
 #endif
 
-#ifndef OPENSSL_NO_DH
 /* This function is aliased to mod_exp (with the dh and mont dropped). */
 static int hwcrhk_mod_exp_dh(const DH *dh, BIGNUM *r,
 		const BIGNUM *a, const BIGNUM *p,
@@ -1098,7 +1085,6 @@ static int hwcrhk_mod_exp_dh(const DH *dh, BIGNUM *r,
 	{
 	return hwcrhk_mod_exp(r, a, p, m, ctx);
 	}
-#endif
 
 /* Random bytes are good */
 static int hwcrhk_rand_bytes(unsigned char *buf, int num)

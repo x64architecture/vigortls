@@ -79,9 +79,7 @@
 
 #ifndef OPENSSL_NO_DEPRECATED
 #include <openssl/bn.h>
-#ifndef OPENSSL_NO_DH
 # include <openssl/dh.h>
-#endif
 #endif
 
 #ifndef OPENSSL_DSA_MAX_MODULUS_BITS
@@ -258,11 +256,9 @@ int	DSA_print_fp(FILE *bp, const DSA *x, int off);
 #define DSA_is_prime(n, callback, cb_arg) \
 	BN_is_prime(n, DSS_prime_checks, callback, NULL, cb_arg)
 
-#ifndef OPENSSL_NO_DH
 /* Convert DSA structure (key or just parameters) into DH structure
  * (be careful to avoid small subgroup attacks when using this!) */
 DH *DSA_dup_DH(const DSA *r);
-#endif
 
 #define EVP_PKEY_CTX_set_dsa_paramgen_bits(ctx, nbits) \
 	EVP_PKEY_CTX_ctrl(ctx, EVP_PKEY_DSA, EVP_PKEY_OP_PARAMGEN, \

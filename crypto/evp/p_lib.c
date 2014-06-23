@@ -70,9 +70,7 @@
 #ifndef OPENSSL_NO_DSA
 #include <openssl/dsa.h>
 #endif
-#ifndef OPENSSL_NO_DH
 #include <openssl/dh.h>
-#endif
 
 #ifndef OPENSSL_NO_ENGINE
 #include <openssl/engine.h>
@@ -335,9 +333,6 @@ EC_KEY *EVP_PKEY_get1_EC_KEY(EVP_PKEY *pkey)
 }
 #endif
 
-
-#ifndef OPENSSL_NO_DH
-
 int EVP_PKEY_set1_DH(EVP_PKEY *pkey, DH *key)
 {
 	int ret = EVP_PKEY_assign_DH(pkey, key);
@@ -355,7 +350,6 @@ DH *EVP_PKEY_get1_DH(EVP_PKEY *pkey)
 	DH_up_ref(pkey->pkey.dh);
 	return pkey->pkey.dh;
 }
-#endif
 
 int EVP_PKEY_type(int type)
 	{

@@ -160,9 +160,7 @@
 #include <openssl/evp.h>
 #include <openssl/hmac.h>
 #include <openssl/x509.h>
-#ifndef OPENSSL_NO_DH
 #include <openssl/dh.h>
-#endif
 #include <openssl/bn.h>
 #ifndef OPENSSL_NO_KRB5
 #include <openssl/krb5_asn.h>
@@ -886,13 +884,11 @@ int ssl3_check_client_hello(SSL *s)
 			}
 		/* Throw away what we have done so far in the current handshake,
 		 * which will now be aborted. (A full SSL_clear would be too much.) */
-#ifndef OPENSSL_NO_DH
 		if (s->s3->tmp.dh != NULL)
 			{
 			DH_free(s->s3->tmp.dh);
 			s->s3->tmp.dh = NULL;
 			}
-#endif
 #ifndef OPENSSL_NO_ECDH
 		if (s->s3->tmp.ecdh != NULL)
 			{
@@ -1548,9 +1544,7 @@ int ssl3_send_server_key_exchange(SSL *s)
 	unsigned char md_buf[MD5_DIGEST_LENGTH+SHA_DIGEST_LENGTH];
 	unsigned int u;
 #endif
-#ifndef OPENSSL_NO_DH
 	DH *dh=NULL,*dhp;
-#endif
 #ifndef OPENSSL_NO_ECDH
 	EC_KEY *ecdh=NULL, *ecdhp;
 	unsigned char *encodedPoint = NULL;
@@ -1610,7 +1604,6 @@ int ssl3_send_server_key_exchange(SSL *s)
 			}
 		else
 #endif
-#ifndef OPENSSL_NO_DH
 			if (type & SSL_kEDH)
 			{
 			dhp=cert->dh_tmp;
@@ -1665,7 +1658,6 @@ int ssl3_send_server_key_exchange(SSL *s)
 			r[2]=dh->pub_key;
 			}
 		else 
-#endif
 #ifndef OPENSSL_NO_ECDH
 			if (type & SSL_kEECDH)
 			{
@@ -2124,10 +2116,8 @@ int ssl3_get_client_key_exchange(SSL *s)
 	RSA *rsa=NULL;
 	EVP_PKEY *pkey=NULL;
 #endif
-#ifndef OPENSSL_NO_DH
 	BIGNUM *pub=NULL;
 	DH *dh_srvr;
-#endif
 #ifndef OPENSSL_NO_KRB5
 	KSSL_ERR kssl_err;
 #endif /* OPENSSL_NO_KRB5 */
@@ -2257,7 +2247,6 @@ int ssl3_get_client_key_exchange(SSL *s)
 		}
 	else
 #endif
-#ifndef OPENSSL_NO_DH
 		if (alg_k & (SSL_kEDH|SSL_kDHr|SSL_kDHd))
 		{
 		n2s(p,i);
@@ -2320,7 +2309,6 @@ int ssl3_get_client_key_exchange(SSL *s)
 		OPENSSL_cleanse(p,i);
 		}
 	else
-#endif
 #ifndef OPENSSL_NO_KRB5
 	if (alg_k & SSL_kKRB5)
 		{
@@ -2877,7 +2865,7 @@ int ssl3_get_client_key_exchange(SSL *s)
 	return(1);
 f_err:
 	ssl3_send_alert(s,SSL3_AL_FATAL,al);
-#if !defined(OPENSSL_NO_DH) || !defined(OPENSSL_NO_RSA) || !defined(OPENSSL_NO_ECDH) || defined(OPENSSL_NO_SRP)
+#if !defined(OPENSSL_NO_RSA) || !defined(OPENSSL_NO_ECDH) || defined(OPENSSL_NO_SRP)
 err:
 #endif
 #ifndef OPENSSL_NO_ECDH

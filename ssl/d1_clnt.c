@@ -124,9 +124,7 @@
 #include <openssl/evp.h>
 #include <openssl/md5.h>
 #include <openssl/bn.h>
-#ifndef OPENSSL_NO_DH
 #include <openssl/dh.h>
-#endif
 
 static const SSL_METHOD *dtls1_get_client_method(int ver);
 static int dtls1_get_hello_verify(SSL *s);
@@ -1162,7 +1160,6 @@ int dtls1_send_client_key_exchange(SSL *s)
 			OPENSSL_cleanse(epms, outl);
                         }
 #endif
-#ifndef OPENSSL_NO_DH
 		else if (alg_k & (SSL_kEDH|SSL_kDHr|SSL_kDHd))
 			{
 			DH *dh_srvr,*dh_clnt;
@@ -1217,7 +1214,6 @@ int dtls1_send_client_key_exchange(SSL *s)
 
 			/* perhaps clean things up a bit EAY EAY EAY EAY*/
 			}
-#endif
 #ifndef OPENSSL_NO_ECDH 
 		else if (alg_k & (SSL_kEECDH|SSL_kECDHr|SSL_kECDHe))
 			{

@@ -2907,7 +2907,7 @@ long ssl3_default_timeout(void)
 {
     /* 2 hours, the 24 hours mentioned in the SSLv3 spec
      * is way too long for http, the cache would over fill */
-    return(60 * 60 * 2);
+    return (60 * 60 * 2);
 }
 
 int ssl3_num_ciphers(void)
@@ -2972,10 +2972,8 @@ void ssl3_free(SSL *s)
         ssl3_release_write_buffer(s);
     if (s->s3->rrec.comp != NULL)
         OPENSSL_free(s->s3->rrec.comp);
-#ifndef OPENSSL_NO_DH
     if (s->s3->tmp.dh != NULL)
         DH_free(s->s3->tmp.dh);
-#endif
 #ifndef OPENSSL_NO_ECDH
     if (s->s3->tmp.ecdh != NULL)
         EC_KEY_free(s->s3->tmp.ecdh);
@@ -3019,12 +3017,10 @@ void ssl3_clear(SSL *s)
         OPENSSL_free(s->s3->rrec.comp);
         s->s3->rrec.comp = NULL;
     }
-#ifndef OPENSSL_NO_DH
     if (s->s3->tmp.dh != NULL) {
         DH_free(s->s3->tmp.dh);
         s->s3->tmp.dh = NULL;
     }
-#endif
 #ifndef OPENSSL_NO_ECDH
     if (s->s3->tmp.ecdh != NULL) {
         EC_KEY_free(s->s3->tmp.ecdh);
@@ -3147,7 +3143,6 @@ long ssl3_ctrl(SSL *s, int cmd, long larg, void *parg)
         }
         break;
 #endif
-#ifndef OPENSSL_NO_DH
     case SSL_CTRL_SET_TMP_DH:
         {
             DH *dh = (DH *)parg;
@@ -3178,7 +3173,6 @@ long ssl3_ctrl(SSL *s, int cmd, long larg, void *parg)
             return (ret);
         }
         break;
-#endif
 #ifndef OPENSSL_NO_ECDH
     case SSL_CTRL_SET_TMP_ECDH:
         {
@@ -3325,7 +3319,7 @@ long ssl3_callback_ctrl(SSL *s, int cmd, void (*fp)(void))
         {
         if (!ssl_cert_inst(&s->cert)) {
             SSLerr(SSL_F_SSL3_CALLBACK_CTRL, ERR_R_MALLOC_FAILURE);
-            return(0);
+            return (0);
         }
     }
 #endif
@@ -3339,13 +3333,11 @@ long ssl3_callback_ctrl(SSL *s, int cmd, void (*fp)(void))
         }
         break;
 #endif
-#ifndef OPENSSL_NO_DH
     case SSL_CTRL_SET_TMP_DH_CB:
         {
             s->cert->dh_tmp_cb = (DH *(*)(SSL *, int, int))fp;
         }
         break;
-#endif
 #ifndef OPENSSL_NO_ECDH
     case SSL_CTRL_SET_TMP_ECDH_CB:
         {
@@ -3414,7 +3406,6 @@ long ssl3_ctx_ctrl(SSL_CTX *ctx, int cmd, long larg, void *parg)
         }
         break;
 #endif
-#ifndef OPENSSL_NO_DH
     case SSL_CTRL_SET_TMP_DH:
         {
             DH *new = NULL,*dh;
@@ -3443,7 +3434,6 @@ long ssl3_ctx_ctrl(SSL_CTX *ctx, int cmd, long larg, void *parg)
             return (0);
         }
         break;
-#endif
 #ifndef OPENSSL_NO_ECDH
     case SSL_CTRL_SET_TMP_ECDH:
         {
@@ -3590,13 +3580,11 @@ long ssl3_ctx_callback_ctrl(SSL_CTX *ctx, int cmd, void (*fp)(void))
         }
         break;
 #endif
-#ifndef OPENSSL_NO_DH
     case SSL_CTRL_SET_TMP_DH_CB:
         {
             cert->dh_tmp_cb = (DH *(*)(SSL *, int, int))fp;
         }
         break;
-#endif
 #ifndef OPENSSL_NO_ECDH
     case SSL_CTRL_SET_TMP_ECDH_CB:
         {
@@ -3674,7 +3662,7 @@ int ssl3_put_cipher_by_char(const SSL_CIPHER *c, unsigned char *p)
     if (p != NULL) {
         l = c->id;
         if ((l & 0xff000000) != 0x03000000) 
-            return(0);
+            return (0);
         p[0] = ((unsigned char)(l >> 8L))&0xFF;
         p[1] = ((unsigned char)(l))&0xFF;
     }
@@ -3949,7 +3937,6 @@ int ssl3_get_req_cert_type(SSL *s, unsigned char *p)
     }
 #endif
 
-#ifndef OPENSSL_NO_DH
     if (alg_k & (SSL_kDHr|SSL_kEDH)) {
 #  ifndef OPENSSL_NO_RSA
         p[ret++] = SSL3_CT_RSA_FIXED_DH;
@@ -3967,7 +3954,6 @@ int ssl3_get_req_cert_type(SSL *s, unsigned char *p)
         p[ret++] = SSL3_CT_DSS_EPHEMERAL_DH;
 #  endif
     }
-#endif /* !OPENSSL_NO_DH */
 #ifndef OPENSSL_NO_RSA
     p[ret++] = SSL3_CT_RSA_SIGN;
 #endif
@@ -4064,7 +4050,7 @@ int ssl3_write(SSL *s, const void *buf, int len)
             ret = ssl3_write_bytes(s,SSL3_RT_APPLICATION_DATA,
                          buf,len);
             if (ret <= 0) 
-                return(ret);
+                return (ret);
 
             s->s3->delay_buf_pop_ret=ret;
         }
@@ -4072,7 +4058,7 @@ int ssl3_write(SSL *s, const void *buf, int len)
         s->rwstate = SSL_WRITING;
         n = BIO_flush(s->wbio);
         if (n <= 0) 
-            return(n);
+            return (n);
         s->rwstate = SSL_NOTHING;
 
         /* We have flushed the buffer, so remove it */
@@ -4085,10 +4071,10 @@ int ssl3_write(SSL *s, const void *buf, int len)
         ret = s->method->ssl_write_bytes(s,SSL3_RT_APPLICATION_DATA,
             buf,len);
         if (ret <= 0) 
-            return(ret);
+            return (ret);
     }
 
-    return(ret);
+    return (ret);
 }
 
 static int ssl3_read_internal(SSL *s, void *buf, int len, int peek)

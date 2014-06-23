@@ -503,10 +503,8 @@ typedef struct cert_st
 	RSA *rsa_tmp;
 	RSA *(*rsa_tmp_cb)(SSL *ssl,int is_export,int keysize);
 #endif
-#ifndef OPENSSL_NO_DH
 	DH *dh_tmp;
 	DH *(*dh_tmp_cb)(SSL *ssl,int is_export,int keysize);
-#endif
 #ifndef OPENSSL_NO_ECDH
 	EC_KEY *ecdh_tmp;
 	/* Callback for generating ephemeral ECDH keys */
@@ -534,9 +532,7 @@ typedef struct sess_cert_st
 #ifndef OPENSSL_NO_RSA
 	RSA *peer_rsa_tmp; /* not used for SSL 2 */
 #endif
-#ifndef OPENSSL_NO_DH
 	DH *peer_dh_tmp; /* not used for SSL 2 */
-#endif
 #ifndef OPENSSL_NO_ECDH
 	EC_KEY *peer_ecdh_tmp;
 #endif

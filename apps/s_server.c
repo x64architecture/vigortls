@@ -177,9 +177,7 @@ typedef unsigned int u_int;
 #include <openssl/ssl.h>
 #include <openssl/rand.h>
 #include <openssl/ocsp.h>
-#ifndef OPENSSL_NO_DH
 #include <openssl/dh.h>
-#endif
 #ifndef OPENSSL_NO_RSA
 #include <openssl/rsa.h>
 #endif
@@ -209,16 +207,13 @@ static int init_ssl_connection(SSL *s);
 static void print_stats(BIO *bp,SSL_CTX *ctx);
 static int generate_session_id(const SSL *ssl, unsigned char *id,
 				unsigned int *id_len);
-#ifndef OPENSSL_NO_DH
 static DH *load_dh_param(const char *dhfile);
 static DH *get_dh512(void);
-#endif
 
 #ifdef MONOLITH
 static void s_server_init(void);
 #endif
 
-#ifndef OPENSSL_NO_DH
 static unsigned char dh512_p[]={
 	0xDA,0x58,0x3C,0x16,0xD9,0x85,0x22,0x89,0xD0,0xE4,0xAF,0x75,
 	0x6F,0x4C,0xCA,0x92,0xDD,0x4B,0xE5,0x33,0xB8,0x04,0xFB,0x0F,
@@ -242,7 +237,6 @@ static DH *get_dh512(void)
 		return(NULL);
 	return(dh);
 	}
-#endif
 
 
 /* static int load_CA(SSL_CTX *ctx, char *file);*/
@@ -524,9 +518,7 @@ static void sv_usage(void)
 	BIO_printf(bio_err," -no_tls1      - Just disable TLSv1\n");
 	BIO_printf(bio_err," -no_tls1_1    - Just disable TLSv1.1\n");
 	BIO_printf(bio_err," -no_tls1_2    - Just disable TLSv1.2\n");
-#ifndef OPENSSL_NO_DH
 	BIO_printf(bio_err," -no_dhe       - Disable ephemeral DH\n");
-#endif
 #ifndef OPENSSL_NO_ECDH
 	BIO_printf(bio_err," -no_ecdhe     - Disable ephemeral ECDH\n");
 #endif
@@ -1641,7 +1633,6 @@ bad:
 # endif
 #endif 
 
-#ifndef OPENSSL_NO_DH
 	if (!no_dhe)
 		{
 		DH *dh=NULL;
@@ -1683,7 +1674,6 @@ bad:
 #endif
 		DH_free(dh);
 		}
-#endif
 
 #ifndef OPENSSL_NO_ECDH
 	if (!no_ecdhe)
@@ -2501,7 +2491,6 @@ static int init_ssl_connection(SSL *con)
 	return(1);
 	}
 
-#ifndef OPENSSL_NO_DH
 static DH *load_dh_param(const char *dhfile)
 	{
 	DH *ret=NULL;
@@ -2514,7 +2503,6 @@ err:
 	if (bio != NULL) BIO_free(bio);
 	return(ret);
 	}
-#endif
 #ifndef OPENSSL_NO_KRB5
 	char *client_princ;
 #endif

@@ -82,9 +82,7 @@ extern int GetThreadID(void);
 #ifndef OPENSSL_NO_DSA
 #include <openssl/dsa.h>
 #endif
-#ifndef OPENSSL_NO_DH
 #include <openssl/dh.h>
-#endif
 
 #ifndef OPENSSL_NO_HW
 #ifndef OPENSSL_NO_HW_AEP
@@ -143,10 +141,8 @@ static int aep_mod_exp_dsa(DSA *dsa, BIGNUM *r, BIGNUM *a,
 
 /* DH stuff */
 /* This function is aliased to mod_exp (with the DH and mont dropped). */
-#ifndef OPENSSL_NO_DH
 static int aep_mod_exp_dh(const DH *dh, BIGNUM *r, const BIGNUM *a,
 	const BIGNUM *p, const BIGNUM *m, BN_CTX *ctx, BN_MONT_CTX *m_ctx);
-#endif
 
 /* rand stuff   */
 #ifdef AEPRAND
@@ -213,7 +209,6 @@ static DSA_METHOD aep_dsa =
 	};
 #endif
 
-#ifndef OPENSSL_NO_DH
 /* Our internal DH_METHOD that we provide pointers to */
 static DH_METHOD aep_dh =
 	{
@@ -227,7 +222,6 @@ static DH_METHOD aep_dh =
 	NULL,
 	NULL
 	};
-#endif
 
 #ifdef AEPRAND
 /* our internal RAND_method that we provide pointers to  */
@@ -271,9 +265,7 @@ static int bind_aep(ENGINE *e)
 #ifndef OPENSSL_NO_DSA
 	const DSA_METHOD  *meth2;
 #endif
-#ifndef OPENSSL_NO_DH
 	const DH_METHOD	  *meth3;
-#endif
 
 	if(!ENGINE_set_id(e, engine_aep_id) ||
 		!ENGINE_set_name(e, engine_aep_name) ||
@@ -283,9 +275,7 @@ static int bind_aep(ENGINE *e)
 #ifndef OPENSSL_NO_DSA
 		!ENGINE_set_DSA(e, &aep_dsa) ||
 #endif
-#ifndef OPENSSL_NO_DH
 		!ENGINE_set_DH(e, &aep_dh) ||
-#endif
 #ifdef AEPRAND
 		!ENGINE_set_RAND(e, &aep_random) ||
 #endif
@@ -325,13 +315,11 @@ static int bind_aep(ENGINE *e)
 	aep_dsa.bn_mod_exp = aep_mod_exp_dsa;
 #endif
 
-#ifndef OPENSSL_NO_DH
 	/* Much the same for Diffie-Hellman */
 	meth3 = DH_OpenSSL();
 	aep_dh.generate_key = meth3->generate_key;
 	aep_dh.compute_key  = meth3->compute_key;
 	aep_dh.bn_mod_exp   = meth3->bn_mod_exp;
-#endif
 
 	/* Ensure the aep error handling is set up */
 	ERR_load_AEPHK_strings();
@@ -848,7 +836,6 @@ static int aep_mod_exp_mont(BIGNUM *r, const BIGNUM *a, const BIGNUM *p,
 	}
 #endif
 
-#ifndef OPENSSL_NO_DH
 /* This function is aliased to mod_exp (with the dh and mont dropped). */
 static int aep_mod_exp_dh(const DH *dh, BIGNUM *r, const BIGNUM *a,
 	const BIGNUM *p, const BIGNUM *m, BN_CTX *ctx,
@@ -856,7 +843,6 @@ static int aep_mod_exp_dh(const DH *dh, BIGNUM *r, const BIGNUM *a,
 	{
 	return aep_mod_exp(r, a, p, m, ctx);
 	}
-#endif
 
 static AEP_RV aep_get_connection(AEP_CONNECTION_HNDL_PTR phConnection)
 	{

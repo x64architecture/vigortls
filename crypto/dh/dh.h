@@ -61,10 +61,6 @@
 
 #include <openssl/e_os2.h>
 
-#ifdef OPENSSL_NO_DH
-#error DH is disabled.
-#endif
-
 #ifndef OPENSSL_NO_BIO
 #include <openssl/bio.h>
 #endif

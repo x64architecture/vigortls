@@ -76,9 +76,7 @@
 #ifndef OPENSSL_NO_DSA
 #include <openssl/dsa.h>
 #endif
-#ifndef OPENSSL_NO_DH
 #include <openssl/dh.h>
-#endif
 
 /* This testing gunk is implemented (and explained) lower down. It also assumes
  * the application explicitly calls "ENGINE_load_openssl()" because this is no
@@ -146,9 +144,7 @@ static int bind_helper(ENGINE *e)
 #ifndef OPENSSL_NO_ECDSA
 			|| !ENGINE_set_ECDSA(e, ECDSA_OpenSSL())
 #endif
-#ifndef OPENSSL_NO_DH
 			|| !ENGINE_set_DH(e, DH_get_default_method())
-#endif
 			|| !ENGINE_set_RAND(e, RAND_SSLeay())
 #ifdef TEST_ENG_OPENSSL_RC4
 			|| !ENGINE_set_ciphers(e, openssl_ciphers)

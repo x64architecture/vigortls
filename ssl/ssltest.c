@@ -178,9 +178,7 @@
 #ifndef OPENSSL_NO_DSA
 #include <openssl/dsa.h>
 #endif
-#ifndef OPENSSL_NO_DH
 #include <openssl/dh.h>
-#endif
 #ifndef OPENSSL_NO_SRP
 #include <openssl/srp.h>
 #endif
@@ -233,11 +231,9 @@ struct app_verify_arg
 	char *proxy_cond;
 	};
 
-#ifndef OPENSSL_NO_DH
 static DH *get_dh512(void);
 static DH *get_dh1024(void);
 static DH *get_dh1024dsa(void);
-#endif
 
 
 static char *psk_key=NULL; /* by default PSK is not used */
@@ -327,11 +323,9 @@ static void sv_usage(void)
 	fprintf(stderr," -reuse        - use session-id reuse\n");
 	fprintf(stderr," -num <val>    - number of connections to perform\n");
 	fprintf(stderr," -bytes <val>  - number of bytes to swap between client/server\n");
-#ifndef OPENSSL_NO_DH
 	fprintf(stderr," -dhe1024      - use 1024 bit key (safe prime) for DHE\n");
 	fprintf(stderr," -dhe1024dsa   - use 1024 bit key (with 160-bit subprime) for DHE\n");
 	fprintf(stderr," -no_dhe       - disable DHE\n");
-#endif
 #ifndef OPENSSL_NO_ECDH
 	fprintf(stderr," -no_ecdhe     - disable ECDHE\n");
 #endif
@@ -522,10 +516,8 @@ int main(int argc, char *argv[])
 	SSL *c_ssl,*s_ssl;
 	int number=1,reuse=0;
 	long bytes=256L;
-#ifndef OPENSSL_NO_DH
 	DH *dh;
 	int dhe1024 = 0, dhe1024dsa = 0;
-#endif
 #ifndef OPENSSL_NO_ECDH
 	EC_KEY *ecdh = NULL;
 #endif
@@ -611,19 +603,11 @@ int main(int argc, char *argv[])
 			reuse=1;
 		else if	(strcmp(*argv,"-dhe1024") == 0)
 			{
-#ifndef OPENSSL_NO_DH
 			dhe1024=1;
-#else
-			fprintf(stderr,"ignoring -dhe1024, since I'm compiled without DH\n");
-#endif
 			}
 		else if	(strcmp(*argv,"-dhe1024dsa") == 0)
 			{
-#ifndef OPENSSL_NO_DH
 			dhe1024dsa=1;
-#else
-			fprintf(stderr,"ignoring -dhe1024, since I'm compiled without DH\n");
-#endif
 			}
 		else if	(strcmp(*argv,"-no_dhe") == 0)
 			no_dhe=1;
@@ -907,7 +891,6 @@ bad:
 		SSL_CTX_set_cipher_list(s_ctx,cipher);
 		}
 
-#ifndef OPENSSL_NO_DH
 	if (!no_dhe)
 		{
 		if (dhe1024dsa)
@@ -923,9 +906,6 @@ bad:
 		SSL_CTX_set_tmp_dh(s_ctx,dh);
 		DH_free(dh);
 		}
-#else
-	(void)no_dhe;
-#endif
 
 #ifndef OPENSSL_NO_ECDH
 	if (!no_ecdhe)
@@ -2364,7 +2344,6 @@ static void free_tmp_rsa(void)
 	}
 #endif
 
-#ifndef OPENSSL_NO_DH
 /* These DH parameters have been generated as follows:
  *    $ openssl dhparam -C -noout 512
  *    $ openssl dhparam -C -noout 1024
@@ -2460,7 +2439,6 @@ static DH *get_dh1024dsa()
 	dh->length = 160;
 	return(dh);
 	}
-#endif
 
 #ifndef OPENSSL_NO_PSK
 /* convert the PSK key (psk_key) in ascii to binary (psk) */

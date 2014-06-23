@@ -126,9 +126,7 @@
 #include <openssl/bio.h>
 #include <openssl/pem.h>
 #include <openssl/x509v3.h>
-#ifndef OPENSSL_NO_DH
 #include <openssl/dh.h>
-#endif
 #include <openssl/bn.h>
 #include "ssl_locl.h"
 
@@ -226,7 +224,6 @@ CERT *ssl_cert_dup(CERT *cert)
 	ret->rsa_tmp_cb = cert->rsa_tmp_cb;
 #endif
 
-#ifndef OPENSSL_NO_DH
 	if (cert->dh_tmp != NULL)
 		{
 		ret->dh_tmp = DHparams_dup(cert->dh_tmp);
@@ -257,7 +254,6 @@ CERT *ssl_cert_dup(CERT *cert)
 			}
 		}
 	ret->dh_tmp_cb = cert->dh_tmp_cb;
-#endif
 
 #ifndef OPENSSL_NO_ECDH
 	if (cert->ecdh_tmp)
@@ -329,17 +325,15 @@ CERT *ssl_cert_dup(CERT *cert)
 
 	return(ret);
 	
-#if !defined(OPENSSL_NO_DH) || !defined(OPENSSL_NO_ECDH)
+#if !defined(OPENSSL_NO_ECDH)
 err:
 #endif
 #ifndef OPENSSL_NO_RSA
 	if (ret->rsa_tmp != NULL)
 		RSA_free(ret->rsa_tmp);
 #endif
-#ifndef OPENSSL_NO_DH
 	if (ret->dh_tmp != NULL)
 		DH_free(ret->dh_tmp);
-#endif
 #ifndef OPENSSL_NO_ECDH
 	if (ret->ecdh_tmp != NULL)
 		EC_KEY_free(ret->ecdh_tmp);
@@ -380,9 +374,7 @@ void ssl_cert_free(CERT *c)
 #ifndef OPENSSL_NO_RSA
 	if (c->rsa_tmp) RSA_free(c->rsa_tmp);
 #endif
-#ifndef OPENSSL_NO_DH
 	if (c->dh_tmp) DH_free(c->dh_tmp);
-#endif
 #ifndef OPENSSL_NO_ECDH
 	if (c->ecdh_tmp) EC_KEY_free(c->ecdh_tmp);
 #endif
@@ -488,10 +480,8 @@ void ssl_sess_cert_free(SESS_CERT *sc)
 	if (sc->peer_rsa_tmp != NULL)
 		RSA_free(sc->peer_rsa_tmp);
 #endif
-#ifndef OPENSSL_NO_DH
 	if (sc->peer_dh_tmp != NULL)
 		DH_free(sc->peer_dh_tmp);
-#endif
 #ifndef OPENSSL_NO_ECDH
 	if (sc->peer_ecdh_tmp != NULL)
 		EC_KEY_free(sc->peer_ecdh_tmp);

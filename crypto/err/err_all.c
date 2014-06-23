@@ -70,9 +70,7 @@
 #ifndef OPENSSL_NO_RSA
 #include <openssl/rsa.h>
 #endif
-#ifndef OPENSSL_NO_DH
 #include <openssl/dh.h>
-#endif
 #ifndef OPENSSL_NO_DSA
 #include <openssl/dsa.h>
 #endif
@@ -116,9 +114,7 @@ void ERR_load_crypto_strings(void)
 #ifndef OPENSSL_NO_RSA
 	ERR_load_RSA_strings();
 #endif
-#ifndef OPENSSL_NO_DH
 	ERR_load_DH_strings();
-#endif
 	ERR_load_EVP_strings();
 	ERR_load_BUF_strings();
 	ERR_load_OBJ_strings();

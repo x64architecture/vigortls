@@ -64,7 +64,6 @@
 #undef OPENSSL_NO_DEPRECATED
 #endif
 
-#ifndef OPENSSL_NO_DH
 #include <stdio.h>
 #include <string.h>
 #include <sys/types.h>
@@ -232,10 +231,3 @@ static int MS_CALLBACK dh_cb(int p, int n, BN_GENCB *cb)
 #endif
 	return 1;
 	}
-#else /* !OPENSSL_NO_DH */
-
-# if PEDANTIC
-static void *dummy=&dummy;
-# endif
-
-#endif

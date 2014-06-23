@@ -153,9 +153,7 @@
 #include <openssl/x509v3.h>
 #include <openssl/rand.h>
 #include <openssl/ocsp.h>
-#ifndef OPENSSL_NO_DH
 #include <openssl/dh.h>
-#endif
 #ifndef OPENSSL_NO_ENGINE
 #include <openssl/engine.h>
 #endif
@@ -2040,13 +2038,9 @@ void ssl_set_cert_masks(CERT *c, const SSL_CIPHER *cipher)
 #else
 	rsa_tmp=rsa_tmp_export=0;
 #endif
-#ifndef OPENSSL_NO_DH
 	dh_tmp=(c->dh_tmp != NULL || c->dh_tmp_cb != NULL);
 	dh_tmp_export=(c->dh_tmp_cb != NULL ||
 		(dh_tmp && DH_size(c->dh_tmp)*8 <= kl));
-#else
-	dh_tmp=dh_tmp_export=0;
-#endif
 
 #ifndef OPENSSL_NO_ECDH
 	have_ecdh_tmp=(c->ecdh_tmp != NULL || c->ecdh_tmp_cb != NULL);
@@ -3098,7 +3092,6 @@ RSA *cb(SSL *ssl,int is_export,int keylength)
  * \param dh the callback
  */
 
-#ifndef OPENSSL_NO_DH
 void SSL_CTX_set_tmp_dh_callback(SSL_CTX *ctx,DH *(*dh)(SSL *ssl,int is_export,
                                                         int keylength))
 	{
@@ -3110,7 +3103,6 @@ void SSL_set_tmp_dh_callback(SSL *ssl,DH *(*dh)(SSL *ssl,int is_export,
 	{
 	SSL_callback_ctrl(ssl,SSL_CTRL_SET_TMP_DH_CB,(void (*)(void))dh);
 	}
-#endif
 
 #ifndef OPENSSL_NO_ECDH
 void SSL_CTX_set_tmp_ecdh_callback(SSL_CTX *ctx,EC_KEY *(*ecdh)(SSL *ssl,int is_export,

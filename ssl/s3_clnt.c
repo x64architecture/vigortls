@@ -159,9 +159,7 @@
 #ifdef OPENSSL_FIPS
 #include <openssl/fips.h>
 #endif
-#ifndef OPENSSL_NO_DH
 #include <openssl/dh.h>
-#endif
 #include <openssl/bn.h>
 #ifndef OPENSSL_NO_ENGINE
 #include <openssl/engine.h>
@@ -1261,9 +1259,7 @@ int ssl3_get_key_exchange(SSL *s)
 #ifndef OPENSSL_NO_RSA
 	RSA *rsa=NULL;
 #endif
-#ifndef OPENSSL_NO_DH
 	DH *dh=NULL;
-#endif
 #ifndef OPENSSL_NO_ECDH
 	EC_KEY *ecdh = NULL;
 	BN_CTX *bn_ctx = NULL;
@@ -1311,13 +1307,11 @@ int ssl3_get_key_exchange(SSL *s)
 			s->session->sess_cert->peer_rsa_tmp=NULL;
 			}
 #endif
-#ifndef OPENSSL_NO_DH
 		if (s->session->sess_cert->peer_dh_tmp)
 			{
 			DH_free(s->session->sess_cert->peer_dh_tmp);
 			s->session->sess_cert->peer_dh_tmp=NULL;
 			}
-#endif
 #ifndef OPENSSL_NO_ECDH
 		if (s->session->sess_cert->peer_ecdh_tmp)
 			{
@@ -1515,7 +1509,6 @@ int ssl3_get_key_exchange(SSL *s)
 	if (0)
 		;
 #endif
-#ifndef OPENSSL_NO_DH
 	else if (alg_k & SSL_kEDH)
 		{
 		if ((dh=DH_new()) == NULL)
@@ -1591,7 +1584,6 @@ int ssl3_get_key_exchange(SSL *s)
 		SSLerr(SSL_F_SSL3_GET_KEY_EXCHANGE,SSL_R_TRIED_TO_USE_UNSUPPORTED_CIPHER);
 		goto f_err;
 		}
-#endif /* !OPENSSL_NO_DH */
 
 #ifndef OPENSSL_NO_ECDH
 	else if (alg_k & SSL_kEECDH)
@@ -1831,10 +1823,8 @@ err:
 	if (rsa != NULL)
 		RSA_free(rsa);
 #endif
-#ifndef OPENSSL_NO_DH
 	if (dh != NULL)
 		DH_free(dh);
-#endif
 #ifndef OPENSSL_NO_ECDH
 	BN_CTX_free(bn_ctx);
 	EC_POINT_free(srvr_ecpoint);
@@ -2426,7 +2416,6 @@ int ssl3_send_client_key_exchange(SSL *s)
 			OPENSSL_cleanse(epms, outl);
 			}
 #endif
-#ifndef OPENSSL_NO_DH
 		else if (alg_k & (SSL_kEDH|SSL_kDHr|SSL_kDHd))
 			{
 			DH *dh_srvr,*dh_clnt;
@@ -2490,7 +2479,6 @@ int ssl3_send_client_key_exchange(SSL *s)
 
 			/* perhaps clean things up a bit EAY EAY EAY EAY*/
 			}
-#endif
 
 #ifndef OPENSSL_NO_ECDH 
 		else if (alg_k & (SSL_kEECDH|SSL_kECDHr|SSL_kECDHe))
@@ -3165,9 +3153,7 @@ int ssl3_check_cert_and_algorithm(SSL *s)
 #ifndef OPENSSL_NO_RSA
 	RSA *rsa;
 #endif
-#ifndef OPENSSL_NO_DH
 	DH *dh;
-#endif
 
 	alg_k=s->s3->tmp.new_cipher->algorithm_mkey;
 	alg_a=s->s3->tmp.new_cipher->algorithm_auth;
@@ -3186,9 +3172,7 @@ int ssl3_check_cert_and_algorithm(SSL *s)
 #ifndef OPENSSL_NO_RSA
 	rsa=s->session->sess_cert->peer_rsa_tmp;
 #endif
-#ifndef OPENSSL_NO_DH
 	dh=s->session->sess_cert->peer_dh_tmp;
-#endif
 
 	/* This is the passed certificate */
 
@@ -3234,7 +3218,6 @@ int ssl3_check_cert_and_algorithm(SSL *s)
 		goto f_err;
 		}
 #endif
-#ifndef OPENSSL_NO_DH
 	if ((alg_k & SSL_kEDH) &&
 		!(has_bits(i,EVP_PK_DH|EVP_PKT_EXCH) || (dh != NULL)))
 		{
@@ -3253,7 +3236,6 @@ int ssl3_check_cert_and_algorithm(SSL *s)
 		goto f_err;
 		}
 #endif
-#endif
 
 	if (SSL_C_IS_EXPORT(s->s3->tmp.new_cipher) && !has_bits(i,EVP_PKT_EXP))
 		{
@@ -3269,7 +3251,6 @@ int ssl3_check_cert_and_algorithm(SSL *s)
 			}
 		else
 #endif
-#ifndef OPENSSL_NO_DH
 			if (alg_k & (SSL_kEDH|SSL_kDHr|SSL_kDHd))
 			    {
 			    if (dh == NULL
@@ -3280,7 +3261,6 @@ int ssl3_check_cert_and_algorithm(SSL *s)
 				}
 			}
 		else
-#endif
 			{
 			SSLerr(SSL_F_SSL3_CHECK_CERT_AND_ALGORITHM,SSL_R_UNKNOWN_KEY_EXCHANGE_TYPE);
 			goto f_err;

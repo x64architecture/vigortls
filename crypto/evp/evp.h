@@ -140,9 +140,7 @@ struct evp_pkey_st
 #ifndef OPENSSL_NO_DSA
 		struct dsa_st *dsa;	/* DSA */
 #endif
-#ifndef OPENSSL_NO_DH
 		struct dh_st *dh;	/* DH */
-#endif
 #ifndef OPENSSL_NO_EC
 		struct ec_key_st *ec;	/* ECC */
 #endif
@@ -457,10 +455,8 @@ typedef int (EVP_PBE_KEYGEN)(EVP_CIPHER_CTX *ctx, const char *pass, int passlen,
 					(char *)(dsa))
 #endif
 
-#ifndef OPENSSL_NO_DH
 #define EVP_PKEY_assign_DH(pkey,dh) EVP_PKEY_assign((pkey),EVP_PKEY_DH,\
 					(char *)(dh))
-#endif
 
 #ifndef OPENSSL_NO_EC
 #define EVP_PKEY_assign_EC_KEY(pkey,eckey) EVP_PKEY_assign((pkey),EVP_PKEY_EC,\
@@ -909,11 +905,9 @@ struct dsa_st;
 int EVP_PKEY_set1_DSA(EVP_PKEY *pkey,struct dsa_st *key);
 struct dsa_st *EVP_PKEY_get1_DSA(EVP_PKEY *pkey);
 #endif
-#ifndef OPENSSL_NO_DH
 struct dh_st;
 int EVP_PKEY_set1_DH(EVP_PKEY *pkey,struct dh_st *key);
 struct dh_st *EVP_PKEY_get1_DH(EVP_PKEY *pkey);
-#endif
 #ifndef OPENSSL_NO_EC
 struct ec_key_st;
 int EVP_PKEY_set1_EC_KEY(EVP_PKEY *pkey,struct ec_key_st *key);

@@ -75,10 +75,8 @@ int ENGINE_set_default(ENGINE *e, unsigned int flags)
 	if((flags & ENGINE_METHOD_DSA) && !ENGINE_set_default_DSA(e))
 		return 0;
 #endif
-#ifndef OPENSSL_NO_DH
 	if((flags & ENGINE_METHOD_DH) && !ENGINE_set_default_DH(e))
 		return 0;
-#endif
 #ifndef OPENSSL_NO_ECDH
 	if((flags & ENGINE_METHOD_ECDH) && !ENGINE_set_default_ECDH(e))
 		return 0;
@@ -157,9 +155,7 @@ int ENGINE_register_complete(ENGINE *e)
 #ifndef OPENSSL_NO_DSA
 	ENGINE_register_DSA(e);
 #endif
-#ifndef OPENSSL_NO_DH
 	ENGINE_register_DH(e);
-#endif
 #ifndef OPENSSL_NO_ECDH
 	ENGINE_register_ECDH(e);
 #endif

@@ -82,9 +82,7 @@
 #include <openssl/dsa.h>
 #endif
 
-#ifndef OPENSSL_NO_DH
 #include <openssl/dh.h>
-#endif
 
 #ifdef  __cplusplus
 extern "C" {

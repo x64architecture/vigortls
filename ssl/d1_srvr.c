@@ -122,9 +122,7 @@
 #include <openssl/x509.h>
 #include <openssl/md5.h>
 #include <openssl/bn.h>
-#ifndef OPENSSL_NO_DH
 #include <openssl/dh.h>
-#endif
 
 static const SSL_METHOD *dtls1_get_server_method(int ver);
 static int dtls1_send_hello_verify_request(SSL *s);
@@ -1026,9 +1024,7 @@ int dtls1_send_server_key_exchange(SSL *s)
 	unsigned char md_buf[MD5_DIGEST_LENGTH+SHA_DIGEST_LENGTH];
 	unsigned int u;
 #endif
-#ifndef OPENSSL_NO_DH
 	DH *dh=NULL,*dhp;
-#endif
 #ifndef OPENSSL_NO_ECDH
 	EC_KEY *ecdh=NULL, *ecdhp;
 	unsigned char *encodedPoint = NULL;
@@ -1087,7 +1083,6 @@ int dtls1_send_server_key_exchange(SSL *s)
 			}
 		else
 #endif
-#ifndef OPENSSL_NO_DH
 			if (type & SSL_kEDH)
 			{
 			dhp=cert->dh_tmp;
@@ -1143,7 +1138,6 @@ int dtls1_send_server_key_exchange(SSL *s)
 			r[2]=dh->pub_key;
 			}
 		else 
-#endif
 #ifndef OPENSSL_NO_ECDH
 			if (type & SSL_kEECDH)
 			{

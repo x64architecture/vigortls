@@ -73,14 +73,6 @@
 #include <openssl/bn.h>
 #include <openssl/rand.h>
 #include <openssl/err.h>
-
-#ifdef OPENSSL_NO_DH
-int main(int argc, char *argv[])
-{
-    printf("No DH support\n");
-    return(0);
-}
-#else
 #include <openssl/dh.h>
 
 #define MS_CALLBACK
@@ -219,4 +211,3 @@ static int MS_CALLBACK cb(int p, int n, BN_GENCB *arg)
 #endif
 	return 1;
 	}
-#endif

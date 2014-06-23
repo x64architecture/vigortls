@@ -146,7 +146,7 @@ $no_static_engine = 0 if (!$shlib);
 $no_mdc2=1 if ($no_des);
 
 $no_ssl3=1 if ($no_md5 || $no_sha);
-$no_ssl3=1 if ($no_rsa && $no_dh);
+$no_ssl3=1 if ($no_rsa);
 
 $no_ssl2=1 if ($no_md5);
 $no_ssl2=1 if ($no_rsa);
@@ -262,7 +262,6 @@ $cflags.=" -DOPENSSL_NO_CAST" if $no_cast;
 $cflags.=" -DOPENSSL_NO_DES"  if $no_des;
 $cflags.=" -DOPENSSL_NO_RSA"  if $no_rsa;
 $cflags.=" -DOPENSSL_NO_DSA"  if $no_dsa;
-$cflags.=" -DOPENSSL_NO_DH"   if $no_dh;
 $cflags.=" -DOPENSSL_NO_WHIRLPOOL"   if $no_whirlpool;
 $cflags.=" -DOPENSSL_NO_SOCK" if $no_sock;
 $cflags.=" -DOPENSSL_NO_SSL2" if $no_ssl2;
@@ -780,7 +779,6 @@ sub var_add
 	return("") if $no_rsa  && $dir =~ /\/rsa/;
 	return("") if $no_rsa  && $dir =~ /^rsaref/;
 	return("") if $no_dsa  && $dir =~ /\/dsa/;
-	return("") if $no_dh   && $dir =~ /\/dh/;
 	return("") if $no_ec   && $dir =~ /\/ec/;
 	return("") if $no_gost   && $dir =~ /\/ccgost/;
 	return("") if $no_cms  && $dir =~ /\/cms/;
@@ -833,8 +831,6 @@ sub var_add
 
 	@a=grep(!/^n_pkey$/,@a) if $no_rsa || $no_rc4;
 
-	@a=grep(!/_dhp$/,@a) if $no_dh;
-
 	@a=grep(!/(^sha[^1])|(_sha$)|(m_dss$)/,@a) if $no_sha;
 	@a=grep(!/(^sha1)|(_sha1$)|(m_dss1$)/,@a) if $no_sha1;
 	@a=grep(!/_mdc2$/,@a) if $no_mdc2;
@@ -846,7 +842,6 @@ sub var_add
 	@a=grep(!/(^rsa$)|(^genrsa$)/,@a) if $no_rsa;
 	@a=grep(!/(^dsa$)|(^gendsa$)|(^dsaparam$)/,@a) if $no_dsa;
 	@a=grep(!/^gendsa$/,@a) if $no_sha1;
-	@a=grep(!/(^dh$)|(^gendh$)/,@a) if $no_dh;
 
 	@a=grep(!/(^dh)|(_sha1$)|(m_dss1$)/,@a) if $no_sha1;
 
@@ -1107,7 +1102,6 @@ sub read_options
 			[\$no_rc2, \$no_rc4, \$no_rc5, \$no_idea, \$no_rsa],
 		"no-rsa" => \$no_rsa,
 		"no-dsa" => \$no_dsa,
-		"no-dh" => \$no_dh,
 		"no-hmac" => \$no_hmac,
 		"no-asm" => \$no_asm,
 		"nasm" => \$nasm,
@@ -1134,7 +1128,7 @@ sub read_options
 		"no-rsax" => 0,
 		"just-ssl" =>
 			[\$no_rc2, \$no_idea, \$no_des, \$no_bf, \$no_cast,
-			  \$no_md2, \$no_sha, \$no_mdc2, \$no_dsa, \$no_dh,
+			  \$no_md2, \$no_sha, \$no_mdc2, \$no_dsa,
 			  \$no_ssl2, \$no_err, \$no_ripemd, \$no_rc5,
 			  \$no_aes, \$no_camellia, \$no_seed, \$no_srp],
 		"rsaref" => 0,

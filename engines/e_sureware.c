@@ -63,9 +63,7 @@
 #ifndef OPENSSL_NO_DSA
 #include <openssl/dsa.h>
 #endif
-#ifndef OPENSSL_NO_DH
 #include <openssl/dh.h>
-#endif
 #include <openssl/bn.h>
 
 #ifndef OPENSSL_NO_HW
@@ -140,7 +138,6 @@ static RSA_METHOD surewarehk_rsa =
 	};
 #endif
 
-#ifndef OPENSSL_NO_DH
 /* Our internal DH_METHOD that we provide pointers to */
 /* This function is aliased to mod_exp (with the dh and mont dropped). */
 static int surewarehk_modexp_dh(const DH *dh, BIGNUM *r, const BIGNUM *a,
@@ -161,7 +158,6 @@ static DH_METHOD surewarehk_dh =
 	NULL,
 	NULL
 	};
-#endif
 
 static RAND_METHOD surewarehk_rand =
 	{
@@ -228,9 +224,7 @@ static int bind_sureware(ENGINE *e)
 #ifndef OPENSSL_NO_DSA
 	const DSA_METHOD *meth2;
 #endif
-#ifndef OPENSSL_NO_DH
 	const DH_METHOD *meth3;
-#endif
 
 	if(!ENGINE_set_id(e, engine_sureware_id) ||
 	   !ENGINE_set_name(e, engine_sureware_name) ||
@@ -240,9 +234,7 @@ static int bind_sureware(ENGINE *e)
 #ifndef OPENSSL_NO_DSA
 	   !ENGINE_set_DSA(e, &surewarehk_dsa) ||
 #endif
-#ifndef OPENSSL_NO_DH
 	   !ENGINE_set_DH(e, &surewarehk_dh) ||
-#endif
 	   !ENGINE_set_RAND(e, &surewarehk_rand) ||
 	   !ENGINE_set_destroy_function(e, surewarehk_destroy) ||
 	   !ENGINE_set_init_function(e, surewarehk_init) ||
@@ -278,7 +270,6 @@ static int bind_sureware(ENGINE *e)
 	}
 #endif
 
-#ifndef OPENSSL_NO_DH
 	/* Much the same for Diffie-Hellman */
 	meth3 = DH_OpenSSL();
 	if (meth3)
@@ -286,7 +277,6 @@ static int bind_sureware(ENGINE *e)
 		surewarehk_dh.generate_key = meth3->generate_key;
 		surewarehk_dh.compute_key = meth3->compute_key;
 	}
-#endif
 
 	/* Ensure the sureware error handling is set up */
 	ERR_load_SUREWARE_strings();

@@ -68,9 +68,7 @@
 #ifndef OPENSSL_NO_DSA
 #include <openssl/dsa.h>
 #endif
-#ifndef OPENSSL_NO_DH
 #include <openssl/dh.h>
-#endif
 #include <openssl/bn.h>
 
 #ifndef OPENSSL_NO_HW
@@ -112,13 +110,11 @@ static int atalla_mod_exp_dsa(DSA *dsa, BIGNUM *r, BIGNUM *a,
 		BN_MONT_CTX *m_ctx);
 #endif
 
-#ifndef OPENSSL_NO_DH
 /* DH stuff */
 /* This function is alised to mod_exp (with the DH and mont dropped). */
 static int atalla_mod_exp_dh(const DH *dh, BIGNUM *r,
 		const BIGNUM *a, const BIGNUM *p,
 		const BIGNUM *m, BN_CTX *ctx, BN_MONT_CTX *m_ctx);
-#endif
 
 /* The definitions for control commands specific to this engine */
 #define ATALLA_CMD_SO_PATH		ENGINE_CMD_BASE
@@ -170,7 +166,6 @@ static DSA_METHOD atalla_dsa =
 	};
 #endif
 
-#ifndef OPENSSL_NO_DH
 /* Our internal DH_METHOD that we provide pointers to */
 static DH_METHOD atalla_dh =
 	{
@@ -184,7 +179,6 @@ static DH_METHOD atalla_dh =
 	NULL,
 	NULL
 	};
-#endif
 
 /* Constants used when creating the ENGINE */
 static const char *engine_atalla_id = "atalla";
@@ -200,9 +194,7 @@ static int bind_helper(ENGINE *e)
 #ifndef OPENSSL_NO_DSA
 	const DSA_METHOD *meth2;
 #endif
-#ifndef OPENSSL_NO_DH
 	const DH_METHOD *meth3;
-#endif
 	if(!ENGINE_set_id(e, engine_atalla_id) ||
 			!ENGINE_set_name(e, engine_atalla_name) ||
 #ifndef OPENSSL_NO_RSA
@@ -211,9 +203,7 @@ static int bind_helper(ENGINE *e)
 #ifndef OPENSSL_NO_DSA
 			!ENGINE_set_DSA(e, &atalla_dsa) ||
 #endif
-#ifndef OPENSSL_NO_DH
 			!ENGINE_set_DH(e, &atalla_dh) ||
-#endif
 			!ENGINE_set_destroy_function(e, atalla_destroy) ||
 			!ENGINE_set_init_function(e, atalla_init) ||
 			!ENGINE_set_finish_function(e, atalla_finish) ||
@@ -245,12 +235,10 @@ static int bind_helper(ENGINE *e)
 	atalla_dsa.dsa_do_verify = meth2->dsa_do_verify;
 #endif
 
-#ifndef OPENSSL_NO_DH
 	/* Much the same for Diffie-Hellman */
 	meth3 = DH_OpenSSL();
 	atalla_dh.generate_key = meth3->generate_key;
 	atalla_dh.compute_key = meth3->compute_key;
-#endif
 
 	/* Ensure the atalla error handling is set up */
 	ERR_load_ATALLA_strings();
@@ -578,7 +566,6 @@ static int atalla_mod_exp_mont(BIGNUM *r, const BIGNUM *a, const BIGNUM *p,
 	}
 #endif
 
-#ifndef OPENSSL_NO_DH
 /* This function is aliased to mod_exp (with the dh and mont dropped). */
 static int atalla_mod_exp_dh(const DH *dh, BIGNUM *r,
 		const BIGNUM *a, const BIGNUM *p,
@@ -586,7 +573,6 @@ static int atalla_mod_exp_dh(const DH *dh, BIGNUM *r,
 	{
 	return atalla_mod_exp(r, a, p, m, ctx);
 	}
-#endif
 
 /* This stuff is needed if this ENGINE is being compiled into a self-contained
  * shared-library. */

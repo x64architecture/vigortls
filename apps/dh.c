@@ -57,8 +57,6 @@
  * [including the GNU Public Licence.]
  */
 
-#include <openssl/opensslconf.h>	/* for OPENSSL_NO_DH */
-#ifndef OPENSSL_NO_DH
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
@@ -346,10 +344,3 @@ end:
 	apps_shutdown();
 	OPENSSL_EXIT(ret);
 	}
-#else /* !OPENSSL_NO_DH */
-
-# if PEDANTIC
-static void *dummy=&dummy;
-# endif
-
-#endif

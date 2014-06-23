@@ -67,17 +67,11 @@ FUNCTION functions[] = {
 	{FUNC_TYPE_GENERAL,"asn1parse",asn1parse_main},
 	{FUNC_TYPE_GENERAL,"req",req_main},
 	{FUNC_TYPE_GENERAL,"dgst",dgst_main},
-#ifndef OPENSSL_NO_DH
 	{FUNC_TYPE_GENERAL,"dh",dh_main},
-#endif
-#ifndef OPENSSL_NO_DH
 	{FUNC_TYPE_GENERAL,"dhparam",dhparam_main},
-#endif
 	{FUNC_TYPE_GENERAL,"enc",enc_main},
 	{FUNC_TYPE_GENERAL,"passwd",passwd_main},
-#ifndef OPENSSL_NO_DH
 	{FUNC_TYPE_GENERAL,"gendh",gendh_main},
-#endif
 	{FUNC_TYPE_GENERAL,"errstr",errstr_main},
 	{FUNC_TYPE_GENERAL,"ca",ca_main},
 	{FUNC_TYPE_GENERAL,"crl",crl_main},
