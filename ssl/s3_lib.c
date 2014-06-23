@@ -3795,6 +3795,13 @@ SSL_CIPHER *ssl3_choose_cipher(SSL *s, STACK_OF(SSL_CIPHER) *clnt,
 			(TLS1_get_version(s) < TLS1_2_VERSION))
 			continue;
 
+#ifndef VIGORTLS_RC4_TLS11
+        /* Disable RC4 for TLS 1.1+ */
+        if ((c->algorithm_enc == SSL_RC4) &&
+            (TLS1_get_version(s) > TLS1_VERSION))
+            continue;
+#endif
+
 		ssl_set_cert_masks(cert,c);
 		mask_k = cert->mask_k;
 		mask_a = cert->mask_a;
