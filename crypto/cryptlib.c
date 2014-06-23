@@ -484,7 +484,7 @@ void CRYPTO_THREADID_current(CRYPTO_THREADID *id)
 		}
 #endif
 	/* Else pick a backup */
-#ifdef defined(OPENSSL_SYS_WIN32)
+#ifdef OPENSSL_SYS_WIN32
 	CRYPTO_THREADID_set_numeric(id, (unsigned long)GetCurrentThreadId());
 #elif defined(OPENSSL_SYS_BEOS)
 	CRYPTO_THREADID_set_numeric(id, (unsigned long)find_thread(NULL));
@@ -526,7 +526,7 @@ unsigned long CRYPTO_thread_id(void)
 
 	if (id_callback == NULL)
 		{
-#ifdef defined(OPENSSL_SYS_WIN32)
+#ifdef OPENSSL_SYS_WIN32
 		ret=(unsigned long)GetCurrentThreadId();
 #elif defined(GETPID_IS_MEANINGLESS)
 		ret=1L;
