@@ -69,11 +69,7 @@
 #include <openssl/crypto.h>
 
 #ifndef OPENSSL_NO_SCTP
-# ifndef OPENSSL_SYS_VMS
 # include <stdint.h>
-# else
-# include <inttypes.h>
-# endif
 #endif
 
 #ifdef  __cplusplus
@@ -677,9 +673,6 @@ BIO_METHOD *BIO_s_bio(void);
 BIO_METHOD *BIO_s_null(void);
 BIO_METHOD *BIO_f_null(void);
 BIO_METHOD *BIO_f_buffer(void);
-#ifdef OPENSSL_SYS_VMS
-BIO_METHOD *BIO_f_linebuffer(void);
-#endif
 BIO_METHOD *BIO_f_nbio_test(void);
 #ifndef OPENSSL_NO_DGRAM
 BIO_METHOD *BIO_s_datagram(void);

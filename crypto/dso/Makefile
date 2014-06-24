@@ -18,9 +18,9 @@ APPS=
 
 LIB=$(TOP)/libcrypto.a
 LIBSRC= dso_dl.c dso_dlfcn.c dso_err.c dso_lib.c dso_null.c \
-	dso_openssl.c dso_win32.c dso_vms.c dso_beos.c
+	dso_openssl.c dso_win32.c dso_beos.c
 LIBOBJ= dso_dl.o dso_dlfcn.o dso_err.o dso_lib.o dso_null.o \
-	dso_openssl.o dso_win32.o dso_vms.o dso_beos.o
+	dso_openssl.o dso_win32.o dso_beos.o
 
 SRC= $(LIBSRC)
 
@@ -132,14 +132,6 @@ dso_openssl.o: ../../include/openssl/opensslv.h
 dso_openssl.o: ../../include/openssl/ossl_typ.h
 dso_openssl.o: ../../include/openssl/safestack.h ../../include/openssl/stack.h
 dso_openssl.o: ../../include/openssl/symhacks.h ../cryptlib.h dso_openssl.c
-dso_vms.o: ../../e_os.h ../../include/openssl/bio.h
-dso_vms.o: ../../include/openssl/buffer.h ../../include/openssl/crypto.h
-dso_vms.o: ../../include/openssl/dso.h ../../include/openssl/e_os2.h
-dso_vms.o: ../../include/openssl/err.h ../../include/openssl/lhash.h
-dso_vms.o: ../../include/openssl/opensslconf.h ../../include/openssl/opensslv.h
-dso_vms.o: ../../include/openssl/ossl_typ.h ../../include/openssl/safestack.h
-dso_vms.o: ../../include/openssl/stack.h ../../include/openssl/symhacks.h
-dso_vms.o: ../cryptlib.h dso_vms.c
 dso_win32.o: ../../e_os.h ../../include/openssl/bio.h
 dso_win32.o: ../../include/openssl/buffer.h ../../include/openssl/crypto.h
 dso_win32.o: ../../include/openssl/dso.h ../../include/openssl/e_os2.h

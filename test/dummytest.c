@@ -12,13 +12,6 @@ int main(int argc, char *argv[])
 
 	p = strrchr(argv[0], '/');
 	if (!p) p = strrchr(argv[0], '\\');
-#ifdef OPENSSL_SYS_VMS
-	if (!p) p = strrchr(argv[0], ']');
-	if (p) q = strrchr(p, '>');
-	if (q) p = q;
-	if (!p) p = strrchr(argv[0], ':');
-	q = 0;
-#endif
 	if (p) p++;
 	if (!p) p = argv[0];
 	if (p) q = strchr(p, '.');

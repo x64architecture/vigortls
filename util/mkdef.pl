@@ -68,9 +68,6 @@ my $do_ctest = 0;
 my $do_ctestall = 0;
 my $do_checkexist = 0;
 
-my $VMSVAX=0;
-my $VMSNonVAX=0;
-my $VMS=0;
 my $W32=0;
 my $W16=0;
 my $NT=0;
@@ -80,7 +77,7 @@ my $safe_stack_def = 0;
 
 my @known_platforms = ( "__FreeBSD__", "PERL5", "NeXT",
 			"EXPORT_VAR_AS_FUNCTION", "ZLIB", "OPENSSL_FIPS" );
-my @known_ossl_platforms = ( "VMS", "WIN16", "WIN32", "WINNT", "OS2" );
+my @known_ossl_platforms = ( "WIN32", "WINNT", "OS2" );
 my @known_algorithms = ( "RC2", "RC4", "RC5", "IDEA", "DES", "BF",
 			 "CAST", "MD2", "MD4", "MD5", "SHA", "SHA0", "SHA1",
 			 "SHA256", "SHA512", "RIPEMD",
@@ -152,17 +149,6 @@ foreach (@ARGV, split(/ /, $options))
 		$W32 = 1;
 		$NT = 1;
 	}
-	if ($_ eq "VMS-VAX") {
-		$VMS=1;
-		$VMSVAX=1;
-	}
-	if ($_ eq "VMS-NonVAX") {
-		$VMS=1;
-		$VMSNonVAX=1;
-	}
-	$VMS=1 if $_ eq "VMS";
-	$OS2=1 if $_ eq "OS2";
-	$fips=1 if /^fips/;
 	if ($_ eq "zlib" || $_ eq "enable-zlib" || $_ eq "zlib-dynamic"
 			 || $_ eq "enable-zlib-dynamic") {
 		$zlib = 1;
@@ -248,7 +234,7 @@ if (!$libname) {
 }
 
 # If no platform is given, assume WIN32
-if ($W32 + $W16 + $VMS + $OS2 == 0) {
+if ($W32 + $W16 + $OS2 == 0) {
 	$W32 = 1;
 }
 
@@ -1133,9 +1119,6 @@ sub is_valid
 
 		if ($platforms) {
 			# platforms
-			if ($keyword eq "VMSVAX" && $VMSVAX) { return 1; }
-			if ($keyword eq "VMSNonVAX" && $VMSNonVAX) { return 1; }
-			if ($keyword eq "VMS" && $VMS) { return 1; }
 			if ($keyword eq "WIN32" && $W32) { return 1; }
 			if ($keyword eq "WIN16" && $W16) { return 1; }
 			if ($keyword eq "WINNT" && $NT) { return 1; }
@@ -1144,7 +1127,7 @@ sub is_valid
 			# EXPORT_VAR_AS_FUNCTION means that global variables
 			# will be represented as functions.  This currently
 			# only happens on VMS-VAX.
-			if ($keyword eq "EXPORT_VAR_AS_FUNCTION" && ($VMSVAX || $W32 || $W16)) {
+			if ($keyword eq "EXPORT_VAR_AS_FUNCTION" && ($W32 || $W16)) {
 				return 1;
 			}
 			if ($keyword eq "OPENSSL_FIPS" && $fips) {

@@ -66,13 +66,6 @@
 #endif
 #endif
 
-#ifndef OPENSSL_SYS_MSDOS
-#if !defined(OPENSSL_SYS_VMS) || defined(OPENSSL_SYS_VMS_DECC)
-#include OPENSSL_UNISTD
-#endif
-#else
-#include <io.h>
-#endif
 #include <string.h>
 
 #ifdef OPENSSL_NO_DES

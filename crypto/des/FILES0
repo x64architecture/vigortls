@@ -13,7 +13,6 @@ Makefile.uni	- The normal unix makefile.
 GNUmakefile	- The makefile for use with glibc.
 makefile.bc	- A Borland C makefile
 times		- Some outputs from 'speed' on some machines.
-vms.com		- For use when compiling under VMS
 
 /* My SunOS des(1) replacement */
 des.c		- des(1) source code.

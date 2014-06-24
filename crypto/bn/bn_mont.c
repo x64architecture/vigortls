@@ -247,7 +247,7 @@ static int BN_from_montgomery_word(BIGNUM *ret, BIGNUM *r, BN_MONT_CTX *mont)
 	 * trick unconditional memcpy below to perform in-place
 	 * "refresh" instead of actual copy. */
 	m=(0-(size_t)v);
-	nrp=(BN_ULONG *)(((PTR_SIZE_INT)rp&~m)|((PTR_SIZE_INT)ap&m));
+	nrp=(BN_ULONG *)(((size_t)rp&~m)|((size_t)ap&m));
 
 	for (i=0,nl-=4; i<nl; i+=4)
 		{

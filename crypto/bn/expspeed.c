@@ -109,14 +109,6 @@ static void genprime_cb(int p, int n, void *arg);
 #include <sys/times.h>
 #endif
 
-/* Depending on the VMS version, the tms structure is perhaps defined.
-   The __TMS macro will show if it was.  If it wasn't defined, we should
-   undefine TIMES, since that tells the rest of the program how things
-   should be handled.				-- Richard Levitte */
-#if defined(OPENSSL_SYS_VMS_DECC) && !defined(__TMS)
-#undef TIMES
-#endif
-
 #ifndef TIMES
 #include <sys/timeb.h>
 #endif

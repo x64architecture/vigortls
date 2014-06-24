@@ -298,9 +298,6 @@ DSO_METHOD *DSO_METHOD_dl(void);
 /* If WIN32 is defined, use DLLs. If not, return NULL. */
 DSO_METHOD *DSO_METHOD_win32(void);
 
-/* If VMS is defined, use shared images. If not, return NULL. */
-DSO_METHOD *DSO_METHOD_vms(void);
-
 /* This function writes null-terminated pathname of DSO module
  * containing 'addr' into 'sz' large caller-provided 'path' and
  * returns the number of characters [including trailing zero]
@@ -368,10 +365,6 @@ void ERR_load_DSO_strings(void);
 #define DSO_F_DSO_UP_REF				 114
 #define DSO_F_GLOBAL_LOOKUP_FUNC			 138
 #define DSO_F_PATHBYADDR				 137
-#define DSO_F_VMS_BIND_SYM				 115
-#define DSO_F_VMS_LOAD					 116
-#define DSO_F_VMS_MERGER				 133
-#define DSO_F_VMS_UNLOAD				 117
 #define DSO_F_WIN32_BIND_FUNC				 118
 #define DSO_F_WIN32_BIND_VAR				 119
 #define DSO_F_WIN32_GLOBALLOOKUP			 142

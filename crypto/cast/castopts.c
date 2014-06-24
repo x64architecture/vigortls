@@ -59,10 +59,6 @@
 /* define PART1, PART2, PART3 or PART4 to build only with a few of the options.
  * This is for machines with 64k code segment size restrictions. */
 
-#if !defined(OPENSSL_SYS_MSDOS) && (!defined(OPENSSL_SYS_VMS) || defined(__DECC))
-#define TIMES
-#endif
-
 #include <stdio.h>
 
 #include <openssl/e_os2.h>
@@ -79,14 +75,6 @@ OPENSSL_DECLARE_EXIT
 #ifdef TIMES
 #include <sys/types.h>
 #include <sys/times.h>
-#endif
-
-/* Depending on the VMS version, the tms structure is perhaps defined.
-   The __TMS macro will show if it was.  If it wasn't defined, we should
-   undefine TIMES, since that tells the rest of the program how things
-   should be handled.				-- Richard Levitte */
-#if defined(OPENSSL_SYS_VMS_DECC) && !defined(__TMS)
-#undef TIMES
 #endif
 
 #ifndef TIMES

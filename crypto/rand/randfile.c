@@ -71,9 +71,6 @@
 #include <openssl/rand.h>
 #include <openssl/buffer.h>
 
-#ifdef OPENSSL_SYS_VMS
-#include <unixio.h>
-#endif
 #ifndef NO_SYS_TYPES_H
 # include <sys/types.h>
 #endif
@@ -91,14 +88,6 @@
 #undef BUFSIZE
 #define BUFSIZE	1024
 #define RAND_DATA 1024
-
-#ifdef OPENSSL_SYS_VMS
-/* This declaration is a nasty hack to get around vms' extension to fopen
- * for passing in sharing options being disabled by our /STANDARD=ANSI89 */
-static FILE *(*const vms_fopen)(const char *, const char *, ...) =
-    (FILE *(*)(const char *, const char *, ...))fopen;
-#define VMS_OPEN_ATTRS "shr=get,put,upd,del","ctx=bin,stm","rfm=stm","rat=none","mrs=0"
-#endif
 
 /* #define RFILE ".rnd" - defined in ../../e_os.h */
 
@@ -133,11 +122,8 @@ int RAND_load_file(const char *file, long bytes)
 #endif
 	if (bytes == 0) return(ret);
 
-#ifdef OPENSSL_SYS_VMS
-	in=vms_fopen(file,"rb",VMS_OPEN_ATTRS);
-#else
 	in=fopen(file,"rb");
-#endif
+
 	if (in == NULL) goto err;
 #if defined(S_IFBLK) && defined(S_IFCHR) && !defined(OPENSSL_NO_POSIX_IO)
 	if (sb.st_mode & (S_IFBLK | S_IFCHR)) {
@@ -215,33 +201,9 @@ int RAND_write_file(const char *file)
 	}
 #endif
 
-#ifdef OPENSSL_SYS_VMS
-	/* VMS NOTE: Prior versions of this routine created a _new_
-	 * version of the rand file for each call into this routine, then
-	 * deleted all existing versions named ;-1, and finally renamed
-	 * the current version as ';1'. Under concurrent usage, this
-	 * resulted in an RMS race condition in rename() which could
-	 * orphan files (see vms message help for RMS$_REENT). With the
-	 * fopen() calls below, openssl/VMS now shares the top-level
-	 * version of the rand file. Note that there may still be
-	 * conditions where the top-level rand file is locked. If so, this
-	 * code will then create a new version of the rand file. Without
-	 * the delete and rename code, this can result in ascending file
-	 * versions that stop at version 32767, and this routine will then
-	 * return an error. The remedy for this is to recode the calling
-	 * application to avoid concurrent use of the rand file, or
-	 * synchronize usage at the application level. Also consider
-	 * whether or not you NEED a persistent rand file in a concurrent
-	 * use situation. 
-	 */
-
-	out = vms_fopen(file,"rb+",VMS_OPEN_ATTRS);
-	if (out == NULL)
-		out = vms_fopen(file,"wb",VMS_OPEN_ATTRS);
-#else
 	if (out == NULL)
 		out = fopen(file,"wb");
-#endif
+
 	if (out == NULL) goto err;
 
 #ifndef NO_CHMOD
@@ -297,9 +259,7 @@ const char *RAND_file_name(char *buf, size_t size)
 		if (s && *s && strlen(s)+strlen(RFILE)+2 < size)
 			{
 			BUF_strlcpy(buf,s,size);
-#ifndef OPENSSL_SYS_VMS
 			BUF_strlcat(buf,"/",size);
-#endif
 			BUF_strlcat(buf,RFILE,size);
 			}
 		else

@@ -137,20 +137,6 @@ extern "C" {
 # endif
 #endif
 
-/* -------------------------------- OpenVMS -------------------------------- */
-#if defined(__VMS) || defined(VMS) || defined(OPENSSL_SYSNAME_VMS)
-# undef OPENSSL_SYS_UNIX
-# define OPENSSL_SYS_VMS
-# if defined(__DECC)
-#  define OPENSSL_SYS_VMS_DECC
-# elif defined(__DECCXX)
-#  define OPENSSL_SYS_VMS_DECC
-#  define OPENSSL_SYS_VMS_DECCXX
-# else
-#  define OPENSSL_SYS_VMS_NODECC
-# endif
-#endif
-
 /* --------------------------------- OS/2 ---------------------------------- */
 #if defined(__EMX__) || defined(__OS2__)
 # undef OPENSSL_SYS_UNIX
@@ -252,11 +238,7 @@ extern "C" {
    value OPENSSL_IMPORT.
 */
 
-#if defined(OPENSSL_SYS_VMS_NODECC)
-# define OPENSSL_EXPORT globalref
-# define OPENSSL_IMPORT globalref
-# define OPENSSL_GLOBAL globaldef
-#elif defined(OPENSSL_SYS_WINDOWS) && defined(OPENSSL_OPT_WINDLL)
+#if defined(OPENSSL_SYS_WINDOWS) && defined(OPENSSL_OPT_WINDLL)
 # define OPENSSL_EXPORT extern __declspec(dllexport)
 # define OPENSSL_IMPORT extern __declspec(dllimport)
 # define OPENSSL_GLOBAL

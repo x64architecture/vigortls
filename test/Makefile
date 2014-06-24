@@ -21,7 +21,7 @@ CFLAGS= $(INCLUDES) $(CFLAG)
 GENERAL=Makefile maketests.com \
 	tests.com testenc.com tx509.com trsa.com tcrl.com tsid.com treq.com \
 	tpkcs7.com tpkcs7d.com tverify.com testgen.com testss.com testssl.com \
-	testca.com VMSca-response.1 VMSca-response.2
+	testca.com
 
 DLIBCRYPTO= ../libcrypto.a
 DLIBSSL= ../libssl.a

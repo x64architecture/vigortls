@@ -86,13 +86,6 @@
 #include <setjmp.h>
 #include <errno.h>
 
-#ifdef OPENSSL_SYS_VMS			/* prototypes for sys$whatever */
-#include <starlet.h>
-#ifdef __DECC
-#pragma message disable DOLLARID
-#endif
-#endif
-
 #ifdef WIN_CONSOLE_BUG
 #include <windows.h>
 #ifndef OPENSSL_SYS_WINCE
@@ -168,18 +161,6 @@
 #define fgets(a,b,c) noecho_fgets(a,b,c)
 #endif
 
-#ifdef OPENSSL_SYS_VMS
-#include <ssdef.h>
-#include <iodef.h>
-#include <ttdef.h>
-#include <descrip.h>
-struct IOSB {
-	short iosb$w_value;
-	short iosb$w_count;
-	long  iosb$l_info;
-	};
-#endif
-
 #if defined(MAC_OS_pre_X) || defined(MAC_OS_GUSI_SOURCE)
 /*
  * This one needs work. As a matter of fact the code is unoperational
@@ -244,16 +225,8 @@ static void read_till_nl(FILE *in)
 int des_read_pw(char *buf, char *buff, int size, const char *prompt,
 	     int verify)
 	{
-#ifdef OPENSSL_SYS_VMS
-	struct IOSB iosb;
-	$DESCRIPTOR(terminal,"TT");
-	long tty_orig[3], tty_new[3];
-	long status;
-	unsigned short channel = 0;
-#else
 #if !defined(OPENSSL_SYS_MSDOS) || defined(__DJGPP__)
 	TTY_STRUCT tty_orig,tty_new;
-#endif
 #endif
 	int number;
 	int ok;
@@ -307,14 +280,6 @@ int des_read_pw(char *buf, char *buff, int size, const char *prompt,
 		}
 	memcpy(&(tty_new),&(tty_orig),sizeof(tty_orig));
 #endif
-#ifdef OPENSSL_SYS_VMS
-	status = sys$assign(&terminal,&channel,0,0);
-	if (status != SS$_NORMAL)
-		return(-1);
-	status=sys$qiow(0,channel,IO$_SENSEMODE,&iosb,0,0,tty_orig,12,0,0,0,0);
-	if ((status != SS$_NORMAL) || (iosb.iosb$w_value != SS$_NORMAL))
-		return(-1);
-#endif
 
 	pushsig();
 	ps=1;
@@ -330,14 +295,6 @@ int des_read_pw(char *buf, char *buff, int size, const char *prompt,
 #else
 		return(-1);
 #endif
-#endif
-#ifdef OPENSSL_SYS_VMS
-	tty_new[0] = tty_orig[0];
-	tty_new[1] = tty_orig[1] | TT$M_NOECHO;
-	tty_new[2] = tty_orig[2];
-	status = sys$qiow(0,channel,IO$_SETMODE,&iosb,0,0,tty_new,12,0,0,0,0);
-	if ((status != SS$_NORMAL) || (iosb.iosb$w_value != SS$_NORMAL))
-		return(-1);
 #endif
 	ps=2;
 
@@ -384,17 +341,9 @@ error:
 #if defined(TTY_set) && !defined(OPENSSL_SYS_VMS)
 	if (ps >= 2) TTY_set(fileno(tty),&tty_orig);
 #endif
-#ifdef OPENSSL_SYS_VMS
-	if (ps >= 2)
-		status = sys$qiow(0,channel,IO$_SETMODE,&iosb,0,0
-			,tty_orig,12,0,0,0,0);
-#endif
 	
 	if (ps >= 1) popsig();
 	if (stdin != tty) fclose(tty);
-#ifdef OPENSSL_SYS_VMS
-	status = sys$dassgn(channel);
-#endif
 	return(!ok);
 	}
 

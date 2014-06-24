@@ -148,13 +148,6 @@ extern "C" {
 #define closesocket(s)		MacSocket_close(s)
 #define readsocket(s,b,n)	MacSocket_recv((s),(b),(n),true)
 #define writesocket(s,b,n)	MacSocket_send((s),(b),(n))
-#elif defined(OPENSSL_SYS_VMS)
-#define get_last_socket_error() errno
-#define clear_socket_error()    errno=0
-#define ioctlsocket(a,b,c)      ioctl(a,b,c)
-#define closesocket(s)          close(s)
-#define readsocket(s,b,n)       recv((s),(b),(n),0)
-#define writesocket(s,b,n)      send((s),(b),(n),0)
 #elif defined(OPENSSL_SYS_VXWORKS)
 #define get_last_socket_error()	errno
 #define clear_socket_error()	errno=0
@@ -358,48 +351,7 @@ static unsigned int _strlen31(const char *str)
 
 #else /* The non-microsoft world */
 
-#  ifdef OPENSSL_SYS_VMS
-#    define VMS 1
-  /* some programs don't include stdlib, so exit() and others give implicit 
-     function warnings */
-#    include <stdlib.h>
-#    if defined(__DECC)
-#      include <unistd.h>
-#    else
-#      include <unixlib.h>
-#    endif
-#    define OPENSSL_CONF	"openssl.cnf"
-#    define SSLEAY_CONF		OPENSSL_CONF
-#    define RFILE		".rnd"
-#    define LIST_SEPARATOR_CHAR ','
-#    define NUL_DEV		"NLA0:"
-  /* We don't have any well-defined random devices on VMS, yet... */
-#    undef DEVRANDOM
-  /* We need to do this since VMS has the following coding on status codes:
-
-     Bits 0-2: status type: 0 = warning, 1 = success, 2 = error, 3 = info ...
-               The important thing to know is that odd numbers are considered
-	       good, while even ones are considered errors.
-     Bits 3-15: actual status number
-     Bits 16-27: facility number.  0 is considered "unknown"
-     Bits 28-31: control bits.  If bit 28 is set, the shell won't try to
-                 output the message (which, for random codes, just looks ugly)
-
-     So, what we do here is to change 0 to 1 to get the default success status,
-     and everything else is shifted up to fit into the status number field, and
-     the status is tagged as an error, which I believe is what is wanted here.
-     -- Richard Levitte
-  */
-#    define EXIT(n)		do { int __VMS_EXIT = n; \
-                                     if (__VMS_EXIT == 0) \
-				       __VMS_EXIT = 1; \
-				     else \
-				       __VMS_EXIT = (n << 3) | 2; \
-                                     __VMS_EXIT |= 0x10000000; \
-				     exit(__VMS_EXIT); } while(0)
-#    define NO_SYS_PARAM_H
-
-#  elif defined(OPENSSL_SYS_NETWARE)
+#  if defined(OPENSSL_SYS_NETWARE)
 #    include <fcntl.h>
 #    include <unistd.h>
 #    define NO_SYS_TYPES_H
@@ -549,19 +501,13 @@ static unsigned int _strlen31(const char *str)
 #    endif
 
 #    include <netdb.h>
-#    if defined(OPENSSL_SYS_VMS_NODECC)
-#      include <socket.h>
-#      include <in.h>
-#      include <inet.h>
-#    else
-#      include <sys/socket.h>
-#      ifdef FILIO_H
-#        include <sys/filio.h> /* Added for FIONBIO under unixware */
-#      endif
-#      include <netinet/in.h>
-#      if !defined(OPENSSL_SYS_BEOS_R5)
-#      include <arpa/inet.h>
+#    include <sys/socket.h>
+#    ifdef FILIO_H
+#      include <sys/filio.h> /* Added for FIONBIO under unixware */
 #    endif
+#    include <netinet/in.h>
+#    if !defined(OPENSSL_SYS_BEOS_R5)
+#      include <arpa/inet.h>
 #    endif
 
 #    if defined(NeXT) || defined(_NEXT_SOURCE)
@@ -587,13 +533,6 @@ static unsigned int _strlen31(const char *str)
 #        if !defined(TCPIP_TYPE_SOCKETSHR) && defined(__VMS_VER) && (__VMS_VER > 70000000)
 #          include <sys/ioctl.h>
 #        endif
-#      endif
-#    endif
-
-#    ifdef VMS
-#      include <unixio.h>
-#      if defined(TCPIP_TYPE_SOCKETSHR)
-#        include <socketshr.h>
 #      endif
 #    endif
 
@@ -656,21 +595,6 @@ extern char *sys_errlist[]; extern int sys_nerr;
 #if defined(OPENSSL_SYS_WINDOWS)
 #  define strcasecmp _stricmp
 #  define strncasecmp _strnicmp
-#elif defined(OPENSSL_SYS_VMS)
-/* VMS below version 7.0 doesn't have strcasecmp() */
-#  include "o_str.h"
-#  define strcasecmp OPENSSL_strcasecmp
-#  define strncasecmp OPENSSL_strncasecmp
-#  define OPENSSL_IMPLEMENTS_strncasecmp
-#elif defined(OPENSSL_SYS_OS2) && defined(__EMX__)
-#  define strcasecmp stricmp
-#  define strncasecmp strnicmp
-#elif defined(OPENSSL_SYS_NETWARE)
-#  include <string.h>
-#  if defined(NETWARE_CLIB)
-#    define strcasecmp stricmp
-#    define strncasecmp strnicmp
-#  endif /* NETWARE_CLIB */
 #endif
 
 #if defined(OPENSSL_SYS_OS2) && defined(__EMX__)

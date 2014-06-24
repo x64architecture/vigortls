@@ -126,11 +126,6 @@
 #include <sys/types.h>
 #endif
 
-#if !defined(_POSIX_C_SOURCE) && defined(OPENSSL_SYS_VMS)
-#ifndef _POSIX_C_SOURCE
-#define _POSIX_C_SOURCE 2
-#endif
-#endif
 #include <signal.h>
 #include <stdio.h>
 #include <string.h>
@@ -157,13 +152,6 @@
 /* 06-Apr-92 Luke Brennan    Support for VMS */
 #include "ui_locl.h"
 #include "cryptlib.h"
-
-#ifdef OPENSSL_SYS_VMS		/* prototypes for sys$whatever */
-# include <starlet.h>
-# ifdef __DECC
-#  pragma message disable DOLLARID
-# endif
-#endif
 
 #ifdef WIN_CONSOLE_BUG
 # include <windows.h>
@@ -245,18 +233,6 @@
 # include <conio.h>
 #endif
 
-#ifdef OPENSSL_SYS_VMS
-# include <ssdef.h>
-# include <iodef.h>
-# include <ttdef.h>
-# include <descrip.h>
-struct IOSB {
-	short iosb$w_value;
-	short iosb$w_count;
-	long  iosb$l_info;
-	};
-#endif
-
 #ifdef OPENSSL_SYS_SUNOS
 	typedef int sig_atomic_t;
 #endif
@@ -282,16 +258,8 @@ static struct sigaction savsig[NX509_SIG];
 static void (*savsig[NX509_SIG])(int );
 #endif
 
-#ifdef OPENSSL_SYS_VMS
-static struct IOSB iosb;
-static $DESCRIPTOR(terminal,"TT");
-static long tty_orig[3], tty_new[3]; /* XXX   Is there any guarantee that this will always suffice for the actual structures? */
-static long status;
-static unsigned short channel = 0;
-#else
 #if !defined(OPENSSL_SYS_MSDOS) || defined(__DJGPP__)
 static TTY_STRUCT tty_orig,tty_new;
-#endif
 #endif
 static FILE *tty_in, *tty_out;
 static int is_a_tty;
@@ -508,14 +476,6 @@ static int open_console(UI *ui)
 			return 0;
 		}
 #endif
-#ifdef OPENSSL_SYS_VMS
-	status = sys$assign(&terminal,&channel,0,0);
-	if (status != SS$_NORMAL)
-		return 0;
-	status=sys$qiow(0,channel,IO$_SENSEMODE,&iosb,0,0,tty_orig,12,0,0,0,0);
-	if ((status != SS$_NORMAL) || (iosb.iosb$w_value != SS$_NORMAL))
-		return 0;
-#endif
 	return 1;
 	}
 
@@ -528,14 +488,6 @@ static int noecho_console(UI *ui)
 
 #if defined(TTY_set) && !defined(OPENSSL_SYS_VMS)
 	if (is_a_tty && (TTY_set(fileno(tty_in),&tty_new) == -1))
-		return 0;
-#endif
-#ifdef OPENSSL_SYS_VMS
-	tty_new[0] = tty_orig[0];
-	tty_new[1] = tty_orig[1] | TT$M_NOECHO;
-	tty_new[2] = tty_orig[2];
-	status = sys$qiow(0,channel,IO$_SETMODE,&iosb,0,0,tty_new,12,0,0,0,0);
-	if ((status != SS$_NORMAL) || (iosb.iosb$w_value != SS$_NORMAL))
 		return 0;
 #endif
 	return 1;
@@ -552,14 +504,6 @@ static int echo_console(UI *ui)
 	if (is_a_tty && (TTY_set(fileno(tty_in),&tty_new) == -1))
 		return 0;
 #endif
-#ifdef OPENSSL_SYS_VMS
-	tty_new[0] = tty_orig[0];
-	tty_new[1] = tty_orig[1] & ~TT$M_NOECHO;
-	tty_new[2] = tty_orig[2];
-	status = sys$qiow(0,channel,IO$_SETMODE,&iosb,0,0,tty_new,12,0,0,0,0);
-	if ((status != SS$_NORMAL) || (iosb.iosb$w_value != SS$_NORMAL))
-		return 0;
-#endif
 	return 1;
 	}
 
@@ -567,9 +511,6 @@ static int close_console(UI *ui)
 	{
 	if (tty_in != stdin) fclose(tty_in);
 	if (tty_out != stderr) fclose(tty_out);
-#ifdef OPENSSL_SYS_VMS
-	status = sys$dassgn(channel);
-#endif
 	CRYPTO_w_unlock(CRYPTO_LOCK_UI);
 
 	return 1;

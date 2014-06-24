@@ -8,16 +8,7 @@
 #include <openssl/safestack.h>
 #include <openssl/e_os2.h>
 
-/* Later versions of DEC C has started to add lnkage information to certain
- * functions, which makes it tricky to use them as values to regular function
- * pointers.  One way is to define a macro that takes care of casting them
- * correctly.
- */
-#ifdef OPENSSL_SYS_VMS_DECC
-# define OPENSSL_strcmp (int (*)(const char *,const char *))strcmp
-#else
-# define OPENSSL_strcmp strcmp
-#endif
+#define OPENSSL_strcmp strcmp
 
 /* I use the ex_data stuff to manage the identifiers for the obj_name_types
  * that applications may define.  I only really use the free function field.

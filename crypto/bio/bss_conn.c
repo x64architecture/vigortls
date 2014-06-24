@@ -66,11 +66,6 @@
 
 #define SOCKET_PROTOCOL IPPROTO_TCP
 
-#if (defined(OPENSSL_SYS_VMS) && __VMS_VER < 70000000)
-/* FIONBIO used as a switch to enable ioctl, and that isn't in VMS < 7.0 */
-#undef FIONBIO
-#endif
-
 
 typedef struct bio_connect_st
 	{

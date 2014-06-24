@@ -60,32 +60,16 @@
 #include <stdlib.h>
 #include <string.h>
 #include <openssl/opensslconf.h>
-#ifndef OPENSSL_SYS_MSDOS
-#ifndef OPENSSL_SYS_VMS
 #include OPENSSL_UNISTD
-#else /* OPENSSL_SYS_VMS */
-#ifdef __DECC
-#include <unistd.h>
-#else /* not __DECC */
-#include <math.h>
-#endif /* __DECC */
-#endif /* OPENSSL_SYS_VMS */
-#else /* OPENSSL_SYS_MSDOS */
-#include <io.h>
-#endif
 
 #include <time.h>
 #include "des_ver.h"
 
-#ifdef OPENSSL_SYS_VMS
-#include <types.h>
-#include <stat.h>
-#else
 #ifndef _IRIX
 #include <sys/types.h>
 #endif
 #include <sys/stat.h>
-#endif
+
 #include <openssl/des.h>
 #include <openssl/rand.h>
 #include <openssl/ui_compat.h>
@@ -100,11 +84,8 @@ int uudecode(unsigned char *in,int num,unsigned char *out);
 void DES_3cbc_encrypt(DES_cblock *input,DES_cblock *output,long length,
 	DES_key_schedule sk1,DES_key_schedule sk2,
 	DES_cblock *ivec1,DES_cblock *ivec2,int enc);
-#ifdef OPENSSL_SYS_VMS
-#define EXIT(a) exit(a&0x10000000L)
-#else
+
 #define EXIT(a) exit(a)
-#endif
 
 #define BUFSIZE (8*1024)
 #define VERIFY  1

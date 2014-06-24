@@ -59,10 +59,6 @@
 /* 11-Sep-92 Andrew Daviel   Support for Silicon Graphics IRIX added */
 /* 06-Apr-92 Luke Brennan    Support for VMS and add extra signal calls */
 
-#if !defined(OPENSSL_SYS_MSDOS) && (!defined(OPENSSL_SYS_VMS) || defined(__DECC)) && !defined(OPENSSL_SYS_MACOSX)
-#define TIMES
-#endif
-
 #include <stdio.h>
 
 #include <openssl/e_os2.h>
@@ -79,14 +75,6 @@ OPENSSL_DECLARE_EXIT
 #ifdef TIMES
 #include <sys/types.h>
 #include <sys/times.h>
-#endif
-
-/* Depending on the VMS version, the tms structure is perhaps defined.
-   The __TMS macro will show if it was.  If it wasn't defined, we should
-   undefine TIMES, since that tells the rest of the program how things
-   should be handled.				-- Richard Levitte */
-#if defined(OPENSSL_SYS_VMS_DECC) && !defined(__TMS)
-#undef TIMES
 #endif
 
 #ifndef TIMES

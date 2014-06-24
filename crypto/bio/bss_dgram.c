@@ -66,7 +66,7 @@
 #include <openssl/bio.h>
 #ifndef OPENSSL_NO_DGRAM
 
-#if defined(OPENSSL_SYS_WIN32) || defined(OPENSSL_SYS_VMS)
+#if defined(OPENSSL_SYS_WIN32)
 #include <sys/timeb.h>
 #endif
 
@@ -1857,11 +1857,6 @@ static void get_current_time(struct timeval *t)
 #ifdef OPENSSL_SYS_WIN32
 	struct _timeb tb;
 	_ftime(&tb);
-	t->tv_sec = (long)tb.time;
-	t->tv_usec = (long)tb.millitm * 1000;
-#elif defined(OPENSSL_SYS_VMS)
-	struct timeb tb;
-	ftime(&tb);
 	t->tv_sec = (long)tb.time;
 	t->tv_usec = (long)tb.millitm * 1000;
 #else

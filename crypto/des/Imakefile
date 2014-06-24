@@ -12,7 +12,7 @@ OBJS=   cbc_cksm.o cbc_enc.o ecb_enc.o pcbc_enc.o \
 	ecb3_enc.o ofb_enc.o ofb64enc.o
 
 GENERAL=COPYRIGHT FILES INSTALL Imakefile README VERSION makefile times \
-	vms.com KERBEROS
+	KERBEROS
 DES=    des.c des.man
 TESTING=destest.c speed.c rpw.c
 LIBDES= des_crypt.man des.h des_locl.h podd.h sk.h spr.h
