@@ -453,7 +453,6 @@ static ERR_STRING_DATA SSL_str_reasons[]=
 {ERR_REASON(SSL_R_NULL_SSL_METHOD_PASSED),"null ssl method passed"},
 {ERR_REASON(SSL_R_OLD_SESSION_CIPHER_NOT_RETURNED),"old session cipher not returned"},
 {ERR_REASON(SSL_R_OLD_SESSION_COMPRESSION_ALGORITHM_NOT_RETURNED),"old session compression algorithm not returned"},
-{ERR_REASON(SSL_R_ONLY_TLS_ALLOWED_IN_FIPS_MODE),"only tls allowed in fips mode"},
 {ERR_REASON(SSL_R_OPAQUE_PRF_INPUT_TOO_LONG),"opaque PRF input too long"},
 {ERR_REASON(SSL_R_PACKET_LENGTH_TOO_LONG),"packet length too long"},
 {ERR_REASON(SSL_R_PARSE_TLSEXT)          ,"parse tlsext"},

@@ -109,8 +109,6 @@
  *
  */
 
-#define OPENSSL_FIPSEVP
-
 #ifdef MD_RAND_DEBUG
 # ifndef NDEBUG
 #   define NDEBUG
@@ -383,10 +381,6 @@ static int ssleay_rand_bytes(unsigned char *buf, int num, int pseudo)
 	 * are fed into the hash function and the results are kept in the
 	 * global 'md'.
 	 */
-#ifdef OPENSSL_FIPS
-	/* NB: in FIPS mode we are already under a lock */
-	if (!FIPS_mode())
-#endif
 		CRYPTO_w_lock(CRYPTO_LOCK_RAND);
 
 	/* prevent ssleay_rand_bytes() from trying to obtain the lock again */
@@ -464,12 +458,9 @@ static int ssleay_rand_bytes(unsigned char *buf, int num, int pseudo)
 
 	md_count[0] += 1;
 
-	/* before unlocking, we must clear 'crypto_lock_rand' */
-	crypto_lock_rand = 0;
-#ifdef OPENSSL_FIPS
-	if (!FIPS_mode())
-#endif
-		CRYPTO_w_unlock(CRYPTO_LOCK_RAND);
+    /* before unlocking, we must clear 'crypto_lock_rand' */
+    crypto_lock_rand = 0;
+    CRYPTO_w_unlock(CRYPTO_LOCK_RAND);
 
 	while (num > 0)
 		{
@@ -521,16 +512,10 @@ static int ssleay_rand_bytes(unsigned char *buf, int num, int pseudo)
 	MD_Init(&m);
 	MD_Update(&m,(unsigned char *)&(md_c[0]),sizeof(md_c));
 	MD_Update(&m,local_md,MD_DIGEST_LENGTH);
-#ifdef OPENSSL_FIPS
-	if (!FIPS_mode())
-#endif
-		CRYPTO_w_lock(CRYPTO_LOCK_RAND);
+    CRYPTO_w_lock(CRYPTO_LOCK_RAND);
 	MD_Update(&m,md,MD_DIGEST_LENGTH);
 	MD_Final(&m,md);
-#ifdef OPENSSL_FIPS
-	if (!FIPS_mode())
-#endif
-		CRYPTO_w_unlock(CRYPTO_LOCK_RAND);
+    CRYPTO_w_unlock(CRYPTO_LOCK_RAND);
 
 	EVP_MD_CTX_cleanup(&m);
 	if (ok)

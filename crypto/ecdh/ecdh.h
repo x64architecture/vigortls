@@ -115,7 +115,6 @@ void ERR_load_ECDH_strings(void);
 
 /* Reason codes. */
 #define ECDH_R_KDF_FAILED				 102
-#define ECDH_R_NON_FIPS_METHOD				 103
 #define ECDH_R_NO_PRIVATE_VALUE				 100
 #define ECDH_R_POINT_ARITHMETIC_FAILURE			 101
 

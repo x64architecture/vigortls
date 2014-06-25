@@ -229,7 +229,6 @@ extern "C" {
 #define SSL_TXT_LOW		"LOW"
 #define SSL_TXT_MEDIUM		"MEDIUM"
 #define SSL_TXT_HIGH		"HIGH"
-#define SSL_TXT_FIPS		"FIPS"
 
 #define SSL_TXT_kFZA		"kFZA" /* unused! */
 #define	SSL_TXT_aFZA		"aFZA" /* unused! */
@@ -2417,7 +2416,6 @@ void ERR_load_SSL_strings(void);
 #define SSL_R_NULL_SSL_METHOD_PASSED			 196
 #define SSL_R_OLD_SESSION_CIPHER_NOT_RETURNED		 197
 #define SSL_R_OLD_SESSION_COMPRESSION_ALGORITHM_NOT_RETURNED 344
-#define SSL_R_ONLY_TLS_ALLOWED_IN_FIPS_MODE		 297
 #define SSL_R_OPAQUE_PRF_INPUT_TOO_LONG			 327
 #define SSL_R_PACKET_LENGTH_TOO_LONG			 198
 #define SSL_R_PARSE_TLSEXT				 227

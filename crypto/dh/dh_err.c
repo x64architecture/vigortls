@@ -100,7 +100,6 @@ static ERR_STRING_DATA DH_str_reasons[]=
 {ERR_REASON(DH_R_KEYS_NOT_SET)           ,"keys not set"},
 {ERR_REASON(DH_R_KEY_SIZE_TOO_SMALL)     ,"key size too small"},
 {ERR_REASON(DH_R_MODULUS_TOO_LARGE)      ,"modulus too large"},
-{ERR_REASON(DH_R_NON_FIPS_METHOD)        ,"non fips method"},
 {ERR_REASON(DH_R_NO_PARAMETERS_SET)      ,"no parameters set"},
 {ERR_REASON(DH_R_NO_PRIVATE_VALUE)       ,"no private value"},
 {ERR_REASON(DH_R_PARAMETER_ENCODING_ERROR),"parameter encoding error"},

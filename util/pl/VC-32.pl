@@ -6,16 +6,6 @@
 $ssl=	"ssleay32";
 $crypto="libeay32";
 
-if ($fips && !$shlib)
-	{
-	$crypto="libeayfips32";
-	$crypto_compat = "libeaycompat32.lib";
-	}
-else
-	{
-	$crypto="libeay32";
-	}
-
 $o='\\';
 $cp='$(PERL) util/copy.pl';
 $mkdir='$(PERL) util/mkdir-p.pl';

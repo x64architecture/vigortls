@@ -407,7 +407,6 @@
 #define SSL_LOW			0x00000020L
 #define SSL_MEDIUM		0x00000040L
 #define SSL_HIGH		0x00000080L
-#define SSL_FIPS		0x00000100L
 
 /* we have used 000001ff - 23 bits left to go */
 
@@ -1152,9 +1151,5 @@ void ssl3_cbc_digest_record(
 	const unsigned char *mac_secret,
 	unsigned mac_secret_length,
 	char is_sslv3);
-
-void tls_fips_digest_extra(
-	const EVP_CIPHER_CTX *cipher_ctx, EVP_MD_CTX *mac_ctx,
-	const unsigned char *data, size_t data_len, size_t orig_len);
 
 #endif

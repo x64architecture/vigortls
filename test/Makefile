@@ -276,9 +276,6 @@ test_engine:
 test_ssl: keyU.ss certU.ss certCA.ss certP1.ss keyP1.ss certP2.ss keyP2.ss \
 		intP1.ss intP2.ss
 	@echo "test SSL protocol"
-	@if [ -n "$(FIPSCANLIB)" ]; then \
-	  sh ./testfipsssl keyU.ss certU.ss certCA.ss; \
-	fi
 	../util/shlib_wrap.sh ./$(SSLTEST) -test_cipherlist
 	@sh ./testssl keyU.ss certU.ss certCA.ss
 	@sh ./testsslproxy keyP1.ss certP1.ss intP1.ss
@@ -348,18 +345,6 @@ BUILD_CMD=shlib_target=; if [ -n "$(SHARED_LIBS)" ]; then \
 		shlib_target="$(SHLIB_TARGET)"; \
 	fi; \
 	LIBRARIES="$(LIBSSL) $(LIBCRYPTO) $(LIBKRB5)"; \
-	$(MAKE) -f $(TOP)/Makefile.shared -e \
-		CC="$${CC}" APPNAME=$$target$(EXE_EXT) OBJECTS="$$target.o" \
-		LIBDEPS="$(PEX_LIBS) $$LIBRARIES $(EX_LIBS)" \
-		link_app.$${shlib_target}
-
-FIPS_BUILD_CMD=shlib_target=; if [ -n "$(SHARED_LIBS)" ]; then \
-		shlib_target="$(SHLIB_TARGET)"; \
-	fi; \
-	LIBRARIES="$(LIBSSL) $(LIBCRYPTO) $(LIBKRB5)"; \
-	if [ -z "$(SHARED_LIBS)" -a -n "$(FIPSCANLIB)" ] ; then \
-		FIPSLD_CC="$(CC)"; CC=$(FIPSDIR)/bin/fipsld; export CC FIPSLD_CC; \
-	fi; \
 	$(MAKE) -f $(TOP)/Makefile.shared -e \
 		CC="$${CC}" APPNAME=$$target$(EXE_EXT) OBJECTS="$$target.o" \
 		LIBDEPS="$(PEX_LIBS) $$LIBRARIES $(EX_LIBS)" \
@@ -444,7 +429,7 @@ $(METHTEST)$(EXE_EXT): $(METHTEST).o $(DLIBCRYPTO)
 	@target=$(METHTEST); $(BUILD_CMD)
 
 $(SSLTEST)$(EXE_EXT): $(SSLTEST).o $(DLIBSSL) $(DLIBCRYPTO)
-	@target=$(SSLTEST); $(FIPS_BUILD_CMD)
+	@target=$(SSLTEST);
 
 $(ENGINETEST)$(EXE_EXT): $(ENGINETEST).o $(DLIBCRYPTO)
 	@target=$(ENGINETEST); $(BUILD_CMD)

@@ -44,7 +44,6 @@ my %mf_import = (
 	WP_ASM_OBJ     => \$mf_wp_asm,
 	CMLL_ENC       => \$mf_cm_asm,
 	BASEADDR       => \$baseaddr,
-	FIPSDIR        => \$fipsdir,
 );
 
 
@@ -231,8 +230,6 @@ else
 	$cflags.=' -DTERMIO';
 	}
 
-$fipsdir =~ s/\//${o}/g;
-
 $out_dir=(defined($VARS{'OUT'}))?$VARS{'OUT'}:$out_def.($debug?".dbg":"");
 $tmp_dir=(defined($VARS{'TMP'}))?$VARS{'TMP'}:$tmp_def.($debug?".dbg":"");
 $inc_dir=(defined($VARS{'INC'}))?$VARS{'INC'}:$inc_def;
@@ -274,7 +271,6 @@ $cflags.=" -DOPENSSL_NO_ECDH" if $no_ecdh;
 $cflags.=" -DOPENSSL_NO_GOST" if $no_gost;
 $cflags.=" -DOPENSSL_NO_ENGINE"   if $no_engine;
 $cflags.=" -DOPENSSL_NO_HW"   if $no_hw;
-$cflags.=" -DOPENSSL_FIPS"    if $fips;
 $cflags.=" -DOPENSSL_NO_JPAKE"    if $no_jpake;
 $cflags.=" -DOPENSSL_NO_EC2M"    if $no_ec2m;
 $cflags.= " -DZLIB" if $zlib_opt;
@@ -410,11 +406,6 @@ else
 	\$(CP) \"\$(O_CRYPTO)\" \"\$(INSTALLTOP)${o}lib\"
 EOF
 	$ex_libs .= " $zlib_lib" if $zlib_opt == 1;
-	if ($fips)
-		{
-		$build_targets .= " \$(LIB_D)$o$crypto_compat \$(PREMAIN_DSO_EXE)";
-		$ex_l_libs .= " \$(O_FIPSCANISTER)";
-		}
 	}
 
 $defs= <<"EOF";
@@ -475,18 +466,6 @@ MKDIR=$mkdir
 MKLIB=$bin_dir$mklib
 MLFLAGS=$mlflags
 ASM=$bin_dir$asm
-
-# FIPS validated module and support file locations
-
-FIPSDIR=$fipsdir
-BASEADDR=$baseaddr
-FIPSLIB_D=\$(FIPSDIR)${o}lib
-FIPS_PREMAIN_SRC=\$(FIPSLIB_D)${o}fips_premain.c
-O_FIPSCANISTER=\$(FIPSLIB_D)${o}fipscanister.lib
-FIPS_SHA1_EXE=\$(FIPSDIR)${o}bin${o}fips_standalone_sha1${exep}
-E_PREMAIN_DSO=fips_premain_dso
-PREMAIN_DSO_EXE=\$(BIN_D)${o}fips_premain_dso$exep
-FIPSLINK=\$(PERL) \$(FIPSDIR)${o}bin${o}fipslink.pl
 
 ######################################################
 # You should not need to touch anything below this point
@@ -652,16 +631,6 @@ $rules.=&do_compile_rule("\$(OBJ_D)",$test,"\$(APP_CFLAGS)");
 $defs.=&do_defs("E_OBJ",$e_exe,"\$(OBJ_D)",$obj);
 $rules.=&do_compile_rule("\$(OBJ_D)",$e_exe,'-DMONOLITH $(APP_CFLAGS)');
 
-# Special case rule for fips_premain_dso
-
-if ($fips)
-	{
-	$rules.=&cc_compile_target("\$(OBJ_D)${o}\$(E_PREMAIN_DSO)$obj",
-		"\$(FIPS_PREMAIN_SRC)",
-		"-DFINGERPRINT_PREMAIN_DSO_LOAD \$(SHLIB_CFLAGS)", "");
-	$rules.=&do_link_rule("\$(PREMAIN_DSO_EXE)","\$(OBJ_D)${o}\$(E_PREMAIN_DSO)$obj \$(CRYPTOOBJ) \$(O_FIPSCANISTER)","","\$(EX_LIBS)", 1);
-	}
-
 foreach (values %lib_nam)
 	{
 	$lib_obj=$lib_obj{$_};
@@ -711,27 +680,8 @@ foreach (split(/\s+/,$engines))
 
 $rules.= &do_lib_rule("\$(SSLOBJ)","\$(O_SSL)",$ssl,$shlib,"\$(SO_SSL)");
 
-if ($fips)
-	{
-	if ($shlib)
-		{
-		$rules.= &do_lib_rule("\$(CRYPTOOBJ) \$(O_FIPSCANISTER)",
-				"\$(O_CRYPTO)", "$crypto",
-				$shlib, "\$(SO_CRYPTO)", "\$(BASEADDR)");
-		}
-	else
-		{
-		$rules.= &do_lib_rule("\$(CRYPTOOBJ)",
-			"\$(O_CRYPTO)",$crypto,$shlib,"\$(SO_CRYPTO)", "");
-		$rules.= &do_lib_rule("\$(CRYPTOOBJ) \$(O_FIPSCANISTER)",
-			"\$(LIB_D)$o$crypto_compat",$crypto,$shlib,"\$(SO_CRYPTO)", "");
-		}
-	}
-	else
-	{
-	$rules.= &do_lib_rule("\$(CRYPTOOBJ)","\$(O_CRYPTO)",$crypto,$shlib,
+$rules.= &do_lib_rule("\$(CRYPTOOBJ)","\$(O_CRYPTO)",$crypto,$shlib,
 							"\$(SO_CRYPTO)");
-	}
 
 foreach (split(" ",$otherlibs))
 	{
@@ -741,7 +691,7 @@ foreach (split(" ",$otherlibs))
 
 	}
 
-$rules.=&do_link_rule("\$(BIN_D)$o\$(E_EXE)$exep","\$(E_OBJ)","\$(LIBS_DEP)","\$(L_LIBS) \$(EX_LIBS)", ($fips && !$shlib) ? 2 : 0);
+$rules.=&do_link_rule("\$(BIN_D)$o\$(E_EXE)$exep","\$(E_OBJ)","\$(LIBS_DEP)","\$(L_LIBS) \$(EX_LIBS)");
 
 print $defs;
 
@@ -1134,8 +1084,7 @@ sub read_options
 		"no-shared" => 0,
 		"no-store" => 0,
 		"no-zlib" => 0,
-		"no-zlib-dynamic" => 0,
-		"fips" => \$fips
+		"no-zlib-dynamic" => 0
 		);
 
 	if (exists $valid_options{$_})

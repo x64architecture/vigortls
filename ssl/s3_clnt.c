@@ -156,9 +156,6 @@
 #include <openssl/objects.h>
 #include <openssl/evp.h>
 #include <openssl/md5.h>
-#ifdef OPENSSL_FIPS
-#include <openssl/fips.h>
-#endif
 #include <openssl/dh.h>
 #include <openssl/bn.h>
 #ifndef OPENSSL_NO_ENGINE
@@ -1729,8 +1726,6 @@ fprintf(stderr, "USING TLSv1.2 HASH %s\n", EVP_MD_name(md));
 			q=md_buf;
 			for (num=2; num > 0; num--)
 				{
-				EVP_MD_CTX_set_flags(&md_ctx,
-					EVP_MD_CTX_FLAG_NON_FIPS_ALLOW);
 				EVP_DigestInit_ex(&md_ctx,(num == 2)
 					?s->ctx->md5:s->ctx->sha1, NULL);
 				EVP_DigestUpdate(&md_ctx,&(s->s3->client_random[0]),SSL3_RANDOM_SIZE);

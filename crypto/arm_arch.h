@@ -37,10 +37,6 @@
 # endif
 #endif
 
-#ifdef OPENSSL_FIPSCANISTER
-#include <openssl/fipssyms.h>
-#endif
-
 #if !__ASSEMBLER__
 extern unsigned int OPENSSL_armcap_P;
                                      

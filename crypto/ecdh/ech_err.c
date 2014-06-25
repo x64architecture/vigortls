@@ -79,7 +79,6 @@ static ERR_STRING_DATA ECDH_str_functs[]=
 static ERR_STRING_DATA ECDH_str_reasons[]=
 	{
 {ERR_REASON(ECDH_R_KDF_FAILED)           ,"KDF failed"},
-{ERR_REASON(ECDH_R_NON_FIPS_METHOD)      ,"non fips method"},
 {ERR_REASON(ECDH_R_NO_PRIVATE_VALUE)     ,"no private value"},
 {ERR_REASON(ECDH_R_POINT_ARITHMETIC_FAILURE),"point arithmetic failure"},
 {0,NULL}

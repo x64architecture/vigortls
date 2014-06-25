@@ -193,7 +193,6 @@ typedef struct err_state_st
 #define ERR_LIB_ECDSA		42
 #define ERR_LIB_ECDH		43
 #define ERR_LIB_STORE           44
-#define ERR_LIB_FIPS		45
 #define ERR_LIB_CMS		46
 #define ERR_LIB_TS		47
 #define ERR_LIB_HMAC		48
@@ -229,7 +228,6 @@ typedef struct err_state_st
 #define ECDSAerr(f,r)  ERR_PUT_error(ERR_LIB_ECDSA,(f),(r),__FILE__,__LINE__)
 #define ECDHerr(f,r)  ERR_PUT_error(ERR_LIB_ECDH,(f),(r),__FILE__,__LINE__)
 #define STOREerr(f,r) ERR_PUT_error(ERR_LIB_STORE,(f),(r),__FILE__,__LINE__)
-#define FIPSerr(f,r) ERR_PUT_error(ERR_LIB_FIPS,(f),(r),__FILE__,__LINE__)
 #define CMSerr(f,r) ERR_PUT_error(ERR_LIB_CMS,(f),(r),__FILE__,__LINE__)
 #define TSerr(f,r) ERR_PUT_error(ERR_LIB_TS,(f),(r),__FILE__,__LINE__)
 #define HMACerr(f,r) ERR_PUT_error(ERR_LIB_HMAC,(f),(r),__FILE__,__LINE__)

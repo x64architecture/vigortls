@@ -171,8 +171,6 @@ static int tls1_P_hash(const EVP_MD *md, const unsigned char *sec,
 
 	EVP_MD_CTX_init(&ctx);
 	EVP_MD_CTX_init(&ctx_tmp);
-	EVP_MD_CTX_set_flags(&ctx, EVP_MD_CTX_FLAG_NON_FIPS_ALLOW);
-	EVP_MD_CTX_set_flags(&ctx_tmp, EVP_MD_CTX_FLAG_NON_FIPS_ALLOW);
 	mac_key = EVP_PKEY_new_mac_key(EVP_PKEY_HMAC, NULL, sec, sec_len);
 	if (!mac_key)
 		goto err;
@@ -1036,13 +1034,6 @@ int tls1_mac(SSL *ssl, unsigned char *md, int send)
 		EVP_DigestSignUpdate(mac_ctx,rec->input,rec->length);
 		t=EVP_DigestSignFinal(mac_ctx,md,&md_size);
 		OPENSSL_assert(t > 0);
-#ifdef OPENSSL_FIPS
-		if (!send && FIPS_mode())
-			tls_fips_digest_extra(
-	    				ssl->enc_read_ctx,
-					mac_ctx, rec->input,
-					rec->length, orig_len);
-#endif
 		}
 		
 	if (!stream_mac)

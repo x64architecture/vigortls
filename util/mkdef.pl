@@ -76,7 +76,7 @@ my $OS2=0;
 my $safe_stack_def = 0;
 
 my @known_platforms = ( "__FreeBSD__", "PERL5", "NeXT",
-			"EXPORT_VAR_AS_FUNCTION", "ZLIB", "OPENSSL_FIPS" );
+			"EXPORT_VAR_AS_FUNCTION", "ZLIB" );
 my @known_ossl_platforms = ( "WIN32", "WINNT", "OS2" );
 my @known_algorithms = ( "RC2", "RC4", "RC5", "IDEA", "DES", "BF",
 			 "CAST", "MD2", "MD4", "MD5", "SHA", "SHA0", "SHA1",
@@ -134,8 +134,6 @@ my $no_fp_api; my $no_static_engine=1; my $no_gmp; my $no_deprecated;
 my $no_rfc3779; my $no_psk; my $no_tlsext; my $no_cms; my $no_capieng;
 my $no_jpake; my $no_srp; my $no_ssl2; my $no_ec2m; my $no_nistp_gcc; 
 my $no_nextprotoneg; my $no_sctp;
-
-my $fips;
 
 my $zlib;
 
@@ -1128,9 +1126,6 @@ sub is_valid
 			# will be represented as functions.  This currently
 			# only happens on VMS-VAX.
 			if ($keyword eq "EXPORT_VAR_AS_FUNCTION" && ($W32 || $W16)) {
-				return 1;
-			}
-			if ($keyword eq "OPENSSL_FIPS" && $fips) {
 				return 1;
 			}
 			if ($keyword eq "ZLIB" && $zlib) { return 1; }
