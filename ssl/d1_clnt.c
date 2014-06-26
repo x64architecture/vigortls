@@ -115,9 +115,6 @@
 
 #include <stdio.h>
 #include "ssl_locl.h"
-#ifndef OPENSSL_NO_KRB5
-#include "kssl_lcl.h"
-#endif
 #include <openssl/buffer.h>
 #include <openssl/rand.h>
 #include <openssl/objects.h>
@@ -1042,11 +1039,6 @@ int dtls1_send_client_key_exchange(SSL *s)
 
 			EVP_CIPHER_CTX_init(&ciph_ctx);
 
-#ifdef KSSL_DEBUG
-                        printf("ssl3_send_client_key_exchange(%lx & %lx)\n",
-                                alg_k, SSL_kKRB5);
-#endif	/* KSSL_DEBUG */
-
 			authp = NULL;
 #ifdef KRB5SENDAUTH
 			if (KRB5SENDAUTH)  authp = &authenticator;
@@ -1057,13 +1049,6 @@ int dtls1_send_client_key_exchange(SSL *s)
 			enc = kssl_map_enc(kssl_ctx->enctype);
                         if (enc == NULL)
                             goto err;
-#ifdef KSSL_DEBUG
-                        {
-                        printf("kssl_cget_tkt rtn %d\n", krb5rc);
-                        if (krb5rc && kssl_err.text)
-			  printf("kssl_cget_tkt kssl_err=%s\n", kssl_err.text);
-                        }
-#endif	/* KSSL_DEBUG */
 
                         if (krb5rc)
                                 {

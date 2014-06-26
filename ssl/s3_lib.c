@@ -151,7 +151,6 @@
 #include <stdio.h>
 #include <openssl/objects.h>
 #include "ssl_locl.h"
-#include "kssl_lcl.h"
 #include "../crypto/ec/ec_lcl.h"
 #include <openssl/md5.h>
 #include <openssl/dh.h>
@@ -3736,10 +3735,6 @@ SSL_CIPHER *ssl3_choose_cipher(SSL *s, STACK_OF(SSL_CIPHER) *clnt,
         mask_k=cert->mask_k | s->srp_ctx.srp_Mask;
         emask_k=cert->export_mask_k | s->srp_ctx.srp_Mask;
 #endif
-            
-#ifdef KSSL_DEBUG
-/*        printf("ssl3_choose_cipher %d alg= %lx\n", i,c->algorithms);*/
-#endif    /* KSSL_DEBUG */
 
         alg_k = c->algorithm_mkey;
         alg_a = c->algorithm_auth;

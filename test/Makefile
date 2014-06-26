@@ -694,7 +694,7 @@ ssltest.o: ../include/openssl/e_os2.h ../include/openssl/ec.h
 ssltest.o: ../include/openssl/ecdh.h ../include/openssl/ecdsa.h
 ssltest.o: ../include/openssl/engine.h ../include/openssl/err.h
 ssltest.o: ../include/openssl/evp.h ../include/openssl/hmac.h
-ssltest.o: ../include/openssl/kssl.h ../include/openssl/lhash.h
+ssltest.o: ../include/openssl/lhash.h
 ssltest.o: ../include/openssl/obj_mac.h ../include/openssl/objects.h
 ssltest.o: ../include/openssl/opensslconf.h ../include/openssl/opensslv.h
 ssltest.o: ../include/openssl/ossl_typ.h ../include/openssl/pem.h

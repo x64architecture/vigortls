@@ -153,7 +153,6 @@
 
 #include <stdio.h>
 #include "ssl_locl.h"
-#include "kssl_lcl.h"
 #include <openssl/buffer.h>
 #include <openssl/rand.h>
 #include <openssl/objects.h>
@@ -2370,12 +2369,6 @@ int ssl3_get_client_key_exchange(SSL *s)
 		if ((krb5rc = kssl_sget_tkt(kssl_ctx, &enc_ticket, &ttimes,
 					&kssl_err)) != 0)
 			{
-#ifdef KSSL_DEBUG
-			printf("kssl_sget_tkt rtn %d [%d]\n",
-				krb5rc, kssl_err.reason);
-			if (kssl_err.text)
-				printf("kssl_err text= %s\n", kssl_err.text);
-#endif	/* KSSL_DEBUG */
 			SSLerr(SSL_F_SSL3_GET_CLIENT_KEY_EXCHANGE,
 				kssl_err.reason);
 			goto err;
@@ -2387,12 +2380,6 @@ int ssl3_get_client_key_exchange(SSL *s)
 		if ((krb5rc = kssl_check_authent(kssl_ctx, &authenticator,
 					&authtime, &kssl_err)) != 0)
 			{
-#ifdef KSSL_DEBUG
-			printf("kssl_check_authent rtn %d [%d]\n",
-				krb5rc, kssl_err.reason);
-			if (kssl_err.text)
-				printf("kssl_err text= %s\n", kssl_err.text);
-#endif	/* KSSL_DEBUG */
 			SSLerr(SSL_F_SSL3_GET_CLIENT_KEY_EXCHANGE,
 				kssl_err.reason);
 			goto err;
@@ -2403,10 +2390,6 @@ int ssl3_get_client_key_exchange(SSL *s)
 			SSLerr(SSL_F_SSL3_GET_CLIENT_KEY_EXCHANGE, krb5rc);
 			goto err;
 			}
-
-#ifdef KSSL_DEBUG
-		kssl_ctx_show(kssl_ctx);
-#endif	/* KSSL_DEBUG */
 
 		enc = kssl_map_enc(kssl_ctx->enctype);
 		if (enc == NULL)

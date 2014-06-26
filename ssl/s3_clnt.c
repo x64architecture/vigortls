@@ -150,7 +150,6 @@
 
 #include <stdio.h>
 #include "ssl_locl.h"
-#include "kssl_lcl.h"
 #include <openssl/buffer.h>
 #include <openssl/rand.h>
 #include <openssl/objects.h>
@@ -1173,13 +1172,6 @@ int ssl3_get_server_certificate(SSL *s)
 	need_cert = ((s->s3->tmp.new_cipher->algorithm_mkey & SSL_kKRB5) &&
 	            (s->s3->tmp.new_cipher->algorithm_auth & SSL_aKRB5))
 	            ? 0 : 1;
-
-#ifdef KSSL_DEBUG
-	printf("pkey,x = %p, %p\n", pkey,x);
-	printf("ssl_cert_type(x,pkey) = %d\n", ssl_cert_type(x,pkey));
-	printf("cipher, alg, nc = %s, %lx, %lx, %d\n", s->s3->tmp.new_cipher->name,
-		s->s3->tmp.new_cipher->algorithm_mkey, s->s3->tmp.new_cipher->algorithm_auth, need_cert);
-#endif    /* KSSL_DEBUG */
 
 	if (need_cert && ((pkey == NULL) || EVP_PKEY_missing_parameters(pkey)))
 		{
@@ -2264,11 +2256,6 @@ int ssl3_send_client_key_exchange(SSL *s)
 
 			EVP_CIPHER_CTX_init(&ciph_ctx);
 
-#ifdef KSSL_DEBUG
-			printf("ssl3_send_client_key_exchange(%lx & %lx)\n",
-				alg_k, SSL_kKRB5);
-#endif	/* KSSL_DEBUG */
-
 			authp = NULL;
 #ifdef KRB5SENDAUTH
 			if (KRB5SENDAUTH)  authp = &authenticator;
@@ -2279,13 +2266,6 @@ int ssl3_send_client_key_exchange(SSL *s)
 			enc = kssl_map_enc(kssl_ctx->enctype);
 			if (enc == NULL)
 			    goto err;
-#ifdef KSSL_DEBUG
-			{
-			printf("kssl_cget_tkt rtn %d\n", krb5rc);
-			if (krb5rc && kssl_err.text)
-			  printf("kssl_cget_tkt kssl_err=%s\n", kssl_err.text);
-			}
-#endif	/* KSSL_DEBUG */
 
 			if (krb5rc)
 				{

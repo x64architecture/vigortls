@@ -253,7 +253,6 @@ $max_ssl = $max_num;
 $max_crypto = $max_num;
 
 my $ssl="ssl/ssl.h";
-$ssl.=" ssl/kssl.h";
 $ssl.=" ssl/tls1.h";
 $ssl.=" ssl/srtp.h";
 

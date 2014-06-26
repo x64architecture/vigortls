@@ -162,7 +162,6 @@
 #include <openssl/pem.h>
 #include <openssl/hmac.h>
 
-#include <openssl/kssl.h>
 #include <openssl/safestack.h>
 #include <openssl/symhacks.h>
 
