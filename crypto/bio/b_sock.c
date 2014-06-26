@@ -62,6 +62,7 @@
 #define USE_SOCKETS
 #include "cryptlib.h"
 #include <openssl/bio.h>
+#include <arpa/inet.h>
 
 #ifndef OPENSSL_NO_SOCK
 
@@ -105,7 +106,6 @@ static struct ghbn_cache_st
 	} ghbn_cache[GHBN_NUM];
 #endif
 
-static int get_ip(const char *str,unsigned char *ip);
 #if 0
 static void ghbn_free(struct hostent *a);
 static struct hostent *ghbn_dup(struct hostent *a);
@@ -117,13 +117,6 @@ int BIO_get_host_ip(const char *str, unsigned char *ip)
 	int locked = 0;
 	struct hostent *he;
 
-	i=get_ip(str,ip);
-	if (i < 0)
-		{
-		BIOerr(BIO_F_BIO_GET_HOST_IP,BIO_R_INVALID_IP_ADDRESS);
-		goto err;
-		}
-
 	/* At this point, we have something that is most probably correct
 	   in some way, so let's init the socket. */
 	if (BIO_sock_init() != 1)
@@ -131,7 +124,8 @@ int BIO_get_host_ip(const char *str, unsigned char *ip)
 
 	/* If the string actually contained an IP address, we need not do
 	   anything more */
-	if (i > 0) return(1);
+    if (inet_pton(AF_INET, str, ip) == 1) 
+        return (1);
 
 	/* do a gethostbyname */
 	CRYPTO_w_lock(CRYPTO_LOCK_GETHOSTBYNAME);
@@ -518,43 +512,6 @@ int BIO_socket_ioctl(int fd, long type, void *arg)
 	return(i);
 	}
 #endif /* __VMS_VER */
-
-/* The reason I have implemented this instead of using sscanf is because
- * Visual C 1.52c gives an unresolved external when linking a DLL :-( */
-static int get_ip(const char *str, unsigned char ip[4])
-	{
-	unsigned int tmp[4];
-	int num=0,c,ok=0;
-
-	tmp[0]=tmp[1]=tmp[2]=tmp[3]=0;
-
-	for (;;)
-		{
-		c= *(str++);
-		if ((c >= '0') && (c <= '9'))
-			{
-			ok=1;
-			tmp[num]=tmp[num]*10+c-'0';
-			if (tmp[num] > 255) return(0);
-			}
-		else if (c == '.')
-			{
-			if (!ok) return(-1);
-			if (num == 3) return(0);
-			num++;
-			ok=0;
-			}
-		else if (c == '\0' && (num == 3) && ok)
-			break;
-		else
-			return(0);
-		}
-	ip[0]=tmp[0];
-	ip[1]=tmp[1];
-	ip[2]=tmp[2];
-	ip[3]=tmp[3];
-	return(1);
-	}
 
 int BIO_get_accept_socket(char *host, int bind_mode)
 	{
