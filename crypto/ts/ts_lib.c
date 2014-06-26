@@ -90,6 +90,8 @@ int TS_OBJ_print_bio(BIO *bio, const ASN1_OBJECT *obj)
     char obj_txt[128];
 
     int len = OBJ_obj2txt(obj_txt, sizeof(obj_txt), obj, 0);
+    if (len >= sizeof(obj_txt))
+        len = sizeof(obj_txt) - 1;
     BIO_write(bio, obj_txt, len);
     BIO_write(bio, "\n", 1);
 
