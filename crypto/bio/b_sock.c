@@ -143,7 +143,8 @@ int BIO_get_host_ip(const char *str, unsigned char *ip)
 		goto err;
 		}
 
-	if (he->h_addrtype != AF_INET)
+	/* cast to short because of win16 winsock definition */
+	if ((short)he->h_addrtype != AF_INET)
 		{
 		BIOerr(BIO_F_BIO_GET_HOST_IP,BIO_R_GETHOSTBYNAME_ADDR_IS_NOT_AF_INET);
 		goto err;
@@ -369,11 +370,7 @@ struct hostent *BIO_gethostbyname(const char *name)
 #if 1
 	/* Caching gethostbyname() results forever is wrong,
 	 * so we have to let the true gethostbyname() worry about this */
-#if (defined(NETWARE_BSDSOCK) && !defined(__NOVELL_LIBC__))
-	return gethostbyname((char*)name);
-#else
 	return gethostbyname(name);
-#endif
 #else
 	struct hostent *ret;
 	int i,lowi=0,j;
@@ -506,6 +503,7 @@ void BIO_sock_cleanup(void)
 #endif
 		WSACleanup();
 		}
+#endif
 	}
 
 #if !defined(OPENSSL_SYS_VMS) || __VMS_VER >= 70000000
