@@ -165,13 +165,8 @@ extern "C" {
 #define writesocket(s,b,n)	write((s),(b),(n))
 #endif
 
-#ifdef WIN16 /* never the case */
-#  define MS_CALLBACK	_far _loadds
-#  define MS_FAR	_far
-#else
-#  define MS_CALLBACK
-#  define MS_FAR
-#endif
+#define MS_CALLBACK
+#define MS_FAR
 
 #if (defined(WINDOWS) || defined(MSDOS))
 

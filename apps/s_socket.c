@@ -470,8 +470,7 @@ static int host_ip(char *str, unsigned char ip[4])
 			BIO_printf(bio_err,"gethostbyname failure\n");
 			goto err;
 			}
-		/* cast to short because of win16 winsock definition */
-		if ((short)he->h_addrtype != AF_INET)
+		if (he->h_addrtype != AF_INET)
 			{
 			BIO_printf(bio_err,"gethostbyname addr is not AF_INET\n");
 			return(0);

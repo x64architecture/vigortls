@@ -278,7 +278,7 @@ int str2fmt(char *s)
 		return(FORMAT_UNDEF);
 	}
 
-#if defined(OPENSSL_SYS_MSDOS) || defined(OPENSSL_SYS_WIN32) || defined(OPENSSL_SYS_WIN16)
+#if defined(OPENSSL_SYS_MSDOS) || defined(OPENSSL_SYS_WIN32)
 void program_name(char *in, char *out, int size)
 	{
 	int i,n;

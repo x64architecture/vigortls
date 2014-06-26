@@ -69,7 +69,6 @@ my $do_ctestall = 0;
 my $do_checkexist = 0;
 
 my $W32=0;
-my $W16=0;
 my $NT=0;
 # Set this to make typesafe STACK definitions appear in DEF
 my $safe_stack_def = 0;
@@ -141,7 +140,6 @@ foreach (@ARGV, split(/ /, $options))
 	{
 	$debug=1 if $_ eq "debug";
 	$W32=1 if $_ eq "32";
-	$W16=1 if $_ eq "16";
 	if($_ eq "NT") {
 		$W32 = 1;
 		$NT = 1;
@@ -231,13 +229,8 @@ if (!$libname) {
 }
 
 # If no platform is given, assume WIN32
-if ($W32 + $W16 == 0) {
+if ($W32 == 0) {
 	$W32 = 1;
-}
-
-# Add extra knowledge
-if ($W16) {
-	$no_fp_api=1;
 }
 
 if (!$do_ssl && !$do_crypto)
@@ -1116,13 +1109,12 @@ sub is_valid
 		if ($platforms) {
 			# platforms
 			if ($keyword eq "WIN32" && $W32) { return 1; }
-			if ($keyword eq "WIN16" && $W16) { return 1; }
 			if ($keyword eq "WINNT" && $NT) { return 1; }
 			# Special platforms:
 			# EXPORT_VAR_AS_FUNCTION means that global variables
 			# will be represented as functions.  This currently
 			# only happens on VMS-VAX.
-			if ($keyword eq "EXPORT_VAR_AS_FUNCTION" && ($W32 || $W16)) {
+			if ($keyword eq "EXPORT_VAR_AS_FUNCTION" && ($W32)) {
 				return 1;
 			}
 			if ($keyword eq "ZLIB" && $zlib) { return 1; }
@@ -1259,8 +1251,6 @@ sub print_def_file
 
 	if ($W32)
 		{ $libname.="32"; }
-	elsif ($W16)
-		{ $libname.="16"; }
 
 	print OUT <<"EOF";
 ;
@@ -1270,19 +1260,6 @@ sub print_def_file
 LIBRARY         $libname	$liboptions
 
 EOF
-
-	if ($W16) {
-		print <<"EOF";
-CODE            PRELOAD MOVEABLE
-DATA            PRELOAD MOVEABLE SINGLE
-
-EXETYPE		WINDOWS
-
-HEAPSIZE	4096
-STACKSIZE	8192
-
-EOF
-	}
 
 	print "EXPORTS\n";
 

@@ -169,7 +169,7 @@ static void read_till_nl(FILE *);
 static void recsig(int);
 static void pushsig(void);
 static void popsig(void);
-#if defined(OPENSSL_SYS_MSDOS) && !defined(OPENSSL_SYS_WIN16)
+#if defined(OPENSSL_SYS_MSDOS)
 static int noecho_fgets(char *buf, int size, FILE *tty);
 #endif
 #ifdef SIGACTION
@@ -413,11 +413,7 @@ static int noecho_fgets(char *buf, int size, FILE *tty)
 			break;
 			}
 		size--;
-#ifdef WIN16TTY
-		i=_inchar();
-#else
 		i=getch();
-#endif
 		if (i == '\r') i='\n';
 		*(p++)=i;
 		if (i == '\n')
@@ -441,4 +437,4 @@ static int noecho_fgets(char *buf, int size, FILE *tty)
 	return(strlen(buf));
 	}
 #endif
-#endif /* !OPENSSL_SYS_WINCE && !WIN16 */
+#endif /* !OPENSSL_SYS_WINCE */
