@@ -159,16 +159,6 @@ typedef struct _SW_LARGENUMBER {
     typedef HANDLE          SW_OSHANDLE;          /* handle to kernel object */
     #define SW_OS_INVALID_HANDLE  INVALID_HANDLE_VALUE
     #define SW_CALLCONV _stdcall
-#elif defined(OPENSSL_SYS_MACINTOSH_CLASSIC)
-    /* async callback mechanisms */
-    /* swiftCallbackLevel */
-    #define SW_MAC_CALLBACK_LEVEL_NO         0		
-    #define SW_MAC_CALLBACK_LEVEL_HARDWARE   1	/* from the hardware ISR */
-    #define SW_MAC_CALLBACK_LEVEL_SECONDARY  2	/* as secondary ISR */
-    typedef int             SW_MAC_CALLBACK_LEVEL;
-    typedef int             SW_OSHANDLE;
-    #define SW_OS_INVALID_HANDLE  (-1)
-    #define SW_CALLCONV
 #else /* Unix variants */
     typedef int             SW_OSHANDLE;          /* handle to driver */
     #define SW_OS_INVALID_HANDLE  (-1)

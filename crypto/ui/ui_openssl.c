@@ -183,7 +183,7 @@
 # undef  SGTTY
 #endif
 
-#if !defined(TERMIO) && !defined(TERMIOS) && !defined(OPENSSL_SYS_VMS) && !defined(OPENSSL_SYS_MSDOS) && !defined(OPENSSL_SYS_MACINTOSH_CLASSIC) && !defined(MAC_OS_GUSI_SOURCE)
+#if !defined(TERMIO) && !defined(TERMIOS) && !defined(OPENSSL_SYS_MSDOS)
 # undef  TERMIOS
 # undef  TERMIO
 # define SGTTY
@@ -219,7 +219,7 @@
 # define TTY_set(tty,data)	ioctl(tty,TIOCSETP,data)
 #endif
 
-#if !defined(_LIBC) && !defined(OPENSSL_SYS_MSDOS) && !defined(OPENSSL_SYS_VMS) && !defined(OPENSSL_SYS_MACINTOSH_CLASSIC) && !defined(OPENSSL_SYS_SUNOS)
+#if !defined(_LIBC) && !defined(OPENSSL_SYS_MSDOS) && !defined(OPENSSL_SYS_SUNOS)
 # include <sys/ioctl.h>
 #endif
 
@@ -229,15 +229,6 @@
 
 #ifdef OPENSSL_SYS_SUNOS
 	typedef int sig_atomic_t;
-#endif
-
-#if defined(OPENSSL_SYS_MACINTOSH_CLASSIC) || defined(MAC_OS_GUSI_SOURCE)
-/*
- * This one needs work. As a matter of fact the code is unoperational
- * and this is only a trick to get it compiled.
- *					<appro@fy.chalmers.se>
- */
-# define TTY_STRUCT int
 #endif
 
 #ifndef NX509_SIG
@@ -437,7 +428,7 @@ static int open_console(UI *ui)
 	CRYPTO_w_lock(CRYPTO_LOCK_UI);
 	is_a_tty = 1;
 
-#if defined(OPENSSL_SYS_MACINTOSH_CLASSIC) || defined(OPENSSL_SYS_VXWORKS) || defined(OPENSSL_SYS_BEOS)
+#if defined(OPENSSL_SYS_VXWORKS) || defined(OPENSSL_SYS_BEOS)
 	tty_in=stdin;
 	tty_out=stderr;
 #else

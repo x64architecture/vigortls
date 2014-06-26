@@ -70,12 +70,6 @@ extern "C" {
 
 #define OPENSSL_SYS_UNIX
 
-/* ----------------------- Macintosh, before MacOS X ----------------------- */
-#if defined(__MWERKS__) && defined(macintosh) || defined(OPENSSL_SYSNAME_MAC)
-# undef OPENSSL_SYS_UNIX
-# define OPENSSL_SYS_MACINTOSH_CLASSIC
-#endif
-
 /* ---------------------- Microsoft operating systems ---------------------- */
 
 /* Note that MSDOS actually denotes 32-bit environments running on top of
@@ -257,10 +251,6 @@ extern "C" {
 # define OPENSSL_IMPLEMENT_GLOBAL(type,name,value) OPENSSL_GLOBAL type _shadow_##name=value;
 # define OPENSSL_DECLARE_GLOBAL(type,name) OPENSSL_EXPORT type _shadow_##name
 # define OPENSSL_GLOBAL_REF(name) _shadow_##name
-#endif
-
-#if defined(OPENSSL_SYS_MACINTOSH_CLASSIC) && macintosh==1 && !defined(MAC_OS_GUSI_SOURCE)
-#  define ossl_ssize_t long
 #endif
 
 #ifdef OPENSSL_SYS_MSDOS

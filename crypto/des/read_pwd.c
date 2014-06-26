@@ -116,7 +116,7 @@
 #undef  SGTTY
 #endif
 
-#if !defined(TERMIO) && !defined(TERMIOS) && !defined(OPENSSL_SYS_VMS) && !defined(OPENSSL_SYS_MSDOS) && !defined(MAC_OS_pre_X) && !defined(MAC_OS_GUSI_SOURCE)
+#if !defined(TERMIO) && !defined(TERMIOS) && !defined(OPENSSL_SYS_VMS) && !defined(OPENSSL_SYS_MSDOS)
 #undef  TERMIOS
 #undef  TERMIO
 #define SGTTY
@@ -159,15 +159,6 @@
 #if defined(OPENSSL_SYS_MSDOS) && !defined(__CYGWIN32__) && !defined(OPENSSL_SYS_WINCE)
 #include <conio.h>
 #define fgets(a,b,c) noecho_fgets(a,b,c)
-#endif
-
-#if defined(MAC_OS_pre_X) || defined(MAC_OS_GUSI_SOURCE)
-/*
- * This one needs work. As a matter of fact the code is unoperational
- * and this is only a trick to get it compiled.
- *					<appro@fy.chalmers.se>
- */
-#define TTY_STRUCT int
 #endif
 
 #ifndef NX509_SIG
@@ -252,8 +243,6 @@ int des_read_pw(char *buf, char *buff, int size, const char *prompt,
 #ifdef OPENSSL_SYS_MSDOS
 	if ((tty=fopen("con","r")) == NULL)
 		tty=stdin;
-#elif defined(MAC_OS_pre_X) || defined(OPENSSL_SYS_VXWORKS)
-	tty=stdin;
 #else
 #ifndef OPENSSL_SYS_MPE
 	if ((tty=fopen("/dev/tty","r")) == NULL)
