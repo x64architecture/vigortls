@@ -212,7 +212,7 @@ extern "C" {
 	* alone, while NT 4.0 and above interfaces ought to be linked with
 	* GetProcAddress at run-time.
 	*/
-#      define _WIN32_WINNT 0x0400
+#      define _WIN32_WINNT 0x0600
 #    endif
 #    if !defined(OPENSSL_NO_SOCK) && defined(_WIN32_WINNT)
        /*

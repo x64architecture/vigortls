@@ -62,7 +62,9 @@
 #define USE_SOCKETS
 #include "cryptlib.h"
 #include <openssl/bio.h>
+#if !defined(OPENSSL_SYS_WINDOWS)
 #include <arpa/inet.h>
+#endif
 
 #ifndef OPENSSL_NO_SOCK
 
