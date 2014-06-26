@@ -71,13 +71,12 @@ my $do_checkexist = 0;
 my $W32=0;
 my $W16=0;
 my $NT=0;
-my $OS2=0;
 # Set this to make typesafe STACK definitions appear in DEF
 my $safe_stack_def = 0;
 
 my @known_platforms = ( "__FreeBSD__", "PERL5", "NeXT",
 			"EXPORT_VAR_AS_FUNCTION", "ZLIB" );
-my @known_ossl_platforms = ( "WIN32", "WINNT", "OS2" );
+my @known_ossl_platforms = ( "WIN32", "WINNT" );
 my @known_algorithms = ( "RC2", "RC4", "RC5", "IDEA", "DES", "BF",
 			 "CAST", "MD2", "MD4", "MD5", "SHA", "SHA0", "SHA1",
 			 "SHA256", "SHA512", "RIPEMD",
@@ -232,7 +231,7 @@ if (!$libname) {
 }
 
 # If no platform is given, assume WIN32
-if ($W32 + $W16 + $OS2 == 0) {
+if ($W32 + $W16 == 0) {
 	$W32 = 1;
 }
 
@@ -243,7 +242,7 @@ if ($W16) {
 
 if (!$do_ssl && !$do_crypto)
 	{
-	print STDERR "usage: $0 ( ssl | crypto ) [ 16 | 32 | NT | OS2 ]\n";
+	print STDERR "usage: $0 ( ssl | crypto ) [ 16 | 32 | NT ]\n";
 	exit(1);
 	}
 
@@ -1119,7 +1118,6 @@ sub is_valid
 			if ($keyword eq "WIN32" && $W32) { return 1; }
 			if ($keyword eq "WIN16" && $W16) { return 1; }
 			if ($keyword eq "WINNT" && $NT) { return 1; }
-			if ($keyword eq "OS2" && $OS2) { return 1; }
 			# Special platforms:
 			# EXPORT_VAR_AS_FUNCTION means that global variables
 			# will be represented as functions.  This currently
@@ -1263,20 +1261,6 @@ sub print_def_file
 		{ $libname.="32"; }
 	elsif ($W16)
 		{ $libname.="16"; }
-	elsif ($OS2)
-		{ # DLL names should not clash on the whole system.
-		  # However, they should not have any particular relationship
-		  # to the name of the static library.  Chose descriptive names
-		  # (must be at most 8 chars).
-		  my %translate = (ssl => 'open_ssl', crypto => 'cryptssl');
-		  $libname = $translate{$name} || $name;
-		  $liboptions = <<EOO;
-INITINSTANCE
-DATA MULTIPLE NONSHARED
-EOO
-		  # Vendor field can't contain colon, drat; so we omit http://
-		  $description = "\@#$http_vendor:$version#\@$what; DLL for library $name.  Build for EMX -Zmtd";
-		}
 
 	print OUT <<"EOF";
 ;

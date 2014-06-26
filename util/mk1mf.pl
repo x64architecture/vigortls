@@ -76,7 +76,6 @@ $infile="MINFO";
 	"linux-elf","Linux elf",
 	"ultrix-mips","DEC mips ultrix",
 	"FreeBSD","FreeBSD distribution",
-	"OS2-EMX", "EMX GCC OS/2",
 	"netware-clib", "CodeWarrior for NetWare - CLib - with WinSock Sockets",
 	"netware-clib-bsdsock", "CodeWarrior for NetWare - CLib - with BSD Sockets",
 	"netware-libc", "CodeWarrior for NetWare - LibC - with WinSock Sockets",
@@ -209,11 +208,6 @@ elsif ($platform eq "ultrix-mips")
 	require "unix.pl";
 	require "ultrix.pl";
 	$unix=1;
-	}
-elsif ($platform eq "OS2-EMX")
-	{
-	$wc=1;
-	require 'OS2-EMX.pl';
 	}
 elsif (($platform eq "netware-clib") || ($platform eq "netware-libc") ||
        ($platform eq "netware-clib-bsdsock") || ($platform eq "netware-libc-bsdsock"))

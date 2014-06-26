@@ -597,12 +597,6 @@ extern char *sys_errlist[]; extern int sys_nerr;
 #  define strncasecmp _strnicmp
 #endif
 
-#if defined(OPENSSL_SYS_OS2) && defined(__EMX__)
-# include <io.h>
-# include <fcntl.h>
-# define NO_SYSLOG
-#endif
-
 /* vxworks */
 #if defined(OPENSSL_SYS_VXWORKS)
 #include <ioLib.h>

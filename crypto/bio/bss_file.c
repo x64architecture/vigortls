@@ -348,7 +348,7 @@ static long MS_CALLBACK file_ctrl(BIO *b, int cmd, long num, void *ptr)
 			else
 				_setmode(fd,_O_BINARY);
 			}
-#elif defined(OPENSSL_SYS_OS2) || defined(OPENSSL_SYS_WIN32_CYGWIN)
+#elif defined(OPENSSL_SYS_WIN32_CYGWIN)
 		int fd = fileno((FILE*)ptr);
 		if (num & BIO_FP_TEXT)
 			setmode(fd, O_TEXT);
@@ -378,7 +378,7 @@ static long MS_CALLBACK file_ctrl(BIO *b, int cmd, long num, void *ptr)
 			ret=0;
 			break;
 			}
-#if defined(OPENSSL_SYS_MSDOS) || defined(OPENSSL_SYS_WINDOWS) || defined(OPENSSL_SYS_OS2) || defined(OPENSSL_SYS_WIN32_CYGWIN)
+#if defined(OPENSSL_SYS_MSDOS) || defined(OPENSSL_SYS_WINDOWS) || defined(OPENSSL_SYS_WIN32_CYGWIN)
 		if (!(num & BIO_FP_TEXT))
 			strcat(p,"b");
 		else
