@@ -278,7 +278,7 @@ int str2fmt(char *s)
 		return(FORMAT_UNDEF);
 	}
 
-#if defined(OPENSSL_SYS_MSDOS) || defined(OPENSSL_SYS_WIN32) || defined(OPENSSL_SYS_WIN16) || defined(OPENSSL_SYS_NETWARE)
+#if defined(OPENSSL_SYS_MSDOS) || defined(OPENSSL_SYS_WIN32) || defined(OPENSSL_SYS_WIN16)
 void program_name(char *in, char *out, int size)
 	{
 	int i,n;
@@ -298,21 +298,12 @@ void program_name(char *in, char *out, int size)
 		p=in;
 	n=strlen(p);
 
-#if defined(OPENSSL_SYS_NETWARE)
-   /* strip off trailing .nlm if present. */
-   if ((n > 4) && (p[n-4] == '.') &&
-      ((p[n-3] == 'n') || (p[n-3] == 'N')) &&
-      ((p[n-2] == 'l') || (p[n-2] == 'L')) &&
-      ((p[n-1] == 'm') || (p[n-1] == 'M')))
-      n-=4;
-#else
 	/* strip off trailing .exe if present. */
 	if ((n > 4) && (p[n-4] == '.') &&
 		((p[n-3] == 'e') || (p[n-3] == 'E')) &&
 		((p[n-2] == 'x') || (p[n-2] == 'X')) &&
 		((p[n-1] == 'e') || (p[n-1] == 'E')))
 		n-=4;
-#endif
 
 	if (n > size-1)
 		n=size-1;
@@ -2785,28 +2776,6 @@ double app_tminterval(int stop,int usertime)
 
 		ret = (__int64)(tmstop.QuadPart - tmstart.QuadPart)*1e-7;
 		}
-
-	return (ret);
-	}
-
-#elif defined(OPENSSL_SYS_NETWARE)
-#include <time.h>
-
-double app_tminterval(int stop,int usertime)
-	{
-	double		ret=0;
-	static clock_t	tmstart;
-	static int	warning=1;
-
-	if (usertime && warning)
-		{
-		BIO_printf(bio_err,"To get meaningful results, run "
-				   "this program on idle system.\n");
-		warning=0;
-		}
-
-	if (stop==TM_START)	tmstart = clock();
-	else			ret     = (clock()-tmstart)/(double)CLOCKS_PER_SEC;
 
 	return (ret);
 	}

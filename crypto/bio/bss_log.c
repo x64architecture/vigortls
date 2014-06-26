@@ -72,8 +72,6 @@
 #elif defined(OPENSSL_SYS_WIN32)
 #elif defined(__ultrix)
 #  include <sys/syslog.h>
-#elif defined(OPENSSL_SYS_NETWARE)
-#  define NO_SYSLOG
 #elif (!defined(MSDOS) || defined(WATT32)) && !defined(OPENSSL_SYS_VXWORKS) && !defined(NO_SYSLOG)
 #  include <syslog.h>
 #endif

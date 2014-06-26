@@ -84,12 +84,8 @@
 
 #ifndef OPENSSL_NO_SOCK
 
-#if defined(OPENSSL_SYS_NETWARE) && defined(NETWARE_BSDSOCK)
-#include "netdb.h"
-#endif
-
 static struct hostent *GetHostByName(char *name);
-#if defined(OPENSSL_SYS_WINDOWS) || (defined(OPENSSL_SYS_NETWARE) && !defined(NETWARE_BSDSOCK))
+#ifdef OPENSSL_SYS_WINDOWS
 static void ssl_sock_cleanup(void);
 #endif
 static int ssl_sock_init(void);
@@ -100,10 +96,6 @@ static int do_accept(int acc_sock, int *sock, char **host);
 static int host_ip(char *str, unsigned char ip[4]);
 
 #define SOCKET_PROTOCOL	IPPROTO_TCP
-
-#if defined(OPENSSL_SYS_NETWARE) && !defined(NETWARE_BSDSOCK)
-static int wsa_init_done=0;
-#endif
 
 #ifdef OPENSSL_SYS_WINDOWS
 static struct WSAData wsa_state;
@@ -153,15 +145,6 @@ static void ssl_sock_cleanup(void)
 		WSACleanup();
 		}
 	}
-#elif defined(OPENSSL_SYS_NETWARE) && !defined(NETWARE_BSDSOCK)
-static void sock_cleanup(void)
-    {
-    if (wsa_init_done)
-        {
-        wsa_init_done=0;
-		WSACleanup();
-		}
-	}
 #endif
 
 static int ssl_sock_init(void)
@@ -188,27 +171,6 @@ static int ssl_sock_init(void)
 			return(0);
 			}
 		}
-#elif defined(OPENSSL_SYS_NETWARE) && !defined(NETWARE_BSDSOCK)
-   WORD wVerReq;
-   WSADATA wsaData;
-   int err;
-
-   if (!wsa_init_done)
-      {
-   
-# ifdef SIGINT
-      signal(SIGINT,(void (*)(int))sock_cleanup);
-# endif
-
-      wsa_init_done=1;
-      wVerReq = MAKEWORD( 2, 0 );
-      err = WSAStartup(wVerReq,&wsaData);
-      if (err != 0)
-         {
-         BIO_printf(bio_err,"unable to start WINSOCK2, error code=%d\n",err);
-         return(0);
-         }
-      }
 #endif /* OPENSSL_SYS_WINDOWS */
 	return(1);
 	}
@@ -383,7 +345,7 @@ redoit:
 	ret=accept(acc_sock,(struct sockaddr *)&from,(void *)&len);
 	if (ret == INVALID_SOCKET)
 		{
-#if defined(OPENSSL_SYS_WINDOWS) || (defined(OPENSSL_SYS_NETWARE) && !defined(NETWARE_BSDSOCK))
+#ifdef OPENSSL_SYS_WINDOWS
 		int i;
 		i=WSAGetLastError();
 		BIO_printf(bio_err,"accept error %d\n",i);

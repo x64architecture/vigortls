@@ -72,9 +72,7 @@
 extern void exit();
 #endif
 
-#ifndef OPENSSL_SYS_NETWARE
 #include <signal.h>
-#endif
 
 #ifndef _IRIX
 #include <time.h>

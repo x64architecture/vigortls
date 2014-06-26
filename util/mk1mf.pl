@@ -76,10 +76,6 @@ $infile="MINFO";
 	"linux-elf","Linux elf",
 	"ultrix-mips","DEC mips ultrix",
 	"FreeBSD","FreeBSD distribution",
-	"netware-clib", "CodeWarrior for NetWare - CLib - with WinSock Sockets",
-	"netware-clib-bsdsock", "CodeWarrior for NetWare - CLib - with BSD Sockets",
-	"netware-libc", "CodeWarrior for NetWare - LibC - with WinSock Sockets",
-	"netware-libc-bsdsock", "CodeWarrior for NetWare - LibC - with BSD Sockets",
 	"default","cc under unix",
 	"auto", "auto detect from top level Makefile"
 	);
@@ -113,8 +109,6 @@ and [options] can be one of
 	no-engine				- No engine
 	no-hw					- No hw
 	nasm 					- Use NASM for x86 asm
-	nw-nasm					- Use NASM x86 asm for NetWare
-	nw-mwasm				- Use Metrowerks x86 asm for NetWare
 	gaswin					- Use GNU as with Mingw32
 	no-socks				- No socket code
 	no-err					- No error strings
@@ -208,13 +202,6 @@ elsif ($platform eq "ultrix-mips")
 	require "unix.pl";
 	require "ultrix.pl";
 	$unix=1;
-	}
-elsif (($platform eq "netware-clib") || ($platform eq "netware-libc") ||
-       ($platform eq "netware-clib-bsdsock") || ($platform eq "netware-libc-bsdsock"))
-	{
-	$LIBC=1 if $platform eq "netware-libc" || $platform eq "netware-libc-bsdsock";
-	$BSDSOCK=1 if ($platform eq "netware-libc-bsdsock") || ($platform eq "netware-clib-bsdsock");
-	require 'netware.pl';
 	}
 else
 	{

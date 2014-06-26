@@ -65,9 +65,7 @@
 #include OPENSSL_UNISTD_IO
 OPENSSL_DECLARE_EXIT
 
-#ifndef OPENSSL_SYS_NETWARE
 #include <signal.h>
-#endif
 
 #ifndef _IRIX
 #include <time.h>

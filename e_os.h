@@ -162,25 +162,6 @@ extern "C" {
 #define ioctlsocket(a,b,c)		  setsockopt((a),SOL_SOCKET,(b),(c),sizeof(*(c)))
 #define readsocket(s,b,n)       recv((s),(b),(n),0)
 #define writesocket(s,b,n)      send((s),(b),(n),0)
-#elif defined(OPENSSL_SYS_NETWARE)
-#if defined(NETWARE_BSDSOCK)
-#define get_last_socket_error() errno
-#define clear_socket_error()    errno=0
-#define closesocket(s)          close(s)
-#define ioctlsocket(a,b,c)      ioctl(a,b,c)
-#if defined(NETWARE_LIBC)
-#define readsocket(s,b,n)       recv((s),(b),(n),0)
-#define writesocket(s,b,n)      send((s),(b),(n),0)
-#else
-#define readsocket(s,b,n)       recv((s),(char*)(b),(n),0)
-#define writesocket(s,b,n)      send((s),(char*)(b),(n),0)
-#endif
-#else
-#define get_last_socket_error()	WSAGetLastError()
-#define clear_socket_error()	WSASetLastError(0)
-#define readsocket(s,b,n)		recv((s),(b),(n),0)
-#define writesocket(s,b,n)		send((s),(b),(n),0)
-#endif
 #else
 #define get_last_socket_error()	errno
 #define clear_socket_error()	errno=0
@@ -467,27 +448,6 @@ static unsigned int _strlen31(const char *str)
 #    define SSLeay_Read(a,b,c)		MacSocket_recv((a),(b),(c),true)
 #    define SHUTDOWN(fd)		MacSocket_close(fd)
 #    define SHUTDOWN2(fd)		MacSocket_close(fd)
-
-#  elif defined(OPENSSL_SYS_NETWARE)
-         /* NetWare uses the WinSock2 interfaces by default, but can be configured for BSD
-         */
-#      if defined(NETWARE_BSDSOCK)
-#        include <sys/socket.h>
-#        include <netinet/in.h>
-#        include <sys/time.h>
-#        if defined(NETWARE_CLIB)
-#          include <sys/bsdskt.h>
-#        else
-#          include <sys/select.h>
-#        endif
-#        define INVALID_SOCKET (int)(~0)
-#      else
-#        include <novsock2.h>
-#      endif
-#      define SSLeay_Write(a,b,c)   send((a),(b),(c),0)
-#      define SSLeay_Read(a,b,c) recv((a),(b),(c),0)
-#      define SHUTDOWN(fd)    { shutdown((fd),0); closesocket(fd); }
-#      define SHUTDOWN2(fd)      { shutdown((fd),2); closesocket(fd); }
 
 #  else
 

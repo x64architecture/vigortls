@@ -76,7 +76,7 @@
 #include <openssl/pem.h>
 
 #ifndef W_OK
-#  if !defined(OPENSSL_SYS_VXWORKS) && !defined(OPENSSL_SYS_WINDOWS) && !defined(OPENSSL_SYS_NETWARE)
+#  if !defined(OPENSSL_SYS_VXWORKS) && !defined(OPENSSL_SYS_WINDOWS)
 #    include <sys/file.h>
 #  endif
 #endif

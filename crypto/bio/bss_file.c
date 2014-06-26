@@ -89,10 +89,6 @@
 #include "bio_lcl.h"
 #include <openssl/err.h>
 
-#if defined(OPENSSL_SYS_NETWARE) && defined(NETWARE_CLIB)
-#include <nwfileio.h>
-#endif
-
 static int MS_CALLBACK file_write(BIO *h, const char *buf, int num);
 static int MS_CALLBACK file_read(BIO *h, char *buf, int size);
 static int MS_CALLBACK file_puts(BIO *h, const char *str);
@@ -325,13 +321,6 @@ static long MS_CALLBACK file_ctrl(BIO *b, int cmd, long num, void *ptr)
 			_setmode(fd,_O_TEXT);
 		else
 			_setmode(fd,_O_BINARY);
-#elif defined(OPENSSL_SYS_NETWARE) && defined(NETWARE_CLIB)
-		int fd = fileno((FILE*)ptr);
-		/* Under CLib there are differences in file modes */
-		if (num & BIO_FP_TEXT)
-			setmode(fd,O_TEXT);
-		else
-			setmode(fd,O_BINARY);
 #elif defined(OPENSSL_SYS_MSDOS)
 		int fd = fileno((FILE*)ptr);
 		/* Set correct text/binary mode */
@@ -379,12 +368,6 @@ static long MS_CALLBACK file_ctrl(BIO *b, int cmd, long num, void *ptr)
 			break;
 			}
 #if defined(OPENSSL_SYS_MSDOS) || defined(OPENSSL_SYS_WINDOWS) || defined(OPENSSL_SYS_WIN32_CYGWIN)
-		if (!(num & BIO_FP_TEXT))
-			strcat(p,"b");
-		else
-			strcat(p,"t");
-#endif
-#if defined(OPENSSL_SYS_NETWARE)
 		if (!(num & BIO_FP_TEXT))
 			strcat(p,"b");
 		else

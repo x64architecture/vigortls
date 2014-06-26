@@ -580,7 +580,7 @@ int MAIN(int argc, char **argv)
 	ENGINE *ssl_client_engine=NULL;
 #endif
 	ENGINE *e=NULL;
-#if defined(OPENSSL_SYS_WINDOWS) || defined(OPENSSL_SYS_MSDOS) || defined(OPENSSL_SYS_NETWARE) || defined(OPENSSL_SYS_BEOS_R5)
+#if defined(OPENSSL_SYS_WINDOWS) || defined(OPENSSL_SYS_MSDOS) || defined(OPENSSL_SYS_BEOS_R5)
 	struct timeval tv;
 #if defined(OPENSSL_SYS_BEOS_R5)
 	int stdin_set = 0;
@@ -1545,7 +1545,7 @@ SSL_set_tlsext_status_ids(con, ids);
 
 		if (!ssl_pending)
 			{
-#if !defined(OPENSSL_SYS_WINDOWS) && !defined(OPENSSL_SYS_MSDOS) && !defined(OPENSSL_SYS_NETWARE) && !defined (OPENSSL_SYS_BEOS_R5)
+#if !defined(OPENSSL_SYS_WINDOWS) && !defined(OPENSSL_SYS_MSDOS) && !defined (OPENSSL_SYS_BEOS_R5)
 			if (tty_on)
 				{
 				if (read_tty)  openssl_fdset(fileno(stdin),&readfds);
@@ -1594,16 +1594,6 @@ SSL_set_tlsext_status_ids(con, ids);
 #endif
 				} else 	i=select(width,(void *)&readfds,(void *)&writefds,
 					 NULL,timeoutp);
-			}
-#elif defined(OPENSSL_SYS_NETWARE)
-			if(!write_tty) {
-				if(read_tty) {
-					tv.tv_sec = 1;
-					tv.tv_usec = 0;
-					i=select(width,(void *)&readfds,(void *)&writefds,
-						NULL,&tv);
-				} else 	i=select(width,(void *)&readfds,(void *)&writefds,
-					NULL,timeoutp);
 			}
 #elif defined(OPENSSL_SYS_BEOS_R5)
 			/* Under BeOS-R5 the situation is similar to DOS */
@@ -1710,7 +1700,7 @@ SSL_set_tlsext_status_ids(con, ids);
 				goto shut;
 				}
 			}
-#if defined(OPENSSL_SYS_WINDOWS) || defined(OPENSSL_SYS_MSDOS) || defined(OPENSSL_SYS_NETWARE) || defined(OPENSSL_SYS_BEOS_R5)
+#if defined(OPENSSL_SYS_WINDOWS) || defined(OPENSSL_SYS_MSDOS) || defined(OPENSSL_SYS_BEOS_R5)
 		/* Assume Windows/DOS/BeOS can always write */
 		else if (!ssl_pending && write_tty)
 #else
@@ -1800,8 +1790,6 @@ printf("read=%d pending=%d peek=%d\n",k,SSL_pending(con),SSL_peek(con,zbuf,10240
 #else
 		else if ((_kbhit()) || (WAIT_OBJECT_0 == WaitForSingleObject(GetStdHandle(STD_INPUT_HANDLE), 0)))
 #endif
-#elif defined (OPENSSL_SYS_NETWARE)
-		else if (_kbhit())
 #elif defined(OPENSSL_SYS_BEOS_R5)
 		else if (stdin_set)
 #else
