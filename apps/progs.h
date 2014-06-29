@@ -139,9 +139,6 @@ FUNCTION functions[] = {
 #ifndef OPENSSL_NO_SRP
 	{FUNC_TYPE_GENERAL,"srp",srp_main},
 #endif
-#ifndef OPENSSL_NO_MD2
-	{FUNC_TYPE_MD,"md2",dgst_main},
-#endif
 #ifndef OPENSSL_NO_MD4
 	{FUNC_TYPE_MD,"md4",dgst_main},
 #endif

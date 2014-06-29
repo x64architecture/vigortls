@@ -123,9 +123,6 @@
 #ifndef OPENSSL_NO_CAMELLIA
 #include <openssl/camellia.h>
 #endif
-#ifndef OPENSSL_NO_MD2
-#include <openssl/md2.h>
-#endif
 #ifndef OPENSSL_NO_MDC2
 #include <openssl/mdc2.h>
 #endif
@@ -344,9 +341,6 @@ int MAIN(int argc, char **argv)
 #endif
 	unsigned rsa_num;
 	unsigned char md[EVP_MAX_MD_SIZE];
-#ifndef OPENSSL_NO_MD2
-	unsigned char md2[MD2_DIGEST_LENGTH];
-#endif
 #ifndef OPENSSL_NO_MDC2
 	unsigned char mdc2[MDC2_DIGEST_LENGTH];
 #endif
@@ -745,10 +739,6 @@ int MAIN(int argc, char **argv)
 				   an algorithm. */
 			}
 		else
-#ifndef OPENSSL_NO_MD2
-		if	(strcmp(*argv,"md2") == 0) doit[D_MD2]=1;
-		else
-#endif
 #ifndef OPENSSL_NO_MDC2
 			if (strcmp(*argv,"mdc2") == 0) doit[D_MDC2]=1;
 		else
@@ -964,9 +954,6 @@ int MAIN(int argc, char **argv)
 			BIO_printf(bio_err,"Error: bad option or value\n");
 			BIO_printf(bio_err,"\n");
 			BIO_printf(bio_err,"Available values:\n");
-#ifndef OPENSSL_NO_MD2
-			BIO_printf(bio_err,"md2      ");
-#endif
 #ifndef OPENSSL_NO_MDC2
 			BIO_printf(bio_err,"mdc2     ");
 #endif
@@ -994,7 +981,7 @@ int MAIN(int argc, char **argv)
 #ifndef OPENSSL_NO_RIPEMD160
 			BIO_printf(bio_err,"rmd160");
 #endif
-#if !defined(OPENSSL_NO_MD2) || !defined(OPENSSL_NO_MDC2) || \
+#if !defined(OPENSSL_NO_MDC2) || \
     !defined(OPENSSL_NO_MD4) || !defined(OPENSSL_NO_MD5) || \
     !defined(OPENSSL_NO_SHA1) || !defined(OPENSSL_NO_RIPEMD160) || \
     !defined(OPENSSL_NO_WHIRLPOOL)
@@ -1434,20 +1421,6 @@ int MAIN(int argc, char **argv)
 #endif
 #endif /* SIGALRM */
 
-#ifndef OPENSSL_NO_MD2
-	if (doit[D_MD2])
-		{
-		for (j=0; j<SIZE_NUM; j++)
-			{
-			print_message(names[D_MD2],c[D_MD2][j],lengths[j]);
-			Time_F(START);
-			for (count=0,run=1; COND(c[D_MD2][j]); count++)
-				EVP_Digest(buf,(unsigned long)lengths[j],&(md2[0]),NULL,EVP_md2(),NULL);
-			d=Time_F(STOP);
-			print_result(D_MD2,j,count,d);
-			}
-		}
-#endif
 #ifndef OPENSSL_NO_MDC2
 	if (doit[D_MDC2])
 		{
@@ -2331,9 +2304,6 @@ show_res:
         fprintf(stdout,"%s\n",SSLeay_version(SSLEAY_BUILT_ON));
 		printf("options:");
 		printf("%s ",BN_options());
-#ifndef OPENSSL_NO_MD2
-		printf("%s ",MD2_options());
-#endif
 #ifndef OPENSSL_NO_RC4
 		printf("%s ",RC4_options());
 #endif

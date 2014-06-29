@@ -122,8 +122,6 @@
 #define USE_MD5_RAND
 #elif !defined(OPENSSL_NO_MDC2) && !defined(OPENSSL_NO_DES)
 #define USE_MDC2_RAND
-#elif !defined(OPENSSL_NO_MD2)
-#define USE_MD2_RAND
 #else
 #error No message digest algorithm available
 #endif
