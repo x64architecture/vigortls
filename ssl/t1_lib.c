@@ -1402,8 +1402,7 @@ int ssl_parse_clienthello_tlsext(SSL *s, unsigned char **p, unsigned char *d, in
 
 	/* Need RI if renegotiating */
 
-	if (!renegotiate_seen && s->renegotiate &&
-		!(s->options & SSL_OP_ALLOW_UNSAFE_LEGACY_RENEGOTIATION))
+	if (!renegotiate_seen && s->renegotiate)
 		{
 		*al = SSL_AD_HANDSHAKE_FAILURE;
 	 	SSLerr(SSL_F_SSL_PARSE_CLIENTHELLO_TLSEXT,
@@ -1665,8 +1664,7 @@ int ssl_parse_serverhello_tlsext(SSL *s, unsigned char **p, unsigned char *d, in
 	 * absence on initial connect only.
 	 */
 	if (!renegotiate_seen
-		&& !(s->options & SSL_OP_LEGACY_SERVER_CONNECT)
-		&& !(s->options & SSL_OP_ALLOW_UNSAFE_LEGACY_RENEGOTIATION))
+		&& !(s->options & SSL_OP_LEGACY_SERVER_CONNECT))
 		{
 		*al = SSL_AD_HANDSHAKE_FAILURE;
 		SSLerr(SSL_F_SSL_PARSE_SERVERHELLO_TLSEXT,
