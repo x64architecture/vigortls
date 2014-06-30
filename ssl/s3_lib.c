@@ -2935,7 +2935,7 @@ int ssl3_new(SSL *s)
 {
     SSL3_STATE *s3;
 
-    if ((s3 = OPENSSL_malloc(sizeof *s3)) == NULL) 
+    if ((s3 = malloc(sizeof *s3)) == NULL) 
         goto err;
     memset(s3, 0, sizeof *s3);
     memset(s3->rrec.seq_num, 0, sizeof(s3->rrec.seq_num));
@@ -2959,9 +2959,9 @@ void ssl3_free(SSL *s)
 
 #ifdef TLSEXT_TYPE_opaque_prf_input
     if (s->s3->client_opaque_prf_input != NULL)
-        OPENSSL_free(s->s3->client_opaque_prf_input);
+        free(s->s3->client_opaque_prf_input);
     if (s->s3->server_opaque_prf_input != NULL)
-        OPENSSL_free(s->s3->server_opaque_prf_input);
+        free(s->s3->server_opaque_prf_input);
 #endif
 
     ssl3_cleanup_key_block(s);
@@ -2970,7 +2970,7 @@ void ssl3_free(SSL *s)
     if (s->s3->wbuf.buf != NULL)
         ssl3_release_write_buffer(s);
     if (s->s3->rrec.comp != NULL)
-        OPENSSL_free(s->s3->rrec.comp);
+        free(s->s3->rrec.comp);
     if (s->s3->tmp.dh != NULL)
         DH_free(s->s3->tmp.dh);
 #ifndef OPENSSL_NO_ECDH
@@ -2989,7 +2989,7 @@ void ssl3_free(SSL *s)
     SSL_SRP_CTX_free(s);
 #endif
     OPENSSL_cleanse(s->s3, sizeof *s->s3);
-    OPENSSL_free(s->s3);
+    free(s->s3);
     s->s3 = NULL;
 }
 
@@ -3001,10 +3001,10 @@ void ssl3_clear(SSL *s)
 
 #ifdef TLSEXT_TYPE_opaque_prf_input
     if (s->s3->client_opaque_prf_input != NULL)
-        OPENSSL_free(s->s3->client_opaque_prf_input);
+        free(s->s3->client_opaque_prf_input);
     s->s3->client_opaque_prf_input = NULL;
     if (s->s3->server_opaque_prf_input != NULL)
-        OPENSSL_free(s->s3->server_opaque_prf_input);
+        free(s->s3->server_opaque_prf_input);
     s->s3->server_opaque_prf_input = NULL;
 #endif
 
@@ -3013,7 +3013,7 @@ void ssl3_clear(SSL *s)
         sk_X509_NAME_pop_free(s->s3->tmp.ca_names, X509_NAME_free);
 
     if (s->s3->rrec.comp != NULL) {
-        OPENSSL_free(s->s3->rrec.comp);
+        free(s->s3->rrec.comp);
         s->s3->rrec.comp = NULL;
     }
     if (s->s3->tmp.dh != NULL) {
@@ -3062,7 +3062,7 @@ void ssl3_clear(SSL *s)
 
 #if !defined(OPENSSL_NO_TLSEXT) && !defined(OPENSSL_NO_NEXTPROTONEG)
     if (s->next_proto_negotiated) {
-        OPENSSL_free(s->next_proto_negotiated);
+        free(s->next_proto_negotiated);
         s->next_proto_negotiated = NULL;
         s->next_proto_negotiated_len = 0;
     }
@@ -3213,7 +3213,7 @@ long ssl3_ctrl(SSL *s, int cmd, long larg, void *parg)
     case SSL_CTRL_SET_TLSEXT_HOSTNAME:
          if (larg == TLSEXT_NAMETYPE_host_name) {
             if (s->tlsext_hostname != NULL) 
-                OPENSSL_free(s->tlsext_hostname);
+                free(s->tlsext_hostname);
             s->tlsext_hostname = NULL;
 
             ret = 1;
@@ -3246,9 +3246,9 @@ long ssl3_ctrl(SSL *s, int cmd, long larg, void *parg)
             break;
             }
         if (s->tlsext_opaque_prf_input != NULL)
-            OPENSSL_free(s->tlsext_opaque_prf_input);
+            free(s->tlsext_opaque_prf_input);
         if ((size_t)larg == 0)
-            s->tlsext_opaque_prf_input = OPENSSL_malloc(1); /* dummy byte just to get non-NULL */
+            s->tlsext_opaque_prf_input = malloc(1); /* dummy byte just to get non-NULL */
         else
             s->tlsext_opaque_prf_input = BUF_memdup(parg, (size_t)larg);
         if (s->tlsext_opaque_prf_input != NULL)
@@ -3292,7 +3292,7 @@ long ssl3_ctrl(SSL *s, int cmd, long larg, void *parg)
         
     case SSL_CTRL_SET_TLSEXT_STATUS_REQ_OCSP_RESP:
         if (s->tlsext_ocsp_resp)
-            OPENSSL_free(s->tlsext_ocsp_resp);
+            free(s->tlsext_ocsp_resp);
         s->tlsext_ocsp_resp = parg;
         s->tlsext_ocsp_resplen = larg;
         ret = 1;
@@ -3507,7 +3507,7 @@ long ssl3_ctx_ctrl(SSL_CTX *ctx, int cmd, long larg, void *parg)
     case SSL_CTRL_SET_TLS_EXT_SRP_USERNAME:
         ctx->srp_ctx.srp_Mask|=SSL_kSRP;
         if (ctx->srp_ctx.login != NULL)
-            OPENSSL_free(ctx->srp_ctx.login);
+            free(ctx->srp_ctx.login);
         ctx->srp_ctx.login = NULL;
         if (parg == NULL)
             break;

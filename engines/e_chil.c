@@ -412,7 +412,7 @@ static const char *HWCRHK_LIBNAME = NULL;
 static void free_HWCRHK_LIBNAME(void)
 	{
 	if(HWCRHK_LIBNAME)
-		OPENSSL_free((void*)HWCRHK_LIBNAME);
+		free((void*)HWCRHK_LIBNAME);
 	HWCRHK_LIBNAME = NULL;
 	}
 static const char *get_HWCRHK_LIBNAME(void)
@@ -720,7 +720,7 @@ static EVP_PKEY *hwcrhk_load_privkey(ENGINE *eng, const char *key_id,
 			HWCRHK_R_NOT_INITIALISED);
 		goto err;
 		}
-	hptr = OPENSSL_malloc(sizeof(HWCryptoHook_RSAKeyHandle));
+	hptr = malloc(sizeof(HWCryptoHook_RSAKeyHandle));
 	if (!hptr)
 		{
 		HWCRHKerr(HWCRHK_F_HWCRHK_LOAD_PRIVKEY,
@@ -1016,7 +1016,7 @@ static int hwcrhk_rsa_finish(RSA *rsa)
 	if (hptr)
                 {
                 p_hwcrhk_RSAUnloadKey(*hptr, NULL);
-                OPENSSL_free(hptr);
+                free(hptr);
 		RSA_set_ex_data(rsa, hndidx_rsa, NULL);
                 }
 	return 1;
@@ -1170,7 +1170,7 @@ static int hwcrhk_get_pass(const char *prompt_info,
                                 *len_io = strlen(buf);
 
                         UI_free(ui);
-                        OPENSSL_free(prompt);
+                        free(prompt);
                         }
                 }
         else

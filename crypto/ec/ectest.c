@@ -1222,14 +1222,14 @@ static void internal_curve_test(void)
 
 	crv_len = EC_get_builtin_curves(NULL, 0);
 
-	curves = OPENSSL_malloc(sizeof(EC_builtin_curve) * crv_len);
+	curves = malloc(sizeof(EC_builtin_curve) * crv_len);
 
 	if (curves == NULL)
 		return;
 
 	if (!EC_get_builtin_curves(curves, crv_len))
 		{
-		OPENSSL_free(curves);
+		free(curves);
 		return;
 		}
 
@@ -1267,7 +1267,7 @@ static void internal_curve_test(void)
 		fprintf(stdout, " failed\n\n");
 		ABORT;
 		}
-	OPENSSL_free(curves);
+	free(curves);
 	return;
 	}
 

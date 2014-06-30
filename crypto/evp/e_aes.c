@@ -678,7 +678,7 @@ static int aes_gcm_cleanup(EVP_CIPHER_CTX *c)
 	EVP_AES_GCM_CTX *gctx = c->cipher_data;
 	OPENSSL_cleanse(&gctx->gcm, sizeof(gctx->gcm));
 	if (gctx->iv != c->iv)
-		OPENSSL_free(gctx->iv);
+		free(gctx->iv);
 	OPENSSL_cleanse(gctx, sizeof(*gctx));
 	return 1;
 	}
@@ -719,8 +719,8 @@ static int aes_gcm_ctrl(EVP_CIPHER_CTX *c, int type, int arg, void *ptr)
 		if ((arg > EVP_MAX_IV_LENGTH) && (arg > gctx->ivlen))
 			{
 			if (gctx->iv != c->iv)
-				OPENSSL_free(gctx->iv);
-			gctx->iv = OPENSSL_malloc(arg);
+				free(gctx->iv);
+			gctx->iv = malloc(arg);
 			if (!gctx->iv)
 				return 0;
 			}
@@ -817,7 +817,7 @@ static int aes_gcm_ctrl(EVP_CIPHER_CTX *c, int type, int arg, void *ptr)
 				gctx_out->iv = out->iv;
 			else
 			{
-				gctx_out->iv = OPENSSL_malloc(gctx->ivlen);
+				gctx_out->iv = malloc(gctx->ivlen);
 				if (!gctx_out->iv)
 					return 0;
 				memcpy(gctx_out->iv, gctx->iv, gctx->ivlen);

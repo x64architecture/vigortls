@@ -113,7 +113,7 @@ void CRYPTO_thread_setup(void)
 	{
 	int i;
 
-	lock_cs=OPENSSL_malloc(CRYPTO_num_locks() * sizeof(HANDLE));
+	lock_cs=malloc(CRYPTO_num_locks() * sizeof(HANDLE));
 	for (i=0; i<CRYPTO_num_locks(); i++)
 		{
 		lock_cs[i]=CreateMutex(NULL,FALSE,NULL);
@@ -131,7 +131,7 @@ static void CRYPTO_thread_cleanup(void)
 	CRYPTO_set_locking_callback(NULL);
 	for (i=0; i<CRYPTO_num_locks(); i++)
 		CloseHandle(lock_cs[i]);
-	OPENSSL_free(lock_cs);
+	free(lock_cs);
 	}
 
 void win32_locking_callback(int mode, int type, char *file, int line)
@@ -164,11 +164,11 @@ void CRYPTO_thread_setup(void)
 	int i;
 
 #ifdef USE_MUTEX
-	lock_cs=OPENSSL_malloc(CRYPTO_num_locks() * sizeof(mutex_t));
+	lock_cs=malloc(CRYPTO_num_locks() * sizeof(mutex_t));
 #else
-	lock_cs=OPENSSL_malloc(CRYPTO_num_locks() * sizeof(rwlock_t));
+	lock_cs=malloc(CRYPTO_num_locks() * sizeof(rwlock_t));
 #endif
-	lock_count=OPENSSL_malloc(CRYPTO_num_locks() * sizeof(long));
+	lock_count=malloc(CRYPTO_num_locks() * sizeof(long));
 	for (i=0; i<CRYPTO_num_locks(); i++)
 		{
 		lock_count[i]=0;
@@ -196,8 +196,8 @@ void CRYPTO_thread_cleanup(void)
 		rwlock_destroy(&(lock_cs[i]));
 #endif
 		}
-	OPENSSL_free(lock_cs);
-	OPENSSL_free(lock_count);
+	free(lock_cs);
+	free(lock_count);
 	}
 
 void solaris_locking_callback(int mode, int type, char *file, int line)
@@ -267,7 +267,7 @@ void CRYPTO_thread_setup(void)
 	arena=usinit(filename);
 	unlink(filename);
 
-	lock_cs=OPENSSL_malloc(CRYPTO_num_locks() * sizeof(usema_t *));
+	lock_cs=malloc(CRYPTO_num_locks() * sizeof(usema_t *));
 	for (i=0; i<CRYPTO_num_locks(); i++)
 		{
 		lock_cs[i]=usnewsema(arena,1);
@@ -290,7 +290,7 @@ void CRYPTO_thread_cleanup(void)
 		usdumpsema(lock_cs[i],stdout,buf);
 		usfreesema(lock_cs[i],arena);
 		}
-	OPENSSL_free(lock_cs);
+	free(lock_cs);
 	}
 
 void irix_locking_callback(int mode, int type, char *file, int line)
@@ -324,8 +324,8 @@ void CRYPTO_thread_setup(void)
 	{
 	int i;
 
-	lock_cs=OPENSSL_malloc(CRYPTO_num_locks() * sizeof(pthread_mutex_t));
-	lock_count=OPENSSL_malloc(CRYPTO_num_locks() * sizeof(long));
+	lock_cs=malloc(CRYPTO_num_locks() * sizeof(pthread_mutex_t));
+	lock_count=malloc(CRYPTO_num_locks() * sizeof(long));
 	for (i=0; i<CRYPTO_num_locks(); i++)
 		{
 		lock_count[i]=0;
@@ -345,8 +345,8 @@ void thread_cleanup(void)
 		{
 		pthread_mutex_destroy(&(lock_cs[i]));
 		}
-	OPENSSL_free(lock_cs);
-	OPENSSL_free(lock_count);
+	free(lock_cs);
+	free(lock_count);
 	}
 
 void pthreads_locking_callback(int mode, int type, char *file,

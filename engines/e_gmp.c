@@ -263,7 +263,7 @@ static int bn2gmp(const BIGNUM *bn, mpz_t g)
 		char *tmpchar = BN_bn2hex(bn);
 		if(!tmpchar) return 0;
 		toret = (mpz_set_str(g, tmpchar, 16) == 0 ? 1 : 0);
-		OPENSSL_free(tmpchar);
+		free(tmpchar);
 		return toret;
 		}
 	}
@@ -287,11 +287,11 @@ static int gmp2bn(mpz_t g, BIGNUM *bn)
 	else
 		{
 		int toret;
-		char *tmpchar = OPENSSL_malloc(mpz_sizeinbase(g, 16) + 10);
+		char *tmpchar = malloc(mpz_sizeinbase(g, 16) + 10);
 		if(!tmpchar) return 0;
 		mpz_get_str(tmpchar, 16, g);
 		toret = BN_hex2bn(&bn, tmpchar);
-		OPENSSL_free(tmpchar);
+		free(tmpchar);
 		return toret;
 		}
 	}
@@ -314,7 +314,7 @@ static E_GMP_RSA_CTX *e_gmp_get_rsa(RSA *rsa)
 	{
 	E_GMP_RSA_CTX *hptr = RSA_get_ex_data(rsa, hndidx_rsa);
 	if(hptr) return hptr;
-	hptr = OPENSSL_malloc(sizeof(E_GMP_RSA_CTX));
+	hptr = malloc(sizeof(E_GMP_RSA_CTX));
 	if(!hptr) return NULL;
 	/* These inits could probably be replaced by more intelligent
 	 * mpz_init2() versions, to reduce malloc-thrashing. */
@@ -357,7 +357,7 @@ err:
 	mpz_clear(hptr->r1);
 	mpz_clear(hptr->I0);
 	mpz_clear(hptr->m1);
-	OPENSSL_free(hptr);
+	free(hptr);
 	return NULL;
 	}
 
@@ -377,7 +377,7 @@ static int e_gmp_rsa_finish(RSA *rsa)
 	mpz_clear(hptr->r1);
 	mpz_clear(hptr->I0);
 	mpz_clear(hptr->m1);
-	OPENSSL_free(hptr);
+	free(hptr);
 	RSA_set_ex_data(rsa, hndidx_rsa, NULL);
 	return 1;
 	}

@@ -145,7 +145,7 @@ int i2d_SSL_SESSION(SSL_SESSION *in, unsigned char **pp)
 
 	/* Note that I cheat in the following 2 assignments.  I know
 	 * that if the ASN1_INTEGER passed to ASN1_INTEGER_set
-	 * is > sizeof(long)+1, the buffer will not be re-OPENSSL_malloc()ed.
+	 * is > sizeof(long)+1, the buffer will not be re-malloc()ed.
 	 * This is a bit evil but makes things simple, no dynamic allocation
 	 * to clean up :-) */
 	a.version.length=LSIZE2;
@@ -393,13 +393,13 @@ SSL_SESSION *d2i_SSL_SESSION(SSL_SESSION **a, const unsigned char **pp,
 
 	ai.data=NULL; ai.length=0;
 	M_ASN1_D2I_get_x(ASN1_INTEGER,aip,d2i_ASN1_INTEGER);
-	if (ai.data != NULL) { OPENSSL_free(ai.data); ai.data=NULL; ai.length=0; }
+	if (ai.data != NULL) { free(ai.data); ai.data=NULL; ai.length=0; }
 
 	/* we don't care about the version right now :-) */
 	M_ASN1_D2I_get_x(ASN1_INTEGER,aip,d2i_ASN1_INTEGER);
 	ssl_version=(int)ASN1_INTEGER_get(aip);
 	ret->ssl_version=ssl_version;
-	if (ai.data != NULL) { OPENSSL_free(ai.data); ai.data=NULL; ai.length=0; }
+	if (ai.data != NULL) { free(ai.data); ai.data=NULL; ai.length=0; }
 
 	os.data=NULL; os.length=0;
 	M_ASN1_D2I_get_x(ASN1_OCTET_STRING,osp,d2i_ASN1_OCTET_STRING);
@@ -472,7 +472,7 @@ SSL_SESSION *d2i_SSL_SESSION(SSL_SESSION **a, const unsigned char **pp,
 		else
 			ret->krb5_client_princ_len=os.length;
 		memcpy(ret->krb5_client_princ,os.data,ret->krb5_client_princ_len);
-		OPENSSL_free(os.data);
+		free(os.data);
 		os.data = NULL;
 		os.length = 0;
 		}
@@ -486,14 +486,14 @@ SSL_SESSION *d2i_SSL_SESSION(SSL_SESSION **a, const unsigned char **pp,
 	else
 		ret->key_arg_length=os.length;
 	memcpy(ret->key_arg,os.data,ret->key_arg_length);
-	if (os.data != NULL) OPENSSL_free(os.data);
+	if (os.data != NULL) free(os.data);
 
 	ai.length=0;
 	M_ASN1_D2I_get_EXP_opt(aip,d2i_ASN1_INTEGER,1);
 	if (ai.data != NULL)
 		{
 		ret->time=ASN1_INTEGER_get(aip);
-		OPENSSL_free(ai.data); ai.data=NULL; ai.length=0;
+		free(ai.data); ai.data=NULL; ai.length=0;
 		}
 	else
 		ret->time=(unsigned long)time(NULL);
@@ -503,7 +503,7 @@ SSL_SESSION *d2i_SSL_SESSION(SSL_SESSION **a, const unsigned char **pp,
 	if (ai.data != NULL)
 		{
 		ret->timeout=ASN1_INTEGER_get(aip);
-		OPENSSL_free(ai.data); ai.data=NULL; ai.length=0;
+		free(ai.data); ai.data=NULL; ai.length=0;
 		}
 	else
 		ret->timeout=3;
@@ -532,7 +532,7 @@ SSL_SESSION *d2i_SSL_SESSION(SSL_SESSION **a, const unsigned char **pp,
 		ret->sid_ctx_length=os.length;
 		memcpy(ret->sid_ctx,os.data,os.length);
 		}
-	    OPENSSL_free(os.data); os.data=NULL; os.length=0;
+	    free(os.data); os.data=NULL; os.length=0;
 	    }
 	else
 	    ret->sid_ctx_length=0;
@@ -542,7 +542,7 @@ SSL_SESSION *d2i_SSL_SESSION(SSL_SESSION **a, const unsigned char **pp,
 	if (ai.data != NULL)
 		{
 		ret->verify_result=ASN1_INTEGER_get(aip);
-		OPENSSL_free(ai.data); ai.data=NULL; ai.length=0;
+		free(ai.data); ai.data=NULL; ai.length=0;
 		}
 	else
 		ret->verify_result=X509_V_OK;
@@ -554,7 +554,7 @@ SSL_SESSION *d2i_SSL_SESSION(SSL_SESSION **a, const unsigned char **pp,
 	if (os.data)
 		{
 		ret->tlsext_hostname = BUF_strndup((char *)os.data, os.length);
-		OPENSSL_free(os.data);
+		free(os.data);
 		os.data = NULL;
 		os.length = 0;
 		}
@@ -569,7 +569,7 @@ SSL_SESSION *d2i_SSL_SESSION(SSL_SESSION **a, const unsigned char **pp,
 	if (os.data)
 		{
 		ret->psk_identity_hint = BUF_strndup((char *)os.data, os.length);
-		OPENSSL_free(os.data);
+		free(os.data);
 		os.data = NULL;
 		os.length = 0;
 		}
@@ -582,7 +582,7 @@ SSL_SESSION *d2i_SSL_SESSION(SSL_SESSION **a, const unsigned char **pp,
 	if (os.data)
 		{
 		ret->psk_identity = BUF_strndup((char *)os.data, os.length);
-		OPENSSL_free(os.data);
+		free(os.data);
 		os.data = NULL;
 		os.length = 0;
 		}
@@ -596,7 +596,7 @@ SSL_SESSION *d2i_SSL_SESSION(SSL_SESSION **a, const unsigned char **pp,
 	if (ai.data != NULL)
 		{
 		ret->tlsext_tick_lifetime_hint=ASN1_INTEGER_get(aip);
-		OPENSSL_free(ai.data); ai.data=NULL; ai.length=0;
+		free(ai.data); ai.data=NULL; ai.length=0;
 		}
 	else if (ret->tlsext_ticklen && ret->session_id_length)
 		ret->tlsext_tick_lifetime_hint = -1;
@@ -622,7 +622,7 @@ SSL_SESSION *d2i_SSL_SESSION(SSL_SESSION **a, const unsigned char **pp,
 	if (os.data)
 		{
 		ret->compress_meth = os.data[0];
-		OPENSSL_free(os.data);
+		free(os.data);
 		os.data = NULL;
 		}
 #endif
@@ -634,7 +634,7 @@ SSL_SESSION *d2i_SSL_SESSION(SSL_SESSION **a, const unsigned char **pp,
 	if (os.data)
 		{
 		ret->srp_username = BUF_strndup((char *)os.data, os.length);
-		OPENSSL_free(os.data);
+		free(os.data);
 		os.data = NULL;
 		os.length = 0;
 		}

@@ -704,7 +704,7 @@ void thread_setup(void)
 	{
 	int i;
 
-	lock_cs=OPENSSL_malloc(CRYPTO_num_locks() * sizeof(HANDLE));
+	lock_cs=malloc(CRYPTO_num_locks() * sizeof(HANDLE));
 	for (i=0; i<CRYPTO_num_locks(); i++)
 		{
 		lock_cs[i]=CreateMutex(NULL,FALSE,NULL);
@@ -721,7 +721,7 @@ void thread_cleanup(void)
 	CRYPTO_set_locking_callback(NULL);
 	for (i=0; i<CRYPTO_num_locks(); i++)
 		CloseHandle(lock_cs[i]);
-	OPENSSL_free(lock_cs);
+	free(lock_cs);
 	}
 
 void win32_locking_callback(int mode, int type, char *file, int line)
@@ -799,8 +799,8 @@ void thread_setup(void)
 	{
 	int i;
 
-	lock_cs=OPENSSL_malloc(CRYPTO_num_locks() * sizeof(mutex_t));
-	lock_count=OPENSSL_malloc(CRYPTO_num_locks() * sizeof(long));
+	lock_cs=malloc(CRYPTO_num_locks() * sizeof(mutex_t));
+	lock_count=malloc(CRYPTO_num_locks() * sizeof(long));
 	for (i=0; i<CRYPTO_num_locks(); i++)
 		{
 		lock_count[i]=0;
@@ -826,8 +826,8 @@ void thread_cleanup(void)
 		mutex_destroy(&(lock_cs[i]));
 		fprintf(stderr,"%8ld:%s\n",lock_count[i],CRYPTO_get_lock_name(i));
 		}
-	OPENSSL_free(lock_cs);
-	OPENSSL_free(lock_count);
+	free(lock_cs);
+	free(lock_count);
 
 	fprintf(stderr,"done cleanup\n");
 
@@ -924,7 +924,7 @@ void thread_setup(void)
 	arena=usinit(filename);
 	unlink(filename);
 
-	lock_cs=OPENSSL_malloc(CRYPTO_num_locks() * sizeof(usema_t *));
+	lock_cs=malloc(CRYPTO_num_locks() * sizeof(usema_t *));
 	for (i=0; i<CRYPTO_num_locks(); i++)
 		{
 		lock_cs[i]=usnewsema(arena,1);
@@ -947,7 +947,7 @@ void thread_cleanup(void)
 		usdumpsema(lock_cs[i],stdout,buf);
 		usfreesema(lock_cs[i],arena);
 		}
-	OPENSSL_free(lock_cs);
+	free(lock_cs);
 	}
 
 void irix_locking_callback(int mode, int type, char *file, int line)
@@ -1007,8 +1007,8 @@ void thread_setup(void)
 	{
 	int i;
 
-	lock_cs=OPENSSL_malloc(CRYPTO_num_locks() * sizeof(pthread_mutex_t));
-	lock_count=OPENSSL_malloc(CRYPTO_num_locks() * sizeof(long));
+	lock_cs=malloc(CRYPTO_num_locks() * sizeof(pthread_mutex_t));
+	lock_count=malloc(CRYPTO_num_locks() * sizeof(long));
 	for (i=0; i<CRYPTO_num_locks(); i++)
 		{
 		lock_count[i]=0;
@@ -1031,8 +1031,8 @@ void thread_cleanup(void)
 		fprintf(stderr,"%8ld:%s\n",lock_count[i],
 			CRYPTO_get_lock_name(i));
 		}
-	OPENSSL_free(lock_cs);
-	OPENSSL_free(lock_count);
+	free(lock_cs);
+	free(lock_count);
 
 	fprintf(stderr,"done cleanup\n");
 	}
@@ -1112,8 +1112,8 @@ void thread_setup(void)
 	{
 	int i;
 
-	lock_cs=(BLocker**)OPENSSL_malloc(CRYPTO_num_locks() * sizeof(BLocker*));
-	lock_count=(long*)OPENSSL_malloc(CRYPTO_num_locks() * sizeof(long));
+	lock_cs=(BLocker**)malloc(CRYPTO_num_locks() * sizeof(BLocker*));
+	lock_count=(long*)malloc(CRYPTO_num_locks() * sizeof(long));
 	for (i=0; i<CRYPTO_num_locks(); i++)
 		{
 		lock_count[i]=0;
@@ -1136,8 +1136,8 @@ void thread_cleanup(void)
 		fprintf(stderr,"%8ld:%s\n",lock_count[i],
 			CRYPTO_get_lock_name(i));
 		}
-	OPENSSL_free(lock_cs);
-	OPENSSL_free(lock_count);
+	free(lock_cs);
+	free(lock_count);
 
 	fprintf(stderr,"done cleanup\n");
 	}

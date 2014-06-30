@@ -335,7 +335,7 @@ static int capi_ctrl(ENGINE *e, int cmd, long i, void *p, void (*f)(void))
 
 		case CAPI_CMD_STORE_NAME:
 		if (ctx->storename)
-			OPENSSL_free(ctx->storename);
+			free(ctx->storename);
 		ctx->storename = BUF_strdup(p);
 		CAPI_trace(ctx, "Setting store name to %s\n", p);
 		break;
@@ -622,7 +622,7 @@ static EVP_PKEY *capi_get_pkey(ENGINE *eng, CAPI_KEY *key)
 		return NULL;
 		}
 
-	pubkey = OPENSSL_malloc(len);
+	pubkey = malloc(len);
 
 	if (!pubkey)
 		goto memerr;
@@ -739,7 +739,7 @@ static EVP_PKEY *capi_get_pkey(ENGINE *eng, CAPI_KEY *key)
 
 	err:
 	if (pubkey)
-		OPENSSL_free(pubkey);
+		free(pubkey);
 	if (!ret)
 		{
 		if (rkey)
@@ -915,7 +915,7 @@ int capi_rsa_priv_dec(int flen, const unsigned char *from,
 		}
 
 	/* Create temp reverse order version of input */
-	if(!(tmpbuf = OPENSSL_malloc(flen)) ) 
+	if(!(tmpbuf = malloc(flen)) ) 
 		{
 		CAPIerr(CAPI_F_CAPI_RSA_PRIV_DEC, ERR_R_MALLOC_FAILURE);
 		return -1;
@@ -928,12 +928,12 @@ int capi_rsa_priv_dec(int flen, const unsigned char *from,
 		{
 		CAPIerr(CAPI_F_CAPI_RSA_PRIV_DEC, CAPI_R_DECRYPT_ERROR);
 		capi_addlasterror();
-		OPENSSL_free(tmpbuf);
+		free(tmpbuf);
 		return -1;
 		} 
 	else memcpy(to, tmpbuf, flen);
 
-	OPENSSL_free(tmpbuf);
+	free(tmpbuf);
 
 	return flen;
 	}
@@ -1082,7 +1082,7 @@ static char *wide_to_asc(LPWSTR wstr)
 		CAPIerr(CAPI_F_WIDE_TO_ASC, CAPI_R_WIN32_ERROR);
 		return NULL;
 		}
-	str = OPENSSL_malloc(sz);
+	str = malloc(sz);
 	if (!str)
 		{
 		CAPIerr(CAPI_F_WIDE_TO_ASC, ERR_R_MALLOC_FAILURE);
@@ -1090,7 +1090,7 @@ static char *wide_to_asc(LPWSTR wstr)
 		}
 	if (!WideCharToMultiByte(CP_ACP,0,wstr,len_0,str,sz,NULL,NULL))
 		{
-		OPENSSL_free(str);
+		free(str);
 		CAPIerr(CAPI_F_WIDE_TO_ASC, CAPI_R_WIN32_ERROR);
 		return NULL;
 		}
@@ -1111,7 +1111,7 @@ static int capi_get_provname(CAPI_CTX *ctx, LPSTR *pname, DWORD *ptype, DWORD id
 		capi_adderror(err);
 		return 0;
 		}
-	name = OPENSSL_malloc(len);
+	name = malloc(len);
 	if (!CryptEnumProvidersA(idx, NULL, 0, ptype, name, &len))
 		{
 		err = GetLastError();
@@ -1142,7 +1142,7 @@ static int capi_list_providers(CAPI_CTX *ctx, BIO *out)
 		if (ret == 0)
 			break;
 		BIO_printf(out, "%d. %s, type %d\n", idx, provname, ptype);
-		OPENSSL_free(provname);
+		free(provname);
 		}
 	return 1;
 	}
@@ -1170,7 +1170,7 @@ static int capi_list_containers(CAPI_CTX *ctx, BIO *out)
 	CAPI_trace(ctx, "Got max container len %d\n", buflen);
 	if (buflen == 0)
 		buflen = 1024;
-	cname = OPENSSL_malloc(buflen);
+	cname = malloc(buflen);
 	if (!cname)
 		{
 		CAPIerr(CAPI_F_CAPI_LIST_CONTAINERS, ERR_R_MALLOC_FAILURE);
@@ -1209,7 +1209,7 @@ static int capi_list_containers(CAPI_CTX *ctx, BIO *out)
 
 	done:
 	if (cname)
-		OPENSSL_free(cname);
+		free(cname);
 	CryptReleaseContext(hprov, 0);
 
 	return ret;
@@ -1222,7 +1222,7 @@ CRYPT_KEY_PROV_INFO *capi_get_prov_info(CAPI_CTX *ctx, PCCERT_CONTEXT cert)
 	
 	if(!CertGetCertificateContextProperty(cert, CERT_KEY_PROV_INFO_PROP_ID, NULL, &len))
 		return NULL;
-	pinfo = OPENSSL_malloc(len);
+	pinfo = malloc(len);
 	if (!pinfo)
 		{
 		CAPIerr(CAPI_F_CAPI_GET_PROV_INFO, ERR_R_MALLOC_FAILURE);
@@ -1232,7 +1232,7 @@ CRYPT_KEY_PROV_INFO *capi_get_prov_info(CAPI_CTX *ctx, PCCERT_CONTEXT cert)
 		{
 		CAPIerr(CAPI_F_CAPI_GET_PROV_INFO, CAPI_R_ERROR_GETTING_KEY_PROVIDER_INFO);
 		capi_addlasterror();
-		OPENSSL_free(pinfo);
+		free(pinfo);
 		return NULL;
 		}
 	return pinfo;
@@ -1256,9 +1256,9 @@ static void capi_dump_prov_info(CAPI_CTX *ctx, BIO *out, CRYPT_KEY_PROV_INFO *pi
 	BIO_printf(out, "    Container Name: %s, Key Type %d\n", contname, pinfo->dwKeySpec);
 	err:
 	if (provname)
-		OPENSSL_free(provname);
+		free(provname);
 	if (contname)
-		OPENSSL_free(contname);
+		free(contname);
 	}
 
 char * capi_cert_get_fname(CAPI_CTX *ctx, PCCERT_CONTEXT cert)
@@ -1269,17 +1269,17 @@ char * capi_cert_get_fname(CAPI_CTX *ctx, PCCERT_CONTEXT cert)
 	CAPI_trace(ctx, "capi_cert_get_fname\n");
 	if (!CertGetCertificateContextProperty(cert, CERT_FRIENDLY_NAME_PROP_ID, NULL, &dlen))
 		return NULL;
-	wfname = OPENSSL_malloc(dlen);
+	wfname = malloc(dlen);
 	if (CertGetCertificateContextProperty(cert, CERT_FRIENDLY_NAME_PROP_ID, wfname, &dlen))
 		{
 		char *fname = wide_to_asc(wfname);
-		OPENSSL_free(wfname);
+		free(wfname);
 		return fname;
 		}
 	CAPIerr(CAPI_F_CAPI_CERT_GET_FNAME, CAPI_R_ERROR_GETTING_FRIENDLY_NAME);
 	capi_addlasterror();
 
-	OPENSSL_free(wfname);
+	free(wfname);
 	return NULL;
 	}
 
@@ -1296,7 +1296,7 @@ void capi_dump_cert(CAPI_CTX *ctx, BIO *out, PCCERT_CONTEXT cert)
 		if (fname)
 			{
 			BIO_printf(out, "  Friendly Name \"%s\"\n", fname);
-			OPENSSL_free(fname);
+			free(fname);
 			}
 		else
 			BIO_printf(out, "  <No Friendly Name>\n");
@@ -1323,7 +1323,7 @@ void capi_dump_cert(CAPI_CTX *ctx, BIO *out, PCCERT_CONTEXT cert)
 		pinfo = capi_get_prov_info(ctx, cert);
 		capi_dump_prov_info(ctx, out, pinfo);
 		if (pinfo)
-			OPENSSL_free(pinfo);
+			free(pinfo);
 		}
 
 	if (flags & CAPI_DMP_PEM)
@@ -1419,7 +1419,7 @@ static PCCERT_CONTEXT capi_find_cert(CAPI_CTX *ctx, const char *id, HCERTSTORE h
 						match = 0;
 					else
 						match = 1;
-					OPENSSL_free(fname);
+					free(fname);
 					if (match)
 						return cert;
 					}
@@ -1433,7 +1433,7 @@ static CAPI_KEY *capi_get_key(CAPI_CTX *ctx, const char *contname, char *provnam
 	{
 	CAPI_KEY *key;
     DWORD dwFlags = 0; 
-	key = OPENSSL_malloc(sizeof(CAPI_KEY));
+	key = malloc(sizeof(CAPI_KEY));
 	CAPI_trace(ctx, "capi_get_key, contname=%s, provname=%s, type=%d\n", 
 						contname, provname, ptype);
     if(ctx->store_flags & CERT_SYSTEM_STORE_LOCAL_MACHINE)
@@ -1456,7 +1456,7 @@ static CAPI_KEY *capi_get_key(CAPI_CTX *ctx, const char *contname, char *provnam
 	return key;
 
 	err:
-	OPENSSL_free(key);
+	free(key);
 	return NULL;
 	}
 
@@ -1477,11 +1477,11 @@ static CAPI_KEY *capi_get_cert_key(CAPI_CTX *ctx, PCCERT_CONTEXT cert)
 
 	err:
 	if (pinfo)
-		OPENSSL_free(pinfo);
+		free(pinfo);
 	if (provname)
-		OPENSSL_free(provname);
+		free(provname);
 	if (contname)
-		OPENSSL_free(contname);
+		free(contname);
 	return key;
 	}
 
@@ -1523,7 +1523,7 @@ void capi_free_key(CAPI_KEY *key)
 	CryptReleaseContext(key->hprov, 0);
 	if (key->pcert)
 		CertFreeCertificateContext(key->pcert);
-	OPENSSL_free(key);
+	free(key);
 	}
 
 
@@ -1532,7 +1532,7 @@ void capi_free_key(CAPI_KEY *key)
 static CAPI_CTX *capi_ctx_new()
 	{
 	CAPI_CTX *ctx;
-	ctx = OPENSSL_malloc(sizeof(CAPI_CTX));
+	ctx = malloc(sizeof(CAPI_CTX));
 	if (!ctx)
 		{
 		CAPIerr(CAPI_F_CAPI_CTX_NEW, ERR_R_MALLOC_FAILURE);
@@ -1560,14 +1560,14 @@ static void capi_ctx_free(CAPI_CTX *ctx)
 	if (!ctx)
 		return;
 	if (ctx->cspname)
-		OPENSSL_free(ctx->cspname);
+		free(ctx->cspname);
 	if (ctx->debug_file)
-		OPENSSL_free(ctx->debug_file);
+		free(ctx->debug_file);
 	if (ctx->storename)
-		OPENSSL_free(ctx->storename);
+		free(ctx->storename);
 	if (ctx->ssl_client_store)
-		OPENSSL_free(ctx->ssl_client_store);
-	OPENSSL_free(ctx);
+		free(ctx->ssl_client_store);
+	free(ctx);
 	}
 
 static int capi_ctx_set_provname(CAPI_CTX *ctx, LPSTR pname, DWORD type, int check)
@@ -1586,7 +1586,7 @@ static int capi_ctx_set_provname(CAPI_CTX *ctx, LPSTR pname, DWORD type, int che
 		CryptReleaseContext(hprov, 0);
 		}
 	if (ctx->cspname)
-		OPENSSL_free(ctx->cspname);
+		free(ctx->cspname);
 	ctx->cspname = BUF_strdup(pname);
 	ctx->csptype = type;
 	return 1;
@@ -1600,7 +1600,7 @@ static int capi_ctx_set_provname_idx(CAPI_CTX *ctx, int idx)
 	if (capi_get_provname(ctx, &pname, &type, idx) != 1)
 		return 0;
 	res = capi_ctx_set_provname(ctx, pname, type, 0);
-	OPENSSL_free(pname);
+	free(pname);
 	return res;
 	}
 

@@ -173,7 +173,7 @@ static int MS_CALLBACK slg_write(BIO *b, const char *in, int inl)
 		{ 0, "", LOG_ERR } /* The default */
 		};
 
-	if((buf= (char *)OPENSSL_malloc(inl+ 1)) == NULL){
+	if((buf= (char *)malloc(inl+ 1)) == NULL){
 		return(0);
 	}
 	strncpy(buf, in, inl);
@@ -186,7 +186,7 @@ static int MS_CALLBACK slg_write(BIO *b, const char *in, int inl)
 
 	xsyslog(b, priority, pp);
 
-	OPENSSL_free(buf);
+	free(buf);
 	return(ret);
 	}
 

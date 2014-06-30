@@ -209,7 +209,7 @@ static void app_info_free(APP_INFO *inf)
 			{
 			app_info_free(inf->next);
 			}
-		OPENSSL_free(inf);
+		free(inf);
 		}
 	}
 
@@ -387,7 +387,7 @@ static APP_INFO *pop_info(void)
 				ret->next = NULL;
 				if (next != NULL)
 					next->references--;
-				OPENSSL_free(ret);
+				free(ret);
 				}
 			}
 		}
@@ -403,7 +403,7 @@ int CRYPTO_push_info_(const char *info, const char *file, int line)
 		{
 		MemCheck_off(); /* obtain MALLOC2 lock */
 
-		if ((ami = (APP_INFO *)OPENSSL_malloc(sizeof(APP_INFO))) == NULL)
+		if ((ami = (APP_INFO *)malloc(sizeof(APP_INFO))) == NULL)
 			{
 			ret=0;
 			goto err;
@@ -412,7 +412,7 @@ int CRYPTO_push_info_(const char *info, const char *file, int line)
 			{
 			if ((amih=lh_APP_INFO_new()) == NULL)
 				{
-				OPENSSL_free(ami);
+				free(ami);
 				ret=0;
 				goto err;
 				}
@@ -495,9 +495,9 @@ void CRYPTO_dbg_malloc(void *addr, int num, const char *file, int line,
 		if (is_MemCheck_on())
 			{
 			MemCheck_off(); /* make sure we hold MALLOC2 lock */
-			if ((m=(MEM *)OPENSSL_malloc(sizeof(MEM))) == NULL)
+			if ((m=(MEM *)malloc(sizeof(MEM))) == NULL)
 				{
-				OPENSSL_free(addr);
+				free(addr);
 				MemCheck_on(); /* release MALLOC2 lock
 				                * if num_disabled drops to 0 */
 				return;
@@ -506,8 +506,8 @@ void CRYPTO_dbg_malloc(void *addr, int num, const char *file, int line,
 				{
 				if ((mh=lh_MEM_new()) == NULL)
 					{
-					OPENSSL_free(addr);
-					OPENSSL_free(m);
+					free(addr);
+					free(m);
 					addr=NULL;
 					goto err;
 					}
@@ -555,7 +555,7 @@ void CRYPTO_dbg_malloc(void *addr, int num, const char *file, int line,
 					{
 					mm->app_info->references--;
 					}
-				OPENSSL_free(mm);
+				free(mm);
 				}
 		err:
 			MemCheck_on(); /* release MALLOC2 lock
@@ -590,7 +590,7 @@ void CRYPTO_dbg_free(void *addr, int before_p)
 #endif
 				if (mp->app_info != NULL)
 					app_info_free(mp->app_info);
-				OPENSSL_free(mp);
+				free(mp);
 				}
 
 			MemCheck_on(); /* release MALLOC2 lock

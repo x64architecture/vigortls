@@ -1067,7 +1067,7 @@ static int request_certificate(SSL *s)
 			goto msg_end;
 
 		i=i2d_X509(s->cert->pkeys[SSL_PKEY_RSA_ENC].x509,NULL);
-		buf2=OPENSSL_malloc((unsigned int)i);
+		buf2=malloc((unsigned int)i);
 		if (buf2 == NULL)
 			{
 			SSLerr(SSL_F_REQUEST_CERTIFICATE,ERR_R_MALLOC_FAILURE);
@@ -1077,10 +1077,10 @@ static int request_certificate(SSL *s)
 		i=i2d_X509(s->cert->pkeys[SSL_PKEY_RSA_ENC].x509,&p2);
 		if (!EVP_VerifyUpdate(&ctx,buf2,(unsigned int)i))
 			{
-			OPENSSL_free(buf2);
+			free(buf2);
 			goto msg_end;
 			}
-		OPENSSL_free(buf2);
+		free(buf2);
 
 		pkey=X509_get_pubkey(x509);
 		if (pkey == NULL) goto end;

@@ -153,7 +153,7 @@ static int dgram_new(BIO *bi)
 
 	bi->init=0;
 	bi->num=0;
-	data = OPENSSL_malloc(sizeof(bio_dgram_data));
+	data = malloc(sizeof(bio_dgram_data));
 	if (data == NULL)
 		return 0;
 	memset(data, 0x00, sizeof(bio_dgram_data));
@@ -172,7 +172,7 @@ static int dgram_free(BIO *a)
 		return 0;
 
 	data = (bio_dgram_data *)a->ptr;
-	if(data != NULL) OPENSSL_free(data);
+	if(data != NULL) free(data);
 
 	return(1);
 	}

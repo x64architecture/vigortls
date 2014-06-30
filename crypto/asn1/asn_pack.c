@@ -79,7 +79,7 @@ STACK_OF(OPENSSL_BLOCK) *ASN1_seq_unpack(const unsigned char *buf, int len,
 }
 
 /* Turn a STACK structures into an ASN1 encoded SEQUENCE OF structure in a
- * OPENSSL_malloc'ed buffer
+ * malloc'ed buffer
  */
 
 unsigned char *ASN1_seq_pack(STACK_OF(OPENSSL_BLOCK) *safes, i2d_of_void *i2d,
@@ -92,7 +92,7 @@ unsigned char *ASN1_seq_pack(STACK_OF(OPENSSL_BLOCK) *safes, i2d_of_void *i2d,
 		ASN1err(ASN1_F_ASN1_SEQ_PACK,ASN1_R_ENCODE_ERROR);
 		return NULL;
 	}
-	if (!(safe = OPENSSL_malloc (safelen))) {
+	if (!(safe = malloc (safelen))) {
 		ASN1err(ASN1_F_ASN1_SEQ_PACK,ERR_R_MALLOC_FAILURE);
 		return NULL;
 	}
@@ -136,7 +136,7 @@ ASN1_STRING *ASN1_pack_string(void *obj, i2d_of_void *i2d, ASN1_STRING **oct)
 		ASN1err(ASN1_F_ASN1_PACK_STRING,ASN1_R_ENCODE_ERROR);
 		return NULL;
 	}
-	if (!(p = OPENSSL_malloc (octmp->length))) {
+	if (!(p = malloc (octmp->length))) {
 		ASN1err(ASN1_F_ASN1_PACK_STRING,ERR_R_MALLOC_FAILURE);
 		return NULL;
 	}
@@ -162,7 +162,7 @@ ASN1_STRING *ASN1_item_pack(void *obj, const ASN1_ITEM *it, ASN1_STRING **oct)
 	} else octmp = *oct;
 
 	if(octmp->data) {
-		OPENSSL_free(octmp->data);
+		free(octmp->data);
 		octmp->data = NULL;
 	}
 		

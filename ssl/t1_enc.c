@@ -341,7 +341,7 @@ int tls1_change_cipher_state(SSL *s, int which)
 
 		if (s->enc_read_ctx != NULL)
 			reuse_dd = 1;
-		else if ((s->enc_read_ctx=OPENSSL_malloc(sizeof(EVP_CIPHER_CTX))) == NULL)
+		else if ((s->enc_read_ctx=malloc(sizeof(EVP_CIPHER_CTX))) == NULL)
 			goto err;
 		else
 			/* make sure it's intialized in case we exit later with an error */
@@ -364,7 +364,7 @@ int tls1_change_cipher_state(SSL *s, int which)
 				}
 			if (s->s3->rrec.comp == NULL)
 				s->s3->rrec.comp=(unsigned char *)
-					OPENSSL_malloc(SSL3_RT_MAX_ENCRYPTED_LENGTH);
+					malloc(SSL3_RT_MAX_ENCRYPTED_LENGTH);
 			if (s->s3->rrec.comp == NULL)
 				goto err;
 			}
@@ -553,7 +553,7 @@ int tls1_setup_key_block(SSL *s)
 
 	ssl3_cleanup_key_block(s);
 
-	if ((p1=(unsigned char *)OPENSSL_malloc(num)) == NULL)
+	if ((p1=(unsigned char *)malloc(num)) == NULL)
 		{
 		SSLerr(SSL_F_TLS1_SETUP_KEY_BLOCK,ERR_R_MALLOC_FAILURE);
 		goto err;
@@ -562,7 +562,7 @@ int tls1_setup_key_block(SSL *s)
 	s->s3->tmp.key_block_length=num;
 	s->s3->tmp.key_block=p1;
 
-	if ((p2=(unsigned char *)OPENSSL_malloc(num)) == NULL)
+	if ((p2=(unsigned char *)malloc(num)) == NULL)
 		{
 		SSLerr(SSL_F_TLS1_SETUP_KEY_BLOCK,ERR_R_MALLOC_FAILURE);
 		goto err;
@@ -596,7 +596,7 @@ err:
 	if (p2)
 		{
 		OPENSSL_cleanse(p2,num);
-		OPENSSL_free(p2);
+		free(p2);
 		}
 	return(ret);
 	}
@@ -991,7 +991,7 @@ int tls1_export_keying_material(SSL *s, unsigned char *out, size_t olen,
 	size_t vallen, currentvalpos;
 	int rv;
 
-	buff = OPENSSL_malloc(olen);
+	buff = malloc(olen);
 	if (buff == NULL) goto err2;
 
 	/* construct PRF arguments
@@ -1005,7 +1005,7 @@ int tls1_export_keying_material(SSL *s, unsigned char *out, size_t olen,
 		vallen += 2 + contextlen;
 		}
 
-	val = OPENSSL_malloc(vallen);
+	val = malloc(vallen);
 	if (val == NULL) goto err2;
 	currentvalpos = 0;
 	memcpy(val + currentvalpos, (unsigned char *) label, llen);
@@ -1058,8 +1058,8 @@ err2:
 	SSLerr(SSL_F_TLS1_EXPORT_KEYING_MATERIAL, ERR_R_MALLOC_FAILURE);
 	rv = 0;
 ret:
-	if (buff != NULL) OPENSSL_free(buff);
-	if (val != NULL) OPENSSL_free(val);
+	if (buff != NULL) free(buff);
+	if (val != NULL) free(val);
 	return(rv);
 	}
 

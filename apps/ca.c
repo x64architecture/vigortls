@@ -582,7 +582,7 @@ bad:
 		size_t len;
 
 		len = strlen(s)+sizeof(CONFIG_FILE)+1;
-		tofree=OPENSSL_malloc(len);
+		tofree=malloc(len);
 		BUF_strlcpy(tofree,s,len);
 		BUF_strlcat(tofree,"/",len);
 		BUF_strlcat(tofree,CONFIG_FILE,len);
@@ -603,7 +603,7 @@ bad:
 		}
 	if(tofree)
 		{
-		OPENSSL_free(tofree);
+		free(tofree);
 		tofree = NULL;
 		}
 
@@ -1130,7 +1130,7 @@ bad:
 				{
 				if ((f=BN_bn2hex(serial)) == NULL) goto err;
 				BIO_printf(bio_err,"next serial number is %s\n",f);
-				OPENSSL_free(f);
+				free(f);
 				}
 			}
 
@@ -1499,7 +1499,7 @@ bad:
 	ret=0;
 err:
 	if(tofree)
-		OPENSSL_free(tofree);
+		free(tofree);
 	BIO_free_all(Cout);
 	BIO_free_all(Sout);
 	BIO_free_all(out);
@@ -1511,7 +1511,7 @@ err:
 	if (ret) ERR_print_errors(bio_err);
 	app_RAND_write_file(randfile, bio_err);
 	if (free_key && key)
-		OPENSSL_free(key);
+		free(key);
 	BN_free(serial);
 	BN_free(crlnumber);
 	free_index(db);
@@ -2135,17 +2135,17 @@ again2:
 		goto err;
 
 	/* We now just add it to the database */
-	row[DB_type]=(char *)OPENSSL_malloc(2);
+	row[DB_type]=(char *)malloc(2);
 
 	tm=X509_get_notAfter(ret);
-	row[DB_exp_date]=(char *)OPENSSL_malloc(tm->length+1);
+	row[DB_exp_date]=(char *)malloc(tm->length+1);
 	memcpy(row[DB_exp_date],tm->data,tm->length);
 	row[DB_exp_date][tm->length]='\0';
 
 	row[DB_rev_date]=NULL;
 
 	/* row[DB_serial] done already */
-	row[DB_file]=(char *)OPENSSL_malloc(8);
+	row[DB_file]=(char *)malloc(8);
 	row[DB_name]=X509_NAME_oneline(X509_get_subject_name(ret),NULL,0);
 
 	if ((row[DB_type] == NULL) || (row[DB_exp_date] == NULL) ||
@@ -2158,7 +2158,7 @@ again2:
 	row[DB_type][0]='V';
 	row[DB_type][1]='\0';
 
-	if ((irow=(char **)OPENSSL_malloc(sizeof(char *)*(DB_NUMBER+1))) == NULL)
+	if ((irow=(char **)malloc(sizeof(char *)*(DB_NUMBER+1))) == NULL)
 		{
 		BIO_printf(bio_err,"Memory allocation failure\n");
 		goto err;
@@ -2180,7 +2180,7 @@ again2:
 	ok=1;
 err:
 	for (i=0; i<DB_NUMBER; i++)
-		if (row[i] != NULL) OPENSSL_free(row[i]);
+		if (row[i] != NULL) free(row[i]);
 
 	if (CAname != NULL)
 		X509_NAME_free(CAname);
@@ -2402,17 +2402,17 @@ static int do_revoke(X509 *x509, CA_DB *db, int type, char *value)
 		BIO_printf(bio_err,"Adding Entry with serial number %s to DB for %s\n", row[DB_serial], row[DB_name]);
 
 		/* We now just add it to the database */
-		row[DB_type]=(char *)OPENSSL_malloc(2);
+		row[DB_type]=(char *)malloc(2);
 
 		tm=X509_get_notAfter(x509);
-		row[DB_exp_date]=(char *)OPENSSL_malloc(tm->length+1);
+		row[DB_exp_date]=(char *)malloc(tm->length+1);
 		memcpy(row[DB_exp_date],tm->data,tm->length);
 		row[DB_exp_date][tm->length]='\0';
 
 		row[DB_rev_date]=NULL;
 
 		/* row[DB_serial] done already */
-		row[DB_file]=(char *)OPENSSL_malloc(8);
+		row[DB_file]=(char *)malloc(8);
 
 		/* row[DB_name] done already */
 
@@ -2426,7 +2426,7 @@ static int do_revoke(X509 *x509, CA_DB *db, int type, char *value)
 		row[DB_type][0]='V';
 		row[DB_type][1]='\0';
 
-		if ((irow=(char **)OPENSSL_malloc(sizeof(char *)*(DB_NUMBER+1))) == NULL)
+		if ((irow=(char **)malloc(sizeof(char *)*(DB_NUMBER+1))) == NULL)
 			{
 			BIO_printf(bio_err,"Memory allocation failure\n");
 			goto err;
@@ -2482,7 +2482,7 @@ err:
 	for (i=0; i<DB_NUMBER; i++)
 		{
 		if (row[i] != NULL) 
-			OPENSSL_free(row[i]);
+			free(row[i]);
 		}
 	return(ok);
 	}
@@ -2497,7 +2497,7 @@ static int get_certificate_status(const char *serial, CA_DB *db)
 		row[i]=NULL;
 
 	/* Malloc needed char spaces */
-	row[DB_serial] = OPENSSL_malloc(strlen(serial) + 2);
+	row[DB_serial] = malloc(strlen(serial) + 2);
 	if (row[DB_serial] == NULL)
 		{
 		BIO_printf(bio_err,"Malloc failure\n");
@@ -2570,7 +2570,7 @@ err:
 	for (i=0; i<DB_NUMBER; i++)
 		{
 		if (row[i] != NULL)
-			OPENSSL_free(row[i]);
+			free(row[i]);
 		}
 	return(ok);
 	}
@@ -2586,7 +2586,7 @@ static int do_updatedb (CA_DB *db)
 
 	/* get actual time and make a string */
 	a_tm = X509_gmtime_adj(a_tm, 0);
-	a_tm_s = (char *) OPENSSL_malloc(a_tm->length+1);
+	a_tm_s = (char *) malloc(a_tm->length+1);
 	if (a_tm_s == NULL)
 		{
 		cnt = -1;
@@ -2642,7 +2642,7 @@ static int do_updatedb (CA_DB *db)
 err:
 
 	ASN1_UTCTIME_free(a_tm);
-	OPENSSL_free(a_tm_s);
+	free(a_tm_s);
 
 	return (cnt);
 	}
@@ -2743,7 +2743,7 @@ char *make_revocation_str(int rev_type, char *rev_arg)
 	if (reason) i += strlen(reason) + 1;
 	if (other) i += strlen(other) + 1;
 
-	str = OPENSSL_malloc(i);
+	str = malloc(i);
 
 	if (!str) return NULL;
 
@@ -2815,7 +2815,7 @@ int make_revoked(X509_REVOKED *rev, const char *str)
 
 	err:
 
-	if (tmp) OPENSSL_free(tmp);
+	if (tmp) free(tmp);
 	ASN1_OBJECT_free(hold);
 	ASN1_GENERALIZEDTIME_free(comp_time);
 	ASN1_ENUMERATED_free(rtmp);
@@ -2963,7 +2963,7 @@ int unpack_revinfo(ASN1_TIME **prevtm, int *preason, ASN1_OBJECT **phold, ASN1_G
 
 	err:
 
-	if (tmp) OPENSSL_free(tmp);
+	if (tmp) free(tmp);
 	if (!phold) ASN1_OBJECT_free(hold);
 	if (!pinvtm) ASN1_GENERALIZEDTIME_free(comp_time);
 

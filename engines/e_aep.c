@@ -360,7 +360,7 @@ static const char *get_AEP_LIBNAME(void)
 static void free_AEP_LIBNAME(void)
 	{
 	if(AEP_LIBNAME)
-		OPENSSL_free((void*)AEP_LIBNAME);
+		free((void*)AEP_LIBNAME);
 	AEP_LIBNAME = NULL;
 	}
 static long set_AEP_LIBNAME(const char *name)

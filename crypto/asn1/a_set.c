@@ -120,7 +120,7 @@ int i2d_ASN1_SET(STACK_OF(OPENSSL_BLOCK) *a, unsigned char **pp,
 
         pStart  = p; /* Catch the beg of Setblobs*/
 		/* In this array we will store the SET blobs */
-		rgSetBlob = OPENSSL_malloc(sk_OPENSSL_BLOCK_num(a) * sizeof(MYBLOB));
+		rgSetBlob = malloc(sk_OPENSSL_BLOCK_num(a) * sizeof(MYBLOB));
 		if (rgSetBlob == NULL)
 			{
 			ASN1err(ASN1_F_I2D_ASN1_SET,ERR_R_MALLOC_FAILURE);
@@ -141,7 +141,7 @@ SetBlob
  /* Now we have to sort the blobs. I am using a simple algo.
     *Sort ptrs *Copy to temp-mem *Copy from temp-mem to user-mem*/
         qsort( rgSetBlob, sk_OPENSSL_BLOCK_num(a), sizeof(MYBLOB), SetBlobCmp);
-		if (!(pTempMem = OPENSSL_malloc(totSize)))
+		if (!(pTempMem = malloc(totSize)))
 			{
 			ASN1err(ASN1_F_I2D_ASN1_SET,ERR_R_MALLOC_FAILURE);
 			return(0);
@@ -157,8 +157,8 @@ SetBlob
 
 /* Copy back to user mem*/
         memcpy(pStart, pTempMem, totSize);
-        OPENSSL_free(pTempMem);
-        OPENSSL_free(rgSetBlob);
+        free(pTempMem);
+        free(rgSetBlob);
 
         return(r);
         }

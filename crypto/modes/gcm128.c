@@ -1538,7 +1538,7 @@ GCM128_CONTEXT *CRYPTO_gcm128_new(void *key, block128_f block)
 {
 	GCM128_CONTEXT *ret;
 
-	if ((ret = (GCM128_CONTEXT *)OPENSSL_malloc(sizeof(GCM128_CONTEXT))))
+	if ((ret = (GCM128_CONTEXT *)malloc(sizeof(GCM128_CONTEXT))))
 		CRYPTO_gcm128_init(ret,key,block);
 
 	return ret;
@@ -1548,7 +1548,7 @@ void CRYPTO_gcm128_release(GCM128_CONTEXT *ctx)
 {
 	if (ctx) {
 		OPENSSL_cleanse(ctx,sizeof(*ctx));
-		OPENSSL_free(ctx);
+		free(ctx);
 	}
 }
 

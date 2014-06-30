@@ -859,7 +859,7 @@ static int surewarehk_rsa_priv_dec(int flen,const unsigned char *from,unsigned c
 		if (ret!=1)
 			goto err;
 		/* intermediate buffer for padding */
-		if ((buf=OPENSSL_malloc(tlen)) == NULL)
+		if ((buf=malloc(tlen)) == NULL)
 		{
 			SUREWAREerr(SUREWARE_F_SUREWAREHK_RSA_PRIV_DEC,ERR_R_MALLOC_FAILURE);
 			goto err;
@@ -889,7 +889,7 @@ err:
 	if (buf)
 	{
 		OPENSSL_cleanse(buf,tlen);
-		OPENSSL_free(buf);
+		free(buf);
 	}
 	return ret;
 }

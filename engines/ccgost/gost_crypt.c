@@ -439,7 +439,7 @@ int gost89_set_asn1_parameters(EVP_CIPHER_CTX *ctx,ASN1_TYPE *params)
 	gcp->enc_param_set = OBJ_nid2obj(c->paramNID);
 
 	len = i2d_GOST_CIPHER_PARAMS(gcp, NULL);
-	p = buf = (unsigned char*)OPENSSL_malloc(len);
+	p = buf = (unsigned char*)malloc(len);
 	if (!buf)
 		{
 		GOST_CIPHER_PARAMS_free(gcp);
@@ -453,11 +453,11 @@ int gost89_set_asn1_parameters(EVP_CIPHER_CTX *ctx,ASN1_TYPE *params)
 
 	if(!os || !ASN1_OCTET_STRING_set(os, buf, len))
 		{
-		OPENSSL_free(buf);
+		free(buf);
 		GOSTerr(GOST_F_GOST89_SET_ASN1_PARAMETERS, GOST_R_NO_MEMORY);
 		return 0;
 		}
-	OPENSSL_free(buf);
+	free(buf);
 
 	ASN1_TYPE_set(params, V_ASN1_SEQUENCE, os);
 	return 1;

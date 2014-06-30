@@ -472,7 +472,7 @@ static int int_TS_RESP_verify_token(TS_VERIFY_CTX *ctx,
  err:
 	X509_free(signer);
 	X509_ALGOR_free(md_alg);
-	OPENSSL_free(imprint);
+	free(imprint);
 	return ret;
 	}
 
@@ -526,7 +526,7 @@ static int TS_check_status_info(TS_RESP *response)
 			   ", status text: ", embedded_status_text ? 
 			   embedded_status_text : "unspecified",
 			   ", failure codes: ", failure_text);
-	OPENSSL_free(embedded_status_text);
+	free(embedded_status_text);
 
 	return 0;
 	}
@@ -546,7 +546,7 @@ static char *TS_get_status_text(STACK_OF(ASN1_UTF8STRING) *text)
 		length += 1;	/* separator character */
 		}
 	/* Allocate memory (closing '\0' included). */
-	if (!(result = OPENSSL_malloc(length)))
+	if (!(result = malloc(length)))
 		{
 		TSerr(TS_F_TS_GET_STATUS_TEXT, ERR_R_MALLOC_FAILURE);
 		return NULL;
@@ -608,7 +608,7 @@ static int TS_compute_imprint(BIO *data, TS_TST_INFO *tst_info,
 	if (length < 0)
 	    goto err;
 	*imprint_len = length;
-	if (!(*imprint = OPENSSL_malloc(*imprint_len))) 
+	if (!(*imprint = malloc(*imprint_len))) 
 		{
 		TSerr(TS_F_TS_COMPUTE_IMPRINT, ERR_R_MALLOC_FAILURE);
 		goto err;
@@ -627,7 +627,7 @@ static int TS_compute_imprint(BIO *data, TS_TST_INFO *tst_info,
 	return 1;
  err:
 	X509_ALGOR_free(*md_alg);
-	OPENSSL_free(*imprint);
+	free(*imprint);
 	*imprint_len = 0;
 	*imprint = NULL;
 	return 0;

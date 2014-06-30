@@ -240,7 +240,7 @@ ASN1_GENERALIZEDTIME *ASN1_GENERALIZEDTIME_adj(ASN1_GENERALIZEDTIME *s,
 	p=(char *)s->data;
 	if ((p == NULL) || ((size_t)s->length < len))
 		{
-		p=OPENSSL_malloc(len);
+		p=malloc(len);
 		if (p == NULL)
 			{
 			ASN1err(ASN1_F_ASN1_GENERALIZEDTIME_ADJ,
@@ -248,7 +248,7 @@ ASN1_GENERALIZEDTIME *ASN1_GENERALIZEDTIME_adj(ASN1_GENERALIZEDTIME *s,
 			return(NULL);
 			}
 		if (s->data != NULL)
-			OPENSSL_free(s->data);
+			free(s->data);
 		s->data=(unsigned char *)p;
 		}
 

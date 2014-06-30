@@ -23,7 +23,7 @@ static int pkey_gost_init(EVP_PKEY_CTX *ctx)
 	{
 	struct gost_pmeth_data *data;
 	EVP_PKEY *pkey = EVP_PKEY_CTX_get0_pkey(ctx);
-	data = OPENSSL_malloc(sizeof(struct gost_pmeth_data));
+	data = malloc(sizeof(struct gost_pmeth_data));
 	if (!data) return 0;
 	memset(data,0,sizeof(struct gost_pmeth_data));
 	if (pkey && EVP_PKEY_get0(pkey)) 
@@ -64,8 +64,8 @@ static int pkey_gost_copy(EVP_PKEY_CTX *dst, EVP_PKEY_CTX *src)
 static void pkey_gost_cleanup (EVP_PKEY_CTX *ctx)
 	{
 	struct gost_pmeth_data *data = EVP_PKEY_CTX_get_data(ctx);
-	if (data->shared_ukm) OPENSSL_free(data->shared_ukm);
-	OPENSSL_free(data);
+	if (data->shared_ukm) free(data->shared_ukm);
+	free(data);
 	}	
 
 /* --------------------- control functions  ------------------------------*/
@@ -101,7 +101,7 @@ static int pkey_gost_ctrl(EVP_PKEY_CTX *ctx, int type, int p1, void *p2)
 			pctx->sign_param_nid = (int)p1;
 			return 1;
 		case EVP_PKEY_CTRL_SET_IV:
-			pctx->shared_ukm=OPENSSL_malloc((int)p1);
+			pctx->shared_ukm=malloc((int)p1);
 			memcpy(pctx->shared_ukm,p2,(int) p1);
 			return 1;
 		case EVP_PKEY_CTRL_PEER_KEY:
@@ -421,7 +421,7 @@ static int pkey_gost_derive_init(EVP_PKEY_CTX *ctx)
 static int pkey_gost_mac_init(EVP_PKEY_CTX *ctx)
 	{
 	struct gost_mac_pmeth_data *data;
-	data = OPENSSL_malloc(sizeof(struct gost_mac_pmeth_data));
+	data = malloc(sizeof(struct gost_mac_pmeth_data));
 	if (!data) return 0;
 	memset(data,0,sizeof(struct gost_mac_pmeth_data));
 	EVP_PKEY_CTX_set_data(ctx,data);
@@ -430,7 +430,7 @@ static int pkey_gost_mac_init(EVP_PKEY_CTX *ctx)
 static void pkey_gost_mac_cleanup (EVP_PKEY_CTX *ctx)
 	{
 	struct gost_mac_pmeth_data *data = EVP_PKEY_CTX_get_data(ctx);
-	OPENSSL_free(data);
+	free(data);
 	}	
 static int pkey_gost_mac_copy(EVP_PKEY_CTX *dst, EVP_PKEY_CTX *src)
 	{
@@ -527,12 +527,12 @@ static int pkey_gost_mac_ctrl_str(EVP_PKEY_CTX *ctx,
 				{
 				GOSTerr(GOST_F_PKEY_GOST_MAC_CTRL_STR,
 					GOST_R_INVALID_MAC_KEY_LENGTH);
-				OPENSSL_free(keybuf);
+				free(keybuf);
 				return 0;	
 				}
 			ret= pkey_gost_mac_ctrl(ctx, EVP_PKEY_CTRL_SET_MAC_KEY,
 				32,keybuf);
-			OPENSSL_free(keybuf);
+			free(keybuf);
 			return ret;
 	
 		}
@@ -548,7 +548,7 @@ static int pkey_gost_mac_keygen(EVP_PKEY_CTX *ctx, EVP_PKEY *pkey)
 			GOSTerr(GOST_F_PKEY_GOST_MAC_KEYGEN,GOST_R_MAC_KEY_NOT_SET);
 			return 0;
 		}
-		keydata = OPENSSL_malloc(32);
+		keydata = malloc(32);
 		memcpy(keydata,data->key,32);
 		EVP_PKEY_assign(pkey, NID_id_Gost28147_89_MAC, keydata);
 		return 1;

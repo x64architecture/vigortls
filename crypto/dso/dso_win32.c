@@ -181,7 +181,7 @@ static int win32_load(DSO *dso)
 		ERR_add_error_data(3, "filename(", filename, ")");
 		goto err;
 		}
-	p = (HINSTANCE *)OPENSSL_malloc(sizeof(HINSTANCE));
+	p = (HINSTANCE *)malloc(sizeof(HINSTANCE));
 	if(p == NULL)
 		{
 		DSOerr(DSO_F_WIN32_LOAD,ERR_R_MALLOC_FAILURE);
@@ -199,9 +199,9 @@ static int win32_load(DSO *dso)
 err:
 	/* Cleanup !*/
 	if(filename != NULL)
-		OPENSSL_free(filename);
+		free(filename);
 	if(p != NULL)
-		OPENSSL_free(p);
+		free(p);
 	if(h != NULL)
 		FreeLibrary(h);
 	return(0);
@@ -232,7 +232,7 @@ static int win32_unload(DSO *dso)
 		return(0);
 		}
 	/* Cleanup */
-	OPENSSL_free(p);
+	free(p);
 	return(1);
 	}
 
@@ -324,7 +324,7 @@ static struct file_st *win32_splitter(DSO *dso, const char *filename,
 		return(NULL);
 		}
 
-	result = OPENSSL_malloc(sizeof(struct file_st));
+	result = malloc(sizeof(struct file_st));
 	if(result == NULL)
 		{
 		DSOerr(DSO_F_WIN32_SPLITTER,
@@ -355,7 +355,7 @@ static struct file_st *win32_splitter(DSO *dso, const char *filename,
 				DSOerr(DSO_F_WIN32_SPLITTER,
 					DSO_R_INCORRECT_FILE_SYNTAX);
 				/*goto err;*/
-				OPENSSL_free(result);
+				free(result);
 				return(NULL);
 				}
 			result->device = start;
@@ -471,7 +471,7 @@ static char *win32_joiner(DSO *dso, const struct file_st *file_split)
 		return(NULL);
 		}
 
-	result = OPENSSL_malloc(len + 1);
+	result = malloc(len + 1);
 	if (!result)
 		{
 		DSOerr(DSO_F_WIN32_JOINER,
@@ -557,7 +557,7 @@ static char *win32_merger(DSO *dso, const char *filespec1, const char *filespec2
 		}
 	if (!filespec2)
 		{
-		merged = OPENSSL_malloc(strlen(filespec1) + 1);
+		merged = malloc(strlen(filespec1) + 1);
 		if(!merged)
 			{
 			DSOerr(DSO_F_WIN32_MERGER,
@@ -568,7 +568,7 @@ static char *win32_merger(DSO *dso, const char *filespec1, const char *filespec2
 		}
 	else if (!filespec1)
 		{
-		merged = OPENSSL_malloc(strlen(filespec2) + 1);
+		merged = malloc(strlen(filespec2) + 1);
 		if(!merged)
 			{
 			DSOerr(DSO_F_WIN32_MERGER,
@@ -591,7 +591,7 @@ static char *win32_merger(DSO *dso, const char *filespec1, const char *filespec2
 			{
 			DSOerr(DSO_F_WIN32_MERGER,
 				ERR_R_MALLOC_FAILURE);
-			OPENSSL_free(filespec1_split);
+			free(filespec1_split);
 			return(NULL);
 			}
 
@@ -622,8 +622,8 @@ static char *win32_merger(DSO *dso, const char *filespec1, const char *filespec2
 
 		merged = win32_joiner(dso, filespec1_split);
 		}
-	OPENSSL_free(filespec1_split);
-	OPENSSL_free(filespec2_split);
+	free(filespec1_split);
+	free(filespec2_split);
 	return(merged);
 	}
 
@@ -638,10 +638,10 @@ static char *win32_name_converter(DSO *dso, const char *filename)
 			(strstr(filename, ":") == NULL));
 	if(transform)
 		/* We will convert this to "%s.dll" */
-		translated = OPENSSL_malloc(len + 5);
+		translated = malloc(len + 5);
 	else
 		/* We will simply duplicate filename */
-		translated = OPENSSL_malloc(len + 1);
+		translated = malloc(len + 1);
 	if(translated == NULL)
 		{
 		DSOerr(DSO_F_WIN32_NAME_CONVERTER,

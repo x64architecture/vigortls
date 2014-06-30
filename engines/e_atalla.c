@@ -289,7 +289,7 @@ static const char *get_ATALLA_LIBNAME(void)
 static void free_ATALLA_LIBNAME(void)
 	{
 		if(ATALLA_LIBNAME)
-			OPENSSL_free((void*)ATALLA_LIBNAME);
+			free((void*)ATALLA_LIBNAME);
 		ATALLA_LIBNAME = NULL;
 	}
 static long set_ATALLA_LIBNAME(const char *name)

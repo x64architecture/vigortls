@@ -172,9 +172,9 @@ int ASN1_sign(i2d_of_void *i2d, X509_ALGOR *algor1, X509_ALGOR *algor2,
 			}
 		}
 	inl=i2d(data,NULL);
-	buf_in=(unsigned char *)OPENSSL_malloc((unsigned int)inl);
+	buf_in=(unsigned char *)malloc((unsigned int)inl);
 	outll=outl=EVP_PKEY_size(pkey);
-	buf_out=(unsigned char *)OPENSSL_malloc((unsigned int)outl);
+	buf_out=(unsigned char *)malloc((unsigned int)outl);
 	if ((buf_in == NULL) || (buf_out == NULL))
 		{
 		outl=0;
@@ -193,7 +193,7 @@ int ASN1_sign(i2d_of_void *i2d, X509_ALGOR *algor1, X509_ALGOR *algor2,
 		ASN1err(ASN1_F_ASN1_SIGN,ERR_R_EVP_LIB);
 		goto err;
 		}
-	if (signature->data != NULL) OPENSSL_free(signature->data);
+	if (signature->data != NULL) free(signature->data);
 	signature->data=buf_out;
 	buf_out=NULL;
 	signature->length=outl;
@@ -205,9 +205,9 @@ int ASN1_sign(i2d_of_void *i2d, X509_ALGOR *algor1, X509_ALGOR *algor2,
 err:
 	EVP_MD_CTX_cleanup(&ctx);
 	if (buf_in != NULL)
-		{ OPENSSL_cleanse((char *)buf_in,(unsigned int)inl); OPENSSL_free(buf_in); }
+		{ OPENSSL_cleanse((char *)buf_in,(unsigned int)inl); free(buf_in); }
 	if (buf_out != NULL)
-		{ OPENSSL_cleanse((char *)buf_out,outll); OPENSSL_free(buf_out); }
+		{ OPENSSL_cleanse((char *)buf_out,outll); free(buf_out); }
 	return(outl);
 	}
 
@@ -299,7 +299,7 @@ int ASN1_item_sign_ctx(const ASN1_ITEM *it,
 
 	inl=ASN1_item_i2d(asn,&buf_in, it);
 	outll=outl=EVP_PKEY_size(pkey);
-	buf_out=OPENSSL_malloc((unsigned int)outl);
+	buf_out=malloc((unsigned int)outl);
 	if ((buf_in == NULL) || (buf_out == NULL))
 		{
 		outl=0;
@@ -314,7 +314,7 @@ int ASN1_item_sign_ctx(const ASN1_ITEM *it,
 		ASN1err(ASN1_F_ASN1_ITEM_SIGN_CTX,ERR_R_EVP_LIB);
 		goto err;
 		}
-	if (signature->data != NULL) OPENSSL_free(signature->data);
+	if (signature->data != NULL) free(signature->data);
 	signature->data=buf_out;
 	buf_out=NULL;
 	signature->length=outl;
@@ -326,8 +326,8 @@ int ASN1_item_sign_ctx(const ASN1_ITEM *it,
 err:
 	EVP_MD_CTX_cleanup(ctx);
 	if (buf_in != NULL)
-		{ OPENSSL_cleanse((char *)buf_in,(unsigned int)inl); OPENSSL_free(buf_in); }
+		{ OPENSSL_cleanse((char *)buf_in,(unsigned int)inl); free(buf_in); }
 	if (buf_out != NULL)
-		{ OPENSSL_cleanse((char *)buf_out,outll); OPENSSL_free(buf_out); }
+		{ OPENSSL_cleanse((char *)buf_out,outll); free(buf_out); }
 	return(outl);
 	}

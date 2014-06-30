@@ -189,7 +189,7 @@ SSL_SESSION *SSL_SESSION_new(void)
 	{
 	SSL_SESSION *ss;
 
-	ss=(SSL_SESSION *)OPENSSL_malloc(sizeof(SSL_SESSION));
+	ss=(SSL_SESSION *)malloc(sizeof(SSL_SESSION));
 	if (ss == NULL)
 		{
 		SSLerr(SSL_F_SSL_SESSION_NEW,ERR_R_MALLOC_FAILURE);
@@ -396,8 +396,8 @@ int ssl_get_new_session(SSL *s, int session)
 #ifndef OPENSSL_NO_EC
 		if (s->tlsext_ecpointformatlist)
 			{
-			if (ss->tlsext_ecpointformatlist != NULL) OPENSSL_free(ss->tlsext_ecpointformatlist);
-			if ((ss->tlsext_ecpointformatlist = OPENSSL_malloc(s->tlsext_ecpointformatlist_length)) == NULL)
+			if (ss->tlsext_ecpointformatlist != NULL) free(ss->tlsext_ecpointformatlist);
+			if ((ss->tlsext_ecpointformatlist = malloc(s->tlsext_ecpointformatlist_length)) == NULL)
 				{
 				SSLerr(SSL_F_SSL_GET_NEW_SESSION, ERR_R_MALLOC_FAILURE);
 				SSL_SESSION_free(ss);
@@ -408,8 +408,8 @@ int ssl_get_new_session(SSL *s, int session)
 			}
 		if (s->tlsext_ellipticcurvelist)
 			{
-			if (ss->tlsext_ellipticcurvelist != NULL) OPENSSL_free(ss->tlsext_ellipticcurvelist);
-			if ((ss->tlsext_ellipticcurvelist = OPENSSL_malloc(s->tlsext_ellipticcurvelist_length)) == NULL)
+			if (ss->tlsext_ellipticcurvelist != NULL) free(ss->tlsext_ellipticcurvelist);
+			if ((ss->tlsext_ellipticcurvelist = malloc(s->tlsext_ellipticcurvelist_length)) == NULL)
 				{
 				SSLerr(SSL_F_SSL_GET_NEW_SESSION, ERR_R_MALLOC_FAILURE);
 				SSL_SESSION_free(ss);
@@ -759,27 +759,27 @@ void SSL_SESSION_free(SSL_SESSION *ss)
 	if (ss->peer != NULL) X509_free(ss->peer);
 	if (ss->ciphers != NULL) sk_SSL_CIPHER_free(ss->ciphers);
 #ifndef OPENSSL_NO_TLSEXT
-	if (ss->tlsext_hostname != NULL) OPENSSL_free(ss->tlsext_hostname);
-	if (ss->tlsext_tick != NULL) OPENSSL_free(ss->tlsext_tick);
+	if (ss->tlsext_hostname != NULL) free(ss->tlsext_hostname);
+	if (ss->tlsext_tick != NULL) free(ss->tlsext_tick);
 #ifndef OPENSSL_NO_EC
 	ss->tlsext_ecpointformatlist_length = 0;
-	if (ss->tlsext_ecpointformatlist != NULL) OPENSSL_free(ss->tlsext_ecpointformatlist);
+	if (ss->tlsext_ecpointformatlist != NULL) free(ss->tlsext_ecpointformatlist);
 	ss->tlsext_ellipticcurvelist_length = 0;
-	if (ss->tlsext_ellipticcurvelist != NULL) OPENSSL_free(ss->tlsext_ellipticcurvelist);
+	if (ss->tlsext_ellipticcurvelist != NULL) free(ss->tlsext_ellipticcurvelist);
 #endif /* OPENSSL_NO_EC */
 #endif
 #ifndef OPENSSL_NO_PSK
 	if (ss->psk_identity_hint != NULL)
-		OPENSSL_free(ss->psk_identity_hint);
+		free(ss->psk_identity_hint);
 	if (ss->psk_identity != NULL)
-		OPENSSL_free(ss->psk_identity);
+		free(ss->psk_identity);
 #endif
 #ifndef OPENSSL_NO_SRP
 	if (ss->srp_username != NULL)
-		OPENSSL_free(ss->srp_username);
+		free(ss->srp_username);
 #endif
 	OPENSSL_cleanse(ss,sizeof(*ss));
-	OPENSSL_free(ss);
+	free(ss);
 	}
 
 int SSL_set_session(SSL *s, SSL_SESSION *session)
@@ -808,7 +808,7 @@ int SSL_set_session(SSL *s, SSL_SESSION *session)
                 if (s->kssl_ctx && !s->kssl_ctx->client_princ &&
                     session->krb5_client_princ_len > 0)
                 {
-                    s->kssl_ctx->client_princ = (char *)OPENSSL_malloc(session->krb5_client_princ_len + 1)) == NULL) 
+                    s->kssl_ctx->client_princ = (char *)malloc(session->krb5_client_princ_len + 1)) == NULL) 
 					if (s->kssl_ctx->client_prince == NULL) {
                         SSLerr(SSL_F_SSL_SET_SESSION, ERR_R_MALLOC_FAILURE);
                         return (0);
@@ -932,11 +932,11 @@ int SSL_set_session_ticket_ext(SSL *s, void *ext_data, int ext_len)
 		{
 		if (s->tlsext_session_ticket)
 			{
-			OPENSSL_free(s->tlsext_session_ticket);
+			free(s->tlsext_session_ticket);
 			s->tlsext_session_ticket = NULL;
 			}
 
-		s->tlsext_session_ticket = OPENSSL_malloc(sizeof(TLS_SESSION_TICKET_EXT) + ext_len);
+		s->tlsext_session_ticket = malloc(sizeof(TLS_SESSION_TICKET_EXT) + ext_len);
 		if (!s->tlsext_session_ticket)
 			{
 			SSLerr(SSL_F_SSL_SET_SESSION_TICKET_EXT, ERR_R_MALLOC_FAILURE);

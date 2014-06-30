@@ -139,7 +139,7 @@ static int beos_load(DSO *dso)
 err:
 	/* Cleanup !*/
 	if(filename != NULL)
-		OPENSSL_free(filename);
+		free(filename);
 	if(id > 0)
 		unload_add_on(id);
 	return(0);
@@ -248,7 +248,7 @@ static char *beos_name_converter(DSO *dso, const char *filename)
 		if ((DSO_flags(dso) & DSO_FLAG_NAME_TRANSLATION_EXT_ONLY) == 0)
 			rsize += 3; /* The length of "lib" */
 		}
-	translated = OPENSSL_malloc(rsize);
+	translated = malloc(rsize);
 	if(translated == NULL)
 		{
 		DSOerr(DSO_F_BEOS_NAME_CONVERTER,

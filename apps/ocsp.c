@@ -201,11 +201,11 @@ int MAIN(int argc, char **argv)
 		else if (!strcmp(*args, "-url"))
 			{
 			if (thost)
-				OPENSSL_free(thost);
+				free(thost);
 			if (tport)
-				OPENSSL_free(tport);
+				free(tport);
 			if (tpath)
-				OPENSSL_free(tpath);
+				free(tpath);
 			if (args[1])
 				{
 				args++;
@@ -926,11 +926,11 @@ end:
 	sk_CONF_VALUE_pop_free(headers, X509V3_conf_free);
 
 	if (thost)
-		OPENSSL_free(thost);
+		free(thost);
 	if (tport)
-		OPENSSL_free(tport);
+		free(tport);
 	if (tpath)
-		OPENSSL_free(tpath);
+		free(tpath);
 
 	OPENSSL_EXIT(ret);
 }
@@ -1175,7 +1175,7 @@ static char **lookup_serial(CA_DB *db, ASN1_INTEGER *ser)
 	row[DB_serial] = itmp;
 	BN_free(bn);
 	rrow=TXT_DB_get_by_index(db->db,DB_serial,row);
-	OPENSSL_free(itmp);
+	free(itmp);
 	return rrow;
 	}
 

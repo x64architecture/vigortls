@@ -625,12 +625,12 @@ int MAIN(int argc, char **argv)
 	for (i=0; i<RSA_NUM; i++)
 		rsa_key[i]=NULL;
 
-	if ((buf=(unsigned char *)OPENSSL_malloc((int)BUFSIZE)) == NULL)
+	if ((buf=(unsigned char *)malloc((int)BUFSIZE)) == NULL)
 		{
 		BIO_printf(bio_err,"out of memory\n");
 		goto end;
 		}
-	if ((buf2=(unsigned char *)OPENSSL_malloc((int)BUFSIZE)) == NULL)
+	if ((buf2=(unsigned char *)malloc((int)BUFSIZE)) == NULL)
 		{
 		BIO_printf(bio_err,"out of memory\n");
 		goto end;
@@ -2442,8 +2442,8 @@ show_res:
 
 end:
 	ERR_print_errors(bio_err);
-	if (buf != NULL) OPENSSL_free(buf);
-	if (buf2 != NULL) OPENSSL_free(buf2);
+	if (buf != NULL) free(buf);
+	if (buf2 != NULL) free(buf2);
 	for (i=0; i<RSA_NUM; i++)
 		if (rsa_key[i] != NULL)
 			RSA_free(rsa_key[i]);

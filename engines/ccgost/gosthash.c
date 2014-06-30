@@ -12,14 +12,14 @@
 #include "gosthash.h"
 
 
-/* Use OPENSSL_malloc for memory allocation if compiled with 
+/* Use malloc for memory allocation if compiled with 
  * -DOPENSSL_BUILD, and libc malloc otherwise
  */
 #ifndef MYALLOC
 # ifdef OPENSSL_BUILD
 #  include <openssl/crypto.h>
-#  define MYALLOC(size) OPENSSL_malloc(size)
-#  define MYFREE(ptr) OPENSSL_free(ptr)
+#  define MYALLOC(size) malloc(size)
+#  define MYFREE(ptr) free(ptr)
 # else
 #  define MYALLOC(size) malloc(size)
 #  define MYFREE(ptr) free(ptr)

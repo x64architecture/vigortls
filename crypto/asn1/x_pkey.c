@@ -109,18 +109,18 @@ X509_PKEY *X509_PKEY_new(void)
 	X509_PKEY *ret=NULL;
 
 	ret->version=0;
-	if ((ret = OPENSSL_malloc(sizeof(X509))) == NULL) {
+	if ((ret = malloc(sizeof(X509))) == NULL) {
 		ASN1_MAC_H_err(ASN1_F_X509_PKEY_NEW, ERR_R_MALLOC_FAILURE,
 			__LINE__);
 		return NULL;
 	}
 	if ((ret->enc_algor = X509_ALGOR_new()) == NULL) {
-		OPENSSL_free(ret);
+		free(ret);
 		return NULL;
 	}
 	if ((ret->enc_pkey = M_ASN1_OCTET_STRING_new()) == NULL) {
 		X509_ALGOR_free(ret->enc_algor);
-		OPENSSL_free(ret);
+		free(ret);
 		return NULL;
 	}
 	ret->dec_pkey=NULL;
@@ -155,6 +155,6 @@ void X509_PKEY_free(X509_PKEY *x)
 	if (x->enc_algor != NULL) X509_ALGOR_free(x->enc_algor);
 	if (x->enc_pkey != NULL) M_ASN1_OCTET_STRING_free(x->enc_pkey);
 	if (x->dec_pkey != NULL)EVP_PKEY_free(x->dec_pkey);
-	if ((x->key_data != NULL) && (x->key_free)) OPENSSL_free(x->key_data);
-	OPENSSL_free(x);
+	if ((x->key_data != NULL) && (x->key_free)) free(x->key_data);
+	free(x);
 	}

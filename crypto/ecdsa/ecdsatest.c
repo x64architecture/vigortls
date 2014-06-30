@@ -312,7 +312,7 @@ int test_builtin(BIO *out)
 	/* get a list of all internal curves */
 	crv_len = EC_get_builtin_curves(NULL, 0);
 
-	curves = OPENSSL_malloc(sizeof(EC_builtin_curve) * crv_len);
+	curves = malloc(sizeof(EC_builtin_curve) * crv_len);
 
 	if (curves == NULL)
 		{
@@ -385,7 +385,7 @@ int test_builtin(BIO *out)
 		(void)BIO_flush(out);
 		/* create signature */
 		sig_len = ECDSA_size(eckey);
-		if ((signature = OPENSSL_malloc(sig_len)) == NULL)
+		if ((signature = malloc(sig_len)) == NULL)
 			goto builtin_err;
                 if (!ECDSA_sign(0, digest, 20, signature, &sig_len, eckey))
 			{
@@ -450,7 +450,7 @@ int test_builtin(BIO *out)
 			goto builtin_err;
 			}
 		buf_len = 2 * bn_len;
-		if ((raw_buf = OPENSSL_malloc(buf_len)) == NULL)
+		if ((raw_buf = malloc(buf_len)) == NULL)
 			goto builtin_err;
 		/* Pad the bignums with leading zeroes. */
 		memset(raw_buf, 0, buf_len);
@@ -493,7 +493,7 @@ int test_builtin(BIO *out)
 		/* cleanup */
 		/* clean bogus errors */
 		ERR_clear_error();
-		OPENSSL_free(signature);
+		free(signature);
 		signature = NULL;
 		EC_KEY_free(eckey);
 		eckey = NULL;
@@ -501,7 +501,7 @@ int test_builtin(BIO *out)
 		wrong_eckey = NULL;
 		ECDSA_SIG_free(ecdsa_sig);
 		ecdsa_sig = NULL;
-		OPENSSL_free(raw_buf);
+		free(raw_buf);
 		raw_buf = NULL;
 		}
 
@@ -514,11 +514,11 @@ builtin_err:
 	if (ecdsa_sig)
 		ECDSA_SIG_free(ecdsa_sig);
 	if (signature)
-		OPENSSL_free(signature);
+		free(signature);
 	if (raw_buf)
-		OPENSSL_free(raw_buf);
+		free(raw_buf);
 	if (curves)
-		OPENSSL_free(curves);
+		free(curves);
 
 	return ret;
 	}

@@ -1191,11 +1191,11 @@ end:
 	if (skkeys)
 		sk_OPENSSL_STRING_free(skkeys);
 	if (secret_key)
-		OPENSSL_free(secret_key);
+		free(secret_key);
 	if (secret_keyid)
-		OPENSSL_free(secret_keyid);
+		free(secret_keyid);
 	if (pwri_tmp)
-		OPENSSL_free(pwri_tmp);
+		free(pwri_tmp);
 	if (econtent_type)
 		ASN1_OBJECT_free(econtent_type);
 	if (rr)
@@ -1215,7 +1215,7 @@ end:
 	BIO_free(in);
 	BIO_free(indata);
 	BIO_free_all(out);
-	if (passin) OPENSSL_free(passin);
+	if (passin) free(passin);
 	return (ret);
 }
 

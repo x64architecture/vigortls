@@ -186,8 +186,8 @@ int args_from_file(char *file, int *argc, char **argv[])
 	*argc=0;
 	*argv=NULL;
 
-	if (buf != NULL) OPENSSL_free(buf);
-	buf=(char *)OPENSSL_malloc(len+1);
+	if (buf != NULL) free(buf);
+	buf=(char *)malloc(len+1);
 	if (buf == NULL) return(0);
 
 	len=fread(buf,1,len,fp);
@@ -197,8 +197,8 @@ int args_from_file(char *file, int *argc, char **argv[])
 	i=0;
 	for (p=buf; *p; p++)
 		if (*p == '\n') i++;
-	if (arg != NULL) OPENSSL_free(arg);
-	arg=(char **)OPENSSL_malloc(sizeof(char *)*(i*2));
+	if (arg != NULL) free(arg);
+	arg=(char **)malloc(sizeof(char *)*(i*2));
 
 	*argv=arg;
 	num=0;
@@ -340,7 +340,7 @@ int chopup_args(ARGS *arg, char *buf, int *argc, char **argv[])
 	if (arg->count == 0)
 		{
 		arg->count=20;
-		arg->data=(char **)OPENSSL_malloc(sizeof(char *)*arg->count);
+		arg->data=(char **)malloc(sizeof(char *)*arg->count);
 		}
 	for (i=0; i<arg->count; i++)
 		arg->data[i]=NULL;
@@ -360,7 +360,7 @@ int chopup_args(ARGS *arg, char *buf, int *argc, char **argv[])
 			{
 			char **tmp_p;
 			int tlen = arg->count + 20;
-			tmp_p = (char **)OPENSSL_realloc(arg->data,
+			tmp_p = (char **)realloc(arg->data,
 				sizeof(char *)*tlen);
 			if (tmp_p == NULL)
 				return 0;
@@ -414,13 +414,13 @@ int dump_cert_text (BIO *out, X509 *x)
 	p=X509_NAME_oneline(X509_get_subject_name(x),NULL,0);
 	BIO_puts(out,"subject=");
 	BIO_puts(out,p);
-	OPENSSL_free(p);
+	free(p);
 
 	p=X509_NAME_oneline(X509_get_issuer_name(x),NULL,0);
 	BIO_puts(out,"\nissuer=");
 	BIO_puts(out,p);
 	BIO_puts(out,"\n");
-	OPENSSL_free(p);
+	free(p);
 
 	return 0;
 }
@@ -540,7 +540,7 @@ int password_callback(char *buf, int bufsiz, int verify,
 				PW_MIN_LENGTH,bufsiz-1);
 		if (ok >= 0 && verify)
 			{
-			buff = (char *)OPENSSL_malloc(bufsiz);
+			buff = (char *)malloc(bufsiz);
 			ok = UI_add_verify_string(ui,prompt,ui_flags,buff,
 				PW_MIN_LENGTH,bufsiz-1, buf);
 			}
@@ -554,7 +554,7 @@ int password_callback(char *buf, int bufsiz, int verify,
 		if (buff)
 			{
 			OPENSSL_cleanse(buff,(unsigned int)bufsiz);
-			OPENSSL_free(buff);
+			free(buff);
 			}
 
 		if (ok >= 0)
@@ -573,7 +573,7 @@ int password_callback(char *buf, int bufsiz, int verify,
 			res = 0;
 			}
 		UI_free(ui);
-		OPENSSL_free(prompt);
+		free(prompt);
 		}
 	return res;
 	}
@@ -1364,7 +1364,7 @@ void print_name(BIO *out, const char *title, X509_NAME *nm, unsigned long lflags
 		buf = X509_NAME_oneline(nm, 0, 0);
 		BIO_puts(out, buf);
 		BIO_puts(out, "\n");
-		OPENSSL_free(buf);
+		free(buf);
 	} else {
 		if(mline) BIO_puts(out, "\n");
 		X509_NAME_print_ex(out, nm, indent, lflags);
@@ -1490,7 +1490,7 @@ char *make_config_name()
 	char *p;
 
 	len=strlen(t)+strlen(OPENSSL_CONF)+2;
-	p=OPENSSL_malloc(len);
+	p=malloc(len);
 	BUF_strlcpy(p,t,len);
 	BUF_strlcat(p,"/",len);
 	BUF_strlcat(p,OPENSSL_CONF,len);
@@ -1767,7 +1767,7 @@ CA_DB *load_index(char *dbfile, DB_ATTR *db_attr)
 			}
 		}
 
-	if ((retdb = OPENSSL_malloc(sizeof(CA_DB))) == NULL)
+	if ((retdb = malloc(sizeof(CA_DB))) == NULL)
 		{
 		fprintf(stderr, "Out of memory\n");
 		goto err;
@@ -1973,7 +1973,7 @@ void free_index(CA_DB *db)
 	if (db)
 		{
 		if (db->db) TXT_DB_free(db->db);
-		OPENSSL_free(db);
+		free(db);
 		}
 	}
 
@@ -2013,11 +2013,11 @@ int parse_yesno(const char *str, int def)
 X509_NAME *parse_name(char *subject, long chtype, int multirdn)
 	{
 	size_t buflen = strlen(subject)+1; /* to copy the types and values into. due to escaping, the copy can only become shorter */
-	char *buf = OPENSSL_malloc(buflen);
+	char *buf = malloc(buflen);
 	size_t max_ne = buflen / 2 + 1; /* maximum number of name elements */
-	char **ne_types = OPENSSL_malloc(max_ne * sizeof (char *));
-	char **ne_values = OPENSSL_malloc(max_ne * sizeof (char *));
-	int *mval = OPENSSL_malloc (max_ne * sizeof (int));
+	char **ne_types = malloc(max_ne * sizeof (char *));
+	char **ne_values = malloc(max_ne * sizeof (char *));
+	int *mval = malloc (max_ne * sizeof (int));
 
 	char *sp = subject, *bp = buf;
 	int i, ne_num = 0;
@@ -2126,22 +2126,22 @@ X509_NAME *parse_name(char *subject, long chtype, int multirdn)
 			goto error;
 		}
 
-	OPENSSL_free(ne_values);
-	OPENSSL_free(ne_types);
-	OPENSSL_free(buf);
-	OPENSSL_free(mval);
+	free(ne_values);
+	free(ne_types);
+	free(buf);
+	free(mval);
 	return n;
 
 error:
 	X509_NAME_free(n);
 	if (ne_values)
-		OPENSSL_free(ne_values);
+		free(ne_values);
 	if (ne_types)
-		OPENSSL_free(ne_types);
+		free(ne_types);
 	if (mval)
-		OPENSSL_free(mval);
+		free(mval);
 	if (buf)
-		OPENSSL_free(buf);
+		free(buf);
 	return NULL;
 }
 
@@ -2347,7 +2347,7 @@ int pkey_ctrl_string(EVP_PKEY_CTX *ctx, char *value)
 		vtmp++;
 		}
 	rv = EVP_PKEY_CTX_ctrl_str(ctx, stmp, vtmp);
-	OPENSSL_free(stmp);
+	free(stmp);
 	return rv;
 	}
 
@@ -2411,7 +2411,7 @@ unsigned char *next_protos_parse(unsigned short *outlen, const char *in)
 	if (len >= 65535)
 		return NULL;
 
-	out = OPENSSL_malloc(strlen(in) + 1);
+	out = malloc(strlen(in) + 1);
 	if (!out)
 		return NULL;
 
@@ -2421,7 +2421,7 @@ unsigned char *next_protos_parse(unsigned short *outlen, const char *in)
 			{
 			if (i - start > 255)
 				{
-				OPENSSL_free(out);
+				free(out);
 				return NULL;
 				}
 			out[start] = i - start;

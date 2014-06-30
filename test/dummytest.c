@@ -21,7 +21,7 @@ int main(int argc, char *argv[])
 		program = BUF_strdup("(unknown)");
 	else
 		{
-		program = OPENSSL_malloc((q - p) + 1);
+		program = malloc((q - p) + 1);
 		strncpy(program, p, q - p);
 		program[q - p] = '\0';
 		}
@@ -36,6 +36,6 @@ int main(int argc, char *argv[])
 
 	printf("No %s support\n", program);
 
-	OPENSSL_free(program);
+	free(program);
 	return(0);
 	}

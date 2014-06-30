@@ -208,7 +208,7 @@ int CRYPTO_get_new_lockid(char *name)
 		}
 	i=sk_OPENSSL_STRING_push(app_locks,str);
 	if (!i)
-		OPENSSL_free(str);
+		free(str);
 	else
 		i+=CRYPTO_NUM_LOCKS; /* gap of one :-) */
 	return(i);
@@ -239,7 +239,7 @@ int CRYPTO_get_new_dynlockid(void)
 		}
 	CRYPTO_w_unlock(CRYPTO_LOCK_DYNLOCK);
 
-	pointer = (CRYPTO_dynlock *)OPENSSL_malloc(sizeof(CRYPTO_dynlock));
+	pointer = (CRYPTO_dynlock *)malloc(sizeof(CRYPTO_dynlock));
 	if (pointer == NULL)
 		{
 		CRYPTOerr(CRYPTO_F_CRYPTO_GET_NEW_DYNLOCKID,ERR_R_MALLOC_FAILURE);
@@ -249,7 +249,7 @@ int CRYPTO_get_new_dynlockid(void)
 	pointer->data = dynlock_create_callback(__FILE__,__LINE__);
 	if (pointer->data == NULL)
 		{
-		OPENSSL_free(pointer);
+		free(pointer);
 		CRYPTOerr(CRYPTO_F_CRYPTO_GET_NEW_DYNLOCKID,ERR_R_MALLOC_FAILURE);
 		return(0);
 		}
@@ -273,7 +273,7 @@ int CRYPTO_get_new_dynlockid(void)
 	if (i == -1)
 		{
 		dynlock_destroy_callback(pointer->data,__FILE__,__LINE__);
-		OPENSSL_free(pointer);
+		free(pointer);
 		}
 	else
 		i += 1; /* to avoid 0 */
@@ -319,7 +319,7 @@ void CRYPTO_destroy_dynlockid(int i)
 	if (pointer)
 		{
 		dynlock_destroy_callback(pointer->data,__FILE__,__LINE__);
-		OPENSSL_free(pointer);
+		free(pointer);
 		}
 	}
 

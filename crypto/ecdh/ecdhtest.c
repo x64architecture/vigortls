@@ -203,7 +203,7 @@ static int test_ecdh_curve(int nid, const char *text, BN_CTX *ctx, BIO *out)
 #endif
 
 	alen=KDF1_SHA1_len;
-	abuf=(unsigned char *)OPENSSL_malloc(alen);
+	abuf=(unsigned char *)malloc(alen);
 	aout=ECDH_compute_key(abuf,alen,EC_KEY_get0_public_key(b),a,KDF1_SHA1);
 
 #ifdef NOISY
@@ -220,7 +220,7 @@ static int test_ecdh_curve(int nid, const char *text, BN_CTX *ctx, BIO *out)
 #endif
 
 	blen=KDF1_SHA1_len;
-	bbuf=(unsigned char *)OPENSSL_malloc(blen);
+	bbuf=(unsigned char *)malloc(blen);
 	bout=ECDH_compute_key(bbuf,blen,EC_KEY_get0_public_key(a),b,KDF1_SHA1);
 
 #ifdef NOISY
@@ -285,8 +285,8 @@ static int test_ecdh_curve(int nid, const char *text, BN_CTX *ctx, BIO *out)
 err:
 	ERR_print_errors_fp(stderr);
 
-	if (abuf != NULL) OPENSSL_free(abuf);
-	if (bbuf != NULL) OPENSSL_free(bbuf);
+	if (abuf != NULL) free(abuf);
+	if (bbuf != NULL) free(bbuf);
 	if (x_a) BN_free(x_a);
 	if (y_a) BN_free(y_a);
 	if (x_b) BN_free(x_b);

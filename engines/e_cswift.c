@@ -304,7 +304,7 @@ static const char *get_CSWIFT_LIBNAME(void)
 static void free_CSWIFT_LIBNAME(void)
 	{
 	if(CSWIFT_LIBNAME)
-		OPENSSL_free((void*)CSWIFT_LIBNAME);
+		free((void*)CSWIFT_LIBNAME);
 	CSWIFT_LIBNAME = NULL;
 	}
 static long set_CSWIFT_LIBNAME(const char *name)
@@ -561,7 +561,7 @@ int cswift_bn_32copy(SW_LARGENUMBER * out, const BIGNUM * in)
 	{
 		mod++;
 	}
-	out->value = (unsigned char*)OPENSSL_malloc(out->nbytes);
+	out->value = (unsigned char*)malloc(out->nbytes);
 	if(!out->value)
 	{
 		return 0;
@@ -687,15 +687,15 @@ static int cswift_mod_exp_crt(BIGNUM *r, const BIGNUM *a, const BIGNUM *p,
 	to_return = 1;
 err:
 	if(sw_param.up.crt.p.value)
-		OPENSSL_free(sw_param.up.crt.p.value);
+		free(sw_param.up.crt.p.value);
 	if(sw_param.up.crt.q.value)
-		OPENSSL_free(sw_param.up.crt.q.value);
+		free(sw_param.up.crt.q.value);
 	if(sw_param.up.crt.dmp1.value)
-		OPENSSL_free(sw_param.up.crt.dmp1.value);
+		free(sw_param.up.crt.dmp1.value);
 	if(sw_param.up.crt.dmq1.value)
-		OPENSSL_free(sw_param.up.crt.dmq1.value);
+		free(sw_param.up.crt.dmq1.value);
 	if(sw_param.up.crt.iqmp.value)
-		OPENSSL_free(sw_param.up.crt.iqmp.value);
+		free(sw_param.up.crt.iqmp.value);
 	if(result)
 		BN_free(result);
 	if(argument)

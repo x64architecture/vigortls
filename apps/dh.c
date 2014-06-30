@@ -275,10 +275,10 @@ bad:
 
 		len=BN_num_bytes(dh->p);
 		bits=BN_num_bits(dh->p);
-		data=(unsigned char *)OPENSSL_malloc(len);
+		data=(unsigned char *)malloc(len);
 		if (data == NULL)
 			{
-			perror("OPENSSL_malloc");
+			perror("malloc");
 			goto end;
 			}
 		l=BN_bn2bin(dh->p,data);
@@ -309,7 +309,7 @@ bad:
 		printf("\tif ((dh->p == NULL) || (dh->g == NULL))\n");
 		printf("\t\treturn(NULL);\n");
 		printf("\treturn(dh);\n\t}\n");
-		OPENSSL_free(data);
+		free(data);
 		}
 
 

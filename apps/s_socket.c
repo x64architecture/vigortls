@@ -252,7 +252,7 @@ int do_server(int port, int type, int *ret, int (*cb)(char *hostname, int s, uns
 		else
 			sock = accept_socket;
 		i=(*cb)(name,sock, context);
-		if (name != NULL) OPENSSL_free(name);
+		if (name != NULL) free(name);
 		if (type==SOCK_STREAM)
 			SHUTDOWN2(sock);
 		if (i < 0)
@@ -388,9 +388,9 @@ redoit:
 		}
 	else
 		{
-		if ((*host=(char *)OPENSSL_malloc(strlen(h1->h_name)+1)) == NULL)
+		if ((*host=(char *)malloc(strlen(h1->h_name)+1)) == NULL)
 			{
-			perror("OPENSSL_malloc");
+			perror("malloc");
 			closesocket(ret);
 			return(0);
 			}

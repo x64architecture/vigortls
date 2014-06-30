@@ -268,9 +268,9 @@ start:
 		else	{
 			/* unknown */
 			}
-		if (name != NULL) OPENSSL_free(name);
-		if (header != NULL) OPENSSL_free(header);
-		if (data != NULL) OPENSSL_free(data);
+		if (name != NULL) free(name);
+		if (header != NULL) free(header);
+		if (data != NULL) free(data);
 		name=NULL;
 		header=NULL;
 		data=NULL;
@@ -299,9 +299,9 @@ err:
 		ret=NULL;
 		}
 		
-	if (name != NULL) OPENSSL_free(name);
-	if (header != NULL) OPENSSL_free(header);
-	if (data != NULL) OPENSSL_free(data);
+	if (name != NULL) free(name);
+	if (header != NULL) free(header);
+	if (data != NULL) free(data);
 	return(ret);
 	}
 

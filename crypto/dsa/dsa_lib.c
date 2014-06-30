@@ -114,7 +114,7 @@ DSA *DSA_new_method(ENGINE *engine)
 	{
 	DSA *ret;
 
-	ret=(DSA *)OPENSSL_malloc(sizeof(DSA));
+	ret=(DSA *)malloc(sizeof(DSA));
 	if (ret == NULL)
 		{
 		DSAerr(DSA_F_DSA_NEW_METHOD,ERR_R_MALLOC_FAILURE);
@@ -127,7 +127,7 @@ DSA *DSA_new_method(ENGINE *engine)
 		if (!ENGINE_init(engine))
 			{
 			DSAerr(DSA_F_DSA_NEW_METHOD, ERR_R_ENGINE_LIB);
-			OPENSSL_free(ret);
+			free(ret);
 			return NULL;
 			}
 		ret->engine = engine;
@@ -142,7 +142,7 @@ DSA *DSA_new_method(ENGINE *engine)
 			DSAerr(DSA_F_DSA_NEW_METHOD,
 				ERR_R_ENGINE_LIB);
 			ENGINE_finish(ret->engine);
-			OPENSSL_free(ret);
+			free(ret);
 			return NULL;
 			}
 		}
@@ -171,7 +171,7 @@ DSA *DSA_new_method(ENGINE *engine)
 			ENGINE_finish(ret->engine);
 #endif
 		CRYPTO_free_ex_data(CRYPTO_EX_INDEX_DSA, ret, &ret->ex_data);
-		OPENSSL_free(ret);
+		free(ret);
 		ret=NULL;
 		}
 	
@@ -213,7 +213,7 @@ void DSA_free(DSA *r)
 	if (r->priv_key != NULL) BN_clear_free(r->priv_key);
 	if (r->kinv != NULL) BN_clear_free(r->kinv);
 	if (r->r != NULL) BN_clear_free(r->r);
-	OPENSSL_free(r);
+	free(r);
 	}
 
 int DSA_up_ref(DSA *r)

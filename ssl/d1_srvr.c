@@ -1082,7 +1082,7 @@ int dtls1_send_server_key_exchange(SSL *s)
 			    NULL, 0, NULL);
 
 			encodedPoint = (unsigned char *) 
-			    OPENSSL_malloc(encodedlen*sizeof(unsigned char)); 
+			    malloc(encodedlen*sizeof(unsigned char)); 
 			bn_ctx = BN_CTX_new();
 			if ((encodedPoint == NULL) || (bn_ctx == NULL))
 				{
@@ -1193,7 +1193,7 @@ int dtls1_send_server_key_exchange(SSL *s)
 			memcpy((unsigned char*)p, 
 			    (unsigned char *)encodedPoint, 
 			    encodedlen);
-			OPENSSL_free(encodedPoint);
+			free(encodedPoint);
 			encodedPoint = NULL;
 			p += encodedlen;
 			}
@@ -1306,7 +1306,7 @@ f_err:
 	ssl3_send_alert(s,SSL3_AL_FATAL,al);
 err:
 #ifndef OPENSSL_NO_ECDH
-	if (encodedPoint != NULL) OPENSSL_free(encodedPoint);
+	if (encodedPoint != NULL) free(encodedPoint);
 	BN_CTX_free(bn_ctx);
 #endif
 	EVP_MD_CTX_cleanup(&md_ctx);
@@ -1478,7 +1478,7 @@ int dtls1_send_newsession_ticket(SSL *s)
 			DTLS1_HM_HEADER_LENGTH + 22 + EVP_MAX_IV_LENGTH +
 			EVP_MAX_BLOCK_LENGTH + EVP_MAX_MD_SIZE + slen))
 			return -1;
-		senc = OPENSSL_malloc(slen);
+		senc = malloc(slen);
 		if (!senc)
 			return -1;
 		p = senc;
@@ -1496,7 +1496,7 @@ int dtls1_send_newsession_ticket(SSL *s)
 			if (tctx->tlsext_ticket_key_cb(s, key_name, iv, &ctx,
 							 &hctx, 1) < 0)
 				{
-				OPENSSL_free(senc);
+				free(senc);
 				return -1;
 				}
 			}
@@ -1542,7 +1542,7 @@ int dtls1_send_newsession_ticket(SSL *s)
 		s->init_num= len;
 		s->state=SSL3_ST_SW_SESSION_TICKET_B;
 		s->init_off=0;
-		OPENSSL_free(senc);
+		free(senc);
 
 		/* XDTLS:  set message header ? */
 		msg_len = s->init_num - DTLS1_HM_HEADER_LENGTH;

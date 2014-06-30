@@ -90,12 +90,12 @@ void X509V3_EXT_val_prn(BIO *out, STACK_OF(CONF_VALUE) *val, int indent, int ml)
 			int len;
 			char *tmp;
 			len = strlen(nval->value)+1;
-			tmp = OPENSSL_malloc(len);
+			tmp = malloc(len);
 			if (tmp)
 			{
 				ascii2ebcdic(tmp, nval->value, len);
 				BIO_printf(out, "%s:%s", nval->name, tmp);
-				OPENSSL_free(tmp);
+				free(tmp);
 			}
 		}
 #endif
@@ -134,12 +134,12 @@ int X509V3_EXT_print(BIO *out, X509_EXTENSION *ext, unsigned long flag, int inde
 			int len;
 			char *tmp;
 			len = strlen(value)+1;
-			tmp = OPENSSL_malloc(len);
+			tmp = malloc(len);
 			if (tmp)
 			{
 				ascii2ebcdic(tmp, value, len);
 				BIO_printf(out, "%*s%s", indent, "", tmp);
-				OPENSSL_free(tmp);
+				free(tmp);
 			}
 		}
 #endif
@@ -156,7 +156,7 @@ int X509V3_EXT_print(BIO *out, X509_EXTENSION *ext, unsigned long flag, int inde
 
 	err:
 		sk_CONF_VALUE_pop_free(nval, X509V3_conf_free);
-		if(value) OPENSSL_free(value);
+		if(value) free(value);
 		if(method->it) ASN1_item_free(ext_str, ASN1_ITEM_ptr(method->it));
 		else method->ext_free(ext_str);
 		return ok;

@@ -132,7 +132,7 @@ static const char *get_CCA4758_LIB_NAME(void)
 static void free_CCA4758_LIB_NAME(void)
 	{
 	if(CCA4758_LIB_NAME)
-		OPENSSL_free((void*)CCA4758_LIB_NAME);
+		free((void*)CCA4758_LIB_NAME);
 	CCA4758_LIB_NAME = NULL;
 	}
 static long set_CCA4758_LIB_NAME(const char *name)
@@ -393,7 +393,7 @@ static EVP_PKEY *ibm_4758_load_privkey(ENGINE* e, const char* key_id,
 	memset(keyLabel,' ', sizeof(keyLabel));
 	memcpy(keyLabel, key_id, keyLabelLength);
 
-	keyToken = OPENSSL_malloc(MAX_CCA_PKA_TOKEN_SIZE + sizeof(long));
+	keyToken = malloc(MAX_CCA_PKA_TOKEN_SIZE + sizeof(long));
 	if (!keyToken)
 		{
 		CCA4758err(CCA4758_F_IBM_4758_LOAD_PRIVKEY,
@@ -446,7 +446,7 @@ static EVP_PKEY *ibm_4758_load_privkey(ENGINE* e, const char* key_id,
 	return res;
 err:
 	if (keyToken)
-		OPENSSL_free(keyToken);
+		free(keyToken);
 	return NULL;
 	}
 
@@ -481,7 +481,7 @@ static EVP_PKEY *ibm_4758_load_pubkey(ENGINE* e, const char* key_id,
 	memset(keyLabel,' ', sizeof(keyLabel));
 	memcpy(keyLabel, key_id, keyLabelLength);
 
-	keyToken = OPENSSL_malloc(MAX_CCA_PKA_TOKEN_SIZE + sizeof(long));
+	keyToken = malloc(MAX_CCA_PKA_TOKEN_SIZE + sizeof(long));
 	if (!keyToken)
 		{
 		CCA4758err(CCA4758_F_IBM_4758_LOAD_PUBKEY,
@@ -520,7 +520,7 @@ static EVP_PKEY *ibm_4758_load_pubkey(ENGINE* e, const char* key_id,
 	return res;
 err:
 	if (keyToken)
-		OPENSSL_free(keyToken);
+		free(keyToken);
 	return NULL;
 	}
 
@@ -660,7 +660,7 @@ static int cca_rsa_verify(int type, const unsigned char *m, unsigned int m_len,
 		case NID_md5 :
 			{
 			unsigned char *ptr;
-			ptr = hashBuffer = OPENSSL_malloc(
+			ptr = hashBuffer = malloc(
 					(unsigned int)keyLength+1);
 			if (!hashBuffer)
 				{
@@ -675,7 +675,7 @@ static int cca_rsa_verify(int type, const unsigned char *m, unsigned int m_len,
 		case NID_sha1 :
 			{
 			unsigned char *ptr;
-			ptr = hashBuffer = OPENSSL_malloc(
+			ptr = hashBuffer = malloc(
 					(unsigned int)keyLength+1);
 			if (!hashBuffer)
 				{
@@ -698,7 +698,7 @@ static int cca_rsa_verify(int type, const unsigned char *m, unsigned int m_len,
 	if (type == NID_sha1 || type == NID_md5)
 		{
 		OPENSSL_cleanse(hashBuffer, keyLength+1);
-		OPENSSL_free(hashBuffer);
+		free(hashBuffer);
 		}
 
 	return ((returnCode || reasonCode) ? 0 : 1);
@@ -784,7 +784,7 @@ static int cca_rsa_sign(int type, const unsigned char *m, unsigned int m_len,
 		case NID_md5 :
 			{
 			unsigned char *ptr;
-			ptr = hashBuffer = OPENSSL_malloc(
+			ptr = hashBuffer = malloc(
 					(unsigned int)keyLength+1);
 			if (!hashBuffer)
 				{
@@ -798,7 +798,7 @@ static int cca_rsa_sign(int type, const unsigned char *m, unsigned int m_len,
 		case NID_sha1 :
 			{
 			unsigned char *ptr;
-			ptr = hashBuffer = OPENSSL_malloc(
+			ptr = hashBuffer = malloc(
 					(unsigned int)keyLength+1);
 			if (!hashBuffer)
 				{
@@ -821,7 +821,7 @@ static int cca_rsa_sign(int type, const unsigned char *m, unsigned int m_len,
 	if (type == NID_sha1 || type == NID_md5)
 		{
 		OPENSSL_cleanse(hashBuffer, keyLength+1);
-		OPENSSL_free(hashBuffer);
+		free(hashBuffer);
 		}
 
 	*siglen = outputLength;
@@ -926,7 +926,7 @@ static void cca_ex_free(void *obj, void *item, CRYPTO_EX_DATA *ad, int idx,
 		long argl, void *argp)
 	{
 	if (item)
-		OPENSSL_free(item);
+		free(item);
 	}
 
 /* Goo to handle building as a dynamic engine */

@@ -24,7 +24,7 @@ int BIO_vprintf(BIO *bio, const char *format, va_list args)
         goto fail;
     }
     BIO_write(bio, buf, ret);
-    OPENSSL_free(buf);
+    free(buf);
 fail:
     return (ret);
 }
@@ -59,7 +59,7 @@ int BIO_vsnprintf(char *buf, size_t n, const char *format, va_list args)
 int vasprintf(char **buf, const char *format, va_list args)
 {
     int wanted = vsnprintf(*buf = NULL, 0, format, args);
-    if((wanted < 0) || ((*buf = OPENSSL_malloc(wanted + 1)) == NULL))
+    if((wanted < 0) || ((*buf = malloc(wanted + 1)) == NULL))
         return -1;
 
     return vsprintf(*buf, format, args);

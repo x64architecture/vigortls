@@ -1189,7 +1189,7 @@ int dtls1_send_client_key_exchange(SSL *s)
 					NULL, 0, NULL);
 
 				encodedPoint = (unsigned char *) 
-				    OPENSSL_malloc(encoded_pt_len * 
+				    malloc(encoded_pt_len * 
 					sizeof(unsigned char)); 
 				bn_ctx = BN_CTX_new();
 				if ((encodedPoint == NULL) || 
@@ -1216,7 +1216,7 @@ int dtls1_send_client_key_exchange(SSL *s)
 
 			/* Free allocated memory */
 			BN_CTX_free(bn_ctx);
-			if (encodedPoint != NULL) OPENSSL_free(encodedPoint);
+			if (encodedPoint != NULL) free(encodedPoint);
 			if (clnt_ecdh != NULL) 
 				 EC_KEY_free(clnt_ecdh);
 			EVP_PKEY_free(srvr_pub_pkey);
@@ -1266,7 +1266,7 @@ int dtls1_send_client_key_exchange(SSL *s)
 			s2n(psk_len, t);
 
 			if (s->session->psk_identity_hint != NULL)
-				OPENSSL_free(s->session->psk_identity_hint);
+				free(s->session->psk_identity_hint);
 			s->session->psk_identity_hint = BUF_strdup(s->ctx->psk_identity_hint);
 			if (s->ctx->psk_identity_hint != NULL &&
 				s->session->psk_identity_hint == NULL)
@@ -1277,7 +1277,7 @@ int dtls1_send_client_key_exchange(SSL *s)
 				}
 
 			if (s->session->psk_identity != NULL)
-				OPENSSL_free(s->session->psk_identity);
+				free(s->session->psk_identity);
 			s->session->psk_identity = BUF_strdup(identity);
 			if (s->session->psk_identity == NULL)
 				{
@@ -1335,7 +1335,7 @@ int dtls1_send_client_key_exchange(SSL *s)
 err:
 #ifndef OPENSSL_NO_ECDH
 	BN_CTX_free(bn_ctx);
-	if (encodedPoint != NULL) OPENSSL_free(encodedPoint);
+	if (encodedPoint != NULL) free(encodedPoint);
 	if (clnt_ecdh != NULL) 
 		EC_KEY_free(clnt_ecdh);
 	EVP_PKEY_free(srvr_pub_pkey);

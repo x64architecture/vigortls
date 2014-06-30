@@ -122,7 +122,7 @@ static int dev_crypto_cleanup(EVP_CIPHER_CTX *ctx)
     if(ioctl(fd,CIOCFSESSION,&CDATA(ctx)->ses) == -1)
 	err("CIOCFSESSION failed");
 
-    OPENSSL_free(CDATA(ctx)->key);
+    free(CDATA(ctx)->key);
 
     return 1;
     }
@@ -133,7 +133,7 @@ static int dev_crypto_init_key(EVP_CIPHER_CTX *ctx,int cipher,
     if(!dev_crypto_init(CDATA(ctx)))
 	return 0;
 
-    CDATA(ctx)->key=OPENSSL_malloc(MAX_HW_KEY);
+    CDATA(ctx)->key=malloc(MAX_HW_KEY);
 
     assert(ctx->cipher->iv_len <= MAX_HW_IV);
 
@@ -190,14 +190,14 @@ static int dev_crypto_cipher(EVP_CIPHER_CTX *ctx,unsigned char *out,
 
 	    if(((unsigned long)in&3) || cinl != inl)
 		{
-		cin=OPENSSL_malloc(cinl);
+		cin=malloc(cinl);
 		memcpy(cin,in,inl);
 		cryp.src=cin;
 		}
 
 	    if(((unsigned long)out&3) || cinl != inl)
 		{
-		cout=OPENSSL_malloc(cinl);
+		cout=malloc(cinl);
 		cryp.dst=cout;
 		}
 
@@ -214,10 +214,10 @@ static int dev_crypto_cipher(EVP_CIPHER_CTX *ctx,unsigned char *out,
 	    if(cout)
 		{
 		memcpy(out,cout,inl);
-		OPENSSL_free(cout);
+		free(cout);
 		}
 	    if(cin)
-		OPENSSL_free(cin);
+		free(cin);
 	    }
 	else 
 	    {	    
@@ -343,7 +343,7 @@ static int do_digest(int ses,unsigned char *md,const void *data,int len)
 	    {
 	    char *dcopy;
 
-	    dcopy=OPENSSL_malloc(len);
+	    dcopy=malloc(len);
 	    memcpy(dcopy,data,len);
 	    cryp.src=dcopy;
 	    cryp.dst=cryp.src; // FIXME!!!
@@ -354,7 +354,7 @@ static int do_digest(int ses,unsigned char *md,const void *data,int len)
 		abort();
 		return 0;
 		}
-	    OPENSSL_free(dcopy);
+	    free(dcopy);
 	    }
 	else
 	    {
@@ -376,7 +376,7 @@ static int dev_crypto_md5_update(EVP_MD_CTX *ctx,const void *data,
     if(ctx->flags&EVP_MD_CTX_FLAG_ONESHOT)
 	return do_digest(md_data->sess.ses,md_data->md,data,len);
 
-    md_data->data=OPENSSL_realloc(md_data->data,md_data->len+len);
+    md_data->data=realloc(md_data->data,md_data->len+len);
     memcpy(md_data->data+md_data->len,data,len);
     md_data->len+=len;
 
@@ -396,7 +396,7 @@ static int dev_crypto_md5_final(EVP_MD_CTX *ctx,unsigned char *md)
     else
 	{
 	ret=do_digest(md_data->sess.ses,md,md_data->data,md_data->len);
-	OPENSSL_free(md_data->data);
+	free(md_data->data);
 	md_data->data=NULL;
 	md_data->len=0;
 	}
@@ -412,7 +412,7 @@ static int dev_crypto_md5_copy(EVP_MD_CTX *to,const EVP_MD_CTX *from)
     // How do we copy sessions?
     assert(from->digest->flags&EVP_MD_FLAG_ONESHOT);
 
-    to_md->data=OPENSSL_malloc(from_md->len);
+    to_md->data=malloc(from_md->len);
     memcpy(to_md->data,from_md->data,from_md->len);
 
     return 1;

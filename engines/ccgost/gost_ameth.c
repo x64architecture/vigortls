@@ -623,7 +623,7 @@ static int pub_decode_gost94(EVP_PKEY *pk, X509_PUBKEY *pub)
 		GOSTerr(GOST_F_PUB_DECODE_GOST94,ERR_R_MALLOC_FAILURE);
 		return 0;
 		}	
-	databuf = OPENSSL_malloc(octet->length);
+	databuf = malloc(octet->length);
 	for (i=0,j=octet->length-1;i<octet->length;i++,j--)
 		{
 		databuf[j]=octet->data[i];
@@ -631,7 +631,7 @@ static int pub_decode_gost94(EVP_PKEY *pk, X509_PUBKEY *pub)
 	dsa = EVP_PKEY_get0(pk);
 	dsa->pub_key=BN_bin2bn(databuf,octet->length,NULL);
 	ASN1_OCTET_STRING_free(octet);
-	OPENSSL_free(databuf);
+	free(databuf);
 	return 1;
 
 	}
@@ -654,7 +654,7 @@ static int pub_encode_gost94(X509_PUBKEY *pub,const EVP_PKEY *pk)
 		ptype = V_ASN1_SEQUENCE;
 		}	
 	data_len = BN_num_bytes(dsa->pub_key);
-	databuf = OPENSSL_malloc(data_len);
+	databuf = malloc(data_len);
 	BN_bn2bin(dsa->pub_key,databuf);
 	octet = ASN1_OCTET_STRING_new();
 	ASN1_STRING_set(octet,NULL,data_len);
@@ -663,7 +663,7 @@ static int pub_encode_gost94(X509_PUBKEY *pub,const EVP_PKEY *pk)
 		{
 		sptr[i]=databuf[j];
 		}
-	OPENSSL_free(databuf);
+	free(databuf);
 	ret = i2d_ASN1_OCTET_STRING(octet,&buf);
 	ASN1_BIT_STRING_free(octet);
 	if (ret <0)  return 0;
@@ -694,7 +694,7 @@ static int pub_decode_gost01(EVP_PKEY *pk,X509_PUBKEY *pub)
 		GOSTerr(GOST_F_PUB_DECODE_GOST01,ERR_R_MALLOC_FAILURE);
 		return 0;
 		}	
-	databuf = OPENSSL_malloc(octet->length);
+	databuf = malloc(octet->length);
 	for (i=0,j=octet->length-1;i<octet->length;i++,j--)
 		{
 		databuf[j]=octet->data[i];
@@ -704,7 +704,7 @@ static int pub_decode_gost01(EVP_PKEY *pk,X509_PUBKEY *pub)
 	
 	Y= getbnfrombuf(databuf,len);
 	X= getbnfrombuf(databuf+len,len);
-	OPENSSL_free(databuf);
+	free(databuf);
 	pub_key = EC_POINT_new(group);
 	if (!EC_POINT_set_affine_coordinates_GFp(group
 			,pub_key,X,Y,NULL))
@@ -764,7 +764,7 @@ static int pub_encode_gost01(X509_PUBKEY *pub,const EVP_PKEY *pk)
 		pub_key,X,Y,NULL);
 	data_len = 2*BN_num_bytes(order);
 	BN_free(order);
-	databuf = OPENSSL_malloc(data_len);
+	databuf = malloc(data_len);
 	memset(databuf,0,data_len);
 	
 	store_bignum(X,databuf+data_len/2,data_len/2);
@@ -779,7 +779,7 @@ static int pub_encode_gost01(X509_PUBKEY *pub,const EVP_PKEY *pk)
 		{
         sptr[i]=databuf[j];
 		}
-    OPENSSL_free(databuf);
+    free(databuf);
 	ret = i2d_ASN1_OCTET_STRING(octet,&buf);
 	ASN1_BIT_STRING_free(octet);
 	if (ret <0)  return 0;
@@ -828,7 +828,7 @@ static int pkey_bits_gost(const EVP_PKEY *pk)
 static void  mackey_free_gost(EVP_PKEY *pk)
 	{
 		if (pk->pkey.ptr) {
-			OPENSSL_free(pk->pkey.ptr);
+			free(pk->pkey.ptr);
 		}	
 	}
 static int mac_ctrl_gost(EVP_PKEY *pkey, int op, long arg1, void *arg2)
