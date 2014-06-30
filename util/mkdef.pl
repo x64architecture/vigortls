@@ -261,7 +261,6 @@ $crypto.=" crypto/rc2/rc2.h" ; # unless $no_rc2;
 $crypto.=" crypto/bf/blowfish.h" ; # unless $no_bf;
 $crypto.=" crypto/cast/cast.h" ; # unless $no_cast;
 $crypto.=" crypto/whrlpool/whrlpool.h" ;
-$crypto.=" crypto/md2/md2.h" ; # unless $no_md2;
 $crypto.=" crypto/md4/md4.h" ; # unless $no_md4;
 $crypto.=" crypto/md5/md5.h" ; # unless $no_md5;
 $crypto.=" crypto/mdc2/mdc2.h" ; # unless $no_mdc2;

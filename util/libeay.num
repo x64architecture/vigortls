@@ -2820,6 +2820,7 @@ EVP_des_ede3_cfb1                       3280	EXIST::FUNCTION:DES
 sk_is_sorted                            3285	EXIST::FUNCTION:
 X509_check_ca                           3286	EXIST::FUNCTION:
 HMAC_CTX_set_flags                      3288	EXIST::FUNCTION:HMAC
+private_RC4_set_key                     3294	NOEXIST::FUNCTION:
 d2i_PROXY_CERT_INFO_EXTENSION           3300	EXIST::FUNCTION:
 PROXY_POLICY_it                         3301	EXIST:!EXPORT_VAR_AS_FUNCTION:VARIABLE:
 PROXY_POLICY_it                         3301	EXIST:EXPORT_VAR_AS_FUNCTION:FUNCTION:

@@ -9,7 +9,6 @@
 my @dirs = (
 ".",
 "crypto",
-"crypto/md2",
 "crypto/md4",
 "crypto/md5",
 "crypto/sha",
@@ -68,8 +67,7 @@ my @dirs = (
 "apps",
 "engines",
 "engines/ccgost",
-"test",
-"tools"
+"test"
 );
 
 %top;
