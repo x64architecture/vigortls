@@ -395,12 +395,6 @@ fprintf(stderr, "Record type=%d, Length=%d\n", rr->type, rr->length);
         goto f_err;
     }
 
-#ifdef TLS_DEBUG
-printf("dec %d\n",rr->length);
-{ unsigned int z; for (z=0; z<rr->length; z++) printf("%02X%c", rr->data[z], ((z+1)%16)?' ':'\n'); }
-printf("\n");
-#endif
-
     /* r->length is now the compressed data plus mac */
     if ((sess != NULL) &&
         (s->enc_read_ctx != NULL) &&

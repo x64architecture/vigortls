@@ -1093,16 +1093,10 @@ int ssl3_get_client_hello(SSL *s)
 		j=0;
 		id=s->session->cipher->id;
 
-#ifdef CIPHER_DEBUG
-		printf("client sent %d ciphers\n",sk_num(ciphers));
-#endif
 		for (i=0; i<sk_SSL_CIPHER_num(ciphers); i++)
 			{
 			c=sk_SSL_CIPHER_value(ciphers,i);
-#ifdef CIPHER_DEBUG
-			printf("client [%2d of %2d]:%s\n",
-				i,sk_num(ciphers),SSL_CIPHER_get_name(c));
-#endif
+
 			if (c->id == id)
 				{
 				j=1;
@@ -1945,10 +1939,7 @@ int ssl3_send_server_key_exchange(SSL *s)
 						}
 					p+=2;
 					}
-#ifdef SSL_DEBUG
-				fprintf(stderr, "Using hash %s\n",
-							EVP_MD_name(md));
-#endif
+
 				EVP_SignInit_ex(&md_ctx, md, NULL);
 				EVP_SignUpdate(&md_ctx,&(s->s3->client_random[0]),SSL3_RANDOM_SIZE);
 				EVP_SignUpdate(&md_ctx,&(s->s3->server_random[0]),SSL3_RANDOM_SIZE);

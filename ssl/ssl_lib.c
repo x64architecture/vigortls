@@ -1417,9 +1417,6 @@ int ssl_cipher_list_to_bytes(SSL *s,STACK_OF(SSL_CIPHER) *sk,unsigned char *p,
 			};
 		j = put_cb ? put_cb(&scsv,p) : ssl_put_cipher_by_char(s,&scsv,p);
 		p+=j;
-#ifdef OPENSSL_RI_DEBUG
-		fprintf(stderr, "SCSV sent by client\n");
-#endif
 		}
 
 	return(p-q);
@@ -1464,9 +1461,6 @@ STACK_OF(SSL_CIPHER) *ssl_bytes_to_cipher_list(SSL *s,unsigned char *p,int num,
 				}
 			s->s3->send_connection_binding = 1;
 			p += n;
-#ifdef OPENSSL_RI_DEBUG
-			fprintf(stderr, "SCSV received by server\n");
-#endif
 			continue;
 			}
 
@@ -2052,14 +2046,6 @@ void ssl_set_cert_masks(CERT *c, const SSL_CIPHER *cipher)
 	mask_a=0;
 	emask_k=0;
 	emask_a=0;
-
-	
-
-#ifdef CIPHER_DEBUG
-	printf("rt=%d rte=%d dht=%d ecdht=%d re=%d ree=%d rs=%d ds=%d dhr=%d dhd=%d\n",
-	        rsa_tmp,rsa_tmp_export,dh_tmp,have_ecdh_tmp,
-		rsa_enc,rsa_enc_export,rsa_sign,dsa_sign,dh_rsa,dh_dsa);
-#endif
 	
 	cpk = &(c->pkeys[SSL_PKEY_GOST01]);
 	if (cpk->x509 != NULL && cpk->privatekey !=NULL) {

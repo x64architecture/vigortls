@@ -908,11 +908,6 @@ static void ssl_cipher_apply_rule(unsigned long cipher_id,
 	const SSL_CIPHER *cp;
 	int reverse = 0;
 
-#ifdef CIPHER_DEBUG
-	printf("Applying rule %d with %08lx/%08lx/%08lx/%08lx/%08lx %08lx (%d)\n",
-		rule, alg_mkey, alg_auth, alg_enc, alg_mac, alg_ssl, algo_strength, strength_bits);
-#endif
-
 	if (rule == CIPHER_DEL)
 		reverse = 1; /* needed to maintain sorting between currently deleted ciphers */
 
@@ -950,9 +945,6 @@ static void ssl_cipher_apply_rule(unsigned long cipher_id,
 			}
 		else
 			{
-#ifdef CIPHER_DEBUG
-			printf("\nName: %s:\nAlgo = %08lx/%08lx/%08lx/%08lx/%08lx Algo_strength = %08lx\n", cp->name, cp->algorithm_mkey, cp->algorithm_auth, cp->algorithm_enc, cp->algorithm_mac, cp->algorithm_ssl, cp->algo_strength);
-#endif
 
 			if (alg_mkey && !(alg_mkey & cp->algorithm_mkey))
 				continue;
@@ -969,10 +961,6 @@ static void ssl_cipher_apply_rule(unsigned long cipher_id,
 			if ((algo_strength & SSL_STRONG_MASK) && !(algo_strength & SSL_STRONG_MASK & cp->algo_strength))
 				continue;
 			}
-
-#ifdef CIPHER_DEBUG
-		printf("Action = %d\n", rule);
-#endif
 
 		/* add the cipher if it has not been added yet. */
 		if (rule == CIPHER_ADD)
@@ -1477,12 +1465,7 @@ STACK_OF(SSL_CIPHER) *ssl_create_cipher_list(const SSL_METHOD *ssl_method,
 	for (curr = head; curr != NULL; curr = curr->next)
 		{
 		if (curr->active)
-			{
 			sk_SSL_CIPHER_push(cipherstack, curr->cipher);
-#ifdef CIPHER_DEBUG
-			printf("<%s>\n",curr->cipher->name);
-#endif
-			}
 		}
 	OPENSSL_free(co_list);	/* Not needed any longer */
 

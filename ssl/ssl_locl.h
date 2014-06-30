@@ -541,7 +541,6 @@ typedef struct sess_cert_st
 /*#define PKT_DEBUG 1   */
 /*#define DES_DEBUG	*/
 /*#define DES_OFB_DEBUG	*/
-/*#define SSL_DEBUG	*/
 /*#define RSA_DEBUG	*/ 
 /*#define IDEA_DEBUG	*/ 
 

@@ -1975,18 +1975,6 @@ static void print_stuff(BIO *bio, SSL *s, int full)
 	BIO_printf(bio,"Expansion: %s\n",
 		expansion ? SSL_COMP_get_name(expansion) : "NONE");
 #endif
- 
-#ifdef SSL_DEBUG
-	{
-	/* Print out local port of connection: useful for debugging */
-	int sock;
-	struct sockaddr_in ladd;
-	socklen_t ladd_size = sizeof(ladd);
-	sock = SSL_get_fd(s);
-	getsockname(sock, (struct sockaddr *)&ladd, &ladd_size);
-	BIO_printf(bio_c_out, "LOCAL PORT is %u\n", ntohs(ladd.sin_port));
-	}
-#endif
 
 #if !defined(OPENSSL_NO_TLSEXT) && !defined(OPENSSL_NO_NEXTPROTONEG)
 	if (next_proto.status != -1) {
