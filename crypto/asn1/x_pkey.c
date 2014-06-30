@@ -107,12 +107,22 @@ X509_PKEY *d2i_X509_PKEY(X509_PKEY **a, const unsigned char **pp, long length)
 X509_PKEY *X509_PKEY_new(void)
 	{
 	X509_PKEY *ret=NULL;
-	ASN1_CTX c;
 
-	M_ASN1_New_Malloc(ret,X509_PKEY);
 	ret->version=0;
-	M_ASN1_New(ret->enc_algor,X509_ALGOR_new);
-	M_ASN1_New(ret->enc_pkey,M_ASN1_OCTET_STRING_new);
+	if ((ret = OPENSSL_malloc(sizeof(X509))) == NULL) {
+		ASN1_MAC_H_err(ASN1_F_X509_PKEY_NEW, ERR_R_MALLOC_FAILURE,
+			__LINE__);
+		return NULL;
+	}
+	if ((ret->enc_algor = X509_ALGOR_new()) == NULL) {
+		OPENSSL_free(ret);
+		return NULL;
+	}
+	if ((ret->enc_pkey = M_ASN1_OCTET_STRING_new()) == NULL) {
+		X509_ALGOR_free(ret->enc_algor);
+		OPENSSL_free(ret);
+		return NULL;
+	}
 	ret->dec_pkey=NULL;
 	ret->key_length=0;
 	ret->key_data=NULL;
@@ -121,7 +131,6 @@ X509_PKEY *X509_PKEY_new(void)
 	memset(ret->cipher.iv,0,EVP_MAX_IV_LENGTH);
 	ret->references=1;
 	return(ret);
-	M_ASN1_New_Error(ASN1_F_X509_PKEY_NEW);
 	}
 
 void X509_PKEY_free(X509_PKEY *x)

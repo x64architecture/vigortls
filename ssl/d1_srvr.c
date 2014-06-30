@@ -142,7 +142,6 @@ IMPLEMENT_dtls1_meth_func(DTLSv1_server_method,
 
 int dtls1_accept(SSL *s)
 	{
-	BUF_MEM *buf;
 	unsigned long Time=(unsigned long)time(NULL);
 	void (*cb)(const SSL *ssl,int type,int val)=NULL;
 	unsigned long alg_k;
@@ -200,6 +199,7 @@ int dtls1_accept(SSL *s)
 
 			if (s->init_buf == NULL)
 				{
+				BUF_MEM *buf;
 				if ((buf=BUF_MEM_new()) == NULL)
 					{
 					ret= -1;
@@ -207,6 +207,7 @@ int dtls1_accept(SSL *s)
 					}
 				if (!BUF_MEM_grow(buf,SSL3_RT_MAX_PLAIN_LENGTH))
 					{
+					BUF_MEM_free(buf);
 					ret= -1;
 					goto end;
 					}

@@ -199,6 +199,7 @@ static int ssl_ctx_make_profiles(const char *profiles_string,STACK_OF(SRTP_PROTE
 	if(!(profiles=sk_SRTP_PROTECTION_PROFILE_new_null()))
 		{
 		SSLerr(SSL_F_SSL_CTX_MAKE_PROFILES, SSL_R_SRTP_COULD_NOT_ALLOCATE_PROFILES);
+		sk_SRTP_PROTECTION_PROFILE_free(profiles);
 		return 1;
 		}
     
@@ -318,6 +319,7 @@ int ssl_parse_clienthello_use_srtp_ext(SSL *s, unsigned char *d, int len,int *al
 		{            
 		SSLerr(SSL_F_SSL_PARSE_CLIENTHELLO_USE_SRTP_EXT,SSL_R_BAD_SRTP_PROTECTION_PROFILE_LIST);
 		*al=SSL_AD_DECODE_ERROR;
+		sk_SRTP_PROTECTION_PROFILE_free(clnt);
 		return 1;
                 }
 

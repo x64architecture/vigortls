@@ -199,6 +199,9 @@ int X509_PURPOSE_add(int id, int trust, int flags,
 	ptmp->name = BUF_strdup(name);
 	ptmp->sname = BUF_strdup(sname);
 	if(!ptmp->name || !ptmp->sname) {
+		OPENSSL_free(ptmp->name);
+		OPENSSL_free(ptmp->sname);
+		OPENSSL_free(ptmp);
 		X509V3err(X509V3_F_X509_PURPOSE_ADD,ERR_R_MALLOC_FAILURE);
 		return 0;
 	}
@@ -215,10 +218,16 @@ int X509_PURPOSE_add(int id, int trust, int flags,
 	/* If its a new entry manage the dynamic table */
 	if(idx == -1) {
 		if(!xptable && !(xptable = sk_X509_PURPOSE_new(xp_cmp))) {
+			OPENSSL_free(ptmp->name);
+			OPENSSL_free(ptmp->sname);
+			OPENSSL_free(ptmp);
 			X509V3err(X509V3_F_X509_PURPOSE_ADD,ERR_R_MALLOC_FAILURE);
 			return 0;
 		}
 		if (!sk_X509_PURPOSE_push(xptable, ptmp)) {
+			OPENSSL_free(ptmp->name);
+			OPENSSL_free(ptmp->sname);
+			OPENSSL_free(ptmp);
 			X509V3err(X509V3_F_X509_PURPOSE_ADD,ERR_R_MALLOC_FAILURE);
 			return 0;
 		}

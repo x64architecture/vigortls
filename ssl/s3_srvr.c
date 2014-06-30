@@ -209,7 +209,6 @@ IMPLEMENT_ssl3_meth_func(SSLv3_server_method,
 
 int ssl3_accept(SSL *s)
 	{
-	BUF_MEM *buf;
 	unsigned long alg_k,Time=(unsigned long)time(NULL);
 	void (*cb)(const SSL *ssl,int type,int val)=NULL;
 	int ret= -1;
@@ -263,11 +262,13 @@ int ssl3_accept(SSL *s)
 				{
 				if ((buf=BUF_MEM_new()) == NULL)
 					{
+					BUF_MEM *buf;
 					ret= -1;
 					goto end;
 					}
 				if (!BUF_MEM_grow(buf,SSL3_RT_MAX_PLAIN_LENGTH))
 					{
+					BUF_MEM_free(buf);
 					ret= -1;
 					goto end;
 					}
