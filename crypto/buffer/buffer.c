@@ -163,7 +163,7 @@ int BUF_MEM_grow_clean(BUF_MEM *str, size_t len)
 	if (str->data == NULL)
 		ret=malloc(n);
 	else
-		ret=realloc_clean(str->data,str->max,n);
+		ret=OPENSSL_realloc_clean(str->data,str->max,n);
 	if (ret == NULL)
 		{
 		BUFerr(BUF_F_BUF_MEM_GROW_CLEAN,ERR_R_MALLOC_FAILURE);

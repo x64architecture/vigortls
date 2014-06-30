@@ -260,9 +260,9 @@ int ssl3_accept(SSL *s)
 
 			if (s->init_buf == NULL)
 				{
+                BUF_MEM *buf;
 				if ((buf=BUF_MEM_new()) == NULL)
 					{
-					BUF_MEM *buf;
 					ret= -1;
 					goto end;
 					}

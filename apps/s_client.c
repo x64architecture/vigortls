@@ -1078,7 +1078,6 @@ bad:
 
 #ifndef OPENSSL_NO_PSK
 	if (psk_key != NULL)
-#endif
 		{
 		if (c_debug)
 			BIO_printf(bio_c_out, "PSK key given, setting client callback\n");

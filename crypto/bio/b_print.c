@@ -1,5 +1,8 @@
 /* Kurt Cancemi places this file in the public domain. */
 
+#ifdef OPENSSL_SYS_LINUX
+#define _GNU_SOURCE
+#endif
 #include <openssl/bio.h>
 
 int BIO_printf(BIO *bio, const char *format, ...)

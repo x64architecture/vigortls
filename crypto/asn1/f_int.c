@@ -169,7 +169,7 @@ int a2i_ASN1_INTEGER(BIO *bp, ASN1_INTEGER *bs, char *buf, int size)
 				sp=(unsigned char *)malloc(
 					(unsigned int)num+i*2);
 			else
-				sp=realloc_clean(s,slen,num+i*2);
+				sp=OPENSSL_realloc_clean(s,slen,num+i*2);
 			if (sp == NULL)
 				{
 				ASN1err(ASN1_F_A2I_ASN1_INTEGER,ERR_R_MALLOC_FAILURE);
