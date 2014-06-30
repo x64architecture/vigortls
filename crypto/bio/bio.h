@@ -756,6 +756,9 @@ int BIO_snprintf(char *buf, size_t n, const char *format, ...)
 	__bio_h__attr__((__format__(__printf__,3,4)));
 int BIO_vsnprintf(char *buf, size_t n, const char *format, va_list args)
 	__bio_h__attr__((__format__(__printf__,3,0)));
+#ifdef OPENSSL_SYS_WIN32
+int vasprintf(char **buf, const char *format, va_list args);
+#endif
 #undef __bio_h__attr__
 
 /* BEGIN ERROR CODES */
