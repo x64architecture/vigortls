@@ -352,21 +352,6 @@ err:\
 		c.slen-=(c.p-c.q); \
 		}
 
-/* New macros */
-#define M_ASN1_New_Malloc(ret,type) \
-	if ((ret=(type *)OPENSSL_malloc(sizeof(type))) == NULL) \
-		{ c.line=__LINE__; goto err2; }
-
-#define M_ASN1_New(arg,func) \
-	if (((arg)=func()) == NULL) return(NULL)
-
-#define M_ASN1_New_Error(a) \
-/*	err:	ASN1_MAC_H_err((a),ERR_R_NESTED_ASN1_ERROR,c.line); \
-		return(NULL);*/ \
-	err2:	ASN1_MAC_H_err((a),ERR_R_MALLOC_FAILURE,c.line); \
-		return(NULL)
-
-
 /* BIG UGLY WARNING!  This is so damn ugly I wanna puke.  Unfortunately,
    some macros that use ASN1_const_CTX still insist on writing in the input
    stream.  ARGH!  ARGH!  ARGH!  Let's get rid of this macro package.
