@@ -1,4 +1,4 @@
-/* Public domain. */
+/* Kurt Cancemi places this file in the public domain. */
 
 #include <openssl/bio.h>
 
