@@ -100,10 +100,6 @@ my @known_algorithms = ( "RC2", "RC4", "RC5", "IDEA", "DES", "BF",
 			 "CMS",
 			 # CryptoAPI Engine
 			 "CAPIENG",
-			 # SSL v2
-			 "SSL2",
-			 # JPAKE
-			 "JPAKE",
 			 # NEXTPROTONEG
 			 "NEXTPROTONEG",
 			 # Deprecated functions
@@ -311,7 +307,6 @@ $crypto.=" crypto/krb5/krb5_asn.h";
 #$crypto.=" crypto/store/store.h";
 $crypto.=" crypto/pqueue/pqueue.h";
 $crypto.=" crypto/cms/cms.h";
-$crypto.=" crypto/jpake/jpake.h";
 $crypto.=" crypto/modes/modes.h";
 $crypto.=" crypto/srp/srp.h";
 

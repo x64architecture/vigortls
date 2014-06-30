@@ -40,7 +40,6 @@ SHA256TEST=	sha256t
 SHA512TEST=	sha512t
 MDC2TEST=	mdc2test
 RMDTEST=	rmdtest
-MD2TEST=	md2test
 MD4TEST=	md4test
 MD5TEST=	md5test
 HMACTEST=	hmactest
@@ -60,42 +59,41 @@ RSATEST=	rsa_test
 ENGINETEST=	enginetest
 EVPTEST=	evp_test
 IGETEST=	igetest
-JPAKETEST=	jpaketest
 SRPTEST=	srptest
 ASN1TEST=	asn1test
 
 TESTS=		alltests
 
 EXE=	$(BNTEST)$(EXE_EXT) $(ECTEST)$(EXE_EXT)  $(ECDSATEST)$(EXE_EXT) $(ECDHTEST)$(EXE_EXT) $(IDEATEST)$(EXE_EXT) \
-	$(MD2TEST)$(EXE_EXT)  $(MD4TEST)$(EXE_EXT) $(MD5TEST)$(EXE_EXT) $(HMACTEST)$(EXE_EXT) $(WPTEST)$(EXE_EXT) \
+	$(MD4TEST)$(EXE_EXT) $(MD5TEST)$(EXE_EXT) $(HMACTEST)$(EXE_EXT) $(WPTEST)$(EXE_EXT) \
 	$(RC2TEST)$(EXE_EXT) $(RC4TEST)$(EXE_EXT) $(RC5TEST)$(EXE_EXT) \
 	$(DESTEST)$(EXE_EXT) $(SHATEST)$(EXE_EXT) $(SHA1TEST)$(EXE_EXT) $(SHA256TEST)$(EXE_EXT) $(SHA512TEST)$(EXE_EXT) \
 	$(MDC2TEST)$(EXE_EXT) $(RMDTEST)$(EXE_EXT) \
 	$(RANDTEST)$(EXE_EXT) $(DHTEST)$(EXE_EXT) $(ENGINETEST)$(EXE_EXT) \
 	$(BFTEST)$(EXE_EXT) $(CASTTEST)$(EXE_EXT) $(SSLTEST)$(EXE_EXT) $(EXPTEST)$(EXE_EXT) $(DSATEST)$(EXE_EXT) $(RSATEST)$(EXE_EXT) \
-	$(EVPTEST)$(EXE_EXT) $(IGETEST)$(EXE_EXT) $(JPAKETEST)$(EXE_EXT) $(SRPTEST)$(EXE_EXT) \
+	$(EVPTEST)$(EXE_EXT) $(IGETEST)$(EXE_EXT) $(SRPTEST)$(EXE_EXT) \
 	$(ASN1TEST)$(EXE_EXT)
 
 # $(METHTEST)$(EXE_EXT)
 
 OBJ=	$(BNTEST).o $(ECTEST).o  $(ECDSATEST).o $(ECDHTEST).o $(IDEATEST).o \
-	$(MD2TEST).o $(MD4TEST).o $(MD5TEST).o \
+	$(MD4TEST).o $(MD5TEST).o \
 	$(HMACTEST).o $(WPTEST).o \
 	$(RC2TEST).o $(RC4TEST).o $(RC5TEST).o \
 	$(DESTEST).o $(SHATEST).o $(SHA1TEST).o $(SHA256TEST).o $(SHA512TEST).o \
 	$(MDC2TEST).o $(RMDTEST).o \
 	$(RANDTEST).o $(DHTEST).o $(ENGINETEST).o $(CASTTEST).o \
 	$(BFTEST).o  $(SSLTEST).o  $(DSATEST).o  $(EXPTEST).o $(RSATEST).o \
-	$(EVPTEST).o $(IGETEST).o $(JPAKETEST).o $(ASN1TEST).o
+	$(EVPTEST).o $(IGETEST).o $(ASN1TEST).o
 
 SRC=	$(BNTEST).c $(ECTEST).c  $(ECDSATEST).c $(ECDHTEST).c $(IDEATEST).c \
-	$(MD2TEST).c  $(MD4TEST).c $(MD5TEST).c \
+	$(MD4TEST).c $(MD5TEST).c \
 	$(HMACTEST).c $(WPTEST).c \
 	$(RC2TEST).c $(RC4TEST).c $(RC5TEST).c \
 	$(DESTEST).c $(SHATEST).c $(SHA1TEST).c $(MDC2TEST).c $(RMDTEST).c \
 	$(RANDTEST).c $(DHTEST).c $(ENGINETEST).c $(CASTTEST).c \
 	$(BFTEST).c  $(SSLTEST).c $(DSATEST).c   $(EXPTEST).c $(RSATEST).c \
-	$(EVPTEST).c $(IGETEST).c $(JPAKETEST).c $(SRPTEST).c $(ASN1TEST).c
+	$(EVPTEST).c $(IGETEST).c $(SRPTEST).c $(ASN1TEST).c
 
 EXHEADER= 
 HEADER=	$(EXHEADER)
@@ -132,13 +130,13 @@ apps:
 
 alltests: \
 	test_des test_idea test_sha test_md4 test_md5 test_hmac \
-	test_md2 test_mdc2 test_wp \
+	test_mdc2 test_wp \
 	test_rmd test_rc2 test_rc4 test_rc5 test_bf test_cast test_aes \
 	test_rand test_bn test_ec test_ecdsa test_ecdh \
 	test_enc test_x509 test_rsa test_crl test_sid \
 	test_gen test_req test_pkcs7 test_verify test_dh test_dsa \
 	test_ss test_ca test_engine test_evp test_ssl test_tsa test_ige \
-	test_jpake test_srp test_cms
+	test_srp test_cms
 
 test_evp:
 	../util/shlib_wrap.sh ./$(EVPTEST) evptests.txt
@@ -169,9 +167,6 @@ test_hmac:
 
 test_wp:
 	../util/shlib_wrap.sh ./$(WPTEST)
-
-test_md2:
-	../util/shlib_wrap.sh ./$(MD2TEST)
 
 test_rmd:
 	../util/shlib_wrap.sh ./$(RMDTEST)
@@ -304,10 +299,6 @@ test_ige: $(IGETEST)$(EXE_EXT)
 	@echo "Test IGE mode"
 	../util/shlib_wrap.sh ./$(IGETEST)
 
-test_jpake: $(JPAKETEST)$(EXE_EXT)
-	@echo "Test JPAKE"
-	../util/shlib_wrap.sh ./$(JPAKETEST)
-
 test_cms:
 	@echo "CMS consistency test"
 	$(PERL) cms-test.pl
@@ -364,9 +355,6 @@ $(EXPTEST)$(EXE_EXT): $(EXPTEST).o $(DLIBCRYPTO)
 
 $(IDEATEST)$(EXE_EXT): $(IDEATEST).o $(DLIBCRYPTO)
 	@target=$(IDEATEST); $(BUILD_CMD)
-
-$(MD2TEST)$(EXE_EXT): $(MD2TEST).o $(DLIBCRYPTO)
-	@target=$(MD2TEST); $(BUILD_CMD)
 
 $(SHATEST)$(EXE_EXT): $(SHATEST).o $(DLIBCRYPTO)
 	@target=$(SHATEST); $(BUILD_CMD)
@@ -445,9 +433,6 @@ $(ECDHTEST)$(EXE_EXT): $(ECDHTEST).o $(DLIBCRYPTO)
 
 $(IGETEST)$(EXE_EXT): $(IGETEST).o $(DLIBCRYPTO)
 	@target=$(IGETEST); $(BUILD_CMD)
-
-$(JPAKETEST)$(EXE_EXT): $(JPAKETEST).o $(DLIBCRYPTO)
-	@target=$(JPAKETEST); $(BUILD_CMD)
 
 $(ASN1TEST)$(EXE_EXT): $(ASN1TEST).o $(DLIBCRYPTO)
 	@target=$(ASN1TEST); $(BUILD_CMD)
@@ -603,16 +588,6 @@ ideatest.o: ../include/openssl/opensslconf.h ideatest.c
 igetest.o: ../include/openssl/aes.h ../include/openssl/e_os2.h
 igetest.o: ../include/openssl/opensslconf.h ../include/openssl/ossl_typ.h
 igetest.o: ../include/openssl/rand.h igetest.c
-jpaketest.o: ../include/openssl/buffer.h ../include/openssl/crypto.h
-jpaketest.o: ../include/openssl/e_os2.h ../include/openssl/opensslconf.h
-jpaketest.o: ../include/openssl/opensslv.h ../include/openssl/ossl_typ.h
-jpaketest.o: ../include/openssl/safestack.h ../include/openssl/stack.h
-jpaketest.o: ../include/openssl/symhacks.h jpaketest.c
-md2test.o: ../include/openssl/buffer.h ../include/openssl/crypto.h
-md2test.o: ../include/openssl/e_os2.h ../include/openssl/opensslconf.h
-md2test.o: ../include/openssl/opensslv.h ../include/openssl/ossl_typ.h
-md2test.o: ../include/openssl/safestack.h ../include/openssl/stack.h
-md2test.o: ../include/openssl/symhacks.h md2test.c
 md4test.o: ../e_os.h ../include/openssl/asn1.h ../include/openssl/bio.h
 md4test.o: ../include/openssl/crypto.h ../include/openssl/e_os2.h
 md4test.o: ../include/openssl/evp.h ../include/openssl/md4.h
