@@ -149,10 +149,6 @@ int dtls1_accept(SSL *s)
 	int ret= -1;
 	int new_state,state,skip=0;
 	int listen;
-#ifndef OPENSSL_NO_SCTP
-	unsigned char sctpauthkey[64];
-	char labelbuffer[sizeof(DTLS1_SCTP_AUTH_LABEL)];
-#endif
 
 	RAND_add(&Time,sizeof(Time),0);
 	ERR_clear_error();
@@ -170,13 +166,6 @@ int dtls1_accept(SSL *s)
 	if (!SSL_in_init(s) || SSL_in_before(s)) SSL_clear(s);
 
 	s->d1->listen = listen;
-#ifndef OPENSSL_NO_SCTP
-	/* Notify SCTP BIO socket to enter handshake
-	 * mode and prevent stream identifier other
-	 * than 0. Will be ignored if no SCTP is used.
-	 */
-	BIO_ctrl(SSL_get_wbio(s), BIO_CTRL_DGRAM_SCTP_SET_IN_HANDSHAKE, s->in_handshake, NULL);
-#endif
 
 	if (s->cert == NULL)
 		{
@@ -236,11 +225,7 @@ int dtls1_accept(SSL *s)
 				{
 				/* Ok, we now need to push on a buffering BIO so that
 				 * the output is sent in a way that TCP likes :-)
-				 * ...but not with SCTP :-)
 				 */
-#ifndef OPENSSL_NO_SCTP
-				if (!BIO_dgram_is_sctp(SSL_get_wbio(s)))
-#endif
 					if (!ssl_init_wbio_buffer(s,1)) { ret= -1; goto end; }
 
 				ssl3_init_finished_mac(s);
@@ -326,43 +311,6 @@ int dtls1_accept(SSL *s)
 			if (s->version != DTLS1_BAD_VER)
 				ssl3_init_finished_mac(s);
 			break;
-			
-#ifndef OPENSSL_NO_SCTP
-		case DTLS1_SCTP_ST_SR_READ_SOCK:
-			
-			if (BIO_dgram_sctp_msg_waiting(SSL_get_rbio(s)))		
-				{
-				s->s3->in_read_app_data=2;
-				s->rwstate=SSL_READING;
-				BIO_clear_retry_flags(SSL_get_rbio(s));
-				BIO_set_retry_read(SSL_get_rbio(s));
-				ret = -1;
-				goto end;
-				}
-			
-			s->state=SSL3_ST_SR_FINISHED_A;
-			break;
-			
-		case DTLS1_SCTP_ST_SW_WRITE_SOCK:
-			ret = BIO_dgram_sctp_wait_for_dry(SSL_get_wbio(s));
-			if (ret < 0) goto end;
-			
-			if (ret == 0)
-				{
-				if (s->d1->next_state != SSL_ST_OK)
-					{
-					s->s3->in_read_app_data=2;
-					s->rwstate=SSL_READING;
-					BIO_clear_retry_flags(SSL_get_rbio(s));
-					BIO_set_retry_read(SSL_get_rbio(s));
-					ret = -1;
-					goto end;
-					}
-				}
-
-			s->state=s->d1->next_state;
-			break;
-#endif
 
 		case SSL3_ST_SW_SRVR_HELLO_A:
 		case SSL3_ST_SW_SRVR_HELLO_B:
@@ -373,20 +321,6 @@ int dtls1_accept(SSL *s)
 
 			if (s->hit)
 				{
-#ifndef OPENSSL_NO_SCTP
-				/* Add new shared key for SCTP-Auth,
-				 * will be ignored if no SCTP used.
-				 */
-				snprintf((char*) labelbuffer, sizeof(DTLS1_SCTP_AUTH_LABEL),
-				         DTLS1_SCTP_AUTH_LABEL);
-
-				SSL_export_keying_material(s, sctpauthkey,
-				                           sizeof(sctpauthkey), labelbuffer,
-				                           sizeof(labelbuffer), NULL, 0, 0);
-				
-				BIO_ctrl(SSL_get_wbio(s), BIO_CTRL_DGRAM_SCTP_ADD_AUTH_KEY,
-                         sizeof(sctpauthkey), sctpauthkey);
-#endif
 #ifndef OPENSSL_NO_TLSEXT
 				if (s->tlsext_ticket_expected)
 					s->state=SSL3_ST_SW_SESSION_TICKET_A;
@@ -505,13 +439,6 @@ int dtls1_accept(SSL *s)
 				skip=1;
 				s->s3->tmp.cert_request=0;
 				s->state=SSL3_ST_SW_SRVR_DONE_A;
-#ifndef OPENSSL_NO_SCTP
-				if (BIO_dgram_is_sctp(SSL_get_wbio(s)))
-					{
-					s->d1->next_state = SSL3_ST_SW_SRVR_DONE_A;
-					s->state = DTLS1_SCTP_ST_SW_WRITE_SOCK;
-					}
-#endif
 				}
 			else
 				{
@@ -521,23 +448,9 @@ int dtls1_accept(SSL *s)
 				if (ret <= 0) goto end;
 #ifndef NETSCAPE_HANG_BUG
 				s->state=SSL3_ST_SW_SRVR_DONE_A;
-#ifndef OPENSSL_NO_SCTP
-				if (BIO_dgram_is_sctp(SSL_get_wbio(s)))
-					{
-					s->d1->next_state = SSL3_ST_SW_SRVR_DONE_A;
-					s->state = DTLS1_SCTP_ST_SW_WRITE_SOCK;
-					}
-#endif
 #else
 				s->state=SSL3_ST_SW_FLUSH;
 				s->s3->tmp.next_state=SSL3_ST_SR_CERT_A;
-#ifndef OPENSSL_NO_SCTP
-				if (BIO_dgram_is_sctp(SSL_get_wbio(s)))
-					{
-					s->d1->next_state = s->s3->tmp.next_state;
-					s->s3->tmp.next_state=DTLS1_SCTP_ST_SW_WRITE_SOCK;
-					}
-#endif
 #endif
 				s->init_num=0;
 				}
@@ -596,20 +509,6 @@ int dtls1_accept(SSL *s)
 		case SSL3_ST_SR_KEY_EXCH_B:
 			ret=ssl3_get_client_key_exchange(s);
 			if (ret <= 0) goto end;
-#ifndef OPENSSL_NO_SCTP
-			/* Add new shared key for SCTP-Auth,
-			 * will be ignored if no SCTP used.
-			 */
-			snprintf((char *) labelbuffer, sizeof(DTLS1_SCTP_AUTH_LABEL),
-			         DTLS1_SCTP_AUTH_LABEL);
-
-			SSL_export_keying_material(s, sctpauthkey,
-			                           sizeof(sctpauthkey), labelbuffer,
-			                           sizeof(labelbuffer), NULL, 0, 0);
-
-			BIO_ctrl(SSL_get_wbio(s), BIO_CTRL_DGRAM_SCTP_ADD_AUTH_KEY,
-			         sizeof(sctpauthkey), sctpauthkey);
-#endif
 
 			s->state=SSL3_ST_SR_CERT_VRFY_A;
 			s->init_num=0;
@@ -646,13 +545,7 @@ int dtls1_accept(SSL *s)
 			s->d1->change_cipher_spec_ok = 1;
 			/* we should decide if we expected this one */
 			ret=ssl3_get_cert_verify(s);
-			if (ret <= 0) goto end;
-#ifndef OPENSSL_NO_SCTP
-			if (BIO_dgram_is_sctp(SSL_get_wbio(s)) &&
-			    state == SSL_ST_RENEGOTIATE)
-				s->state=DTLS1_SCTP_ST_SR_READ_SOCK;
-			else
-#endif			
+			if (ret <= 0) goto end;			
 				s->state=SSL3_ST_SR_FINISHED_A;
 			s->init_num=0;
 			break;
@@ -706,16 +599,6 @@ int dtls1_accept(SSL *s)
 
 			if (ret <= 0) goto end;
 
-#ifndef OPENSSL_NO_SCTP
-			if (!s->hit)
-				{
-				/* Change to new shared key of SCTP-Auth,
-				 * will be ignored if no SCTP used.
-				 */
-				BIO_ctrl(SSL_get_wbio(s), BIO_CTRL_DGRAM_SCTP_NEXT_AUTH_KEY, 0, NULL);
-				}
-#endif
-
 			s->state=SSL3_ST_SW_FINISHED_A;
 			s->init_num=0;
 
@@ -738,26 +621,10 @@ int dtls1_accept(SSL *s)
 			if (ret <= 0) goto end;
 			s->state=SSL3_ST_SW_FLUSH;
 			if (s->hit)
-				{
 				s->s3->tmp.next_state=SSL3_ST_SR_FINISHED_A;
-
-#ifndef OPENSSL_NO_SCTP
-				/* Change to new shared key of SCTP-Auth,
-				 * will be ignored if no SCTP used.
-				 */
-				BIO_ctrl(SSL_get_wbio(s), BIO_CTRL_DGRAM_SCTP_NEXT_AUTH_KEY, 0, NULL);
-#endif
-				}
 			else
 				{
 				s->s3->tmp.next_state=SSL_ST_OK;
-#ifndef OPENSSL_NO_SCTP
-				if (BIO_dgram_is_sctp(SSL_get_wbio(s)))
-					{
-					s->d1->next_state = s->s3->tmp.next_state;
-					s->s3->tmp.next_state=DTLS1_SCTP_ST_SW_WRITE_SOCK;
-					}
-#endif
 				}
 			s->init_num=0;
 			break;
@@ -830,13 +697,6 @@ end:
 	/* BIO_flush(s->wbio); */
 
 	s->in_handshake--;
-#ifndef OPENSSL_NO_SCTP
-		/* Notify SCTP BIO socket to leave handshake
-		 * mode and prevent stream identifier other
-		 * than 0. Will be ignored if no SCTP is used.
-		 */
-		BIO_ctrl(SSL_get_wbio(s), BIO_CTRL_DGRAM_SCTP_SET_IN_HANDSHAKE, s->in_handshake, NULL);
-#endif
 
 	if (cb != NULL)
 		cb(s,SSL_CB_ACCEPT_EXIT,ret);
