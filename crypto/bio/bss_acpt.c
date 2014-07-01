@@ -136,10 +136,9 @@ static BIO_ACCEPT *BIO_ACCEPT_new(void)
 	{
 	BIO_ACCEPT *ret;
 
-	if ((ret=(BIO_ACCEPT *)malloc(sizeof(BIO_ACCEPT))) == NULL)
-		return(NULL);
+    if ((ret = calloc(1, sizeof(BIO_ACCEPT))) == NULL)
+        return (NULL);
 
-	memset(ret,0,sizeof(BIO_ACCEPT));
 	ret->accept_sock=INVALID_SOCKET;
 	ret->bind_mode=BIO_BIND_NORMAL;
 	return(ret);

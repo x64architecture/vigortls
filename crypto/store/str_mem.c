@@ -221,8 +221,7 @@ static int mem_delete(STORE *s, STORE_OBJECT_TYPES type,
 static void *mem_list_start(STORE *s, STORE_OBJECT_TYPES type,
 	OPENSSL_ITEM attributes[], OPENSSL_ITEM parameters[])
 	{
-	struct mem_ctx_st *context =
-		(struct mem_ctx_st *)malloc(sizeof(struct mem_ctx_st));
+	struct mem_ctx_st *context = calloc(1, sizeof(struct mem_ctx_st));
 	void *attribute_context = NULL;
 	STORE_ATTR_INFO *attrs = NULL;
 
@@ -231,7 +230,6 @@ static void *mem_list_start(STORE *s, STORE_OBJECT_TYPES type,
 		STOREerr(STORE_F_MEM_LIST_START, ERR_R_MALLOC_FAILURE);
 		return 0;
 		}
-	memset(context, 0, sizeof(struct mem_ctx_st));
 
 	attribute_context = STORE_parse_attrs_start(attributes);
 	if (!attribute_context)

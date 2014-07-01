@@ -284,9 +284,9 @@ SSL *SSL_new(SSL_CTX *ctx)
 		return(NULL);
 		}
 
-	s=(SSL *)malloc(sizeof(SSL));
-	if (s == NULL) goto err;
-	memset(s,0,sizeof(SSL));
+    s = calloc(1, sizeof(SSL));
+    if (s == NULL)
+        goto err;
 
 #ifndef	OPENSSL_NO_KRB5
 	s->kssl_ctx = kssl_ctx_new();
@@ -1686,11 +1686,9 @@ SSL_CTX *SSL_CTX_new(const SSL_METHOD *meth)
 		SSLerr(SSL_F_SSL_CTX_NEW,SSL_R_X509_VERIFICATION_SETUP_PROBLEMS);
 		goto err;
 		}
-	ret=(SSL_CTX *)malloc(sizeof(SSL_CTX));
-	if (ret == NULL)
-		goto err;
-
-	memset(ret,0,sizeof(SSL_CTX));
+    ret = calloc(1, sizeof(SSL_CTX));
+    if (ret == NULL)
+        goto err;
 
 	ret->method=meth;
 
