@@ -3623,7 +3623,6 @@ ENGINE_get_ssl_client_cert_function     4045	EXIST:!VMS:FUNCTION:ENGINE
 ENGINE_get_ssl_client_cert_fn           4045	EXIST:VMS:FUNCTION:ENGINE
 ENGINE_load_ssl_client_cert             4046	EXIST::FUNCTION:ENGINE
 ENGINE_load_capi                        4047	EXIST::FUNCTION:ENGINE,STATIC_ENGINE
-OPENSSL_isservice                       4048	EXIST::FUNCTION:
 EVP_CIPHER_CTX_clear_flags              4050	EXIST::FUNCTION:
 CRYPTO_set_mem_info_functions           4053	NOEXIST::FUNCTION:
 RSA_X931_generate_key_ex                4054	NOEXIST::FUNCTION:
