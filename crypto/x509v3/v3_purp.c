@@ -232,6 +232,9 @@ int X509_PURPOSE_add(int id, int trust, int flags,
 			return 0;
 		}
 	}
+    free(ptmp->name);
+    free(ptmp->sname);
+    free(ptmp);
 	return 1;
 }
 

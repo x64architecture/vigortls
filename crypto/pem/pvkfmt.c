@@ -752,9 +752,11 @@ static EVP_PKEY *do_PVK_body(const unsigned char **in,
 			PEMerr(PEM_F_DO_PVK_BODY, ERR_R_MALLOC_FAILURE);
 			return NULL;
 			}
-		if (!derive_pvk_key(keybuf, p, saltlen,
-			    (unsigned char *)psbuf, inlen))
-			return NULL;
+        if (!derive_pvk_key(keybuf, p, saltlen,
+                (unsigned char *)psbuf, inlen)) {
+            free(enctmp);
+            return NULL;
+        }
 		p += saltlen;
 		/* Copy BLOBHEADER across, decrypt rest */
 		memcpy(enctmp, p, 8);
@@ -933,8 +935,10 @@ int i2b_PVK_bio(BIO *out, EVP_PKEY *pk, int enclevel,
 	unsigned char *tmp = NULL;
 	int outlen, wrlen;
 	outlen = i2b_PVK(&tmp, pk, enclevel, cb, u);
-	if (outlen < 0)
-		return -1;
+    if (outlen < 0) {
+        free(tmp);                
+        return -1;
+    }
 	wrlen = BIO_write(out, tmp, outlen);
 	free(tmp);
 	if (wrlen == outlen)

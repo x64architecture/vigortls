@@ -184,11 +184,12 @@ int i2d_RSA_NET(const RSA *a, unsigned char **pp,
 		goto err;
 		}
 
-	if (!ASN1_STRING_set(enckey->os, "private-key", -1)) 
-		{
-		ASN1err(ASN1_F_I2D_RSA_NET,ERR_R_MALLOC_FAILURE);
-		goto err;
-		}
+    if (!ASN1_STRING_set(enckey->os, "private-key", -1)) 
+        {
+        ASN1err(ASN1_F_I2D_RSA_NET,ERR_R_MALLOC_FAILURE);
+        free(zz);
+        goto err;
+        }
 	enckey->enckey->digest->data = zz;
 	i2d_NETSCAPE_PKEY(pkey,&zz);
 

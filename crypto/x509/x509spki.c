@@ -109,9 +109,11 @@ char * NETSCAPE_SPKI_b64_encode(NETSCAPE_SPKI *spki)
 	der_len = i2d_NETSCAPE_SPKI(spki, NULL);
 	der_spki = malloc(der_len);
 	b64_str = malloc(der_len * 2);
-	if(!der_spki || !b64_str) {
-		X509err(X509_F_NETSCAPE_SPKI_B64_ENCODE, ERR_R_MALLOC_FAILURE);
-		return NULL;
+    if(!der_spki || !b64_str) {
+        X509err(X509_F_NETSCAPE_SPKI_B64_ENCODE, ERR_R_MALLOC_FAILURE);
+        free(der_spki);
+        free(b64_str);
+        return NULL;
 	}
 	p = der_spki;
 	i2d_NETSCAPE_SPKI(spki, &p);

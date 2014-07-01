@@ -183,11 +183,11 @@ int a2i_ASN1_STRING(BIO *bp, ASN1_STRING *bs, char *buf, int size)
 					m=m-'a'+10;
 				else if ((m >= 'A') && (m <= 'F'))
 					m=m-'A'+10;
-				else
-					{
-					ASN1err(ASN1_F_A2I_ASN1_STRING,ASN1_R_NON_HEX_CHARACTERS);
-					goto err;
-					}
+                else
+                    {
+                    ASN1err(ASN1_F_A2I_ASN1_STRING,ASN1_R_NON_HEX_CHARACTERS);
+                    goto err;
+                    }
 				s[num+j]<<=4;
 				s[num+j]|=m;
 				}
@@ -205,8 +205,9 @@ err:
 	if (0)
 		{
 err_sl:
-		ASN1err(ASN1_F_A2I_ASN1_STRING,ASN1_R_SHORT_LINE);
-		}
-	return(ret);
+        ASN1err(ASN1_F_A2I_ASN1_STRING,ASN1_R_SHORT_LINE);
+        }
+    free(s);
+    return(ret);
 	}
 

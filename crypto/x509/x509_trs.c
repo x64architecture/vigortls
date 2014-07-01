@@ -179,10 +179,11 @@ int X509_TRUST_add(int id, int flags, int (*ck)(X509_TRUST *, X509 *, int),
 	/* free existing name if dynamic */
 	if(trtmp->flags & X509_TRUST_DYNAMIC_NAME) free(trtmp->name);
 	/* dup supplied name */
-	if(!(trtmp->name = BUF_strdup(name))) {
-		X509err(X509_F_X509_TRUST_ADD,ERR_R_MALLOC_FAILURE);
-		return 0;
-	}
+    if(!(trtmp->name = BUF_strdup(name))) {
+        X509err(X509_F_X509_TRUST_ADD,ERR_R_MALLOC_FAILURE);
+        free(trtmp);
+        return 0;
+    }
 	/* Keep the dynamic flag of existing entry */
 	trtmp->flags &= X509_TRUST_DYNAMIC;
 	/* Set all other flags */

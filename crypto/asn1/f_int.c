@@ -190,11 +190,12 @@ int a2i_ASN1_INTEGER(BIO *bp, ASN1_INTEGER *bs, char *buf, int size)
 					m=m-'a'+10;
 				else if ((m >= 'A') && (m <= 'F'))
 					m=m-'A'+10;
-				else
-					{
-					ASN1err(ASN1_F_A2I_ASN1_INTEGER,ASN1_R_NON_HEX_CHARACTERS);
-					goto err;
-					}
+                else
+                    {
+                    ASN1err(ASN1_F_A2I_ASN1_INTEGER,ASN1_R_NON_HEX_CHARACTERS);
+                    free(s);
+                    goto err;
+                    }
 				s[num+j]<<=4;
 				s[num+j]|=m;
 				}

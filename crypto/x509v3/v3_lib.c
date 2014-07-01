@@ -126,6 +126,7 @@ int X509V3_EXT_add_list(X509V3_EXT_METHOD *extlist)
 
 int X509V3_EXT_add_alias(int nid_to, int nid_from)
 {
+    int ret;
 	const X509V3_EXT_METHOD *ext;
 	X509V3_EXT_METHOD *tmpext;
 
@@ -140,7 +141,9 @@ int X509V3_EXT_add_alias(int nid_to, int nid_from)
 	*tmpext = *ext;
 	tmpext->ext_nid = nid_to;
 	tmpext->ext_flags |= X509V3_EXT_DYNAMIC;
-	return X509V3_EXT_add(tmpext);
+    ret = X509V3_EXT_add(tmpext);
+    free(tmpext);
+    return ret;
 }
 
 void X509V3_EXT_cleanup(void)
