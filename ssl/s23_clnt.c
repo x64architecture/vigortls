@@ -121,10 +121,6 @@ static int ssl23_client_hello(SSL *s);
 static int ssl23_get_server_hello(SSL *s);
 static const SSL_METHOD *ssl23_get_client_method(int ver)
 	{
-#ifndef OPENSSL_NO_SSL2
-	if (ver == SSL2_VERSION)
-		return(SSLv2_client_method());
-#endif
 	if (ver == SSL3_VERSION)
 		return(SSLv3_client_method());
 	else if (ver == TLS1_VERSION)
@@ -324,9 +320,6 @@ static int ssl23_client_hello(SSL *s)
 #if !defined(OPENSSL_NO_SSL3)
 		|SSL_OP_NO_SSLv3
 #endif
-#if !defined(OPENSSL_NO_SSL2)
-		|(ssl2_compat?SSL_OP_NO_SSLv2:0)
-#endif
 		;
 #if !defined(OPENSSL_NO_TLS1_2_CLIENT)
 	version = TLS1_2_VERSION;
@@ -344,10 +337,6 @@ static int ssl23_client_hello(SSL *s)
 	if ((options & SSL_OP_NO_TLSv1) && (options & mask) != mask)
 		version = SSL3_VERSION;
 	mask &= ~SSL_OP_NO_SSLv3;
-#endif
-#if !defined(OPENSSL_NO_SSL2)
-	if ((options & SSL_OP_NO_SSLv3) && (options & mask) != mask)
-		version = SSL2_VERSION;
 #endif
 
 #ifndef OPENSSL_NO_TLSEXT
@@ -615,73 +604,8 @@ static int ssl23_get_server_hello(SSL *s)
 	if ((p[0] & 0x80) && (p[2] == SSL2_MT_SERVER_HELLO) &&
 		(p[5] == 0x00) && (p[6] == 0x02))
 		{
-#ifdef OPENSSL_NO_SSL2
 		SSLerr(SSL_F_SSL23_GET_SERVER_HELLO,SSL_R_UNSUPPORTED_PROTOCOL);
 		goto err;
-#else
-		/* we are talking sslv2 */
-		/* we need to clean up the SSLv3 setup and put in the
-		 * sslv2 stuff. */
-		int ch_len;
-
-		if (s->options & SSL_OP_NO_SSLv2)
-			{
-			SSLerr(SSL_F_SSL23_GET_SERVER_HELLO,SSL_R_UNSUPPORTED_PROTOCOL);
-			goto err;
-			}
-		if (s->s2 == NULL)
-			{
-			if (!ssl2_new(s))
-				goto err;
-			}
-		else
-			ssl2_clear(s);
-
-		if (s->options & SSL_OP_NETSCAPE_CHALLENGE_BUG)
-			ch_len=SSL2_CHALLENGE_LENGTH;
-		else
-			ch_len=SSL2_MAX_CHALLENGE_LENGTH;
-
-		/* write out sslv2 challenge */
-		/* Note that ch_len must be <= SSL3_RANDOM_SIZE (32), because
-		   it is one of SSL2_MAX_CHALLENGE_LENGTH (32) or
-		   SSL2_MAX_CHALLENGE_LENGTH (16), but leave the check in for
-		   futurproofing */
-		i=(SSL3_RANDOM_SIZE < ch_len)
-			?SSL3_RANDOM_SIZE:ch_len;
-		s->s2->challenge_length=i;
-		memcpy(s->s2->challenge,
-			&(s->s3->client_random[SSL3_RANDOM_SIZE-i]),i);
-
-		if (s->s3 != NULL) ssl3_free(s);
-
-		if (!BUF_MEM_grow_clean(s->init_buf,
-			SSL2_MAX_RECORD_LENGTH_3_BYTE_HEADER))
-			{
-			SSLerr(SSL_F_SSL23_GET_SERVER_HELLO,ERR_R_BUF_LIB);
-			goto err;
-			}
-
-		s->state=SSL2_ST_GET_SERVER_HELLO_A;
-		if (!(s->client_version == SSL2_VERSION))
-			/* use special padding (SSL 3.0 draft/RFC 2246, App. E.2) */
-			s->s2->ssl2_rollback=1;
-
-		/* setup the 7 bytes we have read so we get them from
-		 * the sslv2 buffer */
-		s->rstate=SSL_ST_READ_HEADER;
-		s->packet_length=n;
-		s->packet= &(s->s2->rbuf[0]);
-		memcpy(s->packet,buf,n);
-		s->s2->rbuf_left=n;
-		s->s2->rbuf_offs=0;
-
-		/* we have already written one */
-		s->s2->write_sequence=1;
-
-		s->method=SSLv2_client_method();
-		s->handshake_func=s->method->ssl_connect;
-#endif
 		}
 	else if (p[1] == SSL3_VERSION_MAJOR &&
 	         p[2] <= TLS1_2_VERSION_MINOR &&

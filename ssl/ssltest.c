@@ -313,9 +313,6 @@ static void sv_usage(void)
 	fprintf(stderr," -srpuser user  - SRP username to use\n");
 	fprintf(stderr," -srppass arg   - password for 'user'\n");
 #endif
-#ifndef OPENSSL_NO_SSL2
-	fprintf(stderr," -ssl2         - use SSLv2\n");
-#endif
 #ifndef OPENSSL_NO_SSL3
 	fprintf(stderr," -ssl3         - use SSLv3\n");
 #endif
@@ -801,10 +798,6 @@ bad:
 	}
 #endif
 
-#if !defined(OPENSSL_NO_SSL2) && !defined(OPENSSL_NO_SSL3)
-	if (ssl2)
-		meth=SSLv2_method();
-	else 
 	if (tls1)
 		meth=TLSv1_method();
 	else
@@ -812,19 +805,6 @@ bad:
 		meth=SSLv3_method();
 	else
 		meth=SSLv23_method();
-#else
-#ifdef OPENSSL_NO_SSL2
-	if (tls1)
-		meth=TLSv1_method();
-	else
-	if (ssl3)
-		meth=SSLv3_method();
-	else
-		meth=SSLv23_method();
-#else
-	meth=SSLv2_method();
-#endif
-#endif
 
 	c_ctx=SSL_CTX_new(meth);
 	s_ctx=SSL_CTX_new(meth);
@@ -2452,21 +2432,6 @@ static int do_test_cipherlist(void)
 	const SSL_METHOD *meth;
 	const SSL_CIPHER *ci, *tci = NULL;
 
-#ifndef OPENSSL_NO_SSL2
-	fprintf(stderr, "testing SSLv2 cipher list order: ");
-	meth = SSLv2_method();
-	while ((ci = meth->get_cipher(i++)) != NULL)
-		{
-		if (tci != NULL)
-			if (ci->id >= tci->id)
-				{
-				fprintf(stderr, "failed %lx vs. %lx\n", ci->id, tci->id);
-				return 0;
-				}
-		tci = ci;
-		}
-	fprintf(stderr, "ok\n");
-#endif
 #ifndef OPENSSL_NO_SSL3
 	fprintf(stderr, "testing SSLv3 cipher list order: ");
 	meth = SSLv3_method();

@@ -776,10 +776,6 @@ int MAIN(int argc, char **argv)
 			meth=TLSv1_client_method();
 			}
 #endif
-#ifndef OPENSSL_NO_SSL2
-		else if	(strcmp(*argv,"-ssl2") == 0)
-			meth=SSLv2_client_method();
-#endif
 #ifndef OPENSSL_NO_SSL3
 		else if	(strcmp(*argv,"-ssl3") == 0)
 			meth=SSLv3_client_method();
