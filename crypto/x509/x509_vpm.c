@@ -88,8 +88,7 @@ static void x509_verify_param_zero(X509_VERIFY_PARAM *param)
 X509_VERIFY_PARAM *X509_VERIFY_PARAM_new(void)
 	{
 	X509_VERIFY_PARAM *param;
-	param = malloc(sizeof(X509_VERIFY_PARAM));
-	memset(param, 0, sizeof(X509_VERIFY_PARAM));
+	param = calloc(1, sizeof(X509_VERIFY_PARAM));
 	x509_verify_param_zero(param);
 	return param;
 	}

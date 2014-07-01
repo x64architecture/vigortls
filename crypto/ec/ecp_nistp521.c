@@ -1761,8 +1761,8 @@ int ec_GFp_nistp521_points_mul(const EC_GROUP *group, EC_POINT *r,
 			 * converting those into affine form is time well spent  */
 			mixed = 1;
 			}
-		secrets = malloc(num_points * sizeof(felem_bytearray));
-		pre_comp = malloc(num_points * 17 * 3 * sizeof(felem));
+		secrets = calloc(num_points, sizeof(felem_bytearray));
+		pre_comp = calloc(num_points, 17 * 3 * sizeof(felem));
 		if (mixed)
 			tmp_felems = malloc((num_points * 17 + 1) * sizeof(felem));
 		if ((secrets == NULL) || (pre_comp == NULL) || (mixed && (tmp_felems == NULL)))
@@ -1773,8 +1773,6 @@ int ec_GFp_nistp521_points_mul(const EC_GROUP *group, EC_POINT *r,
 
 		/* we treat NULL scalars as 0, and NULL points as points at infinity,
 		 * i.e., they contribute nothing to the linear combination */
-		memset(secrets, 0, num_points * sizeof(felem_bytearray));
-		memset(pre_comp, 0, num_points * 17 * 3 * sizeof(felem));
 		for (i = 0; i < num_points; ++i)
 			{
 			if (i == num)

@@ -618,13 +618,11 @@ const UI_METHOD *UI_set_method(UI *ui, const UI_METHOD *meth)
 
 UI_METHOD *UI_create_method(char *name)
 	{
-	UI_METHOD *ui_method = (UI_METHOD *)malloc(sizeof(UI_METHOD));
+	UI_METHOD *ui_method = calloc(1, sizeof(UI_METHOD));
 
 	if (ui_method)
-		{
-		memset(ui_method, 0, sizeof(*ui_method));
 		ui_method->name = BUF_strdup(name);
-		}
+
 	return ui_method;
 	}
 

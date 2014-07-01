@@ -196,11 +196,9 @@ static EVP_PKEY_CTX *int_ctx_new(EVP_PKEY *pkey, ENGINE *e, int id)
 EVP_PKEY_METHOD* EVP_PKEY_meth_new(int id, int flags)
 	{
 	EVP_PKEY_METHOD *pmeth;
-	pmeth = malloc(sizeof(EVP_PKEY_METHOD));
+	pmeth = calloc(1, sizeof(EVP_PKEY_METHOD));
 	if (!pmeth)
 		return NULL;
-
-	memset(pmeth, 0, sizeof(EVP_PKEY_METHOD));
 
 	pmeth->pkey_id = id;
 	pmeth->flags = flags | EVP_PKEY_FLAG_DYNAMIC;

@@ -167,12 +167,11 @@ TS_RESP_CTX *TS_RESP_CTX_new()
 	{
 	TS_RESP_CTX *ctx;
 
-	if (!(ctx = (TS_RESP_CTX *) malloc(sizeof(TS_RESP_CTX))))
+	if (!(ctx = calloc(1, sizeof(TS_RESP_CTX))))
 		{
 		TSerr(TS_F_TS_RESP_CTX_NEW, ERR_R_MALLOC_FAILURE);
 		return NULL;
 		}
-	memset(ctx, 0, sizeof(TS_RESP_CTX));
 
 	/* Setting default callbacks. */
 	ctx->serial_cb = def_serial_cb;
