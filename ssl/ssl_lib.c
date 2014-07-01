@@ -1760,11 +1760,6 @@ SSL_CTX *SSL_CTX_new(const SSL_METHOD *meth)
 	if (!ret->param)
 		goto err;
 
-	if ((ret->rsa_md5=EVP_get_digestbyname("ssl2-md5")) == NULL)
-		{
-		SSLerr(SSL_F_SSL_CTX_NEW,SSL_R_UNABLE_TO_LOAD_SSL2_MD5_ROUTINES);
-		goto err2;
-		}
 	if ((ret->md5=EVP_get_digestbyname("ssl3-md5")) == NULL)
 		{
 		SSLerr(SSL_F_SSL_CTX_NEW,SSL_R_UNABLE_TO_LOAD_SSL3_MD5_ROUTINES);
