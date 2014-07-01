@@ -200,7 +200,7 @@ SSL_SESSION *SSL_SESSION_new(void)
 	ss->verify_result = 1; /* avoid 0 (= X509_V_OK) just in case */
 	ss->references=1;
 	ss->timeout=60*5+4; /* 5 minute timeout by default */
-	ss->time=(unsigned long)time(NULL);
+	ss->time=time(NULL);
 	ss->prev=NULL;
 	ss->next=NULL;
 	ss->compress_meth=0;
@@ -592,7 +592,7 @@ int ssl_get_prev_session(SSL *s, unsigned char *session_id, int len,
 			goto err;
 		}
 
-	if (ret->timeout < (long)(time(NULL) - ret->time)) /* timeout */
+	if (ret->timeout < (time(NULL) - ret->time)) /* timeout */
 		{
 		s->session_ctx->stats.sess_timeout++;
 		if (try_session_cache)
@@ -752,7 +752,6 @@ void SSL_SESSION_free(SSL_SESSION *ss)
 
 	CRYPTO_free_ex_data(CRYPTO_EX_INDEX_SSL_SESSION, ss, &ss->ex_data);
 
-	OPENSSL_cleanse(ss->key_arg,sizeof ss->key_arg);
 	OPENSSL_cleanse(ss->master_key,sizeof ss->master_key);
 	OPENSSL_cleanse(ss->session_id,sizeof ss->session_id);
 	if (ss->sess_cert != NULL) ssl_sess_cert_free(ss->sess_cert);
@@ -859,13 +858,13 @@ long SSL_SESSION_get_timeout(const SSL_SESSION *s)
 	if (s == NULL) return(0);
 	return(s->timeout);
 	}
-
+/* XXX 2038 */
 long SSL_SESSION_get_time(const SSL_SESSION *s)
 	{
 	if (s == NULL) return(0);
 	return(s->time);
 	}
-
+/* XXX 2038 */
 long SSL_SESSION_set_time(SSL_SESSION *s, long t)
 	{
 	if (s == NULL) return(0);
@@ -971,7 +970,7 @@ typedef struct timeout_param_st
 
 static void timeout_doall_arg(SSL_SESSION *s, TIMEOUT_PARAM *p)
 	{
-	if ((p->time == 0) || (p->time > (s->time+s->timeout))) /* timeout */
+	if ((p->time == 0) || (p->time > (s->time + s->timeout))) /* timeout */
 		{
 		/* The reason we don't call SSL_CTX_remove_session() is to
 		 * save on locking overhead */
@@ -986,6 +985,7 @@ static void timeout_doall_arg(SSL_SESSION *s, TIMEOUT_PARAM *p)
 
 static IMPLEMENT_LHASH_DOALL_ARG_FN(timeout, SSL_SESSION, TIMEOUT_PARAM)
 
+/* XXX 2038 */
 void SSL_CTX_flush_sessions(SSL_CTX *s, long t)
 	{
 	unsigned long i;

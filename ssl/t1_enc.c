@@ -499,8 +499,6 @@ int tls1_change_cipher_state(SSL *s, int which)
 			}
 		}
 
-	s->session->key_arg_length=0;
-
 	if (EVP_CIPHER_mode(c) == EVP_CIPH_GCM_MODE)
 		{
 		EVP_CipherInit_ex(dd,c,NULL,key,NULL,(which & SSL3_CC_WRITE));
