@@ -493,9 +493,6 @@ void BIO_sock_cleanup(void)
 	if (wsa_init_done)
 		{
 		wsa_init_done=0;
-#if 0		/* this call is claimed to be non-present in Winsock2 */
-		WSACancelBlockingCall();
-#endif
 		WSACleanup();
 		}
 #endif
