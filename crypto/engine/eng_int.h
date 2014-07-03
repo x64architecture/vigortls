@@ -1,4 +1,4 @@
-/* crypto/engine/eng_int.h */
+/* crypto/engine/eng_int.c */
 /* Written by Geoff Thorpe (geoff@geoffthorpe.net) for the OpenSSL
  * project 2000.
  */
@@ -10,7 +10,7 @@
  * are met:
  *
  * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer. 
+ *    notice, this list of conditions and the following disclaimer.
  *
  * 2. Redistributions in binary form must reproduce the above copyright
  *    notice, this list of conditions and the following disclaimer in
@@ -57,7 +57,7 @@
  */
 /* ====================================================================
  * Copyright 2002 Sun Microsystems, Inc. ALL RIGHTS RESERVED.
- * ECDH support in OpenSSL originally developed by 
+ * ECDH support in OpenSSL originally developed by
  * SUN MICROSYSTEMS, INC., and contributed to the OpenSSL project.
  */
 
@@ -81,11 +81,11 @@ extern "C" {
 #ifdef ENGINE_REF_COUNT_DEBUG
 
 #define engine_ref_debug(e, isfunct, diff) \
-	fprintf(stderr, "engine: %08x %s from %d to %d (%s:%d)\n", \
-		(unsigned int)(e), (isfunct ? "funct" : "struct"), \
-		((isfunct) ? ((e)->funct_ref - (diff)) : ((e)->struct_ref - (diff))), \
-		((isfunct) ? (e)->funct_ref : (e)->struct_ref), \
-		(__FILE__), (__LINE__));
+    fprintf(stderr, "engine: %08x %s from %d to %d (%s:%d)\n", \
+        (unsigned int)(e), (isfunct ? "funct" : "struct"), \
+        ((isfunct) ? ((e)->funct_ref - (diff)) : ((e)->struct_ref - (diff))), \
+        ((isfunct) ? (e)->funct_ref : (e)->struct_ref), \
+        (__FILE__), (__LINE__));
 
 #else
 
@@ -98,10 +98,9 @@ extern "C" {
  * order. NB: both the "add" functions assume CRYPTO_LOCK_ENGINE to already be
  * held (in "write" mode). */
 typedef void (ENGINE_CLEANUP_CB)(void);
-typedef struct st_engine_cleanup_item
-	{
-	ENGINE_CLEANUP_CB *cb;
-	} ENGINE_CLEANUP_ITEM;
+typedef struct st_engine_cleanup_item {
+    ENGINE_CLEANUP_CB *cb;
+} ENGINE_CLEANUP_ITEM;
 DECLARE_STACK_OF(ENGINE_CLEANUP_ITEM)
 void engine_cleanup_add_first(ENGINE_CLEANUP_CB *cb);
 void engine_cleanup_add_last(ENGINE_CLEANUP_CB *cb);
@@ -118,17 +117,20 @@ DECLARE_STACK_OF(ENGINE)
  * as a (ENGINE_TABLE *) pointer value set initially to NULL. */
 typedef struct st_engine_table ENGINE_TABLE;
 int engine_table_register(ENGINE_TABLE **table, ENGINE_CLEANUP_CB *cleanup,
-		ENGINE *e, const int *nids, int num_nids, int setdefault);
+    ENGINE *e, const int *nids, int num_nids, int setdefault);
 void engine_table_unregister(ENGINE_TABLE **table, ENGINE *e);
 void engine_table_cleanup(ENGINE_TABLE **table);
 #ifndef ENGINE_TABLE_DEBUG
 ENGINE *engine_table_select(ENGINE_TABLE **table, int nid);
 #else
-ENGINE *engine_table_select_tmp(ENGINE_TABLE **table, int nid, const char *f, int l);
+ENGINE *engine_table_select_tmp(ENGINE_TABLE **table, int nid, const char *f,
+    int l);
 #define engine_table_select(t,n) engine_table_select_tmp(t,n,__FILE__,__LINE__)
 #endif
-typedef void (engine_table_doall_cb)(int nid, STACK_OF(ENGINE) *sk, ENGINE *def, void *arg);
-void engine_table_doall(ENGINE_TABLE *table, engine_table_doall_cb *cb, void *arg);
+typedef void (engine_table_doall_cb)(int nid, STACK_OF(ENGINE) *sk,
+    ENGINE *def, void *arg);
+void engine_table_doall(ENGINE_TABLE *table, engine_table_doall_cb *cb,
+    void *arg);
 
 /* Internal versions of API functions that have control over locking. These are
  * used between C files when functionality needs to be shared but the caller may
@@ -152,52 +154,51 @@ void engine_pkey_asn1_meths_free(ENGINE *e);
 
 /* This is a structure for storing implementations of various crypto
  * algorithms and functions. */
-struct engine_st
-	{
-	const char *id;
-	const char *name;
-	const RSA_METHOD *rsa_meth;
-	const DSA_METHOD *dsa_meth;
-	const DH_METHOD *dh_meth;
-	const ECDH_METHOD *ecdh_meth;
-	const ECDSA_METHOD *ecdsa_meth;
-	const RAND_METHOD *rand_meth;
-	const STORE_METHOD *store_meth;
-	/* Cipher handling is via this callback */
-	ENGINE_CIPHERS_PTR ciphers;
-	/* Digest handling is via this callback */
-	ENGINE_DIGESTS_PTR digests;
-	/* Public key handling via this callback */
-	ENGINE_PKEY_METHS_PTR pkey_meths;
-	/* ASN1 public key handling via this callback */
-	ENGINE_PKEY_ASN1_METHS_PTR pkey_asn1_meths;
+struct engine_st {
+    const char *id;
+    const char *name;
+    const RSA_METHOD *rsa_meth;
+    const DSA_METHOD *dsa_meth;
+    const DH_METHOD *dh_meth;
+    const ECDH_METHOD *ecdh_meth;
+    const ECDSA_METHOD *ecdsa_meth;
+    const RAND_METHOD *rand_meth;
+    const STORE_METHOD *store_meth;
+    /* Cipher handling is via this callback */
+    ENGINE_CIPHERS_PTR ciphers;
+    /* Digest handling is via this callback */
+    ENGINE_DIGESTS_PTR digests;
+    /* Public key handling via this callback */
+    ENGINE_PKEY_METHS_PTR pkey_meths;
+    /* ASN1 public key handling via this callback */
+    ENGINE_PKEY_ASN1_METHS_PTR pkey_asn1_meths;
 
-	ENGINE_GEN_INT_FUNC_PTR	destroy;
+    ENGINE_GEN_INT_FUNC_PTR    destroy;
 
-	ENGINE_GEN_INT_FUNC_PTR init;
-	ENGINE_GEN_INT_FUNC_PTR finish;
-	ENGINE_CTRL_FUNC_PTR ctrl;
-	ENGINE_LOAD_KEY_PTR load_privkey;
-	ENGINE_LOAD_KEY_PTR load_pubkey;
+    ENGINE_GEN_INT_FUNC_PTR init;
+    ENGINE_GEN_INT_FUNC_PTR finish;
+    ENGINE_CTRL_FUNC_PTR ctrl;
+    ENGINE_LOAD_KEY_PTR load_privkey;
+    ENGINE_LOAD_KEY_PTR load_pubkey;
 
-	ENGINE_SSL_CLIENT_CERT_PTR load_ssl_client_cert;
+    ENGINE_SSL_CLIENT_CERT_PTR load_ssl_client_cert;
 
-	const ENGINE_CMD_DEFN *cmd_defns;
-	int flags;
-	/* reference count on the structure itself */
-	int struct_ref;
-	/* reference count on usability of the engine type. NB: This
-	 * controls the loading and initialisation of any functionlity
-	 * required by this engine, whereas the previous count is
-	 * simply to cope with (de)allocation of this structure. Hence,
-	 * running_ref <= struct_ref at all times. */
-	int funct_ref;
-	/* A place to store per-ENGINE data */
-	CRYPTO_EX_DATA ex_data;
-	/* Used to maintain the linked-list of engines. */
-	struct engine_st *prev;
-	struct engine_st *next;
-	};
+    const ENGINE_CMD_DEFN *cmd_defns;
+    int flags;
+    /* reference count on the structure itself */
+    int struct_ref;
+    /* reference count on usability of the engine type. NB: This
+     * controls the loading and initialisation of any functionlity
+     * required by this engine, whereas the previous count is
+     * simply to cope with (de)allocation of this structure. Hence,
+     * running_ref <= struct_ref at all times. */
+    int funct_ref;
+    /* A place to store per-ENGINE data */
+    CRYPTO_EX_DATA ex_data;
+    /* Used to maintain the linked-list of engines. */
+    struct engine_st *prev;
+    struct engine_st *next;
+};
 
 #ifdef  __cplusplus
 }
