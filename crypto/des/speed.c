@@ -121,9 +121,6 @@ SIGRETTYPE sig_done(int sig)
 	{
 	signal(SIGALRM,sig_done);
 	run=0;
-#ifdef LINT
-	sig=sig;
-#endif
 	}
 #endif
 
@@ -298,7 +295,4 @@ int main(int argc, char **argv)
 	printf("DES ede cbc bytes  per sec = %12.2f (%9.3fuS)\n",d,8.0e6/d);
 	printf("crypt              per sec = %12.2f (%9.3fuS)\n",e,1.0e6/e);
 	exit(0);
-#if defined(LINT) || defined(OPENSSL_SYS_MSDOS)
-	return(0);
-#endif
 	}

@@ -112,9 +112,6 @@ SIGRETTYPE sig_done(int sig)
 	{
 	signal(SIGALRM,sig_done);
 	run=0;
-#ifdef LINT
-	sig=sig;
-#endif
 	}
 #endif
 
@@ -257,8 +254,5 @@ int main(int argc, char **argv)
 	printf("CAST raw ecb bytes per sec = %12.2f (%9.3fuS)\n",b,8.0e6/b);
 	printf("CAST cbc     bytes per sec = %12.2f (%9.3fuS)\n",c,8.0e6/c);
 	exit(0);
-#if defined(LINT) || defined(OPENSSL_SYS_MSDOS)
-	return(0);
-#endif
 	}
 

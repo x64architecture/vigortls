@@ -149,9 +149,6 @@ SIGRETTYPE sig_done(int sig)
 	{
 	signal(SIGALRM,sig_done);
 	run=0;
-#ifdef LINT
-	sig=sig;
-#endif
 	}
 #endif
 
@@ -321,8 +318,5 @@ int main(int argc, char **argv)
 		break;
 		}
 	exit(0);
-#if defined(LINT) || defined(OPENSSL_SYS_MSDOS)
-	return(0);
-#endif
 	}
 
