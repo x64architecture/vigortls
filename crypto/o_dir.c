@@ -74,8 +74,6 @@
 #include "LPdir_unix.c"
 #elif defined OPENSSL_SYS_WIN32
 #include "LPdir_win32.c"
-#elif defined OPENSSL_SYS_WINCE
-#include "LPdir_wince.c"
 #else
 #include "LPdir_nyi.c"
 #endif

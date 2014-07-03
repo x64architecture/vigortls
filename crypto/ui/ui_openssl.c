@@ -153,13 +153,6 @@
 #include "ui_locl.h"
 #include "cryptlib.h"
 
-#ifdef WIN_CONSOLE_BUG
-# include <windows.h>
-#ifndef OPENSSL_SYS_WINCE
-# include <wincon.h>
-#endif
-#endif
-
 
 /* There are 5 types of terminal interface supported,
  * TERMIO, TERMIOS, VMS, MSDOS and SGTTY
@@ -340,7 +333,6 @@ static int read_string(UI *ui, UI_STRING *uis)
 	}
 
 
-#if !defined(OPENSSL_SYS_WINCE)
 /* Internal functions to read a string without echoing */
 static int read_till_nl(FILE *in)
 	{
@@ -355,7 +347,6 @@ static int read_till_nl(FILE *in)
 	}
 
 static volatile sig_atomic_t intr_signal;
-#endif
 
 static int read_string_inner(UI *ui, UI_STRING *uis, int echo, int strip_nl)
 	{
@@ -363,7 +354,6 @@ static int read_string_inner(UI *ui, UI_STRING *uis, int echo, int strip_nl)
 	int ok;
 	char result[BUFSIZ];
 	int maxsize = BUFSIZ-1;
-#if !defined(OPENSSL_SYS_WINCE)
 	char *p;
 
 	intr_signal=0;
@@ -413,9 +403,6 @@ error:
 
 	if (ps >= 1)
 		popsig();
-#else
-	ok=1;
-#endif
 
 	OPENSSL_cleanse(result,BUFSIZ);
 	return ok;
@@ -502,7 +489,6 @@ static int close_console(UI *ui)
 	}
 
 
-#if !defined(OPENSSL_SYS_WINCE)
 /* Internal functions to handle signals and act on them */
 static void pushsig(void)
 	{
@@ -585,10 +571,9 @@ static void recsig(int i)
 	{
 	intr_signal=i;
 	}
-#endif
 
 /* Internal functions specific for Windows */
-#if defined(OPENSSL_SYS_MSDOS) && !defined(OPENSSL_SYS_WINCE)
+#if defined(OPENSSL_SYS_MSDOS)
 static int noecho_fgets(char *buf, int size, FILE *tty)
 	{
 	int i;
@@ -616,18 +601,6 @@ static int noecho_fgets(char *buf, int size, FILE *tty)
 			break;
 			}
 		}
-#ifdef WIN_CONSOLE_BUG
-/* Win95 has several evil console bugs: one of these is that the
- * last character read using getch() is passed to the next read: this is
- * usually a CR so this can be trouble. No STDIO fix seems to work but
- * flushing the console appears to do the trick.
- */
-		{
-			HANDLE inh;
-			inh = GetStdHandle(STD_INPUT_HANDLE);
-			FlushConsoleInputBuffer(inh);
-		}
-#endif
 	return(strlen(buf));
 	}
 #endif

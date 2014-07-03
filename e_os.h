@@ -122,9 +122,6 @@ extern "C" {
 #ifdef WIN32
 #define get_last_sys_error()	GetLastError()
 #define clear_sys_error()	SetLastError(0)
-#if !defined(WINNT)
-#define WIN_CONSOLE_BUG
-#endif
 #else
 #define get_last_sys_error()	errno
 #define clear_sys_error()	errno=0
@@ -279,10 +276,6 @@ static unsigned int _strlen31(const char *str)
 #  include <io.h>
 #  include <fcntl.h>
 
-#  ifdef OPENSSL_SYS_WINCE
-#    define OPENSSL_NO_POSIX_IO
-#  endif
-
 #  define EXIT(n) exit(n)
 #  define LIST_SEPARATOR_CHAR ';'
 #  ifndef X_OK
@@ -298,11 +291,7 @@ static unsigned int _strlen31(const char *str)
 #  define SSLEAY_CONF	OPENSSL_CONF
 #  define NUL_DEV	"nul"
 #  define RFILE		".rnd"
-#  ifdef OPENSSL_SYS_WINCE
-#    define DEFAULT_HOME  ""
-#  else
-#    define DEFAULT_HOME  "C:"
-#  endif
+#  define DEFAULT_HOME  "C:"
 
 /* Avoid Windows 8 SDK GetVersion deprecated problems */
 #if defined(_MSC_VER) && _MSC_VER>=1800

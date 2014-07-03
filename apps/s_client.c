@@ -1528,8 +1528,8 @@ SSL_set_tlsext_status_ids(con, ids);
 			 * will choke the compiler: if you do have a cast then
 			 * you can either go for (int *) or (void *).
 			 */
-#if defined(OPENSSL_SYS_WINDOWS) || defined(OPENSSL_SYS_MSDOS)
-                        /* Under Windows/DOS we make the assumption that we can
+#if defined(OPENSSL_SYS_WINDOWS)
+             /* Under Windows we make the assumption that we can
 			 * always write to the tty: therefore if we need to
 			 * write to the tty we just fall through. Otherwise
 			 * we timeout the select every second and see if there
@@ -1543,33 +1543,11 @@ SSL_set_tlsext_status_ids(con, ids);
 					tv.tv_usec = 0;
 					i=select(width,(void *)&readfds,(void *)&writefds,
 						 NULL,&tv);
-#if defined(OPENSSL_SYS_WINCE) || defined(OPENSSL_SYS_MSDOS)
-					if(!i && (!_kbhit() || !read_tty) ) continue;
-#else
-					if(!i && (!((_kbhit()) || (WAIT_OBJECT_0 == WaitForSingleObject(GetStdHandle(STD_INPUT_HANDLE), 0))) || !read_tty) ) continue;
-#endif
+                if(!i && (!((_kbhit()) || (WAIT_OBJECT_0 == WaitForSingleObject(GetStdHandle(STD_INPUT_HANDLE), 0))) || !read_tty) )
+                        continue;
 				} else 	i=select(width,(void *)&readfds,(void *)&writefds,
 					 NULL,timeoutp);
 			}
-#elif defined(OPENSSL_SYS_BEOS_R5)
-			/* Under BeOS-R5 the situation is similar to DOS */
-			i=0;
-			stdin_set = 0;
-			(void)fcntl(fileno(stdin), F_SETFL, O_NONBLOCK);
-			if(!write_tty) {
-				if(read_tty) {
-					tv.tv_sec = 1;
-					tv.tv_usec = 0;
-					i=select(width,(void *)&readfds,(void *)&writefds,
-						 NULL,&tv);
-					if (read(fileno(stdin), sbuf, 0) >= 0)
-						stdin_set = 1;
-					if (!i && (stdin_set != 1 || !read_tty))
-						continue;
-				} else 	i=select(width,(void *)&readfds,(void *)&writefds,
-					 NULL,timeoutp);
-			}
-			(void)fcntl(fileno(stdin), F_SETFL, 0);
 #else
 			i=select(width,(void *)&readfds,(void *)&writefds,
 				 NULL,timeoutp);
@@ -1740,14 +1718,8 @@ printf("read=%d pending=%d peek=%d\n",k,SSL_pending(con),SSL_peek(con,zbuf,10240
 				}
 			}
 
-#if defined(OPENSSL_SYS_WINDOWS) || defined(OPENSSL_SYS_MSDOS)
-#if defined(OPENSSL_SYS_WINCE) || defined(OPENSSL_SYS_MSDOS)
-		else if (_kbhit())
-#else
+#ifdef OPENSSL_SYS_WINDOWS
 		else if ((_kbhit()) || (WAIT_OBJECT_0 == WaitForSingleObject(GetStdHandle(STD_INPUT_HANDLE), 0)))
-#endif
-#elif defined(OPENSSL_SYS_BEOS_R5)
-		else if (stdin_set)
 #else
 		else if (FD_ISSET(fileno(stdin),&readfds))
 #endif

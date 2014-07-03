@@ -1,6 +1,6 @@
 #!/usr/local/bin/perl
 # VC-32.pl - unified script for Microsoft Visual C++, covering Win32,
-# Win64 and WinCE [follow $FLAVOR variable to trace the differences].
+# Win64 [follow $FLAVOR variable to trace the differences].
 #
 
 $ssl=	"ssleay32";
@@ -56,62 +56,6 @@ $target: \$(TMP_D)$o$bname.asm
 
 ___
 	}
-    }
-elsif ($FLAVOR =~ /CE/)
-    {
-    # sanity check
-    die '%OSVERSION% is not defined'	if (!defined($ENV{'OSVERSION'}));
-    die '%PLATFORM% is not defined'	if (!defined($ENV{'PLATFORM'}));
-    die '%TARGETCPU% is not defined'	if (!defined($ENV{'TARGETCPU'}));
-
-    #
-    # Idea behind this is to mimic flags set by eVC++ IDE...
-    #
-    $wcevers = $ENV{'OSVERSION'};			# WCENNN
-    die '%OSVERSION% value is insane'	if ($wcevers !~ /^WCE([1-9])([0-9]{2})$/);
-    $wcecdefs = "-D_WIN32_WCE=$1$2 -DUNDER_CE=$1$2";	# -D_WIN32_WCE=NNN
-    $wcelflag = "/subsystem:windowsce,$1.$2";		# ...,N.NN
-
-    $wceplatf =  $ENV{'PLATFORM'};
-    $wceplatf =~ tr/a-z0-9 /A-Z0-9_/d;
-    $wcecdefs .= " -DWCE_PLATFORM_$wceplatf";
-
-    $wcetgt = $ENV{'TARGETCPU'};	# just shorter name...
-    SWITCH: for($wcetgt) {
-	/^X86/		&& do {	$wcecdefs.=" -Dx86 -D_X86_ -D_i386_ -Di_386_";
-				$wcelflag.=" /machine:IX86";	last; };
-	/^ARMV4[IT]/	&& do { $wcecdefs.=" -DARM -D_ARM_ -D$wcetgt";
-				$wcecdefs.=" -DTHUMB -D_THUMB_" if($wcetgt=~/T$/);
-				$wcecdefs.=" -QRarch4T -QRinterwork-return";
-				$wcelflag.=" /machine:THUMB";	last; };
-	/^ARM/		&& do {	$wcecdefs.=" -DARM -D_ARM_ -D$wcetgt";
-				$wcelflag.=" /machine:ARM";	last; };
-	/^MIPSIV/	&& do {	$wcecdefs.=" -DMIPS -D_MIPS_ -DR4000 -D$wcetgt";
-				$wcecdefs.=" -D_MIPS64 -QMmips4 -QMn32";
-				$wcelflag.=" /machine:MIPSFPU";	last; };
-	/^MIPS16/	&& do {	$wcecdefs.=" -DMIPS -D_MIPS_ -DR4000 -D$wcetgt";
-				$wcecdefs.=" -DMIPSII -QMmips16";
-				$wcelflag.=" /machine:MIPS16";	last; };
-	/^MIPSII/	&& do {	$wcecdefs.=" -DMIPS -D_MIPS_ -DR4000 -D$wcetgt";
-				$wcecdefs.=" -QMmips2";
-				$wcelflag.=" /machine:MIPS";	last; };
-	/^R4[0-9]{3}/	&& do {	$wcecdefs.=" -DMIPS -D_MIPS_ -DR4000";
-				$wcelflag.=" /machine:MIPS";	last; };
-	/^SH[0-9]/	&& do {	$wcecdefs.=" -D$wcetgt -D_$wcetgt_ -DSHx";
-				$wcecdefs.=" -Qsh4" if ($wcetgt =~ /^SH4/);
-				$wcelflag.=" /machine:$wcetgt";	last; };
-	{ $wcecdefs.=" -D$wcetgt -D_$wcetgt_";
-	  $wcelflag.=" /machine:$wcetgt";			last; };
-    }
-
-    $cc='$(CC)';
-    $base_cflags=' /W3 /WX /GF /Gy /nologo -DUNICODE -D_UNICODE -DOPENSSL_SYSNAME_WINCE -DWIN32_LEAN_AND_MEAN -DL_ENDIAN -DDSO_WIN32 -DNO_CHMOD -DOPENSSL_SMALL_FOOTPRINT';
-    $base_cflags.=" $wcecdefs";
-    $base_cflags.=' -I$(WCECOMPAT)/include'		if (defined($ENV{'WCECOMPAT'}));
-    $base_cflags.=' -I$(PORTSDK_LIBPATH)/../../include'	if (defined($ENV{'PORTSDK_LIBPATH'}));
-    $opt_cflags=' /MC /O1i';	# optimize for space, but with intrinsics...
-    $dbg_cflags=' /MC /Od -DDEBUG -D_DEBUG';
-    $lflags="/nologo /opt:ref $wcelflag";
     }
 else	# Win32
     {

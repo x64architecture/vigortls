@@ -156,7 +156,6 @@ typedef struct tagCURSORINFO
 #define CURSOR_SHOWING     0x00000001
 #endif /* CURSOR_SHOWING */
 
-#if !defined(OPENSSL_SYS_WINCE)
 typedef BOOL (WINAPI *CRYPTACQUIRECONTEXTW)(HCRYPTPROV *, LPCWSTR, LPCWSTR,
 				    DWORD, DWORD);
 typedef BOOL (WINAPI *CRYPTGENRANDOM)(HCRYPTPROV, DWORD, BYTE *);
@@ -187,7 +186,6 @@ typedef NET_API_STATUS (NET_API_FUNCTION * NETSTATGET)
         (LPWSTR, LPWSTR, DWORD, DWORD, LPBYTE*);
 typedef NET_API_STATUS (NET_API_FUNCTION * NETFREE)(LPBYTE);
 #endif /* 1 */
-#endif /* !OPENSSL_SYS_WINCE */
 
 int RAND_poll(void)
 {
@@ -203,24 +201,7 @@ int RAND_poll(void)
         osverinfo.dwOSVersionInfoSize = sizeof(OSVERSIONINFO) ;
         GetVersionEx( &osverinfo ) ;
 
-#if defined(OPENSSL_SYS_WINCE)
-# if defined(_WIN32_WCE) && _WIN32_WCE>=300
-/* Even though MSDN says _WIN32_WCE>=210, it doesn't seem to be available
- * in commonly available implementations prior 300... */
-	{
-	BYTE buf[64];
-	/* poll the CryptoAPI PRNG */
-	/* The CryptoAPI returns sizeof(buf) bytes of randomness */
-	if (CryptAcquireContextW(&hProvider, NULL, NULL, PROV_RSA_FULL,
-				CRYPT_VERIFYCONTEXT))
-		{
-		if (CryptGenRandom(hProvider, sizeof(buf), buf))
-			RAND_add(buf, sizeof(buf), sizeof(buf));
-		CryptReleaseContext(hProvider, 0); 
-		}
-	}
-# endif
-#else	/* OPENSSL_SYS_WINCE */
+
 	/*
 	 * None of below libraries are present on Windows CE, which is
 	 * why we #ifndef the whole section. This also excuses us from
@@ -611,7 +592,6 @@ int RAND_poll(void)
 		FreeLibrary(kernel);
 		}
 	}
-#endif /* !OPENSSL_SYS_WINCE */
 
 	/* timer data */
 	readtimer();
@@ -737,7 +717,6 @@ static void readtimer(void)
 
 static void readscreen(void)
 {
-#if !defined(OPENSSL_SYS_WINCE) && !defined(OPENSSL_SYS_WIN32_CYGWIN)
   HDC		hScrDC;		/* screen DC */
   HDC		hMemDC;		/* memory DC */
   HBITMAP	hBitmap;	/* handle for our bitmap */
@@ -801,7 +780,6 @@ static void readscreen(void)
   DeleteObject(hBitmap);
   DeleteDC(hMemDC);
   DeleteDC(hScrDC);
-#endif /* !OPENSSL_SYS_WINCE */
 }
 
 #endif

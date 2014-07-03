@@ -97,15 +97,11 @@ extern "C" {
 #   undef OPENSSL_SYS_UNIX
 #   define OPENSSL_SYS_WINNT
 #  endif
-#  if defined(OPENSSL_SYSNAME_WINCE)
-#   undef OPENSSL_SYS_UNIX
-#   define OPENSSL_SYS_WINCE
-#  endif
 # endif
 #endif
 
 /* Anything that tries to look like Microsoft is "Windows" */
-#if defined(OPENSSL_SYS_WIN32) || defined(OPENSSL_SYS_WINNT) || defined(OPENSSL_SYS_WINCE)
+#if defined(OPENSSL_SYS_WIN32) || defined(OPENSSL_SYS_WINNT)
 # undef OPENSSL_SYS_UNIX
 # define OPENSSL_SYS_WINDOWS
 # ifndef OPENSSL_SYS_MSDOS

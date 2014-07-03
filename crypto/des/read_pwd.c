@@ -86,13 +86,6 @@
 #include <setjmp.h>
 #include <errno.h>
 
-#ifdef WIN_CONSOLE_BUG
-#include <windows.h>
-#ifndef OPENSSL_SYS_WINCE
-#include <wincon.h>
-#endif
-#endif
-
 
 /* There are 5 types of terminal interface supported,
  * TERMIO, TERMIOS, VMS, MSDOS and SGTTY
@@ -152,11 +145,11 @@
 #define TTY_set(tty,data)	ioctl(tty,TIOCSETP,data)
 #endif
 
-#if !defined(_LIBC) && !defined(OPENSSL_SYS_MSDOS) && !defined(OPENSSL_SYS_VMS) && !defined(MAC_OS_pre_X)
+#if !defined(_LIBC) && !defined(OPENSSL_SYS_MSDOS)
 #include <sys/ioctl.h>
 #endif
 
-#if defined(OPENSSL_SYS_MSDOS) && !defined(__CYGWIN32__) && !defined(OPENSSL_SYS_WINCE)
+#if defined(OPENSSL_SYS_MSDOS)
 #include <conio.h>
 #define fgets(a,b,c) noecho_fgets(a,b,c)
 #endif
@@ -190,17 +183,6 @@ int des_read_pw_string(char *buf, int length, const char *prompt,
 	return(ret);
 	}
 
-#ifdef OPENSSL_SYS_WINCE
-
-int des_read_pw(char *buf, char *buff, int size, const char *prompt, int verify)
-	{ 
-	memset(buf,0,size);
-	memset(buff,0,size);
-	return(0);
-	}
-
-#else /* !OPENSSL_SYS_WINCE */
-
 static void read_till_nl(FILE *in)
 	{
 #define SIZE 4
@@ -216,7 +198,7 @@ static void read_till_nl(FILE *in)
 int des_read_pw(char *buf, char *buff, int size, const char *prompt,
 	     int verify)
 	{
-#if !defined(OPENSSL_SYS_MSDOS) || defined(__DJGPP__)
+#if !defined(OPENSSL_SYS_MSDOS)
 	TTY_STRUCT tty_orig,tty_new;
 #endif
 	int number;
@@ -244,9 +226,7 @@ int des_read_pw(char *buf, char *buff, int size, const char *prompt,
 	if ((tty=fopen("con","r")) == NULL)
 		tty=stdin;
 #else
-#ifndef OPENSSL_SYS_MPE
 	if ((tty=fopen("/dev/tty","r")) == NULL)
-#endif
 		tty=stdin;
 #endif
 
@@ -277,13 +257,9 @@ int des_read_pw(char *buf, char *buff, int size, const char *prompt,
 	tty_new.TTY_FLAGS &= ~ECHO;
 #endif
 
-#if defined(TTY_set) && !defined(OPENSSL_SYS_VMS)
+#if defined(TTY_set)
 	if (is_a_tty && (TTY_set(fileno(tty),&tty_new) == -1))
-#ifdef OPENSSL_SYS_MPE 
-		; /* MPE lies -- echo really has been disabled */
-#else
 		return(-1);
-#endif
 #endif
 	ps=2;
 
@@ -327,7 +303,7 @@ error:
 	perror("fgets(tty)");
 #endif
 	/* What can we do if there is an error? */
-#if defined(TTY_set) && !defined(OPENSSL_SYS_VMS)
+#if defined(TTY_set)
 	if (ps >= 2) TTY_set(fileno(tty),&tty_orig);
 #endif
 	
@@ -422,19 +398,6 @@ static int noecho_fgets(char *buf, int size, FILE *tty)
 			break;
 			}
 		}
-#ifdef WIN_CONSOLE_BUG
-/* Win95 has several evil console bugs: one of these is that the
- * last character read using getch() is passed to the next read: this is
- * usually a CR so this can be trouble. No STDIO fix seems to work but
- * flushing the console appears to do the trick.
- */
-		{
-			HANDLE inh;
-			inh = GetStdHandle(STD_INPUT_HANDLE);
-			FlushConsoleInputBuffer(inh);
-		}
-#endif
 	return(strlen(buf));
 	}
 #endif
-#endif /* !OPENSSL_SYS_WINCE */
