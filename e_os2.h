@@ -184,14 +184,6 @@ extern "C" {
 # define OPENSSL_GLOBAL_REF(name) _shadow_##name
 #endif
 
-#ifdef OPENSSL_SYS_MSDOS
-#  define ossl_ssize_t long
-#endif
-
-#ifndef ossl_ssize_t
-#  define ossl_ssize_t ssize_t
-#endif
-
 #ifdef  __cplusplus
 }
 #endif
