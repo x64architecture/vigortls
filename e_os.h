@@ -378,10 +378,6 @@ static unsigned int _strlen31(const char *str)
 #if defined(OPENSSL_SYS_WINDOWS)
 #  define strcasecmp _stricmp
 #  define strncasecmp _strnicmp
-# ifdef _MSC_VER
-#  include <BaseTsd.h>
-   typedef SSIZE_T ssize_t;
-# endif
 #endif
 
 

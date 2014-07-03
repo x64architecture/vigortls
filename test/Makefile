@@ -56,7 +56,6 @@ DSATEST=	dsatest
 METHTEST=	methtest
 SSLTEST=	ssltest
 RSATEST=	rsa_test
-ENGINETEST=	enginetest
 EVPTEST=	evp_test
 IGETEST=	igetest
 SRPTEST=	srptest
@@ -69,7 +68,7 @@ EXE=	$(BNTEST)$(EXE_EXT) $(ECTEST)$(EXE_EXT)  $(ECDSATEST)$(EXE_EXT) $(ECDHTEST)
 	$(RC2TEST)$(EXE_EXT) $(RC4TEST)$(EXE_EXT) $(RC5TEST)$(EXE_EXT) \
 	$(DESTEST)$(EXE_EXT) $(SHATEST)$(EXE_EXT) $(SHA1TEST)$(EXE_EXT) $(SHA256TEST)$(EXE_EXT) $(SHA512TEST)$(EXE_EXT) \
 	$(MDC2TEST)$(EXE_EXT) $(RMDTEST)$(EXE_EXT) \
-	$(RANDTEST)$(EXE_EXT) $(DHTEST)$(EXE_EXT) $(ENGINETEST)$(EXE_EXT) \
+	$(RANDTEST)$(EXE_EXT) $(DHTEST)$(EXE_EXT) \
 	$(BFTEST)$(EXE_EXT) $(CASTTEST)$(EXE_EXT) $(SSLTEST)$(EXE_EXT) $(EXPTEST)$(EXE_EXT) $(DSATEST)$(EXE_EXT) $(RSATEST)$(EXE_EXT) \
 	$(EVPTEST)$(EXE_EXT) $(IGETEST)$(EXE_EXT) $(SRPTEST)$(EXE_EXT) \
 	$(ASN1TEST)$(EXE_EXT)
@@ -82,7 +81,7 @@ OBJ=	$(BNTEST).o $(ECTEST).o  $(ECDSATEST).o $(ECDHTEST).o $(IDEATEST).o \
 	$(RC2TEST).o $(RC4TEST).o $(RC5TEST).o \
 	$(DESTEST).o $(SHATEST).o $(SHA1TEST).o $(SHA256TEST).o $(SHA512TEST).o \
 	$(MDC2TEST).o $(RMDTEST).o \
-	$(RANDTEST).o $(DHTEST).o $(ENGINETEST).o $(CASTTEST).o \
+	$(RANDTEST).o $(DHTEST).o $(CASTTEST).o \
 	$(BFTEST).o  $(SSLTEST).o  $(DSATEST).o  $(EXPTEST).o $(RSATEST).o \
 	$(EVPTEST).o $(IGETEST).o $(ASN1TEST).o
 
@@ -91,7 +90,7 @@ SRC=	$(BNTEST).c $(ECTEST).c  $(ECDSATEST).c $(ECDHTEST).c $(IDEATEST).c \
 	$(HMACTEST).c $(WPTEST).c \
 	$(RC2TEST).c $(RC4TEST).c $(RC5TEST).c \
 	$(DESTEST).c $(SHATEST).c $(SHA1TEST).c $(MDC2TEST).c $(RMDTEST).c \
-	$(RANDTEST).c $(DHTEST).c $(ENGINETEST).c $(CASTTEST).c \
+	$(RANDTEST).c $(DHTEST).c $(CASTTEST).c \
 	$(BFTEST).c  $(SSLTEST).c $(DSATEST).c   $(EXPTEST).c $(RSATEST).c \
 	$(EVPTEST).c $(IGETEST).c $(SRPTEST).c $(ASN1TEST).c
 
@@ -264,10 +263,6 @@ test_ss keyU.ss certU.ss certCA.ss certP1.ss keyP1.ss certP2.ss keyP2.ss \
 	@cat certCA.ss certU.ss > intP1.ss
 	@cat certCA.ss certU.ss certP1.ss > intP2.ss
 
-test_engine: 
-	@echo "Manipulate the ENGINE structures"
-	../util/shlib_wrap.sh ./$(ENGINETEST)
-
 test_ssl: keyU.ss certU.ss certCA.ss certP1.ss keyP1.ss certP2.ss keyP2.ss \
 		intP1.ss intP2.ss
 	@echo "test SSL protocol"
@@ -419,9 +414,6 @@ $(METHTEST)$(EXE_EXT): $(METHTEST).o $(DLIBCRYPTO)
 $(SSLTEST)$(EXE_EXT): $(SSLTEST).o $(DLIBSSL) $(DLIBCRYPTO)
 	@target=$(SSLTEST);
 
-$(ENGINETEST)$(EXE_EXT): $(ENGINETEST).o $(DLIBCRYPTO)
-	@target=$(ENGINETEST); $(BUILD_CMD)
-
 $(EVPTEST)$(EXE_EXT): $(EVPTEST).o $(DLIBCRYPTO)
 	@target=$(EVPTEST); $(BUILD_CMD)
 
@@ -542,19 +534,6 @@ ectest.o: ../include/openssl/pkcs7.h ../include/openssl/rand.h
 ectest.o: ../include/openssl/safestack.h ../include/openssl/sha.h
 ectest.o: ../include/openssl/stack.h ../include/openssl/symhacks.h
 ectest.o: ../include/openssl/x509.h ../include/openssl/x509_vfy.h ectest.c
-enginetest.o: ../include/openssl/asn1.h ../include/openssl/bio.h
-enginetest.o: ../include/openssl/buffer.h ../include/openssl/crypto.h
-enginetest.o: ../include/openssl/e_os2.h ../include/openssl/ec.h
-enginetest.o: ../include/openssl/ecdh.h ../include/openssl/ecdsa.h
-enginetest.o: ../include/openssl/engine.h ../include/openssl/err.h
-enginetest.o: ../include/openssl/evp.h ../include/openssl/lhash.h
-enginetest.o: ../include/openssl/obj_mac.h ../include/openssl/objects.h
-enginetest.o: ../include/openssl/opensslconf.h ../include/openssl/opensslv.h
-enginetest.o: ../include/openssl/ossl_typ.h ../include/openssl/pkcs7.h
-enginetest.o: ../include/openssl/safestack.h ../include/openssl/sha.h
-enginetest.o: ../include/openssl/stack.h ../include/openssl/symhacks.h
-enginetest.o: ../include/openssl/x509.h ../include/openssl/x509_vfy.h
-enginetest.o: enginetest.c
 evp_test.o: ../e_os.h ../include/openssl/asn1.h ../include/openssl/bio.h
 evp_test.o: ../include/openssl/buffer.h ../include/openssl/conf.h
 evp_test.o: ../include/openssl/crypto.h ../include/openssl/e_os2.h

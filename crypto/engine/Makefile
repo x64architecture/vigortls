@@ -13,7 +13,6 @@ AR=		ar r
 CFLAGS= $(INCLUDES) $(CFLAG)
 
 GENERAL=Makefile
-TEST= enginetest.c
 APPS=
 
 LIB=$(TOP)/libcrypto.a

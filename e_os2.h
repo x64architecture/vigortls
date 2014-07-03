@@ -184,6 +184,12 @@ extern "C" {
 # define OPENSSL_GLOBAL_REF(name) _shadow_##name
 #endif
 
+#if defined(OPENSSL_SYS_WINDOWS)
+# ifdef _MSC_VER
+   typedef long ssize_t;
+# endif
+#endif
+
 #ifdef  __cplusplus
 }
 #endif
