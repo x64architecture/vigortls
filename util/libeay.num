@@ -175,7 +175,7 @@ CRYPTO_get_add_lock_callback            182	EXIST::FUNCTION:
 CRYPTO_get_id_callback                  183	EXIST::FUNCTION:DEPRECATED
 CRYPTO_get_lock_name                    184	EXIST::FUNCTION:
 CRYPTO_get_locking_callback             185	EXIST::FUNCTION:
-CRYPTO_get_mem_functions                186	EXIST::FUNCTION:
+CRYPTO_get_mem_functions                186 EXIST::FUNCTION:
 CRYPTO_lock                             187	EXIST::FUNCTION:
 CRYPTO_malloc                           188	EXIST::FUNCTION:
 CRYPTO_mem_ctrl                         189	EXIST::FUNCTION:
@@ -1371,8 +1371,6 @@ X509V3_string_free                      1506	EXIST::FUNCTION:
 X509V3_section_free                     1507	EXIST::FUNCTION:
 X509V3_set_ctx                          1508	EXIST::FUNCTION:
 s2i_ASN1_INTEGER                        1509	EXIST::FUNCTION:
-CRYPTO_set_locked_mem_functions         1510	EXIST::FUNCTION:
-CRYPTO_get_locked_mem_functions         1511	EXIST::FUNCTION:
 CRYPTO_malloc_locked                    1512	EXIST::FUNCTION:
 CRYPTO_free_locked                      1513	EXIST::FUNCTION:
 BN_mod_exp2_mont                        1514	EXIST::FUNCTION:
@@ -1681,7 +1679,6 @@ PKCS7_sign                              2155	EXIST::FUNCTION:
 PKCS7_add_attrib_smimecap               2156	EXIST::FUNCTION:
 CRYPTO_dbg_set_options                  2157	EXIST::FUNCTION:
 CRYPTO_remove_all_info                  2158	EXIST::FUNCTION:
-CRYPTO_get_mem_debug_functions          2159	EXIST::FUNCTION:
 CRYPTO_is_mem_check_on                  2160	EXIST::FUNCTION:
 CRYPTO_set_mem_debug_functions          2161	EXIST::FUNCTION:
 CRYPTO_pop_info                         2162	EXIST::FUNCTION:
@@ -2250,7 +2247,6 @@ EC_POINT_get_Jprojective_coordinates_GFp 2779	EXIST:!VMS:FUNCTION:EC
 EC_POINT_get_Jproj_coords_GFp           2779	EXIST:VMS:FUNCTION:EC
 ZLONG_it                                2780	EXIST:!EXPORT_VAR_AS_FUNCTION:VARIABLE:
 ZLONG_it                                2780	EXIST:EXPORT_VAR_AS_FUNCTION:FUNCTION:
-CRYPTO_get_locked_mem_ex_functions      2781	EXIST:!VMS:FUNCTION:
 CRYPTO_get_locked_mem_ex_funcs          2781	EXIST:VMS:FUNCTION:
 ASN1_TIME_check                         2782	EXIST::FUNCTION:
 UI_get0_user_data                       2783	EXIST::FUNCTION:
@@ -2342,7 +2338,6 @@ OCSP_ONEREQ_get_ext                     2851	EXIST::FUNCTION:
 EC_POINT_method_of                      2852	EXIST::FUNCTION:EC
 i2d_KRB5_APREQBODY                      2853	EXIST::FUNCTION:
 _ossl_old_des_ecb3_encrypt              2854	EXIST::FUNCTION:DES
-CRYPTO_get_mem_ex_functions             2855	EXIST::FUNCTION:
 ENGINE_get_ex_data                      2856	EXIST::FUNCTION:ENGINE
 UI_destroy_method                       2857	EXIST::FUNCTION:
 ASN1_item_i2d_bio                       2858	EXIST::FUNCTION:BIO

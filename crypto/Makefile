@@ -34,9 +34,9 @@ GENERAL=Makefile README crypto-lib.com install.com
 
 LIB= $(TOP)/libcrypto.a
 SHARED_LIB= libcrypto$(SHLIB_EXT)
-LIBSRC=	cryptlib.c mem.c mem_clr.c mem_dbg.c cversion.c ex_data.c cpt_err.c \
+LIBSRC=	cryptlib.c malloc_wrapper.c mem_clr.c mem_dbg.c cversion.c ex_data.c cpt_err.c \
 	ebcdic.c uid.c o_time.c o_str.c o_dir.c o_init.c
-LIBOBJ= cryptlib.o mem.o mem_dbg.o cversion.o ex_data.o cpt_err.o ebcdic.o \
+LIBOBJ= cryptlib.o malloc_wrapper.o mem_dbg.o cversion.o ex_data.o cpt_err.o ebcdic.o \
 	uid.o o_time.o o_str.o o_dir.o o_init.o $(CPUID_OBJ)
 
 SRC= $(LIBSRC)
@@ -174,13 +174,13 @@ ex_data.o: ../include/openssl/opensslconf.h ../include/openssl/opensslv.h
 ex_data.o: ../include/openssl/ossl_typ.h ../include/openssl/safestack.h
 ex_data.o: ../include/openssl/stack.h ../include/openssl/symhacks.h cryptlib.h
 ex_data.o: ex_data.c
-mem.o: ../e_os.h ../include/openssl/bio.h ../include/openssl/buffer.h
-mem.o: ../include/openssl/crypto.h ../include/openssl/e_os2.h
-mem.o: ../include/openssl/err.h ../include/openssl/lhash.h
-mem.o: ../include/openssl/opensslconf.h ../include/openssl/opensslv.h
-mem.o: ../include/openssl/ossl_typ.h ../include/openssl/safestack.h
-mem.o: ../include/openssl/stack.h ../include/openssl/symhacks.h cryptlib.h
-mem.o: mem.c
+malloc_wrapper.o: ../e_os.h ../include/openssl/bio.h ../include/openssl/buffer.h
+malloc_wrapper.o: ../include/openssl/crypto.h ../include/openssl/e_os2.h
+malloc_wrapper.o: ../include/openssl/err.h ../include/openssl/lhash.h
+malloc_wrapper.o: ../include/openssl/opensslconf.h ../include/openssl/opensslv.h
+malloc_wrapper.o: ../include/openssl/ossl_typ.h ../include/openssl/safestack.h
+malloc_wrapper.o: ../include/openssl/stack.h ../include/openssl/symhacks.h cryptlib.h
+malloc_wrapper.o: malloc_wrapper.c
 mem_clr.o: ../include/openssl/crypto.h ../include/openssl/e_os2.h
 mem_clr.o: ../include/openssl/opensslconf.h ../include/openssl/opensslv.h
 mem_clr.o: ../include/openssl/ossl_typ.h ../include/openssl/safestack.h
