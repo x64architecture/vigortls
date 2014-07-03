@@ -277,14 +277,7 @@ static void ssleay_rand_add(const void *buf, int num, double add)
 		else
 			MD_Update(&m,&(state[st_idx]),j);
 
-		/* DO NOT REMOVE THE FOLLOWING CALL TO MD_Update()! */
 		MD_Update(&m,buf,j);
-		/* We know that line may cause programs such as
-		   purify and valgrind to complain about use of
-		   uninitialized data.  The problem is not, it's
-		   with the caller.  Removing that line will make
-		   sure you get really bad randomness and thereby
-		   other problems such as very insecure keys. */
 
 		MD_Update(&m,(unsigned char *)&(md_c[0]),sizeof(md_c));
 		MD_Final(&m,local_md);
@@ -478,16 +471,7 @@ static int ssleay_rand_bytes(unsigned char *buf, int num, int pseudo)
 		MD_Update(&m,local_md,MD_DIGEST_LENGTH);
 		MD_Update(&m,(unsigned char *)&(md_c[0]),sizeof(md_c));
 
-#ifndef PURIFY /* purify complains */
-		/* The following line uses the supplied buffer as a small
-		 * source of entropy: since this buffer is often uninitialised
-		 * it may cause programs such as purify or valgrind to
-		 * complain. So for those builds it is not used: the removal
-		 * of such a small source of entropy has negligible impact on
-		 * security.
-		 */
 		MD_Update(&m,buf,j);
-#endif
 
 		k=(st_idx+MD_DIGEST_LENGTH/2)-st_num;
 		if (k > 0)
