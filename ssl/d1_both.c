@@ -628,7 +628,8 @@ dtls1_reassemble_fragment(SSL *s, struct hm_header_st* msg_hdr, int *ok)
                 goto err;
             frag_len -= i;
         }
-        return DTLS1_HM_FRAGMENT_RETRY;
+        i = return DTLS1_HM_FRAGMENT_RETRY;
+        goto err;
     }
 
     /* read the body of the fragment (header has already been read */
