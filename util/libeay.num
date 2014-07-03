@@ -3654,7 +3654,6 @@ EVP_PKEY_print_public                   4118	EXIST::FUNCTION:
 EVP_PKEY_CTX_new                        4119	EXIST::FUNCTION:
 i2d_TS_TST_INFO                         4120	EXIST::FUNCTION:
 EVP_PKEY_asn1_find                      4121	EXIST::FUNCTION:
-DSO_METHOD_beos                         4122	EXIST::FUNCTION:
 TS_CONF_load_cert                       4123	EXIST::FUNCTION:
 TS_REQ_get_ext                          4124	EXIST::FUNCTION:
 EVP_PKEY_sign_init                      4125	EXIST::FUNCTION:

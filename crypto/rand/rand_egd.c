@@ -95,7 +95,7 @@
  *   RAND_egd() is a wrapper for RAND_egd_bytes() with numbytes=255.
  */
 
-#if defined(OPENSSL_SYS_WIN32) || defined(OPENSSL_SYS_MSDOS) || defined(OPENSSL_SYS_VXWORKS) || defined(OPENSSL_SYS_VOS) || defined(OPENSSL_SYS_BEOS)
+#if defined(OPENSSL_SYS_WIN32) || defined(OPENSSL_SYS_MSDOS)
 int RAND_query_egd_bytes(const char *path, unsigned char *buf, int bytes)
 	{
 	return(-1);
@@ -115,11 +115,7 @@ int RAND_egd_bytes(const char *path,int bytes)
 #include <sys/types.h>
 #include <sys/socket.h>
 #ifndef NO_SYS_UN_H
-# ifdef OPENSSL_SYS_VXWORKS
-#   include <streams/un.h>
-# else
 #   include <sys/un.h>
-# endif
 #else
 struct	sockaddr_un {
 	short	sun_family;		/* AF_UNIX */

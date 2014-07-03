@@ -223,10 +223,6 @@ int BIO_sock_error(int sock)
 	int j,i;
 	int size;
 		 
-#if defined(OPENSSL_SYS_BEOS_R5)
-	return 0;
-#endif
-		 
 	size=sizeof(int);
 	/* Note: under Windows the third parameter is of type (char *)
 	 * whereas under other systems it is (void *) if you don't have
@@ -477,12 +473,6 @@ int BIO_sock_init(void)
 			}
 		}
 #endif /* OPENSSL_SYS_WINDOWS */
-#ifdef WATT32
-	extern int _watt_do_exit;
-	_watt_do_exit = 0;    /* don't make sock_init() call exit() */
-	if (sock_init())
-		return (-1);
-#endif
 
 	return(1);
 	}

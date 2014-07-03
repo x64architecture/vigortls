@@ -81,24 +81,10 @@ extern "C" {
 
 /* For 32 bit environment, there seems to be the CygWin environment and then
    all the others that try to do the same thing Microsoft does... */
-#if defined(OPENSSL_SYSNAME_UWIN)
-# undef OPENSSL_SYS_UNIX
-# define OPENSSL_SYS_WIN32_UWIN
-#else
-# if defined(__CYGWIN32__) || defined(OPENSSL_SYSNAME_CYGWIN32)
-#  undef OPENSSL_SYS_UNIX
-#  define OPENSSL_SYS_WIN32_CYGWIN
-# else
 #  if defined(_WIN32) || defined(OPENSSL_SYSNAME_WIN32)
 #   undef OPENSSL_SYS_UNIX
 #   define OPENSSL_SYS_WIN32
 #  endif
-#  if defined(OPENSSL_SYSNAME_WINNT)
-#   undef OPENSSL_SYS_UNIX
-#   define OPENSSL_SYS_WINNT
-#  endif
-# endif
-#endif
 
 /* Anything that tries to look like Microsoft is "Windows" */
 #if defined(OPENSSL_SYS_WIN32) || defined(OPENSSL_SYS_WINNT)
@@ -127,60 +113,8 @@ extern "C" {
 #  define OPENSSL_SYS_LINUX
 #  define _GNU_SOURCE
 # endif
-# ifdef OPENSSL_SYSNAME_MPE
-#  define OPENSSL_SYS_MPE
-# endif
-# ifdef OPENSSL_SYSNAME_SNI
-#  define OPENSSL_SYS_SNI
-# endif
-# ifdef OPENSSL_SYSNAME_ULTRASPARC
-#  define OPENSSL_SYS_ULTRASPARC
-# endif
-# ifdef OPENSSL_SYSNAME_NEWS4
-#  define OPENSSL_SYS_NEWS4
-# endif
 # ifdef OPENSSL_SYSNAME_MACOSX
 #  define OPENSSL_SYS_MACOSX
-# endif
-# ifdef OPENSSL_SYSNAME_MACOSX_RHAPSODY
-#  define OPENSSL_SYS_MACOSX_RHAPSODY
-#  define OPENSSL_SYS_MACOSX
-# endif
-# ifdef OPENSSL_SYSNAME_SUNOS
-#  define OPENSSL_SYS_SUNOS
-#endif
-# if defined(_CRAY) || defined(OPENSSL_SYSNAME_CRAY)
-#  define OPENSSL_SYS_CRAY
-# endif
-# if defined(_AIX) || defined(OPENSSL_SYSNAME_AIX)
-#  define OPENSSL_SYS_AIX
-# endif
-#endif
-
-/* --------------------------------- VOS ----------------------------------- */
-#if defined(__VOS__) || defined(OPENSSL_SYSNAME_VOS)
-# define OPENSSL_SYS_VOS
-#ifdef __HPPA__
-# define OPENSSL_SYS_VOS_HPPA
-#endif
-#ifdef __IA32__
-# define OPENSSL_SYS_VOS_IA32
-#endif
-#endif
-
-/* ------------------------------- VxWorks --------------------------------- */
-#ifdef OPENSSL_SYSNAME_VXWORKS
-# define OPENSSL_SYS_VXWORKS
-#endif
-
-/* --------------------------------- BeOS ---------------------------------- */
-#if defined(__BEOS__)
-# define OPENSSL_SYS_BEOS
-# include <sys/socket.h>
-# if defined(BONE_VERSION)
-#  define OPENSSL_SYS_BEOS_BONE
-# else
-#  define OPENSSL_SYS_BEOS_R5
 # endif
 #endif
 
@@ -252,14 +186,6 @@ extern "C" {
 
 #ifdef OPENSSL_SYS_MSDOS
 #  define ossl_ssize_t long
-#endif
-
-#if defined(NeXT) || defined(OPENSSL_SYS_NEWS4) || defined(OPENSSL_SYS_SUNOS)
-#  define ssize_t int
-#endif
-
-#if defined(__ultrix) && !defined(ssize_t)
-#  define ossl_ssize_t int 
 #endif
 
 #ifndef ossl_ssize_t

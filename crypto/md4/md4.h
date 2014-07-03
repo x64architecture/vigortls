@@ -79,7 +79,7 @@ extern "C" {
 
 #if defined(__LP32__)
 #define MD4_LONG unsigned long
-#elif defined(OPENSSL_SYS_CRAY) || defined(__ILP64__)
+#elif defined(__ILP64__)
 #define MD4_LONG unsigned long
 #define MD4_LONG_LOG2 3
 /*

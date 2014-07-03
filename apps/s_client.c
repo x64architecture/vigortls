@@ -157,10 +157,6 @@
 #include "s_apps.h"
 #include "timeouts.h"
 
-#if defined(OPENSSL_SYS_BEOS_R5)
-#include <fcntl.h>
-#endif
-
 #undef PROG
 #define PROG	s_client_main
 
@@ -285,9 +281,6 @@ static void sc_usage(void)
 	BIO_printf(bio_err," -pause        - sleep(1) after each read(2) and write(2) system call\n");
 	BIO_printf(bio_err," -showcerts    - show all certificates in the chain\n");
 	BIO_printf(bio_err," -debug        - extra output\n");
-#ifdef WATT32
-	BIO_printf(bio_err," -wdebug       - WATT-32 tcp debugging\n");
-#endif
 	BIO_printf(bio_err," -msg          - Show protocol messages\n");
 	BIO_printf(bio_err," -nbio_test    - more ssl protocol testing\n");
 	BIO_printf(bio_err," -state        - print the 'ssl' states\n");
@@ -577,11 +570,8 @@ int MAIN(int argc, char **argv)
 	ENGINE *ssl_client_engine=NULL;
 #endif
 	ENGINE *e=NULL;
-#if defined(OPENSSL_SYS_WINDOWS) || defined(OPENSSL_SYS_MSDOS) || defined(OPENSSL_SYS_BEOS_R5)
+#if defined(OPENSSL_SYS_WINDOWS) || defined(OPENSSL_SYS_MSDOS)
 	struct timeval tv;
-#if defined(OPENSSL_SYS_BEOS_R5)
-	int stdin_set = 0;
-#endif
 #endif
 #ifndef OPENSSL_NO_TLSEXT
 	char *servername = NULL; 
@@ -711,10 +701,6 @@ int MAIN(int argc, char **argv)
 			c_tlsextdebug=1;
 		else if	(strcmp(*argv,"-status") == 0)
 			c_status_req=1;
-#endif
-#ifdef WATT32
-		else if (strcmp(*argv,"-wdebug") == 0)
-			dbug_init();
 #endif
 		else if	(strcmp(*argv,"-msg") == 0)
 			c_msg=1;
@@ -1501,7 +1487,7 @@ SSL_set_tlsext_status_ids(con, ids);
 
 		if (!ssl_pending)
 			{
-#if !defined(OPENSSL_SYS_WINDOWS) && !defined(OPENSSL_SYS_MSDOS) && !defined (OPENSSL_SYS_BEOS_R5)
+#if !defined(OPENSSL_SYS_WINDOWS) && !defined(OPENSSL_SYS_MSDOS)
 			if (tty_on)
 				{
 				if (read_tty)  openssl_fdset(fileno(stdin),&readfds);
@@ -1634,7 +1620,7 @@ SSL_set_tlsext_status_ids(con, ids);
 				goto shut;
 				}
 			}
-#if defined(OPENSSL_SYS_WINDOWS) || defined(OPENSSL_SYS_MSDOS) || defined(OPENSSL_SYS_BEOS_R5)
+#if defined(OPENSSL_SYS_WINDOWS) || defined(OPENSSL_SYS_MSDOS)
 		/* Assume Windows/DOS/BeOS can always write */
 		else if (!ssl_pending && write_tty)
 #else

@@ -714,12 +714,7 @@ static int win32_pathbyaddr(void *addr,char *path,int sz)
 		return -1;
 		}
 	/* We take the rest for granted... */
-#ifdef _WIN32_WCE
-	close_snap = (CLOSETOOLHELP32SNAPSHOT)
-		GetProcAddress(dll,"CloseToolhelp32Snapshot");
-#else
 	close_snap = (CLOSETOOLHELP32SNAPSHOT)CloseHandle;
-#endif
 	module_first = (MODULE32)GetProcAddress(dll,"Module32First");
 	module_next  = (MODULE32)GetProcAddress(dll,"Module32Next");
 
@@ -747,27 +742,12 @@ static int win32_pathbyaddr(void *addr,char *path,int sz)
 			{
 			(*close_snap)(hModuleSnap);
 			FreeLibrary(dll);
-#ifdef _WIN32_WCE
-# if _WIN32_WCE >= 101
-			return WideCharToMultiByte(CP_ACP,0,me32.szExePath,-1,
-							path,sz,NULL,NULL);
-# else
-			len = (int)wcslen(me32.szExePath);
-			if (sz <= 0) return len+1;
-			if (len >= sz) len=sz-1;
-			for(i=0;i<len;i++)
-				path[i] = (char)me32.szExePath[i];
-			path[len++] = 0;
-			return len;
-# endif
-#else
 			len = (int)strlen(me32.szExePath);
 			if (sz <= 0) return len+1;
 			if (len >= sz) len=sz-1;
 			memcpy(path,me32.szExePath,len);
 			path[len++] = 0;
 			return len;
-#endif
 			} 
 		} while((*module_next)(hModuleSnap, &me32)); 
  
@@ -802,12 +782,7 @@ static void *win32_globallookup(const char *name)
 		return NULL;
 		}
 	/* We take the rest for granted... */
-#ifdef _WIN32_WCE
-	close_snap = (CLOSETOOLHELP32SNAPSHOT)
-		GetProcAddress(dll,"CloseToolhelp32Snapshot");
-#else
 	close_snap = (CLOSETOOLHELP32SNAPSHOT)CloseHandle;
-#endif
 	module_first = (MODULE32)GetProcAddress(dll,"Module32First");
 	module_next  = (MODULE32)GetProcAddress(dll,"Module32Next");
 

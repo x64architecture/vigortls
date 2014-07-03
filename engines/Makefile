@@ -113,7 +113,6 @@ install:
 			  pfx=lib; \
 			  if [ "$(PLATFORM)" != "Cygwin" ]; then \
 				case "$(CFLAGS)" in \
-				*DSO_BEOS*)	sfx=".so";;	\
 				*DSO_DLFCN*)	sfx=`expr "$(SHLIB_EXT)" : '.*\(\.[a-z][a-z]*\)' \| ".so"`;;	\
 				*DSO_DL*)	sfx=".sl";;	\
 				*DSO_WIN32*)	sfx="eay32.dll"; pfx=;;	\

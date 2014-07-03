@@ -115,12 +115,6 @@
 #define SGTTY
 #endif
 
-#if defined(OPENSSL_SYS_VXWORKS)
-#undef TERMIOS
-#undef TERMIO
-#undef SGTTY
-#endif
-
 #ifdef TERMIOS
 #include <termios.h>
 #define TTY_STRUCT		struct termios

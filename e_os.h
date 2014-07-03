@@ -88,12 +88,6 @@ extern "C" {
 #define DEVRANDOM_EGD "/var/run/egd-pool","/dev/egd-pool","/etc/egd-pool","/etc/entropy"
 #endif
 
-#if defined(OPENSSL_SYS_VXWORKS)
-#  define NO_SYS_PARAM_H
-#  define NO_CHMOD
-#  define NO_SYSLOG
-#endif
-
 /********************************************************************
  The Microsoft section
  ********************************************************************/
@@ -132,27 +126,6 @@ extern "C" {
 #define clear_socket_error()	WSASetLastError(0)
 #define readsocket(s,b,n)	recv((s),(b),(n),0)
 #define writesocket(s,b,n)	send((s),(b),(n),0)
-#elif defined(__DJGPP__)
-#define WATT32
-#define get_last_socket_error()	errno
-#define clear_socket_error()	errno=0
-#define closesocket(s)		close_s(s)
-#define readsocket(s,b,n)	read_s(s,b,n)
-#define writesocket(s,b,n)	send(s,b,n,0)
-#elif defined(OPENSSL_SYS_VXWORKS)
-#define get_last_socket_error()	errno
-#define clear_socket_error()	errno=0
-#define ioctlsocket(a,b,c)	    ioctl((a),(b),(int)(c))
-#define closesocket(s)		    close(s)
-#define readsocket(s,b,n)	    read((s),(b),(n))
-#define writesocket(s,b,n)	    write((s),(char *)(b),(n))
-#elif defined(OPENSSL_SYS_BEOS_R5)
-#define get_last_socket_error() errno
-#define clear_socket_error()    errno=0
-#define FIONBIO SO_NONBLOCK
-#define ioctlsocket(a,b,c)		  setsockopt((a),SOL_SOCKET,(b),(c),sizeof(*(c)))
-#define readsocket(s,b,n)       recv((s),(b),(n),0)
-#define writesocket(s,b,n)      send((s),(b),(n),0)
 #else
 #define get_last_socket_error()	errno
 #define clear_socket_error()	errno=0
@@ -167,19 +140,6 @@ extern "C" {
 
 #if (defined(WINDOWS) || defined(MSDOS))
 
-#  ifdef __DJGPP__
-#    include <unistd.h>
-#    include <sys/stat.h>
-#    include <sys/socket.h>
-#    include <tcp.h>
-#    include <netdb.h>
-#    define _setmode setmode
-#    define _O_TEXT O_TEXT
-#    define _O_BINARY O_BINARY
-#    undef DEVRANDOM
-#    define DEVRANDOM "/dev/urandom\x24"
-#  endif /* __DJGPP__ */
-
 #  ifndef S_IFDIR
 #    define S_IFDIR	_S_IFDIR
 #  endif
@@ -188,7 +148,7 @@ extern "C" {
 #    define S_IFMT	_S_IFMT
 #  endif
 
-#  if !defined(WINNT) && !defined(__DJGPP__)
+#  if !defined(WINNT)
 #    define NO_SYSLOG
 #  endif
 #  define NO_DIRENT
@@ -302,35 +262,6 @@ static unsigned int _strlen31(const char *str)
 
 #else /* The non-microsoft world */
 
-#  if defined(OPENSSL_SYS_NETWARE)
-#    include <fcntl.h>
-#    include <unistd.h>
-#    define NO_SYS_TYPES_H
-#    undef  DEVRANDOM
-#    ifdef NETWARE_CLIB
-#      define getpid GetThreadID
-       extern int GetThreadID(void);
-/* #      include <conio.h> */
-       extern int kbhit(void);
-#    else
-#      include <screen.h>
-#    endif
-#    define NO_SYSLOG
-#    define _setmode setmode
-#    define _kbhit kbhit
-#    define _O_TEXT O_TEXT
-#    define _O_BINARY O_BINARY
-#    define OPENSSL_CONF   "openssl.cnf"
-#    define SSLEAY_CONF    OPENSSL_CONF
-#    define RFILE    ".rnd"
-#    define LIST_SEPARATOR_CHAR ';'
-#    define EXIT(n)  { if (n) printf("ERROR: %d\n", (int)n); exit(n); }
-
-#  else
-     /* !defined VMS */
-#    ifdef OPENSSL_SYS_MPE
-#      define NO_SYS_PARAM_H
-#    endif
 #    ifdef OPENSSL_UNISTD
 #      include OPENSSL_UNISTD
 #    else
@@ -338,19 +269,6 @@ static unsigned int _strlen31(const char *str)
 #    endif
 #    ifndef NO_SYS_TYPES_H
 #      include <sys/types.h>
-#    endif
-#    if defined(NeXT) || defined(OPENSSL_SYS_NEWS4)
-#      define pid_t int /* pid_t is missing on NEXTSTEP/OPENSTEP
-                         * (unless when compiling with -D_POSIX_SOURCE,
-                         * which doesn't work for us) */
-#    endif
-#    ifdef OPENSSL_SYS_NEWS4 /* setvbuf is missing on mips-sony-bsd */
-#      define setvbuf(a, b, c, d) setbuffer((a), (b), (d))
-       typedef unsigned long clock_t;
-#    endif
-#    ifdef OPENSSL_SYS_WIN32_CYGWIN
-#      include <io.h>
-#      include <fcntl.h>
 #    endif
 
 #    define OPENSSL_CONF	"openssl.cnf"
@@ -378,9 +296,6 @@ static unsigned int _strlen31(const char *str)
 #      define SHUTDOWN(fd)		close(fd)
 #      define SHUTDOWN2(fd)		close(fd)
 #    elif !defined(__DJGPP__)
-#      if defined(_WIN32_WCE) && _WIN32_WCE<410
-#        define getservbyname _masked_declaration_getservbyname
-#      endif
 #      if !defined(IPPROTO_IP)
          /* winsock[2].h was included already? */
 #        include <winsock.h>
@@ -416,11 +331,7 @@ static unsigned int _strlen31(const char *str)
 #    ifndef NO_SYS_PARAM_H
 #      include <sys/param.h>
 #    endif
-#    ifdef OPENSSL_SYS_VXWORKS
-#      include <time.h> 
-#    elif !defined(OPENSSL_SYS_MPE)
-#      include <sys/time.h> /* Needed under linux for FD_XXX */
-#    endif
+#    include <sys/time.h> /* Needed under linux for FD_XXX */
 
 #    include <netdb.h>
 #    include <sys/socket.h>
@@ -428,35 +339,9 @@ static unsigned int _strlen31(const char *str)
 #      include <sys/filio.h> /* Added for FIONBIO under unixware */
 #    endif
 #    include <netinet/in.h>
-#    if !defined(OPENSSL_SYS_BEOS_R5)
-#      include <arpa/inet.h>
-#    endif
+#    include <arpa/inet.h>
 
-#    if defined(NeXT) || defined(_NEXT_SOURCE)
-#      include <sys/fcntl.h>
-#      include <sys/types.h>
-#    endif
-
-#    ifdef OPENSSL_SYS_AIX
-#      include <sys/select.h>
-#    endif
-
-#    ifdef __QNX__
-#      include <sys/select.h>
-#    endif
-
-#    if defined(sun)
-#      include <sys/filio.h>
-#    else
-#      ifndef VMS
-#        include <sys/ioctl.h>
-#      else
-	 /* ioctl is only in VMS > 7.0 and when socketshr is not used */
-#        if !defined(TCPIP_TYPE_SOCKETSHR) && defined(__VMS_VER) && (__VMS_VER > 70000000)
-#          include <sys/ioctl.h>
-#        endif
-#      endif
-#    endif
+#    include <sys/ioctl.h>
 
 #    define SSLeay_Read(a,b,c)     read((a),(b),(c))
 #    define SSLeay_Write(a,b,c)    write((a),(b),(c))
@@ -471,28 +356,13 @@ static unsigned int _strlen31(const char *str)
  * versions.
  */
 #  if !defined(OPENSSL_USE_IPV6)
-#    if defined(AF_INET6) && !defined(OPENSSL_SYS_BEOS_BONE) && !defined(NETWARE_CLIB)
+#    if defined(AF_INET6)
 #      define OPENSSL_USE_IPV6 1
 #    else
 #      define OPENSSL_USE_IPV6 0
 #    endif
 #  endif
 
-#endif
-
-#if defined(sun) && !defined(__svr4__) && !defined(__SVR4)
-  /* include headers first, so our defines don't break it */
-#include <stdlib.h>
-#include <string.h>
-  /* bcopy can handle overlapping moves according to SunOS 4.1.4 manpage */
-# define memmove(s1,s2,n) bcopy((s2),(s1),(n))
-# define strtoul(s,e,b) ((unsigned long int)strtol((s),(e),(b)))
-extern char *sys_errlist[]; extern int sys_nerr;
-# define strerror(errnum) \
-	(((errnum)<0 || (errnum)>=sys_nerr) ? NULL : sys_errlist[errnum])
-  /* Being signed SunOS 4.x memcpy breaks ASN1_OBJECT table lookup */
-#include "crypto/o_str.h"
-# define memcmp OPENSSL_memcmp
 #endif
 
 #ifndef OPENSSL_EXIT
@@ -505,58 +375,13 @@ extern char *sys_errlist[]; extern int sys_nerr;
 
 /***********************************************/
 
-#define DG_GCC_BUG	/* gcc < 2.6.3 on DGUX */
-
-#ifdef sgi
-#define IRIX_CC_BUG	/* all version of IRIX I've tested (4.* 5.*) */
-#endif
-#ifdef OPENSSL_SYS_SNI
-#define IRIX_CC_BUG	/* CDS++ up to V2.0Bsomething suffered from the same bug.*/
-#endif
-
 #if defined(OPENSSL_SYS_WINDOWS)
 #  define strcasecmp _stricmp
 #  define strncasecmp _strnicmp
 #endif
 
-/* vxworks */
-#if defined(OPENSSL_SYS_VXWORKS)
-#include <ioLib.h>
-#include <tickLib.h>
-#include <sysLib.h>
-
-#define TTY_STRUCT int
-
-#define sleep(a) taskDelay((a) * sysClkRateGet())
-
-#include <vxWorks.h>
-#include <sockLib.h>
-#include <taskLib.h>
-
-#define getpid taskIdSelf
-
-/* NOTE: these are implemented by helpers in database app!
- * if the database is not linked, we need to implement them
- * elswhere */
-struct hostent *gethostbyname(const char *name);
-struct hostent *gethostbyaddr(const char *addr, int length, int type);
-struct servent *getservbyname(const char *name, const char *proto);
-
-#endif
-/* end vxworks */
-
-/* beos */
-#if defined(OPENSSL_SYS_BEOS_R5)
-#define SO_ERROR 0
-#define NO_SYS_UN
-#define IPPROTO_IP 0
-#include <OS.h>
-#endif
-
 
 #ifdef  __cplusplus
 }
-#endif
-
 #endif
 

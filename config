@@ -106,61 +106,6 @@ case "${SYSTEM}:${RELEASE}:${VERSION}:${MACHINE}" in
 	MACHINE=`echo "$MACHINE" | sed -e 's/-/_/g'`
 	echo "parisc-hp-MPE/iX"; exit 0
 	;;
-    A/UX:*)
-	echo "m68k-apple-aux3"; exit 0
-	;;
-
-    AIX:[3-9]:4:*)
-	echo "${MACHINE}-ibm-aix"; exit 0
-	;;
-
-    AIX:*:[5-9]:*)
-	echo "${MACHINE}-ibm-aix"; exit 0
-	;;
-
-    AIX:*)
-	echo "${MACHINE}-ibm-aix3"; exit 0
-	;;
-
-    BeOS:*:BePC)
-    if [ -e /boot/develop/headers/be/bone ]; then
-		echo "beos-x86-bone"; exit 0
-	else
-		echo "beos-x86-r5"; exit 0
-	fi
-	;;
-
-    dgux:*)
-	echo "${MACHINE}-dg-dgux"; exit 0
-	;;
-
-    HI-UX:*)
-	echo "${MACHINE}-hi-hiux"; exit 0
-	;;
-
-    HP-UX:*)
-	HPUXVER=`echo ${RELEASE}|sed -e 's/[^.]*.[0B]*//'`
-	case "$HPUXVER" in
-	    1[0-9].*)	# HPUX 10 and 11 targets are unified
-		echo "${MACHINE}-hp-hpux1x"; exit 0
-		;;
-	    *)
-		echo "${MACHINE}-hp-hpux"; exit 0
-		;;
-	esac
-	;;
-
-    IRIX:5.*)
-	echo "mips2-sgi-irix"; exit 0
-	;;
-
-    IRIX:6.*)
-	echo "mips3-sgi-irix"; exit 0
-	;;
-
-    IRIX64:*)
-	echo "mips4-sgi-irix64"; exit 0
-	;;
 
     Linux:[2-9].*)
 	echo "${MACHINE}-whatever-linux2"; exit 0

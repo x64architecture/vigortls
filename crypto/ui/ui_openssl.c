@@ -122,9 +122,6 @@
  * sigaction and fileno included. -pedantic would be more appropriate for
  * the intended purposes, but we can't prevent users from adding -ansi.
  */
-#if defined(OPENSSL_SYSNAME_VXWORKS)
-#include <sys/types.h>
-#endif
 
 #include <signal.h>
 #include <stdio.h>
@@ -182,12 +179,6 @@
 # define SGTTY
 #endif
 
-#if defined(OPENSSL_SYS_VXWORKS)
-#undef TERMIOS
-#undef TERMIO
-#undef SGTTY
-#endif
-
 #ifdef TERMIOS
 # include <termios.h>
 # define TTY_STRUCT		struct termios
@@ -212,16 +203,12 @@
 # define TTY_set(tty,data)	ioctl(tty,TIOCSETP,data)
 #endif
 
-#if !defined(_LIBC) && !defined(OPENSSL_SYS_MSDOS) && !defined(OPENSSL_SYS_SUNOS)
+#if !defined(_LIBC) && !defined(OPENSSL_SYS_MSDOS)
 # include <sys/ioctl.h>
 #endif
 
 #ifdef OPENSSL_SYS_MSDOS
 # include <conio.h>
-#endif
-
-#ifdef OPENSSL_SYS_SUNOS
-	typedef int sig_atomic_t;
 #endif
 
 #ifndef NX509_SIG
@@ -236,7 +223,7 @@ static struct sigaction savsig[NX509_SIG];
 static void (*savsig[NX509_SIG])(int );
 #endif
 
-#if !defined(OPENSSL_SYS_MSDOS) || defined(__DJGPP__)
+#if !defined(OPENSSL_SYS_MSDOS)
 static TTY_STRUCT tty_orig,tty_new;
 #endif
 static FILE *tty_in, *tty_out;
@@ -415,10 +402,6 @@ static int open_console(UI *ui)
 	CRYPTO_w_lock(CRYPTO_LOCK_UI);
 	is_a_tty = 1;
 
-#if defined(OPENSSL_SYS_VXWORKS) || defined(OPENSSL_SYS_BEOS)
-	tty_in=stdin;
-	tty_out=stderr;
-#else
 #  ifdef OPENSSL_SYS_MSDOS
 #    define DEV_TTY "con"
 #  else
@@ -428,7 +411,6 @@ static int open_console(UI *ui)
 		tty_in=stdin;
 	if ((tty_out=fopen(DEV_TTY,"w")) == NULL)
 		tty_out=stderr;
-#endif
 
 #if defined(TTY_get) && !defined(OPENSSL_SYS_VMS)
  	if (TTY_get(fileno(tty_in),&tty_orig) == -1)

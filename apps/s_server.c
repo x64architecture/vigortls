@@ -174,10 +174,6 @@
 #include "s_apps.h"
 #include "timeouts.h"
 
-#if defined(OPENSSL_SYS_BEOS_R5)
-#include <fcntl.h>
-#endif
-
 static RSA MS_CALLBACK *tmp_rsa_cb(SSL *s, int is_export, int keylength);
 static int sv_body(char *hostname, int s, unsigned char *context);
 static int www_body(char *hostname, int s, unsigned char *context);
@@ -1886,7 +1882,7 @@ static int sv_body(char *hostname, int s, unsigned char *context)
 	KSSL_CTX *kctx;
 #endif
 	struct timeval timeout;
-#if defined(OPENSSL_SYS_WINDOWS) || defined(OPENSSL_SYS_MSDOS) || defined(OPENSSL_SYS_BEOS_R5)
+#if defined(OPENSSL_SYS_WINDOWS) || defined(OPENSSL_SYS_MSDOS)
 	struct timeval tv;
 #else
 	struct timeval *timeoutp;
@@ -2017,7 +2013,7 @@ static int sv_body(char *hostname, int s, unsigned char *context)
 		if (!read_from_sslcon)
 			{
 			FD_ZERO(&readfds);
-#if !defined(OPENSSL_SYS_WINDOWS) && !defined(OPENSSL_SYS_MSDOS) && !defined(OPENSSL_SYS_BEOS_R5)
+#if !defined(OPENSSL_SYS_WINDOWS) && !defined(OPENSSL_SYS_MSDOS)
 			openssl_fdset(fileno(stdin),&readfds);
 #endif
 			openssl_fdset(s,&readfds);
@@ -2039,17 +2035,6 @@ static int sv_body(char *hostname, int s, unsigned char *context)
 			if((i < 0) || (!i && !_kbhit() ) )continue;
 			if(_kbhit())
 				read_from_terminal = 1;
-#elif defined(OPENSSL_SYS_BEOS_R5)
-			/* Under BeOS-R5 the situation is similar to DOS */
-			tv.tv_sec = 1;
-			tv.tv_usec = 0;
-			(void)fcntl(fileno(stdin), F_SETFL, O_NONBLOCK);
-			i=select(width,(void *)&readfds,NULL,NULL,&tv);
-			if ((i < 0) || (!i && read(fileno(stdin), buf, 0) < 0))
-				continue;
-			if (read(fileno(stdin), buf, 0) >= 0)
-				read_from_terminal = 1;
-			(void)fcntl(fileno(stdin), F_SETFL, 0);
 #else
 			if ((SSL_version(con) == DTLS1_VERSION) &&
 				DTLSv1_get_timeout(con, &timeout))
