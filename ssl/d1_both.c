@@ -628,7 +628,7 @@ dtls1_reassemble_fragment(SSL *s, struct hm_header_st* msg_hdr, int *ok)
                 goto err;
             frag_len -= i;
         }
-        i = return DTLS1_HM_FRAGMENT_RETRY;
+        i = DTLS1_HM_FRAGMENT_RETRY;
         goto err;
     }
 
