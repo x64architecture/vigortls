@@ -186,7 +186,7 @@ static int ssl_check_srp_ext_ClientHello(SSL *s, int *al)
 	if ((s->s3->tmp.new_cipher->algorithm_mkey & SSL_kSRP) &&
 	    (s->srp_ctx.TLS_ext_srp_username_callback != NULL))
 		{
-		if(s->srp_ctx.login == NULL)
+		if (s->srp_ctx.login == NULL)
 			{
 			/* RFC 5054 says SHOULD reject, 
 			   we do so if There is no srp login name */
@@ -1190,7 +1190,7 @@ int ssl3_get_client_hello(SSL *s)
 		SSL_CIPHER *pref_cipher=NULL;
 
 		s->session->master_key_length=sizeof(s->session->master_key);
-		if(s->tls_session_secret_cb(s, s->session->master_key, &s->session->master_key_length,
+		if (s->tls_session_secret_cb(s, s->session->master_key, &s->session->master_key_length,
 			ciphers, &pref_cipher, s->tls_session_secret_cb_arg))
 			{
 			s->hit=1;
@@ -1573,7 +1573,7 @@ int ssl3_send_server_key_exchange(SSL *s)
 				rsa=s->cert->rsa_tmp_cb(s,
 				      SSL_C_IS_EXPORT(s->s3->tmp.new_cipher),
 				      SSL_C_EXPORT_PKEYLENGTH(s->s3->tmp.new_cipher));
-				if(rsa == NULL)
+				if (rsa == NULL)
 				{
 					al=SSL_AD_HANDSHAKE_FAILURE;
 					SSLerr(SSL_F_SSL3_SEND_SERVER_KEY_EXCHANGE,SSL_R_ERROR_GENERATING_TMP_RSA_KEY);
@@ -1624,7 +1624,7 @@ int ssl3_send_server_key_exchange(SSL *s)
 			     dhp->priv_key == NULL ||
 			     (s->options & SSL_OP_SINGLE_DH_USE)))
 				{
-				if(!DH_generate_key(dh))
+				if (!DH_generate_key(dh))
 				    {
 				    SSLerr(SSL_F_SSL3_SEND_SERVER_KEY_EXCHANGE,
 					   ERR_R_DH_LIB);
@@ -1689,7 +1689,7 @@ int ssl3_send_server_key_exchange(SSL *s)
 			    (EC_KEY_get0_private_key(ecdh) == NULL) ||
 			    (s->options & SSL_OP_SINGLE_ECDH_USE))
 				{
-				if(!EC_KEY_generate_key(ecdh))
+				if (!EC_KEY_generate_key(ecdh))
 				    {
 				    SSLerr(SSL_F_SSL3_SEND_SERVER_KEY_EXCHANGE,ERR_R_ECDH_LIB);
 				    goto err;
@@ -2342,7 +2342,7 @@ int ssl3_get_client_key_exchange(SSL *s)
 		/* Note that the length is checked again below,
 		** after decryption
 		*/
-		if(enc_pms.length > sizeof pms)
+		if (enc_pms.length > sizeof pms)
 			{
 			SSLerr(SSL_F_SSL3_GET_CLIENT_KEY_EXCHANGE,
 			       SSL_R_DATA_LENGTH_TOO_LONG);

@@ -98,20 +98,20 @@ X509_ALGOR *PKCS5_pbe2_set_iv(const EVP_CIPHER *cipher, int iter,
 	ASN1_OBJECT *obj;
 
 	alg_nid = EVP_CIPHER_type(cipher);
-	if(alg_nid == NID_undef) {
+	if (alg_nid == NID_undef) {
 		ASN1err(ASN1_F_PKCS5_PBE2_SET_IV,
 				ASN1_R_CIPHER_HAS_NO_OBJECT_IDENTIFIER);
 		goto err;
 	}
 	obj = OBJ_nid2obj(alg_nid);
 
-	if(!(pbe2 = PBE2PARAM_new())) goto merr;
+	if (!(pbe2 = PBE2PARAM_new())) goto merr;
 
 	/* Setup the AlgorithmIdentifier for the encryption scheme */
 	scheme = pbe2->encryption;
 
 	scheme->algorithm = obj;
-	if(!(scheme->parameter = ASN1_TYPE_new())) goto merr;
+	if (!(scheme->parameter = ASN1_TYPE_new())) goto merr;
 
 	/* Create random IV */
 	if (EVP_CIPHER_iv_length(cipher))
@@ -127,7 +127,7 @@ X509_ALGOR *PKCS5_pbe2_set_iv(const EVP_CIPHER *cipher, int iter,
 	/* Dummy cipherinit to just setup the IV, and PRF */
 	if (!EVP_CipherInit_ex(&ctx, cipher, NULL, NULL, iv, 0))
 		goto err;
-	if(EVP_CIPHER_param_to_asn1(&ctx, scheme->parameter) < 0) {
+	if (EVP_CIPHER_param_to_asn1(&ctx, scheme->parameter) < 0) {
 		ASN1err(ASN1_F_PKCS5_PBE2_SET_IV,
 					ASN1_R_ERROR_SETTING_CIPHER_PARAMS);
 		EVP_CIPHER_CTX_cleanup(&ctx);
@@ -146,7 +146,7 @@ X509_ALGOR *PKCS5_pbe2_set_iv(const EVP_CIPHER *cipher, int iter,
 
 	/* If its RC2 then we'd better setup the key length */
 
-	if(alg_nid == NID_rc2_cbc)
+	if (alg_nid == NID_rc2_cbc)
 		keylen = EVP_CIPHER_key_length(cipher);
 	else
 		keylen = -1;
@@ -162,14 +162,14 @@ X509_ALGOR *PKCS5_pbe2_set_iv(const EVP_CIPHER *cipher, int iter,
 
 	/* Now set up top level AlgorithmIdentifier */
 
-	if(!(ret = X509_ALGOR_new())) goto merr;
-	if(!(ret->parameter = ASN1_TYPE_new())) goto merr;
+	if (!(ret = X509_ALGOR_new())) goto merr;
+	if (!(ret->parameter = ASN1_TYPE_new())) goto merr;
 
 	ret->algorithm = OBJ_nid2obj(NID_pbes2);
 
 	/* Encode PBE2PARAM into parameter */
 
-	if(!ASN1_item_pack(pbe2, ASN1_ITEM_rptr(PBE2PARAM),
+	if (!ASN1_item_pack(pbe2, ASN1_ITEM_rptr(PBE2PARAM),
 				 &ret->parameter->value.sequence)) goto merr;
 	ret->parameter->type = V_ASN1_SEQUENCE;
 
@@ -204,9 +204,9 @@ X509_ALGOR *PKCS5_pbkdf2_set(int iter, unsigned char *salt, int saltlen,
 	PBKDF2PARAM *kdf = NULL;
 	ASN1_OCTET_STRING *osalt = NULL;
 
-	if(!(kdf = PBKDF2PARAM_new()))
+	if (!(kdf = PBKDF2PARAM_new()))
 		goto merr;
-	if(!(osalt = M_ASN1_OCTET_STRING_new()))
+	if (!(osalt = M_ASN1_OCTET_STRING_new()))
 		goto merr;
 
 	kdf->salt->value.octet_string = osalt;
@@ -224,19 +224,19 @@ X509_ALGOR *PKCS5_pbkdf2_set(int iter, unsigned char *salt, int saltlen,
 	else if (RAND_pseudo_bytes (osalt->data, saltlen) < 0)
 		goto merr;
 
-	if(iter <= 0)
+	if (iter <= 0)
 		iter = PKCS5_DEFAULT_ITER;
 
-	if(!ASN1_INTEGER_set(kdf->iter, iter))
+	if (!ASN1_INTEGER_set(kdf->iter, iter))
 		goto merr;
 
 	/* If have a key len set it up */
 
-	if(keylen > 0) 
+	if (keylen > 0) 
 		{
-		if(!(kdf->keylength = M_ASN1_INTEGER_new()))
+		if (!(kdf->keylength = M_ASN1_INTEGER_new()))
 			goto merr;
-		if(!ASN1_INTEGER_set (kdf->keylength, keylen))
+		if (!ASN1_INTEGER_set (kdf->keylength, keylen))
 			goto merr;
 		}
 
@@ -260,10 +260,10 @@ X509_ALGOR *PKCS5_pbkdf2_set(int iter, unsigned char *salt, int saltlen,
 
 	/* Encode PBKDF2PARAM into parameter of pbe2 */
 
-	if(!(keyfunc->parameter = ASN1_TYPE_new()))
+	if (!(keyfunc->parameter = ASN1_TYPE_new()))
 		goto merr;
 
-	if(!ASN1_item_pack(kdf, ASN1_ITEM_rptr(PBKDF2PARAM),
+	if (!ASN1_item_pack(kdf, ASN1_ITEM_rptr(PBKDF2PARAM),
 			 &keyfunc->parameter->value.sequence))
 		goto merr;
 	keyfunc->parameter->type = V_ASN1_SEQUENCE;

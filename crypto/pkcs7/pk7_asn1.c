@@ -130,7 +130,7 @@ IMPLEMENT_ASN1_FUNCTIONS(PKCS7_SIGNED)
 static int si_cb(int operation, ASN1_VALUE **pval, const ASN1_ITEM *it,
 							void *exarg)
 {
-	if(operation == ASN1_OP_FREE_POST) {
+	if (operation == ASN1_OP_FREE_POST) {
 		PKCS7_SIGNER_INFO *si = (PKCS7_SIGNER_INFO *)*pval;
 		EVP_PKEY_free(si->pkey);
 	}
@@ -173,7 +173,7 @@ IMPLEMENT_ASN1_FUNCTIONS(PKCS7_ENVELOPE)
 static int ri_cb(int operation, ASN1_VALUE **pval, const ASN1_ITEM *it,
 								void *exarg)
 {
-	if(operation == ASN1_OP_FREE_POST) {
+	if (operation == ASN1_OP_FREE_POST) {
 		PKCS7_RECIP_INFO *ri = (PKCS7_RECIP_INFO *)*pval;
 		X509_free(ri->cert);
 	}

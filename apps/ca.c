@@ -601,7 +601,7 @@ bad:
 				,errorline,configfile);
 		goto err;
 		}
-	if(tofree)
+	if (tofree)
 		{
 		free(tofree);
 		tofree = NULL;
@@ -665,7 +665,7 @@ bad:
 	if (!f)
 		ERR_clear_error();
 
-	if(f && !ASN1_STRING_set_default_mask_asc(f)) {
+	if (f && !ASN1_STRING_set_default_mask_asc(f)) {
 		BIO_printf(bio_err, "Invalid global string mask setting %s\n", f);
 		goto err;
 	}
@@ -1028,7 +1028,7 @@ bad:
 		if ((email_dn == 1) && ((tmp_email_dn=NCONF_get_string(conf,
 			section,ENV_DEFAULT_EMAIL_DN)) != NULL ))
 			{
-			if(strcmp(tmp_email_dn,"no") == 0)
+			if (strcmp(tmp_email_dn,"no") == 0)
 				email_dn=0;
 			}
 		if (verbose)
@@ -1108,7 +1108,7 @@ bad:
 
 		if (days == 0)
 			{
-			if(!NCONF_get_number(conf,section, ENV_DEFAULT_DAYS, &days))
+			if (!NCONF_get_number(conf,section, ENV_DEFAULT_DAYS, &days))
 				days = 0;
 			}
 		if (!enddate && (days == 0))
@@ -1275,7 +1275,7 @@ bad:
 			j=x->cert_info->serialNumber->length;
 			p=(const char *)x->cert_info->serialNumber->data;
 			
-			if(strlen(outdir) >= (size_t)(j ? BSIZE-j*2-6 : BSIZE-8))
+			if (strlen(outdir) >= (size_t)(j ? BSIZE-j*2-6 : BSIZE-8))
 				{
 				BIO_printf(bio_err,"certificate file name too long\n");
 				goto err;
@@ -1498,7 +1498,7 @@ bad:
 	/*****************************************************************/
 	ret=0;
 err:
-	if(tofree)
+	if (tofree)
 		free(tofree);
 	BIO_free_all(Cout);
 	BIO_free_all(Sout);
@@ -2065,7 +2065,7 @@ again2:
 			/* We found extensions to be set from config file */
 			X509V3_set_nconf(&ctx, lconf);
 
-			if(!X509V3_EXT_add_nconf(lconf, &ctx, ext_sect, ret))
+			if (!X509V3_EXT_add_nconf(lconf, &ctx, ext_sect, ret))
 				{
 				BIO_printf(bio_err, "ERROR: adding extensions in section %s\n", ext_sect);
 				ERR_print_errors(bio_err);
@@ -2087,7 +2087,7 @@ again2:
 		}
 
 	/* Set the right value for the noemailDN option */
-	if( email_dn == 0 )
+	if ( email_dn == 0 )
 		{
 		if (!X509_set_subject_name(ret,dn_subject)) goto err;
 		}
@@ -2904,7 +2904,7 @@ int unpack_revinfo(ASN1_TIME **prevtm, int *preason, ASN1_OBJECT **phold, ASN1_G
 		{
 		for (i = 0; i < NUM_REASONS; i++)
 			{
-			if(!strcasecmp(reason_str, crl_reasons[i]))
+			if (!strcasecmp(reason_str, crl_reasons[i]))
 				{
 				reason_code = i;
 				break;

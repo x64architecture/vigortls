@@ -248,7 +248,7 @@ bad:
 		}
 
 	if (derfile) {
-		if(!(derout = BIO_new_file(derfile, "wb"))) {
+		if (!(derout = BIO_new_file(derfile, "wb"))) {
 			BIO_printf(bio_err,"problems opening %s\n",derfile);
 			ERR_print_errors(bio_err);
 			goto end;
@@ -316,7 +316,7 @@ bad:
 			ctmpbuf = tmpbuf;
 			at = d2i_ASN1_TYPE(NULL,&ctmpbuf,tmplen);
 			ASN1_TYPE_free(atmp);
-			if(!at)
+			if (!at)
 				{
 				BIO_printf(bio_err,"Error parsing structure\n");
 				ERR_print_errors(bio_err);
@@ -348,8 +348,8 @@ bad:
 	num -= offset;
 
 	if ((length == 0) || ((long)length > num)) length=(unsigned int)num;
-	if(derout) {
-		if(BIO_write(derout, str + offset, length) != (int)length) {
+	if (derout) {
+		if (BIO_write(derout, str + offset, length) != (int)length) {
 			BIO_printf(bio_err, "Error writing output\n");
 			ERR_print_errors(bio_err);
 			goto end;

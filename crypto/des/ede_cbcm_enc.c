@@ -101,7 +101,7 @@ void DES_ede3_cbcm_encrypt(const unsigned char *in, unsigned char *out,
 	    m0=tin[0];
 	    m1=tin[1];
 
-	    if(l < 0)
+	    if (l < 0)
 		{
 		c2ln(in,tin0,tin1,l+8);
 		}
@@ -172,7 +172,7 @@ void DES_ede3_cbcm_encrypt(const unsigned char *in, unsigned char *out,
 
 	    tout0^=xor0;
 	    tout1^=xor1;
-	    if(l < 0)
+	    if (l < 0)
 		{
 		l2cn(tout0,tout1,out,l+8);
 		}

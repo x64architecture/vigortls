@@ -288,7 +288,7 @@ bad:
 			g = 2;
 		}
 
-	if(num) {
+	if (num) {
 
 		BN_GENCB cb;
 		BN_GENCB_set(&cb, dh_cb, bio_err);
@@ -306,10 +306,10 @@ bad:
 			DSA *dsa = DSA_new();
 			
 			BIO_printf(bio_err,"Generating DSA parameters, %d bit long prime\n",num);
-			if(!dsa || !DSA_generate_parameters_ex(dsa, num,
+			if (!dsa || !DSA_generate_parameters_ex(dsa, num,
 						NULL, 0, NULL, NULL, &cb))
 				{
-				if(dsa) DSA_free(dsa);
+				if (dsa) DSA_free(dsa);
 				ERR_print_errors(bio_err);
 				goto end;
 				}
@@ -328,7 +328,7 @@ bad:
 			dh = DH_new();
 			BIO_printf(bio_err,"Generating DH parameters, %d bit long safe prime, generator %d\n",num,g);
 			BIO_printf(bio_err,"This is going to take a long time\n");
-			if(!dh || !DH_generate_parameters_ex(dh, num, g, &cb))
+			if (!dh || !DH_generate_parameters_ex(dh, num, g, &cb))
 				{
 				ERR_print_errors(bio_err);
 				goto end;

@@ -252,7 +252,7 @@ static int aesni_init_key(EVP_CIPHER_CTX *ctx, const unsigned char *key,
 			dat->stream.cbc = NULL;
 		}
 
-	if(ret < 0)
+	if (ret < 0)
 		{
 		EVPerr(EVP_F_AESNI_INIT_KEY,EVP_R_AES_KEY_SETUP_FAILED);
 		return 0;
@@ -561,7 +561,7 @@ static int aes_init_key(EVP_CIPHER_CTX *ctx, const unsigned char *key,
 #endif
 		}
 
-	if(ret < 0)
+	if (ret < 0)
 		{
 		EVPerr(EVP_F_AES_INIT_KEY,EVP_R_AES_KEY_SETUP_FAILED);
 		return 0;
@@ -1224,7 +1224,7 @@ static int aes_ccm_ctrl(EVP_CIPHER_CTX *c, int type, int arg, void *ptr)
 	case EVP_CTRL_CCM_GET_TAG:
 		if (!c->encrypt || !cctx->tag_set)
 			return 0;
-		if(!CRYPTO_ccm128_tag(&cctx->ccm, ptr, (size_t)arg))
+		if (!CRYPTO_ccm128_tag(&cctx->ccm, ptr, (size_t)arg))
 			return 0;
 		cctx->tag_set = 0;
 		cctx->iv_set = 0;

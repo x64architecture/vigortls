@@ -229,7 +229,7 @@ int MAIN(int argc, char **argv)
 			inrand= *(++argv);
 			need_rand=1;
 			}
-		else if(strcmp(*argv, "-engine") == 0)
+		else if (strcmp(*argv, "-engine") == 0)
 			{
 			if (--argc < 1) goto bad;
 			engine = *(++argv);

@@ -193,7 +193,7 @@ bad:
 	BIO_printf(bio_err,"Generating DH parameters, %d bit long safe prime, generator %d\n",num,g);
 	BIO_printf(bio_err,"This is going to take a long time\n");
 
-	if(((dh = DH_new()) == NULL) || !DH_generate_parameters_ex(dh, num, g, &cb))
+	if (((dh = DH_new()) == NULL) || !DH_generate_parameters_ex(dh, num, g, &cb))
 		goto end;
 		
 	app_RAND_write_file(NULL, bio_err);

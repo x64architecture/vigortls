@@ -384,7 +384,7 @@ ENGINE_by_id(const char *id)
         return iterator;
     /* Prevent infinite recusrion if we're looking for the dynamic engine. */
     if (strcmp(id, "dynamic")) {
-	    if((load_dir = getenv("OPENSSL_ENGINES")) == 0) 
+	    if ((load_dir = getenv("OPENSSL_ENGINES")) == 0) 
             load_dir = ENGINESDIR;
         iterator = ENGINE_by_id("dynamic");
         if (!iterator ||

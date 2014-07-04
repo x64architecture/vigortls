@@ -197,7 +197,7 @@ static int parse_http_line1(char *line)
 
 	for(p = line; *p && !isspace((unsigned char)*p); p++)
 		continue;
-	if(!*p)
+	if (!*p)
 		{
 		OCSPerr(OCSP_F_PARSE_HTTP_LINE1,
 					OCSP_R_SERVER_RESPONSE_PARSE_ERROR);
@@ -208,7 +208,7 @@ static int parse_http_line1(char *line)
 	while(*p && isspace((unsigned char)*p))
 		p++;
 
-	if(!*p)
+	if (!*p)
 		{
 		OCSPerr(OCSP_F_PARSE_HTTP_LINE1,
 					OCSP_R_SERVER_RESPONSE_PARSE_ERROR);
@@ -219,7 +219,7 @@ static int parse_http_line1(char *line)
 	for(q = p; *q && !isspace((unsigned char)*q); q++)
 		continue;
 
-	if(!*q)
+	if (!*q)
 		{
 		OCSPerr(OCSP_F_PARSE_HTTP_LINE1,
 					OCSP_R_SERVER_RESPONSE_PARSE_ERROR);
@@ -232,14 +232,14 @@ static int parse_http_line1(char *line)
 	/* Attempt to parse numeric code */
 	retcode = strtoul(p, &r, 10);
 
-	if(*r)
+	if (*r)
 		return 0;
 
 	/* Skip over any leading white space in message */
 	while(*q && isspace((unsigned char)*q))
 		q++;
 
-	if(*q)
+	if (*q)
 		{
 		/* Finally zap any trailing white space in message (include
 		 * CRLF) */
@@ -248,10 +248,10 @@ static int parse_http_line1(char *line)
 		for(r = q + strlen(q) - 1; isspace((unsigned char)*r); r--)
 			*r = 0;
 		}
-	if(retcode != 200)
+	if (retcode != 200)
 		{
 		OCSPerr(OCSP_F_PARSE_HTTP_LINE1, OCSP_R_SERVER_RESPONSE_ERROR);
-		if(!*q)
+		if (!*q)
 			ERR_add_error_data(2, "Code=", p);
 		else
 			ERR_add_error_data(4, "Code=", p, ",Reason=", q);

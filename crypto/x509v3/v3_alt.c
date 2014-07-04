@@ -99,7 +99,7 @@ STACK_OF(CONF_VALUE) *i2v_GENERAL_NAMES(X509V3_EXT_METHOD *method,
 		gen = sk_GENERAL_NAME_value(gens, i);
 		ret = i2v_GENERAL_NAME(method, gen, ret);
 	}
-	if(!ret) return sk_CONF_VALUE_new_null();
+	if (!ret) return sk_CONF_VALUE_new_null();
 	return ret;
 }
 
@@ -142,10 +142,10 @@ STACK_OF(CONF_VALUE) *i2v_GENERAL_NAME(X509V3_EXT_METHOD *method,
 
 		case GEN_IPADD:
 		p = gen->d.ip->data;
-		if(gen->d.ip->length == 4)
+		if (gen->d.ip->length == 4)
 			BIO_snprintf(oline, sizeof oline,
 				     "%d.%d.%d.%d", p[0], p[1], p[2], p[3]);
-		else if(gen->d.ip->length == 16)
+		else if (gen->d.ip->length == 16)
 			{
 			oline[0] = 0;
 			for (i = 0; i < 8; i++)
@@ -212,10 +212,10 @@ int GENERAL_NAME_print(BIO *out, GENERAL_NAME *gen)
 
 		case GEN_IPADD:
 		p = gen->d.ip->data;
-		if(gen->d.ip->length == 4)
+		if (gen->d.ip->length == 4)
 			BIO_printf(out, "IP Address:%d.%d.%d.%d",
 						p[0], p[1], p[2], p[3]);
-		else if(gen->d.ip->length == 16)
+		else if (gen->d.ip->length == 16)
 			{
 			BIO_printf(out, "IP Address");
 			for (i = 0; i < 8; i++)
@@ -246,18 +246,18 @@ static GENERAL_NAMES *v2i_issuer_alt(X509V3_EXT_METHOD *method,
 	GENERAL_NAMES *gens = NULL;
 	CONF_VALUE *cnf;
 	int i;
-	if(!(gens = sk_GENERAL_NAME_new_null())) {
+	if (!(gens = sk_GENERAL_NAME_new_null())) {
 		X509V3err(X509V3_F_V2I_ISSUER_ALT,ERR_R_MALLOC_FAILURE);
 		return NULL;
 	}
 	for(i = 0; i < sk_CONF_VALUE_num(nval); i++) {
 		cnf = sk_CONF_VALUE_value(nval, i);
-		if(!name_cmp(cnf->name, "issuer") && cnf->value &&
+		if (!name_cmp(cnf->name, "issuer") && cnf->value &&
 						!strcmp(cnf->value, "copy")) {
-			if(!copy_issuer(ctx, gens)) goto err;
+			if (!copy_issuer(ctx, gens)) goto err;
 		} else {
 			GENERAL_NAME *gen;
-			if(!(gen = v2i_GENERAL_NAME(method, ctx, cnf)))
+			if (!(gen = v2i_GENERAL_NAME(method, ctx, cnf)))
 								 goto err; 
 			sk_GENERAL_NAME_push(gens, gen);
 		}
@@ -276,14 +276,14 @@ static int copy_issuer(X509V3_CTX *ctx, GENERAL_NAMES *gens)
 	GENERAL_NAME *gen;
 	X509_EXTENSION *ext;
 	int i;
-	if(ctx && (ctx->flags == CTX_TEST)) return 1;
-	if(!ctx || !ctx->issuer_cert) {
+	if (ctx && (ctx->flags == CTX_TEST)) return 1;
+	if (!ctx || !ctx->issuer_cert) {
 		X509V3err(X509V3_F_COPY_ISSUER,X509V3_R_NO_ISSUER_DETAILS);
 		goto err;
 	}
         i = X509_get_ext_by_NID(ctx->issuer_cert, NID_subject_alt_name, -1);
-	if(i < 0) return 1;
-        if(!(ext = X509_get_ext(ctx->issuer_cert, i)) ||
+	if (i < 0) return 1;
+        if (!(ext = X509_get_ext(ctx->issuer_cert, i)) ||
                         !(ialt = X509V3_EXT_d2i(ext)) ) {
 		X509V3err(X509V3_F_COPY_ISSUER,X509V3_R_ISSUER_DECODE_ERROR);
 		goto err;
@@ -291,7 +291,7 @@ static int copy_issuer(X509V3_CTX *ctx, GENERAL_NAMES *gens)
 
 	for(i = 0; i < sk_GENERAL_NAME_num(ialt); i++) {
 		gen = sk_GENERAL_NAME_value(ialt, i);
-		if(!sk_GENERAL_NAME_push(gens, gen)) {
+		if (!sk_GENERAL_NAME_push(gens, gen)) {
 			X509V3err(X509V3_F_COPY_ISSUER,ERR_R_MALLOC_FAILURE);
 			goto err;
 		}
@@ -311,21 +311,21 @@ static GENERAL_NAMES *v2i_subject_alt(X509V3_EXT_METHOD *method,
 	GENERAL_NAMES *gens = NULL;
 	CONF_VALUE *cnf;
 	int i;
-	if(!(gens = sk_GENERAL_NAME_new_null())) {
+	if (!(gens = sk_GENERAL_NAME_new_null())) {
 		X509V3err(X509V3_F_V2I_SUBJECT_ALT,ERR_R_MALLOC_FAILURE);
 		return NULL;
 	}
 	for(i = 0; i < sk_CONF_VALUE_num(nval); i++) {
 		cnf = sk_CONF_VALUE_value(nval, i);
-		if(!name_cmp(cnf->name, "email") && cnf->value &&
+		if (!name_cmp(cnf->name, "email") && cnf->value &&
 						!strcmp(cnf->value, "copy")) {
-			if(!copy_email(ctx, gens, 0)) goto err;
-		} else if(!name_cmp(cnf->name, "email") && cnf->value &&
+			if (!copy_email(ctx, gens, 0)) goto err;
+		} else if (!name_cmp(cnf->name, "email") && cnf->value &&
 						!strcmp(cnf->value, "move")) {
-			if(!copy_email(ctx, gens, 1)) goto err;
+			if (!copy_email(ctx, gens, 1)) goto err;
 		} else {
 			GENERAL_NAME *gen;
-			if(!(gen = v2i_GENERAL_NAME(method, ctx, cnf)))
+			if (!(gen = v2i_GENERAL_NAME(method, ctx, cnf)))
 								 goto err; 
 			sk_GENERAL_NAME_push(gens, gen);
 		}
@@ -347,14 +347,14 @@ static int copy_email(X509V3_CTX *ctx, GENERAL_NAMES *gens, int move_p)
 	X509_NAME_ENTRY *ne;
 	GENERAL_NAME *gen = NULL;
 	int i;
-	if(ctx != NULL && ctx->flags == CTX_TEST)
+	if (ctx != NULL && ctx->flags == CTX_TEST)
 		return 1;
-	if(!ctx || (!ctx->subject_cert && !ctx->subject_req)) {
+	if (!ctx || (!ctx->subject_cert && !ctx->subject_req)) {
 		X509V3err(X509V3_F_COPY_EMAIL,X509V3_R_NO_SUBJECT_DETAILS);
 		goto err;
 	}
 	/* Find the subject name */
-	if(ctx->subject_cert) nm = X509_get_subject_name(ctx->subject_cert);
+	if (ctx->subject_cert) nm = X509_get_subject_name(ctx->subject_cert);
 	else nm = X509_REQ_get_subject_name(ctx->subject_req);
 
 	/* Now add any email address(es) to STACK */
@@ -369,14 +369,14 @@ static int copy_email(X509V3_CTX *ctx, GENERAL_NAMES *gens, int move_p)
 			X509_NAME_ENTRY_free(ne);
                         i--;
                         }
-		if(!email || !(gen = GENERAL_NAME_new())) {
+		if (!email || !(gen = GENERAL_NAME_new())) {
 			X509V3err(X509V3_F_COPY_EMAIL,ERR_R_MALLOC_FAILURE);
 			goto err;
 		}
 		gen->d.ia5 = email;
 		email = NULL;
 		gen->type = GEN_EMAIL;
-		if(!sk_GENERAL_NAME_push(gens, gen)) {
+		if (!sk_GENERAL_NAME_push(gens, gen)) {
 			X509V3err(X509V3_F_COPY_EMAIL,ERR_R_MALLOC_FAILURE);
 			goto err;
 		}
@@ -400,13 +400,13 @@ GENERAL_NAMES *v2i_GENERAL_NAMES(const X509V3_EXT_METHOD *method,
 	GENERAL_NAMES *gens = NULL;
 	CONF_VALUE *cnf;
 	int i;
-	if(!(gens = sk_GENERAL_NAME_new_null())) {
+	if (!(gens = sk_GENERAL_NAME_new_null())) {
 		X509V3err(X509V3_F_V2I_GENERAL_NAMES,ERR_R_MALLOC_FAILURE);
 		return NULL;
 	}
 	for(i = 0; i < sk_CONF_VALUE_num(nval); i++) {
 		cnf = sk_CONF_VALUE_value(nval, i);
-		if(!(gen = v2i_GENERAL_NAME(method, ctx, cnf))) goto err; 
+		if (!(gen = v2i_GENERAL_NAME(method, ctx, cnf))) goto err; 
 		sk_GENERAL_NAME_push(gens, gen);
 	}
 	return gens;
@@ -428,7 +428,7 @@ GENERAL_NAME *a2i_GENERAL_NAME(GENERAL_NAME *out,
 	char is_string = 0;
 	GENERAL_NAME *gen = NULL;
 
-	if(!value)
+	if (!value)
 		{
 		X509V3err(X509V3_F_A2I_GENERAL_NAME,X509V3_R_MISSING_VALUE);
 		return NULL;
@@ -439,7 +439,7 @@ GENERAL_NAME *a2i_GENERAL_NAME(GENERAL_NAME *out,
 	else
 		{
 		gen = GENERAL_NAME_new();
-		if(gen == NULL)
+		if (gen == NULL)
 			{
 			X509V3err(X509V3_F_A2I_GENERAL_NAME,ERR_R_MALLOC_FAILURE);
 			return NULL;
@@ -457,7 +457,7 @@ GENERAL_NAME *a2i_GENERAL_NAME(GENERAL_NAME *out,
 		case GEN_RID:
 		{
 		ASN1_OBJECT *obj;
-		if(!(obj = OBJ_txt2obj(value,0)))
+		if (!(obj = OBJ_txt2obj(value,0)))
 			{
 			X509V3err(X509V3_F_A2I_GENERAL_NAME,X509V3_R_BAD_OBJECT);
 			ERR_add_error_data(2, "value=", value);
@@ -472,7 +472,7 @@ GENERAL_NAME *a2i_GENERAL_NAME(GENERAL_NAME *out,
 			gen->d.ip = a2i_IPADDRESS_NC(value);
 		else
 			gen->d.ip = a2i_IPADDRESS(value);
-		if(gen->d.ip == NULL)
+		if (gen->d.ip == NULL)
 			{
 			X509V3err(X509V3_F_A2I_GENERAL_NAME,X509V3_R_BAD_IP_ADDRESS);
 			ERR_add_error_data(2, "value=", value);
@@ -500,9 +500,9 @@ GENERAL_NAME *a2i_GENERAL_NAME(GENERAL_NAME *out,
 		goto err;
 		}
 
-	if(is_string)
+	if (is_string)
 		{
-		if(!(gen->d.ia5 = M_ASN1_IA5STRING_new()) ||
+		if (!(gen->d.ia5 = M_ASN1_IA5STRING_new()) ||
 			      !ASN1_STRING_set(gen->d.ia5, (unsigned char*)value,
 					       strlen(value)))
 			{
@@ -532,25 +532,25 @@ GENERAL_NAME *v2i_GENERAL_NAME_ex(GENERAL_NAME *out,
 	name = cnf->name;
 	value = cnf->value;
 
-	if(!value)
+	if (!value)
 		{
 		X509V3err(X509V3_F_V2I_GENERAL_NAME_EX,X509V3_R_MISSING_VALUE);
 		return NULL;
 		}
 
-	if(!name_cmp(name, "email"))
+	if (!name_cmp(name, "email"))
 		type = GEN_EMAIL;
-	else if(!name_cmp(name, "URI"))
+	else if (!name_cmp(name, "URI"))
 		type = GEN_URI;
-	else if(!name_cmp(name, "DNS"))
+	else if (!name_cmp(name, "DNS"))
 		type = GEN_DNS;
-	else if(!name_cmp(name, "RID"))
+	else if (!name_cmp(name, "RID"))
 		type = GEN_RID;
-	else if(!name_cmp(name, "IP"))
+	else if (!name_cmp(name, "IP"))
 		type = GEN_IPADD;
-	else if(!name_cmp(name, "dirName"))
+	else if (!name_cmp(name, "dirName"))
 		type = GEN_DIRNAME;
-	else if(!name_cmp(name, "otherName"))
+	else if (!name_cmp(name, "otherName"))
 		type = GEN_OTHERNAME;
 	else
 		{

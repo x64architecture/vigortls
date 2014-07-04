@@ -172,7 +172,7 @@ int EVP_CIPHER_type(const EVP_CIPHER *ctx)
 		default:
 		/* Check it has an OID and it is valid */
 		otmp = OBJ_nid2obj(nid);
-		if(!otmp || !otmp->data) nid = NID_undef;
+		if (!otmp || !otmp->data) nid = NID_undef;
 		ASN1_OBJECT_free(otmp);
 		return nid;
 	}

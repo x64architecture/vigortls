@@ -127,16 +127,16 @@ int i2c_ASN1_INTEGER(ASN1_INTEGER *a, unsigned char **pp)
 		if (!neg && (i > 127)) {
 			pad=1;
 			pb=0;
-		} else if(neg) {
-			if(i>128) {
+		} else if (neg) {
+			if (i>128) {
 				pad=1;
 				pb=0xFF;
-			} else if(i == 128) {
+			} else if (i == 128) {
 			/*
 			 * Special case: if any other bytes non zero we pad:
 			 * otherwise we don't.
 			 */
-				for(i = 1; i < a->length; i++) if(a->data[i]) {
+				for(i = 1; i < a->length; i++) if (a->data[i]) {
 						pad=1;
 						pb=0xFF;
 						break;
@@ -203,7 +203,7 @@ ASN1_INTEGER *c2i_ASN1_INTEGER(ASN1_INTEGER **a, const unsigned char **pp,
 		goto err;
 		}
 	to=s;
-	if(!len) {
+	if (!len) {
 		/* Strictly speaking this is an illegal INTEGER but we
 		 * tolerate it.
 		 */
@@ -230,7 +230,7 @@ ASN1_INTEGER *c2i_ASN1_INTEGER(ASN1_INTEGER **a, const unsigned char **pp,
 		 * a 1. This is treated separately because it is the only case
 		 * where the number of bytes is larger than len.
 		 */
-		if(!i) {
+		if (!i) {
 			*s = 1;
 			s[len] = 0;
 			len++;
@@ -309,7 +309,7 @@ ASN1_INTEGER *d2i_ASN1_UINTEGER(ASN1_INTEGER **a, const unsigned char **pp,
 		goto err;
 		}
 	ret->type=V_ASN1_INTEGER;
-	if(len) {
+	if (len) {
 		if ((*p == 0) && (len != 1))
 			{
 			p++;
@@ -432,7 +432,7 @@ ASN1_INTEGER *BN_to_ASN1_INTEGER(const BIGNUM *bn, ASN1_INTEGER *ai)
 		}
 	ret->length=BN_bn2bin(bn,ret->data);
 	/* Correct zero case */
-	if(!ret->length)
+	if (!ret->length)
 		{
 		ret->data[0] = 0;
 		ret->length = 1;
@@ -449,7 +449,7 @@ BIGNUM *ASN1_INTEGER_to_BN(const ASN1_INTEGER *ai, BIGNUM *bn)
 
 	if ((ret=BN_bin2bn(ai->data,ai->length,bn)) == NULL)
 		ASN1err(ASN1_F_ASN1_INTEGER_TO_BN,ASN1_R_BN_LIB);
-	else if(ai->type == V_ASN1_NEG_INTEGER)
+	else if (ai->type == V_ASN1_NEG_INTEGER)
 		BN_set_negative(ret, 1);
 	return (ret);
 	}

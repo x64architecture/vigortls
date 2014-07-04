@@ -128,7 +128,7 @@ int X509_NAME_get_index_by_OBJ(X509_NAME *name, ASN1_OBJECT *obj,
 
 X509_NAME_ENTRY *X509_NAME_get_entry(X509_NAME *name, int loc)
 	{
-	if(name == NULL || sk_X509_NAME_ENTRY_num(name->entries) <= loc
+	if (name == NULL || sk_X509_NAME_ENTRY_num(name->entries) <= loc
 	   || loc < 0)
 		return (NULL);
 	else
@@ -177,7 +177,7 @@ int X509_NAME_add_entry_by_OBJ(X509_NAME *name, ASN1_OBJECT *obj, int type,
 	X509_NAME_ENTRY *ne;
 	int ret;
 	ne = X509_NAME_ENTRY_create_by_OBJ(NULL, obj, type, bytes, len);
-	if(!ne) return 0;
+	if (!ne) return 0;
 	ret = X509_NAME_add_entry(name, ne, loc, set);
 	X509_NAME_ENTRY_free(ne);
 	return ret;
@@ -189,7 +189,7 @@ int X509_NAME_add_entry_by_NID(X509_NAME *name, int nid, int type,
 	X509_NAME_ENTRY *ne;
 	int ret;
 	ne = X509_NAME_ENTRY_create_by_NID(NULL, nid, type, bytes, len);
-	if(!ne) return 0;
+	if (!ne) return 0;
 	ret = X509_NAME_add_entry(name, ne, loc, set);
 	X509_NAME_ENTRY_free(ne);
 	return ret;
@@ -201,7 +201,7 @@ int X509_NAME_add_entry_by_txt(X509_NAME *name, const char *field, int type,
 	X509_NAME_ENTRY *ne;
 	int ret;
 	ne = X509_NAME_ENTRY_create_by_txt(NULL, field, type, bytes, len);
-	if(!ne) return 0;
+	if (!ne) return 0;
 	ret = X509_NAME_add_entry(name, ne, loc, set);
 	X509_NAME_ENTRY_free(ne);
 	return ret;
@@ -352,7 +352,7 @@ int X509_NAME_ENTRY_set_data(X509_NAME_ENTRY *ne, int type,
 	int i;
 
 	if ((ne == NULL) || ((bytes == NULL) && (len != 0))) return (0);
-	if((type > 0) && (type & MBSTRING_FLAG)) 
+	if ((type > 0) && (type & MBSTRING_FLAG)) 
 		return ASN1_STRING_set_by_NID(&ne->value, bytes,
 						len, type,
 					OBJ_obj2nid(ne->object)) ? 1 : 0;

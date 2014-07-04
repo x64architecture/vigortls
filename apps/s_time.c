@@ -215,12 +215,12 @@ static int parseArgs(int argc, char **argv)
 		host= *(++argv);
 		}
 #if 0
-	else if( strcmp(*argv,"-host") == 0)
+	else if ( strcmp(*argv,"-host") == 0)
 		{
 		if (--argc < 1) goto bad;
 		host= *(++argv);
 		}
-	else if( strcmp(*argv,"-port") == 0)
+	else if ( strcmp(*argv,"-port") == 0)
 		{
 		if (--argc < 1) goto bad;
 		port= *(++argv);
@@ -230,60 +230,60 @@ static int parseArgs(int argc, char **argv)
 		perform=2;
 	else if (strcmp(*argv,"-new") == 0)
 		perform=1;
-	else if( strcmp(*argv,"-verify") == 0) {
+	else if ( strcmp(*argv,"-verify") == 0) {
 
 	    tm_verify=SSL_VERIFY_PEER|SSL_VERIFY_CLIENT_ONCE;
 	    if (--argc < 1) goto bad;
 	    verify_depth=atoi(*(++argv));
 	    BIO_printf(bio_err,"verify depth is %d\n",verify_depth);
 
-	} else if( strcmp(*argv,"-cert") == 0) {
+	} else if ( strcmp(*argv,"-cert") == 0) {
 
 	    if (--argc < 1) goto bad;
 	    t_cert_file= *(++argv);
 
-	} else if( strcmp(*argv,"-key") == 0) {
+	} else if ( strcmp(*argv,"-key") == 0) {
 
 	    if (--argc < 1) goto bad;
 	    t_key_file= *(++argv);
 
-	} else if( strcmp(*argv,"-CApath") == 0) {
+	} else if ( strcmp(*argv,"-CApath") == 0) {
 
 	    if (--argc < 1) goto bad;
 	    CApath= *(++argv);
 
-	} else if( strcmp(*argv,"-CAfile") == 0) {
+	} else if ( strcmp(*argv,"-CAfile") == 0) {
 
 	    if (--argc < 1) goto bad;
 	    CAfile= *(++argv);
 
-	} else if( strcmp(*argv,"-cipher") == 0) {
+	} else if ( strcmp(*argv,"-cipher") == 0) {
 
 	    if (--argc < 1) goto bad;
 	    tm_cipher= *(++argv);
 	}
 #ifdef FIONBIO
-	else if(strcmp(*argv,"-nbio") == 0) {
+	else if (strcmp(*argv,"-nbio") == 0) {
 	    t_nbio=1;
 	}
 #endif
-	else if(strcmp(*argv,"-www") == 0)
+	else if (strcmp(*argv,"-www") == 0)
 		{
 		if (--argc < 1) goto bad;
 		s_www_path= *(++argv);
-		if(strlen(s_www_path) > MYBUFSIZ-100)
+		if (strlen(s_www_path) > MYBUFSIZ-100)
 			{
 			BIO_printf(bio_err,"-www option too long\n");
 			badop=1;
 			}
 		}
-	else if(strcmp(*argv,"-bugs") == 0)
+	else if (strcmp(*argv,"-bugs") == 0)
 	    st_bugs=1;
 #ifndef OPENSSL_NO_SSL3
-	else if(strcmp(*argv,"-ssl3") == 0)
+	else if (strcmp(*argv,"-ssl3") == 0)
 	    s_time_meth=SSLv3_client_method();
 #endif
-	else if( strcmp(*argv,"-time") == 0) {
+	else if ( strcmp(*argv,"-time") == 0) {
 
 	    if (--argc < 1) goto bad;
 	    maxTime= atoi(*(++argv));
@@ -300,7 +300,7 @@ static int parseArgs(int argc, char **argv)
 
     if (perform == 0) perform=3;
 
-    if(badop) {
+    if (badop) {
 bad:
 		s_time_usage();
 		return -1;
@@ -347,7 +347,7 @@ int MAIN(int argc, char **argv)
 #endif
 
 	/* parse the command line arguments */
-	if( parseArgs( argc, argv ) < 0 )
+	if ( parseArgs( argc, argv ) < 0 )
 		goto end;
 
 	OpenSSL_add_ssl_algorithms();
@@ -357,7 +357,7 @@ int MAIN(int argc, char **argv)
 
 	if (st_bugs) SSL_CTX_set_options(tm_ctx,SSL_OP_ALL);
 	SSL_CTX_set_cipher_list(tm_ctx,tm_cipher);
-	if(!set_cert_stuff(tm_ctx,t_cert_file,t_key_file)) 
+	if (!set_cert_stuff(tm_ctx,t_cert_file,t_key_file)) 
 		goto end;
 
 	SSL_load_error_strings();
@@ -390,14 +390,14 @@ int MAIN(int argc, char **argv)
 		if (finishtime < (long)time(NULL)) break;
 #ifdef WIN32_STUFF
 
-		if( flushWinMsgs(0) == -1 )
+		if ( flushWinMsgs(0) == -1 )
 			goto end;
 
-		if( waitingToDie || exitNow )		/* we're dead */
+		if ( waitingToDie || exitNow )		/* we're dead */
 			goto end;
 #endif
 
-		if( (scon = doConnection( NULL )) == NULL )
+		if ( (scon = doConnection( NULL )) == NULL )
 			goto end;
 
 		if (s_www_path != NULL)
@@ -449,7 +449,7 @@ next:
 	printf( "\n\nNow timing with session id reuse.\n" );
 
 	/* Get an SSL object so we can reuse the session id */
-	if( (scon = doConnection( NULL )) == NULL )
+	if ( (scon = doConnection( NULL )) == NULL )
 		{
 		fprintf( stderr, "Unable to get connection\n" );
 		goto end;
@@ -483,14 +483,14 @@ next:
 		if (finishtime < (long)time(NULL)) break;
 
 #ifdef WIN32_STUFF
-		if( flushWinMsgs(0) == -1 )
+		if ( flushWinMsgs(0) == -1 )
 			goto end;
 
-		if( waitingToDie || exitNow )	/* we're dead */
+		if ( waitingToDie || exitNow )	/* we're dead */
 			goto end;
 #endif
 
-	 	if( (doConnection( scon )) == NULL )
+	 	if ( (doConnection( scon )) == NULL )
 			goto end;
 
 		if (s_www_path)
@@ -576,7 +576,7 @@ static SSL *doConnection(SSL *scon)
 	SSL_set_bio(serverCon,conn,conn);
 
 #if 0
-	if( scon != NULL )
+	if ( scon != NULL )
 		SSL_set_session(serverCon,SSL_get_session(scon));
 #endif
 
@@ -602,7 +602,7 @@ static SSL *doConnection(SSL *scon)
 			}
 		break;
 		}
-	if(i <= 0)
+	if (i <= 0)
 		{
 		BIO_printf(bio_err,"ERROR\n");
 		if (verify_error != X509_V_OK)

@@ -317,7 +317,7 @@ static int asn1_bio_flush_ex(BIO *b, BIO_ASN1_BUF_CTX *ctx,
 			ctx->ex_pos += ret;
 		else
 			{
-			if(cleanup)
+			if (cleanup)
 				cleanup(b, &ctx->ex_buf, &ctx->ex_len,
 								&ctx->ex_arg);
 			ctx->state = next;

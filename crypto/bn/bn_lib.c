@@ -430,8 +430,8 @@ BIGNUM *bn_expand2(BIGNUM *b, int words)
 	if (words > b->dmax)
 		{
 		BN_ULONG *a = bn_expand_internal(b, words);
-		if(!a) return NULL;
-		if(b->d) free(b->d);
+		if (!a) return NULL;
+		if (b->d) free(b->d);
 		b->d=a;
 		b->dmax=words;
 		}
@@ -466,7 +466,7 @@ BIGNUM *BN_dup(const BIGNUM *a)
 
 	t = BN_new();
 	if (t == NULL) return NULL;
-	if(!BN_copy(t, a))
+	if (!BN_copy(t, a))
 		{
 		BN_free(t);
 		return NULL;

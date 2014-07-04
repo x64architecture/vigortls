@@ -83,20 +83,20 @@ int X509V3_add_value(const char *name, const char *value,
 {
 	CONF_VALUE *vtmp = NULL;
 	char *tname = NULL, *tvalue = NULL;
-	if(name && !(tname = BUF_strdup(name))) goto err;
-	if(value && !(tvalue = BUF_strdup(value))) goto err;
-	if(!(vtmp = (CONF_VALUE *)malloc(sizeof(CONF_VALUE)))) goto err;
-	if(!*extlist && !(*extlist = sk_CONF_VALUE_new_null())) goto err;
+	if (name && !(tname = BUF_strdup(name))) goto err;
+	if (value && !(tvalue = BUF_strdup(value))) goto err;
+	if (!(vtmp = (CONF_VALUE *)malloc(sizeof(CONF_VALUE)))) goto err;
+	if (!*extlist && !(*extlist = sk_CONF_VALUE_new_null())) goto err;
 	vtmp->section = NULL;
 	vtmp->name = tname;
 	vtmp->value = tvalue;
-	if(!sk_CONF_VALUE_push(*extlist, vtmp)) goto err;
+	if (!sk_CONF_VALUE_push(*extlist, vtmp)) goto err;
 	return 1;
 	err:
 	X509V3err(X509V3_F_X509V3_ADD_VALUE,ERR_R_MALLOC_FAILURE);
-	if(vtmp) free(vtmp);
-	if(tname) free(tname);
-	if(tvalue) free(tvalue);
+	if (vtmp) free(vtmp);
+	if (tname) free(tname);
+	if (tvalue) free(tvalue);
 	return 0;
 }
 
@@ -110,24 +110,24 @@ int X509V3_add_value_uchar(const char *name, const unsigned char *value,
 
 void X509V3_conf_free(CONF_VALUE *conf)
 {
-	if(!conf) return;
-	if(conf->name) free(conf->name);
-	if(conf->value) free(conf->value);
-	if(conf->section) free(conf->section);
+	if (!conf) return;
+	if (conf->name) free(conf->name);
+	if (conf->value) free(conf->value);
+	if (conf->section) free(conf->section);
 	free(conf);
 }
 
 int X509V3_add_value_bool(const char *name, int asn1_bool,
 						STACK_OF(CONF_VALUE) **extlist)
 {
-	if(asn1_bool) return X509V3_add_value(name, "TRUE", extlist);
+	if (asn1_bool) return X509V3_add_value(name, "TRUE", extlist);
 	return X509V3_add_value(name, "FALSE", extlist);
 }
 
 int X509V3_add_value_bool_nf(char *name, int asn1_bool,
 						STACK_OF(CONF_VALUE) **extlist)
 {
-	if(asn1_bool) return X509V3_add_value(name, "TRUE", extlist);
+	if (asn1_bool) return X509V3_add_value(name, "TRUE", extlist);
 	return 1;
 }
 
@@ -136,8 +136,8 @@ char *i2s_ASN1_ENUMERATED(X509V3_EXT_METHOD *method, ASN1_ENUMERATED *a)
 {
 	BIGNUM *bntmp = NULL;
 	char *strtmp = NULL;
-	if(!a) return NULL;
-	if(!(bntmp = ASN1_ENUMERATED_to_BN(a, NULL)) ||
+	if (!a) return NULL;
+	if (!(bntmp = ASN1_ENUMERATED_to_BN(a, NULL)) ||
 	    !(strtmp = BN_bn2dec(bntmp)) )
 		X509V3err(X509V3_F_I2S_ASN1_ENUMERATED,ERR_R_MALLOC_FAILURE);
 	BN_free(bntmp);
@@ -148,8 +148,8 @@ char *i2s_ASN1_INTEGER(X509V3_EXT_METHOD *method, ASN1_INTEGER *a)
 {
 	BIGNUM *bntmp = NULL;
 	char *strtmp = NULL;
-	if(!a) return NULL;
-	if(!(bntmp = ASN1_INTEGER_to_BN(a, NULL)) ||
+	if (!a) return NULL;
+	if (!(bntmp = ASN1_INTEGER_to_BN(a, NULL)) ||
 	    !(strtmp = BN_bn2dec(bntmp)) )
 		X509V3err(X509V3_F_I2S_ASN1_INTEGER,ERR_R_MALLOC_FAILURE);
 	BN_free(bntmp);
@@ -203,8 +203,8 @@ int X509V3_add_value_int(const char *name, ASN1_INTEGER *aint,
 {
 	char *strtmp;
 	int ret;
-	if(!aint) return 1;
-	if(!(strtmp = i2s_ASN1_INTEGER(NULL, aint))) return 0;
+	if (!aint) return 1;
+	if (!(strtmp = i2s_ASN1_INTEGER(NULL, aint))) return 0;
 	ret = X509V3_add_value(name, strtmp, extlist);
 	free(strtmp);
 	return ret;
@@ -213,13 +213,13 @@ int X509V3_add_value_int(const char *name, ASN1_INTEGER *aint,
 int X509V3_get_value_bool(CONF_VALUE *value, int *asn1_bool)
 {
 	char *btmp;
-	if(!(btmp = value->value)) goto err;
-	if(!strcmp(btmp, "TRUE") || !strcmp(btmp, "true")
+	if (!(btmp = value->value)) goto err;
+	if (!strcmp(btmp, "TRUE") || !strcmp(btmp, "true")
 		 || !strcmp(btmp, "Y") || !strcmp(btmp, "y")
 		|| !strcmp(btmp, "YES") || !strcmp(btmp, "yes")) {
 		*asn1_bool = 0xff;
 		return 1;
-	} else if(!strcmp(btmp, "FALSE") || !strcmp(btmp, "false")
+	} else if (!strcmp(btmp, "FALSE") || !strcmp(btmp, "false")
 		 || !strcmp(btmp, "N") || !strcmp(btmp, "n")
 		|| !strcmp(btmp, "NO") || !strcmp(btmp, "no")) {
 		*asn1_bool = 0;
@@ -234,7 +234,7 @@ int X509V3_get_value_bool(CONF_VALUE *value, int *asn1_bool)
 int X509V3_get_value_int(CONF_VALUE *value, ASN1_INTEGER **aint)
 {
 	ASN1_INTEGER *itmp;
-	if(!(itmp = s2i_ASN1_INTEGER(NULL, value->value))) {
+	if (!(itmp = s2i_ASN1_INTEGER(NULL, value->value))) {
 		X509V3_conf_err(value);
 		return 0;
 	}
@@ -263,23 +263,23 @@ STACK_OF(CONF_VALUE) *X509V3_parse_list(const char *line)
 
 		switch(state) {
 			case HDR_NAME:
-			if(c == ':') {
+			if (c == ':') {
 				state = HDR_VALUE;
 				*p = 0;
 				ntmp = strip_spaces(q);
-				if(!ntmp) {
+				if (!ntmp) {
 					X509V3err(X509V3_F_X509V3_PARSE_LIST, X509V3_R_INVALID_NULL_NAME);
 					goto err;
 				}
 				q = p + 1;
-			} else if(c == ',') {
+			} else if (c == ',') {
 				*p = 0;
 				ntmp = strip_spaces(q);
 				q = p + 1;
 #if 0
 				printf("%s\n", ntmp);
 #endif
-				if(!ntmp) {
+				if (!ntmp) {
 					X509V3err(X509V3_F_X509V3_PARSE_LIST, X509V3_R_INVALID_NULL_NAME);
 					goto err;
 				}
@@ -288,14 +288,14 @@ STACK_OF(CONF_VALUE) *X509V3_parse_list(const char *line)
 			break ;
 
 			case HDR_VALUE:
-			if(c == ',') {
+			if (c == ',') {
 				state = HDR_NAME;
 				*p = 0;
 				vtmp = strip_spaces(q);
 #if 0
 				printf("%s\n", ntmp);
 #endif
-				if(!vtmp) {
+				if (!vtmp) {
 					X509V3err(X509V3_F_X509V3_PARSE_LIST, X509V3_R_INVALID_NULL_VALUE);
 					goto err;
 				}
@@ -307,12 +307,12 @@ STACK_OF(CONF_VALUE) *X509V3_parse_list(const char *line)
 		}
 	}
 
-	if(state == HDR_VALUE) {
+	if (state == HDR_VALUE) {
 		vtmp = strip_spaces(q);
 #if 0
 		printf("%s=%s\n", ntmp, vtmp);
 #endif
-		if(!vtmp) {
+		if (!vtmp) {
 			X509V3err(X509V3_F_X509V3_PARSE_LIST, X509V3_R_INVALID_NULL_VALUE);
 			goto err;
 		}
@@ -322,7 +322,7 @@ STACK_OF(CONF_VALUE) *X509V3_parse_list(const char *line)
 #if 0
 		printf("%s\n", ntmp);
 #endif
-		if(!ntmp) {
+		if (!ntmp) {
 			X509V3err(X509V3_F_X509V3_PARSE_LIST, X509V3_R_INVALID_NULL_NAME);
 			goto err;
 		}
@@ -345,11 +345,11 @@ static char *strip_spaces(char *name)
 	/* Skip over leading spaces */
 	p = name;
 	while(*p && isspace((unsigned char)*p)) p++;
-	if(!*p) return NULL;
+	if (!*p) return NULL;
 	q = p + strlen(p) - 1;
 	while((q != p) && isspace((unsigned char)*q)) q--;
-	if(p != q) q[1] = 0;
-	if(!*p) return NULL;
+	if (p != q) q[1] = 0;
+	if (!*p) return NULL;
 	return p;
 }
 
@@ -366,8 +366,8 @@ char *hex_to_string(const unsigned char *buffer, long len)
 	const unsigned char *p;
 	int i;
 	const static char hexdig[] = "0123456789ABCDEF";
-	if(!buffer || !len) return NULL;
-	if(!(tmp = malloc(len * 3 + 1))) {
+	if (!buffer || !len) return NULL;
+	if (!(tmp = malloc(len * 3 + 1))) {
 		X509V3err(X509V3_F_HEX_TO_STRING,ERR_R_MALLOC_FAILURE);
 		return NULL;
 	}
@@ -393,46 +393,46 @@ unsigned char *string_to_hex(const char *str, long *len)
 {
 	unsigned char *hexbuf, *q;
 	unsigned char ch, cl, *p;
-	if(!str) {
+	if (!str) {
 		X509V3err(X509V3_F_STRING_TO_HEX,X509V3_R_INVALID_NULL_ARGUMENT);
 		return NULL;
 	}
-	if(!(hexbuf = malloc(strlen(str) >> 1))) goto err;
+	if (!(hexbuf = malloc(strlen(str) >> 1))) goto err;
 	for(p = (unsigned char *)str, q = hexbuf; *p;) {
 		ch = *p++;
 #ifdef CHARSET_EBCDIC
 		ch = os_toebcdic[ch];
 #endif
-		if(ch == ':') continue;
+		if (ch == ':') continue;
 		cl = *p++;
 #ifdef CHARSET_EBCDIC
 		cl = os_toebcdic[cl];
 #endif
-		if(!cl) {
+		if (!cl) {
 			X509V3err(X509V3_F_STRING_TO_HEX,X509V3_R_ODD_NUMBER_OF_DIGITS);
 			free(hexbuf);
 			return NULL;
 		}
-		if(isupper(ch)) ch = tolower(ch);
-		if(isupper(cl)) cl = tolower(cl);
+		if (isupper(ch)) ch = tolower(ch);
+		if (isupper(cl)) cl = tolower(cl);
 
-		if((ch >= '0') && (ch <= '9')) ch -= '0';
+		if ((ch >= '0') && (ch <= '9')) ch -= '0';
 		else if ((ch >= 'a') && (ch <= 'f')) ch -= 'a' - 10;
 		else goto badhex;
 
-		if((cl >= '0') && (cl <= '9')) cl -= '0';
+		if ((cl >= '0') && (cl <= '9')) cl -= '0';
 		else if ((cl >= 'a') && (cl <= 'f')) cl -= 'a' - 10;
 		else goto badhex;
 
 		*q++ = (ch << 4) | cl;
 	}
 
-	if(len) *len = q - hexbuf;
+	if (len) *len = q - hexbuf;
 
 	return hexbuf;
 
 	err:
-	if(hexbuf) free(hexbuf);
+	if (hexbuf) free(hexbuf);
 	X509V3err(X509V3_F_STRING_TO_HEX,ERR_R_MALLOC_FAILURE);
 	return NULL;
 
@@ -452,9 +452,9 @@ int name_cmp(const char *name, const char *cmp)
 	int len, ret;
 	char c;
 	len = strlen(cmp);
-	if((ret = strncmp(name, cmp, len))) return ret;
+	if ((ret = strncmp(name, cmp, len))) return ret;
 	c = name[len];
-	if(!c || (c=='.')) return 0;
+	if (!c || (c=='.')) return 0;
 	return 1;
 }
 
@@ -528,13 +528,13 @@ static STACK_OF(OPENSSL_STRING) *get_email(X509_NAME *name, GENERAL_NAMES *gens)
 					 NID_pkcs9_emailAddress, i)) >= 0) {
 		ne = X509_NAME_get_entry(name, i);
 		email = X509_NAME_ENTRY_get_data(ne);
-		if(!append_ia5(&ret, email)) return NULL;
+		if (!append_ia5(&ret, email)) return NULL;
 	}
 	for(i = 0; i < sk_GENERAL_NAME_num(gens); i++)
 	{
 		gen = sk_GENERAL_NAME_value(gens, i);
-		if(gen->type != GEN_EMAIL) continue;
-		if(!append_ia5(&ret, gen->d.ia5)) return NULL;
+		if (gen->type != GEN_EMAIL) continue;
+		if (!append_ia5(&ret, gen->d.ia5)) return NULL;
 	}
 	return ret;
 }
@@ -548,14 +548,14 @@ static int append_ia5(STACK_OF(OPENSSL_STRING) **sk, ASN1_IA5STRING *email)
 {
 	char *emtmp;
 	/* First some sanity checks */
-	if(email->type != V_ASN1_IA5STRING) return 1;
-	if(!email->data || !email->length) return 1;
-	if(!*sk) *sk = sk_OPENSSL_STRING_new(sk_strcmp);
-	if(!*sk) return 0;
+	if (email->type != V_ASN1_IA5STRING) return 1;
+	if (!email->data || !email->length) return 1;
+	if (!*sk) *sk = sk_OPENSSL_STRING_new(sk_strcmp);
+	if (!*sk) return 0;
 	/* Don't add duplicates */
-	if(sk_OPENSSL_STRING_find(*sk, (char *)email->data) != -1) return 1;
+	if (sk_OPENSSL_STRING_find(*sk, (char *)email->data) != -1) return 1;
 	emtmp = BUF_strdup((char *)email->data);
-	if(!emtmp || !sk_OPENSSL_STRING_push(*sk, emtmp)) {
+	if (!emtmp || !sk_OPENSSL_STRING_push(*sk, emtmp)) {
 		X509_email_free(*sk);
 		*sk = NULL;
 		return 0;
@@ -851,7 +851,7 @@ int X509V3_NAME_from_section(X509_NAME *nm, STACK_OF(CONF_VALUE)*dn_sk,
 #endif
 				{
 				p++;
-				if(*p) type = p;
+				if (*p) type = p;
 				break;
 				}
 #ifndef CHARSET_EBCDIC

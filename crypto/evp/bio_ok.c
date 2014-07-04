@@ -240,7 +240,7 @@ static int ok_read(BIO *b, char *out, int outl)
 				ctx->buf_off=0;
 
 				/* copy start of the next block into proper place */
-				if(ctx->buf_len_save- ctx->buf_off_save > 0)
+				if (ctx->buf_len_save- ctx->buf_off_save > 0)
 					{
 					ctx->buf_len= ctx->buf_len_save- ctx->buf_off_save;
 					memmove(ctx->buf, &(ctx->buf[ctx->buf_off_save]),
@@ -307,7 +307,7 @@ static int ok_write(BIO *b, const char *in, int inl)
 
 	if ((ctx == NULL) || (b->next_bio == NULL) || (b->init == 0)) return (0);
 
-	if(ctx->sigio && !sig_out(b))
+	if (ctx->sigio && !sig_out(b))
 		return 0;
 
 	do{
@@ -319,7 +319,7 @@ static int ok_write(BIO *b, const char *in, int inl)
 			if (i <= 0)
 				{
 				BIO_copy_next_retry(b);
-				if(!BIO_should_retry(b))
+				if (!BIO_should_retry(b))
 					ctx->cont= 0;
 				return (i);
 				}
@@ -345,7 +345,7 @@ static int ok_write(BIO *b, const char *in, int inl)
 		inl-=n;
 		in+=n;
 
-		if(ctx->buf_len >= OK_BLOCK_SIZE+ OK_BLOCK_BLOCK)
+		if (ctx->buf_len >= OK_BLOCK_SIZE+ OK_BLOCK_BLOCK)
 			{
 			if (!block_out(b))
 				{
@@ -397,7 +397,7 @@ static long ok_ctrl(BIO *b, int cmd, long num, void *ptr)
 		break;
 	case BIO_CTRL_FLUSH:
 		/* do a final write */
-		if(ctx->blockout == 0)
+		if (ctx->blockout == 0)
 			if (!block_out(b))
 				return 0;
 
@@ -484,7 +484,7 @@ static int sig_out(BIO* b)
 	ctx=b->ptr;
 	md=&ctx->md;
 
-	if(ctx->buf_len+ 2* md->digest->md_size > OK_BLOCK_SIZE) return 1;
+	if (ctx->buf_len+ 2* md->digest->md_size > OK_BLOCK_SIZE) return 1;
 
 	if (!EVP_DigestInit_ex(md, md->digest, NULL))
 		goto berr;
@@ -519,7 +519,7 @@ static int sig_in(BIO* b)
 	ctx=b->ptr;
 	md=&ctx->md;
 
-	if((int)(ctx->buf_len-ctx->buf_off) < 2*md->digest->md_size) return 1;
+	if ((int)(ctx->buf_len-ctx->buf_off) < 2*md->digest->md_size) return 1;
 
 	if (!EVP_DigestInit_ex(md, md->digest, NULL))
 		goto berr;
@@ -533,10 +533,10 @@ static int sig_in(BIO* b)
 		goto berr;
 	ret= memcmp(&(ctx->buf[ctx->buf_off]), tmp, md->digest->md_size) == 0;
 	ctx->buf_off+= md->digest->md_size;
-	if(ret == 1)
+	if (ret == 1)
 		{
 		ctx->sigio= 0;
-		if(ctx->buf_len != ctx->buf_off)
+		if (ctx->buf_len != ctx->buf_off)
 			{
 			memmove(ctx->buf, &(ctx->buf[ctx->buf_off]), ctx->buf_len- ctx->buf_off);
 			}
@@ -603,7 +603,7 @@ static int block_in(BIO* b)
 		goto berr;
 	if (!EVP_DigestFinal_ex(md, tmp, NULL))
 		goto berr;
-	if(memcmp(&(ctx->buf[tl+ OK_BLOCK_BLOCK]), tmp, md->digest->md_size) == 0)
+	if (memcmp(&(ctx->buf[tl+ OK_BLOCK_BLOCK]), tmp, md->digest->md_size) == 0)
 		{
 		/* there might be parts from next block lurking around ! */
 		ctx->buf_off_save= tl+ OK_BLOCK_BLOCK+ md->digest->md_size;

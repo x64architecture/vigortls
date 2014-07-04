@@ -70,7 +70,7 @@ static int dh_builtin_genparams(DH *ret, int prime_len, int generator, BN_GENCB 
 
 int DH_generate_parameters_ex(DH *ret, int prime_len, int generator, BN_GENCB *cb)
 	{
-	if(ret->meth->generate_params)
+	if (ret->meth->generate_params)
 		return ret->meth->generate_params(ret, prime_len, generator, cb);
 	return dh_builtin_genparams(ret, prime_len, generator, cb);
 	}
@@ -114,8 +114,8 @@ static int dh_builtin_genparams(DH *ret, int prime_len, int generator, BN_GENCB 
 	if (t1 == NULL || t2 == NULL) goto err;
 
 	/* Make sure 'ret' has the necessary elements */
-	if(!ret->p && ((ret->p = BN_new()) == NULL)) goto err;
-	if(!ret->g && ((ret->g = BN_new()) == NULL)) goto err;
+	if (!ret->p && ((ret->p = BN_new()) == NULL)) goto err;
+	if (!ret->g && ((ret->g = BN_new()) == NULL)) goto err;
 	
 	if (generator <= 1)
 		{
@@ -155,8 +155,8 @@ static int dh_builtin_genparams(DH *ret, int prime_len, int generator, BN_GENCB 
 		g=generator;
 		}
 	
-	if(!BN_generate_prime_ex(ret->p,prime_len,1,t1,t2,cb)) goto err;
-	if(!BN_GENCB_call(cb, 3, 0)) goto err;
+	if (!BN_generate_prime_ex(ret->p,prime_len,1,t1,t2,cb)) goto err;
+	if (!BN_GENCB_call(cb, 3, 0)) goto err;
 	if (!BN_set_word(ret->g,g)) goto err;
 	ok=1;
 err:

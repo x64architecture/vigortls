@@ -211,7 +211,7 @@ static int do_rsa_print(BIO *bp, const RSA *x, int off, int priv)
 	if (x->n != NULL)
 		mod_len = BN_num_bits(x->n);
 
-	if(!BIO_indent(bp,off,128))
+	if (!BIO_indent(bp,off,128))
 		goto err;
 
 	if (priv && x->d)

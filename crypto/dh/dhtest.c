@@ -106,7 +106,7 @@ int main(int argc, char *argv[])
 	BIO_set_fp(out,stdout,BIO_NOCLOSE);
 
 	BN_GENCB_set(&_cb, &cb, out);
-	if(((a = DH_new()) == NULL) || !DH_generate_parameters_ex(a, 64,
+	if (((a = DH_new()) == NULL) || !DH_generate_parameters_ex(a, 64,
 				DH_GENERATOR_5, &_cb))
 		goto err;
 
@@ -186,8 +186,8 @@ err:
 
 	if (abuf != NULL) free(abuf);
 	if (bbuf != NULL) free(bbuf);
-	if(b != NULL) DH_free(b);
-	if(a != NULL) DH_free(a);
+	if (b != NULL) DH_free(b);
+	if (a != NULL) DH_free(a);
 	BIO_free(out);
 	EXIT(ret);
 	return (ret);

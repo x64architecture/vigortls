@@ -89,7 +89,7 @@ static int t_fromb64(unsigned char *a, const char *src)
 	while(i < size)
 		{
 		loc = strchr(b64table, src[i]);
-		if(loc == (char *) 0) break;
+		if (loc == (char *) 0) break;
 		else a[i] = loc - b64table;
 		++i;
 		}
@@ -102,19 +102,19 @@ static int t_fromb64(unsigned char *a, const char *src)
 	while(1)
 		{
 		a[j] = a[i];
-		if(--i < 0) break;
+		if (--i < 0) break;
 		a[j] |= (a[i] & 3) << 6;
 		--j;
 		a[j] = (unsigned char) ((a[i] & 0x3c) >> 2);
-		if(--i < 0) break;
+		if (--i < 0) break;
 		a[j] |= (a[i] & 0xf) << 4;
 		--j;
 		a[j] = (unsigned char) ((a[i] & 0x30) >> 4);
-		if(--i < 0) break;
+		if (--i < 0) break;
 		a[j] |= (a[i] << 2);
 
 		a[--j] = 0;
-		if(--i < 0) break;
+		if (--i < 0) break;
 		}
 	while(a[j] == 0 && j <= size) ++j;
 	i = 0;
@@ -146,30 +146,30 @@ static char *t_tob64(char *dst, const unsigned char *src, int size)
 	while(1)
 		{
 		c = (b0 & 0xfc) >> 2;
-		if(notleading || c != 0)
+		if (notleading || c != 0)
 			{
 			*dst++ = b64table[c];
 			notleading = 1;
 			}
 		c = ((b0 & 3) << 4) | ((b1 & 0xf0) >> 4);
-		if(notleading || c != 0)
+		if (notleading || c != 0)
 			{
 			*dst++ = b64table[c];
 			notleading = 1;
 			}
 		c = ((b1 & 0xf) << 2) | ((b2 & 0xc0) >> 6);
-		if(notleading || c != 0)
+		if (notleading || c != 0)
 			{
 			*dst++ = b64table[c];
 			notleading = 1;
 			}
 		c = b2 & 0x3f;
-		if(notleading || c != 0)
+		if (notleading || c != 0)
 			{
 			*dst++ = b64table[c];
 			notleading = 1;
 			}
-		if(pos >= size) break;
+		if (pos >= size) break;
 		else
 			{
 			b0 = src[pos++];
@@ -573,7 +573,7 @@ char *SRP_create_verifier(const char *user, const char *pass, char **salt,
 		}
 
 
-	if(!SRP_create_verifier_BN(user, pass, &s, &v, N_bn, g_bn)) goto err;
+	if (!SRP_create_verifier_BN(user, pass, &s, &v, N_bn, g_bn)) goto err;
 
 	BN_bn2bin(v,tmp);
 	if (((vf = malloc(BN_num_bytes(v)*2)) == NULL))
@@ -597,7 +597,7 @@ char *SRP_create_verifier(const char *user, const char *pass, char **salt,
 	result=defgNid;
 
 err:
-	if(N)
+	if (N)
 		{
 		BN_free(N_bn);
 		BN_free(g_bn);
@@ -637,7 +637,7 @@ int SRP_create_verifier_BN(const char *user, const char *pass, BIGNUM **salt, BI
 	x = SRP_Calc_x(*salt,user,pass);
 
 	*verifier = BN_new();
-	if(*verifier == NULL) goto err;
+	if (*verifier == NULL) goto err;
 
 	if (!BN_mod_exp(*verifier,g,x,N,bn_ctx))
 		{

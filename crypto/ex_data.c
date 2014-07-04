@@ -201,13 +201,13 @@ static CRYPTO_EX_DATA_IMPL impl_default =
 static void impl_check(void)
 	{
 	CRYPTO_w_lock(CRYPTO_LOCK_EX_DATA);
-	if(!impl)
+	if (!impl)
 		impl = &impl_default;
 	CRYPTO_w_unlock(CRYPTO_LOCK_EX_DATA);
 	}
 /* A macro wrapper for impl_check that first uses a non-locked test before
  * invoking the function (which checks again inside a lock). */
-#define IMPL_CHECK if(!impl) impl_check();
+#define IMPL_CHECK if (!impl) impl_check();
 
 /* API functions to get/set the "ex_data" implementation */
 const CRYPTO_EX_DATA_IMPL *CRYPTO_get_ex_data_implementation(void)
@@ -219,7 +219,7 @@ int CRYPTO_set_ex_data_implementation(const CRYPTO_EX_DATA_IMPL *i)
 	{
 	int toret = 0;
 	CRYPTO_w_lock(CRYPTO_LOCK_EX_DATA);
-	if(!impl)
+	if (!impl)
 		{
 		impl = i;
 		toret = 1;
@@ -268,7 +268,7 @@ static int ex_data_check(void)
 	{
 	int toret = 1;
 	CRYPTO_w_lock(CRYPTO_LOCK_EX_DATA);
-	if(!ex_data
+	if (!ex_data
 	   && (ex_data = lh_EX_CLASS_ITEM_new()) == NULL)
 		toret = 0;
 	CRYPTO_w_unlock(CRYPTO_LOCK_EX_DATA);
@@ -276,7 +276,7 @@ static int ex_data_check(void)
 	}
 /* This macros helps reduce the locking from repeated checks because the
  * ex_data_check() function checks ex_data again inside a lock. */
-#define EX_DATA_CHECK(iffail) if(!ex_data && !ex_data_check()) {iffail}
+#define EX_DATA_CHECK(iffail) if (!ex_data && !ex_data_check()) {iffail}
 
 /* This "inner" callback is used by the callback function that follows it */
 static void def_cleanup_util_cb(CRYPTO_EX_DATA_FUNCS *funcs)
@@ -303,15 +303,15 @@ static EX_CLASS_ITEM *def_get_class(int class_index)
 	d.class_index = class_index;
 	CRYPTO_w_lock(CRYPTO_LOCK_EX_DATA);
 	p = lh_EX_CLASS_ITEM_retrieve(ex_data, &d);
-	if(!p)
+	if (!p)
 		{
 		gen = malloc(sizeof(EX_CLASS_ITEM));
-		if(gen)
+		if (gen)
 			{
 			gen->class_index = class_index;
 			gen->meth_num = 0;
 			gen->meth = sk_CRYPTO_EX_DATA_FUNCS_new_null();
-			if(!gen->meth)
+			if (!gen->meth)
 				free(gen);
 			else
 				{
@@ -323,7 +323,7 @@ static EX_CLASS_ITEM *def_get_class(int class_index)
 			}
 		}
 	CRYPTO_w_unlock(CRYPTO_LOCK_EX_DATA);
-	if(!p)
+	if (!p)
 		CRYPTOerr(CRYPTO_F_DEF_GET_CLASS,ERR_R_MALLOC_FAILURE);
 	return p;
 	}
@@ -337,7 +337,7 @@ static int def_add_index(EX_CLASS_ITEM *item, long argl, void *argp,
 	int toret = -1;
 	CRYPTO_EX_DATA_FUNCS *a = (CRYPTO_EX_DATA_FUNCS *)malloc(
 					sizeof(CRYPTO_EX_DATA_FUNCS));
-	if(!a)
+	if (!a)
 		{
 		CRYPTOerr(CRYPTO_F_DEF_ADD_INDEX,ERR_R_MALLOC_FAILURE);
 		return -1;
@@ -390,7 +390,7 @@ static int int_get_new_index(int class_index, long argl, void *argp,
 		CRYPTO_EX_free *free_func)
 	{
 	EX_CLASS_ITEM *item = def_get_class(class_index);
-	if(!item)
+	if (!item)
 		return -1;
 	return def_add_index(item, argl, argp, new_func, dup_func, free_func);
 	}
@@ -406,37 +406,37 @@ static int int_new_ex_data(int class_index, void *obj,
 	void *ptr;
 	CRYPTO_EX_DATA_FUNCS **storage = NULL;
 	EX_CLASS_ITEM *item = def_get_class(class_index);
-	if(!item)
+	if (!item)
 		/* error is already set */
 		return 0;
 	ad->sk = NULL;
 	CRYPTO_r_lock(CRYPTO_LOCK_EX_DATA);
 	mx = sk_CRYPTO_EX_DATA_FUNCS_num(item->meth);
-	if(mx > 0)
+	if (mx > 0)
 		{
 		storage = malloc(mx * sizeof(CRYPTO_EX_DATA_FUNCS*));
-		if(!storage)
+		if (!storage)
 			goto skip;
 		for(i = 0; i < mx; i++)
 			storage[i] = sk_CRYPTO_EX_DATA_FUNCS_value(item->meth,i);
 		}
 skip:
 	CRYPTO_r_unlock(CRYPTO_LOCK_EX_DATA);
-	if((mx > 0) && !storage)
+	if ((mx > 0) && !storage)
 		{
 		CRYPTOerr(CRYPTO_F_INT_NEW_EX_DATA,ERR_R_MALLOC_FAILURE);
 		return 0;
 		}
 	for(i = 0; i < mx; i++)
 		{
-		if(storage[i] && storage[i]->new_func)
+		if (storage[i] && storage[i]->new_func)
 			{
 			ptr = CRYPTO_get_ex_data(ad, i);
 			storage[i]->new_func(obj,ptr,ad,i,
 				storage[i]->argl,storage[i]->argp);
 			}
 		}
-	if(storage)
+	if (storage)
 		free(storage);
 	return 1;
 	}
@@ -449,27 +449,27 @@ static int int_dup_ex_data(int class_index, CRYPTO_EX_DATA *to,
 	char *ptr;
 	CRYPTO_EX_DATA_FUNCS **storage = NULL;
 	EX_CLASS_ITEM *item;
-	if(!from->sk)
+	if (!from->sk)
 		/* 'to' should be "blank" which *is* just like 'from' */
 		return 1;
-	if((item = def_get_class(class_index)) == NULL)
+	if ((item = def_get_class(class_index)) == NULL)
 		return 0;
 	CRYPTO_r_lock(CRYPTO_LOCK_EX_DATA);
 	mx = sk_CRYPTO_EX_DATA_FUNCS_num(item->meth);
 	j = sk_void_num(from->sk);
-	if(j < mx)
+	if (j < mx)
 		mx = j;
-	if(mx > 0)
+	if (mx > 0)
 		{
 		storage = malloc(mx * sizeof(CRYPTO_EX_DATA_FUNCS*));
-		if(!storage)
+		if (!storage)
 			goto skip;
 		for(i = 0; i < mx; i++)
 			storage[i] = sk_CRYPTO_EX_DATA_FUNCS_value(item->meth,i);
 		}
 skip:
 	CRYPTO_r_unlock(CRYPTO_LOCK_EX_DATA);
-	if((mx > 0) && !storage)
+	if ((mx > 0) && !storage)
 		{
 		CRYPTOerr(CRYPTO_F_INT_DUP_EX_DATA,ERR_R_MALLOC_FAILURE);
 		return 0;
@@ -477,12 +477,12 @@ skip:
 	for(i = 0; i < mx; i++)
 		{
 		ptr = CRYPTO_get_ex_data(from, i);
-		if(storage[i] && storage[i]->dup_func)
+		if (storage[i] && storage[i]->dup_func)
 			storage[i]->dup_func(to,from,&ptr,i,
 				storage[i]->argl,storage[i]->argp);
 		CRYPTO_set_ex_data(to,i,ptr);
 		}
-	if(storage)
+	if (storage)
 		free(storage);
 	return 1;
 	}
@@ -495,37 +495,37 @@ static void int_free_ex_data(int class_index, void *obj,
 	EX_CLASS_ITEM *item;
 	void *ptr;
 	CRYPTO_EX_DATA_FUNCS **storage = NULL;
-	if((item = def_get_class(class_index)) == NULL)
+	if ((item = def_get_class(class_index)) == NULL)
 		return;
 	CRYPTO_r_lock(CRYPTO_LOCK_EX_DATA);
 	mx = sk_CRYPTO_EX_DATA_FUNCS_num(item->meth);
-	if(mx > 0)
+	if (mx > 0)
 		{
 		storage = malloc(mx * sizeof(CRYPTO_EX_DATA_FUNCS*));
-		if(!storage)
+		if (!storage)
 			goto skip;
 		for(i = 0; i < mx; i++)
 			storage[i] = sk_CRYPTO_EX_DATA_FUNCS_value(item->meth,i);
 		}
 skip:
 	CRYPTO_r_unlock(CRYPTO_LOCK_EX_DATA);
-	if((mx > 0) && !storage)
+	if ((mx > 0) && !storage)
 		{
 		CRYPTOerr(CRYPTO_F_INT_FREE_EX_DATA,ERR_R_MALLOC_FAILURE);
 		return;
 		}
 	for(i = 0; i < mx; i++)
 		{
-		if(storage[i] && storage[i]->free_func)
+		if (storage[i] && storage[i]->free_func)
 			{
 			ptr = CRYPTO_get_ex_data(ad,i);
 			storage[i]->free_func(obj,ptr,ad,i,
 				storage[i]->argl,storage[i]->argp);
 			}
 		}
-	if(storage)
+	if (storage)
 		free(storage);
-	if(ad->sk)
+	if (ad->sk)
 		{
 		sk_void_free(ad->sk);
 		ad->sk=NULL;

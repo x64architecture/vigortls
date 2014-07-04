@@ -88,7 +88,7 @@ char *argv[];
 			argv++; argc--;
 			}
 		else if ((strcmp(argv[1],"-c") == 0) && (argc >= 2)) {
-			if(!(cipher = EVP_get_cipherbyname(argv[2]))) {
+			if (!(cipher = EVP_get_cipherbyname(argv[2]))) {
 				fprintf(stderr, "Unknown cipher %s\n", argv[2]);
 				goto err;
 			}
@@ -101,13 +101,13 @@ char *argv[];
 			if (!(in=BIO_new_file(keyfile,"r"))) goto err;
 			if (!(x509=PEM_read_bio_X509(in,NULL,NULL,NULL)))
 				goto err;
-			if(!recips) recips = sk_X509_new_null();
+			if (!recips) recips = sk_X509_new_null();
 			sk_X509_push(recips, x509);
 			BIO_free(in);
 		} else break;
 	}
 
-	if(!recips) {
+	if (!recips) {
 		fprintf(stderr, "No recipients\n");
 		goto err;
 	}
@@ -127,7 +127,7 @@ char *argv[];
 #else
 	PKCS7_set_type(p7,NID_pkcs7_enveloped);
 #endif
-	if(!cipher)	{
+	if (!cipher)	{
 #ifndef OPENSSL_NO_DES
 		cipher = EVP_des_ede3_cbc();
 #else

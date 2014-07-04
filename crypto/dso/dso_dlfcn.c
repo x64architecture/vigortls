@@ -167,7 +167,7 @@ static int dlfcn_load(DSO *dso)
 	char *filename = DSO_convert_filename(dso, NULL);
 	int flags = DLOPEN_FLAG;
 
-	if(filename == NULL)
+	if (filename == NULL)
 		{
 		DSOerr(DSO_F_DLFCN_LOAD,DSO_R_NO_FILENAME);
 		goto err;
@@ -178,13 +178,13 @@ static int dlfcn_load(DSO *dso)
 		flags |= RTLD_GLOBAL;
 #endif
 	ptr = dlopen(filename, flags);
-	if(ptr == NULL)
+	if (ptr == NULL)
 		{
 		DSOerr(DSO_F_DLFCN_LOAD,DSO_R_LOAD_FAILED);
 		ERR_add_error_data(4, "filename(", filename, "): ", dlerror());
 		goto err;
 		}
-	if(!sk_void_push(dso->meth_data, (char *)ptr))
+	if (!sk_void_push(dso->meth_data, (char *)ptr))
 		{
 		DSOerr(DSO_F_DLFCN_LOAD,DSO_R_STACK_ERROR);
 		goto err;
@@ -194,9 +194,9 @@ static int dlfcn_load(DSO *dso)
 	return (1);
 err:
 	/* Cleanup! */
-	if(filename != NULL)
+	if (filename != NULL)
 		free(filename);
-	if(ptr != NULL)
+	if (ptr != NULL)
 		dlclose(ptr);
 	return (0);
 }
@@ -204,15 +204,15 @@ err:
 static int dlfcn_unload(DSO *dso)
 	{
 	void *ptr;
-	if(dso == NULL)
+	if (dso == NULL)
 		{
 		DSOerr(DSO_F_DLFCN_UNLOAD,ERR_R_PASSED_NULL_PARAMETER);
 		return (0);
 		}
-	if(sk_void_num(dso->meth_data) < 1)
+	if (sk_void_num(dso->meth_data) < 1)
 		return (1);
 	ptr = sk_void_pop(dso->meth_data);
-	if(ptr == NULL)
+	if (ptr == NULL)
 		{
 		DSOerr(DSO_F_DLFCN_UNLOAD,DSO_R_NULL_HANDLE);
 		/* Should push the value back onto the stack in
@@ -229,24 +229,24 @@ static void *dlfcn_bind_var(DSO *dso, const char *symname)
 	{
 	void *ptr, *sym;
 
-	if((dso == NULL) || (symname == NULL))
+	if ((dso == NULL) || (symname == NULL))
 		{
 		DSOerr(DSO_F_DLFCN_BIND_VAR,ERR_R_PASSED_NULL_PARAMETER);
 		return (NULL);
 		}
-	if(sk_void_num(dso->meth_data) < 1)
+	if (sk_void_num(dso->meth_data) < 1)
 		{
 		DSOerr(DSO_F_DLFCN_BIND_VAR,DSO_R_STACK_ERROR);
 		return (NULL);
 		}
 	ptr = sk_void_value(dso->meth_data, sk_void_num(dso->meth_data) - 1);
-	if(ptr == NULL)
+	if (ptr == NULL)
 		{
 		DSOerr(DSO_F_DLFCN_BIND_VAR,DSO_R_NULL_HANDLE);
 		return (NULL);
 		}
 	sym = dlsym(ptr, symname);
-	if(sym == NULL)
+	if (sym == NULL)
 		{
 		DSOerr(DSO_F_DLFCN_BIND_VAR,DSO_R_SYM_FAILURE);
 		ERR_add_error_data(4, "symname(", symname, "): ", dlerror());
@@ -263,24 +263,24 @@ static DSO_FUNC_TYPE dlfcn_bind_func(DSO *dso, const char *symname)
 		void *dlret;
 	} u;
 
-	if((dso == NULL) || (symname == NULL))
+	if ((dso == NULL) || (symname == NULL))
 		{
 		DSOerr(DSO_F_DLFCN_BIND_FUNC,ERR_R_PASSED_NULL_PARAMETER);
 		return (NULL);
 		}
-	if(sk_void_num(dso->meth_data) < 1)
+	if (sk_void_num(dso->meth_data) < 1)
 		{
 		DSOerr(DSO_F_DLFCN_BIND_FUNC,DSO_R_STACK_ERROR);
 		return (NULL);
 		}
 	ptr = sk_void_value(dso->meth_data, sk_void_num(dso->meth_data) - 1);
-	if(ptr == NULL)
+	if (ptr == NULL)
 		{
 		DSOerr(DSO_F_DLFCN_BIND_FUNC,DSO_R_NULL_HANDLE);
 		return (NULL);
 		}
 	u.dlret = dlsym(ptr, symname);
-	if(u.dlret == NULL)
+	if (u.dlret == NULL)
 		{
 		DSOerr(DSO_F_DLFCN_BIND_FUNC,DSO_R_SYM_FAILURE);
 		ERR_add_error_data(4, "symname(", symname, "): ", dlerror());
@@ -294,7 +294,7 @@ static char *dlfcn_merger(DSO *dso, const char *filespec1,
 	{
 	char *merged;
 
-	if(!filespec1 && !filespec2)
+	if (!filespec1 && !filespec2)
 		{
 		DSOerr(DSO_F_DLFCN_MERGER,
 				ERR_R_PASSED_NULL_PARAMETER);
@@ -305,7 +305,7 @@ static char *dlfcn_merger(DSO *dso, const char *filespec1,
 	if (!filespec2 || (filespec1 != NULL && filespec1[0] == '/'))
 		{
 		merged = malloc(strlen(filespec1) + 1);
-		if(!merged)
+		if (!merged)
 			{
 			DSOerr(DSO_F_DLFCN_MERGER, ERR_R_MALLOC_FAILURE);
 			return (NULL);
@@ -316,7 +316,7 @@ static char *dlfcn_merger(DSO *dso, const char *filespec1,
 	else if (!filespec1)
 		{
 		merged = malloc(strlen(filespec2) + 1);
-		if(!merged)
+		if (!merged)
 			{
 			DSOerr(DSO_F_DLFCN_MERGER,
 				ERR_R_MALLOC_FAILURE);
@@ -336,13 +336,13 @@ static char *dlfcn_merger(DSO *dso, const char *filespec1,
 		spec2len = strlen(filespec2);
 		len = spec2len + (filespec1 ? strlen(filespec1) : 0);
 
-		if(filespec2 && filespec2[spec2len - 1] == '/')
+		if (filespec2 && filespec2[spec2len - 1] == '/')
 			{
 			spec2len--;
 			len--;
 			}
 		merged = malloc(len + 2);
-		if(!merged)
+		if (!merged)
 			{
 			DSOerr(DSO_F_DLFCN_MERGER,
 				ERR_R_MALLOC_FAILURE);
@@ -372,7 +372,7 @@ static char *dlfcn_name_converter(DSO *dso, const char *filename)
 	len = strlen(filename);
 	rsize = len + 1;
 	transform = (strstr(filename, "/") == NULL);
-	if(transform)
+	if (transform)
 		{
 		/* We will convert this to "%s.so" or "lib%s.so" etc */
 		rsize += DSO_extlen;	/* The length of ".so" */
@@ -380,13 +380,13 @@ static char *dlfcn_name_converter(DSO *dso, const char *filename)
 			rsize += 3; /* The length of "lib" */
 		}
 	translated = malloc(rsize);
-	if(translated == NULL)
+	if (translated == NULL)
 		{
 		DSOerr(DSO_F_DLFCN_NAME_CONVERTER,
 				DSO_R_NAME_TRANSLATION_FAILED);
 		return (NULL);
 		}
-	if(transform)
+	if (transform)
 		{
 		if ((DSO_flags(dso) & DSO_FLAG_NAME_TRANSLATION_EXT_ONLY) == 0)
 			sprintf(translated, "lib%s" DSO_ext, filename);

@@ -78,19 +78,19 @@ int MAIN(int argc, char **argv)
     ++argv;
     while (argc >= 1 && **argv == '-')
 	{
-	if(!strcmp(*argv,"-hex"))
+	if (!strcmp(*argv,"-hex"))
 	    hex=1;
-	else if(!strcmp(*argv,"-generate"))
+	else if (!strcmp(*argv,"-generate"))
 	    generate=1;
-	else if(!strcmp(*argv,"-bits"))
-	    if(--argc < 1)
+	else if (!strcmp(*argv,"-bits"))
+	    if (--argc < 1)
 		goto bad;
 	    else
 		bits=atoi(*++argv);
-	else if(!strcmp(*argv,"-safe"))
+	else if (!strcmp(*argv,"-safe"))
 	    safe=1;
-	else if(!strcmp(*argv,"-checks"))
-	    if(--argc < 1)
+	else if (!strcmp(*argv,"-checks"))
+	    if (--argc < 1)
 		goto bad;
 	    else
 		checks=atoi(*++argv);
@@ -114,11 +114,11 @@ int MAIN(int argc, char **argv)
 	BIO_set_fp(bio_out,stdout,BIO_NOCLOSE);
 	}
 
-    if(generate)
+    if (generate)
 	{
 	char *s;
 
-	if(!bits)
+	if (!bits)
 	    {
 	    BIO_printf(bio_err,"Specifiy the number of bits.\n");
 	    return 1;
@@ -131,7 +131,7 @@ int MAIN(int argc, char **argv)
 	}
     else
 	{
-	if(hex)
+	if (hex)
 	    BN_hex2bn(&bn,argv[0]);
 	else
 	    BN_dec2bn(&bn,argv[0]);

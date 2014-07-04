@@ -84,15 +84,15 @@ int PKCS12_parse(PKCS12 *p12, const char *pass, EVP_PKEY **pkey, X509 **cert,
 	X509 *x = NULL;
 	/* Check for NULL PKCS12 structure */
 
-	if(!p12)
+	if (!p12)
 		{
 		PKCS12err(PKCS12_F_PKCS12_PARSE,PKCS12_R_INVALID_NULL_PKCS12_POINTER);
 		return 0;
 		}
 
-	if(pkey)
+	if (pkey)
 		*pkey = NULL;
-	if(cert)
+	if (cert)
 		*cert = NULL;
 
 	/* Check the mac */
@@ -103,9 +103,9 @@ int PKCS12_parse(PKCS12 *p12, const char *pass, EVP_PKEY **pkey, X509 **cert,
 	 * password are two different things...
 	 */
 
-	if(!pass || !*pass) {
-		if(PKCS12_verify_mac(p12, NULL, 0)) pass = NULL;
-		else if(PKCS12_verify_mac(p12, "", 0)) pass = "";
+	if (!pass || !*pass) {
+		if (PKCS12_verify_mac(p12, NULL, 0)) pass = NULL;
+		else if (PKCS12_verify_mac(p12, "", 0)) pass = "";
 		else {
 			PKCS12err(PKCS12_F_PKCS12_PARSE,PKCS12_R_MAC_VERIFY_FAILURE);
 			goto err;
@@ -260,16 +260,16 @@ static int parse_bag(PKCS12_SAFEBAG *bag, const char *pass, int passlen,
 			return 1;
 		if (!(x509 = PKCS12_certbag2x509(bag)))
 			return 0;
-		if(lkid && !X509_keyid_set1(x509, lkid->data, lkid->length))
+		if (lkid && !X509_keyid_set1(x509, lkid->data, lkid->length))
 			{
 			X509_free(x509);
 			return 0;
 			}
-		if(fname) {
+		if (fname) {
 			int len, r;
 			unsigned char *data;
 			len = ASN1_STRING_to_UTF8(&data, fname);
-			if(len >= 0) {
+			if (len >= 0) {
 				r = X509_alias_set1(x509, data, len);
 				free(data);
 				if (!r)
@@ -280,7 +280,7 @@ static int parse_bag(PKCS12_SAFEBAG *bag, const char *pass, int passlen,
 			}
 		}
 
-		if(!sk_X509_push(ocerts, x509))
+		if (!sk_X509_push(ocerts, x509))
 			{
 			X509_free(x509);
 			return 0;

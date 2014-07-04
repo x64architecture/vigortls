@@ -394,7 +394,7 @@ err:
 int SSL_CTX_set_session_id_context(SSL_CTX *ctx,const unsigned char *sid_ctx,
 				   unsigned int sid_ctx_len)
     {
-    if(sid_ctx_len > sizeof ctx->sid_ctx)
+    if (sid_ctx_len > sizeof ctx->sid_ctx)
 	{
 	SSLerr(SSL_F_SSL_CTX_SET_SESSION_ID_CONTEXT,SSL_R_SSL_SESSION_ID_CONTEXT_TOO_LONG);
 	return 0;
@@ -408,7 +408,7 @@ int SSL_CTX_set_session_id_context(SSL_CTX *ctx,const unsigned char *sid_ctx,
 int SSL_set_session_id_context(SSL *ssl,const unsigned char *sid_ctx,
 			       unsigned int sid_ctx_len)
     {
-    if(sid_ctx_len > SSL_MAX_SID_CTX_LENGTH)
+    if (sid_ctx_len > SSL_MAX_SID_CTX_LENGTH)
 	{
 	SSLerr(SSL_F_SSL_SET_SESSION_ID_CONTEXT,SSL_R_SSL_SESSION_ID_CONTEXT_TOO_LONG);
 	return 0;
@@ -445,7 +445,7 @@ int SSL_has_matching_session_id(const SSL *ssl, const unsigned char *id,
 	 * use by this SSL. */
 	SSL_SESSION r, *p;
 
-	if(id_len > sizeof r.session_id)
+	if (id_len > sizeof r.session_id)
 		return 0;
 
 	r.ssl_version = ssl->version;
@@ -455,7 +455,7 @@ int SSL_has_matching_session_id(const SSL *ssl, const unsigned char *id,
 	 * callback is calling us to check the uniqueness of a shorter ID, it
 	 * must be compared as a padded-out ID because that is what it will be
 	 * converted to when the callback has finished choosing it. */
-	if((r.ssl_version == SSL2_VERSION) &&
+	if ((r.ssl_version == SSL2_VERSION) &&
 			(id_len < SSL2_SSL_SESSION_ID_LENGTH))
 		{
 		memset(r.session_id + id_len, 0,
@@ -503,7 +503,7 @@ void SSL_free(SSL *s)
 	{
 	int i;
 
-	if(s == NULL)
+	if (s == NULL)
 	    return;
 
 	i=CRYPTO_add(&s->references,-1,CRYPTO_LOCK_SSL);

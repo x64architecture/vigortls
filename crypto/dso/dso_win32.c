@@ -169,26 +169,26 @@ static int win32_load(DSO *dso)
 	/* See applicable comments from dso_dl.c */
 	char *filename = DSO_convert_filename(dso, NULL);
 
-	if(filename == NULL)
+	if (filename == NULL)
 		{
 		DSOerr(DSO_F_WIN32_LOAD,DSO_R_NO_FILENAME);
 		goto err;
 		}
 	h = LoadLibraryA(filename);
-	if(h == NULL)
+	if (h == NULL)
 		{
 		DSOerr(DSO_F_WIN32_LOAD,DSO_R_LOAD_FAILED);
 		ERR_add_error_data(3, "filename(", filename, ")");
 		goto err;
 		}
 	p = (HINSTANCE *)malloc(sizeof(HINSTANCE));
-	if(p == NULL)
+	if (p == NULL)
 		{
 		DSOerr(DSO_F_WIN32_LOAD,ERR_R_MALLOC_FAILURE);
 		goto err;
 		}
 	*p = h;
-	if(!sk_void_push(dso->meth_data, p))
+	if (!sk_void_push(dso->meth_data, p))
 		{
 		DSOerr(DSO_F_WIN32_LOAD,DSO_R_STACK_ERROR);
 		goto err;
@@ -198,11 +198,11 @@ static int win32_load(DSO *dso)
 	return (1);
 err:
 	/* Cleanup !*/
-	if(filename != NULL)
+	if (filename != NULL)
 		free(filename);
-	if(p != NULL)
+	if (p != NULL)
 		free(p);
-	if(h != NULL)
+	if (h != NULL)
 		FreeLibrary(h);
 	return (0);
 	}
@@ -210,20 +210,20 @@ err:
 static int win32_unload(DSO *dso)
 	{
 	HINSTANCE *p;
-	if(dso == NULL)
+	if (dso == NULL)
 		{
 		DSOerr(DSO_F_WIN32_UNLOAD,ERR_R_PASSED_NULL_PARAMETER);
 		return (0);
 		}
-	if(sk_void_num(dso->meth_data) < 1)
+	if (sk_void_num(dso->meth_data) < 1)
 		return (1);
 	p = sk_void_pop(dso->meth_data);
-	if(p == NULL)
+	if (p == NULL)
 		{
 		DSOerr(DSO_F_WIN32_UNLOAD,DSO_R_NULL_HANDLE);
 		return (0);
 		}
-	if(!FreeLibrary(*p))
+	if (!FreeLibrary(*p))
 		{
 		DSOerr(DSO_F_WIN32_UNLOAD,DSO_R_UNLOAD_FAILED);
 		/* We should push the value back onto the stack in
@@ -243,24 +243,24 @@ static void *win32_bind_var(DSO *dso, const char *symname)
 	HINSTANCE *ptr;
 	void *sym;
 
-	if((dso == NULL) || (symname == NULL))
+	if ((dso == NULL) || (symname == NULL))
 		{
 		DSOerr(DSO_F_WIN32_BIND_VAR,ERR_R_PASSED_NULL_PARAMETER);
 		return (NULL);
 		}
-	if(sk_void_num(dso->meth_data) < 1)
+	if (sk_void_num(dso->meth_data) < 1)
 		{
 		DSOerr(DSO_F_WIN32_BIND_VAR,DSO_R_STACK_ERROR);
 		return (NULL);
 		}
 	ptr = sk_void_value(dso->meth_data, sk_void_num(dso->meth_data) - 1);
-	if(ptr == NULL)
+	if (ptr == NULL)
 		{
 		DSOerr(DSO_F_WIN32_BIND_VAR,DSO_R_NULL_HANDLE);
 		return (NULL);
 		}
 	sym = GetProcAddress(*ptr, symname);
-	if(sym == NULL)
+	if (sym == NULL)
 		{
 		DSOerr(DSO_F_WIN32_BIND_VAR,DSO_R_SYM_FAILURE);
 		ERR_add_error_data(3, "symname(", symname, ")");
@@ -274,24 +274,24 @@ static DSO_FUNC_TYPE win32_bind_func(DSO *dso, const char *symname)
 	HINSTANCE *ptr;
 	void *sym;
 
-	if((dso == NULL) || (symname == NULL))
+	if ((dso == NULL) || (symname == NULL))
 		{
 		DSOerr(DSO_F_WIN32_BIND_FUNC,ERR_R_PASSED_NULL_PARAMETER);
 		return (NULL);
 		}
-	if(sk_void_num(dso->meth_data) < 1)
+	if (sk_void_num(dso->meth_data) < 1)
 		{
 		DSOerr(DSO_F_WIN32_BIND_FUNC,DSO_R_STACK_ERROR);
 		return (NULL);
 		}
 	ptr = sk_void_value(dso->meth_data, sk_void_num(dso->meth_data) - 1);
-	if(ptr == NULL)
+	if (ptr == NULL)
 		{
 		DSOerr(DSO_F_WIN32_BIND_FUNC,DSO_R_NULL_HANDLE);
 		return (NULL);
 		}
 	sym = GetProcAddress(*ptr, symname);
-	if(sym == NULL)
+	if (sym == NULL)
 		{
 		DSOerr(DSO_F_WIN32_BIND_FUNC,DSO_R_SYM_FAILURE);
 		ERR_add_error_data(3, "symname(", symname, ")");
@@ -325,7 +325,7 @@ static struct file_st *win32_splitter(DSO *dso, const char *filename,
 		}
 
 	result = malloc(sizeof(struct file_st));
-	if(result == NULL)
+	if (result == NULL)
 		{
 		DSOerr(DSO_F_WIN32_SPLITTER,
 			ERR_R_MALLOC_FAILURE);
@@ -335,7 +335,7 @@ static struct file_st *win32_splitter(DSO *dso, const char *filename,
 	memset(result, 0, sizeof(struct file_st));
 	position = IN_DEVICE;
 
-	if((filename[0] == '\\' && filename[1] == '\\')
+	if ((filename[0] == '\\' && filename[1] == '\\')
 		|| (filename[0] == '/' && filename[1] == '/'))
 		{
 		position = IN_NODE;
@@ -350,7 +350,7 @@ static struct file_st *win32_splitter(DSO *dso, const char *filename,
 		switch(last)
 			{
 		case ':':
-			if(position != IN_DEVICE)
+			if (position != IN_DEVICE)
 				{
 				DSOerr(DSO_F_WIN32_SPLITTER,
 					DSO_R_INCORRECT_FILE_SYNTAX);
@@ -366,14 +366,14 @@ static struct file_st *win32_splitter(DSO *dso, const char *filename,
 			break;
 		case '\\':
 		case '/':
-			if(position == IN_NODE)
+			if (position == IN_NODE)
 				{
 				result->nodelen = (int)(filename - start);
 				position = IN_FILE;
 				start = ++filename;
 				result->dir = start;
 				}
-			else if(position == IN_DEVICE)
+			else if (position == IN_DEVICE)
 				{
 				position = IN_FILE;
 				filename++;
@@ -389,13 +389,13 @@ static struct file_st *win32_splitter(DSO *dso, const char *filename,
 				}
 			break;
 		case '\0':
-			if(position == IN_NODE)
+			if (position == IN_NODE)
 				{
 				result->nodelen = (int)(filename - start);
 				}
 			else
 				{
-				if(filename - start > 0)
+				if (filename - start > 0)
 					{
 					if (assume_last_is_dir)
 						{
@@ -423,10 +423,10 @@ static struct file_st *win32_splitter(DSO *dso, const char *filename,
 		}
 	while(last);
 
-	if(!result->nodelen) result->node = NULL;
-	if(!result->devicelen) result->device = NULL;
-	if(!result->dirlen) result->dir = NULL;
-	if(!result->filelen) result->file = NULL;
+	if (!result->nodelen) result->node = NULL;
+	if (!result->devicelen) result->device = NULL;
+	if (!result->dirlen) result->dir = NULL;
+	if (!result->filelen) result->file = NULL;
 
 	return (result);
 	}
@@ -437,35 +437,35 @@ static char *win32_joiner(DSO *dso, const struct file_st *file_split)
 	char *result = NULL;
 	const char *start;
 
-	if(!file_split)
+	if (!file_split)
 		{
 		DSOerr(DSO_F_WIN32_JOINER,
 				ERR_R_PASSED_NULL_PARAMETER);
 		return (NULL);
 		}
-	if(file_split->node)
+	if (file_split->node)
 		{
 		len += 2 + file_split->nodelen;	/* 2 for starting \\ */
-		if(file_split->predir || file_split->dir || file_split->file)
+		if (file_split->predir || file_split->dir || file_split->file)
 			len++;	/* 1 for ending \ */
 		}
-	else if(file_split->device)
+	else if (file_split->device)
 		{
 		len += file_split->devicelen + 1; /* 1 for ending : */
 		}
 	len += file_split->predirlen;
-	if(file_split->predir && (file_split->dir || file_split->file))
+	if (file_split->predir && (file_split->dir || file_split->file))
 		{
 		len++;	/* 1 for ending \ */
 		}
 	len += file_split->dirlen;
-	if(file_split->dir && file_split->file)
+	if (file_split->dir && file_split->file)
 		{
 		len++;	/* 1 for ending \ */
 		}
 	len += file_split->filelen;
 
-	if(!len)
+	if (!len)
 		{
 		DSOerr(DSO_F_WIN32_JOINER, DSO_R_EMPTY_FILE_STRUCTURE);
 		return (NULL);
@@ -479,17 +479,17 @@ static char *win32_joiner(DSO *dso, const struct file_st *file_split)
 		return (NULL);
 		}
 
-	if(file_split->node)
+	if (file_split->node)
 		{
 		strcpy(&result[offset], "\\\\"); offset += 2;
 		strncpy(&result[offset], file_split->node,
 			file_split->nodelen); offset += file_split->nodelen;
-		if(file_split->predir || file_split->dir || file_split->file)
+		if (file_split->predir || file_split->dir || file_split->file)
 			{
 			result[offset] = '\\'; offset++;
 			}
 		}
-	else if(file_split->device)
+	else if (file_split->device)
 		{
 		strncpy(&result[offset], file_split->device,
 			file_split->devicelen); offset += file_split->devicelen;
@@ -500,7 +500,7 @@ static char *win32_joiner(DSO *dso, const struct file_st *file_split)
 		{
 		const char *end = openssl_strnchr(start, '/',
 			file_split->predirlen - (start - file_split->predir));
-		if(!end)
+		if (!end)
 			end = start
 				+ file_split->predirlen
 				- (start - file_split->predir);
@@ -511,7 +511,7 @@ static char *win32_joiner(DSO *dso, const struct file_st *file_split)
 		}
 #if 0 /* Not needed, since the directory converter above already appeneded
 	 a backslash */
-	if(file_split->predir && (file_split->dir || file_split->file))
+	if (file_split->predir && (file_split->dir || file_split->file))
 		{
 		result[offset] = '\\'; offset++;
 		}
@@ -521,7 +521,7 @@ static char *win32_joiner(DSO *dso, const struct file_st *file_split)
 		{
 		const char *end = openssl_strnchr(start, '/',
 			file_split->dirlen - (start - file_split->dir));
-		if(!end)
+		if (!end)
 			end = start
 				+ file_split->dirlen
 				- (start - file_split->dir);
@@ -532,7 +532,7 @@ static char *win32_joiner(DSO *dso, const struct file_st *file_split)
 		}
 #if 0 /* Not needed, since the directory converter above already appeneded
 	 a backslash */
-	if(file_split->dir && file_split->file)
+	if (file_split->dir && file_split->file)
 		{
 		result[offset] = '\\'; offset++;
 		}
@@ -549,7 +549,7 @@ static char *win32_merger(DSO *dso, const char *filespec1, const char *filespec2
 	struct file_st *filespec1_split = NULL;
 	struct file_st *filespec2_split = NULL;
 
-	if(!filespec1 && !filespec2)
+	if (!filespec1 && !filespec2)
 		{
 		DSOerr(DSO_F_WIN32_MERGER,
 				ERR_R_PASSED_NULL_PARAMETER);
@@ -558,7 +558,7 @@ static char *win32_merger(DSO *dso, const char *filespec1, const char *filespec2
 	if (!filespec2)
 		{
 		merged = malloc(strlen(filespec1) + 1);
-		if(!merged)
+		if (!merged)
 			{
 			DSOerr(DSO_F_WIN32_MERGER,
 				ERR_R_MALLOC_FAILURE);
@@ -569,7 +569,7 @@ static char *win32_merger(DSO *dso, const char *filespec1, const char *filespec2
 	else if (!filespec1)
 		{
 		merged = malloc(strlen(filespec2) + 1);
-		if(!merged)
+		if (!merged)
 			{
 			DSOerr(DSO_F_WIN32_MERGER,
 				ERR_R_MALLOC_FAILURE);
@@ -636,19 +636,19 @@ static char *win32_name_converter(DSO *dso, const char *filename)
 	transform = ((strstr(filename, "/") == NULL) &&
 			(strstr(filename, "\\") == NULL) &&
 			(strstr(filename, ":") == NULL));
-	if(transform)
+	if (transform)
 		/* We will convert this to "%s.dll" */
 		translated = malloc(len + 5);
 	else
 		/* We will simply duplicate filename */
 		translated = malloc(len + 1);
-	if(translated == NULL)
+	if (translated == NULL)
 		{
 		DSOerr(DSO_F_WIN32_NAME_CONVERTER,
 				DSO_R_NAME_TRANSLATION_FAILED); 
 		return (NULL);   
 		}
-	if(transform)
+	if (transform)
 		sprintf(translated, "%s.dll", filename);
 	else
 		sprintf(translated, "%s", filename);
@@ -719,7 +719,7 @@ static int win32_pathbyaddr(void *addr,char *path,int sz)
 	module_next  = (MODULE32)GetProcAddress(dll,"Module32Next");
 
 	hModuleSnap = (*create_snap)(TH32CS_SNAPMODULE,0); 
-	if( hModuleSnap == INVALID_HANDLE_VALUE ) 
+	if ( hModuleSnap == INVALID_HANDLE_VALUE ) 
 		{ 
 		FreeLibrary(dll);
 		DSOerr(DSO_F_WIN32_PATHBYADDR,DSO_R_UNSUPPORTED);
@@ -728,7 +728,7 @@ static int win32_pathbyaddr(void *addr,char *path,int sz)
  
 	me32.dwSize = sizeof(me32); 
  
-	if(!(*module_first)(hModuleSnap,&me32)) 
+	if (!(*module_first)(hModuleSnap,&me32)) 
 		{ 
 		(*close_snap)(hModuleSnap);
 		FreeLibrary(dll);
@@ -787,7 +787,7 @@ static void *win32_globallookup(const char *name)
 	module_next  = (MODULE32)GetProcAddress(dll,"Module32Next");
 
 	hModuleSnap = (*create_snap)(TH32CS_SNAPMODULE,0);
-	if( hModuleSnap == INVALID_HANDLE_VALUE )
+	if ( hModuleSnap == INVALID_HANDLE_VALUE )
 		{
 		FreeLibrary(dll);
 		DSOerr(DSO_F_WIN32_GLOBALLOOKUP,DSO_R_UNSUPPORTED);

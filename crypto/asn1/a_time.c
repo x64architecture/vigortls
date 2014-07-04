@@ -79,7 +79,7 @@ int i2d_ASN1_TIME(ASN1_TIME *a, unsigned char **pp)
 	char tmp[24];
 	ASN1_STRING tmpstr;
 
-	if(a->type == V_ASN1_UTCTIME || a->type == V_ASN1_GENERALIZEDTIME) {
+	if (a->type == V_ASN1_UTCTIME || a->type == V_ASN1_GENERALIZEDTIME) {
 	    int len;
 
 	    tmpstr = *(ASN1_STRING *)a;
@@ -89,7 +89,7 @@ int i2d_ASN1_TIME(ASN1_TIME *a, unsigned char **pp)
 	    a = (ASN1_GENERALIZEDTIME *) &tmpstr;
 	}
 #endif
-	if(a->type == V_ASN1_UTCTIME || a->type == V_ASN1_GENERALIZEDTIME)
+	if (a->type == V_ASN1_UTCTIME || a->type == V_ASN1_GENERALIZEDTIME)
 				return (i2d_ASN1_bytes((ASN1_STRING *)a,pp,
 				     a->type ,V_ASN1_UNIVERSAL));
 	ASN1err(ASN1_F_I2D_ASN1_TIME,ASN1_R_EXPECTING_A_TIME);
@@ -120,7 +120,7 @@ ASN1_TIME *ASN1_TIME_adj(ASN1_TIME *s, time_t t,
 		if (!OPENSSL_gmtime_adj(ts, offset_day, offset_sec))
 			return NULL;
 		}
-	if((ts->tm_year >= 50) && (ts->tm_year < 150))
+	if ((ts->tm_year >= 50) && (ts->tm_year < 150))
 			return ASN1_UTCTIME_adj(s, t, offset_day, offset_sec);
 	return ASN1_GENERALIZEDTIME_adj(s, t, offset_day, offset_sec);
 	}
@@ -154,7 +154,7 @@ ASN1_GENERALIZEDTIME *ASN1_TIME_to_generalizedtime(ASN1_TIME *t, ASN1_GENERALIZE
 	/* If already GeneralizedTime just copy across */
 	if (t->type == V_ASN1_GENERALIZEDTIME)
 		{
-		if(!ASN1_STRING_set(ret, t->data, t->length))
+		if (!ASN1_STRING_set(ret, t->data, t->length))
 			return NULL;
 		return ret;
 		}

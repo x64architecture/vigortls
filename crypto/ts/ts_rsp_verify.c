@@ -157,7 +157,7 @@ int TS_RESP_verify_signature(PKCS7 *token, STACK_OF(X509) *certs,
 		}
 
 	/* Check for the correct content type */
-	if(!PKCS7_type_is_signed(token))
+	if (!PKCS7_type_is_signed(token))
 		{
 		TSerr(TS_F_TS_RESP_VERIFY_SIGNATURE, TS_R_WRONG_CONTENT_TYPE);
 		goto err;

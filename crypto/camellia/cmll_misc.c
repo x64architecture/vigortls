@@ -59,9 +59,9 @@ const char CAMELLIA_version[]="CAMELLIA" OPENSSL_VERSION_PTEXT;
 int private_Camellia_set_key(const unsigned char *userKey, const int bits,
 	CAMELLIA_KEY *key)
 	{
-	if(!userKey || !key)
+	if (!userKey || !key)
 		return -1;
-	if(bits != 128 && bits != 192 && bits != 256)
+	if (bits != 128 && bits != 192 && bits != 256)
 		return -2;
 	key->grand_rounds = Camellia_Ekeygen(bits , userKey, key->u.rd_key);
 	return 0;

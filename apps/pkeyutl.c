@@ -107,7 +107,7 @@ int MAIN(int argc, char **argv)
 	argc--;
 	argv++;
 
-	if(!bio_err) bio_err = BIO_new_fp(stderr, BIO_NOCLOSE);
+	if (!bio_err) bio_err = BIO_new_fp(stderr, BIO_NOCLOSE);
 
 	if (!load_config(bio_err, NULL))
 		goto end;
@@ -131,7 +131,7 @@ int MAIN(int argc, char **argv)
 			if (--argc < 1) badarg = 1;
 			else sigfile= *(++argv);
 			}
-		else if(!strcmp(*argv, "-inkey"))
+		else if (!strcmp(*argv, "-inkey"))
 			{
 			if (--argc < 1)
 				badarg = 1;
@@ -172,7 +172,7 @@ int MAIN(int argc, char **argv)
 			else keyform=str2fmt(*(++argv));
 			}
 #ifndef OPENSSL_NO_ENGINE
-		else if(!strcmp(*argv, "-engine"))
+		else if (!strcmp(*argv, "-engine"))
 			{
 			if (--argc < 1)
 				badarg = 1;
@@ -180,27 +180,27 @@ int MAIN(int argc, char **argv)
 				e = setup_engine(bio_err, *(++argv), 0);
 			}
 #endif
-		else if(!strcmp(*argv, "-pubin"))
+		else if (!strcmp(*argv, "-pubin"))
 			key_type = KEY_PUBKEY;
-		else if(!strcmp(*argv, "-certin"))
+		else if (!strcmp(*argv, "-certin"))
 			key_type = KEY_CERT;
-		else if(!strcmp(*argv, "-asn1parse"))
+		else if (!strcmp(*argv, "-asn1parse"))
 			asn1parse = 1;
-		else if(!strcmp(*argv, "-hexdump"))
+		else if (!strcmp(*argv, "-hexdump"))
 			hexdump = 1;
-		else if(!strcmp(*argv, "-sign"))
+		else if (!strcmp(*argv, "-sign"))
 			pkey_op = EVP_PKEY_OP_SIGN;
-		else if(!strcmp(*argv, "-verify"))
+		else if (!strcmp(*argv, "-verify"))
 			pkey_op = EVP_PKEY_OP_VERIFY;
-		else if(!strcmp(*argv, "-verifyrecover"))
+		else if (!strcmp(*argv, "-verifyrecover"))
 			pkey_op = EVP_PKEY_OP_VERIFYRECOVER;
-		else if(!strcmp(*argv, "-rev"))
+		else if (!strcmp(*argv, "-rev"))
 			rev = 1;
-		else if(!strcmp(*argv, "-encrypt"))
+		else if (!strcmp(*argv, "-encrypt"))
 			pkey_op = EVP_PKEY_OP_ENCRYPT;
-		else if(!strcmp(*argv, "-decrypt"))
+		else if (!strcmp(*argv, "-decrypt"))
 			pkey_op = EVP_PKEY_OP_DECRYPT;
-		else if(!strcmp(*argv, "-derive"))
+		else if (!strcmp(*argv, "-derive"))
 			pkey_op = EVP_PKEY_OP_DERIVE;
 		else if (strcmp(*argv,"-pkeyopt") == 0)
 			{
@@ -220,7 +220,7 @@ int MAIN(int argc, char **argv)
 				}
 			}
 		else badarg = 1;
-		if(badarg)
+		if (badarg)
 			{
 			usage();
 			goto end;
@@ -252,9 +252,9 @@ int MAIN(int argc, char **argv)
 
 	if (pkey_op != EVP_PKEY_OP_DERIVE)
 		{
-		if(infile)
+		if (infile)
 			{
-			if(!(in = BIO_new_file(infile, "rb")))
+			if (!(in = BIO_new_file(infile, "rb")))
 				{
 				BIO_puts(bio_err,
 					"Error Opening Input File\n");
@@ -266,9 +266,9 @@ int MAIN(int argc, char **argv)
 			in = BIO_new_fp(stdin, BIO_NOCLOSE);
 		}
 
-	if(outfile)
+	if (outfile)
 		{
-		if(!(out = BIO_new_file(outfile, "wb")))
+		if (!(out = BIO_new_file(outfile, "wb")))
 			{
 			BIO_printf(bio_err, "Error Creating Output File\n");
 			ERR_print_errors(bio_err);	
@@ -302,12 +302,12 @@ int MAIN(int argc, char **argv)
 		{
 		/* Read the input data */
 		buf_inlen = bio_to_mem(&buf_in, keysize * 10, in);
-		if(buf_inlen <= 0)
+		if (buf_inlen <= 0)
 			{
 			BIO_printf(bio_err, "Error reading input Data\n");
 			exit(1);
 			}
-		if(rev)
+		if (rev)
 			{
 			size_t i;
 			unsigned char ctmp;
@@ -321,7 +321,7 @@ int MAIN(int argc, char **argv)
 			}
 		}
 
-	if(pkey_op == EVP_PKEY_OP_VERIFY)
+	if (pkey_op == EVP_PKEY_OP_VERIFY)
 		{
 		rv  = EVP_PKEY_verify(ctx, sig, (size_t)siglen,
 				      buf_in, (size_t)buf_inlen);
@@ -348,19 +348,19 @@ int MAIN(int argc, char **argv)
 			}
 		}
 
-	if(rv <= 0)
+	if (rv <= 0)
 		{
 		BIO_printf(bio_err, "Public Key operation error\n");
 		ERR_print_errors(bio_err);
 		goto end;
 		}
 	ret = 0;
-	if(asn1parse)
+	if (asn1parse)
 		{
-		if(!ASN1_parse_dump(out, buf_out, buf_outlen, 1, -1))
+		if (!ASN1_parse_dump(out, buf_out, buf_outlen, 1, -1))
 			ERR_print_errors(bio_err);
 		}
-	else if(hexdump)
+	else if (hexdump)
 		BIO_dump(out, (char *)buf_out, buf_outlen);
 	else
 		BIO_write(out, buf_out, buf_outlen);
@@ -413,14 +413,14 @@ static EVP_PKEY_CTX *init_ctx(int *pkeysize,
 	char *passin = NULL;
 	int rv = -1;
 	X509 *x;
-	if(((pkey_op == EVP_PKEY_OP_SIGN) || (pkey_op == EVP_PKEY_OP_DECRYPT) 
+	if (((pkey_op == EVP_PKEY_OP_SIGN) || (pkey_op == EVP_PKEY_OP_DECRYPT) 
 		|| (pkey_op == EVP_PKEY_OP_DERIVE))
 		&& (key_type != KEY_PRIVKEY))
 		{
 		BIO_printf(bio_err, "A private key is needed for this operation\n");
 		goto end;
 		}
-	if(!app_passwd(bio_err, passargin, NULL, &passin, NULL))
+	if (!app_passwd(bio_err, passargin, NULL, &passin, NULL))
 		{
 		BIO_printf(bio_err, "Error getting password\n");
 		goto end;
@@ -440,7 +440,7 @@ static EVP_PKEY_CTX *init_ctx(int *pkeysize,
 		case KEY_CERT:
 		x = load_cert(bio_err, keyfile, keyform,
 			NULL, e, "Certificate");
-		if(x)
+		if (x)
 			{
 			pkey = X509_get_pubkey(x);
 			X509_free(x);

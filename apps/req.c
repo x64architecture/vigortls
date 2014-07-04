@@ -446,7 +446,7 @@ bad:
 		}
 
 	ERR_load_crypto_strings();
-	if(!app_passwd(bio_err, passargin, passargout, &passin, &passout)) {
+	if (!app_passwd(bio_err, passargin, passargout, &passin, &passout)) {
 		BIO_printf(bio_err, "Error getting passwords\n");
 		goto end;
 	}
@@ -467,7 +467,7 @@ bad:
 		{
 		long errline = -1;
 
-		if( verbose )
+		if ( verbose )
 			BIO_printf(bio_err,"Using configuration from %s\n",template);
 		req_conf=NCONF_new(NULL);
 		i=NCONF_load(req_conf,template,&errline);
@@ -487,7 +487,7 @@ bad:
 			if (newreq)
 				goto end;
 			}
-		else if( verbose )
+		else if ( verbose )
 			BIO_printf(bio_err,"Using configuration from %s\n",
 			default_config_file);
 		}
@@ -518,7 +518,7 @@ bad:
 				}
 			}
 		}
-	if(!add_oid_section(bio_err, req_conf)) goto end;
+	if (!add_oid_section(bio_err, req_conf)) goto end;
 
 	if (md_alg == NULL)
 		{
@@ -543,21 +543,21 @@ bad:
 		X509V3_CTX ctx;
 		X509V3_set_ctx_test(&ctx);
 		X509V3_set_nconf(&ctx, req_conf);
-		if(!X509V3_EXT_add_nconf(req_conf, &ctx, extensions, NULL)) {
+		if (!X509V3_EXT_add_nconf(req_conf, &ctx, extensions, NULL)) {
 			BIO_printf(bio_err,
 			 "Error Loading extension section %s\n", extensions);
 			goto end;
 		}
 	}
 
-	if(!passin)
+	if (!passin)
 		{
 		passin = NCONF_get_string(req_conf, SECTION, "input_password");
 		if (!passin)
 			ERR_clear_error();
 		}
 	
-	if(!passout)
+	if (!passout)
 		{
 		passout = NCONF_get_string(req_conf, SECTION, "output_password");
 		if (!passout)
@@ -568,7 +568,7 @@ bad:
 	if (!p)
 		ERR_clear_error();
 
-	if(p && !ASN1_STRING_set_default_mask_asc(p)) {
+	if (p && !ASN1_STRING_set_default_mask_asc(p)) {
 		BIO_printf(bio_err, "Invalid global string mask setting %s\n", p);
 		goto end;
 	}
@@ -583,18 +583,18 @@ bad:
 		}
 
 
-	if(!req_exts)
+	if (!req_exts)
 		{
 		req_exts = NCONF_get_string(req_conf, SECTION, REQ_EXTENSIONS);
 		if (!req_exts)
 			ERR_clear_error();
 		}
-	if(req_exts) {
+	if (req_exts) {
 		/* Check syntax of file */
 		X509V3_CTX ctx;
 		X509V3_set_ctx_test(&ctx);
 		X509V3_set_nconf(&ctx, req_conf);
-		if(!X509V3_EXT_add_nconf(req_conf, &ctx, req_exts, NULL)) {
+		if (!X509V3_EXT_add_nconf(req_conf, &ctx, req_exts, NULL)) {
 			BIO_printf(bio_err,
 			 "Error Loading request extension section %s\n",
 								req_exts);
@@ -821,7 +821,7 @@ loop:
 			if ((x509ss=X509_new()) == NULL) goto end;
 
 			/* Set version to V3 */
-			if(extensions && !X509_set_version(x509ss, 2)) goto end;
+			if (extensions && !X509_set_version(x509ss, 2)) goto end;
 			if (serial)
 				{
 				if (!X509_set_serialNumber(x509ss, serial)) goto end;
@@ -847,7 +847,7 @@ loop:
 			X509V3_set_nconf(&ext_ctx, req_conf);
 
 			/* Add extensions */
-			if(extensions && !X509V3_EXT_add_nconf(req_conf, 
+			if (extensions && !X509V3_EXT_add_nconf(req_conf, 
 				 	&ext_ctx, extensions, x509ss))
 				{
 				BIO_printf(bio_err,
@@ -873,7 +873,7 @@ loop:
 			X509V3_set_nconf(&ext_ctx, req_conf);
 
 			/* Add extensions */
-			if(req_exts && !X509V3_EXT_REQ_add_nconf(req_conf, 
+			if (req_exts && !X509V3_EXT_REQ_add_nconf(req_conf, 
 				 	&ext_ctx, req_exts, req))
 				{
 				BIO_printf(bio_err,
@@ -994,9 +994,9 @@ loop:
 			X509_REQ_print_ex(out, req, nmflag, reqflag);
 		}
 
-	if(subject) 
+	if (subject) 
 		{
-		if(x509)
+		if (x509)
 			print_name(out, "subject=", X509_get_subject_name(x509ss), nmflag);
 		else
 			print_name(out, "subject=", X509_REQ_get_subject_name(req), nmflag);
@@ -1029,7 +1029,7 @@ loop:
 		if 	(outformat == FORMAT_ASN1)
 			i=i2d_X509_REQ_bio(out,req);
 		else if (outformat == FORMAT_PEM) {
-			if(newhdr) i=PEM_write_bio_X509_REQ_NEW(out,req);
+			if (newhdr) i=PEM_write_bio_X509_REQ_NEW(out,req);
 			else i=PEM_write_bio_X509_REQ(out,req);
 		} else {
 			BIO_printf(bio_err,"bad output format specified for outfile\n");
@@ -1060,7 +1060,7 @@ loop:
 	ex=0;
 end:
 #ifndef MONOLITH
-	if(to_free)
+	if (to_free)
 		free(to_free);
 #endif
 	if (ex)
@@ -1086,8 +1086,8 @@ end:
 	X509_REQ_free(req);
 	X509_free(x509ss);
 	ASN1_INTEGER_free(serial);
-	if(passargin && passin) free(passin);
-	if(passargout && passout) free(passout);
+	if (passargin && passin) free(passin);
+	if (passargout && passout) free(passout);
 	OBJ_cleanup();
 	apps_shutdown();
 	OPENSSL_EXIT(ex);
@@ -1104,7 +1104,7 @@ static int make_REQ(X509_REQ *req, EVP_PKEY *pkey, char *subj, int multirdn,
 	tmp=NCONF_get_string(req_conf,SECTION,PROMPT);
 	if (tmp == NULL)
 		ERR_clear_error();
-	if((tmp != NULL) && !strcmp(tmp, "no")) no_prompt = 1;
+	if ((tmp != NULL) && !strcmp(tmp, "no")) no_prompt = 1;
 
 	dn_sect=NCONF_get_string(req_conf,SECTION,DISTINGUISHED_NAME);
 	if (dn_sect == NULL)
@@ -1148,7 +1148,7 @@ static int make_REQ(X509_REQ *req, EVP_PKEY *pkey, char *subj, int multirdn,
 		else
 			i = prompt_info(req, dn_sk, dn_sect, attr_sk, attr_sect, attribs, chtype);
 		}
-	if(!i) goto err;
+	if (!i) goto err;
 
 	if (!X509_REQ_set_pubkey(req,pkey)) goto err;
 
@@ -1194,7 +1194,7 @@ static int prompt_info(X509_REQ *req,
 	X509_NAME *subj;
 	subj = X509_REQ_get_subject_name(req);
 
-	if(!batch)
+	if (!batch)
 		{
 		BIO_printf(bio_err,"You are about to be asked to enter information that will be incorporated\n");
 		BIO_printf(bio_err,"into your certificate request.\n");
@@ -1217,7 +1217,7 @@ start:		for (;;)
 			v=sk_CONF_VALUE_value(dn_sk,i);
 			p=q=NULL;
 			type=v->name;
-			if(!check_end(type,"_min") || !check_end(type,"_max") ||
+			if (!check_end(type,"_min") || !check_end(type,"_max") ||
 				!check_end(type,"_default") ||
 					 !check_end(type,"_value")) continue;
 			/* Skip past any leading X. X: X, etc to allow for
@@ -1227,7 +1227,7 @@ start:		for (;;)
 				if ((*p == ':') || (*p == ',') ||
 							 (*p == '.')) {
 					p++;
-					if(*p) type = p;
+					if (*p) type = p;
 					break;
 				}
 			if (*type == '+')
@@ -1384,7 +1384,7 @@ static int auto_info(X509_REQ *req, STACK_OF(CONF_VALUE) *dn_sk,
 			if ((*p == os_toascii[':']) || (*p == os_toascii[',']) || (*p == os_toascii['.'])) {
 #endif
 				p++;
-				if(*p) type = p;
+				if (*p) type = p;
 				break;
 			}
 #ifndef CHARSET_EBCDIC
@@ -1413,7 +1413,7 @@ static int auto_info(X509_REQ *req, STACK_OF(CONF_VALUE) *dn_sk,
 			for (i = 0; i < sk_CONF_VALUE_num(attr_sk); i++)
 				{
 				v=sk_CONF_VALUE_value(attr_sk,i);
-				if(!X509_REQ_add1_attr_by_txt(req, v->name, chtype,
+				if (!X509_REQ_add1_attr_by_txt(req, v->name, chtype,
 					(unsigned char *)v->value, -1)) return 0;
 				}
 			}
@@ -1429,7 +1429,7 @@ static int add_DN_object(X509_NAME *n, char *text, const char *def, char *value,
 start:
 	if (!batch) BIO_printf(bio_err,"%s [%s]:",text,def);
 	(void)BIO_flush(bio_err);
-	if(value != NULL)
+	if (value != NULL)
 		{
 		BUF_strlcpy(buf,value,sizeof buf);
 		BUF_strlcat(buf,"\n",sizeof buf);
@@ -1470,7 +1470,7 @@ start:
 #ifdef CHARSET_EBCDIC
 	ebcdic2ascii(buf, buf, i);
 #endif
-	if(!req_check_len(i, n_min, n_max))
+	if (!req_check_len(i, n_min, n_max))
 		{
 		if (batch || value)
 			return 0;
@@ -1535,14 +1535,14 @@ start:
 #ifdef CHARSET_EBCDIC
 	ebcdic2ascii(buf, buf, i);
 #endif
-	if(!req_check_len(i, n_min, n_max))
+	if (!req_check_len(i, n_min, n_max))
 		{
 		if (batch || value)
 			return 0;
 		goto start;
 		}
 
-	if(!X509_REQ_add1_attr_by_NID(req, nid, chtype,
+	if (!X509_REQ_add1_attr_by_NID(req, nid, chtype,
 					(unsigned char *)buf, -1)) {
 		BIO_printf(bio_err, "Error adding attribute\n");
 		ERR_print_errors(bio_err);
@@ -1576,7 +1576,7 @@ static int check_end(const char *str, const char *end)
 	const char *tmp;
 	elen = strlen(end);
 	slen = strlen(str);
-	if(elen > slen) return 1;
+	if (elen > slen) return 1;
 	tmp = str + slen - elen;
 	return strcmp(tmp, end);
 }

@@ -85,7 +85,7 @@ int DSA_generate_parameters_ex(DSA *ret, int bits,
 		const unsigned char *seed_in, int seed_len,
 		int *counter_ret, unsigned long *h_ret, BN_GENCB *cb)
 	{
-	if(ret->meth->dsa_paramgen)
+	if (ret->meth->dsa_paramgen)
 		return ret->meth->dsa_paramgen(ret, bits, seed_in, seed_len,
 				counter_ret, h_ret, cb);
 	else
@@ -178,7 +178,7 @@ int dsa_builtin_paramgen(DSA *ret, size_t bits, size_t qbits,
 			int seed_is_random;
 
 			/* step 1 */
-			if(!BN_GENCB_call(cb, 0, m++))
+			if (!BN_GENCB_call(cb, 0, m++))
 				goto err;
 
 			if (!seed_len)
@@ -227,8 +227,8 @@ int dsa_builtin_paramgen(DSA *ret, size_t bits, size_t qbits,
 			/* step 5 */
 			}
 
-		if(!BN_GENCB_call(cb, 2, 0)) goto err;
-		if(!BN_GENCB_call(cb, 3, 0)) goto err;
+		if (!BN_GENCB_call(cb, 2, 0)) goto err;
+		if (!BN_GENCB_call(cb, 3, 0)) goto err;
 
 		/* step 6 */
 		counter=0;
@@ -297,7 +297,7 @@ int dsa_builtin_paramgen(DSA *ret, size_t bits, size_t qbits,
 			}
 		}
 end:
-	if(!BN_GENCB_call(cb, 2, 1))
+	if (!BN_GENCB_call(cb, 2, 1))
 		goto err;
 
 	/* We now need to generate g */
@@ -317,16 +317,16 @@ end:
 		h++;
 		}
 
-	if(!BN_GENCB_call(cb, 3, 1))
+	if (!BN_GENCB_call(cb, 3, 1))
 		goto err;
 
 	ok=1;
 err:
 	if (ok)
 		{
-		if(ret->p) BN_free(ret->p);
-		if(ret->q) BN_free(ret->q);
-		if(ret->g) BN_free(ret->g);
+		if (ret->p) BN_free(ret->p);
+		if (ret->q) BN_free(ret->q);
+		if (ret->g) BN_free(ret->g);
 		ret->p=BN_dup(p);
 		ret->q=BN_dup(q);
 		ret->g=BN_dup(g);
@@ -340,7 +340,7 @@ err:
 		if (seed_out)
 			memcpy(seed_out, seed, qsize);
 		}
-	if(ctx)
+	if (ctx)
 		{
 		BN_CTX_end(ctx);
 		BN_CTX_free(ctx);

@@ -208,7 +208,7 @@ static int asn1_item_print_ctx(BIO *out, ASN1_VALUE **fld, int indent,
 		}
 	else asn1_cb = 0;
 
-	if(*fld == NULL)
+	if (*fld == NULL)
 		{
 		if (pctx->flags & ASN1_PCTX_FLAGS_SHOW_ABSENT)
 			{
@@ -224,7 +224,7 @@ static int asn1_item_print_ctx(BIO *out, ASN1_VALUE **fld, int indent,
 	switch(it->itype)
 		{
 		case ASN1_ITYPE_PRIMITIVE:
-		if(it->templates)
+		if (it->templates)
 			{
 			if (!asn1_template_print_ctx(out, fld, indent,
 							it->templates, pctx))
@@ -264,7 +264,7 @@ static int asn1_item_print_ctx(BIO *out, ASN1_VALUE **fld, int indent,
 		/* CHOICE type, get selector */
 		i = asn1_get_choice_selector(fld, it);
 		/* This should never happen... */
-		if((i < 0) || (i >= it->tcount))
+		if ((i < 0) || (i >= it->tcount))
 			{
 			if (BIO_printf(out,
 				"ERROR: selector [%d] invalid\n", i) <= 0)
@@ -342,15 +342,15 @@ int asn1_template_print_ctx(BIO *out, ASN1_VALUE **fld, int indent,
 	int i, flags;
 	const char *sname, *fname;
 	flags = tt->flags;
-	if(pctx->flags & ASN1_PCTX_FLAGS_SHOW_FIELD_STRUCT_NAME)
+	if (pctx->flags & ASN1_PCTX_FLAGS_SHOW_FIELD_STRUCT_NAME)
 		sname = ASN1_ITEM_ptr(tt->item)->sname;
 	else
 		sname = NULL;
-	if(pctx->flags & ASN1_PCTX_FLAGS_NO_FIELD_NAME)
+	if (pctx->flags & ASN1_PCTX_FLAGS_NO_FIELD_NAME)
 		fname = NULL;
 	else
 		fname = tt->field_name;
-	if(flags & ASN1_TFLG_SK_MASK)
+	if (flags & ASN1_TFLG_SK_MASK)
 		{
 		char *tname;
 		ASN1_VALUE *skitem;
@@ -359,9 +359,9 @@ int asn1_template_print_ctx(BIO *out, ASN1_VALUE **fld, int indent,
 		/* SET OF, SEQUENCE OF */
 		if (fname)
 			{
-			if(pctx->flags & ASN1_PCTX_FLAGS_SHOW_SSOF)
+			if (pctx->flags & ASN1_PCTX_FLAGS_SHOW_SSOF)
 				{
-				if(flags & ASN1_TFLG_SET_OF)
+				if (flags & ASN1_TFLG_SET_OF)
 					tname = "SET";
 				else
 					tname = "SEQUENCE";
@@ -386,7 +386,7 @@ int asn1_template_print_ctx(BIO *out, ASN1_VALUE **fld, int indent,
 			}
 		if (!i && BIO_printf(out, "%*s<EMPTY>\n", indent + 2, "") <= 0)
 				return 0;
-		if(pctx->flags & ASN1_PCTX_FLAGS_SHOW_SEQUENCE)
+		if (pctx->flags & ASN1_PCTX_FLAGS_SHOW_SEQUENCE)
 			{
 			if (BIO_printf(out, "%*s}\n", indent, "") <= 0)
 				return 0;
@@ -490,7 +490,7 @@ static int asn1_print_oid_ctx(BIO *out, const ASN1_OBJECT *oid,
 	char objbuf[80];
 	const char *ln;
 	ln = OBJ_nid2ln(OBJ_obj2nid(oid));
-	if(!ln)
+	if (!ln)
 		ln = "";
 	OBJ_obj2txt(objbuf, sizeof objbuf, oid, 1);
 	if (BIO_printf(out, "%s (%s)", ln, objbuf) <= 0)

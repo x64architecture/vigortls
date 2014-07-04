@@ -254,7 +254,7 @@ bad:
         setup_engine(bio_err, engine, 0);
 #endif
 
-	if(!app_passwd(bio_err, passargin, passargout, &passin, &passout)) 
+	if (!app_passwd(bio_err, passargin, passargout, &passin, &passout)) 
 		{
 		BIO_printf(bio_err, "Error getting passwords\n");
 		goto end;

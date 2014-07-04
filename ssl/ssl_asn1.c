@@ -502,7 +502,7 @@ SSL_SESSION *d2i_SSL_SESSION(SSL_SESSION **a, const unsigned char **pp,
 	os.data=NULL;
 	M_ASN1_D2I_get_EXP_opt(osp,d2i_ASN1_OCTET_STRING,4);
 
-	if(os.data != NULL)
+	if (os.data != NULL)
 	    {
 	    if (os.length > SSL_MAX_SID_CTX_LENGTH)
 		{

@@ -234,7 +234,7 @@ int RAND_query_egd_bytes(const char *path, unsigned char *buf, int bytes)
 			}
 		    }
 		}
-	    if(egdbuf[0] == 0)
+	    if (egdbuf[0] == 0)
 		goto err;
 	    if (buf)
 		retrievebuf = buf + ret;

@@ -84,11 +84,11 @@ static void show_ciphers(const OBJ_NAME *name,void *bio_)
 	BIO *bio=bio_;
 	static int n;
 
-	if(!islower((unsigned char)*name->name))
+	if (!islower((unsigned char)*name->name))
 		return;
 
 	BIO_printf(bio,"-%-25s",name->name);
-	if(++n == 3)
+	if (++n == 3)
 		{
 		BIO_printf(bio,"\n");
 		n=0;
@@ -414,8 +414,8 @@ bad:
 			}
 		}
 
-	if(!str && passarg) {
-		if(!app_passwd(bio_err, passarg, NULL, &pass, NULL)) {
+	if (!str && passarg) {
+		if (!app_passwd(bio_err, passarg, NULL, &pass, NULL)) {
 			BIO_printf(bio_err, "Error getting password\n");
 			goto end;
 		}
@@ -514,11 +514,11 @@ bad:
 			 * input BIO.
 			 */
 			unsigned char *sptr;
-			if(nosalt) sptr = NULL;
+			if (nosalt) sptr = NULL;
 			else {
-				if(enc) {
-					if(hsalt) {
-						if(!set_hex(hsalt,salt,sizeof salt)) {
+				if (enc) {
+					if (hsalt) {
+						if (!set_hex(hsalt,salt,sizeof salt)) {
 							BIO_printf(bio_err,
 								"invalid hex salt value\n");
 							goto end;
@@ -526,7 +526,7 @@ bad:
 					} else if (RAND_pseudo_bytes(salt, sizeof salt) < 0)
 						goto end;
 					/* If -P option then don't bother writing */
-					if((printkey != 2)
+					if ((printkey != 2)
 					   && (BIO_write(wbio,magic,
 							 sizeof magic-1) != sizeof magic-1
 					       || BIO_write(wbio,
@@ -535,13 +535,13 @@ bad:
 						BIO_printf(bio_err,"error writing output file\n");
 						goto end;
 					}
-				} else if(BIO_read(rbio,mbuf,sizeof mbuf) != sizeof mbuf
+				} else if (BIO_read(rbio,mbuf,sizeof mbuf) != sizeof mbuf
 					  || BIO_read(rbio,
 						      (unsigned char *)salt,
 				    sizeof salt) != sizeof salt) {
 					BIO_printf(bio_err,"error reading input file\n");
 					goto end;
-				} else if(memcmp(mbuf,magic,sizeof magic-1)) {
+				} else if (memcmp(mbuf,magic,sizeof magic-1)) {
 				    BIO_printf(bio_err,"bad magic number\n");
 				    goto end;
 				}
@@ -683,7 +683,7 @@ end:
 #ifdef ZLIB
 	if (bzl != NULL) BIO_free(bzl);
 #endif
-	if(pass) free(pass);
+	if (pass) free(pass);
 	apps_shutdown();
 	OPENSSL_EXIT(ret);
 	}

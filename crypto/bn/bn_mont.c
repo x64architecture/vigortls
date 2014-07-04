@@ -342,7 +342,7 @@ void BN_MONT_CTX_init(BN_MONT_CTX *ctx)
 
 void BN_MONT_CTX_free(BN_MONT_CTX *mont)
 	{
-	if(mont == NULL)
+	if (mont == NULL)
 	    return;
 
 	BN_free(&(mont->RR));
@@ -358,7 +358,7 @@ int BN_MONT_CTX_set(BN_MONT_CTX *mont, const BIGNUM *mod, BN_CTX *ctx)
 	BIGNUM *Ri,*R;
 
 	BN_CTX_start(ctx);
-	if((Ri = BN_CTX_get(ctx)) == NULL) goto err;
+	if ((Ri = BN_CTX_get(ctx)) == NULL) goto err;
 	R= &(mont->RR);					/* grab RR as a temp */
 	if (!BN_copy(&(mont->N),mod)) goto err;		/* Set N */
 	mont->N.neg = 0;

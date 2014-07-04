@@ -178,7 +178,7 @@ int MAIN(int argc, char **argv)
 	if (lookup == NULL) abort();
 	if (CAfile) {
 		i=X509_LOOKUP_load_file(lookup,CAfile,X509_FILETYPE_PEM);
-		if(!i) {
+		if (!i) {
 			BIO_printf(bio_err, "Error loading file %s\n", CAfile);
 			ERR_print_errors(bio_err);
 			goto end;
@@ -189,7 +189,7 @@ int MAIN(int argc, char **argv)
 	if (lookup == NULL) abort();
 	if (CApath) {
 		i=X509_LOOKUP_add_dir(lookup,CApath,X509_FILETYPE_PEM);
-		if(!i) {
+		if (!i) {
 			BIO_printf(bio_err, "Error loading directory %s\n", CApath);
 			ERR_print_errors(bio_err);
 			goto end;
@@ -198,27 +198,27 @@ int MAIN(int argc, char **argv)
 
 	ERR_clear_error();
 
-	if(untfile)
+	if (untfile)
 		{
 		untrusted = load_certs(bio_err, untfile, FORMAT_PEM,
 					NULL, e, "untrusted certificates");
-		if(!untrusted)
+		if (!untrusted)
 			goto end;
 		}
 
-	if(trustfile)
+	if (trustfile)
 		{
 		trusted = load_certs(bio_err, trustfile, FORMAT_PEM,
 					NULL, e, "trusted certificates");
-		if(!trusted)
+		if (!trusted)
 			goto end;
 		}
 
-	if(crlfile)
+	if (crlfile)
 		{
 		crls = load_crls(bio_err, crlfile, FORMAT_PEM,
 					NULL, e, "other CRLs");
-		if(!crls)
+		if (!crls)
 			goto end;
 		}
 
@@ -283,12 +283,12 @@ static int check(X509_STORE *ctx, char *file,
 		goto end;
 		}
 	X509_STORE_set_flags(ctx, vflags);
-	if(!X509_STORE_CTX_init(csc,ctx,x,uchain))
+	if (!X509_STORE_CTX_init(csc,ctx,x,uchain))
 		{
 		ERR_print_errors(bio_err);
 		goto end;
 		}
-	if(tchain) X509_STORE_CTX_trusted_stack(csc, tchain);
+	if (tchain) X509_STORE_CTX_trusted_stack(csc, tchain);
 	if (crls)
 		X509_STORE_CTX_set0_crls(csc, crls);
 	i=X509_verify_cert(csc);

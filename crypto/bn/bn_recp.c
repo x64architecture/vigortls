@@ -82,7 +82,7 @@ BN_RECP_CTX *BN_RECP_CTX_new(void)
 
 void BN_RECP_CTX_free(BN_RECP_CTX *recp)
 	{
-	if(recp == NULL)
+	if (recp == NULL)
 	    return;
 
 	BN_free(&(recp->N));
@@ -220,7 +220,7 @@ int BN_reciprocal(BIGNUM *r, const BIGNUM *m, int len, BN_CTX *ctx)
 	BIGNUM *t;
 
 	BN_CTX_start(ctx);
-	if((t = BN_CTX_get(ctx)) == NULL) goto err;
+	if ((t = BN_CTX_get(ctx)) == NULL) goto err;
 
 	if (!BN_set_bit(t,len)) goto err;
 

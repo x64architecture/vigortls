@@ -292,7 +292,7 @@ err:\
 			{ c.line=__LINE__; goto err; } \
 		if (Tinf == (V_ASN1_CONSTRUCTED+1)) { \
 			Tlen = c.slen - (c.p - c.q); \
-			if(!ASN1_const_check_infinite_end(&c.p, Tlen)) \
+			if (!ASN1_const_check_infinite_end(&c.p, Tlen)) \
 				{ c.error=ERR_R_MISSING_ASN1_EOS; \
 				c.line=__LINE__; goto err; } \
 		}\
@@ -319,7 +319,7 @@ err:\
 			{ c.line=__LINE__; goto err; } \
 		if (Tinf == (V_ASN1_CONSTRUCTED+1)) { \
 			Tlen = c.slen - (c.p - c.q); \
-			if(!ASN1_check_infinite_end(&c.p, Tlen)) \
+			if (!ASN1_check_infinite_end(&c.p, Tlen)) \
 				{ c.error=ERR_R_MISSING_ASN1_EOS; \
 				c.line=__LINE__; goto err; } \
 		}\
@@ -345,7 +345,7 @@ err:\
 			{ c.line=__LINE__; goto err; } \
 		if (Tinf == (V_ASN1_CONSTRUCTED+1)) { \
 			Tlen = c.slen - (c.p - c.q); \
-			if(!ASN1_check_infinite_end(&c.p, Tlen)) \
+			if (!ASN1_check_infinite_end(&c.p, Tlen)) \
 				{ c.error=ERR_R_MISSING_ASN1_EOS; \
 				c.line=__LINE__; goto err; } \
 		}\

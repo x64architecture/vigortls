@@ -101,7 +101,7 @@ BIO *BIO_new_mem_buf(void *buf, int len)
 		return NULL;
 	}
 	sz = (len<0) ? strlen(buf) : (size_t)len;
-	if(!(ret = BIO_new(BIO_s_mem())) ) return NULL;
+	if (!(ret = BIO_new(BIO_s_mem())) ) return NULL;
 	b = (BUF_MEM *)ret->ptr;
 	b->data = buf;
 	b->length = sz;
@@ -134,7 +134,7 @@ static int mem_free(BIO *a)
 			{
 			BUF_MEM *b;
 			b = (BUF_MEM *)a->ptr;
-			if(a->flags & BIO_FLAGS_MEM_RDONLY) b->data = NULL;
+			if (a->flags & BIO_FLAGS_MEM_RDONLY) b->data = NULL;
 			BUF_MEM_free(b);
 			a->ptr=NULL;
 			}
@@ -153,7 +153,7 @@ static int mem_read(BIO *b, char *out, int outl)
 	if ((out != NULL) && (ret > 0)) {
 		memcpy(out,bm->data,ret);
 		bm->length-=ret;
-		if(b->flags & BIO_FLAGS_MEM_RDONLY) bm->data += ret;
+		if (b->flags & BIO_FLAGS_MEM_RDONLY) bm->data += ret;
 		else {
 			memmove(&(bm->data[0]),&(bm->data[ret]),bm->length);
 		}
@@ -179,7 +179,7 @@ static int mem_write(BIO *b, const char *in, int inl)
 		goto end;
 		}
 
-	if(b->flags & BIO_FLAGS_MEM_RDONLY) {
+	if (b->flags & BIO_FLAGS_MEM_RDONLY) {
 		BIOerr(BIO_F_MEM_WRITE,BIO_R_WRITE_TO_READ_ONLY_BIO);
 		goto end;
 	}
@@ -207,7 +207,7 @@ static long mem_ctrl(BIO *b, int cmd, long num, void *ptr)
 		if (bm->data != NULL)
 			{
 			/* For read only case reset to the start again */
-			if(b->flags & BIO_FLAGS_MEM_RDONLY) 
+			if (b->flags & BIO_FLAGS_MEM_RDONLY) 
 				{
 				bm->data -= bm->max - bm->length;
 				bm->length = bm->max;

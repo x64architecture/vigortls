@@ -80,7 +80,7 @@ void CAST_encrypt(CAST_LONG *data, const CAST_KEY *key)
 	E_CAST( 9,k,r,l,+,^,-);
 	E_CAST(10,k,l,r,^,-,+);
 	E_CAST(11,k,r,l,-,+,^);
-	if(!key->short_key)
+	if (!key->short_key)
 	    {
 	    E_CAST(12,k,l,r,+,^,-);
 	    E_CAST(13,k,r,l,^,-,+);
@@ -101,7 +101,7 @@ void CAST_decrypt(CAST_LONG *data, const CAST_KEY *key)
 	l=data[0];
 	r=data[1];
 
-	if(!key->short_key)
+	if (!key->short_key)
 	    {
 	    E_CAST(15,k,l,r,+,^,-);
 	    E_CAST(14,k,r,l,-,+,^);

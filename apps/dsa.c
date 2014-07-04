@@ -238,7 +238,7 @@ bad:
         e = setup_engine(bio_err, engine, 0);
 #endif
 
-	if(!app_passwd(bio_err, passargin, passargout, &passin, &passout)) {
+	if (!app_passwd(bio_err, passargin, passargout, &passin, &passout)) {
 		BIO_printf(bio_err, "Error getting passwords\n");
 		goto end;
 	}
@@ -318,10 +318,10 @@ bad:
 	if (noout) goto end;
 	BIO_printf(bio_err,"writing DSA key\n");
 	if 	(outformat == FORMAT_ASN1) {
-		if(pubin || pubout) i=i2d_DSA_PUBKEY_bio(out,dsa);
+		if (pubin || pubout) i=i2d_DSA_PUBKEY_bio(out,dsa);
 		else i=i2d_DSAPrivateKey_bio(out,dsa);
 	} else if (outformat == FORMAT_PEM) {
-		if(pubin || pubout)
+		if (pubin || pubout)
 			i=PEM_write_bio_DSA_PUBKEY(out,dsa);
 		else i=PEM_write_bio_DSAPrivateKey(out,dsa,enc,
 							NULL,0,NULL, passout);
@@ -350,11 +350,11 @@ bad:
 	else
 		ret=0;
 end:
-	if(in != NULL) BIO_free(in);
-	if(out != NULL) BIO_free_all(out);
-	if(dsa != NULL) DSA_free(dsa);
-	if(passin) free(passin);
-	if(passout) free(passout);
+	if (in != NULL) BIO_free(in);
+	if (out != NULL) BIO_free_all(out);
+	if (dsa != NULL) DSA_free(dsa);
+	if (passin) free(passin);
+	if (passout) free(passout);
 	apps_shutdown();
 	OPENSSL_EXIT(ret);
 	}

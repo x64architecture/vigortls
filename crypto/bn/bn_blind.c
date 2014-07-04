@@ -170,7 +170,7 @@ err:
 
 void BN_BLINDING_free(BN_BLINDING *r)
 {
-    if(r == NULL)
+    if (r == NULL)
         return;
 
     if (r->A != NULL) 

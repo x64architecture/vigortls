@@ -257,20 +257,20 @@ int SSL_srp_server_param_with_username(SSL *s, int *ad)
 int SSL_set_srp_server_param_pw(SSL *s, const char *user, const char *pass, const char *grp)
 	{
 	SRP_gN *GN = SRP_get_default_gN(grp);
-	if(GN == NULL) return -1;
+	if (GN == NULL) return -1;
 	s->srp_ctx.N = BN_dup(GN->N);
 	s->srp_ctx.g = BN_dup(GN->g);
-	if(s->srp_ctx.v != NULL)
+	if (s->srp_ctx.v != NULL)
 		{
 		BN_clear_free(s->srp_ctx.v);
 		s->srp_ctx.v = NULL;
 		}
-	if(s->srp_ctx.s != NULL)
+	if (s->srp_ctx.s != NULL)
 		{
 		BN_clear_free(s->srp_ctx.s);
 		s->srp_ctx.s = NULL;
 		}
-	if(!SRP_create_verifier_BN(user, pass, &s->srp_ctx.s, &s->srp_ctx.v, GN->N, GN->g)) return -1;
+	if (!SRP_create_verifier_BN(user, pass, &s->srp_ctx.s, &s->srp_ctx.v, GN->N, GN->g)) return -1;
 
 	return 1;
 	}

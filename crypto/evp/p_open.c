@@ -71,12 +71,12 @@ int EVP_OpenInit(EVP_CIPHER_CTX *ctx, const EVP_CIPHER *type,
 	unsigned char *key=NULL;
 	int i,size=0,ret=0;
 
-	if(type) {	
+	if (type) {	
 		EVP_CIPHER_CTX_init(ctx);
-		if(!EVP_DecryptInit_ex(ctx,type,NULL, NULL,NULL)) return 0;
+		if (!EVP_DecryptInit_ex(ctx,type,NULL, NULL,NULL)) return 0;
 	}
 
-	if(!priv) return 1;
+	if (!priv) return 1;
 
 	if (priv->type != EVP_PKEY_RSA)
 		{
@@ -99,7 +99,7 @@ int EVP_OpenInit(EVP_CIPHER_CTX *ctx, const EVP_CIPHER *type,
 		/* ERROR */
 		goto err;
 		}
-	if(!EVP_DecryptInit_ex(ctx,NULL,NULL,key,iv)) goto err;
+	if (!EVP_DecryptInit_ex(ctx,NULL,NULL,key,iv)) goto err;
 
 	ret=1;
 err:

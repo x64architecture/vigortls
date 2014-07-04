@@ -196,7 +196,7 @@ static void cfbr_encrypt_block(const unsigned char *in,unsigned char *out,
 	/* shift ovec left... */
 	rem = nbits%8;
 	num = nbits/8;
-	if(rem==0)
+	if (rem==0)
 	    memcpy(ivec,ovec+num,16);
 	else
 	    for(n=0 ; n < 16 ; ++n)

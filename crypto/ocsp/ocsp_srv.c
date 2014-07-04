@@ -90,7 +90,7 @@ int OCSP_id_get0_info(ASN1_OCTET_STRING **piNameHash, ASN1_OBJECT **pmd,
 	{
 	if (!cid) return 0;
 	if (pmd) *pmd = cid->hashAlgorithm->algorithm;
-	if(piNameHash) *piNameHash = cid->issuerNameHash;
+	if (piNameHash) *piNameHash = cid->issuerNameHash;
 	if (pikeyHash) *pikeyHash = cid->issuerKeyHash;
 	if (pserial) *pserial = cid->serialNumber;
 	return 1;
@@ -98,7 +98,7 @@ int OCSP_id_get0_info(ASN1_OCTET_STRING **piNameHash, ASN1_OBJECT **pmd,
 
 int OCSP_request_is_signed(OCSP_REQUEST *req)
 	{
-	if(req->optionalSignature) return 1;
+	if (req->optionalSignature) return 1;
 	return 0;
 	}
 
@@ -131,7 +131,7 @@ OCSP_SINGLERESP *OCSP_basic_add1_status(OCSP_BASICRESP *rsp,
 	OCSP_CERTSTATUS *cs;
 	OCSP_REVOKEDINFO *ri;
 
-	if(!rsp->tbsResponseData->responses &&
+	if (!rsp->tbsResponseData->responses &&
 	    !(rsp->tbsResponseData->responses = sk_OCSP_SINGLERESP_new_null()))
 		goto err;
 
@@ -148,7 +148,7 @@ OCSP_SINGLERESP *OCSP_basic_add1_status(OCSP_BASICRESP *rsp,
 
 	OCSP_CERTID_free(single->certId);
 
-	if(!(single->certId = OCSP_CERTID_dup(cid)))
+	if (!(single->certId = OCSP_CERTID_dup(cid)))
 		goto err;
 
 	cs = single->certStatus;
@@ -200,7 +200,7 @@ int OCSP_basic_add1_cert(OCSP_BASICRESP *resp, X509 *cert)
 	if (!resp->certs && !(resp->certs = sk_X509_new_null()))
 		return 0;
 
-	if(!sk_X509_push(resp->certs, cert)) return 0;
+	if (!sk_X509_push(resp->certs, cert)) return 0;
 	CRYPTO_add(&cert->references, 1, CRYPTO_LOCK_X509);
 	return 1;
 	}
@@ -218,14 +218,14 @@ int OCSP_basic_sign(OCSP_BASICRESP *brsp,
 		goto err;
 		}
 
-	if(!(flags & OCSP_NOCERTS))
+	if (!(flags & OCSP_NOCERTS))
 		{
-		if(!OCSP_basic_add1_cert(brsp, signer))
+		if (!OCSP_basic_add1_cert(brsp, signer))
 			goto err;
 		for (i = 0; i < sk_X509_num(certs); i++)
 			{
 			X509 *tmpcert = sk_X509_value(certs, i);
-			if(!OCSP_basic_add1_cert(brsp, tmpcert))
+			if (!OCSP_basic_add1_cert(brsp, tmpcert))
 				goto err;
 			}
 		}

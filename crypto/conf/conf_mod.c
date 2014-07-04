@@ -155,7 +155,7 @@ int CONF_modules_load(const CONF *cnf, const char *appname,
 		vl = sk_CONF_VALUE_value(values, i);
 		ret = module_run(cnf, vl->name, vl->value, flags);
 		if (ret <= 0)
-			if(!(flags & CONF_MFLAGS_IGNORE_ERRORS))
+			if (!(flags & CONF_MFLAGS_IGNORE_ERRORS))
 				return ret;
 		}
 
@@ -365,7 +365,7 @@ static int module_init(CONF_MODULE *pmod, char *name, char *value,
 		goto memerr;
 
 	/* Try to initialize module */
-	if(pmod->init)
+	if (pmod->init)
 		{
 		ret = pmod->init(imod, cnf);
 		init_called = 1;
@@ -579,7 +579,7 @@ int CONF_parse_list(const char *list_, int sep, int nospc,
 	int ret;
 	const char *lstart, *tmpend, *p;
 
-	if(list_ == NULL)
+	if (list_ == NULL)
 		{
 		CONFerr(CONF_F_CONF_PARSE_LIST, CONF_R_LIST_CANNOT_BE_NULL);
 		return 0;

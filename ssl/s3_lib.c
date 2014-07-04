@@ -2852,7 +2852,7 @@ err:
 
 void ssl3_free(SSL *s)
 {
-    if(s == NULL)
+    if (s == NULL)
         return;
 
 #ifdef TLSEXT_TYPE_opaque_prf_input
@@ -3862,7 +3862,7 @@ int ssl3_shutdown(SSL *s)
         /* resend it if not sent */
 #if 1
         ret=s->method->ssl_dispatch_alert(s);
-        if(ret == -1) {
+        if (ret == -1) {
             /* we only get to return -1 here the 2nd/Nth
              * invocation, we must  have already signalled
              * return 0 upon a previous invoation,
@@ -3873,7 +3873,7 @@ int ssl3_shutdown(SSL *s)
     } else if (!(s->shutdown & SSL_RECEIVED_SHUTDOWN)) {
         /* If we are waiting for a close from our peer, we are closed */
         s->method->ssl_read_bytes(s, 0, NULL, 0, 0);
-        if(!(s->shutdown & SSL_RECEIVED_SHUTDOWN)) {
+        if (!(s->shutdown & SSL_RECEIVED_SHUTDOWN)) {
             return (-1);    /* return WANT_READ */
         }
     }

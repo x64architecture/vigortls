@@ -88,7 +88,7 @@ int i;
 		}
 	if (a == NULL)
 	    {
-	    if(b)
+	    if (b)
 		{
 		buf=b->data;
 		free(b);

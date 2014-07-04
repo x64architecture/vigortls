@@ -63,7 +63,7 @@
 #define BLOCK_CIPHER_ecb_loop() \
 	size_t i, bl; \
 	bl = ctx->cipher->block_size;\
-	if(inl < bl) return 1;\
+	if (inl < bl) return 1;\
 	inl -= bl; \
 	for(i=0; i <= inl; i+=bl) 
 
@@ -119,7 +119,7 @@ static int cname##_cfb##cbits##_cipher(EVP_CIPHER_CTX *ctx, unsigned char *out, 
 	    inl-=chunk;\
 	    in +=chunk;\
 	    out+=chunk;\
-	    if(inl<chunk) chunk=inl;\
+	    if (inl<chunk) chunk=inl;\
 	    }\
 	return 1;\
 }

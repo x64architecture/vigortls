@@ -259,7 +259,7 @@ struct doall
 
 static void do_all_fn_doall_arg(const OBJ_NAME *name,struct doall *d)
 	{
-	if(name->type == d->type)
+	if (name->type == d->type)
 		d->fn(name,d->arg);
 	}
 
@@ -288,7 +288,7 @@ static void do_all_sorted_fn(const OBJ_NAME *name,void *d_)
 	{
 	struct doall_sorted *d=d_;
 
-	if(name->type != d->type)
+	if (name->type != d->type)
 		return;
 
 	d->names[d->n++]=name;

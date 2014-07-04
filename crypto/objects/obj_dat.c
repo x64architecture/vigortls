@@ -433,8 +433,8 @@ ASN1_OBJECT *OBJ_txt2obj(const char *s, int no_name)
 	const unsigned char *cp;
 	int i, j;
 
-	if(!no_name) {
-		if( ((nid = OBJ_sn2nid(s)) != NID_undef) ||
+	if (!no_name) {
+		if ( ((nid = OBJ_sn2nid(s)) != NID_undef) ||
 			((nid = OBJ_ln2nid(s)) != NID_undef) ) 
 					return OBJ_nid2obj(nid);
 	}
@@ -449,7 +449,7 @@ ASN1_OBJECT *OBJ_txt2obj(const char *s, int no_name)
 	/* Work out total size */
 	j = ASN1_object_size(0,i,V_ASN1_OBJECT);
 
-	if((buf=(unsigned char *)malloc(j)) == NULL) return NULL;
+	if ((buf=(unsigned char *)malloc(j)) == NULL) return NULL;
 
 	p = buf;
 	/* Write out tag+length */

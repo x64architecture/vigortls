@@ -153,10 +153,10 @@ STORE *STORE_new_engine(ENGINE *engine)
 		STOREerr(STORE_F_STORE_NEW_ENGINE,ERR_R_PASSED_NULL_PARAMETER);
 		return NULL;
 		}
-	if(e)
+	if (e)
 		{
 		meth = ENGINE_get_STORE(e);
-		if(!meth)
+		if (!meth)
 			{
 			STOREerr(STORE_F_STORE_NEW_ENGINE,
 				ERR_R_ENGINE_LIB);

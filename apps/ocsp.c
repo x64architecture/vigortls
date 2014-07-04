@@ -419,7 +419,7 @@ int MAIN(int argc, char **argv)
 				X509_free(issuer);
 				issuer = load_cert(bio_err, *args, FORMAT_PEM,
 					NULL, e, "issuer certificate");
-				if(!issuer) goto end;
+				if (!issuer) goto end;
 				}
 			else badarg = 1;
 			}
@@ -431,11 +431,11 @@ int MAIN(int argc, char **argv)
 				X509_free(cert);
 				cert = load_cert(bio_err, *args, FORMAT_PEM,
 					NULL, e, "certificate");
-				if(!cert) goto end;
+				if (!cert) goto end;
 				if (!cert_id_md) cert_id_md = EVP_sha1();
-				if(!add_ocsp_cert(&req, cert, cert_id_md, issuer, ids))
+				if (!add_ocsp_cert(&req, cert, cert_id_md, issuer, ids))
 					goto end;
-				if(!sk_OPENSSL_STRING_push(reqnames, *args))
+				if (!sk_OPENSSL_STRING_push(reqnames, *args))
 					goto end;
 				}
 			else badarg = 1;
@@ -446,9 +446,9 @@ int MAIN(int argc, char **argv)
 				{
 				args++;
 				if (!cert_id_md) cert_id_md = EVP_sha1();
-				if(!add_ocsp_serial(&req, *args, cert_id_md, issuer, ids))
+				if (!add_ocsp_serial(&req, *args, cert_id_md, issuer, ids))
 					goto end;
-				if(!sk_OPENSSL_STRING_push(reqnames, *args))
+				if (!sk_OPENSSL_STRING_push(reqnames, *args))
 					goto end;
 				}
 			else badarg = 1;
@@ -611,10 +611,10 @@ int MAIN(int argc, char **argv)
 		goto end;
 		}
 
-	if(outfile) out = BIO_new_file(outfile, "w");
+	if (outfile) out = BIO_new_file(outfile, "w");
 	else out = BIO_new_fp(stdout, BIO_NOCLOSE);
 
-	if(!out)
+	if (!out)
 		{
 		BIO_printf(bio_err, "Error opening output file\n");
 		goto end;
@@ -632,7 +632,7 @@ int MAIN(int argc, char **argv)
 			}
 		req = d2i_OCSP_REQUEST_bio(derbio, NULL);
 		BIO_free(derbio);
-		if(!req)
+		if (!req)
 			{
 			BIO_printf(bio_err, "Error reading OCSP request\n");
 			goto end;
@@ -669,7 +669,7 @@ int MAIN(int argc, char **argv)
 		if (!rkey)
 			goto end;
 		}
-	if(acbio)
+	if (acbio)
 		BIO_printf(bio_err, "Waiting for OCSP client connections...\n");
 
 	redo_accept:
@@ -727,7 +727,7 @@ int MAIN(int argc, char **argv)
 	if (reqout)
 		{
 		derbio = BIO_new_file(reqout, "wb");
-		if(!derbio)
+		if (!derbio)
 			{
 			BIO_printf(bio_err, "Error opening file %s\n", reqout);
 			goto end;
@@ -777,7 +777,7 @@ int MAIN(int argc, char **argv)
 			}
 		resp = d2i_OCSP_RESPONSE_bio(derbio, NULL);
 		BIO_free(derbio);
-		if(!resp)
+		if (!resp)
 			{
 			BIO_printf(bio_err, "Error reading OCSP response\n");
 			goto end;
@@ -795,7 +795,7 @@ int MAIN(int argc, char **argv)
 	if (respout)
 		{
 		derbio = BIO_new_file(respout, "wb");
-		if(!derbio)
+		if (!derbio)
 			{
 			BIO_printf(bio_err, "Error opening file %s\n", respout);
 			goto end;
@@ -872,7 +872,7 @@ int MAIN(int argc, char **argv)
 		i = OCSP_basic_verify(bs, verify_other, store, verify_flags);
                 if (i < 0) i = OCSP_basic_verify(bs, NULL, store, 0);
 
-		if(i <= 0)
+		if (i <= 0)
 			{
 			BIO_printf(bio_err, "Response Verify Failure\n");
 			ERR_print_errors(bio_err);
@@ -924,16 +924,16 @@ static int add_ocsp_cert(OCSP_REQUEST **req, X509 *cert, const EVP_MD *cert_id_m
 				STACK_OF(OCSP_CERTID) *ids)
 	{
 	OCSP_CERTID *id;
-	if(!issuer)
+	if (!issuer)
 		{
 		BIO_printf(bio_err, "No issuer certificate specified\n");
 		return 0;
 		}
-	if(!*req) *req = OCSP_REQUEST_new();
-	if(!*req) goto err;
+	if (!*req) *req = OCSP_REQUEST_new();
+	if (!*req) goto err;
 	id = OCSP_cert_to_id(cert_id_md, cert, issuer);
-	if(!id || !sk_OCSP_CERTID_push(ids, id)) goto err;
-	if(!OCSP_request_add0_id(*req, id)) goto err;
+	if (!id || !sk_OCSP_CERTID_push(ids, id)) goto err;
+	if (!OCSP_request_add0_id(*req, id)) goto err;
 	return 1;
 
 	err:
@@ -948,25 +948,25 @@ static int add_ocsp_serial(OCSP_REQUEST **req, char *serial,const EVP_MD *cert_i
 	X509_NAME *iname;
 	ASN1_BIT_STRING *ikey;
 	ASN1_INTEGER *sno;
-	if(!issuer)
+	if (!issuer)
 		{
 		BIO_printf(bio_err, "No issuer certificate specified\n");
 		return 0;
 		}
-	if(!*req) *req = OCSP_REQUEST_new();
-	if(!*req) goto err;
+	if (!*req) *req = OCSP_REQUEST_new();
+	if (!*req) goto err;
 	iname = X509_get_subject_name(issuer);
 	ikey = X509_get0_pubkey_bitstr(issuer);
 	sno = s2i_ASN1_INTEGER(NULL, serial);
-	if(!sno)
+	if (!sno)
 		{
 		BIO_printf(bio_err, "Error converting serial number %s\n", serial);
 		return 0;
 		}
 	id = OCSP_cert_id_new(cert_id_md, iname, ikey, sno);
 	ASN1_INTEGER_free(sno);
-	if(!id || !sk_OCSP_CERTID_push(ids, id)) goto err;
-	if(!OCSP_request_add0_id(*req, id)) goto err;
+	if (!id || !sk_OCSP_CERTID_push(ids, id)) goto err;
+	if (!OCSP_request_add0_id(*req, id)) goto err;
 	return 1;
 
 	err:
@@ -996,7 +996,7 @@ static int print_ocsp_summary(BIO *out, OCSP_BASICRESP *bs, OCSP_REQUEST *req,
 		name = sk_OPENSSL_STRING_value(names, i);
 		BIO_printf(out, "%s: ", name);
 
-		if(!OCSP_resp_find_status(bs, id, &status, &reason,
+		if (!OCSP_resp_find_status(bs, id, &status, &reason,
 					&rev, &thisupd, &nextupd))
 			{
 			BIO_puts(out, "ERROR: No Status found.\n");
@@ -1017,7 +1017,7 @@ static int print_ocsp_summary(BIO *out, OCSP_BASICRESP *bs, OCSP_REQUEST *req,
 		ASN1_GENERALIZEDTIME_print(out, thisupd);
 		BIO_puts(out, "\n");
 
-		if(nextupd)
+		if (nextupd)
 			{
 			BIO_puts(out, "\tNext Update: ");
 			ASN1_GENERALIZEDTIME_print(out, nextupd);
@@ -1222,7 +1222,7 @@ static int do_responder(OCSP_REQUEST **preq, BIO **pcbio, BIO *acbio, char *port
 		/* Look for "POST" signalling start of query */
 		if (!have_post)
 			{
-			if(strncmp(inbuf, "POST", 4))
+			if (strncmp(inbuf, "POST", 4))
 				{
 				BIO_printf(bio_err, "Invalid request\n");
 				return 1;

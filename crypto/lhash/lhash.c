@@ -288,7 +288,7 @@ static void doall_util_fn(_LHASH *lh, int use_arg, LHASH_DOALL_FN_TYPE func,
 			/* 22/05/08 - ben - eh? since a is not passed,
 			 * this should not be needed */
 			n=a->next;
-			if(use_arg)
+			if (use_arg)
 				func_arg(a->data,arg);
 			else
 				func(a->data);
@@ -429,7 +429,7 @@ static LHASH_NODE **getrn(_LHASH *lh, const void *data, unsigned long *rhash)
 			}
 #endif
 		lh->num_comp_calls++;
-		if(cf(n1->data,data) == 0)
+		if (cf(n1->data,data) == 0)
 			break;
 		ret= &(n1->next);
 		}

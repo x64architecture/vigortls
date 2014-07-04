@@ -165,7 +165,7 @@ int RSA_check_key(const RSA *key)
 			}
 	
 		/* iqmp = q^-1 mod p? */
-		if(!BN_mod_inverse(i, key->q, key->p, ctx))
+		if (!BN_mod_inverse(i, key->q, key->p, ctx))
 			{
 			ret = -1;
 			goto err;

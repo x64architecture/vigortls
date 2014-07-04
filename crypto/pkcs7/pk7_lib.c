@@ -92,7 +92,7 @@ long PKCS7_ctrl(PKCS7 *p7, int cmd, long larg, char *parg)
 	case PKCS7_OP_GET_DETACHED_SIGNATURE:
 		if (nid == NID_pkcs7_signed)
 			{
-			if(!p7->d.sign  || !p7->d.sign->contents->d.ptr)
+			if (!p7->d.sign  || !p7->d.sign->contents->d.ptr)
 				ret = 1;
 			else ret = 0;
 				
@@ -271,7 +271,7 @@ int PKCS7_add_signer(PKCS7 *p7, PKCS7_SIGNER_INFO *psi)
 		}
 	if (!j) /* we need to add another algorithm */
 		{
-		if(!(alg=X509_ALGOR_new())
+		if (!(alg=X509_ALGOR_new())
 			|| !(alg->parameter = ASN1_TYPE_new()))
 			{
 			X509_ALGOR_free(alg);
@@ -443,7 +443,7 @@ int PKCS7_set_digest(PKCS7 *p7, const EVP_MD *md)
 	{
 	if (PKCS7_type_is_digest(p7))
 		{
-		if(!(p7->d.digest->md->parameter = ASN1_TYPE_new()))
+		if (!(p7->d.digest->md->parameter = ASN1_TYPE_new()))
 			{
 			PKCS7err(PKCS7_F_PKCS7_SET_DIGEST,ERR_R_MALLOC_FAILURE);
 			return 0;
@@ -609,7 +609,7 @@ int PKCS7_set_cipher(PKCS7 *p7, const EVP_CIPHER *cipher)
 
 	/* Check cipher OID exists and has data in it*/
 	i = EVP_CIPHER_type(cipher);
-	if(i == NID_undef) {
+	if (i == NID_undef) {
 		PKCS7err(PKCS7_F_PKCS7_SET_CIPHER,PKCS7_R_CIPHER_HAS_NO_OBJECT_IDENTIFIER);
 		return (0);
 	}

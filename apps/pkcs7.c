@@ -261,10 +261,10 @@ bad:
 			for (i=0; i<sk_X509_num(certs); i++)
 				{
 				x=sk_X509_value(certs,i);
-				if(text) X509_print(out, x);
+				if (text) X509_print(out, x);
 				else dump_cert_text(out, x);
 
-				if(!noout) PEM_write_bio_X509(out,x);
+				if (!noout) PEM_write_bio_X509(out,x);
 				BIO_puts(out,"\n");
 				}
 			}
@@ -278,7 +278,7 @@ bad:
 
 				X509_CRL_print(out, crl);
 
-				if(!noout)PEM_write_bio_X509_CRL(out,crl);
+				if (!noout)PEM_write_bio_X509_CRL(out,crl);
 				BIO_puts(out,"\n");
 				}
 			}
@@ -287,7 +287,7 @@ bad:
 		goto end;
 		}
 
-	if(!noout) {
+	if (!noout) {
 		if 	(outformat == FORMAT_ASN1)
 			i=i2d_PKCS7_bio(out,p7);
 		else if (outformat == FORMAT_PEM)

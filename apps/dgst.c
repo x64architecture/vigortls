@@ -254,7 +254,7 @@ int MAIN(int argc, char **argv)
 		}
 
 
-	if(do_verify && !sigfile) {
+	if (do_verify && !sigfile) {
 		BIO_printf(bio_err, "No signature to verify: use the -signature option\n");
 		goto end;
 	}
@@ -295,7 +295,7 @@ int MAIN(int argc, char **argv)
 		BIO_set_callback_arg(in,(char *)bio_err);
 		}
 
-	if(!app_passwd(bio_err, passargin, NULL, &passin, NULL))
+	if (!app_passwd(bio_err, passargin, NULL, &passin, NULL))
 		{
 		BIO_printf(bio_err, "Error getting password\n");
 		goto end;
@@ -307,25 +307,25 @@ int MAIN(int argc, char **argv)
 		goto end;
 		}
 
-	if(out_bin == -1) {
-		if(keyfile)
+	if (out_bin == -1) {
+		if (keyfile)
 			out_bin = 1;
 		else
 			out_bin = 0;
 	}
 
-	if(randfile)
+	if (randfile)
 		app_RAND_load_file(randfile, bio_err, 0);
 
-	if(outfile) {
-		if(out_bin)
+	if (outfile) {
+		if (out_bin)
 			out = BIO_new_file(outfile, "wb");
 		else    out = BIO_new_file(outfile, "w");
 	} else {
 		out = BIO_new_fp(stdout, BIO_NOCLOSE);
 	}
 
-	if(!out) {
+	if (!out) {
 		BIO_printf(bio_err, "Error opening output file %s\n", 
 					outfile ? outfile : "(stdout)");
 		ERR_print_errors(bio_err);
@@ -337,7 +337,7 @@ int MAIN(int argc, char **argv)
 		goto end;
 		}
 
-	if(keyfile)
+	if (keyfile)
 		{
 		if (want_pub)
 			sigkey = load_pubkey(bio_err, keyfile, keyform, 0, NULL,
@@ -448,12 +448,12 @@ int MAIN(int argc, char **argv)
 			}
 		}
 
-	if(sigfile && sigkey) {
+	if (sigfile && sigkey) {
 		BIO *sigbio;
 		sigbio = BIO_new_file(sigfile, "rb");
 		siglen = EVP_PKEY_size(sigkey);
 		sigbuf = malloc(siglen);
-		if(!sigbio) {
+		if (!sigbio) {
 			BIO_printf(bio_err, "Error opening signature file %s\n",
 								sigfile);
 			ERR_print_errors(bio_err);
@@ -461,7 +461,7 @@ int MAIN(int argc, char **argv)
 		}
 		siglen = BIO_read(sigbio, sigbuf, siglen);
 		BIO_free(sigbio);
-		if(siglen <= 0) {
+		if (siglen <= 0) {
 			BIO_printf(bio_err, "Error reading signature file %s\n",
 								sigfile);
 			ERR_print_errors(bio_err);
@@ -486,7 +486,7 @@ int MAIN(int argc, char **argv)
 	else
 		{
 		const char *md_name = NULL, *sig_name = NULL;
-		if(!out_bin)
+		if (!out_bin)
 			{
 			if (sigkey)
 				{
@@ -511,7 +511,7 @@ int MAIN(int argc, char **argv)
 			else
 			r=do_fp(out,buf,inp,separator,out_bin,sigkey,sigbuf,
 				siglen,sig_name,md_name, argv[i],bmd);
-			if(r)
+			if (r)
 			    err=r;
 			(void)BIO_reset(bmd);
 			}
@@ -531,7 +531,7 @@ end:
 		sk_OPENSSL_STRING_free(sigopts);
 	if (macopts)
 		sk_OPENSSL_STRING_free(macopts);
-	if(sigbuf) free(sigbuf);
+	if (sigbuf) free(sigbuf);
 	if (bmd != NULL) BIO_free(bmd);
 	apps_shutdown();
 	OPENSSL_EXIT(err);
@@ -548,7 +548,7 @@ int do_fp(BIO *out, unsigned char *buf, BIO *bp, int sep, int binout,
 	for (;;)
 		{
 		i=BIO_read(bp,(char *)buf,BUFSIZE);
-		if(i < 0)
+		if (i < 0)
 			{
 			BIO_printf(bio_err, "Read Error in %s\n",file);
 			ERR_print_errors(bio_err);
@@ -556,14 +556,14 @@ int do_fp(BIO *out, unsigned char *buf, BIO *bp, int sep, int binout,
 			}
 		if (i == 0) break;
 		}
-	if(sigin)
+	if (sigin)
 		{
 		EVP_MD_CTX *ctx;
 		BIO_get_md_ctx(bp, &ctx);
 		i = EVP_DigestVerifyFinal(ctx, sigin, (unsigned int)siglen); 
-		if(i > 0)
+		if (i > 0)
 			BIO_printf(out, "Verified OK\n");
-		else if(i == 0)
+		else if (i == 0)
 			{
 			BIO_printf(out, "Verification Failure\n");
 			return 1;
@@ -576,12 +576,12 @@ int do_fp(BIO *out, unsigned char *buf, BIO *bp, int sep, int binout,
 			}
 		return 0;
 		}
-	if(key)
+	if (key)
 		{
 		EVP_MD_CTX *ctx;
 		BIO_get_md_ctx(bp, &ctx);
 		len = BUFSIZE;
-		if(!EVP_DigestSignFinal(ctx, buf, &len)) 
+		if (!EVP_DigestSignFinal(ctx, buf, &len)) 
 			{
 			BIO_printf(bio_err, "Error Signing Data\n");
 			ERR_print_errors(bio_err);
@@ -598,7 +598,7 @@ int do_fp(BIO *out, unsigned char *buf, BIO *bp, int sep, int binout,
 			}
 		}
 
-	if(binout) BIO_write(out, buf, len);
+	if (binout) BIO_write(out, buf, len);
 	else if (sep == 2)
 		{
 		for (i=0; i<(int)len; i++)

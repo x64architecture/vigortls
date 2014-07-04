@@ -272,14 +272,14 @@ void *EVP_PKEY_get0(EVP_PKEY *pkey)
 int EVP_PKEY_set1_RSA(EVP_PKEY *pkey, RSA *key)
 {
 	int ret = EVP_PKEY_assign_RSA(pkey, key);
-	if(ret)
+	if (ret)
 		RSA_up_ref(key);
 	return ret;
 }
 
 RSA *EVP_PKEY_get1_RSA(EVP_PKEY *pkey)
 	{
-	if(pkey->type != EVP_PKEY_RSA) {
+	if (pkey->type != EVP_PKEY_RSA) {
 		EVPerr(EVP_F_EVP_PKEY_GET1_RSA, EVP_R_EXPECTING_AN_RSA_KEY);
 		return NULL;
 	}
@@ -291,14 +291,14 @@ RSA *EVP_PKEY_get1_RSA(EVP_PKEY *pkey)
 int EVP_PKEY_set1_DSA(EVP_PKEY *pkey, DSA *key)
 {
 	int ret = EVP_PKEY_assign_DSA(pkey, key);
-	if(ret)
+	if (ret)
 		DSA_up_ref(key);
 	return ret;
 }
 
 DSA *EVP_PKEY_get1_DSA(EVP_PKEY *pkey)
 	{
-	if(pkey->type != EVP_PKEY_DSA) {
+	if (pkey->type != EVP_PKEY_DSA) {
 		EVPerr(EVP_F_EVP_PKEY_GET1_DSA, EVP_R_EXPECTING_A_DSA_KEY);
 		return NULL;
 	}
@@ -332,14 +332,14 @@ EC_KEY *EVP_PKEY_get1_EC_KEY(EVP_PKEY *pkey)
 int EVP_PKEY_set1_DH(EVP_PKEY *pkey, DH *key)
 {
 	int ret = EVP_PKEY_assign_DH(pkey, key);
-	if(ret)
+	if (ret)
 		DH_up_ref(key);
 	return ret;
 }
 
 DH *EVP_PKEY_get1_DH(EVP_PKEY *pkey)
 	{
-	if(pkey->type != EVP_PKEY_DH) {
+	if (pkey->type != EVP_PKEY_DH) {
 		EVPerr(EVP_F_EVP_PKEY_GET1_DH, EVP_R_EXPECTING_A_DH_KEY);
 		return NULL;
 	}

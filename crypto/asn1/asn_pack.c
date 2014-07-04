@@ -112,7 +112,7 @@ void *ASN1_unpack_string(ASN1_STRING *oct, d2i_of_void *d2i)
 	char *ret;
 
 	p = oct->data;
-	if(!(ret = d2i(NULL, &p, oct->length)))
+	if (!(ret = d2i(NULL, &p, oct->length)))
 		ASN1err(ASN1_F_ASN1_UNPACK_STRING,ASN1_R_DECODE_ERROR);
 	return ret;
 }
@@ -161,7 +161,7 @@ ASN1_STRING *ASN1_item_pack(void *obj, const ASN1_ITEM *it, ASN1_STRING **oct)
 		if (oct) *oct = octmp;
 	} else octmp = *oct;
 
-	if(octmp->data) {
+	if (octmp->data) {
 		free(octmp->data);
 		octmp->data = NULL;
 	}
@@ -185,7 +185,7 @@ void *ASN1_item_unpack(ASN1_STRING *oct, const ASN1_ITEM *it)
 	void *ret;
 
 	p = oct->data;
-	if(!(ret = ASN1_item_d2i(NULL, &p, oct->length, it)))
+	if (!(ret = ASN1_item_d2i(NULL, &p, oct->length, it)))
 		ASN1err(ASN1_F_ASN1_ITEM_UNPACK,ASN1_R_DECODE_ERROR);
 	return ret;
 }

@@ -198,7 +198,7 @@ bad:
         setup_engine(bio_err, engine, 0);
 #endif
 
-	if(!app_passwd(bio_err, NULL, passargout, NULL, &passout)) {
+	if (!app_passwd(bio_err, NULL, passargout, NULL, &passout)) {
 		BIO_printf(bio_err, "Error getting password\n");
 		goto end;
 	}
@@ -258,7 +258,7 @@ end:
 	if (in != NULL) BIO_free(in);
 	if (out != NULL) BIO_free_all(out);
 	if (dsa != NULL) DSA_free(dsa);
-	if(passout) free(passout);
+	if (passout) free(passout);
 	apps_shutdown();
 	OPENSSL_EXIT(ret);
 	}

@@ -320,12 +320,12 @@ int BIO_gets(BIO *b, char *in, int inl)
 
 int BIO_indent(BIO *b,int indent,int max)
 	{
-	if(indent < 0)
+	if (indent < 0)
 		indent=0;
-	if(indent > max)
+	if (indent > max)
 		indent=max;
 	while(indent--)
-		if(BIO_puts(b," ") != 1)
+		if (BIO_puts(b," ") != 1)
 			return 0;
 	return 1;
 	}
@@ -478,7 +478,7 @@ BIO *BIO_find_type(BIO *bio, int type)
 	{
 	int mt,mask;
 
-	if(!bio) return NULL;
+	if (!bio) return NULL;
 	mask=type&0xff;
 	do	{
 		if (bio->method != NULL)
@@ -499,7 +499,7 @@ BIO *BIO_find_type(BIO *bio, int type)
 
 BIO *BIO_next(BIO *b)
 	{
-	if(!b) return NULL;
+	if (!b) return NULL;
 	return b->next_bio;
 	}
 
@@ -589,13 +589,13 @@ void *BIO_get_ex_data(BIO *bio, int idx)
 
 unsigned long BIO_number_read(BIO *bio)
 {
-	if(bio) return bio->num_read;
+	if (bio) return bio->num_read;
 	return 0;
 }
 
 unsigned long BIO_number_written(BIO *bio)
 {
-	if(bio) return bio->num_write;
+	if (bio) return bio->num_write;
 	return 0;
 }
 

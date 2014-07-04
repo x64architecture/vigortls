@@ -131,19 +131,19 @@ static int util_flags(BIO *bio_out, unsigned int flags, const char *indent)
 	int started = 0, err = 0;
 	/* Indent before displaying input flags */
 	BIO_printf(bio_out, "%s%s(input flags): ", indent, indent);
-	if(flags == 0)
+	if (flags == 0)
 		{
 		BIO_printf(bio_out, "<no flags>\n");
 		return 1;
 		}
         /* If the object is internal, mark it in a way that shows instead of
          * having it part of all the other flags, even if it really is. */
-	if(flags & ENGINE_CMD_FLAG_INTERNAL)
+	if (flags & ENGINE_CMD_FLAG_INTERNAL)
 		{
 		BIO_printf(bio_out, "[Internal] ");
 		}
 
-	if(flags & ENGINE_CMD_FLAG_NUMERIC)
+	if (flags & ENGINE_CMD_FLAG_NUMERIC)
 		{
 		BIO_printf(bio_out, "NUMERIC");
 		started = 1;
@@ -152,9 +152,9 @@ static int util_flags(BIO *bio_out, unsigned int flags, const char *indent)
 	 * STRING, and NO_INPUT flags have been used. Future flags that can be
 	 * OR'd together with these would need to added after these to preserve
 	 * the testing logic. */
-	if(flags & ENGINE_CMD_FLAG_STRING)
+	if (flags & ENGINE_CMD_FLAG_STRING)
 		{
-		if(started)
+		if (started)
 			{
 			BIO_printf(bio_out, "|");
 			err = 1;
@@ -162,9 +162,9 @@ static int util_flags(BIO *bio_out, unsigned int flags, const char *indent)
 		BIO_printf(bio_out, "STRING");
 		started = 1;
 		}
-	if(flags & ENGINE_CMD_FLAG_NO_INPUT)
+	if (flags & ENGINE_CMD_FLAG_NO_INPUT)
 		{
-		if(started)
+		if (started)
 			{
 			BIO_printf(bio_out, "|");
 			err = 1;
@@ -177,12 +177,12 @@ static int util_flags(BIO *bio_out, unsigned int flags, const char *indent)
 			~ENGINE_CMD_FLAG_STRING &
 			~ENGINE_CMD_FLAG_NO_INPUT &
 			~ENGINE_CMD_FLAG_INTERNAL;
-	if(flags)
+	if (flags)
 		{
-		if(started) BIO_printf(bio_out, "|");
+		if (started) BIO_printf(bio_out, "|");
 		BIO_printf(bio_out, "<0x%04X>", flags);
 		}
-	if(err)
+	if (err)
 		BIO_printf(bio_out, "  <illegal flags!>");
 	BIO_printf(bio_out, "\n");
 	return 1;
@@ -198,7 +198,7 @@ static int util_verbose(ENGINE *e, int verbose, BIO *bio_out, const char *indent
 	int flags;
 	int xpos = 0;
 	STACK_OF(OPENSSL_STRING) *cmds = NULL;
-	if(!ENGINE_ctrl(e, ENGINE_CTRL_HAS_CTRL_FUNCTION, 0, NULL, NULL) ||
+	if (!ENGINE_ctrl(e, ENGINE_CTRL_HAS_CTRL_FUNCTION, 0, NULL, NULL) ||
 			((num = ENGINE_ctrl(e, ENGINE_CTRL_GET_FIRST_CMD_TYPE,
 					0, NULL, NULL)) <= 0))
 		{
@@ -210,48 +210,48 @@ static int util_verbose(ENGINE *e, int verbose, BIO *bio_out, const char *indent
 
 	cmds = sk_OPENSSL_STRING_new_null();
 
-	if(!cmds)
+	if (!cmds)
 		goto err;
 	do {
 		int len;
 		/* Get the command input flags */
-		if((flags = ENGINE_ctrl(e, ENGINE_CTRL_GET_CMD_FLAGS, num,
+		if ((flags = ENGINE_ctrl(e, ENGINE_CTRL_GET_CMD_FLAGS, num,
 					NULL, NULL)) < 0)
 			goto err;
                 if (!(flags & ENGINE_CMD_FLAG_INTERNAL) || verbose >= 4)
                         {
                         /* Get the command name */
-                        if((len = ENGINE_ctrl(e, ENGINE_CTRL_GET_NAME_LEN_FROM_CMD, num,
+                        if ((len = ENGINE_ctrl(e, ENGINE_CTRL_GET_NAME_LEN_FROM_CMD, num,
                                 NULL, NULL)) <= 0)
                                 goto err;
-                        if((name = malloc(len + 1)) == NULL)
+                        if ((name = malloc(len + 1)) == NULL)
                                 goto err;
-                        if(ENGINE_ctrl(e, ENGINE_CTRL_GET_NAME_FROM_CMD, num, name,
+                        if (ENGINE_ctrl(e, ENGINE_CTRL_GET_NAME_FROM_CMD, num, name,
                                 NULL) <= 0)
                                 goto err;
                         /* Get the command description */
-                        if((len = ENGINE_ctrl(e, ENGINE_CTRL_GET_DESC_LEN_FROM_CMD, num,
+                        if ((len = ENGINE_ctrl(e, ENGINE_CTRL_GET_DESC_LEN_FROM_CMD, num,
                                 NULL, NULL)) < 0)
                                 goto err;
-                        if(len > 0)
+                        if (len > 0)
                                 {
-                                if((desc = malloc(len + 1)) == NULL)
+                                if ((desc = malloc(len + 1)) == NULL)
                                         goto err;
-                                if(ENGINE_ctrl(e, ENGINE_CTRL_GET_DESC_FROM_CMD, num, desc,
+                                if (ENGINE_ctrl(e, ENGINE_CTRL_GET_DESC_FROM_CMD, num, desc,
                                         NULL) <= 0)
                                         goto err;
                                 }
                         /* Now decide on the output */
-                        if(xpos == 0)
+                        if (xpos == 0)
                                 /* Do an indent */
                                 xpos = BIO_puts(bio_out, indent);
                         else
                                 /* Otherwise prepend a ", " */
                                 xpos += BIO_printf(bio_out, ", ");
-                        if(verbose == 1)
+                        if (verbose == 1)
                                 {
                                 /* We're just listing names, comma-delimited */
-                                if((xpos > (int)strlen(indent)) &&
+                                if ((xpos > (int)strlen(indent)) &&
 					(xpos + (int)strlen(name) > line_wrap))
                                         {
                                         BIO_printf(bio_out, "\n");
@@ -265,25 +265,25 @@ static int util_verbose(ENGINE *e, int verbose, BIO *bio_out, const char *indent
                                 BIO_printf(bio_out, "%s: %s\n", name,
                                         (desc == NULL) ? "<no description>" : desc);
                                 /* ... and sometimes input flags */
-                                if((verbose >= 3) && !util_flags(bio_out, flags,
+                                if ((verbose >= 3) && !util_flags(bio_out, flags,
                                         indent))
                                         goto err;
                                 xpos = 0;
                                 }
                         }
 		free(name); name = NULL;
-		if(desc) { free(desc); desc = NULL; }
+		if (desc) { free(desc); desc = NULL; }
 		/* Move to the next command */
 		num = ENGINE_ctrl(e, ENGINE_CTRL_GET_NEXT_CMD_TYPE,
 					num, NULL, NULL);
 		} while(num > 0);
-	if(xpos > 0)
+	if (xpos > 0)
 		BIO_printf(bio_out, "\n");
 	ret = 1;
 err:
-	if(cmds) sk_OPENSSL_STRING_pop_free(cmds, identity);
-	if(name) free(name);
-	if(desc) free(desc);
+	if (cmds) sk_OPENSSL_STRING_pop_free(cmds, identity);
+	if (name) free(name);
+	if (desc) free(desc);
 	return ret;
 	}
 
@@ -292,7 +292,7 @@ static void util_do_cmds(ENGINE *e, STACK_OF(OPENSSL_STRING) *cmds,
 	{
 	int loop, res, num = sk_OPENSSL_STRING_num(cmds);
 
-	if(num < 0)
+	if (num < 0)
 		{
 		BIO_printf(bio_out, "[Error]: internal stack error\n");
 		return;
@@ -304,14 +304,14 @@ static void util_do_cmds(ENGINE *e, STACK_OF(OPENSSL_STRING) *cmds,
 		cmd = sk_OPENSSL_STRING_value(cmds, loop);
 		res = 1; /* assume success */
 		/* Check if this command has no ":arg" */
-		if((arg = strstr(cmd, ":")) == NULL)
+		if ((arg = strstr(cmd, ":")) == NULL)
 			{
-			if(!ENGINE_ctrl_cmd_string(e, cmd, NULL, 0))
+			if (!ENGINE_ctrl_cmd_string(e, cmd, NULL, 0))
 				res = 0;
 			}
 		else
 			{
-			if((int)(arg - cmd) > 254)
+			if ((int)(arg - cmd) > 254)
 				{
 				BIO_printf(bio_out,"[Error]: command name too long\n");
 				return;
@@ -320,10 +320,10 @@ static void util_do_cmds(ENGINE *e, STACK_OF(OPENSSL_STRING) *cmds,
 			buf[arg-cmd] = '\0';
 			arg++; /* Move past the ":" */
 			/* Call the command with the argument */
-			if(!ENGINE_ctrl_cmd_string(e, buf, arg, 0))
+			if (!ENGINE_ctrl_cmd_string(e, buf, arg, 0))
 				res = 0;
 			}
-		if(res)
+		if (res)
 			BIO_printf(bio_out, "[Success]: %s\n", cmd);
 		else
 			{
@@ -364,9 +364,9 @@ int MAIN(int argc, char **argv)
 		{
 		if (strncmp(*argv,"-v",2) == 0)
 			{
-			if(strspn(*argv + 1, "v") < strlen(*argv + 1))
+			if (strspn(*argv + 1, "v") < strlen(*argv + 1))
 				goto skip_arg_loop;
-			if((verbose=strlen(*argv + 1)) > 4)
+			if ((verbose=strlen(*argv + 1)) > 4)
 				goto skip_arg_loop;
 			}
 		else if (strcmp(*argv,"-c") == 0)
@@ -374,9 +374,9 @@ int MAIN(int argc, char **argv)
 		else if (strncmp(*argv,"-t",2) == 0)
 			{
 			test_avail=1;
-			if(strspn(*argv + 1, "t") < strlen(*argv + 1))
+			if (strspn(*argv + 1, "t") < strlen(*argv + 1))
 				goto skip_arg_loop;
-			if((test_avail_noise = strlen(*argv + 1) - 1) > 1)
+			if ((test_avail_noise = strlen(*argv + 1) - 1) > 1)
 				goto skip_arg_loop;
 			}
 		else if (strcmp(*argv,"-pre") == 0)
@@ -462,30 +462,30 @@ skip_arg_loop:
 					goto end;
 
 				fn_c = ENGINE_get_ciphers(e);
-				if(!fn_c) goto skip_ciphers;
+				if (!fn_c) goto skip_ciphers;
 				n = fn_c(e, NULL, &nids, 0);
 				for(k=0 ; k < n ; ++k)
-					if(!append_buf(&cap_buf,
+					if (!append_buf(&cap_buf,
 						       OBJ_nid2sn(nids[k]),
 						       &cap_size, 256))
 						goto end;
 
 skip_ciphers:
 				fn_d = ENGINE_get_digests(e);
-				if(!fn_d) goto skip_digests;
+				if (!fn_d) goto skip_digests;
 				n = fn_d(e, NULL, &nids, 0);
 				for(k=0 ; k < n ; ++k)
-					if(!append_buf(&cap_buf,
+					if (!append_buf(&cap_buf,
 						       OBJ_nid2sn(nids[k]),
 						       &cap_size, 256))
 						goto end;
 
 skip_digests:
 				fn_pk = ENGINE_get_pkey_meths(e);
-				if(!fn_pk) goto skip_pmeths;
+				if (!fn_pk) goto skip_pmeths;
 				n = fn_pk(e, NULL, &nids, 0);
 				for(k=0 ; k < n ; ++k)
-					if(!append_buf(&cap_buf,
+					if (!append_buf(&cap_buf,
 						       OBJ_nid2sn(nids[k]),
 						       &cap_size, 256))
 						goto end;
@@ -495,7 +495,7 @@ skip_pmeths:
 
 				free(cap_buf);
 				}
-			if(test_avail)
+			if (test_avail)
 				{
 				BIO_printf(bio_out, "%s", indent);
 				if (ENGINE_init(e))
@@ -507,12 +507,12 @@ skip_pmeths:
 				else
 					{
 					BIO_printf(bio_out, "[ unavailable ]\n");
-					if(test_avail_noise)
+					if (test_avail_noise)
 						ERR_print_errors_fp(stdout);
 					ERR_clear_error();
 					}
 				}
-			if((verbose > 0) && !util_verbose(e, verbose, bio_out, indent))
+			if ((verbose > 0) && !util_verbose(e, verbose, bio_out, indent))
 				goto end;
 			ENGINE_free(e);
 			}

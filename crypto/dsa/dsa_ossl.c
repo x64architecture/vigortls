@@ -104,23 +104,23 @@ NULL
 #define DSA_MOD_EXP(err_instr,dsa,rr,a1,p1,a2,p2,m,ctx,in_mont) \
 	do { \
 	int _tmp_res53; \
-	if((dsa)->meth->dsa_mod_exp) \
+	if ((dsa)->meth->dsa_mod_exp) \
 		_tmp_res53 = (dsa)->meth->dsa_mod_exp((dsa), (rr), (a1), (p1), \
 				(a2), (p2), (m), (ctx), (in_mont)); \
 	else \
 		_tmp_res53 = BN_mod_exp2_mont((rr), (a1), (p1), (a2), (p2), \
 				(m), (ctx), (in_mont)); \
-	if(!_tmp_res53) err_instr; \
+	if (!_tmp_res53) err_instr; \
 	} while(0)
 #define DSA_BN_MOD_EXP(err_instr,dsa,r,a,p,m,ctx,m_ctx) \
 	do { \
 	int _tmp_res53; \
-	if((dsa)->meth->bn_mod_exp) \
+	if ((dsa)->meth->bn_mod_exp) \
 		_tmp_res53 = (dsa)->meth->bn_mod_exp((dsa), (r), (a), (p), \
 				(m), (ctx), (m_ctx)); \
 	else \
 		_tmp_res53 = BN_mod_exp_mont((r), (a), (p), (m), (ctx), (m_ctx)); \
-	if(!_tmp_res53) err_instr; \
+	if (!_tmp_res53) err_instr; \
 	} while(0)
 
 const DSA_METHOD *DSA_OpenSSL(void)
@@ -405,7 +405,7 @@ static int dsa_init(DSA *dsa)
 
 static int dsa_finish(DSA *dsa)
 {
-	if(dsa->method_mont_p)
+	if (dsa->method_mont_p)
 		BN_MONT_CTX_free(dsa->method_mont_p);
 	return (1);
 }

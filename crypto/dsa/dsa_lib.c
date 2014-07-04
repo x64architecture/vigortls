@@ -79,7 +79,7 @@ void DSA_set_default_method(const DSA_METHOD *meth)
 
 const DSA_METHOD *DSA_get_default_method(void)
 	{
-	if(!default_DSA_method)
+	if (!default_DSA_method)
 		{
 		default_DSA_method = DSA_OpenSSL();
 		}
@@ -134,10 +134,10 @@ DSA *DSA_new_method(ENGINE *engine)
 		}
 	else
 		ret->engine = ENGINE_get_default_DSA();
-	if(ret->engine)
+	if (ret->engine)
 		{
 		ret->meth = ENGINE_get_DSA(ret->engine);
-		if(!ret->meth)
+		if (!ret->meth)
 			{
 			DSAerr(DSA_F_DSA_NEW_METHOD,
 				ERR_R_ENGINE_LIB);
@@ -197,10 +197,10 @@ void DSA_free(DSA *r)
 		}
 #endif
 
-	if(r->meth->finish)
+	if (r->meth->finish)
 		r->meth->finish(r);
 #ifndef OPENSSL_NO_ENGINE
-	if(r->engine)
+	if (r->engine)
 		ENGINE_finish(r->engine);
 #endif
 

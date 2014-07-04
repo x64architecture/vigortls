@@ -154,9 +154,9 @@ int EVP_DigestInit_ex(EVP_MD_CTX *ctx, const EVP_MD *type, ENGINE *impl)
 		/* Ensure an ENGINE left lying around from last time is cleared
 		 * (the previous check attempted to avoid this if the same
 		 * ENGINE and EVP_MD could be used). */
-		if(ctx->engine)
+		if (ctx->engine)
 			ENGINE_finish(ctx->engine);
-		if(impl)
+		if (impl)
 			{
 			if (!ENGINE_init(impl))
 				{
@@ -167,11 +167,11 @@ int EVP_DigestInit_ex(EVP_MD_CTX *ctx, const EVP_MD *type, ENGINE *impl)
 		else
 			/* Ask if an ENGINE is reserved for this job */
 			impl = ENGINE_get_digest_engine(type->type);
-		if(impl)
+		if (impl)
 			{
 			/* There's an ENGINE for this job ... (apparently) */
 			const EVP_MD *d = ENGINE_get_digest(impl, type->type);
-			if(!d)
+			if (!d)
 				{
 				/* Same comment from evp_enc.c */
 				EVPerr(EVP_F_EVP_DIGESTINIT_EX,EVP_R_INITIALIZATION_ERROR);
@@ -189,7 +189,7 @@ int EVP_DigestInit_ex(EVP_MD_CTX *ctx, const EVP_MD *type, ENGINE *impl)
 			ctx->engine = NULL;
 		}
 	else
-	if(!ctx->digest)
+	if (!ctx->digest)
 		{
 		EVPerr(EVP_F_EVP_DIGESTINIT_EX,EVP_R_NO_DIGEST_SET);
 		return 0;
@@ -369,7 +369,7 @@ int EVP_MD_CTX_cleanup(EVP_MD_CTX *ctx)
 	if (ctx->pctx)
 		EVP_PKEY_CTX_free(ctx->pctx);
 #ifndef OPENSSL_NO_ENGINE
-	if(ctx->engine)
+	if (ctx->engine)
 		/* The EVP_MD we used belongs to an ENGINE, release the
 		 * functional reference we held for this reason. */
 		ENGINE_finish(ctx->engine);

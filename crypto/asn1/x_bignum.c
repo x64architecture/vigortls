@@ -95,14 +95,14 @@ ASN1_ITEM_end(CBIGNUM)
 static int bn_new(ASN1_VALUE **pval, const ASN1_ITEM *it)
 {
 	*pval = (ASN1_VALUE *)BN_new();
-	if(*pval) return 1;
+	if (*pval) return 1;
 	else return 0;
 }
 
 static void bn_free(ASN1_VALUE **pval, const ASN1_ITEM *it)
 {
-	if(!*pval) return;
-	if(it->size & BN_SENSITIVE) BN_clear_free((BIGNUM *)*pval);
+	if (!*pval) return;
+	if (it->size & BN_SENSITIVE) BN_clear_free((BIGNUM *)*pval);
 	else BN_free((BIGNUM *)*pval);
 	*pval = NULL;
 }
@@ -111,13 +111,13 @@ static int bn_i2c(ASN1_VALUE **pval, unsigned char *cont, int *putype, const ASN
 {
 	BIGNUM *bn;
 	int pad;
-	if(!*pval) return -1;
+	if (!*pval) return -1;
 	bn = (BIGNUM *)*pval;
 	/* If MSB set in an octet we need a padding byte */
-	if(BN_num_bits(bn) & 0x7) pad = 0;
+	if (BN_num_bits(bn) & 0x7) pad = 0;
 	else pad = 1;
-	if(cont) {
-		if(pad) *cont++ = 0;
+	if (cont) {
+		if (pad) *cont++ = 0;
 		BN_bn2bin(bn, cont);
 	}
 	return pad + BN_num_bytes(bn);
@@ -127,9 +127,9 @@ static int bn_c2i(ASN1_VALUE **pval, const unsigned char *cont, int len,
 		  int utype, char *free_cont, const ASN1_ITEM *it)
 {
 	BIGNUM *bn;
-	if(!*pval) bn_new(pval, it);
+	if (!*pval) bn_new(pval, it);
 	bn  = (BIGNUM *)*pval;
-	if(!BN_bin2bn(cont, len, bn)) {
+	if (!BN_bin2bn(cont, len, bn)) {
 		bn_free(pval, it);
 		return 0;
 	}

@@ -84,7 +84,7 @@ unsigned char * PKCS12_pbe_crypt(X509_ALGOR *algor, const char *pass,
 		return NULL;
 	}
 
-	if(!(out = malloc(inlen + EVP_CIPHER_CTX_block_size(&ctx)))) {
+	if (!(out = malloc(inlen + EVP_CIPHER_CTX_block_size(&ctx)))) {
 		PKCS12err(PKCS12_F_PKCS12_PBE_CRYPT,ERR_R_MALLOC_FAILURE);
 		goto err;
 	}
@@ -98,7 +98,7 @@ unsigned char * PKCS12_pbe_crypt(X509_ALGOR *algor, const char *pass,
 		}
 
 	outlen = i;
-	if(!EVP_CipherFinal_ex(&ctx, out + i, &i)) {
+	if (!EVP_CipherFinal_ex(&ctx, out + i, &i)) {
 		free(out);
 		out = NULL;
 		PKCS12err(PKCS12_F_PKCS12_PBE_CRYPT,PKCS12_R_PKCS12_CIPHERFINAL_ERROR);
@@ -145,7 +145,7 @@ void * PKCS12_item_decrypt_d2i(X509_ALGOR *algor, const ASN1_ITEM *it,
 #endif
 	ret = ASN1_item_d2i(NULL, &p, outlen, it);
 	if (zbuf) OPENSSL_cleanse(out, outlen);
-	if(!ret) PKCS12err(PKCS12_F_PKCS12_ITEM_DECRYPT_D2I,PKCS12_R_DECODE_ERROR);
+	if (!ret) PKCS12err(PKCS12_F_PKCS12_ITEM_DECRYPT_D2I,PKCS12_R_DECODE_ERROR);
 	free(out);
 	return ret;
 }

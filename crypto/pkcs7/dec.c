@@ -116,7 +116,7 @@ char *argv[];
 
 	 if (!BIO_read_filename(data,argv[0])) goto err; 
 
-	if(!keyfile) {
+	if (!keyfile) {
 		fprintf(stderr, "No private key file specified\n");
 		goto err;
 	}

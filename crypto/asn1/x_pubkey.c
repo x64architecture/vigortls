@@ -202,11 +202,11 @@ EVP_PKEY *d2i_PUBKEY(EVP_PKEY **a, const unsigned char **pp,
 	X509_PUBKEY *xpk;
 	EVP_PKEY *pktmp;
 	xpk = d2i_X509_PUBKEY(NULL, pp, length);
-	if(!xpk) return NULL;
+	if (!xpk) return NULL;
 	pktmp = X509_PUBKEY_get(xpk);
 	X509_PUBKEY_free(xpk);
-	if(!pktmp) return NULL;
-	if(a)
+	if (!pktmp) return NULL;
+	if (a)
 		{
 		EVP_PKEY_free(*a);
 		*a = pktmp;
@@ -218,8 +218,8 @@ int i2d_PUBKEY(EVP_PKEY *a, unsigned char **pp)
 	{
 	X509_PUBKEY *xpk=NULL;
 	int ret;
-	if(!a) return 0;
-	if(!X509_PUBKEY_set(&xpk, a)) return 0;
+	if (!a) return 0;
+	if (!X509_PUBKEY_set(&xpk, a)) return 0;
 	ret = i2d_X509_PUBKEY(xpk, pp);
 	X509_PUBKEY_free(xpk);
 	return ret;
@@ -292,9 +292,9 @@ int i2d_DSA_PUBKEY(DSA *a, unsigned char **pp)
 	{
 	EVP_PKEY *pktmp;
 	int ret;
-	if(!a) return 0;
+	if (!a) return 0;
 	pktmp = EVP_PKEY_new();
-	if(!pktmp)
+	if (!pktmp)
 		{
 		ASN1err(ASN1_F_I2D_DSA_PUBKEY, ERR_R_MALLOC_FAILURE);
 		return 0;

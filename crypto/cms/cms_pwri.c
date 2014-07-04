@@ -182,7 +182,7 @@ CMS_RecipientInfo *CMS_add0_recipient_password(CMS_ContentInfo *cms,
 	if (!pwri->keyEncryptionAlgorithm->parameter)
 		goto merr;
 
-        if(!ASN1_item_pack(encalg, ASN1_ITEM_rptr(X509_ALGOR),
+        if (!ASN1_item_pack(encalg, ASN1_ITEM_rptr(X509_ALGOR),
 	    &pwri->keyEncryptionAlgorithm->parameter->value.sequence))
 		goto merr;
         pwri->keyEncryptionAlgorithm->parameter->type = V_ASN1_SEQUENCE;
@@ -367,7 +367,7 @@ int cms_RecipientInfo_pwri_crypt(CMS_ContentInfo *cms, CMS_RecipientInfo *ri,
 
 	kekcipher = EVP_get_cipherbyobj(kekalg->algorithm);
 		
-	if(!kekcipher)
+	if (!kekcipher)
 		{
 		CMSerr(CMS_F_CMS_RECIPIENTINFO_PWRI_CRYPT,
 				CMS_R_UNKNOWN_CIPHER);
@@ -378,7 +378,7 @@ int cms_RecipientInfo_pwri_crypt(CMS_ContentInfo *cms, CMS_RecipientInfo *ri,
 	if (!EVP_CipherInit_ex(&kekctx, kekcipher, NULL, NULL, NULL, en_de))
 		goto err;
 	EVP_CIPHER_CTX_set_padding(&kekctx, 0);
-	if(EVP_CIPHER_asn1_to_param(&kekctx, kekalg->parameter) < 0)
+	if (EVP_CIPHER_asn1_to_param(&kekctx, kekalg->parameter) < 0)
 		{
 		CMSerr(CMS_F_CMS_RECIPIENTINFO_PWRI_CRYPT,
 				CMS_R_CIPHER_PARAMETER_INITIALISATION_ERROR);

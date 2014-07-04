@@ -331,7 +331,7 @@ BIO_CONNECT *BIO_CONNECT_new(void)
 
 void BIO_CONNECT_free(BIO_CONNECT *a)
 	{
-	if(a == NULL)
+	if (a == NULL)
 	    return;
 
 	if (a->param_hostname != NULL)

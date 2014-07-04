@@ -897,7 +897,7 @@ int dtls1_send_finished(SSL *s, int a, int b, const char *sender, int slen) {
         /* Copy the finished so we can use it for
         * renegotiation checks
         */
-        if(s->type == SSL_ST_CONNECT) {
+        if (s->type == SSL_ST_CONNECT) {
             OPENSSL_assert(i <= EVP_MAX_MD_SIZE);
             memcpy(s->s3->previous_client_finished, 
                    s->s3->tmp.finish_md, i);

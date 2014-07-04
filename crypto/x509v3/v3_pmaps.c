@@ -120,14 +120,14 @@ static void *v2i_POLICY_MAPPINGS(const X509V3_EXT_METHOD *method,
 	CONF_VALUE *val;
 	int i;
 
-	if(!(pmaps = sk_POLICY_MAPPING_new_null())) {
+	if (!(pmaps = sk_POLICY_MAPPING_new_null())) {
 		X509V3err(X509V3_F_V2I_POLICY_MAPPINGS,ERR_R_MALLOC_FAILURE);
 		return NULL;
 	}
 
 	for(i = 0; i < sk_CONF_VALUE_num(nval); i++) {
 		val = sk_CONF_VALUE_value(nval, i);
-		if(!val->value || !val->name) {
+		if (!val->value || !val->name) {
 			sk_POLICY_MAPPING_pop_free(pmaps, POLICY_MAPPING_free);
 			X509V3err(X509V3_F_V2I_POLICY_MAPPINGS,X509V3_R_INVALID_OBJECT_IDENTIFIER);
 			X509V3_conf_err(val);
@@ -135,7 +135,7 @@ static void *v2i_POLICY_MAPPINGS(const X509V3_EXT_METHOD *method,
 		}
 		obj1 = OBJ_txt2obj(val->name, 0);
 		obj2 = OBJ_txt2obj(val->value, 0);
-		if(!obj1 || !obj2) {
+		if (!obj1 || !obj2) {
 			sk_POLICY_MAPPING_pop_free(pmaps, POLICY_MAPPING_free);
 			X509V3err(X509V3_F_V2I_POLICY_MAPPINGS,X509V3_R_INVALID_OBJECT_IDENTIFIER);
 			X509V3_conf_err(val);

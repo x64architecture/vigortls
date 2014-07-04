@@ -106,7 +106,7 @@ int MAIN(int argc, char **argv)
 	BIGNUM *bn = BN_new();
 	RSA *rsa = NULL;
 
-	if(!bn) goto err;
+	if (!bn) goto err;
 
 	apps_startup();
 	BN_GENCB_set(&cb, genrsa_cb, bio_err);
@@ -217,7 +217,7 @@ bad:
 		
 	ERR_load_crypto_strings();
 
-	if(!app_passwd(bio_err, NULL, passargout, NULL, &passout)) {
+	if (!app_passwd(bio_err, NULL, passargout, NULL, &passout)) {
 		BIO_printf(bio_err, "Error getting password\n");
 		goto err;
 	}
@@ -258,7 +258,7 @@ bad:
 	if (!rsa)
 		goto err;
 
-	if(!BN_set_word(bn, f4) || !RSA_generate_key_ex(rsa, num, bn, &cb))
+	if (!BN_set_word(bn, f4) || !RSA_generate_key_ex(rsa, num, bn, &cb))
 		goto err;
 		
 	app_RAND_write_file(NULL, bio_err);
@@ -289,7 +289,7 @@ err:
 	if (bn) BN_free(bn);
 	if (rsa) RSA_free(rsa);
 	if (out) BIO_free_all(out);
-	if(passout) free(passout);
+	if (passout) free(passout);
 	if (ret != 0)
 		ERR_print_errors(bio_err);
 	apps_shutdown();

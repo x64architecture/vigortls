@@ -489,7 +489,7 @@ int setup_ui_method(void)
 	}
 void destroy_ui_method(void)
 	{
-	if(ui_method)
+	if (ui_method)
 		{
 		UI_destroy_method(ui_method);
 		ui_method = NULL;
@@ -583,16 +583,16 @@ static char *app_get_pass(BIO *err, char *arg, int keepbio);
 int app_passwd(BIO *err, char *arg1, char *arg2, char **pass1, char **pass2)
 {
 	int same;
-	if(!arg2 || !arg1 || strcmp(arg1, arg2)) same = 0;
+	if (!arg2 || !arg1 || strcmp(arg1, arg2)) same = 0;
 	else same = 1;
-	if(arg1) {
+	if (arg1) {
 		*pass1 = app_get_pass(err, arg1, same);
-		if(!*pass1) return 0;
-	} else if(pass1) *pass1 = NULL;
-	if(arg2) {
+		if (!*pass1) return 0;
+	} else if (pass1) *pass1 = NULL;
+	if (arg2) {
 		*pass2 = app_get_pass(err, arg2, same ? 2 : 0);
-		if(!*pass2) return 0;
-	} else if(pass2) *pass2 = NULL;
+		if (!*pass2) return 0;
+	} else if (pass2) *pass2 = NULL;
 	return 1;
 }
 
@@ -601,19 +601,19 @@ static char *app_get_pass(BIO *err, char *arg, int keepbio)
 	char *tmp, tpass[APP_PASS_LEN];
 	static BIO *pwdbio = NULL;
 	int i;
-	if(!strncmp(arg, "pass:", 5)) return BUF_strdup(arg + 5);
-	if(!strncmp(arg, "env:", 4)) {
+	if (!strncmp(arg, "pass:", 5)) return BUF_strdup(arg + 5);
+	if (!strncmp(arg, "env:", 4)) {
 		tmp = getenv(arg + 4);
-		if(!tmp) {
+		if (!tmp) {
 			BIO_printf(err, "Can't read environment variable %s\n", arg + 4);
 			return NULL;
 		}
 		return BUF_strdup(tmp);
 	}
-	if(!keepbio || !pwdbio) {
-		if(!strncmp(arg, "file:", 5)) {
+	if (!keepbio || !pwdbio) {
+		if (!strncmp(arg, "file:", 5)) {
 			pwdbio = BIO_new_file(arg + 5, "r");
-			if(!pwdbio) {
+			if (!pwdbio) {
 				BIO_printf(err, "Can't open file %s\n", arg + 5);
 				return NULL;
 			}
@@ -626,11 +626,11 @@ static char *app_get_pass(BIO *err, char *arg, int keepbio)
 		 * on real Windows descriptors, such as those obtained
 		 * with CreateFile.
 		 */
-		} else if(!strncmp(arg, "fd:", 3)) {
+		} else if (!strncmp(arg, "fd:", 3)) {
 			BIO *btmp;
 			i = atoi(arg + 3);
-			if(i >= 0) pwdbio = BIO_new_fd(i, BIO_NOCLOSE);
-			if((i < 0) || !pwdbio) {
+			if (i >= 0) pwdbio = BIO_new_fd(i, BIO_NOCLOSE);
+			if ((i < 0) || !pwdbio) {
 				BIO_printf(err, "Can't access file descriptor %s\n", arg + 3);
 				return NULL;
 			}
@@ -638,9 +638,9 @@ static char *app_get_pass(BIO *err, char *arg, int keepbio)
 			btmp = BIO_new(BIO_f_buffer());
 			pwdbio = BIO_push(btmp, pwdbio);
 #endif
-		} else if(!strcmp(arg, "stdin")) {
+		} else if (!strcmp(arg, "stdin")) {
 			pwdbio = BIO_new_fp(stdin, BIO_NOCLOSE);
-			if(!pwdbio) {
+			if (!pwdbio) {
 				BIO_printf(err, "Can't open BIO for stdin\n");
 				return NULL;
 			}
@@ -650,16 +650,16 @@ static char *app_get_pass(BIO *err, char *arg, int keepbio)
 		}
 	}
 	i = BIO_gets(pwdbio, tpass, APP_PASS_LEN);
-	if(keepbio != 1) {
+	if (keepbio != 1) {
 		BIO_free_all(pwdbio);
 		pwdbio = NULL;
 	}
-	if(i <= 0) {
+	if (i <= 0) {
 		BIO_printf(err, "Error reading password from BIO\n");
 		return NULL;
 	}
 	tmp = strchr(tpass, '\n');
-	if(tmp) *tmp = 0;
+	if (tmp) *tmp = 0;
 	return BUF_strdup(tpass);
 }
 
@@ -669,18 +669,18 @@ int add_oid_section(BIO *err, CONF *conf)
 	STACK_OF(CONF_VALUE) *sktmp;
 	CONF_VALUE *cnf;
 	int i;
-	if(!(p=NCONF_get_string(conf,NULL,"oid_section")))
+	if (!(p=NCONF_get_string(conf,NULL,"oid_section")))
 		{
 		ERR_clear_error();
 		return 1;
 		}
-	if(!(sktmp = NCONF_get_section(conf, p))) {
+	if (!(sktmp = NCONF_get_section(conf, p))) {
 		BIO_printf(err, "problem loading oid section %s\n", p);
 		return 0;
 	}
 	for(i = 0; i < sk_CONF_VALUE_num(sktmp); i++) {
 		cnf = sk_CONF_VALUE_value(sktmp, i);
-		if(OBJ_create(cnf->value, cnf->name, cnf->name) == NID_undef) {
+		if (OBJ_create(cnf->value, cnf->name, cnf->name) == NID_undef) {
 			BIO_printf(err, "problem creating object %s=%s\n",
 							 cnf->name, cnf->value);
 			return 0;
@@ -1313,7 +1313,7 @@ static int set_multi_opts(unsigned long *flags, const char *arg, const NAME_EX_T
 	STACK_OF(CONF_VALUE) *vals;
 	CONF_VALUE *val;
 	int i, ret = 1;
-	if(!arg) return 0;
+	if (!arg) return 0;
 	vals = X509V3_parse_list(arg);
 	for (i = 0; i < sk_CONF_VALUE_num(vals); i++) {
 		val = sk_CONF_VALUE_value(vals, i);
@@ -1330,7 +1330,7 @@ static int set_table_opts(unsigned long *flags, const char *arg, const NAME_EX_T
 	const NAME_EX_TBL *ptbl;
 	c = arg[0];
 
-	if(c == '-') {
+	if (c == '-') {
 		c = 0;
 		arg++;
 	} else if (c == '+') {
@@ -1339,9 +1339,9 @@ static int set_table_opts(unsigned long *flags, const char *arg, const NAME_EX_T
 	} else c = 1;
 
 	for(ptbl = in_tbl; ptbl->name; ptbl++) {
-		if(!strcasecmp(arg, ptbl->name)) {
+		if (!strcasecmp(arg, ptbl->name)) {
 			*flags &= ~ptbl->mask;
-			if(c) *flags |= ptbl->flag;
+			if (c) *flags |= ptbl->flag;
 			else *flags &= ~ptbl->flag;
 			return 1;
 		}
@@ -1355,18 +1355,18 @@ void print_name(BIO *out, const char *title, X509_NAME *nm, unsigned long lflags
 	char mline = 0;
 	int indent = 0;
 
-	if(title) BIO_puts(out, title);
-	if((lflags & XN_FLAG_SEP_MASK) == XN_FLAG_SEP_MULTILINE) {
+	if (title) BIO_puts(out, title);
+	if ((lflags & XN_FLAG_SEP_MASK) == XN_FLAG_SEP_MULTILINE) {
 		mline = 1;
 		indent = 4;
 	}
-	if(lflags == XN_FLAG_COMPAT) {
+	if (lflags == XN_FLAG_COMPAT) {
 		buf = X509_NAME_oneline(nm, 0, 0);
 		BIO_puts(out, buf);
 		BIO_puts(out, "\n");
 		free(buf);
 	} else {
-		if(mline) BIO_puts(out, "\n");
+		if (mline) BIO_puts(out, "\n");
 		X509_NAME_print_ex(out, nm, indent, lflags);
 		BIO_puts(out, "\n");
 	}
@@ -1376,11 +1376,11 @@ X509_STORE *setup_verify(BIO *bp, char *CAfile, char *CApath)
 {
 	X509_STORE *store;
 	X509_LOOKUP *lookup;
-	if(!(store = X509_STORE_new())) goto end;
+	if (!(store = X509_STORE_new())) goto end;
 	lookup=X509_STORE_add_lookup(store,X509_LOOKUP_file());
 	if (lookup == NULL) goto end;
 	if (CAfile) {
-		if(!X509_LOOKUP_load_file(lookup,CAfile,X509_FILETYPE_PEM)) {
+		if (!X509_LOOKUP_load_file(lookup,CAfile,X509_FILETYPE_PEM)) {
 			BIO_printf(bp, "Error loading file %s\n", CAfile);
 			goto end;
 		}
@@ -1389,7 +1389,7 @@ X509_STORE *setup_verify(BIO *bp, char *CAfile, char *CApath)
 	lookup=X509_STORE_add_lookup(store,X509_LOOKUP_hash_dir());
 	if (lookup == NULL) goto end;
 	if (CApath) {
-		if(!X509_LOOKUP_add_dir(lookup,CApath,X509_FILETYPE_PEM)) {
+		if (!X509_LOOKUP_add_dir(lookup,CApath,X509_FILETYPE_PEM)) {
 			BIO_printf(bp, "Error loading directory %s\n", CApath);
 			goto end;
 		}
@@ -1425,13 +1425,13 @@ ENGINE *setup_engine(BIO *err, const char *engine, int debug)
 
         if (engine)
                 {
-		if(strcmp(engine, "auto") == 0)
+		if (strcmp(engine, "auto") == 0)
 			{
 			BIO_printf(err,"enabling auto ENGINE support\n");
 			ENGINE_register_all_complete();
 			return NULL;
 			}
-		if((e = ENGINE_by_id(engine)) == NULL
+		if ((e = ENGINE_by_id(engine)) == NULL
 			&& (e = try_load_engine(err, engine, debug)) == NULL)
 			{
 			BIO_printf(err,"invalid engine \"%s\"\n", engine);
@@ -1444,7 +1444,7 @@ ENGINE *setup_engine(BIO *err, const char *engine, int debug)
 				0, err, 0);
 			}
                 ENGINE_ctrl_cmd(e, "SET_USER_INTERFACE", 0, ui_method, 0, 1);
-		if(!ENGINE_set_default(e, ENGINE_METHOD_ALL))
+		if (!ENGINE_set_default(e, ENGINE_METHOD_ALL))
 			{
 			BIO_printf(err,"can't use that engine\n");
 			ERR_print_errors(err);
@@ -2179,7 +2179,7 @@ int args_verify(char ***pargs, int *pargc,
 		else
 			{
 			i = X509_PURPOSE_get_by_sname(argn);
-			if(i < 0)
+			if (i < 0)
 				{
 				BIO_printf(err, "unrecognized purpose\n");
 				*badarg = 1;
@@ -2199,7 +2199,7 @@ int args_verify(char ***pargs, int *pargc,
 		else
 			{
 			depth = atoi(argn);
-			if(depth < 0)
+			if (depth < 0)
 				{
 				BIO_printf(err, "invalid depth\n");
 				*badarg = 1;

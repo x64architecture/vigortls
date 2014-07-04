@@ -81,7 +81,7 @@ BIGNUM *BN_generate_prime(BIGNUM *ret, int bits, int safe,
 		}
 	else
 		rnd=ret;
-	if(!BN_generate_prime_ex(rnd, bits, safe, add, rem, &cb))
+	if (!BN_generate_prime_ex(rnd, bits, safe, add, rem, &cb))
 		goto err;
 
 	/* we have a prime :-) */

@@ -346,7 +346,7 @@ int test_add(BIO *bp)
 		b.neg=!b.neg;
 		BN_add(&c,&c,&b);
 		BN_add(&c,&c,&a);
-		if(!BN_is_zero(&c))
+		if (!BN_is_zero(&c))
 		    {
 		    fprintf(stderr,"Add test failed!\n");
 		    return 0;
@@ -397,7 +397,7 @@ int test_sub(BIO *bp)
 			}
 		BN_add(&c,&c,&b);
 		BN_sub(&c,&c,&a);
-		if(!BN_is_zero(&c))
+		if (!BN_is_zero(&c))
 		    {
 		    fprintf(stderr,"Subtract test failed!\n");
 		    return 0;
@@ -459,7 +459,7 @@ int test_div(BIO *bp, BN_CTX *ctx)
 		BN_mul(&e,&d,&b,ctx);
 		BN_add(&d,&e,&c);
 		BN_sub(&d,&d,&a);
-		if(!BN_is_zero(&d))
+		if (!BN_is_zero(&d))
 		    {
 		    fprintf(stderr,"Division test failed!\n");
 		    return 0;
@@ -534,7 +534,7 @@ int test_div_word(BIO *bp)
 		BN_mul_word(&b,s);
 		BN_add_word(&b,r);
 		BN_sub(&b,&a,&b);
-		if(!BN_is_zero(&b))
+		if (!BN_is_zero(&b))
 		    {
 		    fprintf(stderr,"Division (word) test failed!\n");
 		    return 0;
@@ -598,7 +598,7 @@ int test_div_recp(BIO *bp, BN_CTX *ctx)
 		BN_mul(&e,&d,&b,ctx);
 		BN_add(&d,&e,&c);
 		BN_sub(&d,&d,&a);
-		if(!BN_is_zero(&d))
+		if (!BN_is_zero(&d))
 		    {
 		    fprintf(stderr,"Reciprocal division test failed!\n");
 		    fprintf(stderr,"a=");
@@ -659,7 +659,7 @@ int test_mul(BIO *bp)
 			}
 		BN_div(&d,&e,&c,&a,ctx);
 		BN_sub(&d,&d,&b);
-		if(!BN_is_zero(&d) || !BN_is_zero(&e))
+		if (!BN_is_zero(&d) || !BN_is_zero(&e))
 		    {
 		    fprintf(stderr,"Multiplication test failed!\n");
 		    return 0;
@@ -703,7 +703,7 @@ int test_sqr(BIO *bp, BN_CTX *ctx)
 			}
 		BN_div(&d,&e,&c,&a,ctx);
 		BN_sub(&d,&d,&a);
-		if(!BN_is_zero(&d) || !BN_is_zero(&e))
+		if (!BN_is_zero(&d) || !BN_is_zero(&e))
 		    {
 		    fprintf(stderr,"Square test failed!\n");
 		    return 0;
@@ -776,7 +776,7 @@ BN_num_bits(mont->N));
 			}
 		BN_mod_mul(&d,&a,&b,&n,ctx);
 		BN_sub(&d,&d,&A);
-		if(!BN_is_zero(&d))
+		if (!BN_is_zero(&d))
 		    {
 		    fprintf(stderr,"Montgomery multiplication test failed!\n");
 		    return 0;
@@ -825,7 +825,7 @@ int test_mod(BIO *bp, BN_CTX *ctx)
 			}
 		BN_div(d,e,a,b,ctx);
 		BN_sub(e,e,c);
-		if(!BN_is_zero(e))
+		if (!BN_is_zero(e))
 		    {
 		    fprintf(stderr,"Modulo test failed!\n");
 		    return 0;
@@ -894,7 +894,7 @@ int test_mod_mul(BIO *bp, BN_CTX *ctx)
 		BN_mul(d,a,b,ctx);
 		BN_sub(d,d,e);
 		BN_div(a,b,d,c,ctx);
-		if(!BN_is_zero(b))
+		if (!BN_is_zero(b))
 		    {
 		    fprintf(stderr,"Modulo multiply test failed!\n");
 		    ERR_print_errors_fp(stderr);
@@ -947,7 +947,7 @@ int test_mod_exp(BIO *bp, BN_CTX *ctx)
 		BN_exp(e,a,b,ctx);
 		BN_sub(e,e,d);
 		BN_div(a,b,e,c,ctx);
-		if(!BN_is_zero(b))
+		if (!BN_is_zero(b))
 		    {
 		    fprintf(stderr,"Modulo exponentiation test failed!\n");
 		    return 0;
@@ -998,7 +998,7 @@ int test_mod_exp_mont_consttime(BIO *bp, BN_CTX *ctx)
 		BN_exp(e,a,b,ctx);
 		BN_sub(e,e,d);
 		BN_div(a,b,e,c,ctx);
-		if(!BN_is_zero(b))
+		if (!BN_is_zero(b))
 		    {
 		    fprintf(stderr,"Modulo exponentiation test failed!\n");
 		    return 0;
@@ -1048,7 +1048,7 @@ int test_exp(BIO *bp, BN_CTX *ctx)
 		for( ; !BN_is_zero(b) ; BN_sub(b,b,one))
 		    BN_mul(e,e,a,ctx);
 		BN_sub(e,e,d);
-		if(!BN_is_zero(e))
+		if (!BN_is_zero(e))
 		    {
 		    fprintf(stderr,"Exponentiation test failed!\n");
 		    return 0;
@@ -1093,14 +1093,14 @@ int test_gf2m_add(BIO *bp)
 			}
 #endif
 		/* Test that two added values have the correct parity. */
-		if((BN_is_odd(&a) && BN_is_odd(&c)) || (!BN_is_odd(&a) && !BN_is_odd(&c)))
+		if ((BN_is_odd(&a) && BN_is_odd(&c)) || (!BN_is_odd(&a) && !BN_is_odd(&c)))
 			{
 		    fprintf(stderr,"GF(2^m) addition test (a) failed!\n");
 			goto err;
 			}
 		BN_GF2m_add(&c,&c,&c);
 		/* Test that c + c = 0. */
-		if(!BN_is_zero(&c))
+		if (!BN_is_zero(&c))
 		    {
 		    fprintf(stderr,"GF(2^m) addition test (b) failed!\n");
 			goto err;
@@ -1154,7 +1154,7 @@ int test_gf2m_mod(BIO *bp)
 			BN_GF2m_add(d, a, c);
 			BN_GF2m_mod(e, d, b[j]);
 			/* Test that a + (a mod p) mod p == 0. */
-			if(!BN_is_zero(e))
+			if (!BN_is_zero(e))
 				{
 				fprintf(stderr,"GF(2^m) modulo test failed!\n");
 				goto err;
@@ -1222,7 +1222,7 @@ int test_gf2m_mod_mul(BIO *bp,BN_CTX *ctx)
 			BN_GF2m_add(f, e, g);
 			BN_GF2m_add(f, f, h);
 			/* Test that (a+d)*c = a*c + d*c. */
-			if(!BN_is_zero(f))
+			if (!BN_is_zero(f))
 				{
 				fprintf(stderr,"GF(2^m) modular multiplication test failed!\n");
 				goto err;
@@ -1285,7 +1285,7 @@ int test_gf2m_mod_sqr(BIO *bp,BN_CTX *ctx)
 #endif
 			BN_GF2m_add(d, c, d);
 			/* Test that a*a = a^2. */
-			if(!BN_is_zero(d))
+			if (!BN_is_zero(d))
 				{
 				fprintf(stderr,"GF(2^m) modular squaring test failed!\n");
 				goto err;
@@ -1340,7 +1340,7 @@ int test_gf2m_mod_inv(BIO *bp,BN_CTX *ctx)
 				}
 #endif
 			/* Test that ((1/a)*a) = 1. */
-			if(!BN_is_one(d))
+			if (!BN_is_one(d))
 				{
 				fprintf(stderr,"GF(2^m) modular inversion test failed!\n");
 				goto err;
@@ -1401,7 +1401,7 @@ int test_gf2m_mod_div(BIO *bp,BN_CTX *ctx)
 				}
 #endif
 			/* Test that ((a/c)*c)/a = 1. */
-			if(!BN_is_one(f))
+			if (!BN_is_one(f))
 				{
 				fprintf(stderr,"GF(2^m) modular division test failed!\n");
 				goto err;
@@ -1472,7 +1472,7 @@ int test_gf2m_mod_exp(BIO *bp,BN_CTX *ctx)
 #endif
 			BN_GF2m_add(f, e, f);
 			/* Test that a^(c+d)=a^c*a^d. */
-			if(!BN_is_zero(f))
+			if (!BN_is_zero(f))
 				{
 				fprintf(stderr,"GF(2^m) modular exponentiation test failed!\n");
 				goto err;
@@ -1531,7 +1531,7 @@ int test_gf2m_mod_sqrt(BIO *bp,BN_CTX *ctx)
 #endif
 			BN_GF2m_add(f, c, e);
 			/* Test that d^2 = a, where d = sqrt(a). */
-			if(!BN_is_zero(f))
+			if (!BN_is_zero(f))
 				{
 				fprintf(stderr,"GF(2^m) modular square root test failed!\n");
 				goto err;
@@ -1595,7 +1595,7 @@ int test_gf2m_mod_solve_quad(BIO *bp,BN_CTX *ctx)
 #endif
 				BN_GF2m_add(e, e, d);
 				/* Test that solution of quadratic c satisfies c^2 + c = a. */
-				if(!BN_is_zero(e))
+				if (!BN_is_zero(e))
 					{
 					fprintf(stderr,"GF(2^m) modular solve quadratic test failed!\n");
 					goto err;
@@ -1829,7 +1829,7 @@ int test_lshift(BIO *bp,BN_CTX *ctx,BIGNUM *a_)
 	d=BN_new();
 	BN_one(c);
 
-	if(a_)
+	if (a_)
 	    a=a_;
 	else
 	    {
@@ -1855,7 +1855,7 @@ int test_lshift(BIO *bp,BN_CTX *ctx,BIGNUM *a_)
 			}
 		BN_mul(d,a,c,ctx);
 		BN_sub(d,d,b);
-		if(!BN_is_zero(d))
+		if (!BN_is_zero(d))
 		    {
 		    fprintf(stderr,"Left shift test failed!\n");
 		    fprintf(stderr,"a=");
@@ -1904,7 +1904,7 @@ int test_lshift1(BIO *bp)
 			}
 		BN_add(c,a,a);
 		BN_sub(a,b,c);
-		if(!BN_is_zero(a))
+		if (!BN_is_zero(a))
 		    {
 		    fprintf(stderr,"Left shift one test failed!\n");
 		    return 0;
@@ -1950,7 +1950,7 @@ int test_rshift(BIO *bp,BN_CTX *ctx)
 			}
 		BN_div(d,e,a,c,ctx);
 		BN_sub(d,d,b);
-		if(!BN_is_zero(d))
+		if (!BN_is_zero(d))
 		    {
 		    fprintf(stderr,"Right shift test failed!\n");
 		    return 0;
@@ -1991,7 +1991,7 @@ int test_rshift1(BIO *bp)
 			}
 		BN_sub(c,a,b);
 		BN_sub(c,c,b);
-		if(!BN_is_zero(c) && !BN_abs_is_word(c, 1))
+		if (!BN_is_zero(c) && !BN_abs_is_word(c, 1))
 		    {
 		    fprintf(stderr,"Right shift one test failed!\n");
 		    return 0;

@@ -276,7 +276,7 @@ int BN_mod_exp_recp(BIGNUM *r, const BIGNUM *a, const BIGNUM *p,
 	BN_CTX_start(ctx);
 	aa = BN_CTX_get(ctx);
 	val[0] = BN_CTX_get(ctx);
-	if(!aa || !val[0]) goto err;
+	if (!aa || !val[0]) goto err;
 
 	BN_RECP_CTX_init(&recp);
 	if (m->neg)
@@ -307,7 +307,7 @@ int BN_mod_exp_recp(BIGNUM *r, const BIGNUM *a, const BIGNUM *p,
 		j=1<<(window-1);
 		for (i=1; i<j; i++)
 			{
-			if(((val[i] = BN_CTX_get(ctx)) == NULL) ||
+			if (((val[i] = BN_CTX_get(ctx)) == NULL) ||
 					!BN_mod_mul_reciprocal(val[i],val[i-1],
 						aa,&recp,ctx))
 				goto err;
@@ -453,7 +453,7 @@ int BN_mod_exp_mont(BIGNUM *rr, const BIGNUM *a, const BIGNUM *p,
 		j=1<<(window-1);
 		for (i=1; i<j; i++)
 			{
-			if(((val[i] = BN_CTX_get(ctx)) == NULL) ||
+			if (((val[i] = BN_CTX_get(ctx)) == NULL) ||
 					!BN_mod_mul_montgomery(val[i],val[i-1],
 						d,mont,ctx))
 				goto err;
@@ -1007,7 +1007,7 @@ int BN_mod_exp_simple(BIGNUM *r, const BIGNUM *a, const BIGNUM *p,
 	BN_CTX_start(ctx);
 	d = BN_CTX_get(ctx);
 	val[0] = BN_CTX_get(ctx);
-	if(!d || !val[0]) goto err;
+	if (!d || !val[0]) goto err;
 
 	if (!BN_nnmod(val[0],a,m,ctx)) goto err;		/* 1 */
 	if (BN_is_zero(val[0]))
@@ -1025,7 +1025,7 @@ int BN_mod_exp_simple(BIGNUM *r, const BIGNUM *a, const BIGNUM *p,
 		j=1<<(window-1);
 		for (i=1; i<j; i++)
 			{
-			if(((val[i] = BN_CTX_get(ctx)) == NULL) ||
+			if (((val[i] = BN_CTX_get(ctx)) == NULL) ||
 					!BN_mod_mul(val[i],val[i-1],d,m,ctx))
 				goto err;
 			}

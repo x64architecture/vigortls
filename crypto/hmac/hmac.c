@@ -96,7 +96,7 @@ int HMAC_Init_ex(HMAC_CTX *ctx, const void *key, int len,
 			memcpy(ctx->key,key,len);
 			ctx->key_length=len;
 			}
-		if(ctx->key_length != HMAC_MAX_MD_CBLOCK)
+		if (ctx->key_length != HMAC_MAX_MD_CBLOCK)
 			memset(&ctx->key[ctx->key_length], 0,
 				HMAC_MAX_MD_CBLOCK - ctx->key_length);
 		}
@@ -126,7 +126,7 @@ int HMAC_Init_ex(HMAC_CTX *ctx, const void *key, int len,
 
 int HMAC_Init(HMAC_CTX *ctx, const void *key, int len, const EVP_MD *md)
 	{
-	if(key && md)
+	if (key && md)
 	    HMAC_CTX_init(ctx);
 	return HMAC_Init_ex(ctx,key,len,md, NULL);
 	}

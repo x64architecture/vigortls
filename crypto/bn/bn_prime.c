@@ -137,12 +137,12 @@ static int probable_prime_dh_safe(BIGNUM *rnd, int bits,
 int BN_GENCB_call(BN_GENCB *cb, int a, int b)
 	{
 	/* No callback means continue */
-	if(!cb) return 1;
+	if (!cb) return 1;
 	switch(cb->ver)
 		{
 	case 1:
 		/* Deprecated-style callbacks */
-		if(!cb->cb.cb_1)
+		if (!cb->cb.cb_1)
 			return 1;
 		cb->cb.cb_1(a, b, cb->arg);
 		return 1;
@@ -169,7 +169,7 @@ int BN_generate_prime_ex(BIGNUM *ret, int bits, int safe,
 	if (ctx == NULL) goto err;
 	BN_CTX_start(ctx);
 	t = BN_CTX_get(ctx);
-	if(!t) goto err;
+	if (!t) goto err;
 loop: 
 	/* make a random number and set the top and bottom bits */
 	if (add == NULL)
@@ -190,7 +190,7 @@ loop:
 			}
 		}
 	/* if (BN_mod_word(ret,(BN_ULONG)3) == 1) goto loop; */
-	if(!BN_GENCB_call(cb, 0, c1++))
+	if (!BN_GENCB_call(cb, 0, c1++))
 		/* aborted */
 		goto err;
 
@@ -218,7 +218,7 @@ loop:
 			if (j == -1) goto err;
 			if (j == 0) goto loop;
 
-			if(!BN_GENCB_call(cb, 2, c1-1))
+			if (!BN_GENCB_call(cb, 2, c1-1))
 				goto err;
 			/* We have a safe prime test pass */
 			}
@@ -265,7 +265,7 @@ int BN_is_prime_fasttest_ex(const BIGNUM *a, int checks, BN_CTX *ctx_passed,
 		for (i = 1; i < NUMPRIMES; i++)
 			if (BN_mod_word(a, primes[i]) == 0) 
 				return 0;
-		if(!BN_GENCB_call(cb, 1, -1))
+		if (!BN_GENCB_call(cb, 1, -1))
 			goto err;
 		}
 
@@ -332,7 +332,7 @@ int BN_is_prime_fasttest_ex(const BIGNUM *a, int checks, BN_CTX *ctx_passed,
 			ret=0;
 			goto err;
 			}
-		if(!BN_GENCB_call(cb, 1, i))
+		if (!BN_GENCB_call(cb, 1, i))
 			goto err;
 		}
 	ret=1;

@@ -165,14 +165,14 @@ int MAIN(int argc, char **argv)
 			outfile= *(++argv);
 			}
 #ifndef OPENSSL_NO_ENGINE
-		else if(strcmp(*argv, "-engine") == 0)
+		else if (strcmp(*argv, "-engine") == 0)
 			{
 			if (--argc < 1) goto bad;
 			engine = *(++argv);
 			}
 #endif
 #ifdef GENCB_TEST
-		else if(strcmp(*argv, "-timebomb") == 0)
+		else if (strcmp(*argv, "-timebomb") == 0)
 			{
 			if (--argc < 1) goto bad;
 			timebomb = atoi(*(++argv));
@@ -286,7 +286,7 @@ bad:
 		BN_GENCB_set(&cb, dsa_cb, bio_err);
 		assert(need_rand);
 		dsa = DSA_new();
-		if(!dsa)
+		if (!dsa)
 			{
 			BIO_printf(bio_err,"Error allocating DSA object\n");
 			goto end;
@@ -294,14 +294,14 @@ bad:
 		BIO_printf(bio_err,"Generating DSA parameters, %d bit long prime\n",num);
 	        BIO_printf(bio_err,"This could take some time\n");
 #ifdef GENCB_TEST
-		if(timebomb > 0)
+		if (timebomb > 0)
 	{
 		struct sigaction act;
 		act.sa_handler = timebomb_sigalarm;
 		act.sa_flags = 0;
 		BIO_printf(bio_err,"(though I'll stop it if not done within %d secs)\n",
 				timebomb);
-		if(sigaction(SIGALRM, &act, NULL) != 0)
+		if (sigaction(SIGALRM, &act, NULL) != 0)
 			{
 			BIO_printf(bio_err,"Error, couldn't set SIGALRM handler\n");
 			goto end;
@@ -309,10 +309,10 @@ bad:
 		alarm(timebomb);
 	}
 #endif
-	        if(!DSA_generate_parameters_ex(dsa,num,NULL,0,NULL,NULL, &cb))
+	        if (!DSA_generate_parameters_ex(dsa,num,NULL,0,NULL,NULL, &cb))
 			{
 #ifdef GENCB_TEST
-			if(stop_keygen_flag)
+			if (stop_keygen_flag)
 				{
 				BIO_printf(bio_err,"DSA key generation time-stopped\n");
 				/* This is an asked-for behaviour! */
@@ -466,7 +466,7 @@ static int MS_CALLBACK dsa_cb(int p, int n, BN_GENCB *cb)
 	p=n;
 #endif
 #ifdef GENCB_TEST
-	if(stop_keygen_flag)
+	if (stop_keygen_flag)
 		return 0;
 #endif
 	return 1;

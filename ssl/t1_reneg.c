@@ -116,9 +116,9 @@
 int ssl_add_clienthello_renegotiate_ext(SSL *s, unsigned char *p, int *len,
 					int maxlen)
     {
-    if(p)
+    if (p)
         {
-	if((s->s3->previous_client_finished_len+1) > maxlen)
+	if ((s->s3->previous_client_finished_len+1) > maxlen)
             {
             SSLerr(SSL_F_SSL_ADD_CLIENTHELLO_RENEGOTIATE_EXT,SSL_R_RENEGOTIATE_EXT_TOO_LONG);
             return 0;
@@ -146,7 +146,7 @@ int ssl_parse_clienthello_renegotiate_ext(SSL *s, unsigned char *d, int len,
     int ilen;
 
     /* Parse the length byte */
-    if(len < 1)
+    if (len < 1)
         {
         SSLerr(SSL_F_SSL_PARSE_CLIENTHELLO_RENEGOTIATE_EXT,SSL_R_RENEGOTIATION_ENCODING_ERR);
         *al=SSL_AD_ILLEGAL_PARAMETER;
@@ -156,7 +156,7 @@ int ssl_parse_clienthello_renegotiate_ext(SSL *s, unsigned char *d, int len,
     d++;
 
     /* Consistency check */
-    if((ilen+1) != len)
+    if ((ilen+1) != len)
         {
         SSLerr(SSL_F_SSL_PARSE_CLIENTHELLO_RENEGOTIATE_EXT,SSL_R_RENEGOTIATION_ENCODING_ERR);
         *al=SSL_AD_ILLEGAL_PARAMETER;
@@ -164,14 +164,14 @@ int ssl_parse_clienthello_renegotiate_ext(SSL *s, unsigned char *d, int len,
         }
 
     /* Check that the extension matches */
-    if(ilen != s->s3->previous_client_finished_len)
+    if (ilen != s->s3->previous_client_finished_len)
         {
         SSLerr(SSL_F_SSL_PARSE_CLIENTHELLO_RENEGOTIATE_EXT,SSL_R_RENEGOTIATION_MISMATCH);
         *al=SSL_AD_HANDSHAKE_FAILURE;
         return 0;
         }
     
-    if(memcmp(d, s->s3->previous_client_finished,
+    if (memcmp(d, s->s3->previous_client_finished,
 	      s->s3->previous_client_finished_len))
         {
         SSLerr(SSL_F_SSL_PARSE_CLIENTHELLO_RENEGOTIATE_EXT,SSL_R_RENEGOTIATION_MISMATCH);
@@ -188,9 +188,9 @@ int ssl_parse_clienthello_renegotiate_ext(SSL *s, unsigned char *d, int len,
 int ssl_add_serverhello_renegotiate_ext(SSL *s, unsigned char *p, int *len,
 					int maxlen)
     {
-    if(p)
+    if (p)
         {
-        if((s->s3->previous_client_finished_len +
+        if ((s->s3->previous_client_finished_len +
             s->s3->previous_server_finished_len + 1) > maxlen)
             {
             SSLerr(SSL_F_SSL_ADD_SERVERHELLO_RENEGOTIATE_EXT,SSL_R_RENEGOTIATE_EXT_TOO_LONG);
@@ -229,7 +229,7 @@ int ssl_parse_serverhello_renegotiate_ext(SSL *s, unsigned char *d, int len,
     OPENSSL_assert(!expected_len || s->s3->previous_server_finished_len);
     
     /* Parse the length byte */
-    if(len < 1)
+    if (len < 1)
         {
         SSLerr(SSL_F_SSL_PARSE_SERVERHELLO_RENEGOTIATE_EXT,SSL_R_RENEGOTIATION_ENCODING_ERR);
         *al=SSL_AD_ILLEGAL_PARAMETER;
@@ -239,7 +239,7 @@ int ssl_parse_serverhello_renegotiate_ext(SSL *s, unsigned char *d, int len,
     d++;
 
     /* Consistency check */
-    if(ilen+1 != len)
+    if (ilen+1 != len)
         {
         SSLerr(SSL_F_SSL_PARSE_SERVERHELLO_RENEGOTIATE_EXT,SSL_R_RENEGOTIATION_ENCODING_ERR);
         *al=SSL_AD_ILLEGAL_PARAMETER;
@@ -247,14 +247,14 @@ int ssl_parse_serverhello_renegotiate_ext(SSL *s, unsigned char *d, int len,
         }
     
     /* Check that the extension matches */
-    if(ilen != expected_len)
+    if (ilen != expected_len)
         {
         SSLerr(SSL_F_SSL_PARSE_SERVERHELLO_RENEGOTIATE_EXT,SSL_R_RENEGOTIATION_MISMATCH);
         *al=SSL_AD_HANDSHAKE_FAILURE;
         return 0;
         }
 
-    if(memcmp(d, s->s3->previous_client_finished,
+    if (memcmp(d, s->s3->previous_client_finished,
 	      s->s3->previous_client_finished_len))
         {
         SSLerr(SSL_F_SSL_PARSE_SERVERHELLO_RENEGOTIATE_EXT,SSL_R_RENEGOTIATION_MISMATCH);
@@ -263,7 +263,7 @@ int ssl_parse_serverhello_renegotiate_ext(SSL *s, unsigned char *d, int len,
         }
     d += s->s3->previous_client_finished_len;
 
-    if(memcmp(d, s->s3->previous_server_finished,
+    if (memcmp(d, s->s3->previous_server_finished,
 	      s->s3->previous_server_finished_len))
         {
         SSLerr(SSL_F_SSL_PARSE_SERVERHELLO_RENEGOTIATE_EXT,SSL_R_RENEGOTIATION_MISMATCH);

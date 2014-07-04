@@ -162,7 +162,7 @@ static void ctxdbg(BN_CTX *ctx)
 	while(bnidx < ctx->used)
 		{
 		fprintf(stderr,"%03x ", item->vals[bnidx++ % BN_CTX_POOL_SIZE].dmax);
-		if(!(bnidx % BN_CTX_POOL_SIZE))
+		if (!(bnidx % BN_CTX_POOL_SIZE))
 			item = item->next;
 		}
 	fprintf(stderr,"\n");
@@ -214,7 +214,7 @@ void BN_CTX_init(BN_CTX *ctx)
 BN_CTX *BN_CTX_new(void)
 	{
 	BN_CTX *ret = malloc(sizeof(BN_CTX));
-	if(!ret)
+	if (!ret)
 		{
 		BNerr(BN_F_BN_CTX_NEW,ERR_R_MALLOC_FAILURE);
 		return NULL;
@@ -256,10 +256,10 @@ void BN_CTX_start(BN_CTX *ctx)
 	{
 	CTXDBG_ENTRY("BN_CTX_start", ctx);
 	/* If we're already overflowing ... */
-	if(ctx->err_stack || ctx->too_many)
+	if (ctx->err_stack || ctx->too_many)
 		ctx->err_stack++;
 	/* (Try to) get a new frame pointer */
-	else if(!BN_STACK_push(&ctx->stack, ctx->used))
+	else if (!BN_STACK_push(&ctx->stack, ctx->used))
 		{
 		BNerr(BN_F_BN_CTX_START,BN_R_TOO_MANY_TEMPORARY_VARIABLES);
 		ctx->err_stack++;
@@ -270,13 +270,13 @@ void BN_CTX_start(BN_CTX *ctx)
 void BN_CTX_end(BN_CTX *ctx)
 	{
 	CTXDBG_ENTRY("BN_CTX_end", ctx);
-	if(ctx->err_stack)
+	if (ctx->err_stack)
 		ctx->err_stack--;
 	else
 		{
 		unsigned int fp = BN_STACK_pop(&ctx->stack);
 		/* Does this stack frame have anything to release? */
-		if(fp < ctx->used)
+		if (fp < ctx->used)
 			BN_POOL_release(&ctx->pool, ctx->used - fp);
 		ctx->used = fp;
 		/* Unjam "too_many" in case "get" had failed */
@@ -289,8 +289,8 @@ BIGNUM *BN_CTX_get(BN_CTX *ctx)
 	{
 	BIGNUM *ret;
 	CTXDBG_ENTRY("BN_CTX_get", ctx);
-	if(ctx->err_stack || ctx->too_many) return NULL;
-	if((ret = BN_POOL_get(&ctx->pool)) == NULL)
+	if (ctx->err_stack || ctx->too_many) return NULL;
+	if ((ret = BN_POOL_get(&ctx->pool)) == NULL)
 		{
 		/* Setting too_many prevents repeated "get" attempts from
 		 * cluttering the error stack. */
@@ -317,7 +317,7 @@ static void BN_STACK_init(BN_STACK *st)
 
 static void BN_STACK_finish(BN_STACK *st)
 	{
-	if(st->size) free(st->indexes);
+	if (st->size) free(st->indexes);
 	}
 
 #ifndef OPENSSL_NO_DEPRECATED
@@ -329,18 +329,18 @@ static void BN_STACK_reset(BN_STACK *st)
 
 static int BN_STACK_push(BN_STACK *st, unsigned int idx)
 	{
-	if(st->depth == st->size)
+	if (st->depth == st->size)
 		/* Need to expand */
 		{
 		unsigned int newsize = (st->size ?
 				(st->size * 3 / 2) : BN_CTX_START_FRAMES);
 		unsigned int *newitems = malloc(newsize *
 						sizeof(unsigned int));
-		if(!newitems) return 0;
-		if(st->depth)
+		if (!newitems) return 0;
+		if (st->depth)
 			memcpy(newitems, st->indexes, st->depth *
 						sizeof(unsigned int));
-		if(st->size) free(st->indexes);
+		if (st->size) free(st->indexes);
 		st->indexes = newitems;
 		st->size = newsize;
 		}
@@ -371,7 +371,7 @@ static void BN_POOL_finish(BN_POOL *p)
 		BIGNUM *bn = p->head->vals;
 		while(loop++ < BN_CTX_POOL_SIZE)
 			{
-			if(bn->d) BN_clear_free(bn);
+			if (bn->d) BN_clear_free(bn);
 			bn++;
 			}
 		p->current = p->head->next;
@@ -390,7 +390,7 @@ static void BN_POOL_reset(BN_POOL *p)
 		BIGNUM *bn = item->vals;
 		while(loop++ < BN_CTX_POOL_SIZE)
 			{
-			if(bn->d) BN_clear(bn);
+			if (bn->d) BN_clear(bn);
 			bn++;
 			}
 		item = item->next;
@@ -402,12 +402,12 @@ static void BN_POOL_reset(BN_POOL *p)
 
 static BIGNUM *BN_POOL_get(BN_POOL *p)
 	{
-	if(p->used == p->size)
+	if (p->used == p->size)
 		{
 		BIGNUM *bn;
 		unsigned int loop = 0;
 		BN_POOL_ITEM *item = malloc(sizeof(BN_POOL_ITEM));
-		if(!item) return NULL;
+		if (!item) return NULL;
 		/* Initialise the structure */
 		bn = item->vals;
 		while(loop++ < BN_CTX_POOL_SIZE)
@@ -415,7 +415,7 @@ static BIGNUM *BN_POOL_get(BN_POOL *p)
 		item->prev = p->tail;
 		item->next = NULL;
 		/* Link it in */
-		if(!p->head)
+		if (!p->head)
 			p->head = p->current = p->tail = item;
 		else
 			{
@@ -428,9 +428,9 @@ static BIGNUM *BN_POOL_get(BN_POOL *p)
 		/* Return the first bignum from the new pool */
 		return item->vals;
 		}
-	if(!p->used)
+	if (!p->used)
 		p->current = p->head;
-	else if((p->used % BN_CTX_POOL_SIZE) == 0)
+	else if ((p->used % BN_CTX_POOL_SIZE) == 0)
 		p->current = p->current->next;
 	return p->current->vals + ((p->used++) % BN_CTX_POOL_SIZE);
 	}
@@ -442,7 +442,7 @@ static void BN_POOL_release(BN_POOL *p, unsigned int num)
 	while(num--)
 		{
 		bn_check_top(p->current->vals + offset);
-		if(!offset)
+		if (!offset)
 			{
 			offset = BN_CTX_POOL_SIZE - 1;
 			p->current = p->current->prev;

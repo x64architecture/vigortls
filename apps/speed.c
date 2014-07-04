@@ -665,17 +665,17 @@ int MAIN(int argc, char **argv)
 			{
 			argc--;
 			argv++;
-			if(argc == 0)
+			if (argc == 0)
 				{
 				BIO_printf(bio_err,"no EVP given\n");
 				goto end;
 				}
 			evp_cipher=EVP_get_cipherbyname(*argv);
-			if(!evp_cipher)
+			if (!evp_cipher)
 				{
 				evp_md=EVP_get_digestbyname(*argv);
 				}
-			if(!evp_cipher && !evp_md)
+			if (!evp_cipher && !evp_md)
 				{
 				BIO_printf(bio_err,"%s is an unknown cipher or digest\n",*argv);
 				goto end;
@@ -693,7 +693,7 @@ int MAIN(int argc, char **argv)
 			{
 			argc--;
 			argv++;
-			if(argc == 0)
+			if (argc == 0)
 				{
 				BIO_printf(bio_err,"no engine given\n");
 				goto end;
@@ -711,13 +711,13 @@ int MAIN(int argc, char **argv)
 			{
 			argc--;
 			argv++;
-			if(argc == 0)
+			if (argc == 0)
 				{
 				BIO_printf(bio_err,"no multi count given\n");
 				goto end;
 				}
 			multi=atoi(argv[0]);
-			if(multi <= 0)
+			if (multi <= 0)
 			    {
 				BIO_printf(bio_err,"bad multi count\n");
 				goto end;
@@ -1075,7 +1075,7 @@ int MAIN(int argc, char **argv)
 		}
 
 #ifndef NO_FORK
-	if(multi && do_multi(multi))
+	if (multi && do_multi(multi))
 		goto show_res;
 #endif
 
@@ -1837,20 +1837,20 @@ int MAIN(int argc, char **argv)
 					lengths[j]);
 
 				EVP_CIPHER_CTX_init(&ctx);
-				if(decrypt)
+				if (decrypt)
 					EVP_DecryptInit_ex(&ctx,evp_cipher,NULL,key16,iv);
 				else
 					EVP_EncryptInit_ex(&ctx,evp_cipher,NULL,key16,iv);
 				EVP_CIPHER_CTX_set_padding(&ctx, 0);
 
 				Time_F(START);
-				if(decrypt)
+				if (decrypt)
 					for (count=0,run=1; COND(save_count*4*lengths[0]/lengths[j]); count++)
 						EVP_DecryptUpdate(&ctx,buf,&outl,buf,lengths[j]);
 				else
 					for (count=0,run=1; COND(save_count*4*lengths[0]/lengths[j]); count++)
 						EVP_EncryptUpdate(&ctx,buf,&outl,buf,lengths[j]);
-				if(decrypt)
+				if (decrypt)
 					EVP_DecryptFinal_ex(&ctx,buf,&outl);
 				else
 					EVP_EncryptFinal_ex(&ctx,buf,&outl);
@@ -2263,7 +2263,7 @@ int MAIN(int argc, char **argv)
 #ifndef NO_FORK
 show_res:
 #endif
-	if(!mr)
+	if (!mr)
 		{
 		fprintf(stdout,"%s\n",SSLeay_version(SSLEAY_VERSION));
         fprintf(stdout,"%s\n",SSLeay_version(SSLEAY_BUILT_ON));
@@ -2289,7 +2289,7 @@ show_res:
 
 	if (pr_header)
 		{
-		if(mr)
+		if (mr)
 			fprintf(stdout,"+H");
 		else
 			{
@@ -2304,7 +2304,7 @@ show_res:
 	for (k=0; k<ALGOR_NUM; k++)
 		{
 		if (!doit[k]) continue;
-		if(mr)
+		if (mr)
 			fprintf(stdout,"+F:%d:%s",k,names[k]);
 		else
 			fprintf(stdout,"%-13s",names[k]);
@@ -2326,7 +2326,7 @@ show_res:
 			printf("%18ssign    verify    sign/s verify/s\n"," ");
 			j=0;
 			}
-		if(mr)
+		if (mr)
 			fprintf(stdout,"+F2:%u:%u:%f:%f\n",
 				k,rsa_bits[k],rsa_results[k][0],
 				rsa_results[k][1]);
@@ -2345,7 +2345,7 @@ show_res:
 			printf("%18ssign    verify    sign/s verify/s\n"," ");
 			j=0;
 			}
-		if(mr)
+		if (mr)
 			fprintf(stdout,"+F3:%u:%u:%f:%f\n",
 				k,dsa_bits[k],dsa_results[k][0],dsa_results[k][1]);
 		else
@@ -2528,7 +2528,7 @@ static int do_multi(int multi)
 			}
 		fflush(stdout);
 		fflush(stderr);
-		if(fork())
+		if (fork())
 			{
 			close(fd[1]);
 			fds[n]=fd[0];
@@ -2562,16 +2562,16 @@ static int do_multi(int multi)
 		while(fgets(buf,sizeof buf,f))
 			{
 			p=strchr(buf,'\n');
-			if(p)
+			if (p)
 				*p='\0';
-			if(buf[0] != '+')
+			if (buf[0] != '+')
 				{
 				fprintf(stderr,"Don't understand line '%s' from child %d\n",
 						buf,n);
 				continue;
 				}
 			printf("Got: %s from %d\n",buf,n);
-			if(!strncmp(buf,"+F:",3))
+			if (!strncmp(buf,"+F:",3))
 				{
 				int alg;
 				int j;
@@ -2582,7 +2582,7 @@ static int do_multi(int multi)
 				for(j=0 ; j < SIZE_NUM ; ++j)
 					results[alg][j]+=atof(sstrsep(&p,sep));
 				}
-			else if(!strncmp(buf,"+F2:",4))
+			else if (!strncmp(buf,"+F2:",4))
 				{
 				int k;
 				double d;
@@ -2592,18 +2592,18 @@ static int do_multi(int multi)
 				sstrsep(&p,sep);
 
 				d=atof(sstrsep(&p,sep));
-				if(n)
+				if (n)
 					rsa_results[k][0]=1/(1/rsa_results[k][0]+1/d);
 				else
 					rsa_results[k][0]=d;
 
 				d=atof(sstrsep(&p,sep));
-				if(n)
+				if (n)
 					rsa_results[k][1]=1/(1/rsa_results[k][1]+1/d);
 				else
 					rsa_results[k][1]=d;
 				}
-			else if(!strncmp(buf,"+F2:",4))
+			else if (!strncmp(buf,"+F2:",4))
 				{
 				int k;
 				double d;
@@ -2613,19 +2613,19 @@ static int do_multi(int multi)
 				sstrsep(&p,sep);
 
 				d=atof(sstrsep(&p,sep));
-				if(n)
+				if (n)
 					rsa_results[k][0]=1/(1/rsa_results[k][0]+1/d);
 				else
 					rsa_results[k][0]=d;
 
 				d=atof(sstrsep(&p,sep));
-				if(n)
+				if (n)
 					rsa_results[k][1]=1/(1/rsa_results[k][1]+1/d);
 				else
 					rsa_results[k][1]=d;
 				}
 #ifndef OPENSSL_NO_DSA
-			else if(!strncmp(buf,"+F3:",4))
+			else if (!strncmp(buf,"+F3:",4))
 				{
 				int k;
 				double d;
@@ -2635,20 +2635,20 @@ static int do_multi(int multi)
 				sstrsep(&p,sep);
 
 				d=atof(sstrsep(&p,sep));
-				if(n)
+				if (n)
 					dsa_results[k][0]=1/(1/dsa_results[k][0]+1/d);
 				else
 					dsa_results[k][0]=d;
 
 				d=atof(sstrsep(&p,sep));
-				if(n)
+				if (n)
 					dsa_results[k][1]=1/(1/dsa_results[k][1]+1/d);
 				else
 					dsa_results[k][1]=d;
 				}
 #endif
 #ifndef OPENSSL_NO_ECDSA
-			else if(!strncmp(buf,"+F4:",4))
+			else if (!strncmp(buf,"+F4:",4))
 				{
 				int k;
 				double d;
@@ -2658,13 +2658,13 @@ static int do_multi(int multi)
 				sstrsep(&p,sep);
 
 				d=atof(sstrsep(&p,sep));
-				if(n)
+				if (n)
 					ecdsa_results[k][0]=1/(1/ecdsa_results[k][0]+1/d);
 				else
 					ecdsa_results[k][0]=d;
 
 				d=atof(sstrsep(&p,sep));
-				if(n)
+				if (n)
 					ecdsa_results[k][1]=1/(1/ecdsa_results[k][1]+1/d);
 				else
 					ecdsa_results[k][1]=d;
@@ -2672,7 +2672,7 @@ static int do_multi(int multi)
 #endif 
 
 #ifndef OPENSSL_NO_ECDH
-			else if(!strncmp(buf,"+F5:",4))
+			else if (!strncmp(buf,"+F5:",4))
 				{
 				int k;
 				double d;
@@ -2682,7 +2682,7 @@ static int do_multi(int multi)
 				sstrsep(&p,sep);
 
 				d=atof(sstrsep(&p,sep));
-				if(n)
+				if (n)
 					ecdh_results[k][0]=1/(1/ecdh_results[k][0]+1/d);
 				else
 					ecdh_results[k][0]=d;
@@ -2690,7 +2690,7 @@ static int do_multi(int multi)
 				}
 #endif
 
-			else if(!strncmp(buf,"+H:",3))
+			else if (!strncmp(buf,"+H:",3))
 				{
 				}
 			else

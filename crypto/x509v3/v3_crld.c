@@ -316,7 +316,7 @@ static void *v2i_crld(const X509V3_EXT_METHOD *method,
 	GENERAL_NAME *gen = NULL;
 	CONF_VALUE *cnf;
 	int i;
-	if(!(crld = sk_DIST_POINT_new_null())) goto merr;
+	if (!(crld = sk_DIST_POINT_new_null())) goto merr;
 	for(i = 0; i < sk_CONF_VALUE_num(nval); i++) {
 		DIST_POINT *point;
 		cnf = sk_CONF_VALUE_value(nval, i);
@@ -330,7 +330,7 @@ static void *v2i_crld(const X509V3_EXT_METHOD *method,
 			X509V3_section_free(ctx, dpsect);
 			if (!point)
 				goto err;
-			if(!sk_DIST_POINT_push(crld, point))
+			if (!sk_DIST_POINT_push(crld, point))
 				{
 				DIST_POINT_free(point);
 				goto merr;
@@ -338,21 +338,21 @@ static void *v2i_crld(const X509V3_EXT_METHOD *method,
 			}
 		else
 			{
-			if(!(gen = v2i_GENERAL_NAME(method, ctx, cnf)))
+			if (!(gen = v2i_GENERAL_NAME(method, ctx, cnf)))
 				goto err; 
-			if(!(gens = GENERAL_NAMES_new()))
+			if (!(gens = GENERAL_NAMES_new()))
 				goto merr;
-			if(!sk_GENERAL_NAME_push(gens, gen))
+			if (!sk_GENERAL_NAME_push(gens, gen))
 				goto merr;
 			gen = NULL;
-			if(!(point = DIST_POINT_new()))
+			if (!(point = DIST_POINT_new()))
 				goto merr;
-			if(!sk_DIST_POINT_push(crld, point))
+			if (!sk_DIST_POINT_push(crld, point))
 				{
 				DIST_POINT_free(point);
 				goto merr;
 				}
-			if(!(point->distpoint = DIST_POINT_NAME_new()))
+			if (!(point->distpoint = DIST_POINT_NAME_new()))
 				goto merr;
 			point->distpoint->name.fullname = gens;
 			point->distpoint->type = 0;
@@ -570,12 +570,12 @@ static int i2r_crldp(const X509V3_EXT_METHOD *method, void *pcrldp, BIO *out,
 		{
 		BIO_puts(out, "\n");
 		point = sk_DIST_POINT_value(crld, i);
-		if(point->distpoint)
+		if (point->distpoint)
 			print_distpoint(out, point->distpoint, indent);
-		if(point->reasons) 
+		if (point->reasons) 
 			print_reasons(out, "Reasons", point->reasons,
 								indent);
-		if(point->CRLissuer)
+		if (point->CRLissuer)
 			{
 			BIO_printf(out, "%*sCRL Issuer:\n", indent, "");
 			print_gens(out, point->CRLissuer, indent);

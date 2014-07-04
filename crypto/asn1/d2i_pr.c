@@ -142,7 +142,7 @@ EVP_PKEY *d2i_AutoPrivateKey(EVP_PKEY **a, const unsigned char **pp,
 	/* Since we only need to discern "traditional format" RSA and DSA
 	 * keys we can just count the elements.
          */
-	if(sk_ASN1_TYPE_num(inkey) == 6) 
+	if (sk_ASN1_TYPE_num(inkey) == 6) 
 		keytype = EVP_PKEY_DSA;
 	else if (sk_ASN1_TYPE_num(inkey) == 4)
 		keytype = EVP_PKEY_EC;

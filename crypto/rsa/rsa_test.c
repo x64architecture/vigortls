@@ -304,12 +304,12 @@ int main(int argc, char *argv[])
 	    unsigned char saved = ctext[n];
 	    for(b = 0 ; b < 256 ; ++b)
 		{
-		if(b == saved)
+		if (b == saved)
 		    continue;
 		ctext[n] = b;
 		num = RSA_private_decrypt(num, ctext, ptext, key,
 					  RSA_PKCS1_OAEP_PADDING);
-		if(num > 0)
+		if (num > 0)
 		    {
 		    printf("Corrupt data decrypted!\n");
 		    err = 1;

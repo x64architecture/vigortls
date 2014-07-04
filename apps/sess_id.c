@@ -140,7 +140,7 @@ int MAIN(int argc, char **argv)
 			noout= ++num;
 		else if (strcmp(*argv,"-context") == 0)
 		    {
-		    if(--argc < 1) goto bad;
+		    if (--argc < 1) goto bad;
 		    context=*++argv;
 		    }
 		else
@@ -166,10 +166,10 @@ bad:
 	if (x == NULL) { goto end; }
 	peer = SSL_SESSION_get0_peer(x);
 
-	if(context)
+	if (context)
 	    {
 	    size_t ctx_len = strlen(context);
-	    if(ctx_len > SSL_MAX_SID_CTX_LENGTH)
+	    if (ctx_len > SSL_MAX_SID_CTX_LENGTH)
 		{
 		BIO_printf(bio_err,"Context too long\n");
 		goto end;

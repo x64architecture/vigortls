@@ -98,38 +98,38 @@ int X509_REQ_print_ex(BIO *bp, X509_REQ *x, unsigned long nmflags, unsigned long
 	char mlch = ' ';
 	int nmindent = 0;
 
-	if((nmflags & XN_FLAG_SEP_MASK) == XN_FLAG_SEP_MULTILINE) {
+	if ((nmflags & XN_FLAG_SEP_MASK) == XN_FLAG_SEP_MULTILINE) {
 		mlch = '\n';
 		nmindent = 12;
 	}
 
-	if(nmflags == X509_FLAG_COMPAT)
+	if (nmflags == X509_FLAG_COMPAT)
 		nmindent = 16;
 
 
 	ri=x->req_info;
-	if(!(cflag & X509_FLAG_NO_HEADER))
+	if (!(cflag & X509_FLAG_NO_HEADER))
 		{
 		if (BIO_write(bp,"Certificate Request:\n",21) <= 0) goto err;
 		if (BIO_write(bp,"    Data:\n",10) <= 0) goto err;
 		}
-	if(!(cflag & X509_FLAG_NO_VERSION))
+	if (!(cflag & X509_FLAG_NO_VERSION))
 		{
 		neg=(ri->version->type == V_ASN1_NEG_INTEGER)?"-":"";
 		l=0;
 		for (i=0; i<ri->version->length; i++)
 			{ l<<=8; l+=ri->version->data[i]; }
-		if(BIO_printf(bp,"%8sVersion: %s%lu (%s0x%lx)\n","",neg,l,neg,
+		if (BIO_printf(bp,"%8sVersion: %s%lu (%s0x%lx)\n","",neg,l,neg,
 			      l) <= 0)
 		    goto err;
 		}
-        if(!(cflag & X509_FLAG_NO_SUBJECT))
+        if (!(cflag & X509_FLAG_NO_SUBJECT))
                 {
                 if (BIO_printf(bp,"        Subject:%c",mlch) <= 0) goto err;
                 if (X509_NAME_print_ex(bp,ri->subject,nmindent, nmflags) < 0) goto err;
                 if (BIO_write(bp,"\n",1) <= 0) goto err;
                 }
-	if(!(cflag & X509_FLAG_NO_PUBKEY))
+	if (!(cflag & X509_FLAG_NO_PUBKEY))
 		{
 		if (BIO_write(bp,"        Subject Public Key Info:\n",33) <= 0)
 			goto err;
@@ -153,16 +153,16 @@ int X509_REQ_print_ex(BIO *bp, X509_REQ *x, unsigned long nmflags, unsigned long
 			}
 		}
 
-	if(!(cflag & X509_FLAG_NO_ATTRIBUTES))
+	if (!(cflag & X509_FLAG_NO_ATTRIBUTES))
 		{
 		/* may not be */
-		if(BIO_printf(bp,"%8sAttributes:\n","") <= 0)
+		if (BIO_printf(bp,"%8sAttributes:\n","") <= 0)
 		    goto err;
 
 		sk=x->req_info->attributes;
 		if (sk_X509_ATTRIBUTE_num(sk) == 0)
 			{
-			if(BIO_printf(bp,"%12sa0:00\n","") <= 0)
+			if (BIO_printf(bp,"%12sa0:00\n","") <= 0)
 			    goto err;
 			}
 		else
@@ -176,9 +176,9 @@ int X509_REQ_print_ex(BIO *bp, X509_REQ *x, unsigned long nmflags, unsigned long
 				int j,type=0,count=1,ii=0;
 
 				a=sk_X509_ATTRIBUTE_value(sk,i);
-				if(X509_REQ_extension_nid(OBJ_obj2nid(a->object)))
+				if (X509_REQ_extension_nid(OBJ_obj2nid(a->object)))
 									continue;
-				if(BIO_printf(bp,"%12s","") <= 0)
+				if (BIO_printf(bp,"%12s","") <= 0)
 				    goto err;
 				if ((j=i2a_ASN1_OBJECT(bp,a->object)) > 0)
 				{
@@ -218,10 +218,10 @@ get_next:
 				}
 			}
 		}
-	if(!(cflag & X509_FLAG_NO_EXTENSIONS))
+	if (!(cflag & X509_FLAG_NO_EXTENSIONS))
 		{
 		exts = X509_REQ_get_extensions(x);
-		if(exts)
+		if (exts)
 			{
 			BIO_printf(bp,"%8sRequested Extensions:\n","");
 			for (i=0; i<sk_X509_EXTENSION_num(exts); i++)
@@ -236,7 +236,7 @@ get_next:
 				j=X509_EXTENSION_get_critical(ex);
 				if (BIO_printf(bp,": %s\n",j?"critical":"") <= 0)
 					goto err;
-				if(!X509V3_EXT_print(bp, ex, cflag, 16))
+				if (!X509V3_EXT_print(bp, ex, cflag, 16))
 					{
 					BIO_printf(bp, "%16s", "");
 					M_ASN1_OCTET_STRING_print(bp,ex->value);
@@ -247,9 +247,9 @@ get_next:
 			}
 		}
 
-	if(!(cflag & X509_FLAG_NO_SIGDUMP))
+	if (!(cflag & X509_FLAG_NO_SIGDUMP))
 		{
-		if(!X509_signature_print(bp, x->sig_alg, x->signature)) goto err;
+		if (!X509_signature_print(bp, x->sig_alg, x->signature)) goto err;
 		}
 
 	return (1);

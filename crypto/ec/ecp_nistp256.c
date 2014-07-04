@@ -1172,7 +1172,7 @@ static void point_add(felem x3, felem y3, felem z3,
 	/* ftmp[i] < 2^101 */
 	felem_shrink(small1, ftmp);
 
-	if(!mixed)
+	if (!mixed)
 		{
 		/* ftmp2 = z2z2 = z2**2 */
 		smallfelem_square(tmp, z2);

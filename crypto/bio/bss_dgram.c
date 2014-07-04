@@ -166,7 +166,7 @@ static int dgram_free(BIO *a)
 		return 0;
 
 	data = (bio_dgram_data *)a->ptr;
-	if(data != NULL) free(data);
+	if (data != NULL) free(data);
 
 	return (1);
 	}

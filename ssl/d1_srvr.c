@@ -920,7 +920,7 @@ int dtls1_send_server_key_exchange(SSL *s)
 				rsa=s->cert->rsa_tmp_cb(s,
 				      SSL_C_IS_EXPORT(s->s3->tmp.new_cipher),
 				      SSL_C_EXPORT_PKEYLENGTH(s->s3->tmp.new_cipher));
-				if(rsa == NULL)
+				if (rsa == NULL)
 				{
 					al=SSL_AD_HANDSHAKE_FAILURE;
 					SSLerr(SSL_F_DTLS1_SEND_SERVER_KEY_EXCHANGE,SSL_R_ERROR_GENERATING_TMP_RSA_KEY);
@@ -972,7 +972,7 @@ int dtls1_send_server_key_exchange(SSL *s)
 			     dhp->priv_key == NULL ||
 			     (s->options & SSL_OP_SINGLE_DH_USE)))
 				{
-				if(!DH_generate_key(dh))
+				if (!DH_generate_key(dh))
 				    {
 				    SSLerr(SSL_F_DTLS1_SEND_SERVER_KEY_EXCHANGE,
 					   ERR_R_DH_LIB);
@@ -1038,7 +1038,7 @@ int dtls1_send_server_key_exchange(SSL *s)
 			    (EC_KEY_get0_private_key(ecdh) == NULL) ||
 			    (s->options & SSL_OP_SINGLE_ECDH_USE))
 				{
-				if(!EC_KEY_generate_key(ecdh))
+				if (!EC_KEY_generate_key(ecdh))
 				    {
 				    SSLerr(SSL_F_DTLS1_SEND_SERVER_KEY_EXCHANGE,ERR_R_ECDH_LIB);
 				    goto err;

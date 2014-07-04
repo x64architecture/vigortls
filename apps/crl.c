@@ -240,7 +240,7 @@ bad:
 	x=load_crl(infile,informat);
 	if (x == NULL) { goto end; }
 
-	if(do_ver) {
+	if (do_ver) {
 		store = X509_STORE_new();
 		lookup=X509_STORE_add_lookup(store,X509_LOOKUP_file());
 		if (lookup == NULL) goto end;
@@ -253,7 +253,7 @@ bad:
 			X509_LOOKUP_add_dir(lookup,NULL,X509_FILETYPE_DEFAULT);
 		ERR_clear_error();
 
-		if(!X509_STORE_CTX_init(&ctx, store, NULL, NULL)) {
+		if (!X509_STORE_CTX_init(&ctx, store, NULL, NULL)) {
 			BIO_printf(bio_err,
 				"Error initialising X509 store\n");
 			goto end;
@@ -261,22 +261,22 @@ bad:
 
 		i = X509_STORE_get_by_subject(&ctx, X509_LU_X509, 
 					X509_CRL_get_issuer(x), &xobj);
-		if(i <= 0) {
+		if (i <= 0) {
 			BIO_printf(bio_err,
 				"Error getting CRL issuer certificate\n");
 			goto end;
 		}
 		pkey = X509_get_pubkey(xobj.data.x509);
 		X509_OBJECT_free_contents(&xobj);
-		if(!pkey) {
+		if (!pkey) {
 			BIO_printf(bio_err,
 				"Error getting CRL issuer public key\n");
 			goto end;
 		}
 		i = X509_CRL_verify(x, pkey);
 		EVP_PKEY_free(pkey);
-		if(i < 0) goto end;
-		if(i == 0) BIO_printf(bio_err, "verify failure\n");
+		if (i < 0) goto end;
+		if (i == 0) BIO_printf(bio_err, "verify failure\n");
 		else BIO_printf(bio_err, "verify OK\n");
 	}
 
@@ -400,7 +400,7 @@ end:
 	BIO_free_all(bio_out);
 	bio_out=NULL;
 	X509_CRL_free(x);
-	if(store) {
+	if (store) {
 		X509_STORE_CTX_cleanup(&ctx);
 		X509_STORE_free(store);
 	}

@@ -94,9 +94,9 @@ int PKCS5_PBKDF2_HMAC(const char *pass, int passlen,
 	HMAC_CTX_init(&hctx_tpl);
 	p = out;
 	tkeylen = keylen;
-	if(!pass)
+	if (!pass)
 		passlen = 0;
-	else if(passlen == -1)
+	else if (passlen == -1)
 		passlen = strlen(pass);
 	if (!HMAC_Init_ex(&hctx_tpl, pass, passlen, digest, NULL))
 		{
@@ -105,7 +105,7 @@ int PKCS5_PBKDF2_HMAC(const char *pass, int passlen,
 		}
 	while(tkeylen)
 		{
-		if(tkeylen > mdlen)
+		if (tkeylen > mdlen)
 			cplen = mdlen;
 		else
 			cplen = tkeylen;
@@ -210,14 +210,14 @@ int PKCS5_v2_PBE_keyivgen(EVP_CIPHER_CTX *ctx, const char *pass, int passlen,
 
 	pbuf = param->value.sequence->data;
 	plen = param->value.sequence->length;
-	if(!(pbe2 = d2i_PBE2PARAM(NULL, &pbuf, plen))) {
+	if (!(pbe2 = d2i_PBE2PARAM(NULL, &pbuf, plen))) {
 		EVPerr(EVP_F_PKCS5_V2_PBE_KEYIVGEN,EVP_R_DECODE_ERROR);
 		goto err;
 	}
 
 	/* See if we recognise the key derivation function */
 
-	if(OBJ_obj2nid(pbe2->keyfunc->algorithm) != NID_id_pbkdf2) {
+	if (OBJ_obj2nid(pbe2->keyfunc->algorithm) != NID_id_pbkdf2) {
 		EVPerr(EVP_F_PKCS5_V2_PBE_KEYIVGEN,
 				EVP_R_UNSUPPORTED_KEY_DERIVATION_FUNCTION);
 		goto err;
@@ -228,7 +228,7 @@ int PKCS5_v2_PBE_keyivgen(EVP_CIPHER_CTX *ctx, const char *pass, int passlen,
 
 	cipher = EVP_get_cipherbyobj(pbe2->encryption->algorithm);
 
-	if(!cipher) {
+	if (!cipher) {
 		EVPerr(EVP_F_PKCS5_V2_PBE_KEYIVGEN,
 						EVP_R_UNSUPPORTED_CIPHER);
 		goto err;
@@ -237,7 +237,7 @@ int PKCS5_v2_PBE_keyivgen(EVP_CIPHER_CTX *ctx, const char *pass, int passlen,
 	/* Fixup cipher based on AlgorithmIdentifier */
 	if (!EVP_CipherInit_ex(ctx, cipher, NULL, NULL, NULL, en_de))
 		goto err;
-	if(EVP_CIPHER_asn1_to_param(ctx, pbe2->encryption->parameter) < 0) {
+	if (EVP_CIPHER_asn1_to_param(ctx, pbe2->encryption->parameter) < 0) {
 		EVPerr(EVP_F_PKCS5_V2_PBE_KEYIVGEN,
 					EVP_R_CIPHER_PARAMETER_ERROR);
 		goto err;
@@ -272,7 +272,7 @@ int PKCS5_v2_PBKDF2_keyivgen(EVP_CIPHER_CTX *ctx, const char *pass, int passlen,
 
 	/* Decode parameter */
 
-	if(!param || (param->type != V_ASN1_SEQUENCE))
+	if (!param || (param->type != V_ASN1_SEQUENCE))
 		{
 		EVPerr(EVP_F_PKCS5_V2_PBKDF2_KEYIVGEN,EVP_R_DECODE_ERROR);
 		goto err;
@@ -281,7 +281,7 @@ int PKCS5_v2_PBKDF2_keyivgen(EVP_CIPHER_CTX *ctx, const char *pass, int passlen,
 	pbuf = param->value.sequence->data;
 	plen = param->value.sequence->length;
 
-	if(!(kdf = d2i_PBKDF2PARAM(NULL, &pbuf, plen)) ) {
+	if (!(kdf = d2i_PBKDF2PARAM(NULL, &pbuf, plen)) ) {
 		EVPerr(EVP_F_PKCS5_V2_PBKDF2_KEYIVGEN,EVP_R_DECODE_ERROR);
 		goto err;
 	}
@@ -290,7 +290,7 @@ int PKCS5_v2_PBKDF2_keyivgen(EVP_CIPHER_CTX *ctx, const char *pass, int passlen,
 
 	/* Now check the parameters of the kdf */
 
-	if(kdf->keylength && (ASN1_INTEGER_get(kdf->keylength) != (int)keylen)){
+	if (kdf->keylength && (ASN1_INTEGER_get(kdf->keylength) != (int)keylen)){
 		EVPerr(EVP_F_PKCS5_V2_PBKDF2_KEYIVGEN,
 						EVP_R_UNSUPPORTED_KEYLENGTH);
 		goto err;
@@ -314,7 +314,7 @@ int PKCS5_v2_PBKDF2_keyivgen(EVP_CIPHER_CTX *ctx, const char *pass, int passlen,
 		goto err;
 		}
 
-	if(kdf->salt->type != V_ASN1_OCTET_STRING) {
+	if (kdf->salt->type != V_ASN1_OCTET_STRING) {
 		EVPerr(EVP_F_PKCS5_V2_PBKDF2_KEYIVGEN,
 						EVP_R_UNSUPPORTED_SALT_TYPE);
 		goto err;
@@ -324,7 +324,7 @@ int PKCS5_v2_PBKDF2_keyivgen(EVP_CIPHER_CTX *ctx, const char *pass, int passlen,
 	salt = kdf->salt->value.octet_string->data;
 	saltlen = kdf->salt->value.octet_string->length;
 	iter = ASN1_INTEGER_get(kdf->iter);
-	if(!PKCS5_PBKDF2_HMAC(pass, passlen, salt, saltlen, iter, prfmd,
+	if (!PKCS5_PBKDF2_HMAC(pass, passlen, salt, saltlen, iter, prfmd,
 						   keylen, key))
 		goto err;
 	rv = EVP_CipherInit_ex(ctx, NULL, NULL, key, NULL, en_de);

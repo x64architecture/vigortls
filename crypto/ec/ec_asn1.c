@@ -677,7 +677,7 @@ static ECPARAMETERS *ec_asn1_group2parameters(const EC_GROUP *group,
 
 	ok = 1;
 
-err :	if(!ok)
+err :	if (!ok)
 		{
 		if (ret && !param)
 			ECPARAMETERS_free(ret);

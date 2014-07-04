@@ -87,7 +87,7 @@ int PKCS5_pbe_set0_algor(X509_ALGOR *algor, int alg, int iter,
 		ASN1err(ASN1_F_PKCS5_PBE_SET0_ALGOR,ERR_R_MALLOC_FAILURE);
 		goto err;
 		}
-	if(iter <= 0)
+	if (iter <= 0)
 		iter = PKCS5_DEFAULT_ITER;
 	if (!ASN1_INTEGER_set(pbe->iter, iter))
 		{
@@ -107,7 +107,7 @@ int PKCS5_pbe_set0_algor(X509_ALGOR *algor, int alg, int iter,
 	else if (RAND_pseudo_bytes(sstr, saltlen) < 0)
 		goto err;
 
-	if(!ASN1_item_pack(pbe, ASN1_ITEM_rptr(PBEPARAM), &pbe_str))
+	if (!ASN1_item_pack(pbe, ASN1_ITEM_rptr(PBEPARAM), &pbe_str))
 		{
 		ASN1err(ASN1_F_PKCS5_PBE_SET0_ALGOR,ERR_R_MALLOC_FAILURE);
 		goto err;

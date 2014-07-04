@@ -354,7 +354,7 @@ BIO *PKCS7_dataInit(PKCS7 *p7, BIO *bio)
 				if (xalg->parameter == NULL)
 					goto err;
 			}
-			if(EVP_CIPHER_param_to_asn1(ctx, xalg->parameter) < 0)
+			if (EVP_CIPHER_param_to_asn1(ctx, xalg->parameter) < 0)
 				goto err;
 		}
 
@@ -380,7 +380,7 @@ BIO *PKCS7_dataInit(PKCS7 *p7, BIO *bio)
 			bio=BIO_new(BIO_s_null());
 		else if (os && os->length > 0)
 			bio = BIO_new_mem_buf(os->data, os->length);
-		if(bio == NULL)
+		if (bio == NULL)
 			{
 			bio=BIO_new(BIO_s_mem());
 			if (bio == NULL)
@@ -595,7 +595,7 @@ BIO *PKCS7_dataDecode(PKCS7 *p7, EVP_PKEY *pkey, BIO *in_bio, X509 *pcert)
 			 * and effective key length. The key length is
 			 * determined by the size of the decrypted RSA key.
 			 */
-			if(!EVP_CIPHER_CTX_set_key_length(evp_ctx, eklen))
+			if (!EVP_CIPHER_CTX_set_key_length(evp_ctx, eklen))
 				{
 				/* Use random key as MMA defence */
 				OPENSSL_cleanse(ek, eklen);
@@ -794,7 +794,7 @@ int PKCS7_dataFinal(PKCS7 *p7, BIO *bio)
 		si_sk=p7->d.sign->signer_info;
 		os=PKCS7_get_octet_string(p7->d.sign->contents);
 		/* If detached data then the content is excluded */
-		if(PKCS7_type_is_data(p7->d.sign->contents) && p7->detached) {
+		if (PKCS7_type_is_data(p7->d.sign->contents) && p7->detached) {
 			M_ASN1_OCTET_STRING_free(os);
 			p7->d.sign->contents->d.data = NULL;
 		}
@@ -803,7 +803,7 @@ int PKCS7_dataFinal(PKCS7 *p7, BIO *bio)
 	case NID_pkcs7_digest:
 		os=PKCS7_get_octet_string(p7->d.digest->contents);
 		/* If detached data then the content is excluded */
-		if(PKCS7_type_is_data(p7->d.digest->contents) && p7->detached)
+		if (PKCS7_type_is_data(p7->d.digest->contents) && p7->detached)
 			{
 			M_ASN1_OCTET_STRING_free(os);
 			p7->d.digest->contents->d.data = NULL;
@@ -928,7 +928,7 @@ int PKCS7_SIGNER_INFO_sign(PKCS7_SIGNER_INFO *si)
 
 	alen = ASN1_item_i2d((ASN1_VALUE *)si->auth_attr,&abuf,
 				ASN1_ITEM_rptr(PKCS7_ATTR_SIGN));
-	if(!abuf)
+	if (!abuf)
 		goto err;
 	if (EVP_DigestSignUpdate(&mctx,abuf,alen) <= 0)
 		goto err;
@@ -937,7 +937,7 @@ int PKCS7_SIGNER_INFO_sign(PKCS7_SIGNER_INFO *si)
 	if (EVP_DigestSignFinal(&mctx, NULL, &siglen) <= 0)
 		goto err;
 	abuf = malloc(siglen);
-	if(!abuf)
+	if (!abuf)
 		goto err;
 	if (EVP_DigestSignFinal(&mctx, abuf, &siglen) <= 0)
 		goto err;
@@ -997,7 +997,7 @@ int PKCS7_dataVerify(X509_STORE *cert_store, X509_STORE_CTX *ctx, BIO *bio,
 		}
 
 	/* Lets verify */
-	if(!X509_STORE_CTX_init(ctx,cert_store,x509,cert))
+	if (!X509_STORE_CTX_init(ctx,cert_store,x509,cert))
 		{
 		PKCS7err(PKCS7_F_PKCS7_DATAVERIFY,ERR_R_X509_LIB);
 		goto err;
@@ -1201,7 +1201,7 @@ static ASN1_TYPE *get_attribute(STACK_OF(X509_ATTRIBUTE) *sk, int nid)
 ASN1_OCTET_STRING *PKCS7_digest_from_attributes(STACK_OF(X509_ATTRIBUTE) *sk)
 {
 	ASN1_TYPE *astype;
-	if(!(astype = get_attribute(sk, NID_pkcs9_messageDigest))) return NULL;
+	if (!(astype = get_attribute(sk, NID_pkcs9_messageDigest))) return NULL;
 	return astype->value.octet_string;
 }
 

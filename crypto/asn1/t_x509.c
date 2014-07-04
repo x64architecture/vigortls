@@ -111,26 +111,26 @@ int X509_print_ex(BIO *bp, X509 *x, unsigned long nmflags, unsigned long cflag)
 	EVP_PKEY *pkey=NULL;
 	const char *neg;
 
-	if((nmflags & XN_FLAG_SEP_MASK) == XN_FLAG_SEP_MULTILINE) {
+	if ((nmflags & XN_FLAG_SEP_MASK) == XN_FLAG_SEP_MULTILINE) {
 			mlch = '\n';
 			nmindent = 12;
 	}
 
-	if(nmflags == X509_FLAG_COMPAT)
+	if (nmflags == X509_FLAG_COMPAT)
 		nmindent = 16;
 
 	ci=x->cert_info;
-	if(!(cflag & X509_FLAG_NO_HEADER))
+	if (!(cflag & X509_FLAG_NO_HEADER))
 		{
 		if (BIO_write(bp,"Certificate:\n",13) <= 0) goto err;
 		if (BIO_write(bp,"    Data:\n",10) <= 0) goto err;
 		}
-	if(!(cflag & X509_FLAG_NO_VERSION))
+	if (!(cflag & X509_FLAG_NO_VERSION))
 		{
 		l=X509_get_version(x);
 		if (BIO_printf(bp,"%8sVersion: %lu (0x%lx)\n","",l+1,l) <= 0) goto err;
 		}
-	if(!(cflag & X509_FLAG_NO_SERIAL))
+	if (!(cflag & X509_FLAG_NO_SERIAL))
 		{
 
 		if (BIO_write(bp,"        Serial Number:",22) <= 0) goto err;
@@ -164,9 +164,9 @@ int X509_print_ex(BIO *bp, X509 *x, unsigned long nmflags, unsigned long cflag)
 
 		}
 
-	if(!(cflag & X509_FLAG_NO_SIGNAME))
+	if (!(cflag & X509_FLAG_NO_SIGNAME))
 		{
-		if(X509_signature_print(bp, x->sig_alg, NULL) <= 0)
+		if (X509_signature_print(bp, x->sig_alg, NULL) <= 0)
 			goto err;
 #if 0
 		if (BIO_printf(bp,"%8sSignature Algorithm: ","") <= 0) 
@@ -178,13 +178,13 @@ int X509_print_ex(BIO *bp, X509 *x, unsigned long nmflags, unsigned long cflag)
 #endif
 		}
 
-	if(!(cflag & X509_FLAG_NO_ISSUER))
+	if (!(cflag & X509_FLAG_NO_ISSUER))
 		{
 		if (BIO_printf(bp,"        Issuer:%c",mlch) <= 0) goto err;
 		if (X509_NAME_print_ex(bp,X509_get_issuer_name(x),nmindent, nmflags) < 0) goto err;
 		if (BIO_write(bp,"\n",1) <= 0) goto err;
 		}
-	if(!(cflag & X509_FLAG_NO_VALIDITY))
+	if (!(cflag & X509_FLAG_NO_VALIDITY))
 		{
 		if (BIO_write(bp,"        Validity\n",17) <= 0) goto err;
 		if (BIO_write(bp,"            Not Before: ",24) <= 0) goto err;
@@ -193,13 +193,13 @@ int X509_print_ex(BIO *bp, X509 *x, unsigned long nmflags, unsigned long cflag)
 		if (!ASN1_TIME_print(bp,X509_get_notAfter(x))) goto err;
 		if (BIO_write(bp,"\n",1) <= 0) goto err;
 		}
-	if(!(cflag & X509_FLAG_NO_SUBJECT))
+	if (!(cflag & X509_FLAG_NO_SUBJECT))
 		{
 		if (BIO_printf(bp,"        Subject:%c",mlch) <= 0) goto err;
 		if (X509_NAME_print_ex(bp,X509_get_subject_name(x),nmindent, nmflags) < 0) goto err;
 		if (BIO_write(bp,"\n",1) <= 0) goto err;
 		}
-	if(!(cflag & X509_FLAG_NO_PUBKEY))
+	if (!(cflag & X509_FLAG_NO_PUBKEY))
 		{
 		if (BIO_write(bp,"        Subject Public Key Info:\n",33) <= 0)
 			goto err;
@@ -227,11 +227,11 @@ int X509_print_ex(BIO *bp, X509 *x, unsigned long nmflags, unsigned long cflag)
 		X509V3_extensions_print(bp, "X509v3 extensions",
 					ci->extensions, cflag, 8);
 
-	if(!(cflag & X509_FLAG_NO_SIGDUMP))
+	if (!(cflag & X509_FLAG_NO_SIGDUMP))
 		{
-		if(X509_signature_print(bp, x->sig_alg, x->signature) <= 0) goto err;
+		if (X509_signature_print(bp, x->sig_alg, x->signature) <= 0) goto err;
 		}
-	if(!(cflag & X509_FLAG_NO_AUX))
+	if (!(cflag & X509_FLAG_NO_AUX))
 		{
 		if (!X509_CERT_AUX_print(bp, x->aux, 0)) goto err;
 		}
@@ -368,8 +368,8 @@ int ASN1_STRING_print(BIO *bp, const ASN1_STRING *v)
 
 int ASN1_TIME_print(BIO *bp, const ASN1_TIME *tm)
 {
-	if(tm->type == V_ASN1_UTCTIME) return ASN1_UTCTIME_print(bp, tm);
-	if(tm->type == V_ASN1_GENERALIZEDTIME)
+	if (tm->type == V_ASN1_UTCTIME) return ASN1_UTCTIME_print(bp, tm);
+	if (tm->type == V_ASN1_GENERALIZEDTIME)
 				return ASN1_GENERALIZEDTIME_print(bp, tm);
 	BIO_write(bp,"Bad time value",14);
 	return (0);

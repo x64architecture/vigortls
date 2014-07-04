@@ -480,7 +480,7 @@ static int bio_zlib_new(BIO *bi)
 		}
 #endif
 	ctx = malloc(sizeof(BIO_ZLIB_CTX));
-	if(!ctx)
+	if (!ctx)
 		{
 		COMPerr(COMP_F_BIO_ZLIB_NEW, ERR_R_MALLOC_FAILURE);
 		return 0;
@@ -512,15 +512,15 @@ static int bio_zlib_new(BIO *bi)
 static int bio_zlib_free(BIO *bi)
 	{
 	BIO_ZLIB_CTX *ctx;
-	if(!bi) return 0;
+	if (!bi) return 0;
 	ctx = (BIO_ZLIB_CTX *)bi->ptr;
-	if(ctx->ibuf)
+	if (ctx->ibuf)
 		{
 		/* Destroy decompress context */
 		inflateEnd(&ctx->zin);
 		free(ctx->ibuf);
 		}
-	if(ctx->obuf)
+	if (ctx->obuf)
 		{
 		/* Destroy compress context */
 		deflateEnd(&ctx->zout);
@@ -538,14 +538,14 @@ static int bio_zlib_read(BIO *b, char *out, int outl)
 	BIO_ZLIB_CTX *ctx;
 	int ret;
 	z_stream *zin;
-	if(!out || !outl) return 0;
+	if (!out || !outl) return 0;
 	ctx = (BIO_ZLIB_CTX *)b->ptr;
 	zin = &ctx->zin;
 	BIO_clear_retry_flags(b);
-	if(!ctx->ibuf)
+	if (!ctx->ibuf)
 		{
 		ctx->ibuf = malloc(ctx->ibufsize);
-		if(!ctx->ibuf)
+		if (!ctx->ibuf)
 			{
 			COMPerr(COMP_F_BIO_ZLIB_READ, ERR_R_MALLOC_FAILURE);
 			return 0;
@@ -564,7 +564,7 @@ static int bio_zlib_read(BIO *b, char *out, int outl)
 		while(zin->avail_in)
 			{
 			ret = inflate(zin, 0);
-			if((ret != Z_OK) && (ret != Z_STREAM_END))
+			if ((ret != Z_OK) && (ret != Z_STREAM_END))
 				{
 				COMPerr(COMP_F_BIO_ZLIB_READ,
 						COMP_R_ZLIB_INFLATE_ERROR);
@@ -573,7 +573,7 @@ static int bio_zlib_read(BIO *b, char *out, int outl)
 				return 0;
 				}
 			/* If EOF or we've read everything then return */
-			if((ret == Z_STREAM_END) || !zin->avail_out)
+			if ((ret == Z_STREAM_END) || !zin->avail_out)
 				return outl - zin->avail_out;
 			}
 
@@ -581,12 +581,12 @@ static int bio_zlib_read(BIO *b, char *out, int outl)
 		 * if an error then return the total data read.
 		 */
 		ret = BIO_read(b->next_bio, ctx->ibuf, ctx->ibufsize);
-		if(ret <= 0)
+		if (ret <= 0)
 			{
 			/* Total data read */
 			int tot = outl - zin->avail_out;
 			BIO_copy_next_retry(b);
-			if(ret < 0) return (tot > 0) ? tot : ret;
+			if (ret < 0) return (tot > 0) ? tot : ret;
 			return tot;
 			}
 		zin->avail_in = ret;
@@ -599,16 +599,16 @@ static int bio_zlib_write(BIO *b, const char *in, int inl)
 	BIO_ZLIB_CTX *ctx;
 	int ret;
 	z_stream *zout;
-	if(!in || !inl) return 0;
+	if (!in || !inl) return 0;
 	ctx = (BIO_ZLIB_CTX *)b->ptr;
-	if(ctx->odone) return 0;
+	if (ctx->odone) return 0;
 	zout = &ctx->zout;
 	BIO_clear_retry_flags(b);
-	if(!ctx->obuf)
+	if (!ctx->obuf)
 		{
 		ctx->obuf = malloc(ctx->obufsize);
 		/* Need error here */
-		if(!ctx->obuf)
+		if (!ctx->obuf)
 			{
 			COMPerr(COMP_F_BIO_ZLIB_WRITE, ERR_R_MALLOC_FAILURE);
 			return 0;
@@ -627,12 +627,12 @@ static int bio_zlib_write(BIO *b, const char *in, int inl)
 		/* If data in output buffer write it first */
 		while(ctx->ocount) {
 			ret = BIO_write(b->next_bio, ctx->optr, ctx->ocount);
-			if(ret <= 0)
+			if (ret <= 0)
 				{
 				/* Total data written */
 				int tot = inl - zout->avail_in;
 				BIO_copy_next_retry(b);
-				if(ret < 0) return (tot > 0) ? tot : ret;
+				if (ret < 0) return (tot > 0) ? tot : ret;
 				return tot;
 				}
 			ctx->optr += ret;
@@ -640,7 +640,7 @@ static int bio_zlib_write(BIO *b, const char *in, int inl)
 		}
 
 		/* Have we consumed all supplied data? */
-		if(!zout->avail_in)
+		if (!zout->avail_in)
 			return inl;
 
 		/* Compress some more */
@@ -651,7 +651,7 @@ static int bio_zlib_write(BIO *b, const char *in, int inl)
 		zout->avail_out = ctx->obufsize;
 		/* Compress some more */
 		ret = deflate(zout, 0);
-		if(ret != Z_OK)
+		if (ret != Z_OK)
 			{
 			COMPerr(COMP_F_BIO_ZLIB_WRITE,
 						COMP_R_ZLIB_DEFLATE_ERROR);
@@ -669,7 +669,7 @@ static int bio_zlib_flush(BIO *b)
 	z_stream *zout;
 	ctx = (BIO_ZLIB_CTX *)b->ptr;
 	/* If no data written or already flush show success */
-	if(!ctx->obuf || (ctx->odone && !ctx->ocount)) return 1;
+	if (!ctx->obuf || (ctx->odone && !ctx->ocount)) return 1;
 	zout = &ctx->zout;
 	BIO_clear_retry_flags(b);
 	/* No more input data */
@@ -681,7 +681,7 @@ static int bio_zlib_flush(BIO *b)
 		while(ctx->ocount)
 			{
 			ret = BIO_write(b->next_bio, ctx->optr, ctx->ocount);
-			if(ret <= 0)
+			if (ret <= 0)
 				{
 				BIO_copy_next_retry(b);
 				return ret;
@@ -689,7 +689,7 @@ static int bio_zlib_flush(BIO *b)
 			ctx->optr += ret;
 			ctx->ocount -= ret;
 			}
-		if(ctx->odone) return 1;
+		if (ctx->odone) return 1;
 
 		/* Compress some more */
 
@@ -699,8 +699,8 @@ static int bio_zlib_flush(BIO *b)
 		zout->avail_out = ctx->obufsize;
 		/* Compress some more */
 		ret = deflate(zout, Z_FINISH);
-		if(ret == Z_STREAM_END) ctx->odone = 1;
-		else if(ret != Z_OK)
+		if (ret == Z_STREAM_END) ctx->odone = 1;
+		else if (ret != Z_OK)
 			{
 			COMPerr(COMP_F_BIO_ZLIB_FLUSH,
 						COMP_R_ZLIB_DEFLATE_ERROR);
@@ -716,7 +716,7 @@ static long bio_zlib_ctrl(BIO *b, int cmd, long num, void *ptr)
 	BIO_ZLIB_CTX *ctx;
 	int ret, *ip;
 	int ibs, obs;
-	if(!b->next_bio) return 0;
+	if (!b->next_bio) return 0;
 	ctx = (BIO_ZLIB_CTX *)b->ptr;
 	switch (cmd)
 		{
@@ -790,7 +790,7 @@ static long bio_zlib_ctrl(BIO *b, int cmd, long num, void *ptr)
 
 static long bio_zlib_callback_ctrl(BIO *b, int cmd, bio_info_cb *fp)
 	{
-	if(!b->next_bio)
+	if (!b->next_bio)
 		return 0;
 	return
 		BIO_callback_ctrl(b->next_bio, cmd, fp);

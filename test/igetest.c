@@ -65,7 +65,7 @@ static void hexdump(FILE *f,const char *title,const unsigned char *s,int l)
     fprintf(f,"%s",title);
     for( ; n < l ; ++n)
 		{
-		if((n%16) == 0)
+		if ((n%16) == 0)
 			fprintf(f,"\n%04x",n);
 		fprintf(f," %02x",s[n]);
 		}
@@ -202,14 +202,14 @@ static int run_test_vectors(void)
 
 		assert(v->length <= MAX_VECTOR_SIZE);
 
-		if(v->encrypt == AES_ENCRYPT)
+		if (v->encrypt == AES_ENCRYPT)
 			AES_set_encrypt_key(v->key, 8*sizeof v->key, &key);
 		else
 			AES_set_decrypt_key(v->key, 8*sizeof v->key, &key);
 		memcpy(iv, v->iv, sizeof iv);
 		AES_ige_encrypt(v->in, buf, v->length, &key, iv, v->encrypt);
 
-		if(memcmp(v->out, buf, v->length))
+		if (memcmp(v->out, buf, v->length))
 			{
 			printf("IGE test vector %d failed\n", n);
 			hexdump(stdout, "key", v->key, sizeof v->key);
@@ -226,7 +226,7 @@ static int run_test_vectors(void)
                 memcpy(buf, v->in, v->length);
 		AES_ige_encrypt(buf, buf, v->length, &key, iv, v->encrypt);
 
-		if(memcmp(v->out, buf, v->length))
+		if (memcmp(v->out, buf, v->length))
 			{
 			printf("IGE test vector %d failed (with in == out)\n", n);
 			hexdump(stdout, "key", v->key, sizeof v->key);
@@ -249,7 +249,7 @@ static int run_test_vectors(void)
 
 		assert(v->length <= MAX_VECTOR_SIZE);
 
-		if(v->encrypt == AES_ENCRYPT)
+		if (v->encrypt == AES_ENCRYPT)
 			{
 			AES_set_encrypt_key(v->key1, 8*v->keysize, &key1);
 			AES_set_encrypt_key(v->key2, 8*v->keysize, &key2);
@@ -263,7 +263,7 @@ static int run_test_vectors(void)
 		AES_bi_ige_encrypt(v->in, buf, v->length, &key1, &key2, v->iv,
 						   v->encrypt);
 
-		if(memcmp(v->out, buf, v->length))
+		if (memcmp(v->out, buf, v->length))
 			{
 			printf("Bidirectional IGE test vector %d failed\n", n);
 			hexdump(stdout, "key 1", v->key1, sizeof v->key1);
@@ -314,7 +314,7 @@ int main(int argc, char **argv)
 	AES_ige_encrypt(ciphertext, checktext, TEST_SIZE, &key, iv,
 					AES_DECRYPT);
 
-	if(memcmp(checktext, plaintext, TEST_SIZE))
+	if (memcmp(checktext, plaintext, TEST_SIZE))
 		{
 		printf("Encrypt+decrypt doesn't match\n");
 		hexdump(stdout, "Plaintext", plaintext, TEST_SIZE);
@@ -336,7 +336,7 @@ int main(int argc, char **argv)
 	AES_ige_encrypt(ciphertext, checktext, TEST_SIZE, &key, iv,
 					AES_DECRYPT);
 
-	if(memcmp(checktext, plaintext, TEST_SIZE))
+	if (memcmp(checktext, plaintext, TEST_SIZE))
 		{
 		printf("Chained encrypt+decrypt doesn't match\n");
 		hexdump(stdout, "Plaintext", plaintext, TEST_SIZE);
@@ -361,7 +361,7 @@ int main(int argc, char **argv)
 					checktext+TEST_SIZE/2, TEST_SIZE/2, &key, iv,
 					AES_DECRYPT);
 
-	if(memcmp(checktext, plaintext, TEST_SIZE))
+	if (memcmp(checktext, plaintext, TEST_SIZE))
 		{
 		printf("Chained encrypt+chained decrypt doesn't match\n");
 		hexdump(stdout, "Plaintext", plaintext, TEST_SIZE);
@@ -384,16 +384,16 @@ int main(int argc, char **argv)
 
 	matches=0;
 	for(n=0 ; n < sizeof checktext ; ++n)
-		if(checktext[n] == plaintext[n])
+		if (checktext[n] == plaintext[n])
 			++matches;
 
-	if(matches > sizeof checktext/2+sizeof checktext/100)
+	if (matches > sizeof checktext/2+sizeof checktext/100)
 		{
 		printf("More than 51%% matches after garbling\n");
 		++err;
 		}
 
-	if(matches < sizeof checktext/2)
+	if (matches < sizeof checktext/2)
 		{
 		printf("Garble extends backwards!\n");
 		++err;
@@ -417,7 +417,7 @@ int main(int argc, char **argv)
 	AES_bi_ige_encrypt(ciphertext, checktext, TEST_SIZE, &key, &key2, iv,
 					   AES_DECRYPT);
 
-	if(memcmp(checktext, plaintext, TEST_SIZE))
+	if (memcmp(checktext, plaintext, TEST_SIZE))
 		{
 		printf("Encrypt+decrypt doesn't match\n");
 		hexdump(stdout, "Plaintext", plaintext, TEST_SIZE);
@@ -440,10 +440,10 @@ int main(int argc, char **argv)
 
 	matches=0;
 	for(n=0 ; n < sizeof checktext ; ++n)
-		if(checktext[n] == plaintext[n])
+		if (checktext[n] == plaintext[n])
 			++matches;
 
-	if(matches > sizeof checktext/100)
+	if (matches > sizeof checktext/100)
 		{
 		printf("More than 1%% matches after bidirectional garbling\n");
 		++err;
@@ -464,10 +464,10 @@ int main(int argc, char **argv)
 
 	matches=0;
 	for(n=0 ; n < sizeof checktext ; ++n)
-		if(checktext[n] == plaintext[n])
+		if (checktext[n] == plaintext[n])
 			++matches;
 
-	if(matches > sizeof checktext/100)
+	if (matches > sizeof checktext/100)
 		{
 		printf("More than 1%% matches after bidirectional garbling (2)\n");
 		++err;
@@ -488,10 +488,10 @@ int main(int argc, char **argv)
 
 	matches=0;
 	for(n=0 ; n < sizeof checktext ; ++n)
-		if(checktext[n] == plaintext[n])
+		if (checktext[n] == plaintext[n])
 			++matches;
 
-	if(matches > sizeof checktext/100)
+	if (matches > sizeof checktext/100)
 		{
 		printf("More than 1%% matches after bidirectional garbling (3)\n");
 		++err;

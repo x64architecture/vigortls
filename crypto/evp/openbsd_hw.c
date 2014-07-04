@@ -90,9 +90,9 @@ static void err(const char *str)
 
 static int dev_crypto_init(session_op *ses)
     {
-    if(dev_failed)
+    if (dev_failed)
 	return 0;
-    if(!fd)
+    if (!fd)
 	{
 	int cryptodev_fd;
 
@@ -119,7 +119,7 @@ static int dev_crypto_init(session_op *ses)
 
 static int dev_crypto_cleanup(EVP_CIPHER_CTX *ctx)
     {
-    if(ioctl(fd,CIOCFSESSION,&CDATA(ctx)->ses) == -1)
+    if (ioctl(fd,CIOCFSESSION,&CDATA(ctx)->ses) == -1)
 	err("CIOCFSESSION failed");
 
     free(CDATA(ctx)->key);
@@ -130,7 +130,7 @@ static int dev_crypto_cleanup(EVP_CIPHER_CTX *ctx)
 static int dev_crypto_init_key(EVP_CIPHER_CTX *ctx,int cipher,
 			       const unsigned char *key,int klen)
     {
-    if(!dev_crypto_init(CDATA(ctx)))
+    if (!dev_crypto_init(CDATA(ctx)))
 	return 0;
 
     CDATA(ctx)->key=malloc(MAX_HW_KEY);
@@ -156,7 +156,7 @@ static int dev_crypto_cipher(EVP_CIPHER_CTX *ctx,unsigned char *out,
     struct crypt_op cryp;
     unsigned char lb[MAX_HW_IV];
 
-    if(!inl)
+    if (!inl)
 	return 1;
 
     assert(CDATA(ctx));
@@ -171,15 +171,15 @@ static int dev_crypto_cipher(EVP_CIPHER_CTX *ctx,unsigned char *out,
     cryp.src=(caddr_t)in;
     cryp.dst=(caddr_t)out;
     cryp.mac=0;
-    if(ctx->cipher->iv_len)
+    if (ctx->cipher->iv_len)
 	cryp.iv=(caddr_t)ctx->iv;
 
-    if(!ctx->encrypt)
+    if (!ctx->encrypt)
 	memcpy(lb,&in[cryp.len-ctx->cipher->iv_len],ctx->cipher->iv_len);
 
-    if(ioctl(fd, CIOCCRYPT, &cryp) == -1)
+    if (ioctl(fd, CIOCCRYPT, &cryp) == -1)
 	{
-	if(errno == EINVAL) /* buffers are misaligned */
+	if (errno == EINVAL) /* buffers are misaligned */
 	    {
 	    unsigned int cinl=0;
 	    char *cin=NULL;
@@ -188,14 +188,14 @@ static int dev_crypto_cipher(EVP_CIPHER_CTX *ctx,unsigned char *out,
 	    /* NB: this can only make cinl != inl with stream ciphers */
 	    cinl=(inl+3)/4*4;
 
-	    if(((unsigned long)in&3) || cinl != inl)
+	    if (((unsigned long)in&3) || cinl != inl)
 		{
 		cin=malloc(cinl);
 		memcpy(cin,in,inl);
 		cryp.src=cin;
 		}
 
-	    if(((unsigned long)out&3) || cinl != inl)
+	    if (((unsigned long)out&3) || cinl != inl)
 		{
 		cout=malloc(cinl);
 		cryp.dst=cout;
@@ -203,7 +203,7 @@ static int dev_crypto_cipher(EVP_CIPHER_CTX *ctx,unsigned char *out,
 
 	    cryp.len=cinl;
 
-	    if(ioctl(fd, CIOCCRYPT, &cryp) == -1)
+	    if (ioctl(fd, CIOCCRYPT, &cryp) == -1)
 		{
 		err("CIOCCRYPT(2) failed");
 		printf("src=%p dst=%p\n",cryp.src,cryp.dst);
@@ -211,12 +211,12 @@ static int dev_crypto_cipher(EVP_CIPHER_CTX *ctx,unsigned char *out,
 		return 0;
 		}
 		
-	    if(cout)
+	    if (cout)
 		{
 		memcpy(out,cout,inl);
 		free(cout);
 		}
-	    if(cin)
+	    if (cin)
 		free(cin);
 	    }
 	else 
@@ -227,7 +227,7 @@ static int dev_crypto_cipher(EVP_CIPHER_CTX *ctx,unsigned char *out,
 	    }
 	}
 
-    if(ctx->encrypt)
+    if (ctx->encrypt)
 	memcpy(ctx->iv,&out[cryp.len-ctx->cipher->iv_len],ctx->cipher->iv_len);
     else
 	memcpy(ctx->iv,lb,ctx->cipher->iv_len);
@@ -281,7 +281,7 @@ typedef struct
 
 static int dev_crypto_init_digest(MD_DATA *md_data,int mac)
     {
-    if(!dev_crypto_init(&md_data->sess))
+    if (!dev_crypto_init(&md_data->sess))
 	return 0;
 
     md_data->len=0;
@@ -323,7 +323,7 @@ static int do_digest(int ses,unsigned char *md,const void *data,int len)
 	};
 
     /* some cards can't do zero length */
-    if(!len)
+    if (!len)
 	{
 	memcpy(md,md5zero,16);
 	return 1;
@@ -337,9 +337,9 @@ static int do_digest(int ses,unsigned char *md,const void *data,int len)
     cryp.dst=(caddr_t)data; // FIXME!!!
     cryp.mac=(caddr_t)md;
 
-    if(ioctl(fd, CIOCCRYPT, &cryp) == -1)
+    if (ioctl(fd, CIOCCRYPT, &cryp) == -1)
 	{
-	if(errno == EINVAL) /* buffer is misaligned */
+	if (errno == EINVAL) /* buffer is misaligned */
 	    {
 	    char *dcopy;
 
@@ -348,7 +348,7 @@ static int do_digest(int ses,unsigned char *md,const void *data,int len)
 	    cryp.src=dcopy;
 	    cryp.dst=cryp.src; // FIXME!!!
 
-	    if(ioctl(fd, CIOCCRYPT, &cryp) == -1)
+	    if (ioctl(fd, CIOCCRYPT, &cryp) == -1)
 		{
 		err("CIOCCRYPT(MAC2) failed");
 		abort();
@@ -373,7 +373,7 @@ static int dev_crypto_md5_update(EVP_MD_CTX *ctx,const void *data,
     {
     MD_DATA *md_data=ctx->md_data;
 
-    if(ctx->flags&EVP_MD_CTX_FLAG_ONESHOT)
+    if (ctx->flags&EVP_MD_CTX_FLAG_ONESHOT)
 	return do_digest(md_data->sess.ses,md_data->md,data,len);
 
     md_data->data=realloc(md_data->data,md_data->len+len);
@@ -388,7 +388,7 @@ static int dev_crypto_md5_final(EVP_MD_CTX *ctx,unsigned char *md)
     int ret;
     MD_DATA *md_data=ctx->md_data;
 
-    if(ctx->flags&EVP_MD_CTX_FLAG_ONESHOT)
+    if (ctx->flags&EVP_MD_CTX_FLAG_ONESHOT)
 	{
 	memcpy(md,md_data->md,MD5_DIGEST_LENGTH);
 	ret=1;

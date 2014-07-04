@@ -360,14 +360,14 @@ int X509_verify_cert(X509_STORE_CTX *ctx)
 	 */
 
 	ok = ctx->check_revocation(ctx);
-	if(!ok) goto end;
+	if (!ok) goto end;
 
 	/* At this point, we have a chain and need to verify it */
 	if (ctx->verify != NULL)
 		ok=ctx->verify(ctx);
 	else
 		ok=internal_verify(ctx);
-	if(!ok) goto end;
+	if (!ok) goto end;
 
 #ifndef OPENSSL_NO_RFC3779
 	/* RFC 3779 path validation, now that CRL check has been done */
@@ -380,7 +380,7 @@ int X509_verify_cert(X509_STORE_CTX *ctx)
 	/* If we get this far evaluate policies */
 	if (!bad_chain && (ctx->param->flags & X509_V_FLAG_POLICY_CHECK))
 		ok = ctx->check_policy(ctx);
-	if(!ok) goto end;
+	if (!ok) goto end;
 	if (0)
 		{
 end:
@@ -712,7 +712,7 @@ static int check_cert(X509_STORE_CTX *ctx)
 		/* If error looking up CRL, nothing we can do except
 		 * notify callback
 		 */
-		if(!ok)
+		if (!ok)
 			{
 			ctx->error = X509_V_ERR_UNABLE_TO_GET_CRL;
 			ok = ctx->verify_cb(0, ctx);
@@ -798,7 +798,7 @@ static int check_crl_time(X509_STORE_CTX *ctx, X509_CRL *crl, int notify)
 			return 0;
 		}
 
-	if(X509_CRL_get_nextUpdate(crl))
+	if (X509_CRL_get_nextUpdate(crl))
 		{
 		i=X509_cmp_time(X509_CRL_get_nextUpdate(crl), ptime);
 
@@ -1366,15 +1366,15 @@ static int check_crl(X509_STORE_CTX *ctx, X509_CRL *crl)
 		{
 		issuer = sk_X509_value(ctx->chain, chnum);
 		/* If not self signed, can't check signature */
-		if(!ctx->check_issued(ctx, issuer, issuer))
+		if (!ctx->check_issued(ctx, issuer, issuer))
 			{
 			ctx->error = X509_V_ERR_UNABLE_TO_GET_CRL_ISSUER;
 			ok = ctx->verify_cb(0, ctx);
-			if(!ok) goto err;
+			if (!ok) goto err;
 			}
 		}
 
-	if(issuer)
+	if (issuer)
 		{
 		/* Skip most tests for deltas because they have already
 		 * been done
@@ -1387,14 +1387,14 @@ static int check_crl(X509_STORE_CTX *ctx, X509_CRL *crl)
 				{
 				ctx->error = X509_V_ERR_KEYUSAGE_NO_CRL_SIGN;
 				ok = ctx->verify_cb(0, ctx);
-				if(!ok) goto err;
+				if (!ok) goto err;
 				}
 
 			if (!(ctx->current_crl_score & CRL_SCORE_SCOPE))
 				{
 				ctx->error = X509_V_ERR_DIFFERENT_CRL_SCOPE;
 				ok = ctx->verify_cb(0, ctx);
-				if(!ok) goto err;
+				if (!ok) goto err;
 				}
 
 			if (!(ctx->current_crl_score & CRL_SCORE_SAME_PATH))
@@ -1403,7 +1403,7 @@ static int check_crl(X509_STORE_CTX *ctx, X509_CRL *crl)
 					{
 					ctx->error = X509_V_ERR_CRL_PATH_VALIDATION_ERROR;
 					ok = ctx->verify_cb(0, ctx);
-					if(!ok) goto err;
+					if (!ok) goto err;
 					}
 				}
 
@@ -1411,7 +1411,7 @@ static int check_crl(X509_STORE_CTX *ctx, X509_CRL *crl)
 				{
 				ctx->error = X509_V_ERR_INVALID_EXTENSION;
 				ok = ctx->verify_cb(0, ctx);
-				if(!ok) goto err;
+				if (!ok) goto err;
 				}
 
 
@@ -1427,7 +1427,7 @@ static int check_crl(X509_STORE_CTX *ctx, X509_CRL *crl)
 		/* Attempt to get issuer certificate public key */
 		ikey = X509_get_pubkey(issuer);
 
-		if(!ikey)
+		if (!ikey)
 			{
 			ctx->error=X509_V_ERR_UNABLE_TO_DECODE_ISSUER_PUBLIC_KEY;
 			ok = ctx->verify_cb(0, ctx);
@@ -1436,7 +1436,7 @@ static int check_crl(X509_STORE_CTX *ctx, X509_CRL *crl)
 		else
 			{
 			/* Verify CRL signature */
-			if(X509_CRL_verify(crl, ikey) <= 0)
+			if (X509_CRL_verify(crl, ikey) <= 0)
 				{
 				ctx->error=X509_V_ERR_CRL_SIGNATURE_FAILURE;
 				ok = ctx->verify_cb(0, ctx);
@@ -1467,7 +1467,7 @@ static int cert_crl(X509_STORE_CTX *ctx, X509_CRL *crl, X509 *x)
 		{
 		ctx->error = X509_V_ERR_UNHANDLED_CRITICAL_CRL_EXTENSION;
 		ok = ctx->verify_cb(0, ctx);
-		if(!ok)
+		if (!ok)
 			return 0;
 		}
 	/* Look for serial number of certificate in CRL
@@ -1513,7 +1513,7 @@ static int check_policy(X509_STORE_CTX *ctx)
 				continue;
 			ctx->current_cert = x;
 			ctx->error = X509_V_ERR_INVALID_POLICY_EXTENSION;
-			if(!ctx->verify_cb(0, ctx))
+			if (!ctx->verify_cb(0, ctx))
 				return 0;
 			}
 		return 1;
@@ -2119,7 +2119,7 @@ int X509_STORE_CTX_init(X509_STORE_CTX *ctx, X509_STORE *store, X509 *x509,
 	 * X509_STORE_CTX_cleanup does a proper "free" on the ex_data, we put a
 	 * corresponding "new" here and remove this bogus initialisation. */
 	/* memset(&(ctx->ex_data),0,sizeof(CRYPTO_EX_DATA)); */
-	if(!CRYPTO_new_ex_data(CRYPTO_EX_INDEX_X509_STORE_CTX, ctx,
+	if (!CRYPTO_new_ex_data(CRYPTO_EX_INDEX_X509_STORE_CTX, ctx,
 				&(ctx->ex_data)))
 		{
 		free(ctx);

@@ -123,16 +123,16 @@ static void *v2i_EXTENDED_KEY_USAGE(const X509V3_EXT_METHOD *method,
 	CONF_VALUE *val;
 	int i;
 
-	if(!(extku = sk_ASN1_OBJECT_new_null())) {
+	if (!(extku = sk_ASN1_OBJECT_new_null())) {
 		X509V3err(X509V3_F_V2I_EXTENDED_KEY_USAGE,ERR_R_MALLOC_FAILURE);
 		return NULL;
 	}
 
 	for(i = 0; i < sk_CONF_VALUE_num(nval); i++) {
 		val = sk_CONF_VALUE_value(nval, i);
-		if(val->value) extval = val->value;
+		if (val->value) extval = val->value;
 		else extval = val->name;
-		if(!(objtmp = OBJ_txt2obj(extval, 0))) {
+		if (!(objtmp = OBJ_txt2obj(extval, 0))) {
 			sk_ASN1_OBJECT_pop_free(extku, ASN1_OBJECT_free);
 			X509V3err(X509V3_F_V2I_EXTENDED_KEY_USAGE,X509V3_R_INVALID_OBJECT_IDENTIFIER);
 			X509V3_conf_err(val);

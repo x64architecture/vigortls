@@ -160,7 +160,7 @@ STACK_OF(X509_ATTRIBUTE) *X509at_add1_attr_by_OBJ(STACK_OF(X509_ATTRIBUTE) **x,
 	X509_ATTRIBUTE *attr;
 	STACK_OF(X509_ATTRIBUTE) *ret;
 	attr = X509_ATTRIBUTE_create_by_OBJ(NULL, obj, type, bytes, len);
-	if(!attr) return 0;
+	if (!attr) return 0;
 	ret = X509at_add1_attr(x, attr);
 	X509_ATTRIBUTE_free(attr);
 	return ret;
@@ -173,7 +173,7 @@ STACK_OF(X509_ATTRIBUTE) *X509at_add1_attr_by_NID(STACK_OF(X509_ATTRIBUTE) **x,
 	X509_ATTRIBUTE *attr;
 	STACK_OF(X509_ATTRIBUTE) *ret;
 	attr = X509_ATTRIBUTE_create_by_NID(NULL, nid, type, bytes, len);
-	if(!attr) return 0;
+	if (!attr) return 0;
 	ret = X509at_add1_attr(x, attr);
 	X509_ATTRIBUTE_free(attr);
 	return ret;
@@ -186,7 +186,7 @@ STACK_OF(X509_ATTRIBUTE) *X509at_add1_attr_by_txt(STACK_OF(X509_ATTRIBUTE) **x,
 	X509_ATTRIBUTE *attr;
 	STACK_OF(X509_ATTRIBUTE) *ret;
 	attr = X509_ATTRIBUTE_create_by_txt(NULL, attrname, type, bytes, len);
-	if(!attr) return 0;
+	if (!attr) return 0;
 	ret = X509at_add1_attr(x, attr);
 	X509_ATTRIBUTE_free(attr);
 	return ret;
@@ -288,20 +288,20 @@ int X509_ATTRIBUTE_set1_data(X509_ATTRIBUTE *attr, int attrtype, const void *dat
 	ASN1_STRING *stmp = NULL;
 	int atype = 0;
 	if (!attr) return 0;
-	if(attrtype & MBSTRING_FLAG) {
+	if (attrtype & MBSTRING_FLAG) {
 		stmp = ASN1_STRING_set_by_NID(NULL, data, len, attrtype,
 						OBJ_obj2nid(attr->object));
-		if(!stmp) {
+		if (!stmp) {
 			X509err(X509_F_X509_ATTRIBUTE_SET1_DATA, ERR_R_ASN1_LIB);
 			return 0;
 		}
 		atype = stmp->type;
 	} else if (len != -1){
-		if(!(stmp = ASN1_STRING_type_new(attrtype))) goto err;
-		if(!ASN1_STRING_set(stmp, data, len)) goto err;
+		if (!(stmp = ASN1_STRING_type_new(attrtype))) goto err;
+		if (!ASN1_STRING_set(stmp, data, len)) goto err;
 		atype = attrtype;
 	}
-	if(!(attr->value.set = sk_ASN1_TYPE_new_null())) goto err;
+	if (!(attr->value.set = sk_ASN1_TYPE_new_null())) goto err;
 	attr->single = 0;
 	/* This is a bit naughty because the attribute should really have
 	 * at least one value but some types use and zero length SET and
@@ -312,7 +312,7 @@ int X509_ATTRIBUTE_set1_data(X509_ATTRIBUTE *attr, int attrtype, const void *dat
 		return 1;
 	}
 
-	if(!(ttmp = ASN1_TYPE_new())) goto err;
+	if (!(ttmp = ASN1_TYPE_new())) goto err;
 	if ((len == -1) && !(attrtype & MBSTRING_FLAG))
 		{
 		if (!ASN1_TYPE_set1(ttmp, attrtype, data))
@@ -320,7 +320,7 @@ int X509_ATTRIBUTE_set1_data(X509_ATTRIBUTE *attr, int attrtype, const void *dat
 		}
 	else
 		ASN1_TYPE_set(ttmp, atype, stmp);
-	if(!sk_ASN1_TYPE_push(attr->value.set, ttmp)) goto err;
+	if (!sk_ASN1_TYPE_push(attr->value.set, ttmp)) goto err;
 	return 1;
 	err:
 	ASN1_STRING_free(stmp);
@@ -330,8 +330,8 @@ int X509_ATTRIBUTE_set1_data(X509_ATTRIBUTE *attr, int attrtype, const void *dat
 
 int X509_ATTRIBUTE_count(X509_ATTRIBUTE *attr)
 {
-	if(!attr->single) return sk_ASN1_TYPE_num(attr->value.set);
-	if(attr->value.single) return 1;
+	if (!attr->single) return sk_ASN1_TYPE_num(attr->value.set);
+	if (attr->value.single) return 1;
 	return 0;
 }
 
@@ -346,8 +346,8 @@ void *X509_ATTRIBUTE_get0_data(X509_ATTRIBUTE *attr, int idx,
 {
 	ASN1_TYPE *ttmp;
 	ttmp = X509_ATTRIBUTE_get0_type(attr, idx);
-	if(!ttmp) return NULL;
-	if(atrtype != ASN1_TYPE_get(ttmp)){
+	if (!ttmp) return NULL;
+	if (atrtype != ASN1_TYPE_get(ttmp)){
 		X509err(X509_F_X509_ATTRIBUTE_GET0_DATA, X509_R_WRONG_TYPE);
 		return NULL;
 	}
@@ -357,7 +357,7 @@ void *X509_ATTRIBUTE_get0_data(X509_ATTRIBUTE *attr, int idx,
 ASN1_TYPE *X509_ATTRIBUTE_get0_type(X509_ATTRIBUTE *attr, int idx)
 {
 	if (attr == NULL) return (NULL);
-	if(idx >= X509_ATTRIBUTE_count(attr)) return NULL;
-	if(!attr->single) return sk_ASN1_TYPE_value(attr->value.set, idx);
+	if (idx >= X509_ATTRIBUTE_count(attr)) return NULL;
+	if (!attr->single) return sk_ASN1_TYPE_value(attr->value.set, idx);
 	else return attr->value.single;
 }

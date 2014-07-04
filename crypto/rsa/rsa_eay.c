@@ -367,7 +367,7 @@ static int RSA_eay_private_encrypt(int flen, const unsigned char *from,
 	ret = BN_CTX_get(ctx);
 	num = BN_num_bytes(rsa->n);
 	buf = malloc(num);
-	if(!f || !ret || !buf)
+	if (!f || !ret || !buf)
 		{
 		RSAerr(RSA_F_RSA_EAY_PRIVATE_ENCRYPT,ERR_R_MALLOC_FAILURE);
 		goto err;
@@ -445,7 +445,7 @@ static int RSA_eay_private_encrypt(int flen, const unsigned char *from,
 			d= rsa->d;
 
 		if (rsa->flags & RSA_FLAG_CACHE_PUBLIC)
-			if(!BN_MONT_CTX_set_locked(&rsa->_method_mod_n, CRYPTO_LOCK_RSA, rsa->n, ctx))
+			if (!BN_MONT_CTX_set_locked(&rsa->_method_mod_n, CRYPTO_LOCK_RSA, rsa->n, ctx))
 				goto err;
 
 		if (!rsa->meth->bn_mod_exp(ret,f,d,rsa->n,ctx,
@@ -504,13 +504,13 @@ static int RSA_eay_private_decrypt(int flen, const unsigned char *from,
 	BIGNUM *unblind = NULL;
 	BN_BLINDING *blinding = NULL;
 
-	if((ctx = BN_CTX_new()) == NULL) goto err;
+	if ((ctx = BN_CTX_new()) == NULL) goto err;
 	BN_CTX_start(ctx);
 	f   = BN_CTX_get(ctx);
 	ret = BN_CTX_get(ctx);
 	num = BN_num_bytes(rsa->n);
 	buf = malloc(num);
-	if(!f || !ret || !buf)
+	if (!f || !ret || !buf)
 		{
 		RSAerr(RSA_F_RSA_EAY_PRIVATE_DECRYPT,ERR_R_MALLOC_FAILURE);
 		goto err;
@@ -661,13 +661,13 @@ static int RSA_eay_public_decrypt(int flen, const unsigned char *from,
 			}
 		}
 	
-	if((ctx = BN_CTX_new()) == NULL) goto err;
+	if ((ctx = BN_CTX_new()) == NULL) goto err;
 	BN_CTX_start(ctx);
 	f = BN_CTX_get(ctx);
 	ret = BN_CTX_get(ctx);
 	num=BN_num_bytes(rsa->n);
 	buf = malloc(num);
-	if(!f || !ret || !buf)
+	if (!f || !ret || !buf)
 		{
 		RSAerr(RSA_F_RSA_EAY_PUBLIC_DECRYPT,ERR_R_MALLOC_FAILURE);
 		goto err;

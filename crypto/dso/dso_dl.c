@@ -127,21 +127,21 @@ static int dl_load(DSO *dso)
 	 * platform-independant filename and try once with that. */
 	char *filename= DSO_convert_filename(dso, NULL);
 
-	if(filename == NULL)
+	if (filename == NULL)
 		{
 		DSOerr(DSO_F_DL_LOAD,DSO_R_NO_FILENAME);
 		goto err;
 		}
 	ptr = shl_load(filename, BIND_IMMEDIATE |
 		(dso->flags&DSO_FLAG_NO_NAME_TRANSLATION?0:DYNAMIC_PATH), 0L);
-	if(ptr == NULL)
+	if (ptr == NULL)
 		{
 		DSOerr(DSO_F_DL_LOAD,DSO_R_LOAD_FAILED);
 		ERR_add_error_data(4, "filename(", filename, "): ",
 			strerror(errno));
 		goto err;
 		}
-	if(!sk_push(dso->meth_data, (char *)ptr))
+	if (!sk_push(dso->meth_data, (char *)ptr))
 		{
 		DSOerr(DSO_F_DL_LOAD,DSO_R_STACK_ERROR);
 		goto err;
@@ -152,9 +152,9 @@ static int dl_load(DSO *dso)
 	return (1);
 err:
 	/* Cleanup! */
-	if(filename != NULL)
+	if (filename != NULL)
 		free(filename);
-	if(ptr != NULL)
+	if (ptr != NULL)
 		shl_unload(ptr);
 	return (0);
 	}
@@ -162,16 +162,16 @@ err:
 static int dl_unload(DSO *dso)
 	{
 	shl_t ptr;
-	if(dso == NULL)
+	if (dso == NULL)
 		{
 		DSOerr(DSO_F_DL_UNLOAD,ERR_R_PASSED_NULL_PARAMETER);
 		return (0);
 		}
-	if(sk_num(dso->meth_data) < 1)
+	if (sk_num(dso->meth_data) < 1)
 		return (1);
 	/* Is this statement legal? */
 	ptr = (shl_t)sk_pop(dso->meth_data);
-	if(ptr == NULL)
+	if (ptr == NULL)
 		{
 		DSOerr(DSO_F_DL_UNLOAD,DSO_R_NULL_HANDLE);
 		/* Should push the value back onto the stack in
@@ -188,18 +188,18 @@ static void *dl_bind_var(DSO *dso, const char *symname)
 	shl_t ptr;
 	void *sym;
 
-	if((dso == NULL) || (symname == NULL))
+	if ((dso == NULL) || (symname == NULL))
 		{
 		DSOerr(DSO_F_DL_BIND_VAR,ERR_R_PASSED_NULL_PARAMETER);
 		return (NULL);
 		}
-	if(sk_num(dso->meth_data) < 1)
+	if (sk_num(dso->meth_data) < 1)
 		{
 		DSOerr(DSO_F_DL_BIND_VAR,DSO_R_STACK_ERROR);
 		return (NULL);
 		}
 	ptr = (shl_t)sk_value(dso->meth_data, sk_num(dso->meth_data) - 1);
-	if(ptr == NULL)
+	if (ptr == NULL)
 		{
 		DSOerr(DSO_F_DL_BIND_VAR,DSO_R_NULL_HANDLE);
 		return (NULL);
@@ -219,18 +219,18 @@ static DSO_FUNC_TYPE dl_bind_func(DSO *dso, const char *symname)
 	shl_t ptr;
 	void *sym;
 
-	if((dso == NULL) || (symname == NULL))
+	if ((dso == NULL) || (symname == NULL))
 		{
 		DSOerr(DSO_F_DL_BIND_FUNC,ERR_R_PASSED_NULL_PARAMETER);
 		return (NULL);
 		}
-	if(sk_num(dso->meth_data) < 1)
+	if (sk_num(dso->meth_data) < 1)
 		{
 		DSOerr(DSO_F_DL_BIND_FUNC,DSO_R_STACK_ERROR);
 		return (NULL);
 		}
 	ptr = (shl_t)sk_value(dso->meth_data, sk_num(dso->meth_data) - 1);
-	if(ptr == NULL)
+	if (ptr == NULL)
 		{
 		DSOerr(DSO_F_DL_BIND_FUNC,DSO_R_NULL_HANDLE);
 		return (NULL);
@@ -249,7 +249,7 @@ static char *dl_merger(DSO *dso, const char *filespec1, const char *filespec2)
 	{
 	char *merged;
 
-	if(!filespec1 && !filespec2)
+	if (!filespec1 && !filespec2)
 		{
 		DSOerr(DSO_F_DL_MERGER,
 				ERR_R_PASSED_NULL_PARAMETER);
@@ -260,7 +260,7 @@ static char *dl_merger(DSO *dso, const char *filespec1, const char *filespec2)
 	if (!filespec2 || filespec1[0] == '/')
 		{
 		merged = malloc(strlen(filespec1) + 1);
-		if(!merged)
+		if (!merged)
 			{
 			DSOerr(DSO_F_DL_MERGER,
 				ERR_R_MALLOC_FAILURE);
@@ -272,7 +272,7 @@ static char *dl_merger(DSO *dso, const char *filespec1, const char *filespec2)
 	else if (!filespec1)
 		{
 		merged = malloc(strlen(filespec2) + 1);
-		if(!merged)
+		if (!merged)
 			{
 			DSOerr(DSO_F_DL_MERGER,
 				ERR_R_MALLOC_FAILURE);
@@ -292,13 +292,13 @@ static char *dl_merger(DSO *dso, const char *filespec1, const char *filespec2)
 		spec2len = (filespec2 ? strlen(filespec2) : 0);
 		len = spec2len + (filespec1 ? strlen(filespec1) : 0);
 
-		if(filespec2 && filespec2[spec2len - 1] == '/')
+		if (filespec2 && filespec2[spec2len - 1] == '/')
 			{
 			spec2len--;
 			len--;
 			}
 		merged = malloc(len + 2);
-		if(!merged)
+		if (!merged)
 			{
 			DSOerr(DSO_F_DL_MERGER,
 				ERR_R_MALLOC_FAILURE);
@@ -336,13 +336,13 @@ static char *dl_name_converter(DSO *dso, const char *filename)
 			rsize += 3; /* The length of "lib" */
 		}
 	translated = malloc(rsize);
-	if(translated == NULL)
+	if (translated == NULL)
 		{
 		DSOerr(DSO_F_DL_NAME_CONVERTER,
 				DSO_R_NAME_TRANSLATION_FAILED); 
 		return (NULL);   
 		}
-	if(transform)
+	if (transform)
 		{
 		if ((DSO_flags(dso) & DSO_FLAG_NAME_TRANSLATION_EXT_ONLY) == 0)
 			sprintf(translated, "lib%s%s", filename, extension);

@@ -198,7 +198,7 @@ int OCSP_RESPONSE_print(BIO *bp, OCSP_RESPONSE* o, unsigned long flags)
 	if (rb == NULL) return 1;
         if (BIO_puts(bp,"    Response Type: ") <= 0)
 	        goto err;
-	if(i2a_ASN1_OBJECT(bp, rb->responseType) <= 0)
+	if (i2a_ASN1_OBJECT(bp, rb->responseType) <= 0)
 	        goto err;
 	if (OBJ_obj2nid(rb->responseType) != NID_id_pkix_OCSP_basic) 
 	        {
@@ -233,7 +233,7 @@ int OCSP_RESPONSE_print(BIO *bp, OCSP_RESPONSE* o, unsigned long flags)
 		if (! sk_OCSP_SINGLERESP_value(rd->responses, i)) continue;
 		single = sk_OCSP_SINGLERESP_value(rd->responses, i);
 		cid = single->certId;
-		if(ocsp_certid_print(bp, cid, 4) <= 0) goto err;
+		if (ocsp_certid_print(bp, cid, 4) <= 0) goto err;
 		cst = single->certStatus;
 		if (BIO_printf(bp,"    Cert Status: %s",
 			       OCSP_cert_status_str(cst->type)) <= 0)
@@ -274,7 +274,7 @@ int OCSP_RESPONSE_print(BIO *bp, OCSP_RESPONSE* o, unsigned long flags)
 	if (!X509V3_extensions_print(bp, "Response Extensions",
 					rd->responseExtensions, flags, 4))
 							goto err;
-	if(X509_signature_print(bp, br->signatureAlgorithm, br->signature) <= 0)
+	if (X509_signature_print(bp, br->signatureAlgorithm, br->signature) <= 0)
 							goto err;
 
 	for (i=0; i<sk_X509_num(br->certs); i++)

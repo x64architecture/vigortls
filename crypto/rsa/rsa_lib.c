@@ -146,10 +146,10 @@ RSA *RSA_new_method(ENGINE *engine)
 		}
 	else
 		ret->engine = ENGINE_get_default_RSA();
-	if(ret->engine)
+	if (ret->engine)
 		{
 		ret->meth = ENGINE_get_RSA(ret->engine);
-		if(!ret->meth)
+		if (!ret->meth)
 			{
 			RSAerr(RSA_F_RSA_NEW_METHOD,
 				ERR_R_ENGINE_LIB);

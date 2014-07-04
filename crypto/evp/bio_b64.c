@@ -203,7 +203,7 @@ static int b64_read(BIO *b, char *out, int outl)
 				{
 				ctx->cont=i;
 				/* If buffer empty break */
-				if(ctx->tmp_len == 0)
+				if (ctx->tmp_len == 0)
 					break;
 				/* Fall through and process what we have */
 				else

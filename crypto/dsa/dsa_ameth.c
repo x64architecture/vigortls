@@ -209,7 +209,7 @@ static int dsa_priv_decode(EVP_PKEY *pkey, PKCS8_PRIV_KEY_INFO *p8)
 	if (*p == (V_ASN1_SEQUENCE|V_ASN1_CONSTRUCTED))
 		{
 		ASN1_TYPE *t1, *t2;
-	    	if(!(ndsa = d2i_ASN1_SEQUENCE_ANY(NULL, &p, pklen)))
+	    	if (!(ndsa = d2i_ASN1_SEQUENCE_ANY(NULL, &p, pklen)))
 			goto decerr;
 		if (sk_ASN1_TYPE_num(ndsa) != 2)
 			goto decerr;
@@ -282,7 +282,7 @@ static int dsa_priv_decode(EVP_PKEY *pkey, PKCS8_PRIV_KEY_INFO *p8)
 
 	EVP_PKEY_assign_DSA(pkey, dsa);
 	BN_CTX_free (ctx);
-	if(ndsa)
+	if (ndsa)
 		sk_ASN1_TYPE_pop_free(ndsa, ASN1_TYPE_free);
 	else
 		ASN1_INTEGER_free(privkey);
@@ -468,7 +468,7 @@ static int do_dsa_print(BIO *bp, const DSA *x, int off, int ptype)
 
 	if (priv_key)
 		{
-		if(!BIO_indent(bp,off,128))
+		if (!BIO_indent(bp,off,128))
 		   goto err;
 		if (BIO_printf(bp,"%s: (%d bit)\n",ktype, BN_num_bits(x->p))
 			<= 0) goto err;

@@ -1454,13 +1454,13 @@ bad:
 		}
 	if (session_id_prefix)
 		{
-		if(strlen(session_id_prefix) >= 32)
+		if (strlen(session_id_prefix) >= 32)
 			BIO_printf(bio_err,
 "warning: id_prefix is too long, only one new session will be possible\n");
-		else if(strlen(session_id_prefix) >= 16)
+		else if (strlen(session_id_prefix) >= 16)
 			BIO_printf(bio_err,
 "warning: id_prefix is too long if you use SSLv2\n");
-		if(!SSL_CTX_set_generate_session_id(ctx, generate_session_id))
+		if (!SSL_CTX_set_generate_session_id(ctx, generate_session_id))
 			{
 			BIO_printf(bio_err,"error setting 'id_prefix'\n");
 			ERR_print_errors(bio_err);
@@ -1527,13 +1527,13 @@ bad:
 
 		if (session_id_prefix)
 			{
-			if(strlen(session_id_prefix) >= 32)
+			if (strlen(session_id_prefix) >= 32)
 				BIO_printf(bio_err,
 					"warning: id_prefix is too long, only one new session will be possible\n");
-			else if(strlen(session_id_prefix) >= 16)
+			else if (strlen(session_id_prefix) >= 16)
 				BIO_printf(bio_err,
 					"warning: id_prefix is too long if you use SSLv2\n");
-			if(!SSL_CTX_set_generate_session_id(ctx2, generate_session_id))
+			if (!SSL_CTX_set_generate_session_id(ctx2, generate_session_id))
 				{
 				BIO_printf(bio_err,"error setting 'id_prefix'\n");
 				ERR_print_errors(bio_err);
@@ -1732,7 +1732,7 @@ bad:
 
 	if (cipher != NULL)
 		{
-		if(!SSL_CTX_set_cipher_list(ctx,cipher))
+		if (!SSL_CTX_set_cipher_list(ctx,cipher))
 			{
 			BIO_printf(bio_err,"error setting cipher list\n");
 			ERR_print_errors(bio_err);
@@ -1928,7 +1928,7 @@ static int sv_body(char *hostname, int s, unsigned char *context)
                         kssl_ctx_setstring(kctx, KSSL_KEYTAB, KRB5KEYTAB);
                         }
 #endif	/* OPENSSL_NO_KRB5 */
-		if(context)
+		if (context)
 		      SSL_set_session_id_context(con, context,
 						 strlen((char *)context));
 	}
@@ -2032,8 +2032,8 @@ static int sv_body(char *hostname, int s, unsigned char *context)
 			tv.tv_sec = 1;
 			tv.tv_usec = 0;
 			i=select(width,(void *)&readfds,NULL,NULL,&tv);
-			if((i < 0) || (!i && !_kbhit() ) )continue;
-			if(_kbhit())
+			if ((i < 0) || (!i && !_kbhit() ) )continue;
+			if (_kbhit())
 				read_from_terminal = 1;
 #else
 			if ((SSL_version(con) == DTLS1_VERSION) &&
@@ -2357,7 +2357,7 @@ static int init_ssl_connection(SSL *con)
 	SRTP_PROTECTION_PROFILE *srtp_profile
 	  = SSL_get_selected_srtp_profile(con);
 
-	if(srtp_profile)
+	if (srtp_profile)
 		BIO_printf(bio_s_out,"SRTP Extension negotiated, profile=%s\n",
 			   srtp_profile->name);
 	}
@@ -2494,7 +2494,7 @@ static int www_body(char *hostname, int s, unsigned char *context)
 		kssl_ctx_setstring(kctx, KSSL_KEYTAB, KRB5KEYTAB);
 		}
 #endif	/* OPENSSL_NO_KRB5 */
-	if(context) SSL_set_session_id_context(con, context,
+	if (context) SSL_set_session_id_context(con, context,
 					       strlen((char *)context));
 
 	sbio=BIO_new_socket(s,BIO_NOCLOSE);
@@ -2859,10 +2859,10 @@ static RSA MS_CALLBACK *tmp_rsa_cb(SSL *s, int is_export, int keylength)
 			BIO_printf(bio_err,"Generating temp (%d bit) RSA key...",keylength);
 			(void)BIO_flush(bio_err);
 			}
-		if(!BN_set_word(bn, RSA_F4) || ((rsa_tmp = RSA_new()) == NULL) ||
+		if (!BN_set_word(bn, RSA_F4) || ((rsa_tmp = RSA_new()) == NULL) ||
 				!RSA_generate_key_ex(rsa_tmp, keylength, bn, NULL))
 			{
-			if(rsa_tmp) RSA_free(rsa_tmp);
+			if (rsa_tmp) RSA_free(rsa_tmp);
 			rsa_tmp = NULL;
 			}
 		if (!s_quiet)
@@ -2893,7 +2893,7 @@ static int generate_session_id(const SSL *ssl, unsigned char *id,
 		}
 	while(SSL_has_matching_session_id(ssl, id, *id_len) &&
 		(++count < MAX_SESSION_ID_ATTEMPTS));
-	if(count >= MAX_SESSION_ID_ATTEMPTS)
+	if (count >= MAX_SESSION_ID_ATTEMPTS)
 		return 0;
 	return 1;
 	}

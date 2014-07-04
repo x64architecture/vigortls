@@ -535,7 +535,7 @@ static struct hostent *GetHostByName(char *name)
 		ret=gethostbyname(name);
 		if (ret == NULL) return (NULL);
 		/* else add to cache */
-		if(strlen(name) < sizeof ghbn_cache[0].name)
+		if (strlen(name) < sizeof ghbn_cache[0].name)
 			{
 			strcpy(ghbn_cache[lowi].name,name);
 			memcpy((char *)&(ghbn_cache[lowi].ent),ret,sizeof(struct hostent));

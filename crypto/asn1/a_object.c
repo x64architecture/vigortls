@@ -277,7 +277,7 @@ ASN1_OBJECT *d2i_ASN1_OBJECT(ASN1_OBJECT **a, const unsigned char **pp,
 		goto err;
 		}
 	ret = c2i_ASN1_OBJECT(a, &p, len);
-	if(ret) *pp = p;
+	if (ret) *pp = p;
 	return ret;
 err:
 	ASN1err(ASN1_F_D2I_ASN1_OBJECT,i);

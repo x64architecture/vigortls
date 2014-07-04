@@ -216,15 +216,15 @@ static void group_order_tests(EC_GROUP *group)
 	if (!BN_one(n1)) ABORT;
 	/* n1 = 1 - order */
 	if (!BN_sub(n1, n1, order)) ABORT;
-	if(!EC_POINT_mul(group, Q, NULL, P, n1, ctx)) ABORT;
+	if (!EC_POINT_mul(group, Q, NULL, P, n1, ctx)) ABORT;
 	if (0 != EC_POINT_cmp(group, Q, P, ctx)) ABORT;
 	/* n2 = 1 + order */
 	if (!BN_add(n2, order, BN_value_one())) ABORT;
-	if(!EC_POINT_mul(group, Q, NULL, P, n2, ctx)) ABORT;
+	if (!EC_POINT_mul(group, Q, NULL, P, n2, ctx)) ABORT;
 	if (0 != EC_POINT_cmp(group, Q, P, ctx)) ABORT;
 	/* n2 = (1 - order) * (1 + order) */
 	if (!BN_mul(n2, n1, n2, ctx)) ABORT;
-	if(!EC_POINT_mul(group, Q, NULL, P, n2, ctx)) ABORT;
+	if (!EC_POINT_mul(group, Q, NULL, P, n2, ctx)) ABORT;
 	if (0 != EC_POINT_cmp(group, Q, P, ctx)) ABORT;
 	fprintf(stdout, "ok\n");
 	EC_POINT_free(P);
@@ -1346,7 +1346,7 @@ void nistp_single_test(const struct nistp_test_params *test)
 	m = BN_new(); n = BN_new(); order = BN_new();
 
 	NISTP = EC_GROUP_new(test->meth());
-	if(!NISTP) ABORT;
+	if (!NISTP) ABORT;
 	if (!BN_hex2bn(&p, test->p)) ABORT;
 	if (1 != BN_is_prime_ex(p, BN_prime_checks, ctx, NULL)) ABORT;
 	if (!BN_hex2bn(&a, test->a)) ABORT;
@@ -1356,9 +1356,9 @@ void nistp_single_test(const struct nistp_test_params *test)
 	P = EC_POINT_new(NISTP);
 	Q = EC_POINT_new(NISTP);
 	Q_CHECK = EC_POINT_new(NISTP);
-	if(!BN_hex2bn(&x, test->Qx)) ABORT;
-	if(!BN_hex2bn(&y, test->Qy)) ABORT;
-	if(!EC_POINT_set_affine_coordinates_GFp(NISTP, Q_CHECK, x, y, ctx)) ABORT;
+	if (!BN_hex2bn(&x, test->Qx)) ABORT;
+	if (!BN_hex2bn(&y, test->Qy)) ABORT;
+	if (!EC_POINT_set_affine_coordinates_GFp(NISTP, Q_CHECK, x, y, ctx)) ABORT;
 	if (!BN_hex2bn(&x, test->Gx)) ABORT;
 	if (!BN_hex2bn(&y, test->Gy)) ABORT;
 	if (!EC_POINT_set_affine_coordinates_GFp(NISTP, G, x, y, ctx)) ABORT;

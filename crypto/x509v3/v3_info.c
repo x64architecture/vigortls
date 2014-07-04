@@ -111,12 +111,12 @@ static STACK_OF(CONF_VALUE) *i2v_AUTHORITY_INFO_ACCESS(X509V3_EXT_METHOD *method
 	for(i = 0; i < sk_ACCESS_DESCRIPTION_num(ainfo); i++) {
 		desc = sk_ACCESS_DESCRIPTION_value(ainfo, i);
 		ret = i2v_GENERAL_NAME(method, desc->location, ret);
-		if(!ret) break;
+		if (!ret) break;
 		vtmp = sk_CONF_VALUE_value(ret, i);
 		i2t_ASN1_OBJECT(objtmp, sizeof objtmp, desc->method);
 		nlen = strlen(objtmp) + strlen(vtmp->name) + 5;
 		ntmp = malloc(nlen);
-		if(!ntmp) {
+		if (!ntmp) {
 			X509V3err(X509V3_F_I2V_AUTHORITY_INFO_ACCESS,
 					ERR_R_MALLOC_FAILURE);
 			return NULL;
@@ -128,7 +128,7 @@ static STACK_OF(CONF_VALUE) *i2v_AUTHORITY_INFO_ACCESS(X509V3_EXT_METHOD *method
 		vtmp->name = ntmp;
 		
 	}
-	if(!ret) return sk_CONF_VALUE_new_null();
+	if (!ret) return sk_CONF_VALUE_new_null();
 	return ret;
 }
 
@@ -140,35 +140,35 @@ static AUTHORITY_INFO_ACCESS *v2i_AUTHORITY_INFO_ACCESS(X509V3_EXT_METHOD *metho
 	ACCESS_DESCRIPTION *acc;
 	int i, objlen;
 	char *objtmp, *ptmp;
-	if(!(ainfo = sk_ACCESS_DESCRIPTION_new_null())) {
+	if (!(ainfo = sk_ACCESS_DESCRIPTION_new_null())) {
 		X509V3err(X509V3_F_V2I_AUTHORITY_INFO_ACCESS,ERR_R_MALLOC_FAILURE);
 		return NULL;
 	}
 	for(i = 0; i < sk_CONF_VALUE_num(nval); i++) {
 		cnf = sk_CONF_VALUE_value(nval, i);
-		if(!(acc = ACCESS_DESCRIPTION_new())
+		if (!(acc = ACCESS_DESCRIPTION_new())
 			|| !sk_ACCESS_DESCRIPTION_push(ainfo, acc)) {
 			X509V3err(X509V3_F_V2I_AUTHORITY_INFO_ACCESS,ERR_R_MALLOC_FAILURE);
 			goto err;
 		}
 		ptmp = strchr(cnf->name, ';');
-		if(!ptmp) {
+		if (!ptmp) {
 			X509V3err(X509V3_F_V2I_AUTHORITY_INFO_ACCESS,X509V3_R_INVALID_SYNTAX);
 			goto err;
 		}
 		objlen = ptmp - cnf->name;
 		ctmp.name = ptmp + 1;
 		ctmp.value = cnf->value;
-		if(!v2i_GENERAL_NAME_ex(acc->location, method, ctx, &ctmp, 0))
+		if (!v2i_GENERAL_NAME_ex(acc->location, method, ctx, &ctmp, 0))
 								 goto err; 
-		if(!(objtmp = malloc(objlen + 1))) {
+		if (!(objtmp = malloc(objlen + 1))) {
 			X509V3err(X509V3_F_V2I_AUTHORITY_INFO_ACCESS,ERR_R_MALLOC_FAILURE);
 			goto err;
 		}
 		strncpy(objtmp, cnf->name, objlen);
 		objtmp[objlen] = 0;
 		acc->method = OBJ_txt2obj(objtmp, 0);
-		if(!acc->method) {
+		if (!acc->method) {
 			X509V3err(X509V3_F_V2I_AUTHORITY_INFO_ACCESS,X509V3_R_BAD_OBJECT);
 			ERR_add_error_data(2, "value=", objtmp);
 			free(objtmp);

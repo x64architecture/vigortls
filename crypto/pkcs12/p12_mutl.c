@@ -83,7 +83,7 @@ int PKCS12_gen_mac(PKCS12 *p12, const char *pass, int passlen,
 	saltlen = p12->mac->salt->length;
 	if (!p12->mac->iter) iter = 1;
 	else iter = ASN1_INTEGER_get (p12->mac->iter);
-    	if(!(md_type =
+    	if (!(md_type =
 		 EVP_get_digestbyobj (p12->mac->dinfo->algor->algorithm))) {
 		PKCS12err(PKCS12_F_PKCS12_GEN_MAC,PKCS12_R_UNKNOWN_DIGEST_ALGORITHM);
 		return 0;
@@ -91,7 +91,7 @@ int PKCS12_gen_mac(PKCS12 *p12, const char *pass, int passlen,
 	md_size = EVP_MD_size(md_type);
 	if (md_size < 0)
 	    return 0;
-	if(!PKCS12_key_gen (pass, passlen, salt, saltlen, PKCS12_MAC_ID, iter,
+	if (!PKCS12_key_gen (pass, passlen, salt, saltlen, PKCS12_MAC_ID, iter,
 				 md_size, key, md_type)) {
 		PKCS12err(PKCS12_F_PKCS12_GEN_MAC,PKCS12_R_KEY_GEN_ERROR);
 		return 0;
@@ -114,7 +114,7 @@ int PKCS12_verify_mac(PKCS12 *p12, const char *pass, int passlen)
 {
 	unsigned char mac[EVP_MAX_MD_SIZE];
 	unsigned int maclen;
-	if(p12->mac == NULL) {
+	if (p12->mac == NULL) {
 		PKCS12err(PKCS12_F_PKCS12_VERIFY_MAC,PKCS12_R_MAC_ABSENT);
 		return 0;
 	}
@@ -158,7 +158,7 @@ int PKCS12_setup_mac(PKCS12 *p12, int iter, unsigned char *salt, int saltlen,
 {
 	if (!(p12->mac = PKCS12_MAC_DATA_new())) return PKCS12_ERROR;
 	if (iter > 1) {
-		if(!(p12->mac->iter = M_ASN1_INTEGER_new())) {
+		if (!(p12->mac->iter = M_ASN1_INTEGER_new())) {
 			PKCS12err(PKCS12_F_PKCS12_SETUP_MAC, ERR_R_MALLOC_FAILURE);
 			return 0;
 		}

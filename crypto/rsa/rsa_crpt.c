@@ -210,7 +210,7 @@ err:
 	BN_CTX_end(ctx);
 	if (in_ctx == NULL)
 		BN_CTX_free(ctx);
-	if(rsa->e == NULL)
+	if (rsa->e == NULL)
 		BN_free(e);
 
 	return ret;

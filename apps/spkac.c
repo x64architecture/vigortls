@@ -183,7 +183,7 @@ bad:
 		}
 
 	ERR_load_crypto_strings();
-	if(!app_passwd(bio_err, passargin, NULL, &passin, NULL)) {
+	if (!app_passwd(bio_err, passargin, NULL, &passin, NULL)) {
 		BIO_printf(bio_err, "Error getting password\n");
 		goto end;
 	}
@@ -192,15 +192,15 @@ bad:
         e = setup_engine(bio_err, engine, 0);
 #endif
 
-	if(keyfile) {
+	if (keyfile) {
 		pkey = load_key(bio_err,
 				strcmp(keyfile, "-") ? keyfile : NULL,
 				FORMAT_PEM, 1, passin, e, "private key");
-		if(!pkey) {
+		if (!pkey) {
 			goto end;
 		}
 		spki = NETSCAPE_SPKI_new();
-		if(challenge) ASN1_STRING_set(spki->spkac->challenge,
+		if (challenge) ASN1_STRING_set(spki->spkac->challenge,
 						 challenge, (int)strlen(challenge));
 		NETSCAPE_SPKI_set_pubkey(spki, pkey);
 		NETSCAPE_SPKI_sign(spki, pkey, EVP_md5());
@@ -211,7 +211,7 @@ bad:
 			out = BIO_new_fp(stdout, BIO_NOCLOSE);
 		}
 
-		if(!out) {
+		if (!out) {
 			BIO_printf(bio_err, "Error opening output file\n");
 			ERR_print_errors(bio_err);
 			goto end;
@@ -227,7 +227,7 @@ bad:
 	if (infile) in = BIO_new_file(infile, "r");
 	else in = BIO_new_fp(stdin, BIO_NOCLOSE);
 
-	if(!in) {
+	if (!in) {
 		BIO_printf(bio_err, "Error opening input file\n");
 		ERR_print_errors(bio_err);
 		goto end;
@@ -236,7 +236,7 @@ bad:
 	conf = NCONF_new(NULL);
 	i = NCONF_load_bio(conf, in, NULL);
 
-	if(!i) {
+	if (!i) {
 		BIO_printf(bio_err, "Error parsing config file\n");
 		ERR_print_errors(bio_err);
 		goto end;
@@ -244,7 +244,7 @@ bad:
 
 	spkstr = NCONF_get_string(conf, spksect, spkac);
 		
-	if(!spkstr) {
+	if (!spkstr) {
 		BIO_printf(bio_err, "Can't find SPKAC called \"%s\"\n", spkac);
 		ERR_print_errors(bio_err);
 		goto end;
@@ -252,7 +252,7 @@ bad:
 
 	spki = NETSCAPE_SPKI_b64_decode(spkstr, -1);
 	
-	if(!spki) {
+	if (!spki) {
 		BIO_printf(bio_err, "Error loading SPKAC\n");
 		ERR_print_errors(bio_err);
 		goto end;
@@ -263,15 +263,15 @@ bad:
 		out = BIO_new_fp(stdout, BIO_NOCLOSE);
 	}
 
-	if(!out) {
+	if (!out) {
 		BIO_printf(bio_err, "Error opening output file\n");
 		ERR_print_errors(bio_err);
 		goto end;
 	}
 
-	if(!noout) NETSCAPE_SPKI_print(out, spki);
+	if (!noout) NETSCAPE_SPKI_print(out, spki);
 	pkey = NETSCAPE_SPKI_get_pubkey(spki);
-	if(verify) {
+	if (verify) {
 		i = NETSCAPE_SPKI_verify(spki, pkey);
 		if (i > 0) BIO_printf(bio_err, "Signature OK\n");
 		else {
@@ -280,7 +280,7 @@ bad:
 			goto end;
 		}
 	}
-	if(pubkey) PEM_write_bio_PUBKEY(out, pkey);
+	if (pubkey) PEM_write_bio_PUBKEY(out, pkey);
 
 	ret = 0;
 
@@ -290,7 +290,7 @@ end:
 	BIO_free(in);
 	BIO_free_all(out);
 	EVP_PKEY_free(pkey);
-	if(passin) free(passin);
+	if (passin) free(passin);
 	apps_shutdown();
 	OPENSSL_EXIT(ret);
 	}

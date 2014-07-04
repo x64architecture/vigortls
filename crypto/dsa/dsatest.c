@@ -153,7 +153,7 @@ int main(int argc, char **argv)
 	BIO_printf(bio_err,"test generation of DSA parameters\n");
 
 	BN_GENCB_set(&cb, dsa_cb, bio_err);
-	if(((dsa = DSA_new()) == NULL) || !DSA_generate_parameters_ex(dsa, 512,
+	if (((dsa = DSA_new()) == NULL) || !DSA_generate_parameters_ex(dsa, 512,
 				seed, 20, &counter, &h, &cb))
 		goto end;
 

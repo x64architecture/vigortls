@@ -75,7 +75,7 @@ void DH_set_default_method(const DH_METHOD *meth)
 
 const DH_METHOD *DH_get_default_method(void)
 	{
-	if(!default_DH_method)
+	if (!default_DH_method)
 		{
 		default_DH_method = DH_OpenSSL();
 		}
@@ -131,10 +131,10 @@ DH *DH_new_method(ENGINE *engine)
 		}
 	else
 		ret->engine = ENGINE_get_default_DH();
-	if(ret->engine)
+	if (ret->engine)
 		{
 		ret->meth = ENGINE_get_DH(ret->engine);
-		if(!ret->meth)
+		if (!ret->meth)
 			{
 			DHerr(DH_F_DH_NEW_METHOD,ERR_R_ENGINE_LIB);
 			ENGINE_finish(ret->engine);
@@ -175,7 +175,7 @@ DH *DH_new_method(ENGINE *engine)
 void DH_free(DH *r)
 	{
 	int i;
-	if(r == NULL) return;
+	if (r == NULL) return;
 	i = CRYPTO_add(&r->references, -1, CRYPTO_LOCK_DH);
 #ifdef REF_PRINT
 	REF_PRINT("DH",r);

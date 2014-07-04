@@ -85,7 +85,7 @@ void CAST_set_key(CAST_KEY *key, int len, const unsigned char *data)
 	if (len > 16) len=16;
 	for (i=0; i<len; i++)
 		x[i]=data[i];
-	if(len <= 10)
+	if (len <= 10)
 	    key->short_key=1;
 	else
 	    key->short_key=0;

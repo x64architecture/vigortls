@@ -341,7 +341,7 @@ void TXT_DB_free(TXT_DB *db)
 	int i,n;
 	char **p,*max;
 
-	if(db == NULL)
+	if (db == NULL)
 	    return;
 
 	if (db->index != NULL)

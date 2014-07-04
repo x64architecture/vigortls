@@ -96,7 +96,7 @@ int OCSP_basic_verify(OCSP_BASICRESP *bs, STACK_OF(X509) *certs,
 			ret = OCSP_BASICRESP_verify(bs, skey, 0);
 			EVP_PKEY_free(skey);
 			}
-		if(!skey || ret <= 0)
+		if (!skey || ret <= 0)
 			{
 			OCSPerr(OCSP_F_OCSP_BASIC_VERIFY, OCSP_R_SIGNATURE_FAILURE);
 			goto end;
@@ -105,11 +105,11 @@ int OCSP_basic_verify(OCSP_BASICRESP *bs, STACK_OF(X509) *certs,
 	if (!(flags & OCSP_NOVERIFY))
 		{
 		int init_res;
-		if(flags & OCSP_NOCHAIN)
+		if (flags & OCSP_NOCHAIN)
 			init_res = X509_STORE_CTX_init(&ctx, st, signer, NULL);
 		else
 			init_res = X509_STORE_CTX_init(&ctx, st, signer, bs->certs);
-		if(!init_res)
+		if (!init_res)
 			{
 			ret = -1;
 			OCSPerr(OCSP_F_OCSP_BASIC_VERIFY,ERR_R_X509_LIB);
@@ -128,7 +128,7 @@ int OCSP_basic_verify(OCSP_BASICRESP *bs, STACK_OF(X509) *certs,
 					X509_verify_cert_error_string(i));
                         goto end;
                 	}
-		if(flags & OCSP_NOCHECKS)
+		if (flags & OCSP_NOCHECKS)
 			{
 			ret = 1;
 			goto end;
@@ -144,10 +144,10 @@ int OCSP_basic_verify(OCSP_BASICRESP *bs, STACK_OF(X509) *certs,
 		/* Easy case: explicitly trusted. Get root CA and
 		 * check for explicit trust
 		 */
-		if(flags & OCSP_NOEXPLICIT) goto end;
+		if (flags & OCSP_NOEXPLICIT) goto end;
 
 		x = sk_X509_value(chain, sk_X509_num(chain) - 1);
-		if(X509_check_trust(x, NID_OCSP_sign, 0) != X509_TRUST_TRUSTED)
+		if (X509_check_trust(x, NID_OCSP_sign, 0) != X509_TRUST_TRUSTED)
 			{
 			OCSPerr(OCSP_F_OCSP_BASIC_VERIFY,OCSP_R_ROOT_CA_NOT_TRUSTED);
 			goto end;
@@ -158,7 +158,7 @@ int OCSP_basic_verify(OCSP_BASICRESP *bs, STACK_OF(X509) *certs,
 
 
 	end:
-	if(chain) sk_X509_pop_free(chain, X509_free);
+	if (chain) sk_X509_pop_free(chain, X509_free);
 	return ret;
 	}
 
@@ -173,7 +173,7 @@ static int ocsp_find_signer(X509 **psigner, OCSP_BASICRESP *bs, STACK_OF(X509) *
 		*psigner = signer;
 		return 2;
 		}
-	if(!(flags & OCSP_NOINTERN) &&
+	if (!(flags & OCSP_NOINTERN) &&
 	    (signer = ocsp_find_signer_sk(bs->certs, rid)))
 		{
 		*psigner = signer;
@@ -206,7 +206,7 @@ static X509 *ocsp_find_signer_sk(STACK_OF(X509) *certs, OCSP_RESPID *id)
 		{
 		x = sk_X509_value(certs, i);
 		X509_pubkey_digest(x, EVP_sha1(), tmphash, NULL);
-		if(!memcmp(keyhash, tmphash, SHA_DIGEST_LENGTH))
+		if (!memcmp(keyhash, tmphash, SHA_DIGEST_LENGTH))
 			return x;
 		}
 	return NULL;
@@ -299,7 +299,7 @@ static int ocsp_match_issuerid(X509 *cert, OCSP_CERTID *cid,
 			STACK_OF(OCSP_SINGLERESP) *sresp)
 	{
 	/* If only one ID to match then do it */
-	if(cid)
+	if (cid)
 		{
 		const EVP_MD *dgst;
 		X509_NAME *iname;
@@ -393,7 +393,7 @@ int OCSP_request_verify(OCSP_REQUEST *req, STACK_OF(X509) *certs, X509_STORE *st
 		skey = X509_get_pubkey(signer);
 		ret = OCSP_REQUEST_verify(req, skey);
 		EVP_PKEY_free(skey);
-		if(ret <= 0)
+		if (ret <= 0)
 			{
 			OCSPerr(OCSP_F_OCSP_REQUEST_VERIFY, OCSP_R_SIGNATURE_FAILURE);
 			return 0;
@@ -402,12 +402,12 @@ int OCSP_request_verify(OCSP_REQUEST *req, STACK_OF(X509) *certs, X509_STORE *st
 	if (!(flags & OCSP_NOVERIFY))
 		{
 		int init_res;
-		if(flags & OCSP_NOCHAIN)
+		if (flags & OCSP_NOCHAIN)
 			init_res = X509_STORE_CTX_init(&ctx, store, signer, NULL);
 		else
 			init_res = X509_STORE_CTX_init(&ctx, store, signer,
 					req->optionalSignature->certs);
-		if(!init_res)
+		if (!init_res)
 			{
 			OCSPerr(OCSP_F_OCSP_REQUEST_VERIFY,ERR_R_X509_LIB);
 			return 0;
@@ -433,7 +433,7 @@ static int ocsp_req_find_signer(X509 **psigner, OCSP_REQUEST *req, X509_NAME *nm
 				X509_STORE *st, unsigned long flags)
 	{
 	X509 *signer;
-	if(!(flags & OCSP_NOINTERN))
+	if (!(flags & OCSP_NOINTERN))
 		{
 		signer = X509_find_by_subject(req->optionalSignature->certs, nm);
 		*psigner = signer;

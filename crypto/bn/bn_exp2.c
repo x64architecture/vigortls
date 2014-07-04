@@ -153,7 +153,7 @@ int BN_mod_exp2_mont(BIGNUM *rr, const BIGNUM *a1, const BIGNUM *p1,
 	r = BN_CTX_get(ctx);
 	val1[0] = BN_CTX_get(ctx);
 	val2[0] = BN_CTX_get(ctx);
-	if(!d || !r || !val1[0] || !val2[0]) goto err;
+	if (!d || !r || !val1[0] || !val2[0]) goto err;
 
 	if (in_mont != NULL)
 		mont=in_mont;
@@ -192,7 +192,7 @@ int BN_mod_exp2_mont(BIGNUM *rr, const BIGNUM *a1, const BIGNUM *p1,
 		j=1<<(window1-1);
 		for (i=1; i<j; i++)
 			{
-			if(((val1[i] = BN_CTX_get(ctx)) == NULL) ||
+			if (((val1[i] = BN_CTX_get(ctx)) == NULL) ||
 					!BN_mod_mul_montgomery(val1[i],val1[i-1],
 						d,mont,ctx))
 				goto err;
@@ -225,7 +225,7 @@ int BN_mod_exp2_mont(BIGNUM *rr, const BIGNUM *a1, const BIGNUM *p1,
 		j=1<<(window2-1);
 		for (i=1; i<j; i++)
 			{
-			if(((val2[i] = BN_CTX_get(ctx)) == NULL) ||
+			if (((val2[i] = BN_CTX_get(ctx)) == NULL) ||
 					!BN_mod_mul_montgomery(val2[i],val2[i-1],
 						d,mont,ctx))
 				goto err;

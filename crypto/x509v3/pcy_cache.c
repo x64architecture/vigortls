@@ -221,7 +221,7 @@ static int policy_cache_new(X509 *x)
 		x->ex_flags |= EXFLAG_INVALID_POLICY;
 		}
 
-	if(ext_pcons)
+	if (ext_pcons)
 		POLICY_CONSTRAINTS_free(ext_pcons);
 
 	if (ext_any)

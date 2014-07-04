@@ -133,10 +133,10 @@ static int x509_name_ex_new(ASN1_VALUE **val, const ASN1_ITEM *it)
 {
 	X509_NAME *ret = NULL;
 	ret = malloc(sizeof(X509_NAME));
-	if(!ret) goto memerr;
+	if (!ret) goto memerr;
 	if ((ret->entries=sk_X509_NAME_ENTRY_new_null()) == NULL)
 		goto memerr;
-	if((ret->bytes = BUF_MEM_new()) == NULL) goto memerr;
+	if ((ret->bytes = BUF_MEM_new()) == NULL) goto memerr;
 	ret->canon_enc = NULL;
 	ret->canon_enclen = 0;
 	ret->modified=1;
@@ -157,7 +157,7 @@ static int x509_name_ex_new(ASN1_VALUE **val, const ASN1_ITEM *it)
 static void x509_name_ex_free(ASN1_VALUE **pval, const ASN1_ITEM *it)
 {
 	X509_NAME *a;
-	if(!pval || !*pval)
+	if (!pval || !*pval)
 	    return;
 	a = (X509_NAME *)*pval;
 
@@ -187,12 +187,12 @@ static int x509_name_ex_d2i(ASN1_VALUE **val,
 			       &p, len, ASN1_ITEM_rptr(X509_NAME_INTERNAL),
 			       tag, aclass, opt, ctx);
 	
-	if(ret <= 0) return ret;
+	if (ret <= 0) return ret;
 
-	if(*val) x509_name_ex_free(val, NULL);
-	if(!x509_name_ex_new(&nm.a, NULL)) goto err;
+	if (*val) x509_name_ex_free(val, NULL);
+	if (!x509_name_ex_new(&nm.a, NULL)) goto err;
 	/* We've decoded it: now cache encoding */
-	if(!BUF_MEM_grow(nm.x->bytes, p - q)) goto err;
+	if (!BUF_MEM_grow(nm.x->bytes, p - q)) goto err;
 	memcpy(nm.x->bytes->data, q, p - q);
 
 	/* Convert internal representation to X509_NAME structure */
@@ -201,7 +201,7 @@ static int x509_name_ex_d2i(ASN1_VALUE **val,
 		for(j = 0; j < sk_X509_NAME_ENTRY_num(entries); j++) {
 			entry = sk_X509_NAME_ENTRY_value(entries, j);
 			entry->set = i;
-			if(!sk_X509_NAME_ENTRY_push(nm.x->entries, entry))
+			if (!sk_X509_NAME_ENTRY_push(nm.x->entries, entry))
 				goto err;
 		}
 		sk_X509_NAME_ENTRY_free(entries);
@@ -225,16 +225,16 @@ static int x509_name_ex_i2d(ASN1_VALUE **val, unsigned char **out, const ASN1_IT
 {
 	int ret;
 	X509_NAME *a = (X509_NAME *)*val;
-	if(a->modified) {
+	if (a->modified) {
 		ret = x509_name_encode(a);
-		if(ret < 0)
+		if (ret < 0)
 			return ret;
 		ret = x509_name_canon(a);
-		if(ret < 0)
+		if (ret < 0)
 			return ret;
 	}
 	ret = a->bytes->length;
-	if(out != NULL) {
+	if (out != NULL) {
 		memcpy(*out,a->bytes->data,ret);
 		*out+=ret;
 	}
@@ -261,18 +261,18 @@ static int x509_name_encode(X509_NAME *a)
 	X509_NAME_ENTRY *entry;
 	int i, set = -1;
 	intname.s = sk_STACK_OF_X509_NAME_ENTRY_new_null();
-	if(!intname.s) goto memerr;
+	if (!intname.s) goto memerr;
 	for(i = 0; i < sk_X509_NAME_ENTRY_num(a->entries); i++) {
 		entry = sk_X509_NAME_ENTRY_value(a->entries, i);
-		if(entry->set != set) {
+		if (entry->set != set) {
 			entries = sk_X509_NAME_ENTRY_new_null();
-			if(!entries) goto memerr;
-			if(!sk_STACK_OF_X509_NAME_ENTRY_push(intname.s,
+			if (!entries) goto memerr;
+			if (!sk_STACK_OF_X509_NAME_ENTRY_push(intname.s,
 							     entries))
 				goto memerr;
 			set = entry->set;
 		}
-		if(!sk_X509_NAME_ENTRY_push(entries, entry)) goto memerr;
+		if (!sk_X509_NAME_ENTRY_push(entries, entry)) goto memerr;
 	}
 	len = ASN1_item_ex_i2d(&intname.a, NULL,
 			       ASN1_ITEM_rptr(X509_NAME_INTERNAL), -1, -1);
@@ -335,17 +335,17 @@ static int x509_name_canon(X509_NAME *a)
 		return 1;
 		}
 	intname = sk_STACK_OF_X509_NAME_ENTRY_new_null();
-	if(!intname)
+	if (!intname)
 		goto err;
 	for(i = 0; i < sk_X509_NAME_ENTRY_num(a->entries); i++)
 		{
 		entry = sk_X509_NAME_ENTRY_value(a->entries, i);
-		if(entry->set != set)
+		if (entry->set != set)
 			{
 			entries = sk_X509_NAME_ENTRY_new_null();
-			if(!entries)
+			if (!entries)
 				goto err;
-			if(!sk_STACK_OF_X509_NAME_ENTRY_push(intname, entries))
+			if (!sk_STACK_OF_X509_NAME_ENTRY_push(intname, entries))
 				goto err;
 			set = entry->set;
 			}
@@ -353,7 +353,7 @@ static int x509_name_canon(X509_NAME *a)
 		tmpentry->object = OBJ_dup(entry->object);
 		if (!asn1_string_canon(tmpentry->value, entry->value))
 			goto err;
-		if(!sk_X509_NAME_ENTRY_push(entries, tmpentry))
+		if (!sk_X509_NAME_ENTRY_push(entries, tmpentry))
 			goto err;
 		tmpentry = NULL;
 		}

@@ -89,7 +89,7 @@ void ECDH_set_default_method(const ECDH_METHOD *meth)
 
 const ECDH_METHOD *ECDH_get_default_method(void)
 	{
-	if(!default_ECDH_method) 
+	if (!default_ECDH_method) 
 		{
 		default_ECDH_method = ECDH_OpenSSL();
 		}

@@ -68,7 +68,7 @@ static int dsa_builtin_keygen(DSA *dsa);
 
 int DSA_generate_key(DSA *dsa)
 	{
-	if(dsa->meth->dsa_keygen)
+	if (dsa->meth->dsa_keygen)
 		return dsa->meth->dsa_keygen(dsa);
 	return dsa_builtin_keygen(dsa);
 	}

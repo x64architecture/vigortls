@@ -79,7 +79,7 @@ static int SetBlobCmp(const void *elem1, const void *elem2 )
 
     r = memcmp(b1->pbData, b2->pbData,
 	       b1->cbData < b2->cbData ? b1->cbData : b2->cbData);
-    if(r != 0)
+    if (r != 0)
 	return r;
     return b1->cbData-b2->cbData;
     }
@@ -109,7 +109,7 @@ int i2d_ASN1_SET(STACK_OF(OPENSSL_BLOCK) *a, unsigned char **pp,
 	/* And then again by Ben */
 	/* And again by Steve */
 
-	if(!is_set || (sk_OPENSSL_BLOCK_num(a) < 2))
+	if (!is_set || (sk_OPENSSL_BLOCK_num(a) < 2))
 		{
 		for (i=0; i<sk_OPENSSL_BLOCK_num(a); i++)
                 	i2d(sk_OPENSSL_BLOCK_value(a,i),&p);

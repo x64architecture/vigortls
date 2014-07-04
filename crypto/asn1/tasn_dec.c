@@ -1105,7 +1105,7 @@ static int asn1_find_end(const unsigned char **in, long len, char inf)
 	 */
 	while (len > 0)
 		{
-		if(asn1_check_eoc(&p, len))
+		if (asn1_check_eoc(&p, len))
 			{
 			expected_eoc--;
 			if (expected_eoc == 0)
@@ -1115,7 +1115,7 @@ static int asn1_find_end(const unsigned char **in, long len, char inf)
 			}
 		q = p;
 		/* Just read in a header: only care about the length */
-		if(!asn1_check_tlen(&plen, NULL, NULL, &inf, NULL, &p, len,
+		if (!asn1_check_tlen(&plen, NULL, NULL, &inf, NULL, &p, len,
 				-1, 0, 0, NULL))
 			{
 			ASN1err(ASN1_F_ASN1_FIND_END, ERR_R_NESTED_ASN1_ERROR);

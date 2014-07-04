@@ -74,7 +74,7 @@ static const RAND_METHOD *default_RAND_meth = NULL;
 int RAND_set_rand_method(const RAND_METHOD *meth)
 	{
 #ifndef OPENSSL_NO_ENGINE
-	if(funct_ref)
+	if (funct_ref)
 		{
 		ENGINE_finish(funct_ref);
 		funct_ref = NULL;
@@ -90,16 +90,16 @@ const RAND_METHOD *RAND_get_rand_method(void)
 		{
 #ifndef OPENSSL_NO_ENGINE
 		ENGINE *e = ENGINE_get_default_RAND();
-		if(e)
+		if (e)
 			{
 			default_RAND_meth = ENGINE_get_RAND(e);
-			if(!default_RAND_meth)
+			if (!default_RAND_meth)
 				{
 				ENGINE_finish(e);
 				e = NULL;
 				}
 			}
-		if(e)
+		if (e)
 			funct_ref = e;
 		else
 #endif
@@ -112,12 +112,12 @@ const RAND_METHOD *RAND_get_rand_method(void)
 int RAND_set_rand_engine(ENGINE *engine)
 	{
 	const RAND_METHOD *tmp_meth = NULL;
-	if(engine)
+	if (engine)
 		{
-		if(!ENGINE_init(engine))
+		if (!ENGINE_init(engine))
 			return 0;
 		tmp_meth = ENGINE_get_RAND(engine);
-		if(!tmp_meth)
+		if (!tmp_meth)
 			{
 			ENGINE_finish(engine);
 			return 0;

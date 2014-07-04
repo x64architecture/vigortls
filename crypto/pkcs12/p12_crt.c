@@ -104,7 +104,7 @@ PKCS12 *PKCS12_create(char *pass, char *name, EVP_PKEY *pkey, X509 *cert,
 	if (!mac_iter)
 		mac_iter = 1;
 
-	if(!pkey && !cert && !ca)
+	if (!pkey && !cert && !ca)
 		{
 		PKCS12err(PKCS12_F_PKCS12_CREATE,PKCS12_R_INVALID_NULL_ARGUMENT);
 		return NULL;
@@ -112,7 +112,7 @@ PKCS12 *PKCS12_create(char *pass, char *name, EVP_PKEY *pkey, X509 *cert,
 
 	if (pkey && cert)
 		{
-		if(!X509_check_private_key(cert, pkey))
+		if (!X509_check_private_key(cert, pkey))
 			return NULL;
 		X509_digest(cert, EVP_sha1(), keyid, &keyidlen);
 		}
@@ -120,9 +120,9 @@ PKCS12 *PKCS12_create(char *pass, char *name, EVP_PKEY *pkey, X509 *cert,
 	if (cert)
 		{
 		bag = PKCS12_add_cert(&bags, cert);
-		if(name && !PKCS12_add_friendlyname(bag, name, -1))
+		if (name && !PKCS12_add_friendlyname(bag, name, -1))
 			goto err;
-		if(keyidlen && !PKCS12_add_localkeyid(bag, keyid, keyidlen))
+		if (keyidlen && !PKCS12_add_localkeyid(bag, keyid, keyidlen))
 			goto err;
 		}
 
@@ -151,9 +151,9 @@ PKCS12 *PKCS12_create(char *pass, char *name, EVP_PKEY *pkey, X509 *cert,
 		if (!copy_bag_attr(bag, pkey, NID_LocalKeySet))
 			goto err;
 
-		if(name && !PKCS12_add_friendlyname(bag, name, -1))
+		if (name && !PKCS12_add_friendlyname(bag, name, -1))
 			goto err;
-		if(keyidlen && !PKCS12_add_localkeyid(bag, keyid, keyidlen))
+		if (keyidlen && !PKCS12_add_localkeyid(bag, keyid, keyidlen))
 			goto err;
 		}
 
@@ -199,7 +199,7 @@ PKCS12_SAFEBAG *PKCS12_add_cert(STACK_OF(PKCS12_SAFEBAG) **pbags, X509 *cert)
 	int keyidlen = -1;
 
 	/* Add user certificate */
-	if(!(bag = PKCS12_x5092certbag(cert)))
+	if (!(bag = PKCS12_x5092certbag(cert)))
 		goto err;
 
 	/* Use friendlyName and localKeyID in certificate.
@@ -208,12 +208,12 @@ PKCS12_SAFEBAG *PKCS12_add_cert(STACK_OF(PKCS12_SAFEBAG) **pbags, X509 *cert)
 
 	name = (char *)X509_alias_get0(cert, &namelen);
 
-	if(name && !PKCS12_add_friendlyname(bag, name, namelen))
+	if (name && !PKCS12_add_friendlyname(bag, name, namelen))
 		goto err;
 
 	keyid = X509_keyid_get0(cert, &keyidlen);
 
-	if(keyid && !PKCS12_add_localkeyid(bag, keyid, keyidlen))
+	if (keyid && !PKCS12_add_localkeyid(bag, keyid, keyidlen))
 		goto err;
 
 	if (!pkcs12_add_bag(pbags, bag))
@@ -239,9 +239,9 @@ PKCS12_SAFEBAG *PKCS12_add_key(STACK_OF(PKCS12_SAFEBAG) **pbags, EVP_PKEY *key,
 	PKCS8_PRIV_KEY_INFO *p8 = NULL;
 
 	/* Make a PKCS#8 structure */
-	if(!(p8 = EVP_PKEY2PKCS8(key)))
+	if (!(p8 = EVP_PKEY2PKCS8(key)))
 		goto err;
-	if(key_usage && !PKCS8_add_keyusage(p8, key_usage))
+	if (key_usage && !PKCS8_add_keyusage(p8, key_usage))
 		goto err;
 	if (nid_key != -1)
 		{
@@ -251,7 +251,7 @@ PKCS12_SAFEBAG *PKCS12_add_key(STACK_OF(PKCS12_SAFEBAG) **pbags, EVP_PKEY *key,
 	else
 		bag = PKCS12_MAKE_KEYBAG(p8);
 
-	if(!bag)
+	if (!bag)
 		goto err;
 
 	if (!pkcs12_add_bag(pbags, bag))
@@ -358,7 +358,7 @@ PKCS12 *PKCS12_add_safes(STACK_OF(PKCS7) *safes, int nid_p7)
 	if (!p12)
 		return NULL;
 
-	if(!PKCS12_pack_authsafes(p12, safes))
+	if (!PKCS12_pack_authsafes(p12, safes))
 		{
 		PKCS12_free(p12);
 		return NULL;

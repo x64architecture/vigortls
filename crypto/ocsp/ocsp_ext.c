@@ -336,7 +336,7 @@ static int ocsp_add1_nonce(STACK_OF(X509_EXTENSION) **exts, unsigned char *val, 
 		memcpy(tmpval, val, len);
 	else
 		RAND_pseudo_bytes(tmpval, len);
-	if(!X509V3_add1_i2d(exts, NID_id_pkix_OCSP_Nonce,
+	if (!X509V3_add1_i2d(exts, NID_id_pkix_OCSP_Nonce,
 			&os, 0, X509V3_ADD_REPLACE))
 				goto err;
 	ret = 1;
@@ -389,18 +389,18 @@ int OCSP_check_nonce(OCSP_REQUEST *req, OCSP_BASICRESP *bs)
 	req_idx = OCSP_REQUEST_get_ext_by_NID(req, NID_id_pkix_OCSP_Nonce, -1);
 	resp_idx = OCSP_BASICRESP_get_ext_by_NID(bs, NID_id_pkix_OCSP_Nonce, -1);
 	/* Check both absent */
-	if((req_idx < 0) && (resp_idx < 0))
+	if ((req_idx < 0) && (resp_idx < 0))
 		return 2;
 	/* Check in request only */
-	if((req_idx >= 0) && (resp_idx < 0))
+	if ((req_idx >= 0) && (resp_idx < 0))
 		return -1;
 	/* Check in response but not request */
-	if((req_idx < 0) && (resp_idx >= 0))
+	if ((req_idx < 0) && (resp_idx >= 0))
 		return 3;
 	/* Otherwise nonce in request and response so retrieve the extensions */
 	req_ext = OCSP_REQUEST_get_ext(req, req_idx);
 	resp_ext = OCSP_BASICRESP_get_ext(bs, resp_idx);
-	if(ASN1_OCTET_STRING_cmp(req_ext->value, resp_ext->value))
+	if (ASN1_OCTET_STRING_cmp(req_ext->value, resp_ext->value))
 		return 0;
 	return 1;
 	}

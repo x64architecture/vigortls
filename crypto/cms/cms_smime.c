@@ -75,7 +75,7 @@ static int cms_copy_content(BIO *out, BIO *in, unsigned int flags)
 	else
 		tmpout = out;
 
-	if(!tmpout)
+	if (!tmpout)
 		{
 		CMSerr(CMS_F_CMS_COPY_CONTENT,ERR_R_MALLOC_FAILURE);
 		goto err;
@@ -101,9 +101,9 @@ static int cms_copy_content(BIO *out, BIO *in, unsigned int flags)
 			goto err;
 	}
 
-	if(flags & CMS_TEXT)
+	if (flags & CMS_TEXT)
 		{
-		if(!SMIME_text(tmpout, out))
+		if (!SMIME_text(tmpout, out))
 			{
 			CMSerr(CMS_F_CMS_COPY_CONTENT,CMS_R_SMIME_TEXT_ERROR);
 			goto err;
@@ -213,7 +213,7 @@ CMS_ContentInfo *CMS_digest_create(BIO *in, const EVP_MD *md,
 	if (!cms)
 		return NULL;
 
-	if(!(flags & CMS_DETACHED))
+	if (!(flags & CMS_DETACHED))
 		CMS_set_detached(cms, 0);
 
 	if ((flags & CMS_STREAM) || CMS_final(cms, in, NULL, flags))
@@ -265,7 +265,7 @@ CMS_ContentInfo *CMS_EncryptedData_encrypt(BIO *in, const EVP_CIPHER *cipher,
 	if (!CMS_EncryptedData_set1_key(cms, cipher, key, keylen))
 		return NULL;
 
-	if(!(flags & CMS_DETACHED))
+	if (!(flags & CMS_DETACHED))
 		CMS_set_detached(cms, 0);
 
 	if ((flags & (CMS_STREAM|CMS_PARTIAL))
@@ -480,7 +480,7 @@ CMS_ContentInfo *CMS_sign(X509 *signcert, EVP_PKEY *pkey, STACK_OF(X509) *certs,
 			goto merr;
 		}
 
-	if(!(flags & CMS_DETACHED))
+	if (!(flags & CMS_DETACHED))
 		CMS_set_detached(cms, 0);
 
 	if ((flags & (CMS_STREAM|CMS_PARTIAL))
@@ -589,7 +589,7 @@ CMS_ContentInfo *CMS_encrypt(STACK_OF(X509) *certs, BIO *data,
 			}
 		}
 
-	if(!(flags & CMS_DETACHED))
+	if (!(flags & CMS_DETACHED))
 		CMS_set_detached(cms, 0);
 
 	if ((flags & (CMS_STREAM|CMS_PARTIAL))
@@ -823,7 +823,7 @@ CMS_ContentInfo *CMS_compress(BIO *in, int comp_nid, unsigned int flags)
 	if (!cms)
 		return NULL;
 
-	if(!(flags & CMS_DETACHED))
+	if (!(flags & CMS_DETACHED))
 		CMS_set_detached(cms, 0);
 
 	if ((flags & CMS_STREAM) || CMS_final(cms, in, NULL, flags))

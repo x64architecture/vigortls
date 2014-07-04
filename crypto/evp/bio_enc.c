@@ -208,7 +208,7 @@ static int enc_read(BIO *b, char *out, int outl)
 			 * and either read more data or decrypt the final
 			 * block
 			 */
-			if(ctx->buf_len == 0) continue;
+			if (ctx->buf_len == 0) continue;
 			}
 
 		if (ctx->buf_len <= outl)

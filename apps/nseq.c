@@ -128,7 +128,7 @@ int MAIN(int argc, char **argv)
 		while((x509 = PEM_read_bio_X509(in, NULL, NULL, NULL))) 
 		    sk_X509_push(seq->certs,x509);
 
-		if(!sk_X509_num(seq->certs))
+		if (!sk_X509_num(seq->certs))
 		{
 			BIO_printf (bio_err, "Error reading certs file %s\n", infile);
 			ERR_print_errors(bio_err);

@@ -310,7 +310,7 @@ int MAIN(int argc, char **argv)
 		}
 
 	/* Get the password if required. */
-	if(mode == CMD_REPLY && passin &&
+	if (mode == CMD_REPLY && passin &&
 	   !app_passwd(bio_err, passin, NULL, &password, NULL))
 		{
 		BIO_printf(bio_err,"Error getting password.\n");
@@ -453,7 +453,7 @@ static CONF *load_config_file(const char *configfile)
 			}
 		else
 			ERR_clear_error();
-		if(!add_oid_section(bio_err, conf)) 
+		if (!add_oid_section(bio_err, conf)) 
 			ERR_print_errors(bio_err);
 		}
 	return conf;

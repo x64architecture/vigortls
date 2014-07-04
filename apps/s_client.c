@@ -397,11 +397,11 @@ static int srp_Verify_N_and_g(BIGNUM *N, BIGNUM *g)
 		BN_add_word(r, 1) &&
 		BN_cmp(r, N) == 0;
 
-	if(r)
+	if (r)
 		BN_free(r);
-	if(p)
+	if (p)
 		BN_free(p);
-	if(bn_ctx)
+	if (bn_ctx)
 		BN_CTX_free(bn_ctx);
 	return ret;
 	}
@@ -1027,7 +1027,7 @@ bad:
 		}
 
 #ifndef OPENSSL_NO_SRP
-	if(!app_passwd(bio_err, srppass, NULL, &srp_arg.srppassin, NULL))
+	if (!app_passwd(bio_err, srppass, NULL, &srp_arg.srppassin, NULL))
 		{
 		BIO_printf(bio_err, "Error getting password\n");
 		goto end;
@@ -1089,7 +1089,7 @@ bad:
 
 	if (state) SSL_CTX_set_info_callback(ctx,apps_ssl_info_callback);
 	if (cipher != NULL)
-		if(!SSL_CTX_set_cipher_list(ctx,cipher)) {
+		if (!SSL_CTX_set_cipher_list(ctx,cipher)) {
 		BIO_printf(bio_err,"error setting cipher list\n");
 		ERR_print_errors(bio_err);
 		goto end;
@@ -1498,7 +1498,7 @@ SSL_set_tlsext_status_ids(con, ids);
 			if (write_ssl)
 				openssl_fdset(SSL_get_fd(con),&writefds);
 #else
-			if(!tty_on || !write_tty) {
+			if (!tty_on || !write_tty) {
 				if (read_ssl)
 					openssl_fdset(SSL_get_fd(con),&readfds);
 				if (write_ssl)
@@ -1523,13 +1523,13 @@ SSL_set_tlsext_status_ids(con, ids);
 			 * Windows application we wouldn't do this.
 			 */
 			i=0;
-			if(!write_tty) {
-				if(read_tty) {
+			if (!write_tty) {
+				if (read_tty) {
 					tv.tv_sec = 1;
 					tv.tv_usec = 0;
 					i=select(width,(void *)&readfds,(void *)&writefds,
 						 NULL,&tv);
-                if(!i && (!((_kbhit()) || (WAIT_OBJECT_0 == WaitForSingleObject(GetStdHandle(STD_INPUT_HANDLE), 0))) || !read_tty) )
+                if (!i && (!((_kbhit()) || (WAIT_OBJECT_0 == WaitForSingleObject(GetStdHandle(STD_INPUT_HANDLE), 0))) || !read_tty) )
                         continue;
 				} else 	i=select(width,(void *)&readfds,(void *)&writefds,
 					 NULL,timeoutp);
@@ -1944,7 +1944,7 @@ static void print_stuff(BIO *bio, SSL *s, int full)
  	{
  	SRTP_PROTECTION_PROFILE *srtp_profile=SSL_get_selected_srtp_profile(s);
  
-	if(srtp_profile)
+	if (srtp_profile)
 		BIO_printf(bio,"SRTP Extension negotiated, profile=%s\n",
 			   srtp_profile->name);
 	}

@@ -988,7 +988,7 @@ bad:
 		if (gethostname(localhost, sizeof localhost-1) == 0)
                         {
 			localhost[sizeof localhost-1]='\0';
-			if(strlen(localhost) == sizeof localhost-1)
+			if (strlen(localhost) == sizeof localhost-1)
 				{
 				BIO_printf(bio_err,"localhost name too long\n");
 				goto end;
@@ -2237,14 +2237,14 @@ static RSA MS_CALLBACK *tmp_rsa_cb(SSL *s, int is_export, int keylength)
 		{
 		bn = BN_new();
 		rsa_tmp = RSA_new();
-		if(!bn || !rsa_tmp || !BN_set_word(bn, RSA_F4))
+		if (!bn || !rsa_tmp || !BN_set_word(bn, RSA_F4))
 			{
 			BIO_printf(bio_err, "Memory error...");
 			goto end;
 			}
 		BIO_printf(bio_err,"Generating temp (%d bit) RSA key...",keylength);
 		(void)BIO_flush(bio_err);
-		if(!RSA_generate_key_ex(rsa_tmp,keylength,bn,NULL))
+		if (!RSA_generate_key_ex(rsa_tmp,keylength,bn,NULL))
 			{
 			BIO_printf(bio_err, "Error generating key.");
 			RSA_free(rsa_tmp);
@@ -2254,7 +2254,7 @@ end:
 		BIO_printf(bio_err,"\n");
 		(void)BIO_flush(bio_err);
 		}
-	if(bn) BN_free(bn);
+	if (bn) BN_free(bn);
 	return (rsa_tmp);
 	}
 

@@ -192,7 +192,7 @@ void DES_ede3_cfb_encrypt(const unsigned char *in,unsigned char *out,
 				/* shift ovec left most of the bits... */
 				memmove(ovec,ovec+num/8,8+(num%8 ? 1 : 0));
 				/* now the remaining bits */
-				if(num%8 != 0)
+				if (num%8 != 0)
 					for(i=0 ; i < 8 ; ++i)
 						{
 						ovec[i]<<=num%8;
@@ -230,7 +230,7 @@ void DES_ede3_cfb_encrypt(const unsigned char *in,unsigned char *out,
 				/* shift ovec left most of the bits... */
 				memmove(ovec,ovec+num/8,8+(num%8 ? 1 : 0));
 				/* now the remaining bits */
-				if(num%8 != 0)
+				if (num%8 != 0)
 					for(i=0 ; i < 8 ; ++i)
 						{
 						ovec[i]<<=num%8;

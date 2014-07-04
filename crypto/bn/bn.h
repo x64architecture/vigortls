@@ -337,9 +337,9 @@ struct bn_gencb_st
 	void *arg;		/* callback-specific data */
 	union
 		{
-		/* if(ver==1) - handles old style callbacks */
+		/* if (ver==1) - handles old style callbacks */
 		void (*cb_1)(int, int, void *);
-		/* if(ver==2) - new callback style */
+		/* if (ver==2) - new callback style */
 		int (*cb_2)(int, int, BN_GENCB *);
 		} cb;
 	};
@@ -726,7 +726,7 @@ int RAND_pseudo_bytes(unsigned char *buf,int num);
 #define bn_pollute(a) \
 	do { \
 		const BIGNUM *_bnum1 = (a); \
-		if(_bnum1->top < _bnum1->dmax) { \
+		if (_bnum1->top < _bnum1->dmax) { \
 			unsigned char _tmp_char; \
 			/* We cast away const without the compiler knowing, any \
 			 * *genuinely* constant variables that aren't mutable \

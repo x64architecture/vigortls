@@ -531,7 +531,7 @@ static int SortFnByName(const void *_f1,const void *_f2)
     const FUNCTION *f1=_f1;
     const FUNCTION *f2=_f2;
 
-    if(f1->type != f2->type)
+    if (f1->type != f2->type)
 	return f1->type-f2->type;
     return strcmp(f1->name,f2->name);
     }

@@ -42,13 +42,13 @@ static int run_srp(const char *username, const char *client_pass, const char *se
 	/* use builtin 1024-bit params */
 	SRP_gN *GN = SRP_get_default_gN("1024");
 
-	if(GN == NULL)
+	if (GN == NULL)
 		{
 		fprintf(stderr, "Failed to get SRP parameters\n");
 		return -1;
 		}
 	/* Set up server's password entry */
-	if(!SRP_create_verifier_BN(username, server_pass, &s, &v, GN->N, GN->g))
+	if (!SRP_create_verifier_BN(username, server_pass, &s, &v, GN->N, GN->g))
 		{
 		fprintf(stderr, "Failed to create SRP verifier\n");
 		return -1;
@@ -69,7 +69,7 @@ static int run_srp(const char *username, const char *client_pass, const char *se
 	Bpub = SRP_Calc_B(b, GN->N, GN->g, v);
 	showbn("B", Bpub);
 
-	if(!SRP_Verify_B_mod_N(Bpub, GN->N))
+	if (!SRP_Verify_B_mod_N(Bpub, GN->N))
 		{
 		fprintf(stderr, "Invalid B\n");
 		return -1;
@@ -85,7 +85,7 @@ static int run_srp(const char *username, const char *client_pass, const char *se
 	Apub = SRP_Calc_A(a, GN->N, GN->g);
 	showbn("A", Apub);
 
-	if(!SRP_Verify_A_mod_N(Apub, GN->N))
+	if (!SRP_Verify_A_mod_N(Apub, GN->N))
 		{
 		fprintf(stderr, "Invalid A\n");
 		return -1;
@@ -103,7 +103,7 @@ static int run_srp(const char *username, const char *client_pass, const char *se
 	Kserver = SRP_Calc_server_key(Apub, v, u, b, GN->N);
 	showbn("Server's key", Kserver);
 
-	if(BN_cmp(Kclient, Kserver) == 0)
+	if (BN_cmp(Kclient, Kserver) == 0)
 		{
 		ret = 0;
 		}
@@ -139,14 +139,14 @@ int main(int argc, char **argv)
 	ERR_load_crypto_strings();
 
 	/* "Negative" test, expect a mismatch */
-	if(run_srp("alice", "password1", "password2") == 0)
+	if (run_srp("alice", "password1", "password2") == 0)
 		{
 		fprintf(stderr, "Mismatched SRP run failed\n");
 		return 1;
 		}
 
 	/* "Positive" test, should pass */
-	if(run_srp("alice", "password", "password") != 0)
+	if (run_srp("alice", "password", "password") != 0)
 		{
 		fprintf(stderr, "Plain SRP run failed\n");
 		return 1;

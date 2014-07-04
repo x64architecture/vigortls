@@ -91,7 +91,7 @@ unsigned long X509_issuer_and_serial_hash(X509 *a)
 	if (!EVP_DigestUpdate(&ctx,(unsigned char *)f,strlen(f)))
 		goto err;
 	free(f);
-	if(!EVP_DigestUpdate(&ctx,(unsigned char *)a->cert_info->serialNumber->data,
+	if (!EVP_DigestUpdate(&ctx,(unsigned char *)a->cert_info->serialNumber->data,
 		(unsigned long)a->cert_info->serialNumber->length))
 		goto err;
 	if (!EVP_DigestFinal_ex(&ctx,&(md[0]),NULL))
@@ -267,7 +267,7 @@ X509 *X509_find_by_issuer_and_serial(STACK_OF(X509) *sk, X509_NAME *name,
 	X509_CINF cinf;
 	X509 x,*x509=NULL;
 
-	if(!sk) return NULL;
+	if (!sk) return NULL;
 
 	x.cert_info= &cinf;
 	cinf.serialNumber=serial;
@@ -305,7 +305,7 @@ EVP_PKEY *X509_get_pubkey(X509 *x)
 
 ASN1_BIT_STRING *X509_get0_pubkey_bitstr(const X509 *x)
 	{
-	if(!x) return NULL;
+	if (!x) return NULL;
 	return x->cert_info->key->public_key;
 	}
 

@@ -96,7 +96,7 @@ static int crl_inf_cb(int operation, ASN1_VALUE **pval, const ASN1_ITEM *it,
 {
 	X509_CRL_INFO *a = (X509_CRL_INFO *)*pval;
 
-	if(!a || !a->revoked) return 1;
+	if (!a || !a->revoked) return 1;
 	switch(operation) {
 		/* Just set cmp function here. We don't sort because that
 		 * would affect the output of X509_CRL_print().
@@ -372,9 +372,9 @@ int X509_CRL_add0_revoked(X509_CRL *crl, X509_REVOKED *rev)
 {
 	X509_CRL_INFO *inf;
 	inf = crl->crl;
-	if(!inf->revoked)
+	if (!inf->revoked)
 		inf->revoked = sk_X509_REVOKED_new(X509_REVOKED_cmp);
-	if(!inf->revoked || !sk_X509_REVOKED_push(inf->revoked, rev)) {
+	if (!inf->revoked || !sk_X509_REVOKED_push(inf->revoked, rev)) {
 		ASN1err(ASN1_F_X509_CRL_ADD0_REVOKED, ERR_R_MALLOC_FAILURE);
 		return 0;
 	}
@@ -457,7 +457,7 @@ static int def_crl_lookup(X509_CRL *crl,
 		CRYPTO_w_unlock(CRYPTO_LOCK_X509_CRL);
 		}
 	idx = sk_X509_REVOKED_find(crl->crl->revoked, &rtmp);
-	if(idx < 0)
+	if (idx < 0)
 		return 0;
 	/* Need to look for matching name */
 	for(;idx < sk_X509_REVOKED_num(crl->crl->revoked); idx++)

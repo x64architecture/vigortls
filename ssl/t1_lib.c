@@ -400,18 +400,18 @@ unsigned char *ssl_add_clienthello_tlsext(SSL *s, unsigned char *buf, unsigned c
           {
           int el;
           
-          if(!ssl_add_clienthello_renegotiate_ext(s, 0, &el, 0))
+          if (!ssl_add_clienthello_renegotiate_ext(s, 0, &el, 0))
               {
               SSLerr(SSL_F_SSL_ADD_CLIENTHELLO_TLSEXT, ERR_R_INTERNAL_ERROR);
               return NULL;
               }
 
-          if((limit - ret - 4 - el) < 0) return NULL;
+          if ((limit - ret - 4 - el) < 0) return NULL;
           
           s2n(TLSEXT_TYPE_renegotiate,ret);
           s2n(el,ret);
 
-          if(!ssl_add_clienthello_renegotiate_ext(s, ret, &el, el))
+          if (!ssl_add_clienthello_renegotiate_ext(s, ret, &el, el))
               {
               SSLerr(SSL_F_SSL_ADD_CLIENTHELLO_TLSEXT, ERR_R_INTERNAL_ERROR);
               return NULL;
@@ -625,18 +625,18 @@ unsigned char *ssl_add_clienthello_tlsext(SSL *s, unsigned char *buf, unsigned c
 #endif
 
 #ifndef OPENSSL_NO_SRTP
-        if(SSL_get_srtp_profiles(s))
+        if (SSL_get_srtp_profiles(s))
                 {
                 int el;
 
                 ssl_add_clienthello_use_srtp_ext(s, 0, &el, 0);
                 
-                if((limit - ret - 4 - el) < 0) return NULL;
+                if ((limit - ret - 4 - el) < 0) return NULL;
 
                 s2n(TLSEXT_TYPE_use_srtp,ret);
                 s2n(el,ret);
 
-                if(ssl_add_clienthello_use_srtp_ext(s, ret, &el, el))
+                if (ssl_add_clienthello_use_srtp_ext(s, ret, &el, el))
 			{
 			SSLerr(SSL_F_SSL_ADD_CLIENTHELLO_TLSEXT, ERR_R_INTERNAL_ERROR);
 			return NULL;
@@ -705,22 +705,22 @@ unsigned char *ssl_add_serverhello_tlsext(SSL *s, unsigned char *buf, unsigned c
 		s2n(0,ret);
 		}
 
-	if(s->s3->send_connection_binding)
+	if (s->s3->send_connection_binding)
         {
           int el;
           
-          if(!ssl_add_serverhello_renegotiate_ext(s, 0, &el, 0))
+          if (!ssl_add_serverhello_renegotiate_ext(s, 0, &el, 0))
               {
               SSLerr(SSL_F_SSL_ADD_SERVERHELLO_TLSEXT, ERR_R_INTERNAL_ERROR);
               return NULL;
               }
 
-          if((limit - ret - 4 - el) < 0) return NULL;
+          if ((limit - ret - 4 - el) < 0) return NULL;
           
           s2n(TLSEXT_TYPE_renegotiate,ret);
           s2n(el,ret);
 
-          if(!ssl_add_serverhello_renegotiate_ext(s, ret, &el, el))
+          if (!ssl_add_serverhello_renegotiate_ext(s, ret, &el, el))
               {
               SSLerr(SSL_F_SSL_ADD_SERVERHELLO_TLSEXT, ERR_R_INTERNAL_ERROR);
               return NULL;
@@ -789,18 +789,18 @@ unsigned char *ssl_add_serverhello_tlsext(SSL *s, unsigned char *buf, unsigned c
 #endif
 
 #ifndef OPENSSL_NO_SRTP
-        if(s->srtp_profile)
+        if (s->srtp_profile)
                 {
                 int el;
 
                 ssl_add_serverhello_use_srtp_ext(s, 0, &el, 0);
                 
-                if((limit - ret - 4 - el) < 0) return NULL;
+                if ((limit - ret - 4 - el) < 0) return NULL;
 
                 s2n(TLSEXT_TYPE_use_srtp,ret);
                 s2n(el,ret);
 
-                if(ssl_add_serverhello_use_srtp_ext(s, ret, &el, el))
+                if (ssl_add_serverhello_use_srtp_ext(s, ret, &el, el))
 			{
 			SSLerr(SSL_F_SSL_ADD_SERVERHELLO_TLSEXT, ERR_R_INTERNAL_ERROR);
 			return NULL;
@@ -1036,7 +1036,7 @@ int ssl_parse_clienthello_tlsext(SSL *s, unsigned char **p, unsigned char *d, in
 				case TLSEXT_NAMETYPE_host_name:
 					if (!s->hit)
 						{
-						if(s->session->tlsext_hostname)
+						if (s->session->tlsext_hostname)
 							{
 							*al = SSL_AD_DECODE_ERROR;
 							return 0;
@@ -1122,7 +1122,7 @@ int ssl_parse_clienthello_tlsext(SSL *s, unsigned char **p, unsigned char *d, in
 				}
 			if (!s->hit)
 				{
-				if(s->session->tlsext_ecpointformatlist)
+				if (s->session->tlsext_ecpointformatlist)
 					{
 					free(s->session->tlsext_ecpointformatlist);
 					s->session->tlsext_ecpointformatlist = NULL;
@@ -1159,7 +1159,7 @@ int ssl_parse_clienthello_tlsext(SSL *s, unsigned char **p, unsigned char *d, in
 				}
 			if (!s->hit)
 				{
-				if(s->session->tlsext_ellipticcurvelist)
+				if (s->session->tlsext_ellipticcurvelist)
 					{
 					*al = TLS1_AD_DECODE_ERROR;
 					return 0;
@@ -1224,7 +1224,7 @@ int ssl_parse_clienthello_tlsext(SSL *s, unsigned char **p, unsigned char *d, in
 			}
 		else if (type == TLSEXT_TYPE_renegotiate)
 			{
-			if(!ssl_parse_clienthello_renegotiate_ext(s, data, size, al))
+			if (!ssl_parse_clienthello_renegotiate_ext(s, data, size, al))
 				return 0;
 			renegotiate_seen = 1;
 			}
@@ -1389,7 +1389,7 @@ int ssl_parse_clienthello_tlsext(SSL *s, unsigned char **p, unsigned char *d, in
 #ifndef OPENSSL_NO_SRTP
 		else if (type == TLSEXT_TYPE_use_srtp)
 			{
-			if(ssl_parse_clienthello_use_srtp_ext(s, data, size,
+			if (ssl_parse_clienthello_use_srtp_ext(s, data, size,
 							      al))
 				return 0;
 			}
@@ -1611,14 +1611,14 @@ int ssl_parse_serverhello_tlsext(SSL *s, unsigned char **p, unsigned char *d, in
 #endif
 		else if (type == TLSEXT_TYPE_renegotiate)
 			{
-			if(!ssl_parse_serverhello_renegotiate_ext(s, data, size, al))
+			if (!ssl_parse_serverhello_renegotiate_ext(s, data, size, al))
 				return 0;
 			renegotiate_seen = 1;
 			}
 #ifndef OPENSSL_NO_SRTP
 		else if (type == TLSEXT_TYPE_use_srtp)
 			{
-                        if(ssl_parse_serverhello_use_srtp_ext(s, data, size,
+                        if (ssl_parse_serverhello_use_srtp_ext(s, data, size,
 							      al))
                                 return 0;
 			}

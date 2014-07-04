@@ -79,14 +79,14 @@ int NETSCAPE_SPKI_print(BIO *out, NETSCAPE_SPKI *spki)
 	BIO_printf(out,"  Public Key Algorithm: %s\n",
 				(i == NID_undef)?"UNKNOWN":OBJ_nid2ln(i));
 	pkey = X509_PUBKEY_get(spki->spkac->pubkey);
-	if(!pkey) BIO_printf(out, "  Unable to load public key\n");
+	if (!pkey) BIO_printf(out, "  Unable to load public key\n");
 	else
 		{
 		EVP_PKEY_print_public(out, pkey, 4, NULL);
 		EVP_PKEY_free(pkey);
 		}
 	chal = spki->spkac->challenge;
-	if(chal->length)
+	if (chal->length)
 		BIO_printf(out, "  Challenge String: %s\n", chal->data);
 	i=OBJ_obj2nid(spki->sig_algor->algorithm);
 	BIO_printf(out,"  Signature Algorithm: %s",

@@ -367,7 +367,7 @@ void EVP_PKEY_CTX_free(EVP_PKEY_CTX *ctx)
 	if (ctx->peerkey)
 		EVP_PKEY_free(ctx->peerkey);
 #ifndef OPENSSL_NO_ENGINE
-	if(ctx->engine)
+	if (ctx->engine)
 		/* The EVP_PKEY_CTX we used belongs to an ENGINE, release the
 		 * functional reference we held for this reason. */
 		ENGINE_finish(ctx->engine);

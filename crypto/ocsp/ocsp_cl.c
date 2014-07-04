@@ -129,7 +129,7 @@ int OCSP_request_add1_cert(OCSP_REQUEST *req, X509 *cert)
 	if (!sig->certs && !(sig->certs = sk_X509_new_null()))
 		return 0;
 
-	if(!sk_X509_push(sig->certs, cert)) return 0;
+	if (!sk_X509_push(sig->certs, cert)) return 0;
 	CRYPTO_add(&cert->references, 1, CRYPTO_LOCK_X509);
 	return 1;
 	}
@@ -167,7 +167,7 @@ int OCSP_request_sign(OCSP_REQUEST   *req,
 
 	if (!(flags & OCSP_NOCERTS))
 		{
-		if(!OCSP_request_add1_cert(req, signer)) goto err;
+		if (!OCSP_request_add1_cert(req, signer)) goto err;
 		for (i = 0; i < sk_X509_num(certs); i++)
 			{
 			x = sk_X509_value(certs, i);
@@ -262,7 +262,7 @@ int OCSP_single_get0_status(OCSP_SINGLERESP *single, int *reason,
 	{
 	int ret;
 	OCSP_CERTSTATUS *cst;
-	if(!single) return -1;
+	if (!single) return -1;
 	cst = single->certStatus;
 	ret = cst->type;
 	if (ret == V_OCSP_CERTSTATUS_REVOKED)
@@ -271,13 +271,13 @@ int OCSP_single_get0_status(OCSP_SINGLERESP *single, int *reason,
 		if (revtime) *revtime = rev->revocationTime;
 		if (reason) 
 			{
-			if(rev->revocationReason)
+			if (rev->revocationReason)
 				*reason = ASN1_ENUMERATED_get(rev->revocationReason);
 			else *reason = -1;
 			}
 		}
-	if(thisupd) *thisupd = single->thisUpdate;
-	if(nextupd) *nextupd = single->nextUpdate;
+	if (thisupd) *thisupd = single->thisUpdate;
+	if (nextupd) *nextupd = single->nextUpdate;
 	return ret;
 	}
 
@@ -295,10 +295,10 @@ int OCSP_resp_find_status(OCSP_BASICRESP *bs, OCSP_CERTID *id, int *status,
 	OCSP_SINGLERESP *single;
 	i = OCSP_resp_find(bs, id, -1);
 	/* Maybe check for multiple responses and give an error? */
-	if(i < 0) return 0;
+	if (i < 0) return 0;
 	single = OCSP_resp_get0(bs, i);
 	i = OCSP_single_get0_status(single, reason, revtime, thisupd, nextupd);
-	if(status) *status = i;
+	if (status) *status = i;
 	return 1;
 	}
 

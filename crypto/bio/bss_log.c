@@ -172,7 +172,7 @@ static int MS_CALLBACK slg_write(BIO *b, const char *in, int inl)
 		{ 0, "", LOG_ERR } /* The default */
 		};
 
-	if((buf= (char *)malloc(inl+ 1)) == NULL){
+	if ((buf= (char *)malloc(inl+ 1)) == NULL){
 		return (0);
 	}
 	strncpy(buf, in, inl);
@@ -263,7 +263,7 @@ static void xsyslog(BIO *bp, int priority, const char *string)
 	
 static void xcloselog(BIO* bp)
 {
-	if(bp->ptr)
+	if (bp->ptr)
 		DeregisterEventSource((HANDLE)(bp->ptr));
 	bp->ptr= NULL;
 }

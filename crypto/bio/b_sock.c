@@ -184,10 +184,10 @@ int BIO_get_port(const char *str, unsigned short *port_ptr)
 #else
 		s=getservbyname(str,"tcp");
 #endif
-		if(s != NULL)
+		if (s != NULL)
 			*port_ptr=ntohs((unsigned short)s->s_port);
 		CRYPTO_w_unlock(CRYPTO_LOCK_GETSERVBYNAME);
-		if(s == NULL)
+		if (s == NULL)
 			{
 			if (strcmp(str,"http") == 0)
 				*port_ptr=80;
@@ -335,7 +335,7 @@ static void ghbn_free(struct hostent *a)
 	{
 	int i;
 
-	if(a == NULL)
+	if (a == NULL)
 	    return;
 
 	if (a->h_aliases != NULL)
@@ -425,7 +425,7 @@ struct hostent *BIO_gethostbyname(const char *name)
 			ghbn_free(ghbn_cache[lowi].ent); /* XXX not thread-safe */
 		ghbn_cache[lowi].name[0] = '\0';
 
-		if((ret=ghbn_cache[lowi].ent=ghbn_dup(ret)) == NULL)
+		if ((ret=ghbn_cache[lowi].ent=ghbn_dup(ret)) == NULL)
 			{
 			BIOerr(BIO_F_BIO_GETHOSTBYNAME,ERR_R_MALLOC_FAILURE);
 			goto end;
@@ -758,7 +758,7 @@ int BIO_accept(int sock, char **addr)
 		}
 	if (ret == INVALID_SOCKET)
 		{
-		if(BIO_sock_should_retry(ret)) return -2;
+		if (BIO_sock_should_retry(ret)) return -2;
 		SYSerr(SYS_F_ACCEPT,get_last_socket_error());
 		BIOerr(BIO_F_BIO_ACCEPT,BIO_R_ACCEPT_ERROR);
 		goto end;

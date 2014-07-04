@@ -146,7 +146,7 @@ static BIO_ACCEPT *BIO_ACCEPT_new(void)
 
 static void BIO_ACCEPT_free(BIO_ACCEPT *a)
 	{
-	if(a == NULL)
+	if (a == NULL)
 	    return;
 
 	if (a->param_addr != NULL) free(a->param_addr);
@@ -231,7 +231,7 @@ again:
 		i=BIO_accept(c->accept_sock,&(c->addr));
 
 		/* -2 return means we should retry */
-		if(i == -2)
+		if (i == -2)
 			{
 			BIO_set_retry_special(b);
 			b->retry_reason=BIO_RR_ACCEPT;

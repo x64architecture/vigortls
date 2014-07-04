@@ -197,7 +197,7 @@ static int des_init_key(EVP_CIPHER_CTX *ctx, const unsigned char *key,
 	{
 	DES_cblock *deskey = (DES_cblock *)key;
 #ifdef EVP_CHECK_DES_KEY
-	if(DES_set_key_checked(deskey,ctx->cipher_data) != 0)
+	if (DES_set_key_checked(deskey,ctx->cipher_data) != 0)
 		return 0;
 #else
 	DES_set_key_unchecked(deskey,ctx->cipher_data);

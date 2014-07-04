@@ -92,7 +92,7 @@ int PEM_def_callback(char *buf, int num, int w, void *key)
 #else
 	int i,j;
 	const char *prompt;
-	if(key) {
+	if (key) {
 		i=strlen(key);
 		i=(i > num)?num:i;
 		memcpy(buf,key,i);
@@ -189,13 +189,13 @@ static int check_pem(const char *nm, const char *name)
 
 	/* Make PEM_STRING_EVP_PKEY match any private key */
 
-	if(!strcmp(name,PEM_STRING_EVP_PKEY))
+	if (!strcmp(name,PEM_STRING_EVP_PKEY))
 		{
 		int slen;
 		const EVP_PKEY_ASN1_METHOD *ameth;
-		if(!strcmp(nm,PEM_STRING_PKCS8))
+		if (!strcmp(nm,PEM_STRING_PKCS8))
 			return 1;
-		if(!strcmp(nm,PEM_STRING_PKCS8INF))
+		if (!strcmp(nm,PEM_STRING_PKCS8INF))
 			return 1;
 		slen = pem_check_suffix(nm, "PRIVATE KEY"); 
 		if (slen > 0)
@@ -211,7 +211,7 @@ static int check_pem(const char *nm, const char *name)
 		return 0;
 		}
 
-	if(!strcmp(name,PEM_STRING_PARAMETERS))
+	if (!strcmp(name,PEM_STRING_PARAMETERS))
 		{
 		int slen;
 		const EVP_PKEY_ASN1_METHOD *ameth;
@@ -239,31 +239,31 @@ static int check_pem(const char *nm, const char *name)
 
 	/* Permit older strings */
 
-	if(!strcmp(nm,PEM_STRING_X509_OLD) &&
+	if (!strcmp(nm,PEM_STRING_X509_OLD) &&
 		!strcmp(name,PEM_STRING_X509)) return 1;
 
-	if(!strcmp(nm,PEM_STRING_X509_REQ_OLD) &&
+	if (!strcmp(nm,PEM_STRING_X509_REQ_OLD) &&
 		!strcmp(name,PEM_STRING_X509_REQ)) return 1;
 
 	/* Allow normal certs to be read as trusted certs */
-	if(!strcmp(nm,PEM_STRING_X509) &&
+	if (!strcmp(nm,PEM_STRING_X509) &&
 		!strcmp(name,PEM_STRING_X509_TRUSTED)) return 1;
 
-	if(!strcmp(nm,PEM_STRING_X509_OLD) &&
+	if (!strcmp(nm,PEM_STRING_X509_OLD) &&
 		!strcmp(name,PEM_STRING_X509_TRUSTED)) return 1;
 
 	/* Some CAs use PKCS#7 with CERTIFICATE headers */
-	if(!strcmp(nm, PEM_STRING_X509) &&
+	if (!strcmp(nm, PEM_STRING_X509) &&
 		!strcmp(name, PEM_STRING_PKCS7)) return 1;
 
-	if(!strcmp(nm, PEM_STRING_PKCS7_SIGNED) &&
+	if (!strcmp(nm, PEM_STRING_PKCS7_SIGNED) &&
 		!strcmp(name, PEM_STRING_PKCS7)) return 1;
 
 #ifndef OPENSSL_NO_CMS
-	if(!strcmp(nm, PEM_STRING_X509) &&
+	if (!strcmp(nm, PEM_STRING_X509) &&
 		!strcmp(name, PEM_STRING_CMS)) return 1;
 	/* Allow CMS to be read from PKCS#7 headers */
-	if(!strcmp(nm, PEM_STRING_PKCS7) &&
+	if (!strcmp(nm, PEM_STRING_PKCS7) &&
 		!strcmp(name, PEM_STRING_CMS)) return 1;
 #endif
 
@@ -282,12 +282,12 @@ int PEM_bytes_read_bio(unsigned char **pdata, long *plen, char **pnm, const char
 	for (;;)
 		{
 		if (!PEM_read_bio(bp,&nm,&header,&data,&len)) {
-			if(ERR_GET_REASON(ERR_peek_error()) ==
+			if (ERR_GET_REASON(ERR_peek_error()) ==
 				PEM_R_NO_START_LINE)
 				ERR_add_error_data(2, "Expecting: ", name);
 			return 0;
 		}
-		if(check_pem(nm, name)) break;
+		if (check_pem(nm, name)) break;
 		free(nm);
 		free(header);
 		free(data);

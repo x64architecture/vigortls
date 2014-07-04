@@ -100,16 +100,16 @@ static BASIC_CONSTRAINTS *v2i_BASIC_CONSTRAINTS(X509V3_EXT_METHOD *method,
 	BASIC_CONSTRAINTS *bcons=NULL;
 	CONF_VALUE *val;
 	int i;
-	if(!(bcons = BASIC_CONSTRAINTS_new())) {
+	if (!(bcons = BASIC_CONSTRAINTS_new())) {
 		X509V3err(X509V3_F_V2I_BASIC_CONSTRAINTS, ERR_R_MALLOC_FAILURE);
 		return NULL;
 	}
 	for(i = 0; i < sk_CONF_VALUE_num(values); i++) {
 		val = sk_CONF_VALUE_value(values, i);
-		if(!strcmp(val->name, "CA")) {
-			if(!X509V3_get_value_bool(val, &bcons->ca)) goto err;
-		} else if(!strcmp(val->name, "pathlen")) {
-			if(!X509V3_get_value_int(val, &bcons->pathlen)) goto err;
+		if (!strcmp(val->name, "CA")) {
+			if (!X509V3_get_value_bool(val, &bcons->ca)) goto err;
+		} else if (!strcmp(val->name, "pathlen")) {
+			if (!X509V3_get_value_int(val, &bcons->pathlen)) goto err;
 		} else {
 			X509V3err(X509V3_F_V2I_BASIC_CONSTRAINTS, X509V3_R_INVALID_NAME);
 			X509V3_conf_err(val);

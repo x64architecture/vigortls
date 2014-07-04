@@ -659,7 +659,7 @@ typedef unsigned long (*dynamic_v_check_fn)(unsigned long ossl_version);
 #define IMPLEMENT_DYNAMIC_CHECK_FN() \
     extern unsigned long v_check(unsigned long v); \
     extern unsigned long v_check(unsigned long v) { \
-        if(v >= OSSL_DYNAMIC_OLDEST) return OSSL_DYNAMIC_VERSION; \
+        if (v >= OSSL_DYNAMIC_OLDEST) return OSSL_DYNAMIC_VERSION; \
         return 0; }
 
 /* This function is passed the ENGINE structure to initialise with its own
@@ -684,8 +684,8 @@ typedef int (*dynamic_bind_engine)(ENGINE *e, const char *id,
     int bind_engine(ENGINE *e, const char *id, const dynamic_fns *fns); \
     extern \
     int bind_engine(ENGINE *e, const char *id, const dynamic_fns *fns) { \
-        if(ENGINE_get_static_state() == fns->static_state) goto skip_cbs; \
-        if(!CRYPTO_set_mem_functions(fns->mem_fns.malloc_cb, \
+        if (ENGINE_get_static_state() == fns->static_state) goto skip_cbs; \
+        if (!CRYPTO_set_mem_functions(fns->mem_fns.malloc_cb, \
             fns->mem_fns.realloc_cb, fns->mem_fns.free_cb)) \
             return 0; \
         CRYPTO_set_locking_callback(fns->lock_fns.lock_locking_cb); \
@@ -693,11 +693,11 @@ typedef int (*dynamic_bind_engine)(ENGINE *e, const char *id,
         CRYPTO_set_dynlock_create_callback(fns->lock_fns.dynlock_create_cb); \
         CRYPTO_set_dynlock_lock_callback(fns->lock_fns.dynlock_lock_cb); \
         CRYPTO_set_dynlock_destroy_callback(fns->lock_fns.dynlock_destroy_cb); \
-        if(!CRYPTO_set_ex_data_implementation(fns->ex_data_fns)) \
+        if (!CRYPTO_set_ex_data_implementation(fns->ex_data_fns)) \
             return 0; \
-        if(!ERR_set_implementation(fns->err_fns)) return 0; \
+        if (!ERR_set_implementation(fns->err_fns)) return 0; \
     skip_cbs: \
-        if(!fn(e,id)) return 0; \
+        if (!fn(e,id)) return 0; \
         return 1; }
 
 /* If the loading application (or library) and the loaded ENGINE library share

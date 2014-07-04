@@ -70,7 +70,7 @@ int ASN1_bn_print(BIO *bp, const char *number, const BIGNUM *num,
 
 	if (num == NULL) return (1);
 	neg = (BN_is_negative(num))?"-":"";
-	if(!BIO_indent(bp,off,128))
+	if (!BIO_indent(bp,off,128))
 		return 0;
 	if (BN_is_zero(num))
 		{
@@ -101,7 +101,7 @@ int ASN1_bn_print(BIO *bp, const char *number, const BIGNUM *num,
 			{
 			if ((i%15) == 0)
 				{
-				if(BIO_puts(bp,"\n") <= 0
+				if (BIO_puts(bp,"\n") <= 0
 				   || !BIO_indent(bp,off+4,128))
 				    return 0;
 				}

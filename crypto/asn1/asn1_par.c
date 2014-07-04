@@ -428,10 +428,10 @@ const char *ASN1_tag2str(int tag)
 	"UNIVERSALSTRING", "<ASN1 29>", "BMPSTRING"		    /* 28-30 */
 	};
 
-	if((tag == V_ASN1_NEG_INTEGER) || (tag == V_ASN1_NEG_ENUMERATED))
+	if ((tag == V_ASN1_NEG_INTEGER) || (tag == V_ASN1_NEG_ENUMERATED))
 							tag &= ~0x100;
 
-	if(tag < 0 || tag > 30) return "(unknown)";
+	if (tag < 0 || tag > 30) return "(unknown)";
 	return tag2str[tag];
 }
 

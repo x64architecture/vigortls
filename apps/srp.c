@@ -424,7 +424,7 @@ bad:
 	setup_engine(bio_err, engine, 0);
 #endif
 
-	if(!app_passwd(bio_err, passargin, passargout, &passin, &passout))
+	if (!app_passwd(bio_err, passargin, passargout, &passin, &passout))
 		{
 		BIO_printf(bio_err, "Error getting passwords\n");
 		goto err;
@@ -463,7 +463,7 @@ bad:
 					,errorline,configfile);
 			goto err;
 			}
-		if(tofree)
+		if (tofree)
 			{
 			free(tofree);
 			tofree = NULL;
@@ -732,7 +732,7 @@ err:
 	VERBOSE BIO_printf(bio_err,"User errors %d.\n",errors);
 
 	VERBOSE BIO_printf(bio_err,"SRP terminating with code %d.\n",ret);
-	if(tofree)
+	if (tofree)
 		free(tofree);
 	if (ret) ERR_print_errors(bio_err);
 	if (randfile) app_RAND_write_file(randfile, bio_err);

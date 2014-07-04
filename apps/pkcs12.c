@@ -336,22 +336,22 @@ int MAIN(int argc, char **argv)
     e = setup_engine(bio_err, engine, 0);
 #endif
 
-    if(passarg) {
-	if(export_cert) passargout = passarg;
+    if (passarg) {
+	if (export_cert) passargout = passarg;
 	else passargin = passarg;
     }
 
-    if(!app_passwd(bio_err, passargin, passargout, &passin, &passout)) {
+    if (!app_passwd(bio_err, passargin, passargout, &passin, &passout)) {
 	BIO_printf(bio_err, "Error getting passwords\n");
 	goto end;
     }
 
-    if(!cpass) {
-    	if(export_cert) cpass = passout;
+    if (!cpass) {
+    	if (export_cert) cpass = passout;
     	else cpass = passin;
     }
 
-    if(cpass) {
+    if (cpass) {
 	mpass = cpass;
 	noprompt = 1;
     } else {
@@ -359,7 +359,7 @@ int MAIN(int argc, char **argv)
 	mpass = macpass;
     }
 
-    if(export_cert || inrand) {
+    if (export_cert || inrand) {
     	app_RAND_load_file(NULL, bio_err, (inrand != NULL));
         if (inrand != NULL)
 		BIO_printf(bio_err,"%ld semi-random bytes loaded\n",
@@ -398,7 +398,7 @@ int MAIN(int argc, char **argv)
 #ifdef CRYPTO_MDEBUG
     CRYPTO_push_info("read MAC password");
 #endif
-	if(EVP_read_pw_string (macpass, sizeof macpass, "Enter MAC Password:", export_cert))
+	if (EVP_read_pw_string (macpass, sizeof macpass, "Enter MAC Password:", export_cert))
 	{
     	    BIO_printf (bio_err, "Can't read Password\n");
     	    goto end;
@@ -443,7 +443,7 @@ int MAIN(int argc, char **argv)
 #endif
 
 	/* Load in all certs in input file */
-	if(!(options & NOCERTS))
+	if (!(options & NOCERTS))
 		{
 		certs = load_certs(bio_err, infile, FORMAT_PEM, NULL, e,
 							"certificates");
@@ -456,7 +456,7 @@ int MAIN(int argc, char **argv)
 			for(i = 0; i < sk_X509_num(certs); i++)
 				{
 				x = sk_X509_value(certs, i);
-				if(X509_check_private_key(x, key))
+				if (X509_check_private_key(x, key))
 					{
 					ucert = x;
 					/* Zero keyid and alias */
@@ -482,10 +482,10 @@ int MAIN(int argc, char **argv)
 #endif
 
 	/* Add any more certificates asked for */
-	if(certfile)
+	if (certfile)
 		{
 		STACK_OF(X509) *morecerts=NULL;
-		if(!(morecerts = load_certs(bio_err, certfile, FORMAT_PEM,
+		if (!(morecerts = load_certs(bio_err, certfile, FORMAT_PEM,
 					    NULL, e,
 					    "certificates from certfile")))
 			goto export_end;
@@ -557,7 +557,7 @@ int MAIN(int argc, char **argv)
 	CRYPTO_push_info("reading password");
 #endif
 
-	if(!noprompt &&
+	if (!noprompt &&
 		EVP_read_pw_string(pass, sizeof pass, "Enter Export Password:", 1))
 		{
 	    	BIO_printf (bio_err, "Can't read Password\n");
@@ -627,7 +627,7 @@ int MAIN(int argc, char **argv)
 #ifdef CRYPTO_MDEBUG
     CRYPTO_push_info("read import password");
 #endif
-    if(!noprompt && EVP_read_pw_string(pass, sizeof pass, "Enter Import Password:", 0)) {
+    if (!noprompt && EVP_read_pw_string(pass, sizeof pass, "Enter Import Password:", 0)) {
 	BIO_printf (bio_err, "Can't read Password\n");
 	goto end;
     }
@@ -638,14 +638,14 @@ int MAIN(int argc, char **argv)
     if (!twopass) BUF_strlcpy(macpass, pass, sizeof macpass);
 
     if ((options & INFO) && p12->mac) BIO_printf (bio_err, "MAC Iteration %ld\n", p12->mac->iter ? ASN1_INTEGER_get (p12->mac->iter) : 1);
-    if(macver) {
+    if (macver) {
 #ifdef CRYPTO_MDEBUG
     CRYPTO_push_info("verify MAC");
 #endif
 	/* If we enter empty password try no password first */
-	if(!mpass[0] && PKCS12_verify_mac(p12, NULL, 0)) {
+	if (!mpass[0] && PKCS12_verify_mac(p12, NULL, 0)) {
 		/* If mac and crypto pass the same set it to NULL too */
-		if(!twopass) cpass = NULL;
+		if (!twopass) cpass = NULL;
 	} else if (!PKCS12_verify_mac(p12, mpass, -1)) {
 	    BIO_printf (bio_err, "Mac verify error: invalid password?\n");
 	    ERR_print_errors (bio_err);
@@ -671,15 +671,15 @@ int MAIN(int argc, char **argv)
     ret = 0;
  end:
     if (p12) PKCS12_free(p12);
-    if(export_cert || inrand) app_RAND_write_file(NULL, bio_err);
+    if (export_cert || inrand) app_RAND_write_file(NULL, bio_err);
 #ifdef CRYPTO_MDEBUG
     CRYPTO_remove_all_info();
 #endif
     BIO_free(in);
     BIO_free_all(out);
     if (canames) sk_OPENSSL_STRING_free(canames);
-    if(passin) free(passin);
-    if(passout) free(passout);
+    if (passin) free(passin);
+    if (passout) free(passout);
     apps_shutdown();
     OPENSSL_EXIT(ret);
 }
@@ -879,7 +879,7 @@ int cert_load(BIO *in, STACK_OF(X509) *sk)
 #ifdef CRYPTO_MDEBUG
 	CRYPTO_pop_info();
 #endif
-	if(ret) ERR_clear_error();
+	if (ret) ERR_clear_error();
 	return ret;
 }
 
@@ -891,11 +891,11 @@ int print_attribs (BIO *out, STACK_OF(X509_ATTRIBUTE) *attrlst,const char *name)
 	ASN1_TYPE *av;
 	char *value;
 	int i, attr_nid;
-	if(!attrlst) {
+	if (!attrlst) {
 		BIO_printf(out, "%s: <No Attributes>\n", name);
 		return 1;
 	}
-	if(!sk_X509_ATTRIBUTE_num(attrlst)) {
+	if (!sk_X509_ATTRIBUTE_num(attrlst)) {
 		BIO_printf(out, "%s: <Empty Attributes>\n", name);
 		return 1;
 	}
@@ -904,12 +904,12 @@ int print_attribs (BIO *out, STACK_OF(X509_ATTRIBUTE) *attrlst,const char *name)
 		attr = sk_X509_ATTRIBUTE_value(attrlst, i);
 		attr_nid = OBJ_obj2nid(attr->object);
 		BIO_printf(out, "    ");
-		if(attr_nid == NID_undef) {
+		if (attr_nid == NID_undef) {
 			i2a_ASN1_OBJECT (out, attr->object);
 			BIO_printf(out, ": ");
 		} else BIO_printf(out, "%s: ", OBJ_nid2ln(attr_nid));
 
-		if(sk_ASN1_TYPE_num(attr->value.set)) {
+		if (sk_ASN1_TYPE_num(attr->value.set)) {
 			av = sk_ASN1_TYPE_value(attr->value.set, 0);
 			switch(av->type) {
 				case V_ASN1_BMPSTRING:

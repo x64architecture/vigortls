@@ -89,7 +89,7 @@ X509_ATTRIBUTE *CMS_signed_delete_attr(CMS_SignerInfo *si, int loc)
 
 int CMS_signed_add1_attr(CMS_SignerInfo *si, X509_ATTRIBUTE *attr)
 {
-	if(X509at_add1_attr(&si->signedAttrs, attr)) return 1;
+	if (X509at_add1_attr(&si->signedAttrs, attr)) return 1;
 	return 0;
 }
 
@@ -97,7 +97,7 @@ int CMS_signed_add1_attr_by_OBJ(CMS_SignerInfo *si,
 			const ASN1_OBJECT *obj, int type,
 			const void *bytes, int len)
 {
-	if(X509at_add1_attr_by_OBJ(&si->signedAttrs, obj,
+	if (X509at_add1_attr_by_OBJ(&si->signedAttrs, obj,
 				type, bytes, len)) return 1;
 	return 0;
 }
@@ -106,7 +106,7 @@ int CMS_signed_add1_attr_by_NID(CMS_SignerInfo *si,
 			int nid, int type,
 			const void *bytes, int len)
 {
-	if(X509at_add1_attr_by_NID(&si->signedAttrs, nid,
+	if (X509at_add1_attr_by_NID(&si->signedAttrs, nid,
 				type, bytes, len)) return 1;
 	return 0;
 }
@@ -115,7 +115,7 @@ int CMS_signed_add1_attr_by_txt(CMS_SignerInfo *si,
 			const char *attrname, int type,
 			const void *bytes, int len)
 {
-	if(X509at_add1_attr_by_txt(&si->signedAttrs, attrname,
+	if (X509at_add1_attr_by_txt(&si->signedAttrs, attrname,
 				type, bytes, len)) return 1;
 	return 0;
 }
@@ -155,7 +155,7 @@ X509_ATTRIBUTE *CMS_unsigned_delete_attr(CMS_SignerInfo *si, int loc)
 
 int CMS_unsigned_add1_attr(CMS_SignerInfo *si, X509_ATTRIBUTE *attr)
 {
-	if(X509at_add1_attr(&si->unsignedAttrs, attr)) return 1;
+	if (X509at_add1_attr(&si->unsignedAttrs, attr)) return 1;
 	return 0;
 }
 
@@ -163,7 +163,7 @@ int CMS_unsigned_add1_attr_by_OBJ(CMS_SignerInfo *si,
 			const ASN1_OBJECT *obj, int type,
 			const void *bytes, int len)
 {
-	if(X509at_add1_attr_by_OBJ(&si->unsignedAttrs, obj,
+	if (X509at_add1_attr_by_OBJ(&si->unsignedAttrs, obj,
 				type, bytes, len)) return 1;
 	return 0;
 }
@@ -172,7 +172,7 @@ int CMS_unsigned_add1_attr_by_NID(CMS_SignerInfo *si,
 			int nid, int type,
 			const void *bytes, int len)
 {
-	if(X509at_add1_attr_by_NID(&si->unsignedAttrs, nid,
+	if (X509at_add1_attr_by_NID(&si->unsignedAttrs, nid,
 				type, bytes, len)) return 1;
 	return 0;
 }
@@ -181,7 +181,7 @@ int CMS_unsigned_add1_attr_by_txt(CMS_SignerInfo *si,
 			const char *attrname, int type,
 			const void *bytes, int len)
 {
-	if(X509at_add1_attr_by_txt(&si->unsignedAttrs, attrname,
+	if (X509at_add1_attr_by_txt(&si->unsignedAttrs, attrname,
 				type, bytes, len)) return 1;
 	return 0;
 }

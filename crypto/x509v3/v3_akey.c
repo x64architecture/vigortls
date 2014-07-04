@@ -84,14 +84,14 @@ static STACK_OF(CONF_VALUE) *i2v_AUTHORITY_KEYID(X509V3_EXT_METHOD *method,
 	     AUTHORITY_KEYID *akeyid, STACK_OF(CONF_VALUE) *extlist)
 {
 	char *tmp;
-	if(akeyid->keyid) {
+	if (akeyid->keyid) {
 		tmp = hex_to_string(akeyid->keyid->data, akeyid->keyid->length);
 		X509V3_add_value("keyid", tmp, &extlist);
 		free(tmp);
 	}
-	if(akeyid->issuer) 
+	if (akeyid->issuer) 
 		extlist = i2v_GENERAL_NAMES(NULL, akeyid->issuer, extlist);
-	if(akeyid->serial) {
+	if (akeyid->serial) {
 		tmp = hex_to_string(akeyid->serial->data,
 						 akeyid->serial->length);
 		X509V3_add_value("serial", tmp, &extlist);
@@ -126,16 +126,16 @@ static AUTHORITY_KEYID *v2i_AUTHORITY_KEYID(X509V3_EXT_METHOD *method,
 	for(i = 0; i < sk_CONF_VALUE_num(values); i++)
 		{
 		cnf = sk_CONF_VALUE_value(values, i);
-		if(!strcmp(cnf->name, "keyid"))
+		if (!strcmp(cnf->name, "keyid"))
 			{
 			keyid = 1;
-			if(cnf->value && !strcmp(cnf->value, "always"))
+			if (cnf->value && !strcmp(cnf->value, "always"))
 				keyid = 2;
 			}
-		else if(!strcmp(cnf->name, "issuer"))
+		else if (!strcmp(cnf->name, "issuer"))
 			{
 			issuer = 1;
-			if(cnf->value && !strcmp(cnf->value, "always"))
+			if (cnf->value && !strcmp(cnf->value, "always"))
 				issuer = 2;
 			}
 		else
@@ -146,9 +146,9 @@ static AUTHORITY_KEYID *v2i_AUTHORITY_KEYID(X509V3_EXT_METHOD *method,
 			}
 		}
 
-	if(!ctx || !ctx->issuer_cert)
+	if (!ctx || !ctx->issuer_cert)
 		{
-		if(ctx && (ctx->flags==CTX_TEST))
+		if (ctx && (ctx->flags==CTX_TEST))
 			return AUTHORITY_KEYID_new();
 		X509V3err(X509V3_F_V2I_AUTHORITY_KEYID,X509V3_R_NO_ISSUER_CERTIFICATE);
 		return NULL;
@@ -156,34 +156,34 @@ static AUTHORITY_KEYID *v2i_AUTHORITY_KEYID(X509V3_EXT_METHOD *method,
 
 	cert = ctx->issuer_cert;
 
-	if(keyid)
+	if (keyid)
 		{
 		i = X509_get_ext_by_NID(cert, NID_subject_key_identifier, -1);
-		if((i >= 0)  && (ext = X509_get_ext(cert, i)))
+		if ((i >= 0)  && (ext = X509_get_ext(cert, i)))
 			ikeyid = X509V3_EXT_d2i(ext);
-		if(keyid==2 && !ikeyid)
+		if (keyid==2 && !ikeyid)
 			{
 			X509V3err(X509V3_F_V2I_AUTHORITY_KEYID,X509V3_R_UNABLE_TO_GET_ISSUER_KEYID);
 			return NULL;
 			}
 		}
 
-	if((issuer && !ikeyid) || (issuer == 2))
+	if ((issuer && !ikeyid) || (issuer == 2))
 		{
 		isname = X509_NAME_dup(X509_get_issuer_name(cert));
 		serial = M_ASN1_INTEGER_dup(X509_get_serialNumber(cert));
-		if(!isname || !serial)
+		if (!isname || !serial)
 			{
 			X509V3err(X509V3_F_V2I_AUTHORITY_KEYID,X509V3_R_UNABLE_TO_GET_ISSUER_DETAILS);
 			goto err;
 			}
 		}
 
-	if(!(akeyid = AUTHORITY_KEYID_new())) goto err;
+	if (!(akeyid = AUTHORITY_KEYID_new())) goto err;
 
-	if(isname)
+	if (isname)
 		{
-		if(!(gens = sk_GENERAL_NAME_new_null())
+		if (!(gens = sk_GENERAL_NAME_new_null())
 			|| !(gen = GENERAL_NAME_new())
 			|| !sk_GENERAL_NAME_push(gens, gen))
 			{

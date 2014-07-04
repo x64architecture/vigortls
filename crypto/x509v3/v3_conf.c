@@ -132,31 +132,31 @@ static X509_EXTENSION *do_ext_nconf(CONF *conf, X509V3_CTX *ctx, int ext_nid,
 	/* Now get internal extension representation based on type */
 	if (method->v2i)
 		{
-		if(*value == '@') nval = NCONF_get_section(conf, value + 1);
+		if (*value == '@') nval = NCONF_get_section(conf, value + 1);
 		else nval = X509V3_parse_list(value);
-		if(sk_CONF_VALUE_num(nval) <= 0)
+		if (sk_CONF_VALUE_num(nval) <= 0)
 			{
 			X509V3err(X509V3_F_DO_EXT_NCONF,X509V3_R_INVALID_EXTENSION_STRING);
 			ERR_add_error_data(4, "name=", OBJ_nid2sn(ext_nid), ",section=", value);
 			return NULL;
 			}
 		ext_struc = method->v2i(method, ctx, nval);
-		if(*value != '@') sk_CONF_VALUE_pop_free(nval,
+		if (*value != '@') sk_CONF_VALUE_pop_free(nval,
 							 X509V3_conf_free);
-		if(!ext_struc) return NULL;
+		if (!ext_struc) return NULL;
 		}
-	else if(method->s2i)
+	else if (method->s2i)
 		{
-		if(!(ext_struc = method->s2i(method, ctx, value))) return NULL;
+		if (!(ext_struc = method->s2i(method, ctx, value))) return NULL;
 		}
-	else if(method->r2i)
+	else if (method->r2i)
 		{
-		if(!ctx->db || !ctx->db_meth)
+		if (!ctx->db || !ctx->db_meth)
 			{
 			X509V3err(X509V3_F_DO_EXT_NCONF,X509V3_R_NO_CONFIG_DATABASE);
 			return NULL;
 			}
-		if(!(ext_struc = method->r2i(method, ctx, value))) return NULL;
+		if (!(ext_struc = method->r2i(method, ctx, value))) return NULL;
 		}
 	else
 		{
@@ -166,7 +166,7 @@ static X509_EXTENSION *do_ext_nconf(CONF *conf, X509V3_CTX *ctx, int ext_nid,
 		}
 
 	ext  = do_ext_i2d(method, ext_nid, crit, ext_struc);
-	if(method->it) ASN1_item_free(ext_struc, ASN1_ITEM_ptr(method->it));
+	if (method->it) ASN1_item_free(ext_struc, ASN1_ITEM_ptr(method->it));
 	else method->ext_free(ext_struc);
 	return ext;
 
@@ -190,7 +190,7 @@ static X509_EXTENSION *do_ext_i2d(const X509V3_EXT_METHOD *method, int ext_nid,
 		{
 		unsigned char *p;
 		ext_len = method->i2d(ext_struc, NULL);
-		if(!(ext_der = malloc(ext_len))) goto merr;
+		if (!(ext_der = malloc(ext_len))) goto merr;
 		p = ext_der;
 		method->i2d(ext_struc, &p);
 		}
@@ -300,7 +300,7 @@ static X509_EXTENSION *v3_generic_extension(const char *ext, char *value,
 	err:
 	ASN1_OBJECT_free(obj);
 	M_ASN1_OCTET_STRING_free(oct);
-	if(ext_der) free(ext_der);
+	if (ext_der) free(ext_der);
 	return extension;
 
 	}
@@ -384,7 +384,7 @@ int X509V3_EXT_REQ_add_nconf(CONF *conf, X509V3_CTX *ctx, char *section,
 
 char * X509V3_get_string(X509V3_CTX *ctx, char *name, char *section)
 	{
-	if(!ctx->db || !ctx->db_meth || !ctx->db_meth->get_string)
+	if (!ctx->db || !ctx->db_meth || !ctx->db_meth->get_string)
 		{
 		X509V3err(X509V3_F_X509V3_GET_STRING,X509V3_R_OPERATION_NOT_DEFINED);
 		return NULL;
@@ -396,7 +396,7 @@ char * X509V3_get_string(X509V3_CTX *ctx, char *name, char *section)
 
 STACK_OF(CONF_VALUE) * X509V3_get_section(X509V3_CTX *ctx, char *section)
 	{
-	if(!ctx->db || !ctx->db_meth || !ctx->db_meth->get_section)
+	if (!ctx->db || !ctx->db_meth || !ctx->db_meth->get_section)
 		{
 		X509V3err(X509V3_F_X509V3_GET_SECTION,X509V3_R_OPERATION_NOT_DEFINED);
 		return NULL;

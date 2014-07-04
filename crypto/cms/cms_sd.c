@@ -305,7 +305,7 @@ CMS_SignerInfo *CMS_add1_signer(CMS_ContentInfo *cms,
 	CMS_SignerInfo *si = NULL;
 	X509_ALGOR *alg;
 	int i, type;
-	if(!X509_check_private_key(signer, pk))
+	if (!X509_check_private_key(signer, pk))
 		{
 		CMSerr(CMS_F_CMS_ADD1_SIGNER,
 			CMS_R_PRIVATE_KEY_DOES_NOT_MATCH_CERTIFICATE);
@@ -732,7 +732,7 @@ int CMS_SignerInfo_sign(CMS_SignerInfo *si)
 
 	alen = ASN1_item_i2d((ASN1_VALUE *)si->signedAttrs,&abuf,
 				ASN1_ITEM_rptr(CMS_Attributes_Sign));
-	if(!abuf)
+	if (!abuf)
 		goto err;
 	if (EVP_DigestSignUpdate(&mctx, abuf, alen) <= 0)
 		goto err;
@@ -740,7 +740,7 @@ int CMS_SignerInfo_sign(CMS_SignerInfo *si)
 		goto err;
 	free(abuf);
 	abuf = malloc(siglen);
-	if(!abuf)
+	if (!abuf)
 		goto err;
 	if (EVP_DigestSignFinal(&mctx, abuf, &siglen) <= 0)
 		goto err;
@@ -789,7 +789,7 @@ int CMS_SignerInfo_verify(CMS_SignerInfo *si)
 
 	alen = ASN1_item_i2d((ASN1_VALUE *)si->signedAttrs,&abuf,
 				ASN1_ITEM_rptr(CMS_Attributes_Verify));
-	if(!abuf)
+	if (!abuf)
 		goto err;
 	r = EVP_DigestVerifyUpdate(&mctx, abuf, alen);
 	free(abuf);

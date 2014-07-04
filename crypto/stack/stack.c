@@ -107,7 +107,7 @@ _STACK *sk_dup(_STACK *sk)
 	ret->comp=sk->comp;
 	return (ret);
 err:
-	if(ret)
+	if (ret)
 		sk_free(ret);
 	return (NULL);
 	}
@@ -134,7 +134,7 @@ _STACK *sk_new(int (*c)(const void *, const void *))
 	ret->sorted=0;
 	return (ret);
 err:
-	if(ret)
+	if (ret)
 		free(ret);
 	return (NULL);
 	}
@@ -143,7 +143,7 @@ int sk_insert(_STACK *st, void *data, int loc)
 	{
 	char **s;
 
-	if(st == NULL) return 0;
+	if (st == NULL) return 0;
 	if (st->num_alloc <= st->num+1)
 		{
 		s=realloc((char *)st->data,
@@ -192,7 +192,7 @@ void *sk_delete(_STACK *st, int loc)
 	char *ret;
 	int i,j;
 
-	if(!st || (loc < 0) || (loc >= st->num)) return NULL;
+	if (!st || (loc < 0) || (loc >= st->num)) return NULL;
 
 	ret=st->data[loc];
 	if (loc != st->num-1)
@@ -215,7 +215,7 @@ static int internal_find(_STACK *st, void *data, int ret_val_options)
 	const void * const *r;
 	int i;
 
-	if(st == NULL) return -1;
+	if (st == NULL) return -1;
 
 	if (st->comp == NULL)
 		{
@@ -293,19 +293,19 @@ void sk_free(_STACK *st)
 
 int sk_num(const _STACK *st)
 {
-	if(st == NULL) return -1;
+	if (st == NULL) return -1;
 	return st->num;
 }
 
 void *sk_value(const _STACK *st, int i)
 {
-	if(!st || (i < 0) || (i >= st->num)) return NULL;
+	if (!st || (i < 0) || (i >= st->num)) return NULL;
 	return st->data[i];
 }
 
 void *sk_set(_STACK *st, int i, void *value)
 {
-	if(!st || (i < 0) || (i >= st->num)) return NULL;
+	if (!st || (i < 0) || (i >= st->num)) return NULL;
 	return (st->data[i] = value);
 }
 

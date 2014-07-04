@@ -82,7 +82,7 @@ int PKCS12_key_gen_asc(const char *pass, int passlen, unsigned char *salt,
 	unsigned char *unipass;
 	int uniplen;
 
-	if(!pass) {
+	if (!pass) {
 		unipass = NULL;
 		uniplen = 0;
 	} else if (!OPENSSL_asc2uni(pass, passlen, &unipass, &uniplen)) {
@@ -93,7 +93,7 @@ int PKCS12_key_gen_asc(const char *pass, int passlen, unsigned char *salt,
 						 id, iter, n, out, md_type);
 	if (ret <= 0)
 	    return 0;
-	if(unipass) {
+	if (unipass) {
 		OPENSSL_cleanse(unipass, uniplen);	/* Clear password from memory */
 		free(unipass);
 	}
@@ -139,7 +139,7 @@ int PKCS12_key_gen_uni(unsigned char *pass, int passlen, unsigned char *salt,
 	Ai = malloc (u);
 	B = malloc (v + 1);
 	Slen = v * ((saltlen+v-1)/v);
-	if(passlen) Plen = v * ((passlen+v-1)/v);
+	if (passlen) Plen = v * ((passlen+v-1)/v);
 	else Plen = 0;
 	Ilen = Slen + Plen;
 	I = malloc (Ilen);

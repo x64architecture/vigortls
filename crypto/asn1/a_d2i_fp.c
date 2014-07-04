@@ -92,7 +92,7 @@ void *ASN1_d2i_bio(void *(*xnew)(void), d2i_of_void *d2i, BIO *in, void **x)
 	int len;
 
 	len = asn1_d2i_read_bio(in, &b);
-	if(len < 0) goto err;
+	if (len < 0) goto err;
 
 	p=(unsigned char *)b->data;
 	ret=d2i(x,&p,len);
@@ -111,7 +111,7 @@ void *ASN1_item_d2i_bio(const ASN1_ITEM *it, BIO *in, void *x)
 	int len;
 
 	len = asn1_d2i_read_bio(in, &b);
-	if(len < 0) goto err;
+	if (len < 0) goto err;
 
 	p=(const unsigned char *)b->data;
 	ret=ASN1_item_d2i(x,&p,len, it);
