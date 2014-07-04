@@ -348,15 +348,16 @@ int tls12_get_req_sig_algs(SSL *s, unsigned char *p)
 	return (int)slen;
 	}
 
-unsigned char *ssl_add_clienthello_tlsext(SSL *s, unsigned char *p, unsigned char *limit)
-	{
-	int extdatalen=0;
-	unsigned char *ret = p;
+unsigned char *ssl_add_clienthello_tlsext(SSL *s, unsigned char *buf, unsigned char *limit)
+{
+    int extdatalen = 0;
+    unsigned char *orig = buf;
+    unsigned char *ret = buf;
 
 	/* don't add extensions for SSLv3 unless doing secure renegotiation */
 	if (s->client_version == SSL3_VERSION
 					&& !s->s3->send_connection_binding)
-		return p;
+		return orig;
 
 	ret+=2;
 
@@ -405,7 +406,7 @@ unsigned char *ssl_add_clienthello_tlsext(SSL *s, unsigned char *p, unsigned cha
               return NULL;
               }
 
-          if((limit - p - 4 - el) < 0) return NULL;
+          if((limit - ret - 4 - el) < 0) return NULL;
           
           s2n(TLSEXT_TYPE_renegotiate,ret);
           s2n(el,ret);
@@ -630,7 +631,7 @@ unsigned char *ssl_add_clienthello_tlsext(SSL *s, unsigned char *p, unsigned cha
 
                 ssl_add_clienthello_use_srtp_ext(s, 0, &el, 0);
                 
-                if((limit - p - 4 - el) < 0) return NULL;
+                if((limit - ret - 4 - el) < 0) return NULL;
 
                 s2n(TLSEXT_TYPE_use_srtp,ret);
                 s2n(el,ret);
@@ -673,24 +674,25 @@ unsigned char *ssl_add_clienthello_tlsext(SSL *s, unsigned char *p, unsigned cha
 			}
 		}
 
-	if ((extdatalen = ret-p-2)== 0) 
-		return p;
+	if ((extdatalen = ret - orig - 2) == 0)
+		return orig;
 
-	s2n(extdatalen,p);
+	s2n(extdatalen, orig);
 	return ret;
 	}
 
-unsigned char *ssl_add_serverhello_tlsext(SSL *s, unsigned char *p, unsigned char *limit)
-	{
-	int extdatalen=0;
-	unsigned char *ret = p;
+unsigned char *ssl_add_serverhello_tlsext(SSL *s, unsigned char *buf, unsigned char *limit)
+{
+    int extdatalen = 0;
+    unsigned char *orig = buf;
+    unsigned char *ret = buf;
 #ifndef OPENSSL_NO_NEXTPROTONEG
-	int next_proto_neg_seen;
+    int next_proto_neg_seen;
 #endif
 
 	/* don't add extensions for SSLv3, unless doing secure renegotiation */
 	if (s->version == SSL3_VERSION && !s->s3->send_connection_binding)
-		return p;
+		return orig;
 	
 	ret+=2;
 	if (ret>=limit) return NULL; /* this really never occurs, but ... */
@@ -713,7 +715,7 @@ unsigned char *ssl_add_serverhello_tlsext(SSL *s, unsigned char *p, unsigned cha
               return NULL;
               }
 
-          if((limit - p - 4 - el) < 0) return NULL;
+          if((limit - ret - 4 - el) < 0) return NULL;
           
           s2n(TLSEXT_TYPE_renegotiate,ret);
           s2n(el,ret);
@@ -793,7 +795,7 @@ unsigned char *ssl_add_serverhello_tlsext(SSL *s, unsigned char *p, unsigned cha
 
                 ssl_add_serverhello_use_srtp_ext(s, 0, &el, 0);
                 
-                if((limit - p - 4 - el) < 0) return NULL;
+                if((limit - ret - 4 - el) < 0) return NULL;
 
                 s2n(TLSEXT_TYPE_use_srtp,ret);
                 s2n(el,ret);
@@ -844,10 +846,10 @@ unsigned char *ssl_add_serverhello_tlsext(SSL *s, unsigned char *p, unsigned cha
 		}
 #endif
 
-	if ((extdatalen = ret-p-2)== 0) 
-		return p;
+	if ((extdatalen = ret-orig-2)== 0)
+		return orig;
 
-	s2n(extdatalen,p);
+	s2n(extdatalen, orig);
 	return ret;
 	}
 
