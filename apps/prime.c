@@ -71,75 +71,75 @@ int MAIN(int argc, char **argv)
     apps_startup();
 
     if (bio_err == NULL)
-	if ((bio_err=BIO_new(BIO_s_file())) != NULL)
-	    BIO_set_fp(bio_err,stderr,BIO_NOCLOSE|BIO_FP_TEXT);
+    if ((bio_err=BIO_new(BIO_s_file())) != NULL)
+        BIO_set_fp(bio_err,stderr,BIO_NOCLOSE|BIO_FP_TEXT);
 
     --argc;
     ++argv;
     while (argc >= 1 && **argv == '-')
-	{
-	if (!strcmp(*argv,"-hex"))
-	    hex=1;
-	else if (!strcmp(*argv,"-generate"))
-	    generate=1;
-	else if (!strcmp(*argv,"-bits"))
-	    if (--argc < 1)
-		goto bad;
-	    else
-		bits=atoi(*++argv);
-	else if (!strcmp(*argv,"-safe"))
-	    safe=1;
-	else if (!strcmp(*argv,"-checks"))
-	    if (--argc < 1)
-		goto bad;
-	    else
-		checks=atoi(*++argv);
-	else
-	    {
-	    BIO_printf(bio_err,"Unknown option '%s'\n",*argv);
-	    goto bad;
-	    }
-	--argc;
-	++argv;
-	}
+    {
+    if (!strcmp(*argv,"-hex"))
+        hex=1;
+    else if (!strcmp(*argv,"-generate"))
+        generate=1;
+    else if (!strcmp(*argv,"-bits"))
+        if (--argc < 1)
+        goto bad;
+        else
+        bits=atoi(*++argv);
+    else if (!strcmp(*argv,"-safe"))
+        safe=1;
+    else if (!strcmp(*argv,"-checks"))
+        if (--argc < 1)
+        goto bad;
+        else
+        checks=atoi(*++argv);
+    else
+        {
+        BIO_printf(bio_err,"Unknown option '%s'\n",*argv);
+        goto bad;
+        }
+    --argc;
+    ++argv;
+    }
 
     if (argv[0] == NULL && !generate)
-	{
-	BIO_printf(bio_err,"No prime specified\n");
-	goto bad;
-	}
+    {
+    BIO_printf(bio_err,"No prime specified\n");
+    goto bad;
+    }
 
     if ((bio_out=BIO_new(BIO_s_file())) != NULL)
-	{
-	BIO_set_fp(bio_out,stdout,BIO_NOCLOSE);
-	}
+    {
+    BIO_set_fp(bio_out,stdout,BIO_NOCLOSE);
+    }
 
     if (generate)
-	{
-	char *s;
+    {
+    char *s;
 
-	if (!bits)
-	    {
-	    BIO_printf(bio_err,"Specifiy the number of bits.\n");
-	    return 1;
-	    }
-	bn=BN_new();
-	BN_generate_prime_ex(bn,bits,safe,NULL,NULL,NULL);
-	s=hex ? BN_bn2hex(bn) : BN_bn2dec(bn);
-	BIO_printf(bio_out,"%s\n",s);
-	free(s);
-	}
+    if (!bits)
+        {
+        BIO_printf(bio_err,"Specifiy the number of bits.\n");
+        return 1;
+        }
+    bn=BN_new();
+    BN_generate_prime_ex(bn,bits,safe,NULL,NULL,NULL);
+    s=hex ? BN_bn2hex(bn) : BN_bn2dec(bn);
+    BIO_printf(bio_out,"%s\n",s);
+    free(s);
+    }
     else
-	{
-	if (hex)
-	    BN_hex2bn(&bn,argv[0]);
-	else
-	    BN_dec2bn(&bn,argv[0]);
+    {
+    if (hex)
+        BN_hex2bn(&bn,argv[0]);
+    else
+        BN_dec2bn(&bn,argv[0]);
 
-	BN_print(bio_out,bn);
-	BIO_printf(bio_out," is %sprime\n",
-		   BN_is_prime_ex(bn,checks,NULL,NULL) ? "" : "not ");
-	}
+    BN_print(bio_out,bn);
+    BIO_printf(bio_out," is %sprime\n",
+           BN_is_prime_ex(bn,checks,NULL,NULL) ? "" : "not ");
+    }
 
     BN_free(bn);
     BIO_free_all(bio_out);

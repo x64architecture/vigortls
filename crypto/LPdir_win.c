@@ -54,54 +54,54 @@ const char *LP_find_file(LP_DIR_CTX **ctx, const char *directory)
     {
       *ctx = (LP_DIR_CTX *)malloc(sizeof(LP_DIR_CTX));
       if (*ctx == NULL)
-	{
-	  errno = ENOMEM;
-	  return 0;
-	}
+    {
+      errno = ENOMEM;
+      return 0;
+    }
       memset(*ctx, '\0', sizeof(LP_DIR_CTX));
 
       if (sizeof(TCHAR) != sizeof(char))
-	{
-	  TCHAR *wdir = NULL;
-	  /* len_0 denotes string length *with* trailing 0 */ 
-	  size_t index = 0,len_0 = strlen(directory) + 1;
+    {
+      TCHAR *wdir = NULL;
+      /* len_0 denotes string length *with* trailing 0 */ 
+      size_t index = 0,len_0 = strlen(directory) + 1;
 
-	  wdir = (TCHAR *)malloc(len_0 * sizeof(TCHAR));
-	  if (wdir == NULL)
-	    {
-	      free(*ctx);
-	      *ctx = NULL;
-	      errno = ENOMEM;
-	      return 0;
-	    }
+      wdir = (TCHAR *)malloc(len_0 * sizeof(TCHAR));
+      if (wdir == NULL)
+        {
+          free(*ctx);
+          *ctx = NULL;
+          errno = ENOMEM;
+          return 0;
+        }
 
 #ifdef LP_MULTIBYTE_AVAILABLE
-	  if (!MultiByteToWideChar(CP_ACP, 0, directory, len_0, (WCHAR *)wdir, len_0))
+      if (!MultiByteToWideChar(CP_ACP, 0, directory, len_0, (WCHAR *)wdir, len_0))
 #endif
-	    for (index = 0; index < len_0; index++)
-	      wdir[index] = (TCHAR)directory[index];
+        for (index = 0; index < len_0; index++)
+          wdir[index] = (TCHAR)directory[index];
 
-	  (*ctx)->handle = FindFirstFile(wdir, &(*ctx)->ctx);
+      (*ctx)->handle = FindFirstFile(wdir, &(*ctx)->ctx);
 
-	  free(wdir);
-	}
+      free(wdir);
+    }
       else
-	(*ctx)->handle = FindFirstFile((TCHAR *)directory, &(*ctx)->ctx);
+    (*ctx)->handle = FindFirstFile((TCHAR *)directory, &(*ctx)->ctx);
 
       if ((*ctx)->handle == INVALID_HANDLE_VALUE)
-	{
-	  free(*ctx);
-	  *ctx = NULL;
-	  errno = EINVAL;
-	  return 0;
-	}
+    {
+      free(*ctx);
+      *ctx = NULL;
+      errno = EINVAL;
+      return 0;
+    }
     }
   else
     {
       if (FindNextFile((*ctx)->handle, &(*ctx)->ctx) == FALSE)
-	{
-	  return 0;
-	}
+    {
+      return 0;
+    }
     }
 
   if (sizeof(TCHAR) != sizeof(char))
@@ -114,14 +114,14 @@ const char *LP_find_file(LP_DIR_CTX **ctx, const char *directory)
 
 #ifdef LP_MULTIBYTE_AVAILABLE
       if (!WideCharToMultiByte(CP_ACP, 0, (WCHAR *)wdir, len_0, (*ctx)->entry_name,
-			       sizeof((*ctx)->entry_name), NULL, 0))
+                   sizeof((*ctx)->entry_name), NULL, 0))
 #endif
-	for (index = 0; index < len_0; index++)
-	  (*ctx)->entry_name[index] = (char)wdir[index];
+    for (index = 0; index < len_0; index++)
+      (*ctx)->entry_name[index] = (char)wdir[index];
     }
   else
     strncpy((*ctx)->entry_name, (const char *)(*ctx)->ctx.cFileName,
-	    sizeof((*ctx)->entry_name)-1);
+        sizeof((*ctx)->entry_name)-1);
 
   (*ctx)->entry_name[sizeof((*ctx)->entry_name)-1] = '\0';
 

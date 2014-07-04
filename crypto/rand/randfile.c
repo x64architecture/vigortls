@@ -77,14 +77,14 @@
 #endif
 
 #ifdef _WIN32
-#define stat	_stat
-#define chmod	_chmod
-#define open	_open
-#define fdopen	_fdopen
+#define stat    _stat
+#define chmod    _chmod
+#define open    _open
+#define fdopen    _fdopen
 #endif
 
 #undef BUFSIZE
-#define BUFSIZE	1024
+#define BUFSIZE    1024
 #define RAND_DATA 1024
 
 /* #define RFILE ".rnd" - defined in ../../e_os.h */
@@ -93,182 +93,182 @@
  * Entropy devices and EGD sockets are handled in rand_unix.c */
 
 int RAND_load_file(const char *file, long bytes)
-	{
-	/* If bytes >= 0, read up to 'bytes' bytes.
-	 * if bytes == -1, read complete file. */
+    {
+    /* If bytes >= 0, read up to 'bytes' bytes.
+     * if bytes == -1, read complete file. */
 
-	MS_STATIC unsigned char buf[BUFSIZE];
+    MS_STATIC unsigned char buf[BUFSIZE];
 #ifndef OPENSSL_NO_POSIX_IO
-	struct stat sb;
+    struct stat sb;
 #endif
-	int i,ret=0,n;
-	FILE *in;
+    int i,ret=0,n;
+    FILE *in;
 
-	if (file == NULL) return (0);
+    if (file == NULL) return (0);
 
 #ifndef OPENSSL_NO_POSIX_IO
-	if (stat(file,&sb) < 0) return (0);
-	RAND_add(&sb,sizeof(sb),0.0);
+    if (stat(file,&sb) < 0) return (0);
+    RAND_add(&sb,sizeof(sb),0.0);
 #endif
-	if (bytes == 0) return (ret);
+    if (bytes == 0) return (ret);
 
-	in=fopen(file,"rb");
+    in=fopen(file,"rb");
 
-	if (in == NULL) goto err;
+    if (in == NULL) goto err;
 #if defined(S_IFBLK) && defined(S_IFCHR) && !defined(OPENSSL_NO_POSIX_IO)
-	if (sb.st_mode & (S_IFBLK | S_IFCHR)) {
-	  /* this file is a device. we don't want read an infinite number
-	   * of bytes from a random device, nor do we want to use buffered
-	   * I/O because we will waste system entropy. 
-	   */
-	  bytes = (bytes == -1) ? 2048 : bytes; /* ok, is 2048 enough? */
+    if (sb.st_mode & (S_IFBLK | S_IFCHR)) {
+      /* this file is a device. we don't want read an infinite number
+       * of bytes from a random device, nor do we want to use buffered
+       * I/O because we will waste system entropy. 
+       */
+      bytes = (bytes == -1) ? 2048 : bytes; /* ok, is 2048 enough? */
 #ifndef OPENSSL_NO_SETVBUF_IONBF
-	  setvbuf(in, NULL, _IONBF, 0); /* don't do buffered reads */
+      setvbuf(in, NULL, _IONBF, 0); /* don't do buffered reads */
 #endif /* ndef OPENSSL_NO_SETVBUF_IONBF */
-	}
+    }
 #endif
-	for (;;)
-		{
-		if (bytes > 0)
-			n = (bytes < BUFSIZE)?(int)bytes:BUFSIZE;
-		else
-			n = BUFSIZE;
-		i=fread(buf,1,n,in);
-		if (i <= 0) break;
-		/* even if n != i, use the full array */
-		RAND_add(buf,n,(double)i);
-		ret+=i;
-		if (bytes > 0)
-			{
-			bytes-=n;
-			if (bytes <= 0) break;
-			}
-		}
-	fclose(in);
-	OPENSSL_cleanse(buf,BUFSIZE);
+    for (;;)
+        {
+        if (bytes > 0)
+            n = (bytes < BUFSIZE)?(int)bytes:BUFSIZE;
+        else
+            n = BUFSIZE;
+        i=fread(buf,1,n,in);
+        if (i <= 0) break;
+        /* even if n != i, use the full array */
+        RAND_add(buf,n,(double)i);
+        ret+=i;
+        if (bytes > 0)
+            {
+            bytes-=n;
+            if (bytes <= 0) break;
+            }
+        }
+    fclose(in);
+    OPENSSL_cleanse(buf,BUFSIZE);
 err:
-	return (ret);
-	}
+    return (ret);
+    }
 
 int RAND_write_file(const char *file)
-	{
-	unsigned char buf[BUFSIZE];
-	int i,ret=0,rand_err=0;
-	FILE *out = NULL;
-	int n;
+    {
+    unsigned char buf[BUFSIZE];
+    int i,ret=0,rand_err=0;
+    FILE *out = NULL;
+    int n;
 #ifndef OPENSSL_NO_POSIX_IO
-	struct stat sb;
-	
-	i=stat(file,&sb);
-	if (i != -1) { 
+    struct stat sb;
+    
+    i=stat(file,&sb);
+    if (i != -1) { 
 #if defined(S_ISBLK) && defined(S_ISCHR)
-	  if (S_ISBLK(sb.st_mode) || S_ISCHR(sb.st_mode)) {
-	    /* this file is a device. we don't write back to it. 
-	     * we "succeed" on the assumption this is some sort 
-	     * of random device. Otherwise attempting to write to 
-	     * and chmod the device causes problems.
-	     */
-	    return (1); 
-	  }
+      if (S_ISBLK(sb.st_mode) || S_ISCHR(sb.st_mode)) {
+        /* this file is a device. we don't write back to it. 
+         * we "succeed" on the assumption this is some sort 
+         * of random device. Otherwise attempting to write to 
+         * and chmod the device causes problems.
+         */
+        return (1); 
+      }
 #endif
-	}
+    }
 #endif
 
 #if defined(O_CREAT) && !defined(OPENSSL_NO_POSIX_IO) && !defined(OPENSSL_SYS_VMS)
-	{
+    {
 #ifndef O_BINARY
 #define O_BINARY 0
 #endif
-	/* chmod(..., 0600) is too late to protect the file,
-	 * permissions should be restrictive from the start */
-	int fd = open(file, O_WRONLY|O_CREAT|O_BINARY, 0600);
-	if (fd != -1)
-		out = fdopen(fd, "wb");
-	}
+    /* chmod(..., 0600) is too late to protect the file,
+     * permissions should be restrictive from the start */
+    int fd = open(file, O_WRONLY|O_CREAT|O_BINARY, 0600);
+    if (fd != -1)
+        out = fdopen(fd, "wb");
+    }
 #endif
 
-	if (out == NULL)
-		out = fopen(file,"wb");
+    if (out == NULL)
+        out = fopen(file,"wb");
 
-	if (out == NULL) goto err;
+    if (out == NULL) goto err;
 
 #ifndef NO_CHMOD
-	chmod(file,0600);
+    chmod(file,0600);
 #endif
-	n=RAND_DATA;
-	for (;;)
-		{
-		i=(n > BUFSIZE)?BUFSIZE:n;
-		n-=BUFSIZE;
-		if (RAND_bytes(buf,i) <= 0)
-			rand_err=1;
-		i=fwrite(buf,1,i,out);
-		if (i <= 0)
-			{
-			ret=0;
-			break;
-			}
-		ret+=i;
-		if (n <= 0) break;
+    n=RAND_DATA;
+    for (;;)
+        {
+        i=(n > BUFSIZE)?BUFSIZE:n;
+        n-=BUFSIZE;
+        if (RAND_bytes(buf,i) <= 0)
+            rand_err=1;
+        i=fwrite(buf,1,i,out);
+        if (i <= 0)
+            {
+            ret=0;
+            break;
+            }
+        ret+=i;
+        if (n <= 0) break;
                 }
 
-	fclose(out);
-	OPENSSL_cleanse(buf,BUFSIZE);
+    fclose(out);
+    OPENSSL_cleanse(buf,BUFSIZE);
 err:
-	return (rand_err ? -1 : ret);
-	}
+    return (rand_err ? -1 : ret);
+    }
 
 const char *RAND_file_name(char *buf, size_t size)
-	{
-	char *s=NULL;
+    {
+    char *s=NULL;
 #ifdef __OpenBSD__
-	struct stat sb;
+    struct stat sb;
 #endif
 
-	if (OPENSSL_issetugid() == 0)
-		s=getenv("RANDFILE");
-	if (s != NULL && *s && strlen(s) + 1 < size)
-		{
-		if (BUF_strlcpy(buf,s,size) >= size)
-			return NULL;
-		}
-	else
-		{
-		if (OPENSSL_issetugid() == 0)
-			s=getenv("HOME");
+    if (OPENSSL_issetugid() == 0)
+        s=getenv("RANDFILE");
+    if (s != NULL && *s && strlen(s) + 1 < size)
+        {
+        if (BUF_strlcpy(buf,s,size) >= size)
+            return NULL;
+        }
+    else
+        {
+        if (OPENSSL_issetugid() == 0)
+            s=getenv("HOME");
 #ifdef DEFAULT_HOME
-		if (s == NULL)
-			{
-			s = DEFAULT_HOME;
-			}
+        if (s == NULL)
+            {
+            s = DEFAULT_HOME;
+            }
 #endif
-		if (s && *s && strlen(s)+strlen(RFILE)+2 < size)
-			{
-			BUF_strlcpy(buf,s,size);
-			BUF_strlcat(buf,"/",size);
-			BUF_strlcat(buf,RFILE,size);
-			}
-		else
-		  	buf[0] = '\0'; /* no file name */
-		}
+        if (s && *s && strlen(s)+strlen(RFILE)+2 < size)
+            {
+            BUF_strlcpy(buf,s,size);
+            BUF_strlcat(buf,"/",size);
+            BUF_strlcat(buf,RFILE,size);
+            }
+        else
+              buf[0] = '\0'; /* no file name */
+        }
 
 #ifdef __OpenBSD__
-	/* given that all random loads just fail if the file can't be 
-	 * seen on a stat, we stat the file we're returning, if it
-	 * fails, use /dev/arandom instead. this allows the user to 
-	 * use their own source for good random data, but defaults
-	 * to something hopefully decent if that isn't available. 
-	 */
+    /* given that all random loads just fail if the file can't be 
+     * seen on a stat, we stat the file we're returning, if it
+     * fails, use /dev/arandom instead. this allows the user to 
+     * use their own source for good random data, but defaults
+     * to something hopefully decent if that isn't available. 
+     */
 
-	if (!buf[0])
-		if (BUF_strlcpy(buf,"/dev/arandom",size) >= size) {
-			return (NULL);
-		}	
-	if (stat(buf,&sb) == -1)
-		if (BUF_strlcpy(buf,"/dev/arandom",size) >= size) {
-			return (NULL);
-		}	
+    if (!buf[0])
+        if (BUF_strlcpy(buf,"/dev/arandom",size) >= size) {
+            return (NULL);
+        }    
+    if (stat(buf,&sb) == -1)
+        if (BUF_strlcpy(buf,"/dev/arandom",size) >= size) {
+            return (NULL);
+        }    
 
 #endif
-	return (buf);
-	}
+    return (buf);
+    }

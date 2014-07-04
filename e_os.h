@@ -73,7 +73,7 @@ extern "C" {
 /* Used to checking reference counts, most while doing perl5 stuff :-) */
 #ifdef REF_PRINT
 #undef REF_PRINT
-#define REF_PRINT(a,b)	fprintf(stderr,"%08X:%4d:%s\n",(int)b,b->references,a)
+#define REF_PRINT(a,b)    fprintf(stderr,"%08X:%4d:%s\n",(int)b,b->references,a)
 #endif
 
 #ifndef DEVRANDOM
@@ -94,7 +94,7 @@ extern "C" {
 /* The following is used because of the small stack in some
  * Microsoft operating systems */
 #if defined(OPENSSL_SYS_MSDOS) && !defined(OPENSSL_SYSNAME_WIN32)
-#  define MS_STATIC	static
+#  define MS_STATIC    static
 #else
 #  define MS_STATIC
 #endif
@@ -114,25 +114,25 @@ extern "C" {
 #endif
 
 #ifdef WIN32
-#define get_last_sys_error()	GetLastError()
-#define clear_sys_error()	SetLastError(0)
+#define get_last_sys_error()    GetLastError()
+#define clear_sys_error()    SetLastError(0)
 #else
-#define get_last_sys_error()	errno
-#define clear_sys_error()	errno=0
+#define get_last_sys_error()    errno
+#define clear_sys_error()    errno=0
 #endif
 
 #if defined(WINDOWS)
-#define get_last_socket_error()	WSAGetLastError()
-#define clear_socket_error()	WSASetLastError(0)
-#define readsocket(s,b,n)	recv((s),(b),(n),0)
-#define writesocket(s,b,n)	send((s),(b),(n),0)
+#define get_last_socket_error()    WSAGetLastError()
+#define clear_socket_error()    WSASetLastError(0)
+#define readsocket(s,b,n)    recv((s),(b),(n),0)
+#define writesocket(s,b,n)    send((s),(b),(n),0)
 #else
-#define get_last_socket_error()	errno
-#define clear_socket_error()	errno=0
-#define ioctlsocket(a,b,c)	ioctl(a,b,c)
-#define closesocket(s)		close(s)
-#define readsocket(s,b,n)	read((s),(b),(n))
-#define writesocket(s,b,n)	write((s),(b),(n))
+#define get_last_socket_error()    errno
+#define clear_socket_error()    errno=0
+#define ioctlsocket(a,b,c)    ioctl(a,b,c)
+#define closesocket(s)        close(s)
+#define readsocket(s,b,n)    read((s),(b),(n))
+#define writesocket(s,b,n)    write((s),(b),(n))
 #endif
 
 #define MS_CALLBACK
@@ -141,11 +141,11 @@ extern "C" {
 #if (defined(WINDOWS) || defined(MSDOS))
 
 #  ifndef S_IFDIR
-#    define S_IFDIR	_S_IFDIR
+#    define S_IFDIR    _S_IFDIR
 #  endif
 
 #  ifndef S_IFMT
-#    define S_IFMT	_S_IFMT
+#    define S_IFMT    _S_IFMT
 #  endif
 
 #  if !defined(WINNT)
@@ -156,19 +156,19 @@ extern "C" {
 #  ifdef WINDOWS
 #    if !defined(_WIN32_WCE) && !defined(_WIN32_WINNT)
        /*
-	* Defining _WIN32_WINNT here in e_os.h implies certain "discipline."
-	* Most notably we ought to check for availability of each specific
-	* routine with GetProcAddress() and/or guard NT-specific calls with
-	* GetVersion() < 0x80000000. One can argue that in latter "or" case
-	* we ought to /DELAYLOAD some .DLLs in order to protect ourselves
-	* against run-time link errors. This doesn't seem to be necessary,
-	* because it turned out that already Windows 95, first non-NT Win32
-	* implementation, is equipped with at least NT 3.51 stubs, dummy
-	* routines with same name, but which do nothing. Meaning that it's
-	* apparently sufficient to guard "vanilla" NT calls with GetVersion
-	* alone, while NT 4.0 and above interfaces ought to be linked with
-	* GetProcAddress at run-time.
-	*/
+    * Defining _WIN32_WINNT here in e_os.h implies certain "discipline."
+    * Most notably we ought to check for availability of each specific
+    * routine with GetProcAddress() and/or guard NT-specific calls with
+    * GetVersion() < 0x80000000. One can argue that in latter "or" case
+    * we ought to /DELAYLOAD some .DLLs in order to protect ourselves
+    * against run-time link errors. This doesn't seem to be necessary,
+    * because it turned out that already Windows 95, first non-NT Win32
+    * implementation, is equipped with at least NT 3.51 stubs, dummy
+    * routines with same name, but which do nothing. Meaning that it's
+    * apparently sufficient to guard "vanilla" NT calls with GetVersion
+    * alone, while NT 4.0 and above interfaces ought to be linked with
+    * GetProcAddress at run-time.
+    */
 #      define _WIN32_WINNT 0x0600
 #    endif
 #    if !defined(OPENSSL_NO_SOCK) && defined(_WIN32_WINNT)
@@ -192,11 +192,11 @@ extern "C" {
 #      define strlen(s) _strlen31(s)
 /* cut strings to 2GB */
 static unsigned int _strlen31(const char *str)
-	{
-	unsigned int len=0;
-	while (*str && len<0x80000000U) str++, len++;
-	return len&0x7FFFFFFF;
-	}
+    {
+    unsigned int len=0;
+    while (*str && len<0x80000000U) str++, len++;
+    return len&0x7FFFFFFF;
+    }
 #    endif
 #    include <malloc.h>
 #    if defined(_MSC_VER) && _MSC_VER<=1200 && defined(_MT) && defined(isspace)
@@ -223,8 +223,8 @@ static unsigned int _strlen31(const char *str)
          /* pre-1300 has __p__iob(), but it's available only in msvcrt.lib,
           * or in other words with /MD. Declaring implicit import, i.e.
           * with _imp_ prefix, works correctly with all compiler options,
-	  * but without /MD results in LINK warning LNK4049:
-	  * 'locally defined symbol "__iob" imported'.
+      * but without /MD results in LINK warning LNK4049:
+      * 'locally defined symbol "__iob" imported'.
           */
          extern FILE *_imp___iob;
 #        define stdin  (&_imp___iob[0])
@@ -239,18 +239,18 @@ static unsigned int _strlen31(const char *str)
 #  define EXIT(n) exit(n)
 #  define LIST_SEPARATOR_CHAR ';'
 #  ifndef X_OK
-#    define X_OK	0
+#    define X_OK    0
 #  endif
 #  ifndef W_OK
-#    define W_OK	2
+#    define W_OK    2
 #  endif
 #  ifndef R_OK
-#    define R_OK	4
+#    define R_OK    4
 #  endif
-#  define OPENSSL_CONF	"openssl.cnf"
-#  define SSLEAY_CONF	OPENSSL_CONF
-#  define NUL_DEV	"nul"
-#  define RFILE		".rnd"
+#  define OPENSSL_CONF    "openssl.cnf"
+#  define SSLEAY_CONF    OPENSSL_CONF
+#  define NUL_DEV    "nul"
+#  define RFILE        ".rnd"
 #  define DEFAULT_HOME  "C:"
 
 /* Avoid Windows 8 SDK GetVersion deprecated problems */
@@ -271,15 +271,15 @@ static unsigned int _strlen31(const char *str)
 #      include <sys/types.h>
 #    endif
 
-#    define OPENSSL_CONF	"openssl.cnf"
-#    define SSLEAY_CONF		OPENSSL_CONF
-#    define RFILE		".rnd"
+#    define OPENSSL_CONF    "openssl.cnf"
+#    define SSLEAY_CONF        OPENSSL_CONF
+#    define RFILE        ".rnd"
 #    define LIST_SEPARATOR_CHAR ':'
-#    define NUL_DEV		"/dev/null"
-#    define EXIT(n)		exit(n)
+#    define NUL_DEV        "/dev/null"
+#    define EXIT(n)        exit(n)
 #  endif
 
-#  define SSLeay_getpid()	getpid()
+#  define SSLeay_getpid()    getpid()
 
 #endif
 
@@ -291,10 +291,10 @@ static unsigned int _strlen31(const char *str)
       /* windows world */
 
 #    ifdef OPENSSL_NO_SOCK
-#      define SSLeay_Write(a,b,c)	(-1)
-#      define SSLeay_Read(a,b,c)	(-1)
-#      define SHUTDOWN(fd)		close(fd)
-#      define SHUTDOWN2(fd)		close(fd)
+#      define SSLeay_Write(a,b,c)    (-1)
+#      define SSLeay_Read(a,b,c)    (-1)
+#      define SHUTDOWN(fd)        close(fd)
+#      define SHUTDOWN2(fd)        close(fd)
 #    elif !defined(__DJGPP__)
 #      if !defined(IPPROTO_IP)
          /* winsock[2].h was included already? */
@@ -312,18 +312,18 @@ static unsigned int _strlen31(const char *str)
  * the value constitutes an index in per-process table of limited size
  * and not a real pointer.
  */
-#        define socket(d,t,p)	((int)socket(d,t,p))
-#        define accept(s,f,l)	((int)accept(s,f,l))
+#        define socket(d,t,p)    ((int)socket(d,t,p))
+#        define accept(s,f,l)    ((int)accept(s,f,l))
 #      endif
-#      define SSLeay_Write(a,b,c)	send((a),(b),(c),0)
-#      define SSLeay_Read(a,b,c)	recv((a),(b),(c),0)
-#      define SHUTDOWN(fd)		{ shutdown((fd),0); closesocket(fd); }
-#      define SHUTDOWN2(fd)		{ shutdown((fd),2); closesocket(fd); }
+#      define SSLeay_Write(a,b,c)    send((a),(b),(c),0)
+#      define SSLeay_Read(a,b,c)    recv((a),(b),(c),0)
+#      define SHUTDOWN(fd)        { shutdown((fd),0); closesocket(fd); }
+#      define SHUTDOWN2(fd)        { shutdown((fd),2); closesocket(fd); }
 #    else
-#      define SSLeay_Write(a,b,c)	write_s(a,b,c,0)
-#      define SSLeay_Read(a,b,c)	read_s(a,b,c)
-#      define SHUTDOWN(fd)		close_s(fd)
-#      define SHUTDOWN2(fd)		close_s(fd)
+#      define SSLeay_Write(a,b,c)    write_s(a,b,c,0)
+#      define SSLeay_Read(a,b,c)    read_s(a,b,c)
+#      define SHUTDOWN(fd)        close_s(fd)
+#      define SHUTDOWN2(fd)        close_s(fd)
 #    endif
 
 #  else
@@ -348,7 +348,7 @@ static unsigned int _strlen31(const char *str)
 #    define SHUTDOWN(fd)    { shutdown((fd),0); closesocket((fd)); }
 #    define SHUTDOWN2(fd)   { shutdown((fd),2); closesocket((fd)); }
 #    ifndef INVALID_SOCKET
-#    define INVALID_SOCKET	(-1)
+#    define INVALID_SOCKET    (-1)
 #    endif /* INVALID_SOCKET */
 #  endif
 

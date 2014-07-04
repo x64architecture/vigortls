@@ -68,34 +68,34 @@
  */
 
 static int hmac_size(const EVP_PKEY *pkey)
-	{
-	return EVP_MAX_MD_SIZE;
-	}
+    {
+    return EVP_MAX_MD_SIZE;
+    }
 
 static void hmac_key_free(EVP_PKEY *pkey)
-	{
-	ASN1_OCTET_STRING *os = (ASN1_OCTET_STRING *)pkey->pkey.ptr;
-	if (os)
-		{
-		if (os->data)
-			OPENSSL_cleanse(os->data, os->length);
-		ASN1_OCTET_STRING_free(os);
-		}
-	}
+    {
+    ASN1_OCTET_STRING *os = (ASN1_OCTET_STRING *)pkey->pkey.ptr;
+    if (os)
+        {
+        if (os->data)
+            OPENSSL_cleanse(os->data, os->length);
+        ASN1_OCTET_STRING_free(os);
+        }
+    }
 
 
 static int hmac_pkey_ctrl(EVP_PKEY *pkey, int op, long arg1, void *arg2)
-	{
-	switch (op)
-		{
-		case ASN1_PKEY_CTRL_DEFAULT_MD_NID:
-		*(int *)arg2 = NID_sha1;
-		return 1;
+    {
+    switch (op)
+        {
+        case ASN1_PKEY_CTRL_DEFAULT_MD_NID:
+        *(int *)arg2 = NID_sha1;
+        return 1;
 
-		default:
-		return -2;
-		}
-	}
+        default:
+        return -2;
+        }
+    }
 
 #ifdef HMAC_TEST_PRIVATE_KEY_FORMAT
 /* A bogus private key format for test purposes. This is simply the
@@ -104,64 +104,64 @@ static int hmac_pkey_ctrl(EVP_PKEY *pkey, int op, long arg1, void *arg2)
  */
 
 static int old_hmac_decode(EVP_PKEY *pkey,
-					const unsigned char **pder, int derlen)
-	{
-	ASN1_OCTET_STRING *os;
-	os = ASN1_OCTET_STRING_new();
-	if (!os || !ASN1_OCTET_STRING_set(os, *pder, derlen))
-		return 0;
-	EVP_PKEY_assign(pkey, EVP_PKEY_HMAC, os);
-	return 1;
-	}
+                    const unsigned char **pder, int derlen)
+    {
+    ASN1_OCTET_STRING *os;
+    os = ASN1_OCTET_STRING_new();
+    if (!os || !ASN1_OCTET_STRING_set(os, *pder, derlen))
+        return 0;
+    EVP_PKEY_assign(pkey, EVP_PKEY_HMAC, os);
+    return 1;
+    }
 
 static int old_hmac_encode(const EVP_PKEY *pkey, unsigned char **pder)
-	{
-	int inc;
-	ASN1_OCTET_STRING *os = (ASN1_OCTET_STRING *)pkey->pkey.ptr;
-	if (pder)
-		{
-		if (!*pder)
-			{
-			*pder = malloc(os->length);
-			inc = 0;
-			}
-		else inc = 1;
+    {
+    int inc;
+    ASN1_OCTET_STRING *os = (ASN1_OCTET_STRING *)pkey->pkey.ptr;
+    if (pder)
+        {
+        if (!*pder)
+            {
+            *pder = malloc(os->length);
+            inc = 0;
+            }
+        else inc = 1;
 
-		memcpy(*pder, os->data, os->length);
+        memcpy(*pder, os->data, os->length);
 
-		if (inc)
-			*pder += os->length;
-		}
-			
-	return os->length;
-	}
+        if (inc)
+            *pder += os->length;
+        }
+            
+    return os->length;
+    }
 
 #endif
 
 const EVP_PKEY_ASN1_METHOD hmac_asn1_meth = 
-	{
-	EVP_PKEY_HMAC,
-	EVP_PKEY_HMAC,
-	0,
+    {
+    EVP_PKEY_HMAC,
+    EVP_PKEY_HMAC,
+    0,
 
-	"HMAC",
-	"OpenSSL HMAC method",
+    "HMAC",
+    "OpenSSL HMAC method",
 
-	0,0,0,0,
+    0,0,0,0,
 
-	0,0,0,
+    0,0,0,
 
-	hmac_size,
-	0,
-	0,0,0,0,0,0,0,
+    hmac_size,
+    0,
+    0,0,0,0,0,0,0,
 
-	hmac_key_free,
-	hmac_pkey_ctrl,
+    hmac_key_free,
+    hmac_pkey_ctrl,
 #ifdef HMAC_TEST_PRIVATE_KEY_FORMAT
-	old_hmac_decode,
-	old_hmac_encode
+    old_hmac_decode,
+    old_hmac_encode
 #else
-	0,0
+    0,0
 #endif
-	};
+    };
 

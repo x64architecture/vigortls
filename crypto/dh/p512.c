@@ -71,15 +71,15 @@ unsigned char data[]={
 0xD7,0x76,0x27,0x6B,0xA2,0xD3,0xD4,0x12,
 0xE2,0x18,0xF4,0xDD,0x1E,0x08,0x4C,0xF6,
 0xD8,0x00,0x3E,0x7C,0x47,0x74,0xE8,0x33,
-	};
+    };
 
 main()
-	{
-	DH *dh;
+    {
+    DH *dh;
 
-	dh=DH_new();
-	dh->p=BN_bin2bn(data,sizeof(data),NULL);
-	dh->g=BN_new();
-	BN_set_word(dh->g,2);
-	PEM_write_DHparams(stdout,dh);
-	}
+    dh=DH_new();
+    dh->p=BN_bin2bn(data,sizeof(data),NULL);
+    dh->g=BN_new();
+    BN_set_word(dh->g,2);
+    PEM_write_DHparams(stdout,dh);
+    }

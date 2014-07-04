@@ -73,15 +73,15 @@ int main(int argc, char *argv[])
 #include <openssl/md4.h>
 
 static char *test[]={
-	"",
-	"a",
-	"abc",
-	"message digest",
-	"abcdefghijklmnopqrstuvwxyz",
-	"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789",
-	"12345678901234567890123456789012345678901234567890123456789012345678901234567890",
-	NULL,
-	};
+    "",
+    "a",
+    "abc",
+    "message digest",
+    "abcdefghijklmnopqrstuvwxyz",
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789",
+    "12345678901234567890123456789012345678901234567890123456789012345678901234567890",
+    NULL,
+    };
 
 static char *ret[]={
 "31d6cfe0d16ae931b73c59d7e0c089c0",
@@ -95,42 +95,42 @@ static char *ret[]={
 
 static char *pt(unsigned char *md);
 int main(int argc, char *argv[])
-	{
-	int i,err=0;
-	char **P,**R;
-	char *p;
-	unsigned char md[MD4_DIGEST_LENGTH];
+    {
+    int i,err=0;
+    char **P,**R;
+    char *p;
+    unsigned char md[MD4_DIGEST_LENGTH];
 
-	P=test;
-	R=ret;
-	i=1;
-	while (*P != NULL)
-		{
-		EVP_Digest(&(P[0][0]),strlen((char *)*P),md,NULL,EVP_md4(), NULL);
-		p=pt(md);
-		if (strcmp(p,(char *)*R) != 0)
-			{
-			printf("error calculating MD4 on '%s'\n",*P);
-			printf("got %s instead of %s\n",p,*R);
-			err++;
-			}
-		else
-			printf("test %d ok\n",i);
-		i++;
-		R++;
-		P++;
-		}
-	EXIT(err);
-	return (0);
-	}
+    P=test;
+    R=ret;
+    i=1;
+    while (*P != NULL)
+        {
+        EVP_Digest(&(P[0][0]),strlen((char *)*P),md,NULL,EVP_md4(), NULL);
+        p=pt(md);
+        if (strcmp(p,(char *)*R) != 0)
+            {
+            printf("error calculating MD4 on '%s'\n",*P);
+            printf("got %s instead of %s\n",p,*R);
+            err++;
+            }
+        else
+            printf("test %d ok\n",i);
+        i++;
+        R++;
+        P++;
+        }
+    EXIT(err);
+    return (0);
+    }
 
 static char *pt(unsigned char *md)
-	{
-	int i;
-	static char buf[80];
+    {
+    int i;
+    static char buf[80];
 
-	for (i=0; i<MD4_DIGEST_LENGTH; i++)
-		sprintf(&(buf[i*2]),"%02x",md[i]);
-	return (buf);
-	}
+    for (i=0; i<MD4_DIGEST_LENGTH; i++)
+        sprintf(&(buf[i*2]),"%02x",md[i]);
+    return (buf);
+    }
 #endif

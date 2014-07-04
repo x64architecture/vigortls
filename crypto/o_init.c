@@ -60,13 +60,13 @@
  */
 
 void OPENSSL_init(void)
-	{
-	static int done = 0;
-	if (done)
-		return;
-	done = 1;
+    {
+    static int done = 0;
+    if (done)
+        return;
+    done = 1;
 #if 0
-	fprintf(stderr, "Called OPENSSL_init\n");
+    fprintf(stderr, "Called OPENSSL_init\n");
 #endif
-	}
+    }
 

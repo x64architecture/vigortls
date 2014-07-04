@@ -54,11 +54,11 @@
  */
 
 /*
-	Why BIO_s_log?
+    Why BIO_s_log?
 
-	BIO_s_log is useful for system daemons (or services under NT).
-	It is one-way BIO, it sends all stuff to syslogd (on system that
-	commonly use that), or event log (on NT), or OPCOM (on OpenVMS).
+    BIO_s_log is useful for system daemons (or services under NT).
+    It is one-way BIO, it sends all stuff to syslogd (on system that
+    commonly use that), or event log (on NT), or OPCOM (on OpenVMS).
 
 */
 
@@ -81,16 +81,16 @@
 #ifndef NO_SYSLOG
 
 #ifdef OPENSSL_SYS_WIN32
-#define LOG_EMERG	0
-#define LOG_ALERT	1
-#define LOG_CRIT	2
-#define LOG_ERR		3
-#define LOG_WARNING	4
-#define LOG_NOTICE	5
-#define LOG_INFO	6
-#define LOG_DEBUG	7
+#define LOG_EMERG    0
+#define LOG_ALERT    1
+#define LOG_CRIT    2
+#define LOG_ERR        3
+#define LOG_WARNING    4
+#define LOG_NOTICE    5
+#define LOG_INFO    6
+#define LOG_DEBUG    7
 
-#define LOG_DAEMON	(3<<3)
+#define LOG_DAEMON    (3<<3)
 #endif
 
 static int MS_CALLBACK slg_write(BIO *h, const char *buf, int num);
@@ -103,186 +103,186 @@ static void xsyslog(BIO* bp, int priority, const char* string);
 static void xcloselog(BIO* bp);
 
 static BIO_METHOD methods_slg=
-	{
-	BIO_TYPE_MEM,"syslog",
-	slg_write,
-	NULL,
-	slg_puts,
-	NULL,
-	slg_ctrl,
-	slg_new,
-	slg_free,
-	NULL,
-	};
+    {
+    BIO_TYPE_MEM,"syslog",
+    slg_write,
+    NULL,
+    slg_puts,
+    NULL,
+    slg_ctrl,
+    slg_new,
+    slg_free,
+    NULL,
+    };
 
 BIO_METHOD *BIO_s_log(void)
-	{
-	return (&methods_slg);
-	}
+    {
+    return (&methods_slg);
+    }
 
 static int MS_CALLBACK slg_new(BIO *bi)
-	{
-	bi->init=1;
-	bi->num=0;
-	bi->ptr=NULL;
-	xopenlog(bi, "application", LOG_DAEMON);
-	return (1);
-	}
+    {
+    bi->init=1;
+    bi->num=0;
+    bi->ptr=NULL;
+    xopenlog(bi, "application", LOG_DAEMON);
+    return (1);
+    }
 
 static int MS_CALLBACK slg_free(BIO *a)
-	{
-	if (a == NULL) return (0);
-	xcloselog(a);
-	return (1);
-	}
-	
+    {
+    if (a == NULL) return (0);
+    xcloselog(a);
+    return (1);
+    }
+    
 static int MS_CALLBACK slg_write(BIO *b, const char *in, int inl)
-	{
-	int ret= inl;
-	char* buf;
-	char* pp;
-	int priority, i;
-	static const struct
-		{
-		int strl;
-		char str[10];
-		int log_level;
-		}
-	mapping[] =
-		{
-		{ 6, "PANIC ", LOG_EMERG },
-		{ 6, "EMERG ", LOG_EMERG },
-		{ 4, "EMR ", LOG_EMERG },
-		{ 6, "ALERT ", LOG_ALERT },
-		{ 4, "ALR ", LOG_ALERT },
-		{ 5, "CRIT ", LOG_CRIT },
-		{ 4, "CRI ", LOG_CRIT },
-		{ 6, "ERROR ", LOG_ERR },
-		{ 4, "ERR ", LOG_ERR },
-		{ 8, "WARNING ", LOG_WARNING },
-		{ 5, "WARN ", LOG_WARNING },
-		{ 4, "WAR ", LOG_WARNING },
-		{ 7, "NOTICE ", LOG_NOTICE },
-		{ 5, "NOTE ", LOG_NOTICE },
-		{ 4, "NOT ", LOG_NOTICE },
-		{ 5, "INFO ", LOG_INFO },
-		{ 4, "INF ", LOG_INFO },
-		{ 6, "DEBUG ", LOG_DEBUG },
-		{ 4, "DBG ", LOG_DEBUG },
-		{ 0, "", LOG_ERR } /* The default */
-		};
+    {
+    int ret= inl;
+    char* buf;
+    char* pp;
+    int priority, i;
+    static const struct
+        {
+        int strl;
+        char str[10];
+        int log_level;
+        }
+    mapping[] =
+        {
+        { 6, "PANIC ", LOG_EMERG },
+        { 6, "EMERG ", LOG_EMERG },
+        { 4, "EMR ", LOG_EMERG },
+        { 6, "ALERT ", LOG_ALERT },
+        { 4, "ALR ", LOG_ALERT },
+        { 5, "CRIT ", LOG_CRIT },
+        { 4, "CRI ", LOG_CRIT },
+        { 6, "ERROR ", LOG_ERR },
+        { 4, "ERR ", LOG_ERR },
+        { 8, "WARNING ", LOG_WARNING },
+        { 5, "WARN ", LOG_WARNING },
+        { 4, "WAR ", LOG_WARNING },
+        { 7, "NOTICE ", LOG_NOTICE },
+        { 5, "NOTE ", LOG_NOTICE },
+        { 4, "NOT ", LOG_NOTICE },
+        { 5, "INFO ", LOG_INFO },
+        { 4, "INF ", LOG_INFO },
+        { 6, "DEBUG ", LOG_DEBUG },
+        { 4, "DBG ", LOG_DEBUG },
+        { 0, "", LOG_ERR } /* The default */
+        };
 
-	if ((buf= (char *)malloc(inl+ 1)) == NULL){
-		return (0);
-	}
-	strncpy(buf, in, inl);
-	buf[inl]= '\0';
+    if ((buf= (char *)malloc(inl+ 1)) == NULL){
+        return (0);
+    }
+    strncpy(buf, in, inl);
+    buf[inl]= '\0';
 
-	i = 0;
-	while(strncmp(buf, mapping[i].str, mapping[i].strl) != 0) i++;
-	priority = mapping[i].log_level;
-	pp = buf + mapping[i].strl;
+    i = 0;
+    while(strncmp(buf, mapping[i].str, mapping[i].strl) != 0) i++;
+    priority = mapping[i].log_level;
+    pp = buf + mapping[i].strl;
 
-	xsyslog(b, priority, pp);
+    xsyslog(b, priority, pp);
 
-	free(buf);
-	return (ret);
-	}
+    free(buf);
+    return (ret);
+    }
 
 static long MS_CALLBACK slg_ctrl(BIO *b, int cmd, long num, void *ptr)
-	{
-	switch (cmd)
-		{
-	case BIO_CTRL_SET:
-		xcloselog(b);
-		xopenlog(b, ptr, num);
-		break;
-	default:
-		break;
-		}
-	return (0);
-	}
+    {
+    switch (cmd)
+        {
+    case BIO_CTRL_SET:
+        xcloselog(b);
+        xopenlog(b, ptr, num);
+        break;
+    default:
+        break;
+        }
+    return (0);
+    }
 
 static int MS_CALLBACK slg_puts(BIO *bp, const char *str)
-	{
-	int n,ret;
+    {
+    int n,ret;
 
-	n=strlen(str);
-	ret=slg_write(bp,str,n);
-	return (ret);
-	}
+    n=strlen(str);
+    ret=slg_write(bp,str,n);
+    return (ret);
+    }
 
 #if defined(OPENSSL_SYS_WIN32)
 
 static void xopenlog(BIO* bp, char* name, int level)
 {
-	if (check_winnt())
-		bp->ptr = RegisterEventSourceA(NULL,name);
-	else
-		bp->ptr = NULL;
+    if (check_winnt())
+        bp->ptr = RegisterEventSourceA(NULL,name);
+    else
+        bp->ptr = NULL;
 }
 
 static void xsyslog(BIO *bp, int priority, const char *string)
 {
-	LPCSTR lpszStrings[2];
-	WORD evtype= EVENTLOG_ERROR_TYPE;
-	char pidbuf[DECIMAL_SIZE(DWORD)+4];
+    LPCSTR lpszStrings[2];
+    WORD evtype= EVENTLOG_ERROR_TYPE;
+    char pidbuf[DECIMAL_SIZE(DWORD)+4];
 
-	if (bp->ptr == NULL)
-		return;
+    if (bp->ptr == NULL)
+        return;
 
-	switch (priority)
-		{
-	case LOG_EMERG:
-	case LOG_ALERT:
-	case LOG_CRIT:
-	case LOG_ERR:
-		evtype = EVENTLOG_ERROR_TYPE;
-		break;
-	case LOG_WARNING:
-		evtype = EVENTLOG_WARNING_TYPE;
-		break;
-	case LOG_NOTICE:
-	case LOG_INFO:
-	case LOG_DEBUG:
-		evtype = EVENTLOG_INFORMATION_TYPE;
-		break;
-	default:		/* Should never happen, but set it
-				   as error anyway. */
-		evtype = EVENTLOG_ERROR_TYPE;
-		break;
-		}
+    switch (priority)
+        {
+    case LOG_EMERG:
+    case LOG_ALERT:
+    case LOG_CRIT:
+    case LOG_ERR:
+        evtype = EVENTLOG_ERROR_TYPE;
+        break;
+    case LOG_WARNING:
+        evtype = EVENTLOG_WARNING_TYPE;
+        break;
+    case LOG_NOTICE:
+    case LOG_INFO:
+    case LOG_DEBUG:
+        evtype = EVENTLOG_INFORMATION_TYPE;
+        break;
+    default:        /* Should never happen, but set it
+                   as error anyway. */
+        evtype = EVENTLOG_ERROR_TYPE;
+        break;
+        }
 
-	sprintf(pidbuf, "[%u] ", GetCurrentProcessId());
-	lpszStrings[0] = pidbuf;
-	lpszStrings[1] = string;
+    sprintf(pidbuf, "[%u] ", GetCurrentProcessId());
+    lpszStrings[0] = pidbuf;
+    lpszStrings[1] = string;
 
-	ReportEventA(bp->ptr, evtype, 0, 1024, NULL, 2, 0,
-				lpszStrings, NULL);
+    ReportEventA(bp->ptr, evtype, 0, 1024, NULL, 2, 0,
+                lpszStrings, NULL);
 }
-	
+    
 static void xcloselog(BIO* bp)
 {
-	if (bp->ptr)
-		DeregisterEventSource((HANDLE)(bp->ptr));
-	bp->ptr= NULL;
+    if (bp->ptr)
+        DeregisterEventSource((HANDLE)(bp->ptr));
+    bp->ptr= NULL;
 }
 
 #else /* Unix/Watt32 */
 
 static void xopenlog(BIO* bp, char* name, int level)
 {
-	openlog(name, LOG_PID|LOG_CONS, level);
+    openlog(name, LOG_PID|LOG_CONS, level);
 }
 
 static void xsyslog(BIO *bp, int priority, const char *string)
 {
-	syslog(priority, "%s", string);
+    syslog(priority, "%s", string);
 }
 
 static void xcloselog(BIO* bp)
 {
-	closelog();
+    closelog();
 }
 
 #endif /* Unix */

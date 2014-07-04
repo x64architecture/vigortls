@@ -61,16 +61,16 @@
 #include OPENSSL_UNISTD
 
 int OPENSSL_issetugid(void)
-	{
-	return issetugid();
-	}
+    {
+    return issetugid();
+    }
 
 #elif defined(OPENSSL_SYS_WIN32)
 
 int OPENSSL_issetugid(void)
-	{
-	return 0;
-	}
+    {
+    return 0;
+    }
 
 #else
 
@@ -78,11 +78,11 @@ int OPENSSL_issetugid(void)
 #include <sys/types.h>
 
 int OPENSSL_issetugid(void)
-	{
-	if (getuid() != geteuid()) return 1;
-	if (getgid() != getegid()) return 1;
-	return 0;
-	}
+    {
+    if (getuid() != geteuid()) return 1;
+    if (getgid() != getegid()) return 1;
+    return 0;
+    }
 #endif
 
 

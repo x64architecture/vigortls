@@ -170,106 +170,106 @@
 
 #undef PKCS1_CHECK
 
-#define c2l(c,l)	(l = ((unsigned long)(*((c)++)))     , \
-			 l|=(((unsigned long)(*((c)++)))<< 8), \
-			 l|=(((unsigned long)(*((c)++)))<<16), \
-			 l|=(((unsigned long)(*((c)++)))<<24))
+#define c2l(c,l)    (l = ((unsigned long)(*((c)++)))     , \
+             l|=(((unsigned long)(*((c)++)))<< 8), \
+             l|=(((unsigned long)(*((c)++)))<<16), \
+             l|=(((unsigned long)(*((c)++)))<<24))
 
 /* NOTE - c is not incremented as per c2l */
-#define c2ln(c,l1,l2,n)	{ \
-			c+=n; \
-			l1=l2=0; \
-			switch (n) { \
-			case 8: l2 =((unsigned long)(*(--(c))))<<24; \
-			case 7: l2|=((unsigned long)(*(--(c))))<<16; \
-			case 6: l2|=((unsigned long)(*(--(c))))<< 8; \
-			case 5: l2|=((unsigned long)(*(--(c))));     \
-			case 4: l1 =((unsigned long)(*(--(c))))<<24; \
-			case 3: l1|=((unsigned long)(*(--(c))))<<16; \
-			case 2: l1|=((unsigned long)(*(--(c))))<< 8; \
-			case 1: l1|=((unsigned long)(*(--(c))));     \
-				} \
-			}
+#define c2ln(c,l1,l2,n)    { \
+            c+=n; \
+            l1=l2=0; \
+            switch (n) { \
+            case 8: l2 =((unsigned long)(*(--(c))))<<24; \
+            case 7: l2|=((unsigned long)(*(--(c))))<<16; \
+            case 6: l2|=((unsigned long)(*(--(c))))<< 8; \
+            case 5: l2|=((unsigned long)(*(--(c))));     \
+            case 4: l1 =((unsigned long)(*(--(c))))<<24; \
+            case 3: l1|=((unsigned long)(*(--(c))))<<16; \
+            case 2: l1|=((unsigned long)(*(--(c))))<< 8; \
+            case 1: l1|=((unsigned long)(*(--(c))));     \
+                } \
+            }
 
-#define l2c(l,c)	(*((c)++)=(unsigned char)(((l)    )&0xff), \
-			 *((c)++)=(unsigned char)(((l)>> 8)&0xff), \
-			 *((c)++)=(unsigned char)(((l)>>16)&0xff), \
-			 *((c)++)=(unsigned char)(((l)>>24)&0xff))
+#define l2c(l,c)    (*((c)++)=(unsigned char)(((l)    )&0xff), \
+             *((c)++)=(unsigned char)(((l)>> 8)&0xff), \
+             *((c)++)=(unsigned char)(((l)>>16)&0xff), \
+             *((c)++)=(unsigned char)(((l)>>24)&0xff))
 
-#define n2l(c,l)	(l =((unsigned long)(*((c)++)))<<24, \
-			 l|=((unsigned long)(*((c)++)))<<16, \
-			 l|=((unsigned long)(*((c)++)))<< 8, \
-			 l|=((unsigned long)(*((c)++))))
+#define n2l(c,l)    (l =((unsigned long)(*((c)++)))<<24, \
+             l|=((unsigned long)(*((c)++)))<<16, \
+             l|=((unsigned long)(*((c)++)))<< 8, \
+             l|=((unsigned long)(*((c)++))))
 
-#define l2n(l,c)	(*((c)++)=(unsigned char)(((l)>>24)&0xff), \
-			 *((c)++)=(unsigned char)(((l)>>16)&0xff), \
-			 *((c)++)=(unsigned char)(((l)>> 8)&0xff), \
-			 *((c)++)=(unsigned char)(((l)    )&0xff))
+#define l2n(l,c)    (*((c)++)=(unsigned char)(((l)>>24)&0xff), \
+             *((c)++)=(unsigned char)(((l)>>16)&0xff), \
+             *((c)++)=(unsigned char)(((l)>> 8)&0xff), \
+             *((c)++)=(unsigned char)(((l)    )&0xff))
 
-#define l2n6(l,c)	(*((c)++)=(unsigned char)(((l)>>40)&0xff), \
-			 *((c)++)=(unsigned char)(((l)>>32)&0xff), \
-			 *((c)++)=(unsigned char)(((l)>>24)&0xff), \
-			 *((c)++)=(unsigned char)(((l)>>16)&0xff), \
-			 *((c)++)=(unsigned char)(((l)>> 8)&0xff), \
-			 *((c)++)=(unsigned char)(((l)    )&0xff))
+#define l2n6(l,c)    (*((c)++)=(unsigned char)(((l)>>40)&0xff), \
+             *((c)++)=(unsigned char)(((l)>>32)&0xff), \
+             *((c)++)=(unsigned char)(((l)>>24)&0xff), \
+             *((c)++)=(unsigned char)(((l)>>16)&0xff), \
+             *((c)++)=(unsigned char)(((l)>> 8)&0xff), \
+             *((c)++)=(unsigned char)(((l)    )&0xff))
 
-#define l2n8(l,c)	(*((c)++)=(unsigned char)(((l)>>56)&0xff), \
-			 *((c)++)=(unsigned char)(((l)>>48)&0xff), \
-			 *((c)++)=(unsigned char)(((l)>>40)&0xff), \
-			 *((c)++)=(unsigned char)(((l)>>32)&0xff), \
-			 *((c)++)=(unsigned char)(((l)>>24)&0xff), \
-			 *((c)++)=(unsigned char)(((l)>>16)&0xff), \
-			 *((c)++)=(unsigned char)(((l)>> 8)&0xff), \
-			 *((c)++)=(unsigned char)(((l)    )&0xff))
+#define l2n8(l,c)    (*((c)++)=(unsigned char)(((l)>>56)&0xff), \
+             *((c)++)=(unsigned char)(((l)>>48)&0xff), \
+             *((c)++)=(unsigned char)(((l)>>40)&0xff), \
+             *((c)++)=(unsigned char)(((l)>>32)&0xff), \
+             *((c)++)=(unsigned char)(((l)>>24)&0xff), \
+             *((c)++)=(unsigned char)(((l)>>16)&0xff), \
+             *((c)++)=(unsigned char)(((l)>> 8)&0xff), \
+             *((c)++)=(unsigned char)(((l)    )&0xff))
 
-#define n2l6(c,l)	(l =((BN_ULLONG)(*((c)++)))<<40, \
-			 l|=((BN_ULLONG)(*((c)++)))<<32, \
-			 l|=((BN_ULLONG)(*((c)++)))<<24, \
-			 l|=((BN_ULLONG)(*((c)++)))<<16, \
-			 l|=((BN_ULLONG)(*((c)++)))<< 8, \
-			 l|=((BN_ULLONG)(*((c)++))))
+#define n2l6(c,l)    (l =((BN_ULLONG)(*((c)++)))<<40, \
+             l|=((BN_ULLONG)(*((c)++)))<<32, \
+             l|=((BN_ULLONG)(*((c)++)))<<24, \
+             l|=((BN_ULLONG)(*((c)++)))<<16, \
+             l|=((BN_ULLONG)(*((c)++)))<< 8, \
+             l|=((BN_ULLONG)(*((c)++))))
 
 /* NOTE - c is not incremented as per l2c */
-#define l2cn(l1,l2,c,n)	{ \
-			c+=n; \
-			switch (n) { \
-			case 8: *(--(c))=(unsigned char)(((l2)>>24)&0xff); \
-			case 7: *(--(c))=(unsigned char)(((l2)>>16)&0xff); \
-			case 6: *(--(c))=(unsigned char)(((l2)>> 8)&0xff); \
-			case 5: *(--(c))=(unsigned char)(((l2)    )&0xff); \
-			case 4: *(--(c))=(unsigned char)(((l1)>>24)&0xff); \
-			case 3: *(--(c))=(unsigned char)(((l1)>>16)&0xff); \
-			case 2: *(--(c))=(unsigned char)(((l1)>> 8)&0xff); \
-			case 1: *(--(c))=(unsigned char)(((l1)    )&0xff); \
-				} \
-			}
+#define l2cn(l1,l2,c,n)    { \
+            c+=n; \
+            switch (n) { \
+            case 8: *(--(c))=(unsigned char)(((l2)>>24)&0xff); \
+            case 7: *(--(c))=(unsigned char)(((l2)>>16)&0xff); \
+            case 6: *(--(c))=(unsigned char)(((l2)>> 8)&0xff); \
+            case 5: *(--(c))=(unsigned char)(((l2)    )&0xff); \
+            case 4: *(--(c))=(unsigned char)(((l1)>>24)&0xff); \
+            case 3: *(--(c))=(unsigned char)(((l1)>>16)&0xff); \
+            case 2: *(--(c))=(unsigned char)(((l1)>> 8)&0xff); \
+            case 1: *(--(c))=(unsigned char)(((l1)    )&0xff); \
+                } \
+            }
 
-#define n2s(c,s)	((s=(((unsigned int)(c[0]))<< 8)| \
-			    (((unsigned int)(c[1]))    )),c+=2)
-#define s2n(s,c)	((c[0]=(unsigned char)(((s)>> 8)&0xff), \
-			  c[1]=(unsigned char)(((s)    )&0xff)),c+=2)
+#define n2s(c,s)    ((s=(((unsigned int)(c[0]))<< 8)| \
+                (((unsigned int)(c[1]))    )),c+=2)
+#define s2n(s,c)    ((c[0]=(unsigned char)(((s)>> 8)&0xff), \
+              c[1]=(unsigned char)(((s)    )&0xff)),c+=2)
 
-#define n2l3(c,l)	((l =(((unsigned long)(c[0]))<<16)| \
-			     (((unsigned long)(c[1]))<< 8)| \
-			     (((unsigned long)(c[2]))    )),c+=3)
+#define n2l3(c,l)    ((l =(((unsigned long)(c[0]))<<16)| \
+                 (((unsigned long)(c[1]))<< 8)| \
+                 (((unsigned long)(c[2]))    )),c+=3)
 
-#define l2n3(l,c)	((c[0]=(unsigned char)(((l)>>16)&0xff), \
-			  c[1]=(unsigned char)(((l)>> 8)&0xff), \
-			  c[2]=(unsigned char)(((l)    )&0xff)),c+=3)
+#define l2n3(l,c)    ((c[0]=(unsigned char)(((l)>>16)&0xff), \
+              c[1]=(unsigned char)(((l)>> 8)&0xff), \
+              c[2]=(unsigned char)(((l)    )&0xff)),c+=3)
 
 /* LOCAL STUFF */
 
-#define SSL_DECRYPT	0
-#define SSL_ENCRYPT	1
+#define SSL_DECRYPT    0
+#define SSL_ENCRYPT    1
 
-#define TWO_BYTE_BIT	0x80
-#define SEC_ESC_BIT	0x40
-#define TWO_BYTE_MASK	0x7fff
-#define THREE_BYTE_MASK	0x3fff
+#define TWO_BYTE_BIT    0x80
+#define SEC_ESC_BIT    0x40
+#define TWO_BYTE_MASK    0x7fff
+#define THREE_BYTE_MASK    0x3fff
 
-#define INC32(a)	((a)=((a)+1)&0xffffffffL)
-#define DEC32(a)	((a)=((a)-1)&0xffffffffL)
-#define MAX_MAC_SIZE	20 /* up from 16 for SSLv3 */
+#define INC32(a)    ((a)=((a)+1)&0xffffffffL)
+#define DEC32(a)    ((a)=((a)-1)&0xffffffffL)
+#define MAX_MAC_SIZE    20 /* up from 16 for SSLv3 */
 
 /*
  * Define the Bitmasks for SSL_CIPHER.algorithms.
@@ -286,67 +286,67 @@
  */
 
 /* Bits for algorithm_mkey (key exchange algorithm) */
-#define SSL_kRSA		0x00000001L /* RSA key exchange */
-#define SSL_kDHr		0x00000002L /* DH cert, RSA CA cert */ /* no such ciphersuites supported! */
-#define SSL_kDHd		0x00000004L /* DH cert, DSA CA cert */ /* no such ciphersuite supported! */
-#define SSL_kEDH		0x00000008L /* tmp DH key no DH cert */
-#define SSL_kKRB5		0x00000010L /* Kerberos5 key exchange */
-#define SSL_kECDHr		0x00000020L /* ECDH cert, RSA CA cert */
-#define SSL_kECDHe		0x00000040L /* ECDH cert, ECDSA CA cert */
-#define SSL_kEECDH		0x00000080L /* ephemeral ECDH */
-#define SSL_kPSK		0x00000100L /* PSK */
+#define SSL_kRSA        0x00000001L /* RSA key exchange */
+#define SSL_kDHr        0x00000002L /* DH cert, RSA CA cert */ /* no such ciphersuites supported! */
+#define SSL_kDHd        0x00000004L /* DH cert, DSA CA cert */ /* no such ciphersuite supported! */
+#define SSL_kEDH        0x00000008L /* tmp DH key no DH cert */
+#define SSL_kKRB5        0x00000010L /* Kerberos5 key exchange */
+#define SSL_kECDHr        0x00000020L /* ECDH cert, RSA CA cert */
+#define SSL_kECDHe        0x00000040L /* ECDH cert, ECDSA CA cert */
+#define SSL_kEECDH        0x00000080L /* ephemeral ECDH */
+#define SSL_kPSK        0x00000100L /* PSK */
 #define SSL_kGOST       0x00000200L /* GOST key exchange */
 #define SSL_kSRP        0x00000400L /* SRP */
 
 /* Bits for algorithm_auth (server authentication) */
-#define SSL_aRSA		0x00000001L /* RSA auth */
-#define SSL_aDSS 		0x00000002L /* DSS auth */
-#define SSL_aNULL 		0x00000004L /* no auth (i.e. use ADH or AECDH) */
-#define SSL_aDH 		0x00000008L /* Fixed DH auth (kDHd or kDHr) */ /* no such ciphersuites supported! */
-#define SSL_aECDH 		0x00000010L /* Fixed ECDH auth (kECDHe or kECDHr) */
+#define SSL_aRSA        0x00000001L /* RSA auth */
+#define SSL_aDSS         0x00000002L /* DSS auth */
+#define SSL_aNULL         0x00000004L /* no auth (i.e. use ADH or AECDH) */
+#define SSL_aDH         0x00000008L /* Fixed DH auth (kDHd or kDHr) */ /* no such ciphersuites supported! */
+#define SSL_aECDH         0x00000010L /* Fixed ECDH auth (kECDHe or kECDHr) */
 #define SSL_aKRB5               0x00000020L /* KRB5 auth */
 #define SSL_aECDSA              0x00000040L /* ECDSA auth*/
 #define SSL_aPSK                0x00000080L /* PSK auth */
-#define SSL_aGOST94				0x00000100L /* GOST R 34.10-94 signature auth */
-#define SSL_aGOST01 			0x00000200L /* GOST R 34.10-2001 signature auth */
+#define SSL_aGOST94                0x00000100L /* GOST R 34.10-94 signature auth */
+#define SSL_aGOST01             0x00000200L /* GOST R 34.10-2001 signature auth */
 
 
 /* Bits for algorithm_enc (symmetric encryption) */
-#define SSL_DES			0x00000001L
-#define SSL_3DES		0x00000002L
-#define SSL_RC4			0x00000004L
-#define SSL_RC2			0x00000008L
-#define SSL_IDEA		0x00000010L
-#define SSL_eNULL		0x00000020L
-#define SSL_AES128		0x00000040L
-#define SSL_AES256		0x00000080L
-#define SSL_CAMELLIA128		0x00000100L
-#define SSL_CAMELLIA256		0x00000200L
-#define SSL_eGOST2814789CNT	0x00000400L
-#define SSL_SEED		0x00000800L
-#define SSL_AES128GCM		0x00001000L
-#define SSL_AES256GCM		0x00002000L
+#define SSL_DES            0x00000001L
+#define SSL_3DES        0x00000002L
+#define SSL_RC4            0x00000004L
+#define SSL_RC2            0x00000008L
+#define SSL_IDEA        0x00000010L
+#define SSL_eNULL        0x00000020L
+#define SSL_AES128        0x00000040L
+#define SSL_AES256        0x00000080L
+#define SSL_CAMELLIA128        0x00000100L
+#define SSL_CAMELLIA256        0x00000200L
+#define SSL_eGOST2814789CNT    0x00000400L
+#define SSL_SEED        0x00000800L
+#define SSL_AES128GCM        0x00001000L
+#define SSL_AES256GCM        0x00002000L
 
-#define SSL_AES        		(SSL_AES128|SSL_AES256|SSL_AES128GCM|SSL_AES256GCM)
-#define SSL_CAMELLIA		(SSL_CAMELLIA128|SSL_CAMELLIA256)
+#define SSL_AES                (SSL_AES128|SSL_AES256|SSL_AES128GCM|SSL_AES256GCM)
+#define SSL_CAMELLIA        (SSL_CAMELLIA128|SSL_CAMELLIA256)
 
 
 /* Bits for algorithm_mac (symmetric authentication) */
 
-#define SSL_MD5			0x00000001L
-#define SSL_SHA1		0x00000002L
+#define SSL_MD5            0x00000001L
+#define SSL_SHA1        0x00000002L
 #define SSL_GOST94      0x00000004L
 #define SSL_GOST89MAC   0x00000008L
-#define SSL_SHA256		0x00000010L
-#define SSL_SHA384		0x00000020L
+#define SSL_SHA256        0x00000010L
+#define SSL_SHA384        0x00000020L
 /* Not a real MAC, just an indication it is part of cipher */
-#define SSL_AEAD		0x00000040L
+#define SSL_AEAD        0x00000040L
 
 /* Bits for algorithm_ssl (protocol version) */
-#define SSL_SSLV2		0x00000001L
-#define SSL_SSLV3		0x00000002L
-#define SSL_TLSV1		SSL_SSLV3	/* for now */
-#define SSL_TLSV1_2		0x00000004L
+#define SSL_SSLV2        0x00000001L
+#define SSL_SSLV3        0x00000002L
+#define SSL_TLSV1        SSL_SSLV3    /* for now */
+#define SSL_TLSV1_2        0x00000004L
 
 
 /* Bits for algorithm2 (handshake digests and other extra flags) */
@@ -362,7 +362,7 @@
  * make sure to update this constant too */
 #define SSL_MAX_DIGEST 6
 
-#define TLS1_PRF_DGST_MASK	(0xff << TLS1_PRF_DGST_SHIFT)
+#define TLS1_PRF_DGST_MASK    (0xff << TLS1_PRF_DGST_SHIFT)
 
 #define TLS1_PRF_DGST_SHIFT 10
 #define TLS1_PRF_MD5 (SSL_HANDSHAKE_MAC_MD5 << TLS1_PRF_DGST_SHIFT)
@@ -393,20 +393,20 @@
  * and ciphers goes, another extension to SSL_SUPER and/or SSL_ULTRA would
  * be possible.
  */
-#define SSL_EXP_MASK		0x00000003L
-#define SSL_STRONG_MASK		0x000001fcL
+#define SSL_EXP_MASK        0x00000003L
+#define SSL_STRONG_MASK        0x000001fcL
 
-#define SSL_NOT_EXP		0x00000001L
-#define SSL_EXPORT		0x00000002L
+#define SSL_NOT_EXP        0x00000001L
+#define SSL_EXPORT        0x00000002L
 
-#define SSL_STRONG_NONE		0x00000004L
-#define SSL_EXP40		0x00000008L
-#define SSL_MICRO		(SSL_EXP40)
-#define SSL_EXP56		0x00000010L
-#define SSL_MINI		(SSL_EXP56)
-#define SSL_LOW			0x00000020L
-#define SSL_MEDIUM		0x00000040L
-#define SSL_HIGH		0x00000080L
+#define SSL_STRONG_NONE        0x00000004L
+#define SSL_EXP40        0x00000008L
+#define SSL_MICRO        (SSL_EXP40)
+#define SSL_EXP56        0x00000010L
+#define SSL_MINI        (SSL_EXP56)
+#define SSL_LOW            0x00000020L
+#define SSL_MEDIUM        0x00000040L
+#define SSL_HIGH        0x00000080L
 
 /* we have used 000001ff - 23 bits left to go */
 
@@ -423,36 +423,36 @@
  * direct usage is discouraged.
  * Use the SSL_C_* macros instead.
  */
-#define SSL_IS_EXPORT(a)	((a)&SSL_EXPORT)
-#define SSL_IS_EXPORT56(a)	((a)&SSL_EXP56)
-#define SSL_IS_EXPORT40(a)	((a)&SSL_EXP40)
-#define SSL_C_IS_EXPORT(c)	SSL_IS_EXPORT((c)->algo_strength)
-#define SSL_C_IS_EXPORT56(c)	SSL_IS_EXPORT56((c)->algo_strength)
-#define SSL_C_IS_EXPORT40(c)	SSL_IS_EXPORT40((c)->algo_strength)
+#define SSL_IS_EXPORT(a)    ((a)&SSL_EXPORT)
+#define SSL_IS_EXPORT56(a)    ((a)&SSL_EXP56)
+#define SSL_IS_EXPORT40(a)    ((a)&SSL_EXP40)
+#define SSL_C_IS_EXPORT(c)    SSL_IS_EXPORT((c)->algo_strength)
+#define SSL_C_IS_EXPORT56(c)    SSL_IS_EXPORT56((c)->algo_strength)
+#define SSL_C_IS_EXPORT40(c)    SSL_IS_EXPORT40((c)->algo_strength)
 
-#define SSL_EXPORT_KEYLENGTH(a,s)	(SSL_IS_EXPORT40(s) ? 5 : \
-				 (a) == SSL_DES ? 8 : 7)
+#define SSL_EXPORT_KEYLENGTH(a,s)    (SSL_IS_EXPORT40(s) ? 5 : \
+                 (a) == SSL_DES ? 8 : 7)
 #define SSL_EXPORT_PKEYLENGTH(a) (SSL_IS_EXPORT40(a) ? 512 : 1024)
-#define SSL_C_EXPORT_KEYLENGTH(c)	SSL_EXPORT_KEYLENGTH((c)->algorithm_enc, \
-				(c)->algo_strength)
-#define SSL_C_EXPORT_PKEYLENGTH(c)	SSL_EXPORT_PKEYLENGTH((c)->algo_strength)
+#define SSL_C_EXPORT_KEYLENGTH(c)    SSL_EXPORT_KEYLENGTH((c)->algorithm_enc, \
+                (c)->algo_strength)
+#define SSL_C_EXPORT_PKEYLENGTH(c)    SSL_EXPORT_PKEYLENGTH((c)->algo_strength)
 
 
 
 
 /* Mostly for SSLv3 */
-#define SSL_PKEY_RSA_ENC	0
-#define SSL_PKEY_RSA_SIGN	1
-#define SSL_PKEY_DSA_SIGN	2
-#define SSL_PKEY_DH_RSA		3
-#define SSL_PKEY_DH_DSA		4
+#define SSL_PKEY_RSA_ENC    0
+#define SSL_PKEY_RSA_SIGN    1
+#define SSL_PKEY_DSA_SIGN    2
+#define SSL_PKEY_DH_RSA        3
+#define SSL_PKEY_DH_DSA        4
 #define SSL_PKEY_ECC            5
-#define SSL_PKEY_GOST94		6
-#define SSL_PKEY_GOST01		7
-#define SSL_PKEY_NUM		8
+#define SSL_PKEY_GOST94        6
+#define SSL_PKEY_GOST01        7
+#define SSL_PKEY_NUM        8
 
 /* SSL_kRSA <- RSA_ENC | (RSA_TMP & RSA_SIGN) |
- * 	    <- (EXPORT & (RSA_ENC | RSA_TMP) & RSA_SIGN)
+ *         <- (EXPORT & (RSA_ENC | RSA_TMP) & RSA_SIGN)
  * SSL_kDH  <- DH_ENC & (RSA_ENC | RSA_SIGN | DSA_SIGN)
  * SSL_kEDH <- RSA_ENC | RSA_SIGN | DSA_SIGN
  * SSL_aRSA <- RSA_ENC | RSA_SIGN
@@ -460,9 +460,9 @@
  */
 
 /*
-#define CERT_INVALID		0
-#define CERT_PUBLIC_KEY		1
-#define CERT_PRIVATE_KEY	2
+#define CERT_INVALID        0
+#define CERT_PUBLIC_KEY        1
+#define CERT_PRIVATE_KEY    2
 */
 
 #ifndef OPENSSL_NO_EC
@@ -475,113 +475,113 @@
 #endif  /* OPENSSL_NO_EC */
 
 typedef struct cert_pkey_st
-	{
-	X509 *x509;
-	EVP_PKEY *privatekey;
-	/* Digest to use when signing */
-	const EVP_MD *digest;
-	} CERT_PKEY;
+    {
+    X509 *x509;
+    EVP_PKEY *privatekey;
+    /* Digest to use when signing */
+    const EVP_MD *digest;
+    } CERT_PKEY;
 
 typedef struct cert_st
-	{
-	/* Current active set */
-	CERT_PKEY *key; /* ALWAYS points to an element of the pkeys array
-			 * Probably it would make more sense to store
-			 * an index, not a pointer. */
+    {
+    /* Current active set */
+    CERT_PKEY *key; /* ALWAYS points to an element of the pkeys array
+             * Probably it would make more sense to store
+             * an index, not a pointer. */
  
-	/* The following masks are for the key and auth
-	 * algorithms that are supported by the certs below */
-	int valid;
-	unsigned long mask_k;
-	unsigned long mask_a;
-	unsigned long export_mask_k;
-	unsigned long export_mask_a;
-	RSA *rsa_tmp;
-	RSA *(*rsa_tmp_cb)(SSL *ssl,int is_export,int keysize);
-	DH *dh_tmp;
-	DH *(*dh_tmp_cb)(SSL *ssl,int is_export,int keysize);
+    /* The following masks are for the key and auth
+     * algorithms that are supported by the certs below */
+    int valid;
+    unsigned long mask_k;
+    unsigned long mask_a;
+    unsigned long export_mask_k;
+    unsigned long export_mask_a;
+    RSA *rsa_tmp;
+    RSA *(*rsa_tmp_cb)(SSL *ssl,int is_export,int keysize);
+    DH *dh_tmp;
+    DH *(*dh_tmp_cb)(SSL *ssl,int is_export,int keysize);
 #ifndef OPENSSL_NO_ECDH
-	EC_KEY *ecdh_tmp;
-	/* Callback for generating ephemeral ECDH keys */
-	EC_KEY *(*ecdh_tmp_cb)(SSL *ssl,int is_export,int keysize);
+    EC_KEY *ecdh_tmp;
+    /* Callback for generating ephemeral ECDH keys */
+    EC_KEY *(*ecdh_tmp_cb)(SSL *ssl,int is_export,int keysize);
 #endif
 
-	CERT_PKEY pkeys[SSL_PKEY_NUM];
+    CERT_PKEY pkeys[SSL_PKEY_NUM];
 
-	int references; /* >1 only if SSL_copy_session_id is used */
-	} CERT;
+    int references; /* >1 only if SSL_copy_session_id is used */
+    } CERT;
 
 
 typedef struct sess_cert_st
-	{
-	STACK_OF(X509) *cert_chain; /* as received from peer (not for SSL2) */
+    {
+    STACK_OF(X509) *cert_chain; /* as received from peer (not for SSL2) */
 
-	/* The 'peer_...' members are used only by clients. */
-	int peer_cert_type;
+    /* The 'peer_...' members are used only by clients. */
+    int peer_cert_type;
 
-	CERT_PKEY *peer_key; /* points to an element of peer_pkeys (never NULL!) */
-	CERT_PKEY peer_pkeys[SSL_PKEY_NUM];
-	/* Obviously we don't have the private keys of these,
-	 * so maybe we shouldn't even use the CERT_PKEY type here. */
+    CERT_PKEY *peer_key; /* points to an element of peer_pkeys (never NULL!) */
+    CERT_PKEY peer_pkeys[SSL_PKEY_NUM];
+    /* Obviously we don't have the private keys of these,
+     * so maybe we shouldn't even use the CERT_PKEY type here. */
 
-	RSA *peer_rsa_tmp; /* not used for SSL 2 */
-	DH *peer_dh_tmp; /* not used for SSL 2 */
+    RSA *peer_rsa_tmp; /* not used for SSL 2 */
+    DH *peer_dh_tmp; /* not used for SSL 2 */
 #ifndef OPENSSL_NO_ECDH
-	EC_KEY *peer_ecdh_tmp;
+    EC_KEY *peer_ecdh_tmp;
 #endif
 
-	int references; /* actually always 1 at the moment */
-	} SESS_CERT;
+    int references; /* actually always 1 at the moment */
+    } SESS_CERT;
 
 
-/*#define MAC_DEBUG	*/
+/*#define MAC_DEBUG    */
 
-/*#define ERR_DEBUG	*/
-/*#define ABORT_DEBUG	*/
+/*#define ERR_DEBUG    */
+/*#define ABORT_DEBUG    */
 /*#define PKT_DEBUG 1   */
-/*#define DES_DEBUG	*/
-/*#define DES_OFB_DEBUG	*/
-/*#define RSA_DEBUG	*/ 
-/*#define IDEA_DEBUG	*/ 
+/*#define DES_DEBUG    */
+/*#define DES_OFB_DEBUG    */
+/*#define RSA_DEBUG    */ 
+/*#define IDEA_DEBUG    */ 
 
 #define FP_ICC  (int (*)(const void *,const void *))
 #define ssl_put_cipher_by_char(ssl,ciph,ptr) \
-		((ssl)->method->put_cipher_by_char((ciph),(ptr)))
+        ((ssl)->method->put_cipher_by_char((ciph),(ptr)))
 #define ssl_get_cipher_by_char(ssl,ptr) \
-		((ssl)->method->get_cipher_by_char(ptr))
+        ((ssl)->method->get_cipher_by_char(ptr))
 
 /* This is for the SSLv3/TLSv1.0 differences in crypto/hash stuff
  * It is a bit of a mess of functions, but hell, think of it as
  * an opaque structure :-) */
 typedef struct ssl3_enc_method
-	{
-	int (*enc)(SSL *, int);
-	int (*mac)(SSL *, unsigned char *, int);
-	int (*setup_key_block)(SSL *);
-	int (*generate_master_secret)(SSL *, unsigned char *, unsigned char *, int);
-	int (*change_cipher_state)(SSL *, int);
-	int (*final_finish_mac)(SSL *,  const char *, int, unsigned char *);
-	int finish_mac_length;
-	int (*cert_verify_mac)(SSL *, int, unsigned char *);
-	const char *client_finished_label;
-	int client_finished_label_len;
-	const char *server_finished_label;
-	int server_finished_label_len;
-	int (*alert_value)(int);
-	int (*export_keying_material)(SSL *, unsigned char *, size_t,
-				      const char *, size_t,
-				      const unsigned char *, size_t,
-				      int use_context);
-	} SSL3_ENC_METHOD;
+    {
+    int (*enc)(SSL *, int);
+    int (*mac)(SSL *, unsigned char *, int);
+    int (*setup_key_block)(SSL *);
+    int (*generate_master_secret)(SSL *, unsigned char *, unsigned char *, int);
+    int (*change_cipher_state)(SSL *, int);
+    int (*final_finish_mac)(SSL *,  const char *, int, unsigned char *);
+    int finish_mac_length;
+    int (*cert_verify_mac)(SSL *, int, unsigned char *);
+    const char *client_finished_label;
+    int client_finished_label_len;
+    const char *server_finished_label;
+    int server_finished_label_len;
+    int (*alert_value)(int);
+    int (*export_keying_material)(SSL *, unsigned char *, size_t,
+                      const char *, size_t,
+                      const unsigned char *, size_t,
+                      int use_context);
+    } SSL3_ENC_METHOD;
 
 #ifndef OPENSSL_NO_COMP
 /* Used for holding the relevant compression methods loaded into SSL_CTX */
 typedef struct ssl3_comp_st
-	{
-	int comp_id;	/* The identifier byte for this compression type */
-	char *name;	/* Text name used for the compression type */
-	COMP_METHOD *method; /* The method :-) */
-	} SSL3_COMP;
+    {
+    int comp_id;    /* The identifier byte for this compression type */
+    char *name;    /* Text name used for the compression type */
+    COMP_METHOD *method; /* The method :-) */
+    } SSL3_COMP;
 #endif
 
 extern SSL3_ENC_METHOD ssl3_undef_enc_method;
@@ -598,190 +598,190 @@ extern SSL3_ENC_METHOD DTLSv1_enc_data;
 #define SSL_IS_DTLS(s) (s->method->version == DTLS1_VERSION)
 
 #define IMPLEMENT_tls_meth_func(version, func_name, s_accept, s_connect, \
-				s_get_meth) \
+                s_get_meth) \
 const SSL_METHOD *func_name(void)  \
-	{ \
-	static const SSL_METHOD func_name##_data= { \
-		version, \
-		tls1_new, \
-		tls1_clear, \
-		tls1_free, \
-		s_accept, \
-		s_connect, \
-		ssl3_read, \
-		ssl3_peek, \
-		ssl3_write, \
-		ssl3_shutdown, \
-		ssl3_renegotiate, \
-		ssl3_renegotiate_check, \
-		ssl3_get_message, \
-		ssl3_read_bytes, \
-		ssl3_write_bytes, \
-		ssl3_dispatch_alert, \
-		ssl3_ctrl, \
-		ssl3_ctx_ctrl, \
-		ssl3_get_cipher_by_char, \
-		ssl3_put_cipher_by_char, \
-		ssl3_pending, \
-		ssl3_num_ciphers, \
-		ssl3_get_cipher, \
-		s_get_meth, \
-		tls1_default_timeout, \
-		&TLSv1_enc_data, \
-		ssl_undefined_void_function, \
-		ssl3_callback_ctrl, \
-		ssl3_ctx_callback_ctrl, \
-	}; \
-	return &func_name##_data; \
-	}
+    { \
+    static const SSL_METHOD func_name##_data= { \
+        version, \
+        tls1_new, \
+        tls1_clear, \
+        tls1_free, \
+        s_accept, \
+        s_connect, \
+        ssl3_read, \
+        ssl3_peek, \
+        ssl3_write, \
+        ssl3_shutdown, \
+        ssl3_renegotiate, \
+        ssl3_renegotiate_check, \
+        ssl3_get_message, \
+        ssl3_read_bytes, \
+        ssl3_write_bytes, \
+        ssl3_dispatch_alert, \
+        ssl3_ctrl, \
+        ssl3_ctx_ctrl, \
+        ssl3_get_cipher_by_char, \
+        ssl3_put_cipher_by_char, \
+        ssl3_pending, \
+        ssl3_num_ciphers, \
+        ssl3_get_cipher, \
+        s_get_meth, \
+        tls1_default_timeout, \
+        &TLSv1_enc_data, \
+        ssl_undefined_void_function, \
+        ssl3_callback_ctrl, \
+        ssl3_ctx_callback_ctrl, \
+    }; \
+    return &func_name##_data; \
+    }
 
 #define IMPLEMENT_ssl3_meth_func(func_name, s_accept, s_connect, s_get_meth) \
 const SSL_METHOD *func_name(void)  \
-	{ \
-	static const SSL_METHOD func_name##_data= { \
-		SSL3_VERSION, \
-		ssl3_new, \
-		ssl3_clear, \
-		ssl3_free, \
-		s_accept, \
-		s_connect, \
-		ssl3_read, \
-		ssl3_peek, \
-		ssl3_write, \
-		ssl3_shutdown, \
-		ssl3_renegotiate, \
-		ssl3_renegotiate_check, \
-		ssl3_get_message, \
-		ssl3_read_bytes, \
-		ssl3_write_bytes, \
-		ssl3_dispatch_alert, \
-		ssl3_ctrl, \
-		ssl3_ctx_ctrl, \
-		ssl3_get_cipher_by_char, \
-		ssl3_put_cipher_by_char, \
-		ssl3_pending, \
-		ssl3_num_ciphers, \
-		ssl3_get_cipher, \
-		s_get_meth, \
-		ssl3_default_timeout, \
-		&SSLv3_enc_data, \
-		ssl_undefined_void_function, \
-		ssl3_callback_ctrl, \
-		ssl3_ctx_callback_ctrl, \
-	}; \
-	return &func_name##_data; \
-	}
+    { \
+    static const SSL_METHOD func_name##_data= { \
+        SSL3_VERSION, \
+        ssl3_new, \
+        ssl3_clear, \
+        ssl3_free, \
+        s_accept, \
+        s_connect, \
+        ssl3_read, \
+        ssl3_peek, \
+        ssl3_write, \
+        ssl3_shutdown, \
+        ssl3_renegotiate, \
+        ssl3_renegotiate_check, \
+        ssl3_get_message, \
+        ssl3_read_bytes, \
+        ssl3_write_bytes, \
+        ssl3_dispatch_alert, \
+        ssl3_ctrl, \
+        ssl3_ctx_ctrl, \
+        ssl3_get_cipher_by_char, \
+        ssl3_put_cipher_by_char, \
+        ssl3_pending, \
+        ssl3_num_ciphers, \
+        ssl3_get_cipher, \
+        s_get_meth, \
+        ssl3_default_timeout, \
+        &SSLv3_enc_data, \
+        ssl_undefined_void_function, \
+        ssl3_callback_ctrl, \
+        ssl3_ctx_callback_ctrl, \
+    }; \
+    return &func_name##_data; \
+    }
 
 #define IMPLEMENT_ssl23_meth_func(func_name, s_accept, s_connect, s_get_meth) \
 const SSL_METHOD *func_name(void)  \
-	{ \
-	static const SSL_METHOD func_name##_data= { \
-	TLS1_2_VERSION, \
-	tls1_new, \
-	tls1_clear, \
-	tls1_free, \
-	s_accept, \
-	s_connect, \
-	ssl23_read, \
-	ssl23_peek, \
-	ssl23_write, \
-	ssl_undefined_function, \
-	ssl_undefined_function, \
-	ssl_ok, \
-	ssl3_get_message, \
-	ssl3_read_bytes, \
-	ssl3_write_bytes, \
-	ssl3_dispatch_alert, \
-	ssl3_ctrl, \
-	ssl3_ctx_ctrl, \
-	ssl23_get_cipher_by_char, \
-	ssl23_put_cipher_by_char, \
-	ssl_undefined_const_function, \
-	ssl23_num_ciphers, \
-	ssl23_get_cipher, \
-	s_get_meth, \
-	ssl23_default_timeout, \
-	&ssl3_undef_enc_method, \
-	ssl_undefined_void_function, \
-	ssl3_callback_ctrl, \
-	ssl3_ctx_callback_ctrl, \
-	}; \
-	return &func_name##_data; \
-	}
+    { \
+    static const SSL_METHOD func_name##_data= { \
+    TLS1_2_VERSION, \
+    tls1_new, \
+    tls1_clear, \
+    tls1_free, \
+    s_accept, \
+    s_connect, \
+    ssl23_read, \
+    ssl23_peek, \
+    ssl23_write, \
+    ssl_undefined_function, \
+    ssl_undefined_function, \
+    ssl_ok, \
+    ssl3_get_message, \
+    ssl3_read_bytes, \
+    ssl3_write_bytes, \
+    ssl3_dispatch_alert, \
+    ssl3_ctrl, \
+    ssl3_ctx_ctrl, \
+    ssl23_get_cipher_by_char, \
+    ssl23_put_cipher_by_char, \
+    ssl_undefined_const_function, \
+    ssl23_num_ciphers, \
+    ssl23_get_cipher, \
+    s_get_meth, \
+    ssl23_default_timeout, \
+    &ssl3_undef_enc_method, \
+    ssl_undefined_void_function, \
+    ssl3_callback_ctrl, \
+    ssl3_ctx_callback_ctrl, \
+    }; \
+    return &func_name##_data; \
+    }
 
 #define IMPLEMENT_ssl2_meth_func(func_name, s_accept, s_connect, s_get_meth) \
 const SSL_METHOD *func_name(void)  \
-	{ \
-	static const SSL_METHOD func_name##_data= { \
-		SSL2_VERSION, \
-		ssl2_new,	/* local */ \
-		ssl2_clear,	/* local */ \
-		ssl2_free,	/* local */ \
-		s_accept, \
-		s_connect, \
-		ssl2_read, \
-		ssl2_peek, \
-		ssl2_write, \
-		ssl2_shutdown, \
-		ssl_ok,	/* NULL - renegotiate */ \
-		ssl_ok,	/* NULL - check renegotiate */ \
-		NULL, /* NULL - ssl_get_message */ \
-		NULL, /* NULL - ssl_get_record */ \
-		NULL, /* NULL - ssl_write_bytes */ \
-		NULL, /* NULL - dispatch_alert */ \
-		ssl2_ctrl,	/* local */ \
-		ssl2_ctx_ctrl,	/* local */ \
-		ssl2_get_cipher_by_char, \
-		ssl2_put_cipher_by_char, \
-		ssl2_pending, \
-		ssl2_num_ciphers, \
-		ssl2_get_cipher, \
-		s_get_meth, \
-		ssl2_default_timeout, \
-		&ssl3_undef_enc_method, \
-		ssl_undefined_void_function, \
-		ssl2_callback_ctrl,	/* local */ \
-		ssl2_ctx_callback_ctrl,	/* local */ \
-	}; \
-	return &func_name##_data; \
-	}
+    { \
+    static const SSL_METHOD func_name##_data= { \
+        SSL2_VERSION, \
+        ssl2_new,    /* local */ \
+        ssl2_clear,    /* local */ \
+        ssl2_free,    /* local */ \
+        s_accept, \
+        s_connect, \
+        ssl2_read, \
+        ssl2_peek, \
+        ssl2_write, \
+        ssl2_shutdown, \
+        ssl_ok,    /* NULL - renegotiate */ \
+        ssl_ok,    /* NULL - check renegotiate */ \
+        NULL, /* NULL - ssl_get_message */ \
+        NULL, /* NULL - ssl_get_record */ \
+        NULL, /* NULL - ssl_write_bytes */ \
+        NULL, /* NULL - dispatch_alert */ \
+        ssl2_ctrl,    /* local */ \
+        ssl2_ctx_ctrl,    /* local */ \
+        ssl2_get_cipher_by_char, \
+        ssl2_put_cipher_by_char, \
+        ssl2_pending, \
+        ssl2_num_ciphers, \
+        ssl2_get_cipher, \
+        s_get_meth, \
+        ssl2_default_timeout, \
+        &ssl3_undef_enc_method, \
+        ssl_undefined_void_function, \
+        ssl2_callback_ctrl,    /* local */ \
+        ssl2_ctx_callback_ctrl,    /* local */ \
+    }; \
+    return &func_name##_data; \
+    }
 
 #define IMPLEMENT_dtls1_meth_func(func_name, s_accept, s_connect, s_get_meth) \
 const SSL_METHOD *func_name(void)  \
-	{ \
-	static const SSL_METHOD func_name##_data= { \
-		DTLS1_VERSION, \
-		dtls1_new, \
-		dtls1_clear, \
-		dtls1_free, \
-		s_accept, \
-		s_connect, \
-		ssl3_read, \
-		ssl3_peek, \
-		ssl3_write, \
-		dtls1_shutdown, \
-		ssl3_renegotiate, \
-		ssl3_renegotiate_check, \
-		dtls1_get_message, \
-		dtls1_read_bytes, \
-		dtls1_write_app_data_bytes, \
-		dtls1_dispatch_alert, \
-		dtls1_ctrl, \
-		ssl3_ctx_ctrl, \
-		ssl3_get_cipher_by_char, \
-		ssl3_put_cipher_by_char, \
-		ssl3_pending, \
-		ssl3_num_ciphers, \
-		dtls1_get_cipher, \
-		s_get_meth, \
-		dtls1_default_timeout, \
-		&DTLSv1_enc_data, \
-		ssl_undefined_void_function, \
-		ssl3_callback_ctrl, \
-		ssl3_ctx_callback_ctrl, \
-	}; \
-	return &func_name##_data; \
-	}
+    { \
+    static const SSL_METHOD func_name##_data= { \
+        DTLS1_VERSION, \
+        dtls1_new, \
+        dtls1_clear, \
+        dtls1_free, \
+        s_accept, \
+        s_connect, \
+        ssl3_read, \
+        ssl3_peek, \
+        ssl3_write, \
+        dtls1_shutdown, \
+        ssl3_renegotiate, \
+        ssl3_renegotiate_check, \
+        dtls1_get_message, \
+        dtls1_read_bytes, \
+        dtls1_write_app_data_bytes, \
+        dtls1_dispatch_alert, \
+        dtls1_ctrl, \
+        ssl3_ctx_ctrl, \
+        ssl3_get_cipher_by_char, \
+        ssl3_put_cipher_by_char, \
+        ssl3_pending, \
+        ssl3_num_ciphers, \
+        dtls1_get_cipher, \
+        s_get_meth, \
+        dtls1_default_timeout, \
+        &DTLSv1_enc_data, \
+        ssl_undefined_void_function, \
+        ssl3_callback_ctrl, \
+        ssl3_ctx_callback_ctrl, \
+    }; \
+    return &func_name##_data; \
+    }
 
 void ssl_clear_cipher_ctx(SSL *s);
 int ssl_clear_bad_session(SSL *s);
@@ -796,21 +796,21 @@ int ssl_get_new_session(SSL *s, int session);
 int ssl_get_prev_session(SSL *s, unsigned char *session,int len, const unsigned char *limit);
 int ssl_cipher_id_cmp(const SSL_CIPHER *a,const SSL_CIPHER *b);
 DECLARE_OBJ_BSEARCH_GLOBAL_CMP_FN(SSL_CIPHER, SSL_CIPHER,
-				  ssl_cipher_id);
+                  ssl_cipher_id);
 int ssl_cipher_ptr_id_cmp(const SSL_CIPHER * const *ap,
-			const SSL_CIPHER * const *bp);
+            const SSL_CIPHER * const *bp);
 STACK_OF(SSL_CIPHER) *ssl_bytes_to_cipher_list(SSL *s,unsigned char *p,int num,
-					       STACK_OF(SSL_CIPHER) **skp);
+                           STACK_OF(SSL_CIPHER) **skp);
 int ssl_cipher_list_to_bytes(SSL *s,STACK_OF(SSL_CIPHER) *sk,unsigned char *p,
                              int (*put_cb)(const SSL_CIPHER *, unsigned char *));
 STACK_OF(SSL_CIPHER) *ssl_create_cipher_list(const SSL_METHOD *meth,
-					     STACK_OF(SSL_CIPHER) **pref,
-					     STACK_OF(SSL_CIPHER) **sorted,
-					     const char *rule_str);
+                         STACK_OF(SSL_CIPHER) **pref,
+                         STACK_OF(SSL_CIPHER) **sorted,
+                         const char *rule_str);
 void ssl_update_cache(SSL *s, int mode);
 int ssl_cipher_get_evp(const SSL_SESSION *s,const EVP_CIPHER **enc,
-		       const EVP_MD **md,int *mac_pkey_type,int *mac_secret_size, SSL_COMP **comp);
-int ssl_get_handshake_digest(int i,long *mask,const EVP_MD **md);			   
+               const EVP_MD **md,int *mac_pkey_type,int *mac_secret_size, SSL_COMP **comp);
+int ssl_get_handshake_digest(int i,long *mask,const EVP_MD **md);               
 int ssl_verify_cert_chain(SSL *s,STACK_OF(X509) *sk);
 int ssl_undefined_function(SSL *s);
 int ssl_undefined_void_function(void);
@@ -838,21 +838,21 @@ void ssl2_return_error(SSL *s,int reason);
 void ssl2_write_error(SSL *s);
 int ssl2_num_ciphers(void);
 const SSL_CIPHER *ssl2_get_cipher(unsigned int u);
-int	ssl2_new(SSL *s);
-void	ssl2_free(SSL *s);
-int	ssl2_accept(SSL *s);
-int	ssl2_connect(SSL *s);
-int	ssl2_read(SSL *s, void *buf, int len);
-int	ssl2_peek(SSL *s, void *buf, int len);
-int	ssl2_write(SSL *s, const void *buf, int len);
-int	ssl2_shutdown(SSL *s);
-void	ssl2_clear(SSL *s);
-long	ssl2_ctrl(SSL *s,int cmd, long larg, void *parg);
-long	ssl2_ctx_ctrl(SSL_CTX *s,int cmd, long larg, void *parg);
-long	ssl2_callback_ctrl(SSL *s,int cmd, void (*fp)(void));
-long	ssl2_ctx_callback_ctrl(SSL_CTX *s,int cmd, void (*fp)(void));
-int	ssl2_pending(const SSL *s);
-long	ssl2_default_timeout(void );
+int    ssl2_new(SSL *s);
+void    ssl2_free(SSL *s);
+int    ssl2_accept(SSL *s);
+int    ssl2_connect(SSL *s);
+int    ssl2_read(SSL *s, void *buf, int len);
+int    ssl2_peek(SSL *s, void *buf, int len);
+int    ssl2_write(SSL *s, const void *buf, int len);
+int    ssl2_shutdown(SSL *s);
+void    ssl2_clear(SSL *s);
+long    ssl2_ctrl(SSL *s,int cmd, long larg, void *parg);
+long    ssl2_ctx_ctrl(SSL_CTX *s,int cmd, long larg, void *parg);
+long    ssl2_callback_ctrl(SSL *s,int cmd, void (*fp)(void));
+long    ssl2_ctx_callback_ctrl(SSL_CTX *s,int cmd, void (*fp)(void));
+int    ssl2_pending(const SSL *s);
+long    ssl2_default_timeout(void );
 
 const SSL_CIPHER *ssl3_get_cipher_by_char(const unsigned char *p);
 int ssl3_put_cipher_by_char(const SSL_CIPHER *c,unsigned char *p);
@@ -868,7 +868,7 @@ void ssl3_cleanup_key_block(SSL *s);
 int ssl3_do_write(SSL *s,int type);
 int ssl3_send_alert(SSL *s,int level, int desc);
 int ssl3_generate_master_secret(SSL *s, unsigned char *out,
-	unsigned char *p, int len);
+    unsigned char *p, int len);
 int ssl3_get_req_cert_type(SSL *s,unsigned char *p);
 long ssl3_get_message(SSL *s, int st1, int stn, int mt, long max, int *ok);
 int ssl3_send_finished(SSL *s, int a, int b, const char *sender,int slen);
@@ -887,27 +887,27 @@ int n_ssl3_mac(SSL *ssl, unsigned char *md, int send_data);
 void ssl3_free_digest_list(SSL *s);
 unsigned long ssl3_output_cert_chain(SSL *s, X509 *x);
 SSL_CIPHER *ssl3_choose_cipher(SSL *ssl,STACK_OF(SSL_CIPHER) *clnt,
-			       STACK_OF(SSL_CIPHER) *srvr);
-int	ssl3_setup_buffers(SSL *s);
-int	ssl3_setup_read_buffer(SSL *s);
-int	ssl3_setup_write_buffer(SSL *s);
-int	ssl3_release_read_buffer(SSL *s);
-int	ssl3_release_write_buffer(SSL *s);
-int	ssl3_digest_cached_records(SSL *s);
-int	ssl3_new(SSL *s);
-void	ssl3_free(SSL *s);
-int	ssl3_accept(SSL *s);
-int	ssl3_connect(SSL *s);
-int	ssl3_read(SSL *s, void *buf, int len);
-int	ssl3_peek(SSL *s, void *buf, int len);
-int	ssl3_write(SSL *s, const void *buf, int len);
-int	ssl3_shutdown(SSL *s);
-void	ssl3_clear(SSL *s);
-long	ssl3_ctrl(SSL *s,int cmd, long larg, void *parg);
-long	ssl3_ctx_ctrl(SSL_CTX *s,int cmd, long larg, void *parg);
-long	ssl3_callback_ctrl(SSL *s,int cmd, void (*fp)(void));
-long	ssl3_ctx_callback_ctrl(SSL_CTX *s,int cmd, void (*fp)(void));
-int	ssl3_pending(const SSL *s);
+                   STACK_OF(SSL_CIPHER) *srvr);
+int    ssl3_setup_buffers(SSL *s);
+int    ssl3_setup_read_buffer(SSL *s);
+int    ssl3_setup_write_buffer(SSL *s);
+int    ssl3_release_read_buffer(SSL *s);
+int    ssl3_release_write_buffer(SSL *s);
+int    ssl3_digest_cached_records(SSL *s);
+int    ssl3_new(SSL *s);
+void    ssl3_free(SSL *s);
+int    ssl3_accept(SSL *s);
+int    ssl3_connect(SSL *s);
+int    ssl3_read(SSL *s, void *buf, int len);
+int    ssl3_peek(SSL *s, void *buf, int len);
+int    ssl3_write(SSL *s, const void *buf, int len);
+int    ssl3_shutdown(SSL *s);
+void    ssl3_clear(SSL *s);
+long    ssl3_ctrl(SSL *s,int cmd, long larg, void *parg);
+long    ssl3_ctx_ctrl(SSL_CTX *s,int cmd, long larg, void *parg);
+long    ssl3_callback_ctrl(SSL *s,int cmd, void (*fp)(void));
+long    ssl3_ctx_callback_ctrl(SSL_CTX *s,int cmd, void (*fp)(void));
+int    ssl3_pending(const SSL *s);
 
 void ssl3_record_sequence_update(unsigned char *seq);
 int ssl3_do_change_cipher_spec(SSL *ssl);
@@ -929,10 +929,10 @@ int dtls1_read_bytes(SSL *s, int type, unsigned char *buf, int len, int peek);
 int ssl3_do_compress(SSL *ssl);
 int ssl3_do_uncompress(SSL *ssl);
 int ssl3_write_pending(SSL *s, int type, const unsigned char *buf,
-	unsigned int len);
+    unsigned int len);
 unsigned char *dtls1_set_message_header(SSL *s, 
-	unsigned char *p, unsigned char mt,	unsigned long len, 
-	unsigned long frag_off, unsigned long frag_len);
+    unsigned char *p, unsigned char mt,    unsigned long len, 
+    unsigned long frag_off, unsigned long frag_len);
 
 int dtls1_write_app_data_bytes(SSL *s, int type, const void *buf, int len);
 int dtls1_write_bytes(SSL *s, int type, const void *buf, int len);
@@ -943,7 +943,7 @@ unsigned long dtls1_output_cert_chain(SSL *s, X509 *x);
 int dtls1_read_failed(SSL *s, int code);
 int dtls1_buffer_message(SSL *s, int ccs);
 int dtls1_retransmit_message(SSL *s, unsigned short seq, 
-	unsigned long frag_off, int *found);
+    unsigned long frag_off, int *found);
 int dtls1_get_queue_priority(unsigned short seq, int is_ccs);
 int dtls1_retransmit_buffered_messages(SSL *s);
 void dtls1_clear_record_buffer(SSL *s);
@@ -1024,8 +1024,8 @@ long tls1_ctrl(SSL *s,int cmd, long larg, void *parg);
 long tls1_callback_ctrl(SSL *s,int cmd, void (*fp)(void));
 
 int dtls1_new(SSL *s);
-int	dtls1_accept(SSL *s);
-int	dtls1_connect(SSL *s);
+int    dtls1_accept(SSL *s);
+int    dtls1_connect(SSL *s);
 void dtls1_free(SSL *s);
 void dtls1_clear(SSL *s);
 long dtls1_ctrl(SSL *s,int cmd, long larg, void *parg);
@@ -1034,7 +1034,7 @@ int dtls1_shutdown(SSL *s);
 long dtls1_get_message(SSL *s, int st1, int stn, int mt, long max, int *ok);
 int dtls1_get_record(SSL *s);
 int do_dtls1_write(SSL *s, int type, const unsigned char *buf,
-	unsigned int len);
+    unsigned int len);
 int dtls1_dispatch_alert(SSL *s);
 int dtls1_enc(SSL *s, int snd);
 
@@ -1045,14 +1045,14 @@ int tls1_change_cipher_state(SSL *s, int which);
 int tls1_setup_key_block(SSL *s);
 int tls1_enc(SSL *s, int snd);
 int tls1_final_finish_mac(SSL *s,
-	const char *str, int slen, unsigned char *p);
+    const char *str, int slen, unsigned char *p);
 int tls1_cert_verify_mac(SSL *s, int md_nid, unsigned char *p);
 int tls1_mac(SSL *ssl, unsigned char *md, int snd);
 int tls1_generate_master_secret(SSL *s, unsigned char *out,
-	unsigned char *p, int len);
+    unsigned char *p, int len);
 int tls1_export_keying_material(SSL *s, unsigned char *out, size_t olen,
-	const char *label, size_t llen,
-	const unsigned char *p, size_t plen, int use_context);
+    const char *label, size_t llen,
+    const unsigned char *p, size_t plen, int use_context);
 int tls1_alert_code(int code);
 int ssl3_alert_code(int code);
 int ssl_ok(SSL *s);
@@ -1080,15 +1080,15 @@ int ssl_check_clienthello_tlsext_late(SSL *s);
 int ssl_check_serverhello_tlsext(SSL *s);
 
 #ifdef OPENSSL_NO_SHA256
-#define tlsext_tick_md	EVP_sha1
+#define tlsext_tick_md    EVP_sha1
 #else
-#define tlsext_tick_md	EVP_sha256
+#define tlsext_tick_md    EVP_sha256
 #endif
 int tls1_process_ticket(SSL *s, unsigned char *session_id, int len,
-				const unsigned char *limit, SSL_SESSION **ret);
+                const unsigned char *limit, SSL_SESSION **ret);
 
 int tls12_get_sigandhash(unsigned char *p, const EVP_PKEY *pk,
-				const EVP_MD *md);
+                const EVP_MD *md);
 int tls12_get_sigid(const EVP_PKEY *pk);
 const EVP_MD *tls12_get_hash(unsigned char hash_alg);
 
@@ -1096,13 +1096,13 @@ const EVP_MD *tls12_get_hash(unsigned char hash_alg);
 EVP_MD_CTX* ssl_replace_hash(EVP_MD_CTX **hash,const EVP_MD *md) ;
 void ssl_clear_hash_ctx(EVP_MD_CTX **hash);
 int ssl_add_serverhello_renegotiate_ext(SSL *s, unsigned char *p, int *len,
-					int maxlen);
+                    int maxlen);
 int ssl_parse_serverhello_renegotiate_ext(SSL *s, unsigned char *d, int len,
-					  int *al);
+                      int *al);
 int ssl_add_clienthello_renegotiate_ext(SSL *s, unsigned char *p, int *len,
-					int maxlen);
+                    int maxlen);
 int ssl_parse_clienthello_renegotiate_ext(SSL *s, unsigned char *d, int len,
-					  int *al);
+                      int *al);
 long ssl_get_algorithm2(SSL *s);
 int tls1_process_sigalgs(SSL *s, const unsigned char *data, int dsize);
 int tls12_get_req_sig_algs(SSL *s, unsigned char *p);
@@ -1114,27 +1114,27 @@ int ssl_parse_serverhello_use_srtp_ext(SSL *s, unsigned char *d, int len,int *al
 
 /* s3_cbc.c */
 void ssl3_cbc_copy_mac(unsigned char* out,
-		       const SSL3_RECORD *rec,
-		       unsigned md_size,unsigned orig_len);
+               const SSL3_RECORD *rec,
+               unsigned md_size,unsigned orig_len);
 int ssl3_cbc_remove_padding(const SSL* s,
-			    SSL3_RECORD *rec,
-			    unsigned block_size,
-			    unsigned mac_size);
+                SSL3_RECORD *rec,
+                unsigned block_size,
+                unsigned mac_size);
 int tls1_cbc_remove_padding(const SSL* s,
-			    SSL3_RECORD *rec,
-			    unsigned block_size,
-			    unsigned mac_size);
+                SSL3_RECORD *rec,
+                unsigned block_size,
+                unsigned mac_size);
 char ssl3_cbc_record_digest_supported(const EVP_MD_CTX *ctx);
 void ssl3_cbc_digest_record(
-	const EVP_MD_CTX *ctx,
-	unsigned char* md_out,
-	size_t* md_out_size,
-	const unsigned char header[13],
-	const unsigned char *data,
-	size_t data_plus_mac_size,
-	size_t data_plus_mac_plus_padding_size,
-	const unsigned char *mac_secret,
-	unsigned mac_secret_length,
-	char is_sslv3);
+    const EVP_MD_CTX *ctx,
+    unsigned char* md_out,
+    size_t* md_out_size,
+    const unsigned char header[13],
+    const unsigned char *data,
+    size_t data_plus_mac_size,
+    size_t data_plus_mac_plus_padding_size,
+    const unsigned char *mac_secret,
+    unsigned mac_secret_length,
+    char is_sslv3);
 
 #endif

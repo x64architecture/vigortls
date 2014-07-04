@@ -69,45 +69,45 @@
 #define ERR_REASON(reason) ERR_PACK(ERR_LIB_BIO,0,reason)
 
 static ERR_STRING_DATA BIO_str_functs[]=
-	{
-{ERR_FUNC(BIO_F_ACPT_STATE),	"ACPT_STATE"},
-{ERR_FUNC(BIO_F_BIO_ACCEPT),	"BIO_accept"},
-{ERR_FUNC(BIO_F_BIO_BER_GET_HEADER),	"BIO_BER_GET_HEADER"},
-{ERR_FUNC(BIO_F_BIO_CALLBACK_CTRL),	"BIO_callback_ctrl"},
-{ERR_FUNC(BIO_F_BIO_CTRL),	"BIO_ctrl"},
-{ERR_FUNC(BIO_F_BIO_GETHOSTBYNAME),	"BIO_gethostbyname"},
-{ERR_FUNC(BIO_F_BIO_GETS),	"BIO_gets"},
-{ERR_FUNC(BIO_F_BIO_GET_ACCEPT_SOCKET),	"BIO_get_accept_socket"},
-{ERR_FUNC(BIO_F_BIO_GET_HOST_IP),	"BIO_get_host_ip"},
-{ERR_FUNC(BIO_F_BIO_GET_PORT),	"BIO_get_port"},
-{ERR_FUNC(BIO_F_BIO_MAKE_PAIR),	"BIO_MAKE_PAIR"},
-{ERR_FUNC(BIO_F_BIO_NEW),	"BIO_new"},
-{ERR_FUNC(BIO_F_BIO_NEW_FILE),	"BIO_new_file"},
-{ERR_FUNC(BIO_F_BIO_NEW_MEM_BUF),	"BIO_new_mem_buf"},
-{ERR_FUNC(BIO_F_BIO_NREAD),	"BIO_nread"},
-{ERR_FUNC(BIO_F_BIO_NREAD0),	"BIO_nread0"},
-{ERR_FUNC(BIO_F_BIO_NWRITE),	"BIO_nwrite"},
-{ERR_FUNC(BIO_F_BIO_NWRITE0),	"BIO_nwrite0"},
-{ERR_FUNC(BIO_F_BIO_PUTS),	"BIO_puts"},
-{ERR_FUNC(BIO_F_BIO_READ),	"BIO_read"},
-{ERR_FUNC(BIO_F_BIO_SOCK_INIT),	"BIO_sock_init"},
-{ERR_FUNC(BIO_F_BIO_WRITE),	"BIO_write"},
-{ERR_FUNC(BIO_F_BUFFER_CTRL),	"BUFFER_CTRL"},
-{ERR_FUNC(BIO_F_CONN_CTRL),	"CONN_CTRL"},
-{ERR_FUNC(BIO_F_CONN_STATE),	"CONN_STATE"},
-{ERR_FUNC(BIO_F_DGRAM_SCTP_READ),	"DGRAM_SCTP_READ"},
-{ERR_FUNC(BIO_F_FILE_CTRL),	"FILE_CTRL"},
-{ERR_FUNC(BIO_F_FILE_READ),	"FILE_READ"},
-{ERR_FUNC(BIO_F_LINEBUFFER_CTRL),	"LINEBUFFER_CTRL"},
-{ERR_FUNC(BIO_F_MEM_READ),	"MEM_READ"},
-{ERR_FUNC(BIO_F_MEM_WRITE),	"MEM_WRITE"},
-{ERR_FUNC(BIO_F_SSL_NEW),	"SSL_new"},
-{ERR_FUNC(BIO_F_WSASTARTUP),	"WSASTARTUP"},
+    {
+{ERR_FUNC(BIO_F_ACPT_STATE),    "ACPT_STATE"},
+{ERR_FUNC(BIO_F_BIO_ACCEPT),    "BIO_accept"},
+{ERR_FUNC(BIO_F_BIO_BER_GET_HEADER),    "BIO_BER_GET_HEADER"},
+{ERR_FUNC(BIO_F_BIO_CALLBACK_CTRL),    "BIO_callback_ctrl"},
+{ERR_FUNC(BIO_F_BIO_CTRL),    "BIO_ctrl"},
+{ERR_FUNC(BIO_F_BIO_GETHOSTBYNAME),    "BIO_gethostbyname"},
+{ERR_FUNC(BIO_F_BIO_GETS),    "BIO_gets"},
+{ERR_FUNC(BIO_F_BIO_GET_ACCEPT_SOCKET),    "BIO_get_accept_socket"},
+{ERR_FUNC(BIO_F_BIO_GET_HOST_IP),    "BIO_get_host_ip"},
+{ERR_FUNC(BIO_F_BIO_GET_PORT),    "BIO_get_port"},
+{ERR_FUNC(BIO_F_BIO_MAKE_PAIR),    "BIO_MAKE_PAIR"},
+{ERR_FUNC(BIO_F_BIO_NEW),    "BIO_new"},
+{ERR_FUNC(BIO_F_BIO_NEW_FILE),    "BIO_new_file"},
+{ERR_FUNC(BIO_F_BIO_NEW_MEM_BUF),    "BIO_new_mem_buf"},
+{ERR_FUNC(BIO_F_BIO_NREAD),    "BIO_nread"},
+{ERR_FUNC(BIO_F_BIO_NREAD0),    "BIO_nread0"},
+{ERR_FUNC(BIO_F_BIO_NWRITE),    "BIO_nwrite"},
+{ERR_FUNC(BIO_F_BIO_NWRITE0),    "BIO_nwrite0"},
+{ERR_FUNC(BIO_F_BIO_PUTS),    "BIO_puts"},
+{ERR_FUNC(BIO_F_BIO_READ),    "BIO_read"},
+{ERR_FUNC(BIO_F_BIO_SOCK_INIT),    "BIO_sock_init"},
+{ERR_FUNC(BIO_F_BIO_WRITE),    "BIO_write"},
+{ERR_FUNC(BIO_F_BUFFER_CTRL),    "BUFFER_CTRL"},
+{ERR_FUNC(BIO_F_CONN_CTRL),    "CONN_CTRL"},
+{ERR_FUNC(BIO_F_CONN_STATE),    "CONN_STATE"},
+{ERR_FUNC(BIO_F_DGRAM_SCTP_READ),    "DGRAM_SCTP_READ"},
+{ERR_FUNC(BIO_F_FILE_CTRL),    "FILE_CTRL"},
+{ERR_FUNC(BIO_F_FILE_READ),    "FILE_READ"},
+{ERR_FUNC(BIO_F_LINEBUFFER_CTRL),    "LINEBUFFER_CTRL"},
+{ERR_FUNC(BIO_F_MEM_READ),    "MEM_READ"},
+{ERR_FUNC(BIO_F_MEM_WRITE),    "MEM_WRITE"},
+{ERR_FUNC(BIO_F_SSL_NEW),    "SSL_new"},
+{ERR_FUNC(BIO_F_WSASTARTUP),    "WSASTARTUP"},
 {0,NULL}
-	};
+    };
 
 static ERR_STRING_DATA BIO_str_reasons[]=
-	{
+    {
 {ERR_REASON(BIO_R_ACCEPT_ERROR)          ,"accept error"},
 {ERR_REASON(BIO_R_BAD_FOPEN_MODE)        ,"bad fopen mode"},
 {ERR_REASON(BIO_R_BAD_HOSTNAME_LOOKUP)   ,"bad hostname lookup"},
@@ -138,18 +138,18 @@ static ERR_STRING_DATA BIO_str_reasons[]=
 {ERR_REASON(BIO_R_WRITE_TO_READ_ONLY_BIO),"write to read only BIO"},
 {ERR_REASON(BIO_R_WSASTARTUP)            ,"WSAStartup"},
 {0,NULL}
-	};
+    };
 
 #endif
 
 void ERR_load_BIO_strings(void)
-	{
+    {
 #ifndef OPENSSL_NO_ERR
 
-	if (ERR_func_error_string(BIO_str_functs[0].error) == NULL)
-		{
-		ERR_load_strings(0,BIO_str_functs);
-		ERR_load_strings(0,BIO_str_reasons);
-		}
+    if (ERR_func_error_string(BIO_str_functs[0].error) == NULL)
+        {
+        ERR_load_strings(0,BIO_str_functs);
+        ERR_load_strings(0,BIO_str_reasons);
+        }
 #endif
-	}
+    }

@@ -117,26 +117,26 @@
 
 #ifdef TERMIOS
 #include <termios.h>
-#define TTY_STRUCT		struct termios
-#define TTY_FLAGS		c_lflag
-#define	TTY_get(tty,data)	tcgetattr(tty,data)
-#define TTY_set(tty,data)	tcsetattr(tty,TCSANOW,data)
+#define TTY_STRUCT        struct termios
+#define TTY_FLAGS        c_lflag
+#define    TTY_get(tty,data)    tcgetattr(tty,data)
+#define TTY_set(tty,data)    tcsetattr(tty,TCSANOW,data)
 #endif
 
 #ifdef TERMIO
 #include <termio.h>
-#define TTY_STRUCT		struct termio
-#define TTY_FLAGS		c_lflag
-#define TTY_get(tty,data)	ioctl(tty,TCGETA,data)
-#define TTY_set(tty,data)	ioctl(tty,TCSETA,data)
+#define TTY_STRUCT        struct termio
+#define TTY_FLAGS        c_lflag
+#define TTY_get(tty,data)    ioctl(tty,TCGETA,data)
+#define TTY_set(tty,data)    ioctl(tty,TCSETA,data)
 #endif
 
 #ifdef SGTTY
 #include <sgtty.h>
-#define TTY_STRUCT		struct sgttyb
-#define TTY_FLAGS		sg_flags
-#define TTY_get(tty,data)	ioctl(tty,TIOCGETP,data)
-#define TTY_set(tty,data)	ioctl(tty,TIOCSETP,data)
+#define TTY_STRUCT        struct sgttyb
+#define TTY_FLAGS        sg_flags
+#define TTY_get(tty,data)    ioctl(tty,TIOCGETP,data)
+#define TTY_set(tty,data)    ioctl(tty,TIOCSETP,data)
 #endif
 
 #if !defined(_LIBC) && !defined(OPENSSL_SYS_MSDOS)
@@ -167,231 +167,231 @@ static int noecho_fgets(char *buf, int size, FILE *tty);
 static jmp_buf save;
 
 int des_read_pw_string(char *buf, int length, const char *prompt,
-	     int verify)
-	{
-	char buff[BUFSIZ];
-	int ret;
+         int verify)
+    {
+    char buff[BUFSIZ];
+    int ret;
 
-	ret=des_read_pw(buf,buff,(length>BUFSIZ)?BUFSIZ:length,prompt,verify);
-	OPENSSL_cleanse(buff,BUFSIZ);
-	return (ret);
-	}
+    ret=des_read_pw(buf,buff,(length>BUFSIZ)?BUFSIZ:length,prompt,verify);
+    OPENSSL_cleanse(buff,BUFSIZ);
+    return (ret);
+    }
 
 static void read_till_nl(FILE *in)
-	{
+    {
 #define SIZE 4
-	char buf[SIZE+1];
+    char buf[SIZE+1];
 
-	do	{
-		fgets(buf,SIZE,in);
-		} while (strchr(buf,'\n') == NULL);
-	}
+    do    {
+        fgets(buf,SIZE,in);
+        } while (strchr(buf,'\n') == NULL);
+    }
 
 
 /* return 0 if ok, 1 (or -1) otherwise */
 int des_read_pw(char *buf, char *buff, int size, const char *prompt,
-	     int verify)
-	{
+         int verify)
+    {
 #if !defined(OPENSSL_SYS_MSDOS)
-	TTY_STRUCT tty_orig,tty_new;
+    TTY_STRUCT tty_orig,tty_new;
 #endif
-	int number;
-	int ok;
-	/* statics are simply to avoid warnings about longjmp clobbering
-	   things */
-	static int ps;
-	int is_a_tty;
-	static FILE *tty;
-	char *p;
+    int number;
+    int ok;
+    /* statics are simply to avoid warnings about longjmp clobbering
+       things */
+    static int ps;
+    int is_a_tty;
+    static FILE *tty;
+    char *p;
 
-	if (setjmp(save))
-		{
-		ok=0;
-		goto error;
-		}
+    if (setjmp(save))
+        {
+        ok=0;
+        goto error;
+        }
 
-	number=5;
-	ok=0;
-	ps=0;
-	is_a_tty=1;
-	tty=NULL;
+    number=5;
+    ok=0;
+    ps=0;
+    is_a_tty=1;
+    tty=NULL;
 
 #ifdef OPENSSL_SYS_MSDOS
-	if ((tty=fopen("con","r")) == NULL)
-		tty=stdin;
+    if ((tty=fopen("con","r")) == NULL)
+        tty=stdin;
 #else
-	if ((tty=fopen("/dev/tty","r")) == NULL)
-		tty=stdin;
+    if ((tty=fopen("/dev/tty","r")) == NULL)
+        tty=stdin;
 #endif
 
 #if defined(TTY_get) && !defined(OPENSSL_SYS_VMS)
-	if (TTY_get(fileno(tty),&tty_orig) == -1)
-		{
+    if (TTY_get(fileno(tty),&tty_orig) == -1)
+        {
 #ifdef ENOTTY
-		if (errno == ENOTTY)
-			is_a_tty=0;
-		else
+        if (errno == ENOTTY)
+            is_a_tty=0;
+        else
 #endif
 #ifdef EINVAL
-		/* Ariel Glenn ariel@columbia.edu reports that solaris
-		 * can return EINVAL instead.  This should be ok */
-		if (errno == EINVAL)
-			is_a_tty=0;
-		else
+        /* Ariel Glenn ariel@columbia.edu reports that solaris
+         * can return EINVAL instead.  This should be ok */
+        if (errno == EINVAL)
+            is_a_tty=0;
+        else
 #endif
-			return (-1);
-		}
-	memcpy(&(tty_new),&(tty_orig),sizeof(tty_orig));
+            return (-1);
+        }
+    memcpy(&(tty_new),&(tty_orig),sizeof(tty_orig));
 #endif
 
-	pushsig();
-	ps=1;
+    pushsig();
+    ps=1;
 
 #ifdef TTY_FLAGS
-	tty_new.TTY_FLAGS &= ~ECHO;
+    tty_new.TTY_FLAGS &= ~ECHO;
 #endif
 
 #if defined(TTY_set)
-	if (is_a_tty && (TTY_set(fileno(tty),&tty_new) == -1))
-		return (-1);
+    if (is_a_tty && (TTY_set(fileno(tty),&tty_new) == -1))
+        return (-1);
 #endif
-	ps=2;
+    ps=2;
 
-	while ((!ok) && (number--))
-		{
-		fputs(prompt,stderr);
-		fflush(stderr);
+    while ((!ok) && (number--))
+        {
+        fputs(prompt,stderr);
+        fflush(stderr);
 
-		buf[0]='\0';
-		fgets(buf,size,tty);
-		if (feof(tty)) goto error;
-		if (ferror(tty)) goto error;
-		if ((p=(char *)strchr(buf,'\n')) != NULL)
-			*p='\0';
-		else	read_till_nl(tty);
-		if (verify)
-			{
-			fprintf(stderr,"\nVerifying password - %s",prompt);
-			fflush(stderr);
-			buff[0]='\0';
-			fgets(buff,size,tty);
-			if (feof(tty)) goto error;
-			if ((p=(char *)strchr(buff,'\n')) != NULL)
-				*p='\0';
-			else	read_till_nl(tty);
-				
-			if (strcmp(buf,buff) != 0)
-				{
-				fprintf(stderr,"\nVerify failure");
-				fflush(stderr);
-				break;
-				/* continue; */
-				}
-			}
-		ok=1;
-		}
+        buf[0]='\0';
+        fgets(buf,size,tty);
+        if (feof(tty)) goto error;
+        if (ferror(tty)) goto error;
+        if ((p=(char *)strchr(buf,'\n')) != NULL)
+            *p='\0';
+        else    read_till_nl(tty);
+        if (verify)
+            {
+            fprintf(stderr,"\nVerifying password - %s",prompt);
+            fflush(stderr);
+            buff[0]='\0';
+            fgets(buff,size,tty);
+            if (feof(tty)) goto error;
+            if ((p=(char *)strchr(buff,'\n')) != NULL)
+                *p='\0';
+            else    read_till_nl(tty);
+                
+            if (strcmp(buf,buff) != 0)
+                {
+                fprintf(stderr,"\nVerify failure");
+                fflush(stderr);
+                break;
+                /* continue; */
+                }
+            }
+        ok=1;
+        }
 
 error:
-	fprintf(stderr,"\n");
+    fprintf(stderr,"\n");
 #if 0
-	perror("fgets(tty)");
+    perror("fgets(tty)");
 #endif
-	/* What can we do if there is an error? */
+    /* What can we do if there is an error? */
 #if defined(TTY_set)
-	if (ps >= 2) TTY_set(fileno(tty),&tty_orig);
+    if (ps >= 2) TTY_set(fileno(tty),&tty_orig);
 #endif
-	
-	if (ps >= 1) popsig();
-	if (stdin != tty) fclose(tty);
-	return (!ok);
-	}
+    
+    if (ps >= 1) popsig();
+    if (stdin != tty) fclose(tty);
+    return (!ok);
+    }
 
 static void pushsig(void)
-	{
-	int i;
+    {
+    int i;
 #ifdef SIGACTION
-	struct sigaction sa;
+    struct sigaction sa;
 
-	memset(&sa,0,sizeof sa);
-	sa.sa_handler=recsig;
+    memset(&sa,0,sizeof sa);
+    sa.sa_handler=recsig;
 #endif
 
-	for (i=1; i<NX509_SIG; i++)
-		{
+    for (i=1; i<NX509_SIG; i++)
+        {
 #ifdef SIGUSR1
-		if (i == SIGUSR1)
-			continue;
+        if (i == SIGUSR1)
+            continue;
 #endif
 #ifdef SIGUSR2
-		if (i == SIGUSR2)
-			continue;
+        if (i == SIGUSR2)
+            continue;
 #endif
 #ifdef SIGACTION
-		sigaction(i,&sa,&savsig[i]);
+        sigaction(i,&sa,&savsig[i]);
 #else
-		savsig[i]=signal(i,recsig);
+        savsig[i]=signal(i,recsig);
 #endif
-		}
+        }
 
 #ifdef SIGWINCH
-	signal(SIGWINCH,SIG_DFL);
+    signal(SIGWINCH,SIG_DFL);
 #endif
-	}
+    }
 
 static void popsig(void)
-	{
-	int i;
+    {
+    int i;
 
-	for (i=1; i<NX509_SIG; i++)
-		{
+    for (i=1; i<NX509_SIG; i++)
+        {
 #ifdef SIGUSR1
-		if (i == SIGUSR1)
-			continue;
+        if (i == SIGUSR1)
+            continue;
 #endif
 #ifdef SIGUSR2
-		if (i == SIGUSR2)
-			continue;
+        if (i == SIGUSR2)
+            continue;
 #endif
 #ifdef SIGACTION
-		sigaction(i,&savsig[i],NULL);
+        sigaction(i,&savsig[i],NULL);
 #else
-		signal(i,savsig[i]);
+        signal(i,savsig[i]);
 #endif
-		}
-	}
+        }
+    }
 
 static void recsig(int i)
-	{
-	longjmp(save,1);
+    {
+    longjmp(save,1);
 #ifdef LINT
-	i=i;
+    i=i;
 #endif
-	}
+    }
 
 #ifdef OPENSSL_SYS_MSDOS
 static int noecho_fgets(char *buf, int size, FILE *tty)
-	{
-	int i;
-	char *p;
+    {
+    int i;
+    char *p;
 
-	p=buf;
-	for (;;)
-		{
-		if (size == 0)
-			{
-			*p='\0';
-			break;
-			}
-		size--;
-		i=getch();
-		if (i == '\r') i='\n';
-		*(p++)=i;
-		if (i == '\n')
-			{
-			*p='\0';
-			break;
-			}
-		}
-	return (strlen(buf));
-	}
+    p=buf;
+    for (;;)
+        {
+        if (size == 0)
+            {
+            *p='\0';
+            break;
+            }
+        size--;
+        i=getch();
+        if (i == '\r') i='\n';
+        *(p++)=i;
+        if (i == '\n')
+            {
+            *p='\0';
+            break;
+            }
+        }
+    return (strlen(buf));
+    }
 #endif

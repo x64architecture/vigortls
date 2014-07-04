@@ -64,35 +64,35 @@
 #include <openssl/bn.h>
 
 DSA_SIG * DSA_do_sign(const unsigned char *dgst, int dlen, DSA *dsa)
-	{
-	return dsa->meth->dsa_do_sign(dgst, dlen, dsa);
-	}
+    {
+    return dsa->meth->dsa_do_sign(dgst, dlen, dsa);
+    }
 
 int DSA_sign_setup(DSA *dsa, BN_CTX *ctx_in, BIGNUM **kinvp, BIGNUM **rp)
-	{
-	return dsa->meth->dsa_sign_setup(dsa, ctx_in, kinvp, rp);
-	}
+    {
+    return dsa->meth->dsa_sign_setup(dsa, ctx_in, kinvp, rp);
+    }
 
 DSA_SIG *DSA_SIG_new(void)
-	{
-	DSA_SIG *sig;
-	sig = malloc(sizeof(DSA_SIG));
-	if (!sig)
-		return NULL;
-	sig->r = NULL;
-	sig->s = NULL;
-	return sig;
-	}
+    {
+    DSA_SIG *sig;
+    sig = malloc(sizeof(DSA_SIG));
+    if (!sig)
+        return NULL;
+    sig->r = NULL;
+    sig->s = NULL;
+    return sig;
+    }
 
 void DSA_SIG_free(DSA_SIG *sig)
-	{
-	if (sig)
-		{
-		if (sig->r)
-			BN_free(sig->r);
-		if (sig->s)
-			BN_free(sig->s);
-		free(sig);
-		}
-	}
+    {
+    if (sig)
+        {
+        if (sig->r)
+            BN_free(sig->r);
+        if (sig->s)
+            BN_free(sig->s);
+        free(sig);
+        }
+    }
 

@@ -39,7 +39,7 @@
  * As this implementation relies on 64-bit integer type, it's totally
  * inappropriate for platforms which don't support it, most notably
  * 16-bit platforms.
- *					<appro@fy.chalmers.se>
+ *                    <appro@fy.chalmers.se>
  */
 #include <stdlib.h>
 #include <string.h>
@@ -60,36 +60,36 @@ const char SHA512_version[]="SHA-512" OPENSSL_VERSION_PTEXT;
 #endif
 
 int SHA384_Init(SHA512_CTX *c)
-	{
-	c->h[0]=U64(0xcbbb9d5dc1059ed8);
-	c->h[1]=U64(0x629a292a367cd507);
-	c->h[2]=U64(0x9159015a3070dd17);
-	c->h[3]=U64(0x152fecd8f70e5939);
-	c->h[4]=U64(0x67332667ffc00b31);
-	c->h[5]=U64(0x8eb44a8768581511);
-	c->h[6]=U64(0xdb0c2e0d64f98fa7);
-	c->h[7]=U64(0x47b5481dbefa4fa4);
+    {
+    c->h[0]=U64(0xcbbb9d5dc1059ed8);
+    c->h[1]=U64(0x629a292a367cd507);
+    c->h[2]=U64(0x9159015a3070dd17);
+    c->h[3]=U64(0x152fecd8f70e5939);
+    c->h[4]=U64(0x67332667ffc00b31);
+    c->h[5]=U64(0x8eb44a8768581511);
+    c->h[6]=U64(0xdb0c2e0d64f98fa7);
+    c->h[7]=U64(0x47b5481dbefa4fa4);
 
         c->Nl=0;        c->Nh=0;
         c->num=0;       c->md_len=SHA384_DIGEST_LENGTH;
         return 1;
-	}
+    }
 
 int SHA512_Init(SHA512_CTX *c)
-	{
-	c->h[0]=U64(0x6a09e667f3bcc908);
-	c->h[1]=U64(0xbb67ae8584caa73b);
-	c->h[2]=U64(0x3c6ef372fe94f82b);
-	c->h[3]=U64(0xa54ff53a5f1d36f1);
-	c->h[4]=U64(0x510e527fade682d1);
-	c->h[5]=U64(0x9b05688c2b3e6c1f);
-	c->h[6]=U64(0x1f83d9abfb41bd6b);
-	c->h[7]=U64(0x5be0cd19137e2179);
+    {
+    c->h[0]=U64(0x6a09e667f3bcc908);
+    c->h[1]=U64(0xbb67ae8584caa73b);
+    c->h[2]=U64(0x3c6ef372fe94f82b);
+    c->h[3]=U64(0xa54ff53a5f1d36f1);
+    c->h[4]=U64(0x510e527fade682d1);
+    c->h[5]=U64(0x9b05688c2b3e6c1f);
+    c->h[6]=U64(0x1f83d9abfb41bd6b);
+    c->h[7]=U64(0x5be0cd19137e2179);
 
         c->Nl=0;        c->Nh=0;
         c->num=0;       c->md_len=SHA512_DIGEST_LENGTH;
         return 1;
-	}
+    }
 
 #ifndef SHA512_ASM
 static
@@ -97,175 +97,175 @@ static
 void sha512_block_data_order (SHA512_CTX *ctx, const void *in, size_t num);
 
 int SHA512_Final (unsigned char *md, SHA512_CTX *c)
-	{
-	unsigned char *p=(unsigned char *)c->u.p;
-	size_t n=c->num;
+    {
+    unsigned char *p=(unsigned char *)c->u.p;
+    size_t n=c->num;
 
-	p[n]=0x80;	/* There always is a room for one */
-	n++;
-	if (n > (sizeof(c->u)-16))
-		memset (p+n,0,sizeof(c->u)-n), n=0,
-		sha512_block_data_order (c,p,1);
+    p[n]=0x80;    /* There always is a room for one */
+    n++;
+    if (n > (sizeof(c->u)-16))
+        memset (p+n,0,sizeof(c->u)-n), n=0,
+        sha512_block_data_order (c,p,1);
 
-	memset (p+n,0,sizeof(c->u)-16-n);
-#ifdef	B_ENDIAN
-	c->u.d[SHA_LBLOCK-2] = c->Nh;
-	c->u.d[SHA_LBLOCK-1] = c->Nl;
+    memset (p+n,0,sizeof(c->u)-16-n);
+#ifdef    B_ENDIAN
+    c->u.d[SHA_LBLOCK-2] = c->Nh;
+    c->u.d[SHA_LBLOCK-1] = c->Nl;
 #else
-	p[sizeof(c->u)-1]  = (unsigned char)(c->Nl);
-	p[sizeof(c->u)-2]  = (unsigned char)(c->Nl>>8);
-	p[sizeof(c->u)-3]  = (unsigned char)(c->Nl>>16);
-	p[sizeof(c->u)-4]  = (unsigned char)(c->Nl>>24);
-	p[sizeof(c->u)-5]  = (unsigned char)(c->Nl>>32);
-	p[sizeof(c->u)-6]  = (unsigned char)(c->Nl>>40);
-	p[sizeof(c->u)-7]  = (unsigned char)(c->Nl>>48);
-	p[sizeof(c->u)-8]  = (unsigned char)(c->Nl>>56);
-	p[sizeof(c->u)-9]  = (unsigned char)(c->Nh);
-	p[sizeof(c->u)-10] = (unsigned char)(c->Nh>>8);
-	p[sizeof(c->u)-11] = (unsigned char)(c->Nh>>16);
-	p[sizeof(c->u)-12] = (unsigned char)(c->Nh>>24);
-	p[sizeof(c->u)-13] = (unsigned char)(c->Nh>>32);
-	p[sizeof(c->u)-14] = (unsigned char)(c->Nh>>40);
-	p[sizeof(c->u)-15] = (unsigned char)(c->Nh>>48);
-	p[sizeof(c->u)-16] = (unsigned char)(c->Nh>>56);
+    p[sizeof(c->u)-1]  = (unsigned char)(c->Nl);
+    p[sizeof(c->u)-2]  = (unsigned char)(c->Nl>>8);
+    p[sizeof(c->u)-3]  = (unsigned char)(c->Nl>>16);
+    p[sizeof(c->u)-4]  = (unsigned char)(c->Nl>>24);
+    p[sizeof(c->u)-5]  = (unsigned char)(c->Nl>>32);
+    p[sizeof(c->u)-6]  = (unsigned char)(c->Nl>>40);
+    p[sizeof(c->u)-7]  = (unsigned char)(c->Nl>>48);
+    p[sizeof(c->u)-8]  = (unsigned char)(c->Nl>>56);
+    p[sizeof(c->u)-9]  = (unsigned char)(c->Nh);
+    p[sizeof(c->u)-10] = (unsigned char)(c->Nh>>8);
+    p[sizeof(c->u)-11] = (unsigned char)(c->Nh>>16);
+    p[sizeof(c->u)-12] = (unsigned char)(c->Nh>>24);
+    p[sizeof(c->u)-13] = (unsigned char)(c->Nh>>32);
+    p[sizeof(c->u)-14] = (unsigned char)(c->Nh>>40);
+    p[sizeof(c->u)-15] = (unsigned char)(c->Nh>>48);
+    p[sizeof(c->u)-16] = (unsigned char)(c->Nh>>56);
 #endif
 
-	sha512_block_data_order (c,p,1);
+    sha512_block_data_order (c,p,1);
 
-	if (md==0) return 0;
+    if (md==0) return 0;
 
-	switch (c->md_len)
-		{
-		/* Let compiler decide if it's appropriate to unroll... */
-		case SHA384_DIGEST_LENGTH:
-			for (n=0;n<SHA384_DIGEST_LENGTH/8;n++)
-				{
-				SHA_LONG64 t = c->h[n];
+    switch (c->md_len)
+        {
+        /* Let compiler decide if it's appropriate to unroll... */
+        case SHA384_DIGEST_LENGTH:
+            for (n=0;n<SHA384_DIGEST_LENGTH/8;n++)
+                {
+                SHA_LONG64 t = c->h[n];
 
-				*(md++)	= (unsigned char)(t>>56);
-				*(md++)	= (unsigned char)(t>>48);
-				*(md++)	= (unsigned char)(t>>40);
-				*(md++)	= (unsigned char)(t>>32);
-				*(md++)	= (unsigned char)(t>>24);
-				*(md++)	= (unsigned char)(t>>16);
-				*(md++)	= (unsigned char)(t>>8);
-				*(md++)	= (unsigned char)(t);
-				}
-			break;
-		case SHA512_DIGEST_LENGTH:
-			for (n=0;n<SHA512_DIGEST_LENGTH/8;n++)
-				{
-				SHA_LONG64 t = c->h[n];
+                *(md++)    = (unsigned char)(t>>56);
+                *(md++)    = (unsigned char)(t>>48);
+                *(md++)    = (unsigned char)(t>>40);
+                *(md++)    = (unsigned char)(t>>32);
+                *(md++)    = (unsigned char)(t>>24);
+                *(md++)    = (unsigned char)(t>>16);
+                *(md++)    = (unsigned char)(t>>8);
+                *(md++)    = (unsigned char)(t);
+                }
+            break;
+        case SHA512_DIGEST_LENGTH:
+            for (n=0;n<SHA512_DIGEST_LENGTH/8;n++)
+                {
+                SHA_LONG64 t = c->h[n];
 
-				*(md++)	= (unsigned char)(t>>56);
-				*(md++)	= (unsigned char)(t>>48);
-				*(md++)	= (unsigned char)(t>>40);
-				*(md++)	= (unsigned char)(t>>32);
-				*(md++)	= (unsigned char)(t>>24);
-				*(md++)	= (unsigned char)(t>>16);
-				*(md++)	= (unsigned char)(t>>8);
-				*(md++)	= (unsigned char)(t);
-				}
-			break;
-		/* ... as well as make sure md_len is not abused. */
-		default:	return 0;
-		}
+                *(md++)    = (unsigned char)(t>>56);
+                *(md++)    = (unsigned char)(t>>48);
+                *(md++)    = (unsigned char)(t>>40);
+                *(md++)    = (unsigned char)(t>>32);
+                *(md++)    = (unsigned char)(t>>24);
+                *(md++)    = (unsigned char)(t>>16);
+                *(md++)    = (unsigned char)(t>>8);
+                *(md++)    = (unsigned char)(t);
+                }
+            break;
+        /* ... as well as make sure md_len is not abused. */
+        default:    return 0;
+        }
 
-	return 1;
-	}
+    return 1;
+    }
 
 int SHA384_Final (unsigned char *md,SHA512_CTX *c)
 {   return SHA512_Final (md,c);   }
 
 int SHA512_Update (SHA512_CTX *c, const void *_data, size_t len)
-	{
-	SHA_LONG64	l;
-	unsigned char  *p=c->u.p;
-	const unsigned char *data=(const unsigned char *)_data;
+    {
+    SHA_LONG64    l;
+    unsigned char  *p=c->u.p;
+    const unsigned char *data=(const unsigned char *)_data;
 
-	if (len==0) return  1;
+    if (len==0) return  1;
 
-	l = (c->Nl+(((SHA_LONG64)len)<<3))&U64(0xffffffffffffffff);
-	if (l < c->Nl)		c->Nh++;
-	if (sizeof(len)>=8)	c->Nh+=(((SHA_LONG64)len)>>61);
-	c->Nl=l;
+    l = (c->Nl+(((SHA_LONG64)len)<<3))&U64(0xffffffffffffffff);
+    if (l < c->Nl)        c->Nh++;
+    if (sizeof(len)>=8)    c->Nh+=(((SHA_LONG64)len)>>61);
+    c->Nl=l;
 
-	if (c->num != 0)
-		{
-		size_t n = sizeof(c->u) - c->num;
+    if (c->num != 0)
+        {
+        size_t n = sizeof(c->u) - c->num;
 
-		if (len < n)
-			{
-			memcpy (p+c->num,data,len), c->num += (unsigned int)len;
-			return 1;
-			}
-		else	{
-			memcpy (p+c->num,data,n), c->num = 0;
-			len-=n, data+=n;
-			sha512_block_data_order (c,p,1);
-			}
-		}
+        if (len < n)
+            {
+            memcpy (p+c->num,data,len), c->num += (unsigned int)len;
+            return 1;
+            }
+        else    {
+            memcpy (p+c->num,data,n), c->num = 0;
+            len-=n, data+=n;
+            sha512_block_data_order (c,p,1);
+            }
+        }
 
-	if (len >= sizeof(c->u))
-		{
+    if (len >= sizeof(c->u))
+        {
 #ifndef SHA512_BLOCK_CAN_MANAGE_UNALIGNED_DATA
-		if ((size_t)data%sizeof(c->u.d[0]) != 0)
-			while (len >= sizeof(c->u))
-				memcpy (p,data,sizeof(c->u)),
-				sha512_block_data_order (c,p,1),
-				len  -= sizeof(c->u),
-				data += sizeof(c->u);
-		else
+        if ((size_t)data%sizeof(c->u.d[0]) != 0)
+            while (len >= sizeof(c->u))
+                memcpy (p,data,sizeof(c->u)),
+                sha512_block_data_order (c,p,1),
+                len  -= sizeof(c->u),
+                data += sizeof(c->u);
+        else
 #endif
-			sha512_block_data_order (c,data,len/sizeof(c->u)),
-			data += len,
-			len  %= sizeof(c->u),
-			data -= len;
-		}
+            sha512_block_data_order (c,data,len/sizeof(c->u)),
+            data += len,
+            len  %= sizeof(c->u),
+            data -= len;
+        }
 
-	if (len != 0)	memcpy (p,data,len), c->num = (int)len;
+    if (len != 0)    memcpy (p,data,len), c->num = (int)len;
 
-	return 1;
-	}
+    return 1;
+    }
 
 int SHA384_Update (SHA512_CTX *c, const void *data, size_t len)
 {   return SHA512_Update (c,data,len);   }
 
 void SHA512_Transform (SHA512_CTX *c, const unsigned char *data)
-	{
+    {
 #ifndef SHA512_BLOCK_CAN_MANAGE_UNALIGNED_DATA
-	if ((size_t)data%sizeof(c->u.d[0]) != 0)
-		memcpy(c->u.p,data,sizeof(c->u.p)),
-		data = c->u.p;
+    if ((size_t)data%sizeof(c->u.d[0]) != 0)
+        memcpy(c->u.p,data,sizeof(c->u.p)),
+        data = c->u.p;
 #endif
-	sha512_block_data_order (c,data,1);
-	}
+    sha512_block_data_order (c,data,1);
+    }
 
 unsigned char *SHA384(const unsigned char *d, size_t n, unsigned char *md)
-	{
-	SHA512_CTX c;
-	static unsigned char m[SHA384_DIGEST_LENGTH];
+    {
+    SHA512_CTX c;
+    static unsigned char m[SHA384_DIGEST_LENGTH];
 
-	if (md == NULL) md=m;
-	SHA384_Init(&c);
-	SHA512_Update(&c,d,n);
-	SHA512_Final(md,&c);
-	OPENSSL_cleanse(&c,sizeof(c));
-	return (md);
-	}
+    if (md == NULL) md=m;
+    SHA384_Init(&c);
+    SHA512_Update(&c,d,n);
+    SHA512_Final(md,&c);
+    OPENSSL_cleanse(&c,sizeof(c));
+    return (md);
+    }
 
 unsigned char *SHA512(const unsigned char *d, size_t n, unsigned char *md)
-	{
-	SHA512_CTX c;
-	static unsigned char m[SHA512_DIGEST_LENGTH];
+    {
+    SHA512_CTX c;
+    static unsigned char m[SHA512_DIGEST_LENGTH];
 
-	if (md == NULL) md=m;
-	SHA512_Init(&c);
-	SHA512_Update(&c,d,n);
-	SHA512_Final(md,&c);
-	OPENSSL_cleanse(&c,sizeof(c));
-	return (md);
-	}
+    if (md == NULL) md=m;
+    SHA512_Init(&c);
+    SHA512_Update(&c,d,n);
+    SHA512_Final(md,&c);
+    OPENSSL_cleanse(&c,sizeof(c));
+    return (md);
+    }
 
 #ifndef SHA512_ASM
 static const SHA_LONG64 K512[80] = {
@@ -313,64 +313,64 @@ static const SHA_LONG64 K512[80] = {
 #ifndef PEDANTIC
 # if defined(__GNUC__) && __GNUC__>=2 && !defined(OPENSSL_NO_ASM) && !defined(OPENSSL_NO_INLINE_ASM)
 #  if defined(__x86_64) || defined(__x86_64__)
-#   define ROTR(a,n)	({ SHA_LONG64 ret;		\
-				asm ("rorq %1,%0"	\
-				: "=r"(ret)		\
-				: "J"(n),"0"(a)		\
-				: "cc"); ret;		})
+#   define ROTR(a,n)    ({ SHA_LONG64 ret;        \
+                asm ("rorq %1,%0"    \
+                : "=r"(ret)        \
+                : "J"(n),"0"(a)        \
+                : "cc"); ret;        })
 #   if !defined(B_ENDIAN)
-#    define PULL64(x) ({ SHA_LONG64 ret=*((const SHA_LONG64 *)(&(x)));	\
-				asm ("bswapq	%0"		\
-				: "=r"(ret)			\
-				: "0"(ret)); ret;		})
+#    define PULL64(x) ({ SHA_LONG64 ret=*((const SHA_LONG64 *)(&(x)));    \
+                asm ("bswapq    %0"        \
+                : "=r"(ret)            \
+                : "0"(ret)); ret;        })
 #   endif
 #  elif (defined(__i386) || defined(__i386__)) && !defined(B_ENDIAN)
 #   if defined(I386_ONLY)
 #    define PULL64(x) ({ const unsigned int *p=(const unsigned int *)(&(x));\
-			 unsigned int hi=p[0],lo=p[1];		\
-				asm("xchgb %%ah,%%al;xchgb %%dh,%%dl;"\
-				    "roll $16,%%eax; roll $16,%%edx; "\
-				    "xchgb %%ah,%%al;xchgb %%dh,%%dl;" \
-				: "=a"(lo),"=d"(hi)		\
-				: "0"(lo),"1"(hi) : "cc");	\
-				((SHA_LONG64)hi)<<32|lo;	})
+             unsigned int hi=p[0],lo=p[1];        \
+                asm("xchgb %%ah,%%al;xchgb %%dh,%%dl;"\
+                    "roll $16,%%eax; roll $16,%%edx; "\
+                    "xchgb %%ah,%%al;xchgb %%dh,%%dl;" \
+                : "=a"(lo),"=d"(hi)        \
+                : "0"(lo),"1"(hi) : "cc");    \
+                ((SHA_LONG64)hi)<<32|lo;    })
 #   else
 #    define PULL64(x) ({ const unsigned int *p=(const unsigned int *)(&(x));\
-			 unsigned int hi=p[0],lo=p[1];		\
-				asm ("bswapl %0; bswapl %1;"	\
-				: "=r"(lo),"=r"(hi)		\
-				: "0"(lo),"1"(hi));		\
-				((SHA_LONG64)hi)<<32|lo;	})
+             unsigned int hi=p[0],lo=p[1];        \
+                asm ("bswapl %0; bswapl %1;"    \
+                : "=r"(lo),"=r"(hi)        \
+                : "0"(lo),"1"(hi));        \
+                ((SHA_LONG64)hi)<<32|lo;    })
 #   endif
 #  elif (defined(_ARCH_PPC) && defined(__64BIT__)) || defined(_ARCH_PPC64)
-#   define ROTR(a,n)	({ SHA_LONG64 ret;		\
-				asm ("rotrdi %0,%1,%2"	\
-				: "=r"(ret)		\
-				: "r"(a),"K"(n)); ret;	})
+#   define ROTR(a,n)    ({ SHA_LONG64 ret;        \
+                asm ("rotrdi %0,%1,%2"    \
+                : "=r"(ret)        \
+                : "r"(a),"K"(n)); ret;    })
 #  endif
 # elif defined(_MSC_VER)
-#  if defined(_WIN64)	/* applies to both IA-64 and AMD64 */
+#  if defined(_WIN64)    /* applies to both IA-64 and AMD64 */
 #   pragma intrinsic(_rotr64)
-#   define ROTR(a,n)	_rotr64((a),n)
+#   define ROTR(a,n)    _rotr64((a),n)
 #  endif
 #  if defined(_M_IX86) && !defined(OPENSSL_NO_ASM) && !defined(OPENSSL_NO_INLINE_ASM)
 #   if defined(I386_ONLY)
     static SHA_LONG64 __fastcall __pull64be(const void *x)
-    {	_asm	mov	edx, [ecx + 0]
-	_asm	mov	eax, [ecx + 4]
-	_asm	xchg	dh,dl
-	_asm	xchg	ah,al
-	_asm	rol	edx,16
-	_asm	rol	eax,16
-	_asm	xchg	dh,dl
-	_asm	xchg	ah,al
+    {    _asm    mov    edx, [ecx + 0]
+    _asm    mov    eax, [ecx + 4]
+    _asm    xchg    dh,dl
+    _asm    xchg    ah,al
+    _asm    rol    edx,16
+    _asm    rol    eax,16
+    _asm    xchg    dh,dl
+    _asm    xchg    ah,al
     }
 #   else
     static SHA_LONG64 __fastcall __pull64be(const void *x)
-    {	_asm	mov	edx, [ecx + 0]
-	_asm	mov	eax, [ecx + 4]
-	_asm	bswap	edx
-	_asm	bswap	eax
+    {    _asm    mov    edx, [ecx + 0]
+    _asm    mov    eax, [ecx + 4]
+    _asm    bswap    edx
+    _asm    bswap    eax
     }
 #   endif
 #   define PULL64(x) __pull64be(&(x))
@@ -387,16 +387,16 @@ static const SHA_LONG64 K512[80] = {
 #endif
 
 #ifndef ROTR
-#define ROTR(x,s)	(((x)>>s) | (x)<<(64-s))
+#define ROTR(x,s)    (((x)>>s) | (x)<<(64-s))
 #endif
 
-#define Sigma0(x)	(ROTR((x),28) ^ ROTR((x),34) ^ ROTR((x),39))
-#define Sigma1(x)	(ROTR((x),14) ^ ROTR((x),18) ^ ROTR((x),41))
-#define sigma0(x)	(ROTR((x),1)  ^ ROTR((x),8)  ^ ((x)>>7))
-#define sigma1(x)	(ROTR((x),19) ^ ROTR((x),61) ^ ((x)>>6))
+#define Sigma0(x)    (ROTR((x),28) ^ ROTR((x),34) ^ ROTR((x),39))
+#define Sigma1(x)    (ROTR((x),14) ^ ROTR((x),18) ^ ROTR((x),41))
+#define sigma0(x)    (ROTR((x),1)  ^ ROTR((x),8)  ^ ((x)>>7))
+#define sigma1(x)    (ROTR((x),19) ^ ROTR((x),61) ^ ((x)>>6))
 
-#define Ch(x,y,z)	(((x) & (y)) ^ ((~(x)) & (z)))
-#define Maj(x,y,z)	(((x) & (y)) ^ ((x) & (z)) ^ ((y) & (z)))
+#define Ch(x,y,z)    (((x) & (y)) ^ ((~(x)) & (z)))
+#define Maj(x,y,z)    (((x) & (y)) ^ ((x) & (z)) ^ ((y) & (z)))
 
 
 #if defined(__i386) || defined(__i386__) || defined(_M_IX86)
@@ -405,191 +405,191 @@ static const SHA_LONG64 K512[80] = {
  * ~24 registers, both size and performance wise...
  */
 static void sha512_block_data_order (SHA512_CTX *ctx, const void *in, size_t num)
-	{
-	const SHA_LONG64 *W=in;
-	SHA_LONG64	A,E,T;
-	SHA_LONG64	X[9+80],*F;
-	int i;
+    {
+    const SHA_LONG64 *W=in;
+    SHA_LONG64    A,E,T;
+    SHA_LONG64    X[9+80],*F;
+    int i;
 
-			while (num--) {
+            while (num--) {
 
-	F    = X+80;
-	A    = ctx->h[0];	F[1] = ctx->h[1];
-	F[2] = ctx->h[2];	F[3] = ctx->h[3];
-	E    = ctx->h[4];	F[5] = ctx->h[5];
-	F[6] = ctx->h[6];	F[7] = ctx->h[7];
+    F    = X+80;
+    A    = ctx->h[0];    F[1] = ctx->h[1];
+    F[2] = ctx->h[2];    F[3] = ctx->h[3];
+    E    = ctx->h[4];    F[5] = ctx->h[5];
+    F[6] = ctx->h[6];    F[7] = ctx->h[7];
 
-	for (i=0;i<16;i++,F--)
-		{
+    for (i=0;i<16;i++,F--)
+        {
 #ifdef B_ENDIAN
-		T = W[i];
+        T = W[i];
 #else
-		T = PULL64(W[i]);
+        T = PULL64(W[i]);
 #endif
-		F[0] = A;
-		F[4] = E;
-		F[8] = T;
-		T   += F[7] + Sigma1(E) + Ch(E,F[5],F[6]) + K512[i];
-		E    = F[3] + T;
-		A    = T + Sigma0(A) + Maj(A,F[1],F[2]);
-		}
+        F[0] = A;
+        F[4] = E;
+        F[8] = T;
+        T   += F[7] + Sigma1(E) + Ch(E,F[5],F[6]) + K512[i];
+        E    = F[3] + T;
+        A    = T + Sigma0(A) + Maj(A,F[1],F[2]);
+        }
 
-	for (;i<80;i++,F--)
-		{
-		T    = sigma0(F[8+16-1]);
-		T   += sigma1(F[8+16-14]);
-		T   += F[8+16] + F[8+16-9];
+    for (;i<80;i++,F--)
+        {
+        T    = sigma0(F[8+16-1]);
+        T   += sigma1(F[8+16-14]);
+        T   += F[8+16] + F[8+16-9];
 
-		F[0] = A;
-		F[4] = E;
-		F[8] = T;
-		T   += F[7] + Sigma1(E) + Ch(E,F[5],F[6]) + K512[i];
-		E    = F[3] + T;
-		A    = T + Sigma0(A) + Maj(A,F[1],F[2]);
-		}
+        F[0] = A;
+        F[4] = E;
+        F[8] = T;
+        T   += F[7] + Sigma1(E) + Ch(E,F[5],F[6]) + K512[i];
+        E    = F[3] + T;
+        A    = T + Sigma0(A) + Maj(A,F[1],F[2]);
+        }
 
-	ctx->h[0] += A;		ctx->h[1] += F[1];
-	ctx->h[2] += F[2];	ctx->h[3] += F[3];
-	ctx->h[4] += E;		ctx->h[5] += F[5];
-	ctx->h[6] += F[6];	ctx->h[7] += F[7];
+    ctx->h[0] += A;        ctx->h[1] += F[1];
+    ctx->h[2] += F[2];    ctx->h[3] += F[3];
+    ctx->h[4] += E;        ctx->h[5] += F[5];
+    ctx->h[6] += F[6];    ctx->h[7] += F[7];
 
-			W+=SHA_LBLOCK;
-			}
-	}
+            W+=SHA_LBLOCK;
+            }
+    }
 
 #elif defined(OPENSSL_SMALL_FOOTPRINT)
 
 static void sha512_block_data_order (SHA512_CTX *ctx, const void *in, size_t num)
-	{
-	const SHA_LONG64 *W=in;
-	SHA_LONG64	a,b,c,d,e,f,g,h,s0,s1,T1,T2;
-	SHA_LONG64	X[16];
-	int i;
+    {
+    const SHA_LONG64 *W=in;
+    SHA_LONG64    a,b,c,d,e,f,g,h,s0,s1,T1,T2;
+    SHA_LONG64    X[16];
+    int i;
 
-			while (num--) {
+            while (num--) {
 
-	a = ctx->h[0];	b = ctx->h[1];	c = ctx->h[2];	d = ctx->h[3];
-	e = ctx->h[4];	f = ctx->h[5];	g = ctx->h[6];	h = ctx->h[7];
+    a = ctx->h[0];    b = ctx->h[1];    c = ctx->h[2];    d = ctx->h[3];
+    e = ctx->h[4];    f = ctx->h[5];    g = ctx->h[6];    h = ctx->h[7];
 
-	for (i=0;i<16;i++)
-		{
+    for (i=0;i<16;i++)
+        {
 #ifdef B_ENDIAN
-		T1 = X[i] = W[i];
+        T1 = X[i] = W[i];
 #else
-		T1 = X[i] = PULL64(W[i]);
+        T1 = X[i] = PULL64(W[i]);
 #endif
-		T1 += h + Sigma1(e) + Ch(e,f,g) + K512[i];
-		T2 = Sigma0(a) + Maj(a,b,c);
-		h = g;	g = f;	f = e;	e = d + T1;
-		d = c;	c = b;	b = a;	a = T1 + T2;
-		}
+        T1 += h + Sigma1(e) + Ch(e,f,g) + K512[i];
+        T2 = Sigma0(a) + Maj(a,b,c);
+        h = g;    g = f;    f = e;    e = d + T1;
+        d = c;    c = b;    b = a;    a = T1 + T2;
+        }
 
-	for (;i<80;i++)
-		{
-		s0 = X[(i+1)&0x0f];	s0 = sigma0(s0);
-		s1 = X[(i+14)&0x0f];	s1 = sigma1(s1);
+    for (;i<80;i++)
+        {
+        s0 = X[(i+1)&0x0f];    s0 = sigma0(s0);
+        s1 = X[(i+14)&0x0f];    s1 = sigma1(s1);
 
-		T1 = X[i&0xf] += s0 + s1 + X[(i+9)&0xf];
-		T1 += h + Sigma1(e) + Ch(e,f,g) + K512[i];
-		T2 = Sigma0(a) + Maj(a,b,c);
-		h = g;	g = f;	f = e;	e = d + T1;
-		d = c;	c = b;	b = a;	a = T1 + T2;
-		}
+        T1 = X[i&0xf] += s0 + s1 + X[(i+9)&0xf];
+        T1 += h + Sigma1(e) + Ch(e,f,g) + K512[i];
+        T2 = Sigma0(a) + Maj(a,b,c);
+        h = g;    g = f;    f = e;    e = d + T1;
+        d = c;    c = b;    b = a;    a = T1 + T2;
+        }
 
-	ctx->h[0] += a;	ctx->h[1] += b;	ctx->h[2] += c;	ctx->h[3] += d;
-	ctx->h[4] += e;	ctx->h[5] += f;	ctx->h[6] += g;	ctx->h[7] += h;
+    ctx->h[0] += a;    ctx->h[1] += b;    ctx->h[2] += c;    ctx->h[3] += d;
+    ctx->h[4] += e;    ctx->h[5] += f;    ctx->h[6] += g;    ctx->h[7] += h;
 
-			W+=SHA_LBLOCK;
-			}
-	}
+            W+=SHA_LBLOCK;
+            }
+    }
 
 #else
 
-#define	ROUND_00_15(i,a,b,c,d,e,f,g,h)		do {	\
-	T1 += h + Sigma1(e) + Ch(e,f,g) + K512[i];	\
-	h = Sigma0(a) + Maj(a,b,c);			\
-	d += T1;	h += T1;		} while (0)
+#define    ROUND_00_15(i,a,b,c,d,e,f,g,h)        do {    \
+    T1 += h + Sigma1(e) + Ch(e,f,g) + K512[i];    \
+    h = Sigma0(a) + Maj(a,b,c);            \
+    d += T1;    h += T1;        } while (0)
 
-#define	ROUND_16_80(i,j,a,b,c,d,e,f,g,h,X)	do {	\
-	s0 = X[(j+1)&0x0f];	s0 = sigma0(s0);	\
-	s1 = X[(j+14)&0x0f];	s1 = sigma1(s1);	\
-	T1 = X[(j)&0x0f] += s0 + s1 + X[(j+9)&0x0f];	\
-	ROUND_00_15(i+j,a,b,c,d,e,f,g,h);		} while (0)
+#define    ROUND_16_80(i,j,a,b,c,d,e,f,g,h,X)    do {    \
+    s0 = X[(j+1)&0x0f];    s0 = sigma0(s0);    \
+    s1 = X[(j+14)&0x0f];    s1 = sigma1(s1);    \
+    T1 = X[(j)&0x0f] += s0 + s1 + X[(j+9)&0x0f];    \
+    ROUND_00_15(i+j,a,b,c,d,e,f,g,h);        } while (0)
 
 static void sha512_block_data_order (SHA512_CTX *ctx, const void *in, size_t num)
-	{
-	const SHA_LONG64 *W=in;
-	SHA_LONG64	a,b,c,d,e,f,g,h,s0,s1,T1;
-	SHA_LONG64	X[16];
-	int i;
+    {
+    const SHA_LONG64 *W=in;
+    SHA_LONG64    a,b,c,d,e,f,g,h,s0,s1,T1;
+    SHA_LONG64    X[16];
+    int i;
 
-			while (num--) {
+            while (num--) {
 
-	a = ctx->h[0];	b = ctx->h[1];	c = ctx->h[2];	d = ctx->h[3];
-	e = ctx->h[4];	f = ctx->h[5];	g = ctx->h[6];	h = ctx->h[7];
+    a = ctx->h[0];    b = ctx->h[1];    c = ctx->h[2];    d = ctx->h[3];
+    e = ctx->h[4];    f = ctx->h[5];    g = ctx->h[6];    h = ctx->h[7];
 
 #ifdef B_ENDIAN
-	T1 = X[0] = W[0];	ROUND_00_15(0,a,b,c,d,e,f,g,h);
-	T1 = X[1] = W[1];	ROUND_00_15(1,h,a,b,c,d,e,f,g);
-	T1 = X[2] = W[2];	ROUND_00_15(2,g,h,a,b,c,d,e,f);
-	T1 = X[3] = W[3];	ROUND_00_15(3,f,g,h,a,b,c,d,e);
-	T1 = X[4] = W[4];	ROUND_00_15(4,e,f,g,h,a,b,c,d);
-	T1 = X[5] = W[5];	ROUND_00_15(5,d,e,f,g,h,a,b,c);
-	T1 = X[6] = W[6];	ROUND_00_15(6,c,d,e,f,g,h,a,b);
-	T1 = X[7] = W[7];	ROUND_00_15(7,b,c,d,e,f,g,h,a);
-	T1 = X[8] = W[8];	ROUND_00_15(8,a,b,c,d,e,f,g,h);
-	T1 = X[9] = W[9];	ROUND_00_15(9,h,a,b,c,d,e,f,g);
-	T1 = X[10] = W[10];	ROUND_00_15(10,g,h,a,b,c,d,e,f);
-	T1 = X[11] = W[11];	ROUND_00_15(11,f,g,h,a,b,c,d,e);
-	T1 = X[12] = W[12];	ROUND_00_15(12,e,f,g,h,a,b,c,d);
-	T1 = X[13] = W[13];	ROUND_00_15(13,d,e,f,g,h,a,b,c);
-	T1 = X[14] = W[14];	ROUND_00_15(14,c,d,e,f,g,h,a,b);
-	T1 = X[15] = W[15];	ROUND_00_15(15,b,c,d,e,f,g,h,a);
+    T1 = X[0] = W[0];    ROUND_00_15(0,a,b,c,d,e,f,g,h);
+    T1 = X[1] = W[1];    ROUND_00_15(1,h,a,b,c,d,e,f,g);
+    T1 = X[2] = W[2];    ROUND_00_15(2,g,h,a,b,c,d,e,f);
+    T1 = X[3] = W[3];    ROUND_00_15(3,f,g,h,a,b,c,d,e);
+    T1 = X[4] = W[4];    ROUND_00_15(4,e,f,g,h,a,b,c,d);
+    T1 = X[5] = W[5];    ROUND_00_15(5,d,e,f,g,h,a,b,c);
+    T1 = X[6] = W[6];    ROUND_00_15(6,c,d,e,f,g,h,a,b);
+    T1 = X[7] = W[7];    ROUND_00_15(7,b,c,d,e,f,g,h,a);
+    T1 = X[8] = W[8];    ROUND_00_15(8,a,b,c,d,e,f,g,h);
+    T1 = X[9] = W[9];    ROUND_00_15(9,h,a,b,c,d,e,f,g);
+    T1 = X[10] = W[10];    ROUND_00_15(10,g,h,a,b,c,d,e,f);
+    T1 = X[11] = W[11];    ROUND_00_15(11,f,g,h,a,b,c,d,e);
+    T1 = X[12] = W[12];    ROUND_00_15(12,e,f,g,h,a,b,c,d);
+    T1 = X[13] = W[13];    ROUND_00_15(13,d,e,f,g,h,a,b,c);
+    T1 = X[14] = W[14];    ROUND_00_15(14,c,d,e,f,g,h,a,b);
+    T1 = X[15] = W[15];    ROUND_00_15(15,b,c,d,e,f,g,h,a);
 #else
-	T1 = X[0]  = PULL64(W[0]);	ROUND_00_15(0,a,b,c,d,e,f,g,h);
-	T1 = X[1]  = PULL64(W[1]);	ROUND_00_15(1,h,a,b,c,d,e,f,g);
-	T1 = X[2]  = PULL64(W[2]);	ROUND_00_15(2,g,h,a,b,c,d,e,f);
-	T1 = X[3]  = PULL64(W[3]);	ROUND_00_15(3,f,g,h,a,b,c,d,e);
-	T1 = X[4]  = PULL64(W[4]);	ROUND_00_15(4,e,f,g,h,a,b,c,d);
-	T1 = X[5]  = PULL64(W[5]);	ROUND_00_15(5,d,e,f,g,h,a,b,c);
-	T1 = X[6]  = PULL64(W[6]);	ROUND_00_15(6,c,d,e,f,g,h,a,b);
-	T1 = X[7]  = PULL64(W[7]);	ROUND_00_15(7,b,c,d,e,f,g,h,a);
-	T1 = X[8]  = PULL64(W[8]);	ROUND_00_15(8,a,b,c,d,e,f,g,h);
-	T1 = X[9]  = PULL64(W[9]);	ROUND_00_15(9,h,a,b,c,d,e,f,g);
-	T1 = X[10] = PULL64(W[10]);	ROUND_00_15(10,g,h,a,b,c,d,e,f);
-	T1 = X[11] = PULL64(W[11]);	ROUND_00_15(11,f,g,h,a,b,c,d,e);
-	T1 = X[12] = PULL64(W[12]);	ROUND_00_15(12,e,f,g,h,a,b,c,d);
-	T1 = X[13] = PULL64(W[13]);	ROUND_00_15(13,d,e,f,g,h,a,b,c);
-	T1 = X[14] = PULL64(W[14]);	ROUND_00_15(14,c,d,e,f,g,h,a,b);
-	T1 = X[15] = PULL64(W[15]);	ROUND_00_15(15,b,c,d,e,f,g,h,a);
+    T1 = X[0]  = PULL64(W[0]);    ROUND_00_15(0,a,b,c,d,e,f,g,h);
+    T1 = X[1]  = PULL64(W[1]);    ROUND_00_15(1,h,a,b,c,d,e,f,g);
+    T1 = X[2]  = PULL64(W[2]);    ROUND_00_15(2,g,h,a,b,c,d,e,f);
+    T1 = X[3]  = PULL64(W[3]);    ROUND_00_15(3,f,g,h,a,b,c,d,e);
+    T1 = X[4]  = PULL64(W[4]);    ROUND_00_15(4,e,f,g,h,a,b,c,d);
+    T1 = X[5]  = PULL64(W[5]);    ROUND_00_15(5,d,e,f,g,h,a,b,c);
+    T1 = X[6]  = PULL64(W[6]);    ROUND_00_15(6,c,d,e,f,g,h,a,b);
+    T1 = X[7]  = PULL64(W[7]);    ROUND_00_15(7,b,c,d,e,f,g,h,a);
+    T1 = X[8]  = PULL64(W[8]);    ROUND_00_15(8,a,b,c,d,e,f,g,h);
+    T1 = X[9]  = PULL64(W[9]);    ROUND_00_15(9,h,a,b,c,d,e,f,g);
+    T1 = X[10] = PULL64(W[10]);    ROUND_00_15(10,g,h,a,b,c,d,e,f);
+    T1 = X[11] = PULL64(W[11]);    ROUND_00_15(11,f,g,h,a,b,c,d,e);
+    T1 = X[12] = PULL64(W[12]);    ROUND_00_15(12,e,f,g,h,a,b,c,d);
+    T1 = X[13] = PULL64(W[13]);    ROUND_00_15(13,d,e,f,g,h,a,b,c);
+    T1 = X[14] = PULL64(W[14]);    ROUND_00_15(14,c,d,e,f,g,h,a,b);
+    T1 = X[15] = PULL64(W[15]);    ROUND_00_15(15,b,c,d,e,f,g,h,a);
 #endif
 
-	for (i=16;i<80;i+=16)
-		{
-		ROUND_16_80(i, 0,a,b,c,d,e,f,g,h,X);
-		ROUND_16_80(i, 1,h,a,b,c,d,e,f,g,X);
-		ROUND_16_80(i, 2,g,h,a,b,c,d,e,f,X);
-		ROUND_16_80(i, 3,f,g,h,a,b,c,d,e,X);
-		ROUND_16_80(i, 4,e,f,g,h,a,b,c,d,X);
-		ROUND_16_80(i, 5,d,e,f,g,h,a,b,c,X);
-		ROUND_16_80(i, 6,c,d,e,f,g,h,a,b,X);
-		ROUND_16_80(i, 7,b,c,d,e,f,g,h,a,X);
-		ROUND_16_80(i, 8,a,b,c,d,e,f,g,h,X);
-		ROUND_16_80(i, 9,h,a,b,c,d,e,f,g,X);
-		ROUND_16_80(i,10,g,h,a,b,c,d,e,f,X);
-		ROUND_16_80(i,11,f,g,h,a,b,c,d,e,X);
-		ROUND_16_80(i,12,e,f,g,h,a,b,c,d,X);
-		ROUND_16_80(i,13,d,e,f,g,h,a,b,c,X);
-		ROUND_16_80(i,14,c,d,e,f,g,h,a,b,X);
-		ROUND_16_80(i,15,b,c,d,e,f,g,h,a,X);
-		}
+    for (i=16;i<80;i+=16)
+        {
+        ROUND_16_80(i, 0,a,b,c,d,e,f,g,h,X);
+        ROUND_16_80(i, 1,h,a,b,c,d,e,f,g,X);
+        ROUND_16_80(i, 2,g,h,a,b,c,d,e,f,X);
+        ROUND_16_80(i, 3,f,g,h,a,b,c,d,e,X);
+        ROUND_16_80(i, 4,e,f,g,h,a,b,c,d,X);
+        ROUND_16_80(i, 5,d,e,f,g,h,a,b,c,X);
+        ROUND_16_80(i, 6,c,d,e,f,g,h,a,b,X);
+        ROUND_16_80(i, 7,b,c,d,e,f,g,h,a,X);
+        ROUND_16_80(i, 8,a,b,c,d,e,f,g,h,X);
+        ROUND_16_80(i, 9,h,a,b,c,d,e,f,g,X);
+        ROUND_16_80(i,10,g,h,a,b,c,d,e,f,X);
+        ROUND_16_80(i,11,f,g,h,a,b,c,d,e,X);
+        ROUND_16_80(i,12,e,f,g,h,a,b,c,d,X);
+        ROUND_16_80(i,13,d,e,f,g,h,a,b,c,X);
+        ROUND_16_80(i,14,c,d,e,f,g,h,a,b,X);
+        ROUND_16_80(i,15,b,c,d,e,f,g,h,a,X);
+        }
 
-	ctx->h[0] += a;	ctx->h[1] += b;	ctx->h[2] += c;	ctx->h[3] += d;
-	ctx->h[4] += e;	ctx->h[5] += f;	ctx->h[6] += g;	ctx->h[7] += h;
+    ctx->h[0] += a;    ctx->h[1] += b;    ctx->h[2] += c;    ctx->h[3] += d;
+    ctx->h[4] += e;    ctx->h[5] += f;    ctx->h[6] += g;    ctx->h[7] += h;
 
-			W+=SHA_LBLOCK;
-			}
-	}
+            W+=SHA_LBLOCK;
+            }
+    }
 
 #endif
 

@@ -157,7 +157,7 @@ typedef struct tagCURSORINFO
 #endif /* CURSOR_SHOWING */
 
 typedef BOOL (WINAPI *CRYPTACQUIRECONTEXTW)(HCRYPTPROV *, LPCWSTR, LPCWSTR,
-				    DWORD, DWORD);
+                    DWORD, DWORD);
 typedef BOOL (WINAPI *CRYPTGENRANDOM)(HCRYPTPROV, DWORD, BYTE *);
 typedef BOOL (WINAPI *CRYPTRELEASECONTEXT)(HCRYPTPROV, DWORD);
 
@@ -189,285 +189,285 @@ typedef NET_API_STATUS (NET_API_FUNCTION * NETFREE)(LPBYTE);
 
 int RAND_poll(void)
 {
-	MEMORYSTATUS m;
-	HCRYPTPROV hProvider = 0;
-	DWORD w;
-	int good = 0;
+    MEMORYSTATUS m;
+    HCRYPTPROV hProvider = 0;
+    DWORD w;
+    int good = 0;
 
-	/* Determine the OS version we are on so we can turn off things 
-	 * that do not work properly.
-	 */
+    /* Determine the OS version we are on so we can turn off things 
+     * that do not work properly.
+     */
         OSVERSIONINFO osverinfo ;
         osverinfo.dwOSVersionInfoSize = sizeof(OSVERSIONINFO) ;
         GetVersionEx( &osverinfo ) ;
 
 
-	/*
-	 * None of below libraries are present on Windows CE, which is
-	 * why we #ifndef the whole section. This also excuses us from
-	 * handling the GetProcAddress issue. The trouble is that in
-	 * real Win32 API GetProcAddress is available in ANSI flavor
-	 * only. In WinCE on the other hand GetProcAddress is a macro
-	 * most commonly defined as GetProcAddressW, which accepts
-	 * Unicode argument. If we were to call GetProcAddress under
-	 * WinCE, I'd recommend to either redefine GetProcAddress as
-	 * GetProcAddressA (there seem to be one in common CE spec) or
-	 * implement own shim routine, which would accept ANSI argument
-	 * and expand it to Unicode.
-	 */
-	{
-	/* load functions dynamically - not available on all systems */
-	HMODULE advapi = LoadLibrary(TEXT("ADVAPI32.DLL"));
-	HMODULE kernel = LoadLibrary(TEXT("KERNEL32.DLL"));
-	HMODULE user = NULL;
-	HMODULE netapi = LoadLibrary(TEXT("NETAPI32.DLL"));
-	CRYPTACQUIRECONTEXTW acquire = NULL;
-	CRYPTGENRANDOM gen = NULL;
-	CRYPTRELEASECONTEXT release = NULL;
-	NETSTATGET netstatget = NULL;
-	NETFREE netfree = NULL;
-	BYTE buf[64];
+    /*
+     * None of below libraries are present on Windows CE, which is
+     * why we #ifndef the whole section. This also excuses us from
+     * handling the GetProcAddress issue. The trouble is that in
+     * real Win32 API GetProcAddress is available in ANSI flavor
+     * only. In WinCE on the other hand GetProcAddress is a macro
+     * most commonly defined as GetProcAddressW, which accepts
+     * Unicode argument. If we were to call GetProcAddress under
+     * WinCE, I'd recommend to either redefine GetProcAddress as
+     * GetProcAddressA (there seem to be one in common CE spec) or
+     * implement own shim routine, which would accept ANSI argument
+     * and expand it to Unicode.
+     */
+    {
+    /* load functions dynamically - not available on all systems */
+    HMODULE advapi = LoadLibrary(TEXT("ADVAPI32.DLL"));
+    HMODULE kernel = LoadLibrary(TEXT("KERNEL32.DLL"));
+    HMODULE user = NULL;
+    HMODULE netapi = LoadLibrary(TEXT("NETAPI32.DLL"));
+    CRYPTACQUIRECONTEXTW acquire = NULL;
+    CRYPTGENRANDOM gen = NULL;
+    CRYPTRELEASECONTEXT release = NULL;
+    NETSTATGET netstatget = NULL;
+    NETFREE netfree = NULL;
+    BYTE buf[64];
 
-	if (netapi)
-		{
-		netstatget = (NETSTATGET) GetProcAddress(netapi,"NetStatisticsGet");
-		netfree = (NETFREE) GetProcAddress(netapi,"NetApiBufferFree");
-		}
+    if (netapi)
+        {
+        netstatget = (NETSTATGET) GetProcAddress(netapi,"NetStatisticsGet");
+        netfree = (NETFREE) GetProcAddress(netapi,"NetApiBufferFree");
+        }
 
-	if (netstatget && netfree)
-		{
-		LPBYTE outbuf;
-		/* NetStatisticsGet() is a Unicode only function
- 		 * STAT_WORKSTATION_0 contains 45 fields and STAT_SERVER_0
-		 * contains 17 fields.  We treat each field as a source of
-		 * one byte of entropy.
+    if (netstatget && netfree)
+        {
+        LPBYTE outbuf;
+        /* NetStatisticsGet() is a Unicode only function
+          * STAT_WORKSTATION_0 contains 45 fields and STAT_SERVER_0
+         * contains 17 fields.  We treat each field as a source of
+         * one byte of entropy.
                  */
 
-		if (netstatget(NULL, L"LanmanWorkstation", 0, 0, &outbuf) == 0)
-			{
-			RAND_add(outbuf, sizeof(STAT_WORKSTATION_0), 45);
-			netfree(outbuf);
-			}
-		if (netstatget(NULL, L"LanmanServer", 0, 0, &outbuf) == 0)
-			{
-			RAND_add(outbuf, sizeof(STAT_SERVER_0), 17);
-			netfree(outbuf);
-			}
-		}
+        if (netstatget(NULL, L"LanmanWorkstation", 0, 0, &outbuf) == 0)
+            {
+            RAND_add(outbuf, sizeof(STAT_WORKSTATION_0), 45);
+            netfree(outbuf);
+            }
+        if (netstatget(NULL, L"LanmanServer", 0, 0, &outbuf) == 0)
+            {
+            RAND_add(outbuf, sizeof(STAT_SERVER_0), 17);
+            netfree(outbuf);
+            }
+        }
 
-	if (netapi)
-		FreeLibrary(netapi);
+    if (netapi)
+        FreeLibrary(netapi);
 
         /* It appears like this can cause an exception deep within ADVAPI32.DLL
          * at random times on Windows 2000.  Reported by Jeffrey Altman.  
          * Only use it on NT.
-	 */
-	/* Wolfgang Marczy <WMarczy@topcall.co.at> reports that
-	 * the RegQueryValueEx call below can hang on NT4.0 (SP6).
-	 * So we don't use this at all for now. */
+     */
+    /* Wolfgang Marczy <WMarczy@topcall.co.at> reports that
+     * the RegQueryValueEx call below can hang on NT4.0 (SP6).
+     * So we don't use this at all for now. */
 #if 0
         if ( osverinfo.dwPlatformId == VER_PLATFORM_WIN32_NT &&
-		osverinfo.dwMajorVersion < 5)
-		{
-		/* Read Performance Statistics from NT/2000 registry
-		 * The size of the performance data can vary from call
-		 * to call so we must guess the size of the buffer to use
-		 * and increase its size if we get an ERROR_MORE_DATA
-		 * return instead of ERROR_SUCCESS.
-		 */
-		LONG   rc=ERROR_MORE_DATA;
-		char * buf=NULL;
-		DWORD bufsz=0;
-		DWORD length;
+        osverinfo.dwMajorVersion < 5)
+        {
+        /* Read Performance Statistics from NT/2000 registry
+         * The size of the performance data can vary from call
+         * to call so we must guess the size of the buffer to use
+         * and increase its size if we get an ERROR_MORE_DATA
+         * return instead of ERROR_SUCCESS.
+         */
+        LONG   rc=ERROR_MORE_DATA;
+        char * buf=NULL;
+        DWORD bufsz=0;
+        DWORD length;
 
-		while (rc == ERROR_MORE_DATA)
-			{
-			buf = realloc(buf,bufsz+8192);
-			if (!buf)
-				break;
-			bufsz += 8192;
+        while (rc == ERROR_MORE_DATA)
+            {
+            buf = realloc(buf,bufsz+8192);
+            if (!buf)
+                break;
+            bufsz += 8192;
 
-			length = bufsz;
-			rc = RegQueryValueEx(HKEY_PERFORMANCE_DATA, TEXT("Global"),
-				NULL, NULL, buf, &length);
-			}
-		if (rc == ERROR_SUCCESS)
-			{
+            length = bufsz;
+            rc = RegQueryValueEx(HKEY_PERFORMANCE_DATA, TEXT("Global"),
+                NULL, NULL, buf, &length);
+            }
+        if (rc == ERROR_SUCCESS)
+            {
                         /* For entropy count assume only least significant
-			 * byte of each DWORD is random.
-			 */
-			RAND_add(&length, sizeof(length), 0);
-			RAND_add(buf, length, length / 4.0);
+             * byte of each DWORD is random.
+             */
+            RAND_add(&length, sizeof(length), 0);
+            RAND_add(buf, length, length / 4.0);
 
-			/* Close the Registry Key to allow Windows to cleanup/close
-			 * the open handle
-			 * Note: The 'HKEY_PERFORMANCE_DATA' key is implicitly opened
-			 *       when the RegQueryValueEx above is done.  However, if
-			 *       it is not explicitly closed, it can cause disk
-			 *       partition manipulation problems.
-			 */
-			RegCloseKey(HKEY_PERFORMANCE_DATA);
-			}
-		if (buf)
-			free(buf);
-		}
+            /* Close the Registry Key to allow Windows to cleanup/close
+             * the open handle
+             * Note: The 'HKEY_PERFORMANCE_DATA' key is implicitly opened
+             *       when the RegQueryValueEx above is done.  However, if
+             *       it is not explicitly closed, it can cause disk
+             *       partition manipulation problems.
+             */
+            RegCloseKey(HKEY_PERFORMANCE_DATA);
+            }
+        if (buf)
+            free(buf);
+        }
 #endif
 
-	if (advapi)
-		{
-		/*
-		 * If it's available, then it's available in both ANSI
-		 * and UNICODE flavors even in Win9x, documentation says.
-		 * We favor Unicode...
-		 */
-		acquire = (CRYPTACQUIRECONTEXTW) GetProcAddress(advapi,
-			"CryptAcquireContextW");
-		gen = (CRYPTGENRANDOM) GetProcAddress(advapi,
-			"CryptGenRandom");
-		release = (CRYPTRELEASECONTEXT) GetProcAddress(advapi,
-			"CryptReleaseContext");
-		}
+    if (advapi)
+        {
+        /*
+         * If it's available, then it's available in both ANSI
+         * and UNICODE flavors even in Win9x, documentation says.
+         * We favor Unicode...
+         */
+        acquire = (CRYPTACQUIRECONTEXTW) GetProcAddress(advapi,
+            "CryptAcquireContextW");
+        gen = (CRYPTGENRANDOM) GetProcAddress(advapi,
+            "CryptGenRandom");
+        release = (CRYPTRELEASECONTEXT) GetProcAddress(advapi,
+            "CryptReleaseContext");
+        }
 
-	if (acquire && gen && release)
-		{
-		/* poll the CryptoAPI PRNG */
+    if (acquire && gen && release)
+        {
+        /* poll the CryptoAPI PRNG */
                 /* The CryptoAPI returns sizeof(buf) bytes of randomness */
-		if (acquire(&hProvider, NULL, NULL, PROV_RSA_FULL,
-			CRYPT_VERIFYCONTEXT))
-			{
-			if (gen(hProvider, sizeof(buf), buf) != 0)
-				{
-				RAND_add(buf, sizeof(buf), 0);
-				good = 1;
+        if (acquire(&hProvider, NULL, NULL, PROV_RSA_FULL,
+            CRYPT_VERIFYCONTEXT))
+            {
+            if (gen(hProvider, sizeof(buf), buf) != 0)
+                {
+                RAND_add(buf, sizeof(buf), 0);
+                good = 1;
 #if 0
-				printf("randomness from PROV_RSA_FULL\n");
+                printf("randomness from PROV_RSA_FULL\n");
 #endif
-				}
-			release(hProvider, 0); 
-			}
-		
-		/* poll the Pentium PRG with CryptoAPI */
-		if (acquire(&hProvider, 0, INTEL_DEF_PROV, PROV_INTEL_SEC, 0))
-			{
-			if (gen(hProvider, sizeof(buf), buf) != 0)
-				{
-				RAND_add(buf, sizeof(buf), sizeof(buf));
-				good = 1;
+                }
+            release(hProvider, 0); 
+            }
+        
+        /* poll the Pentium PRG with CryptoAPI */
+        if (acquire(&hProvider, 0, INTEL_DEF_PROV, PROV_INTEL_SEC, 0))
+            {
+            if (gen(hProvider, sizeof(buf), buf) != 0)
+                {
+                RAND_add(buf, sizeof(buf), sizeof(buf));
+                good = 1;
 #if 0
-				printf("randomness from PROV_INTEL_SEC\n");
+                printf("randomness from PROV_INTEL_SEC\n");
 #endif
-				}
-			release(hProvider, 0);
-			}
-		}
+                }
+            release(hProvider, 0);
+            }
+        }
 
         if (advapi)
-		FreeLibrary(advapi);
+        FreeLibrary(advapi);
 
-	if ((osverinfo.dwPlatformId != VER_PLATFORM_WIN32_NT ||
-	     !OPENSSL_isservice()) &&
-	    (user = LoadLibrary(TEXT("USER32.DLL"))))
-		{
-		GETCURSORINFO cursor;
-		GETFOREGROUNDWINDOW win;
-		GETQUEUESTATUS queue;
+    if ((osverinfo.dwPlatformId != VER_PLATFORM_WIN32_NT ||
+         !OPENSSL_isservice()) &&
+        (user = LoadLibrary(TEXT("USER32.DLL"))))
+        {
+        GETCURSORINFO cursor;
+        GETFOREGROUNDWINDOW win;
+        GETQUEUESTATUS queue;
 
-		win = (GETFOREGROUNDWINDOW) GetProcAddress(user, "GetForegroundWindow");
-		cursor = (GETCURSORINFO) GetProcAddress(user, "GetCursorInfo");
-		queue = (GETQUEUESTATUS) GetProcAddress(user, "GetQueueStatus");
+        win = (GETFOREGROUNDWINDOW) GetProcAddress(user, "GetForegroundWindow");
+        cursor = (GETCURSORINFO) GetProcAddress(user, "GetCursorInfo");
+        queue = (GETQUEUESTATUS) GetProcAddress(user, "GetQueueStatus");
 
-		if (win)
-			{
-			/* window handle */
-			HWND h = win();
-			RAND_add(&h, sizeof(h), 0);
-			}
-		if (cursor)
-			{
-			/* unfortunately, its not safe to call GetCursorInfo()
-			 * on NT4 even though it exists in SP3 (or SP6) and
-			 * higher.
-			 */
-			if ( osverinfo.dwPlatformId == VER_PLATFORM_WIN32_NT &&
-				osverinfo.dwMajorVersion < 5)
-				cursor = 0;
-			}
-		if (cursor)
-			{
-			/* cursor position */
+        if (win)
+            {
+            /* window handle */
+            HWND h = win();
+            RAND_add(&h, sizeof(h), 0);
+            }
+        if (cursor)
+            {
+            /* unfortunately, its not safe to call GetCursorInfo()
+             * on NT4 even though it exists in SP3 (or SP6) and
+             * higher.
+             */
+            if ( osverinfo.dwPlatformId == VER_PLATFORM_WIN32_NT &&
+                osverinfo.dwMajorVersion < 5)
+                cursor = 0;
+            }
+        if (cursor)
+            {
+            /* cursor position */
                         /* assume 2 bytes of entropy */
-			CURSORINFO ci;
-			ci.cbSize = sizeof(CURSORINFO);
-			if (cursor(&ci))
-				RAND_add(&ci, ci.cbSize, 2);
-			}
+            CURSORINFO ci;
+            ci.cbSize = sizeof(CURSORINFO);
+            if (cursor(&ci))
+                RAND_add(&ci, ci.cbSize, 2);
+            }
 
-		if (queue)
-			{
-			/* message queue status */
+        if (queue)
+            {
+            /* message queue status */
                         /* assume 1 byte of entropy */
-			w = queue(QS_ALLEVENTS);
-			RAND_add(&w, sizeof(w), 1);
-			}
+            w = queue(QS_ALLEVENTS);
+            RAND_add(&w, sizeof(w), 1);
+            }
 
-		FreeLibrary(user);
-		}
+        FreeLibrary(user);
+        }
 
-	/* Toolhelp32 snapshot: enumerate processes, threads, modules and heap
-	 * http://msdn.microsoft.com/library/psdk/winbase/toolhelp_5pfd.htm
-	 * (Win 9x and 2000 only, not available on NT)
-	 *
-	 * This seeding method was proposed in Peter Gutmann, Software
-	 * Generation of Practically Strong Random Numbers,
-	 * http://www.usenix.org/publications/library/proceedings/sec98/gutmann.html
-	 * revised version at http://www.cryptoengines.com/~peter/06_random.pdf
-	 * (The assignment of entropy estimates below is arbitrary, but based
-	 * on Peter's analysis the full poll appears to be safe. Additional
-	 * interactive seeding is encouraged.)
-	 */
+    /* Toolhelp32 snapshot: enumerate processes, threads, modules and heap
+     * http://msdn.microsoft.com/library/psdk/winbase/toolhelp_5pfd.htm
+     * (Win 9x and 2000 only, not available on NT)
+     *
+     * This seeding method was proposed in Peter Gutmann, Software
+     * Generation of Practically Strong Random Numbers,
+     * http://www.usenix.org/publications/library/proceedings/sec98/gutmann.html
+     * revised version at http://www.cryptoengines.com/~peter/06_random.pdf
+     * (The assignment of entropy estimates below is arbitrary, but based
+     * on Peter's analysis the full poll appears to be safe. Additional
+     * interactive seeding is encouraged.)
+     */
 
-	if (kernel)
-		{
-		CREATETOOLHELP32SNAPSHOT snap;
-		CLOSETOOLHELP32SNAPSHOT close_snap;
-		HANDLE handle;
+    if (kernel)
+        {
+        CREATETOOLHELP32SNAPSHOT snap;
+        CLOSETOOLHELP32SNAPSHOT close_snap;
+        HANDLE handle;
 
-		HEAP32FIRST heap_first;
-		HEAP32NEXT heap_next;
-		HEAP32LIST heaplist_first, heaplist_next;
-		PROCESS32 process_first, process_next;
-		THREAD32 thread_first, thread_next;
-		MODULE32 module_first, module_next;
+        HEAP32FIRST heap_first;
+        HEAP32NEXT heap_next;
+        HEAP32LIST heaplist_first, heaplist_next;
+        PROCESS32 process_first, process_next;
+        THREAD32 thread_first, thread_next;
+        MODULE32 module_first, module_next;
 
-		HEAPLIST32 hlist;
-		HEAPENTRY32 hentry;
-		PROCESSENTRY32 p;
-		THREADENTRY32 t;
-		MODULEENTRY32 m;
-		DWORD starttime = 0;
+        HEAPLIST32 hlist;
+        HEAPENTRY32 hentry;
+        PROCESSENTRY32 p;
+        THREADENTRY32 t;
+        MODULEENTRY32 m;
+        DWORD starttime = 0;
 
-		snap = (CREATETOOLHELP32SNAPSHOT)
-			GetProcAddress(kernel, "CreateToolhelp32Snapshot");
-		close_snap = (CLOSETOOLHELP32SNAPSHOT)
-			GetProcAddress(kernel, "CloseToolhelp32Snapshot");
-		heap_first = (HEAP32FIRST) GetProcAddress(kernel, "Heap32First");
-		heap_next = (HEAP32NEXT) GetProcAddress(kernel, "Heap32Next");
-		heaplist_first = (HEAP32LIST) GetProcAddress(kernel, "Heap32ListFirst");
-		heaplist_next = (HEAP32LIST) GetProcAddress(kernel, "Heap32ListNext");
-		process_first = (PROCESS32) GetProcAddress(kernel, "Process32First");
-		process_next = (PROCESS32) GetProcAddress(kernel, "Process32Next");
-		thread_first = (THREAD32) GetProcAddress(kernel, "Thread32First");
-		thread_next = (THREAD32) GetProcAddress(kernel, "Thread32Next");
-		module_first = (MODULE32) GetProcAddress(kernel, "Module32First");
-		module_next = (MODULE32) GetProcAddress(kernel, "Module32Next");
+        snap = (CREATETOOLHELP32SNAPSHOT)
+            GetProcAddress(kernel, "CreateToolhelp32Snapshot");
+        close_snap = (CLOSETOOLHELP32SNAPSHOT)
+            GetProcAddress(kernel, "CloseToolhelp32Snapshot");
+        heap_first = (HEAP32FIRST) GetProcAddress(kernel, "Heap32First");
+        heap_next = (HEAP32NEXT) GetProcAddress(kernel, "Heap32Next");
+        heaplist_first = (HEAP32LIST) GetProcAddress(kernel, "Heap32ListFirst");
+        heaplist_next = (HEAP32LIST) GetProcAddress(kernel, "Heap32ListNext");
+        process_first = (PROCESS32) GetProcAddress(kernel, "Process32First");
+        process_next = (PROCESS32) GetProcAddress(kernel, "Process32Next");
+        thread_first = (THREAD32) GetProcAddress(kernel, "Thread32First");
+        thread_next = (THREAD32) GetProcAddress(kernel, "Thread32Next");
+        module_first = (MODULE32) GetProcAddress(kernel, "Module32First");
+        module_next = (MODULE32) GetProcAddress(kernel, "Module32Next");
 
-		if (snap && heap_first && heap_next && heaplist_first &&
-			heaplist_next && process_first && process_next &&
-			thread_first && thread_next && module_first &&
-			module_next && (handle = snap(TH32CS_SNAPALL,0))
-			!= INVALID_HANDLE_VALUE)
-			{
-			/* heap list and heap walking */
+        if (snap && heap_first && heap_next && heaplist_first &&
+            heaplist_next && process_first && process_next &&
+            thread_first && thread_next && module_first &&
+            module_next && (handle = snap(TH32CS_SNAPALL,0))
+            != INVALID_HANDLE_VALUE)
+            {
+            /* heap list and heap walking */
                         /* HEAPLIST32 contains 3 fields that will change with
                          * each entry.  Consider each field a source of 1 byte
                          * of entropy.
@@ -475,140 +475,140 @@ int RAND_poll(void)
                          * each entry.  Consider each field a source of 1 byte
                          * of entropy.
                          */
-			ZeroMemory(&hlist, sizeof(HEAPLIST32));
-			hlist.dwSize = sizeof(HEAPLIST32);		
-			if (good) starttime = GetTickCount();
+            ZeroMemory(&hlist, sizeof(HEAPLIST32));
+            hlist.dwSize = sizeof(HEAPLIST32);        
+            if (good) starttime = GetTickCount();
 #ifdef _MSC_VER
-			if (heaplist_first(handle, &hlist))
-				{
-				/*
-				   following discussion on dev ML, exception on WinCE (or other Win
-				   platform) is theoretically of unknown origin; prevent infinite
-				   loop here when this theoretical case occurs; otherwise cope with
-				   the expected (MSDN documented) exception-throwing behaviour of
-				   Heap32Next() on WinCE.
+            if (heaplist_first(handle, &hlist))
+                {
+                /*
+                   following discussion on dev ML, exception on WinCE (or other Win
+                   platform) is theoretically of unknown origin; prevent infinite
+                   loop here when this theoretical case occurs; otherwise cope with
+                   the expected (MSDN documented) exception-throwing behaviour of
+                   Heap32Next() on WinCE.
 
-				   based on patch in original message by Tanguy Fautré (2009/03/02)
-			           Subject: RAND_poll() and CreateToolhelp32Snapshot() stability
-			     */
-				int ex_cnt_limit = 42; 
-				do
-					{
-					RAND_add(&hlist, hlist.dwSize, 3);
-					__try
-						{
-						ZeroMemory(&hentry, sizeof(HEAPENTRY32));
-					hentry.dwSize = sizeof(HEAPENTRY32);
-					if (heap_first(&hentry,
-						hlist.th32ProcessID,
-						hlist.th32HeapID))
-						{
-						int entrycnt = 80;
-						do
-							RAND_add(&hentry,
-								hentry.dwSize, 5);
-						while (heap_next(&hentry)
-						&& (!good || (GetTickCount()-starttime)<MAXDELAY)
-							&& --entrycnt > 0);
-						}
-						}
-					__except (EXCEPTION_EXECUTE_HANDLER)
-						{
-							/* ignore access violations when walking the heap list */
-							ex_cnt_limit--;
-						}
-					} while (heaplist_next(handle, &hlist) 
-						&& (!good || (GetTickCount()-starttime)<MAXDELAY)
-						&& ex_cnt_limit > 0);
-				}
+                   based on patch in original message by Tanguy Fautré (2009/03/02)
+                       Subject: RAND_poll() and CreateToolhelp32Snapshot() stability
+                 */
+                int ex_cnt_limit = 42; 
+                do
+                    {
+                    RAND_add(&hlist, hlist.dwSize, 3);
+                    __try
+                        {
+                        ZeroMemory(&hentry, sizeof(HEAPENTRY32));
+                    hentry.dwSize = sizeof(HEAPENTRY32);
+                    if (heap_first(&hentry,
+                        hlist.th32ProcessID,
+                        hlist.th32HeapID))
+                        {
+                        int entrycnt = 80;
+                        do
+                            RAND_add(&hentry,
+                                hentry.dwSize, 5);
+                        while (heap_next(&hentry)
+                        && (!good || (GetTickCount()-starttime)<MAXDELAY)
+                            && --entrycnt > 0);
+                        }
+                        }
+                    __except (EXCEPTION_EXECUTE_HANDLER)
+                        {
+                            /* ignore access violations when walking the heap list */
+                            ex_cnt_limit--;
+                        }
+                    } while (heaplist_next(handle, &hlist) 
+                        && (!good || (GetTickCount()-starttime)<MAXDELAY)
+                        && ex_cnt_limit > 0);
+                }
 
 #else
-			if (heaplist_first(handle, &hlist))
-				{
-				do
-					{
-					RAND_add(&hlist, hlist.dwSize, 3);
-					hentry.dwSize = sizeof(HEAPENTRY32);
-					if (heap_first(&hentry,
-						hlist.th32ProcessID,
-						hlist.th32HeapID))
-						{
-						int entrycnt = 80;
-						do
-							RAND_add(&hentry,
-								hentry.dwSize, 5);
-						while (heap_next(&hentry)
-							&& --entrycnt > 0);
-						}
-					} while (heaplist_next(handle, &hlist) 
-						&& (!good || (GetTickCount()-starttime)<MAXDELAY));
-				}
+            if (heaplist_first(handle, &hlist))
+                {
+                do
+                    {
+                    RAND_add(&hlist, hlist.dwSize, 3);
+                    hentry.dwSize = sizeof(HEAPENTRY32);
+                    if (heap_first(&hentry,
+                        hlist.th32ProcessID,
+                        hlist.th32HeapID))
+                        {
+                        int entrycnt = 80;
+                        do
+                            RAND_add(&hentry,
+                                hentry.dwSize, 5);
+                        while (heap_next(&hentry)
+                            && --entrycnt > 0);
+                        }
+                    } while (heaplist_next(handle, &hlist) 
+                        && (!good || (GetTickCount()-starttime)<MAXDELAY));
+                }
 #endif
 
-			/* process walking */
+            /* process walking */
                         /* PROCESSENTRY32 contains 9 fields that will change
                          * with each entry.  Consider each field a source of
                          * 1 byte of entropy.
                          */
-			p.dwSize = sizeof(PROCESSENTRY32);
-		
-			if (good) starttime = GetTickCount();
-			if (process_first(handle, &p))
-				do
-					RAND_add(&p, p.dwSize, 9);
-				while (process_next(handle, &p) && (!good || (GetTickCount()-starttime)<MAXDELAY));
+            p.dwSize = sizeof(PROCESSENTRY32);
+        
+            if (good) starttime = GetTickCount();
+            if (process_first(handle, &p))
+                do
+                    RAND_add(&p, p.dwSize, 9);
+                while (process_next(handle, &p) && (!good || (GetTickCount()-starttime)<MAXDELAY));
 
-			/* thread walking */
+            /* thread walking */
                         /* THREADENTRY32 contains 6 fields that will change
                          * with each entry.  Consider each field a source of
                          * 1 byte of entropy.
                          */
-			t.dwSize = sizeof(THREADENTRY32);
-			if (good) starttime = GetTickCount();
-			if (thread_first(handle, &t))
-				do
-					RAND_add(&t, t.dwSize, 6);
-				while (thread_next(handle, &t) && (!good || (GetTickCount()-starttime)<MAXDELAY));
+            t.dwSize = sizeof(THREADENTRY32);
+            if (good) starttime = GetTickCount();
+            if (thread_first(handle, &t))
+                do
+                    RAND_add(&t, t.dwSize, 6);
+                while (thread_next(handle, &t) && (!good || (GetTickCount()-starttime)<MAXDELAY));
 
-			/* module walking */
+            /* module walking */
                         /* MODULEENTRY32 contains 9 fields that will change
                          * with each entry.  Consider each field a source of
                          * 1 byte of entropy.
                          */
-			m.dwSize = sizeof(MODULEENTRY32);
-			if (good) starttime = GetTickCount();
-			if (module_first(handle, &m))
-				do
-					RAND_add(&m, m.dwSize, 9);
-				while (module_next(handle, &m)
-					       	&& (!good || (GetTickCount()-starttime)<MAXDELAY));
-			if (close_snap)
-				close_snap(handle);
-			else
-				CloseHandle(handle);
+            m.dwSize = sizeof(MODULEENTRY32);
+            if (good) starttime = GetTickCount();
+            if (module_first(handle, &m))
+                do
+                    RAND_add(&m, m.dwSize, 9);
+                while (module_next(handle, &m)
+                               && (!good || (GetTickCount()-starttime)<MAXDELAY));
+            if (close_snap)
+                close_snap(handle);
+            else
+                CloseHandle(handle);
 
-			}
+            }
 
-		FreeLibrary(kernel);
-		}
-	}
+        FreeLibrary(kernel);
+        }
+    }
 
-	/* timer data */
-	readtimer();
-	
-	/* memory usage statistics */
-	GlobalMemoryStatus(&m);
-	RAND_add(&m, sizeof(m), 1);
+    /* timer data */
+    readtimer();
+    
+    /* memory usage statistics */
+    GlobalMemoryStatus(&m);
+    RAND_add(&m, sizeof(m), 1);
 
-	/* process ID */
-	w = GetCurrentProcessId();
-	RAND_add(&w, sizeof(w), 1);
+    /* process ID */
+    w = GetCurrentProcessId();
+    RAND_add(&w, sizeof(w), 1);
 
 #if 0
-	printf("Exiting RAND_poll\n");
+    printf("Exiting RAND_poll\n");
 #endif
 
-	return (1);
+    return (1);
 }
 
 int RAND_event(UINT iMsg, WPARAM wParam, LPARAM lParam)
@@ -625,7 +625,7 @@ int RAND_event(UINT iMsg, WPARAM wParam, LPARAM lParam)
                         key = wParam;
                         }
                         break;
-	case WM_MOUSEMOVE:
+    case WM_MOUSEMOVE:
                         {
                         static int lastx,lasty,lastdx,lastdy;
                         int x,y,dx,dy;
@@ -639,62 +639,62 @@ int RAND_event(UINT iMsg, WPARAM wParam, LPARAM lParam)
                         lastx=x, lasty=y;
                         lastdx=dx, lastdy=dy;
                         }
-		break;
-		}
+        break;
+        }
 
-	readtimer();
+    readtimer();
         RAND_add(&iMsg, sizeof(iMsg), add_entropy);
-	RAND_add(&wParam, sizeof(wParam), 0);
-	RAND_add(&lParam, sizeof(lParam), 0);
+    RAND_add(&wParam, sizeof(wParam), 0);
+    RAND_add(&lParam, sizeof(lParam), 0);
  
-	return (RAND_status());
-	}
+    return (RAND_status());
+    }
 
 
 void RAND_screen(void) /* function available for backward compatibility */
 {
-	RAND_poll();
-	readscreen();
+    RAND_poll();
+    readscreen();
 }
 
 
 /* feed timing information to the PRNG */
 static void readtimer(void)
 {
-	DWORD w;
-	LARGE_INTEGER l;
-	static int have_perfc = 1;
+    DWORD w;
+    LARGE_INTEGER l;
+    static int have_perfc = 1;
 #if defined(_MSC_VER) && defined(_M_X86)
-	static int have_tsc = 1;
-	DWORD cyclecount;
+    static int have_tsc = 1;
+    DWORD cyclecount;
 
-	if (have_tsc) {
-	  __try {
-	    __asm {
-	      _emit 0x0f
-	      _emit 0x31
-	      mov cyclecount, eax
-	      }
-	    RAND_add(&cyclecount, sizeof(cyclecount), 1);
-	  } __except(EXCEPTION_EXECUTE_HANDLER) {
-	    have_tsc = 0;
-	  }
-	}
+    if (have_tsc) {
+      __try {
+        __asm {
+          _emit 0x0f
+          _emit 0x31
+          mov cyclecount, eax
+          }
+        RAND_add(&cyclecount, sizeof(cyclecount), 1);
+      } __except(EXCEPTION_EXECUTE_HANDLER) {
+        have_tsc = 0;
+      }
+    }
 #else
 # define have_tsc 0
 #endif
 
-	if (have_perfc) {
-	  if (QueryPerformanceCounter(&l) == 0)
-	    have_perfc = 0;
-	  else
-	    RAND_add(&l, sizeof(l), 0);
-	}
+    if (have_perfc) {
+      if (QueryPerformanceCounter(&l) == 0)
+        have_perfc = 0;
+      else
+        RAND_add(&l, sizeof(l), 0);
+    }
 
-	if (!have_tsc && !have_perfc) {
-	  w = GetTickCount();
-	  RAND_add(&w, sizeof(w), 0);
-	}
+    if (!have_tsc && !have_perfc) {
+      w = GetTickCount();
+      RAND_add(&w, sizeof(w), 0);
+    }
 }
 
 /* feed screen contents to PRNG */
@@ -717,17 +717,17 @@ static void readtimer(void)
 
 static void readscreen(void)
 {
-  HDC		hScrDC;		/* screen DC */
-  HDC		hMemDC;		/* memory DC */
-  HBITMAP	hBitmap;	/* handle for our bitmap */
-  HBITMAP	hOldBitmap;	/* handle for previous bitmap */
-  BITMAP	bm;		/* bitmap properties */
-  unsigned int	size;		/* size of bitmap */
-  char		*bmbits;	/* contents of bitmap */
-  int		w;		/* screen width */
-  int		h;		/* screen height */
-  int		y;		/* y-coordinate of screen lines to grab */
-  int		n = 16;		/* number of screen lines to grab at a time */
+  HDC        hScrDC;        /* screen DC */
+  HDC        hMemDC;        /* memory DC */
+  HBITMAP    hBitmap;    /* handle for our bitmap */
+  HBITMAP    hOldBitmap;    /* handle for previous bitmap */
+  BITMAP    bm;        /* bitmap properties */
+  unsigned int    size;        /* size of bitmap */
+  char        *bmbits;    /* contents of bitmap */
+  int        w;        /* screen width */
+  int        h;        /* screen height */
+  int        y;        /* y-coordinate of screen lines to grab */
+  int        n = 16;        /* number of screen lines to grab at a time */
 
   if (check_winnt() && OPENSSL_isservice()>0)
     return;
@@ -754,21 +754,21 @@ static void readscreen(void)
   if (bmbits) {
     /* Now go through the whole screen, repeatedly grabbing n lines */
     for (y = 0; y < h-n; y += n)
-    	{
-	unsigned char md[MD_DIGEST_LENGTH];
+        {
+    unsigned char md[MD_DIGEST_LENGTH];
 
-	/* Bitblt screen DC to memory DC */
-	BitBlt(hMemDC, 0, 0, w, n, hScrDC, 0, y, SRCCOPY);
+    /* Bitblt screen DC to memory DC */
+    BitBlt(hMemDC, 0, 0, w, n, hScrDC, 0, y, SRCCOPY);
 
-	/* Copy bitmap bits from memory DC to bmbits */
-	GetBitmapBits(hBitmap, size, bmbits);
+    /* Copy bitmap bits from memory DC to bmbits */
+    GetBitmapBits(hBitmap, size, bmbits);
 
-	/* Get the hash of the bitmap */
-	MD(bmbits,size,md);
+    /* Get the hash of the bitmap */
+    MD(bmbits,size,md);
 
-	/* Seed the random generator with the hash value */
-	RAND_add(md, MD_DIGEST_LENGTH, 0);
-	}
+    /* Seed the random generator with the hash value */
+    RAND_add(md, MD_DIGEST_LENGTH, 0);
+    }
 
     free(bmbits);
   }

@@ -59,112 +59,112 @@ static unsigned const char cov_2char[64]={
 };
 
 char *DES_crypt(const char *buf, const char *salt)
-	{
-	static char buff[14];
+    {
+    static char buff[14];
 
 #ifndef CHARSET_EBCDIC
-	return (DES_fcrypt(buf,salt,buff));
+    return (DES_fcrypt(buf,salt,buff));
 #else
-	char e_salt[2+1];
-	char e_buf[32+1];	/* replace 32 by 8 ? */
-	char *ret;
+    char e_salt[2+1];
+    char e_buf[32+1];    /* replace 32 by 8 ? */
+    char *ret;
 
-	/* Copy at most 2 chars of salt */
-	if ((e_salt[0] = salt[0]) != '\0')
-	    e_salt[1] = salt[1];
+    /* Copy at most 2 chars of salt */
+    if ((e_salt[0] = salt[0]) != '\0')
+        e_salt[1] = salt[1];
 
-	/* Copy at most 32 chars of password */
-	strncpy (e_buf, buf, sizeof(e_buf));
+    /* Copy at most 32 chars of password */
+    strncpy (e_buf, buf, sizeof(e_buf));
 
-	/* Make sure we have a delimiter */
-	e_salt[sizeof(e_salt)-1] = e_buf[sizeof(e_buf)-1] = '\0';
+    /* Make sure we have a delimiter */
+    e_salt[sizeof(e_salt)-1] = e_buf[sizeof(e_buf)-1] = '\0';
 
-	/* Convert the e_salt to ASCII, as that's what DES_fcrypt works on */
-	ebcdic2ascii(e_salt, e_salt, sizeof e_salt);
+    /* Convert the e_salt to ASCII, as that's what DES_fcrypt works on */
+    ebcdic2ascii(e_salt, e_salt, sizeof e_salt);
 
-	/* Convert the cleartext password to ASCII */
-	ebcdic2ascii(e_buf, e_buf, sizeof e_buf);
+    /* Convert the cleartext password to ASCII */
+    ebcdic2ascii(e_buf, e_buf, sizeof e_buf);
 
-	/* Encrypt it (from/to ASCII) */
-	ret = DES_fcrypt(e_buf,e_salt,buff);
+    /* Encrypt it (from/to ASCII) */
+    ret = DES_fcrypt(e_buf,e_salt,buff);
 
-	/* Convert the result back to EBCDIC */
-	ascii2ebcdic(ret, ret, strlen(ret));
-	
-	return ret;
+    /* Convert the result back to EBCDIC */
+    ascii2ebcdic(ret, ret, strlen(ret));
+    
+    return ret;
 #endif
-	}
+    }
 
 
 char *DES_fcrypt(const char *buf, const char *salt, char *ret)
-	{
-	unsigned int i,j,x,y;
-	DES_LONG Eswap0,Eswap1;
-	DES_LONG out[2],ll;
-	DES_cblock key;
-	DES_key_schedule ks;
-	unsigned char bb[9];
-	unsigned char *b=bb;
-	unsigned char c,u;
+    {
+    unsigned int i,j,x,y;
+    DES_LONG Eswap0,Eswap1;
+    DES_LONG out[2],ll;
+    DES_cblock key;
+    DES_key_schedule ks;
+    unsigned char bb[9];
+    unsigned char *b=bb;
+    unsigned char c,u;
 
-	/* eay 25/08/92
-	 * If you call crypt("pwd","*") as often happens when you
-	 * have * as the pwd field in /etc/passwd, the function
-	 * returns *\0XXXXXXXXX
-	 * The \0 makes the string look like * so the pwd "*" would
-	 * crypt to "*".  This was found when replacing the crypt in
-	 * our shared libraries.  People found that the disabled
-	 * accounts effectively had no passwd :-(. */
+    /* eay 25/08/92
+     * If you call crypt("pwd","*") as often happens when you
+     * have * as the pwd field in /etc/passwd, the function
+     * returns *\0XXXXXXXXX
+     * The \0 makes the string look like * so the pwd "*" would
+     * crypt to "*".  This was found when replacing the crypt in
+     * our shared libraries.  People found that the disabled
+     * accounts effectively had no passwd :-(. */
 #ifndef CHARSET_EBCDIC
-	x=ret[0]=((salt[0] == '\0')?'A':salt[0]);
-	Eswap0=con_salt[x]<<2;
-	x=ret[1]=((salt[1] == '\0')?'A':salt[1]);
-	Eswap1=con_salt[x]<<6;
+    x=ret[0]=((salt[0] == '\0')?'A':salt[0]);
+    Eswap0=con_salt[x]<<2;
+    x=ret[1]=((salt[1] == '\0')?'A':salt[1]);
+    Eswap1=con_salt[x]<<6;
 #else
-	x=ret[0]=((salt[0] == '\0')?os_toascii['A']:salt[0]);
-	Eswap0=con_salt[x]<<2;
-	x=ret[1]=((salt[1] == '\0')?os_toascii['A']:salt[1]);
-	Eswap1=con_salt[x]<<6;
+    x=ret[0]=((salt[0] == '\0')?os_toascii['A']:salt[0]);
+    Eswap0=con_salt[x]<<2;
+    x=ret[1]=((salt[1] == '\0')?os_toascii['A']:salt[1]);
+    Eswap1=con_salt[x]<<6;
 #endif
 
 /* EAY
 r=strlen(buf);
 r=(r+7)/8;
 */
-	for (i=0; i<8; i++)
-		{
-		c= *(buf++);
-		if (!c) break;
-		key[i]=(c<<1);
-		}
-	for (; i<8; i++)
-		key[i]=0;
+    for (i=0; i<8; i++)
+        {
+        c= *(buf++);
+        if (!c) break;
+        key[i]=(c<<1);
+        }
+    for (; i<8; i++)
+        key[i]=0;
 
-	DES_set_key_unchecked(&key,&ks);
-	fcrypt_body(&(out[0]),&ks,Eswap0,Eswap1);
+    DES_set_key_unchecked(&key,&ks);
+    fcrypt_body(&(out[0]),&ks,Eswap0,Eswap1);
 
-	ll=out[0]; l2c(ll,b);
-	ll=out[1]; l2c(ll,b);
-	y=0;
-	u=0x80;
-	bb[8]=0;
-	for (i=2; i<13; i++)
-		{
-		c=0;
-		for (j=0; j<6; j++)
-			{
-			c<<=1;
-			if (bb[y] & u) c|=1;
-			u>>=1;
-			if (!u)
-				{
-				y++;
-				u=0x80;
-				}
-			}
-		ret[i]=cov_2char[c];
-		}
-	ret[13]='\0';
-	return (ret);
-	}
+    ll=out[0]; l2c(ll,b);
+    ll=out[1]; l2c(ll,b);
+    y=0;
+    u=0x80;
+    bb[8]=0;
+    for (i=2; i<13; i++)
+        {
+        c=0;
+        for (j=0; j<6; j++)
+            {
+            c<<=1;
+            if (bb[y] & u) c|=1;
+            u>>=1;
+            if (!u)
+                {
+                y++;
+                u=0x80;
+                }
+            }
+        ret[i]=cov_2char[c];
+        }
+    ret[13]='\0';
+    return (ret);
+    }
 

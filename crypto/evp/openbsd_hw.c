@@ -70,11 +70,11 @@ static void *dummy=&dummy;
 #include <assert.h>
 
 /* longest key supported in hardware */
-#define MAX_HW_KEY	24
-#define MAX_HW_IV	8
+#define MAX_HW_KEY    24
+#define MAX_HW_IV    8
 
-#define MD5_DIGEST_LENGTH	16
-#define MD5_CBLOCK		64
+#define MD5_DIGEST_LENGTH    16
+#define MD5_CBLOCK        64
 
 static int fd;
 static int dev_failed;
@@ -91,26 +91,26 @@ static void err(const char *str)
 static int dev_crypto_init(session_op *ses)
     {
     if (dev_failed)
-	return 0;
+    return 0;
     if (!fd)
-	{
-	int cryptodev_fd;
+    {
+    int cryptodev_fd;
 
         if ((cryptodev_fd=open("/dev/crypto",O_RDWR,0)) < 0)
-	    {
-	    err("/dev/crypto");
-	    dev_failed=1;
-	    return 0;
-	    }
+        {
+        err("/dev/crypto");
+        dev_failed=1;
+        return 0;
+        }
         if (ioctl(cryptodev_fd,CRIOGET,&fd) == -1)
-	    {
-	    err("CRIOGET failed");
-	    close(cryptodev_fd);
-	    dev_failed=1;
-	    return 0;
-	    }
-	close(cryptodev_fd);
-	}
+        {
+        err("CRIOGET failed");
+        close(cryptodev_fd);
+        dev_failed=1;
+        return 0;
+        }
+    close(cryptodev_fd);
+    }
     assert(ses);
     memset(ses,'\0',sizeof *ses);
 
@@ -120,7 +120,7 @@ static int dev_crypto_init(session_op *ses)
 static int dev_crypto_cleanup(EVP_CIPHER_CTX *ctx)
     {
     if (ioctl(fd,CIOCFSESSION,&CDATA(ctx)->ses) == -1)
-	err("CIOCFSESSION failed");
+    err("CIOCFSESSION failed");
 
     free(CDATA(ctx)->key);
 
@@ -128,10 +128,10 @@ static int dev_crypto_cleanup(EVP_CIPHER_CTX *ctx)
     }
 
 static int dev_crypto_init_key(EVP_CIPHER_CTX *ctx,int cipher,
-			       const unsigned char *key,int klen)
+                   const unsigned char *key,int klen)
     {
     if (!dev_crypto_init(CDATA(ctx)))
-	return 0;
+    return 0;
 
     CDATA(ctx)->key=malloc(MAX_HW_KEY);
 
@@ -143,21 +143,21 @@ static int dev_crypto_init_key(EVP_CIPHER_CTX *ctx,int cipher,
     CDATA(ctx)->keylen=klen;
 
     if (ioctl(fd,CIOCGSESSION,CDATA(ctx)) == -1)
-	{
-	err("CIOCGSESSION failed");
-	return 0;
-	}
+    {
+    err("CIOCGSESSION failed");
+    return 0;
+    }
     return 1;
     }
 
 static int dev_crypto_cipher(EVP_CIPHER_CTX *ctx,unsigned char *out,
-			     const unsigned char *in,unsigned int inl)
+                 const unsigned char *in,unsigned int inl)
     {
     struct crypt_op cryp;
     unsigned char lb[MAX_HW_IV];
 
     if (!inl)
-	return 1;
+    return 1;
 
     assert(CDATA(ctx));
     assert(!dev_failed);
@@ -172,92 +172,92 @@ static int dev_crypto_cipher(EVP_CIPHER_CTX *ctx,unsigned char *out,
     cryp.dst=(caddr_t)out;
     cryp.mac=0;
     if (ctx->cipher->iv_len)
-	cryp.iv=(caddr_t)ctx->iv;
+    cryp.iv=(caddr_t)ctx->iv;
 
     if (!ctx->encrypt)
-	memcpy(lb,&in[cryp.len-ctx->cipher->iv_len],ctx->cipher->iv_len);
+    memcpy(lb,&in[cryp.len-ctx->cipher->iv_len],ctx->cipher->iv_len);
 
     if (ioctl(fd, CIOCCRYPT, &cryp) == -1)
-	{
-	if (errno == EINVAL) /* buffers are misaligned */
-	    {
-	    unsigned int cinl=0;
-	    char *cin=NULL;
-	    char *cout=NULL;
+    {
+    if (errno == EINVAL) /* buffers are misaligned */
+        {
+        unsigned int cinl=0;
+        char *cin=NULL;
+        char *cout=NULL;
 
-	    /* NB: this can only make cinl != inl with stream ciphers */
-	    cinl=(inl+3)/4*4;
+        /* NB: this can only make cinl != inl with stream ciphers */
+        cinl=(inl+3)/4*4;
 
-	    if (((unsigned long)in&3) || cinl != inl)
-		{
-		cin=malloc(cinl);
-		memcpy(cin,in,inl);
-		cryp.src=cin;
-		}
+        if (((unsigned long)in&3) || cinl != inl)
+        {
+        cin=malloc(cinl);
+        memcpy(cin,in,inl);
+        cryp.src=cin;
+        }
 
-	    if (((unsigned long)out&3) || cinl != inl)
-		{
-		cout=malloc(cinl);
-		cryp.dst=cout;
-		}
+        if (((unsigned long)out&3) || cinl != inl)
+        {
+        cout=malloc(cinl);
+        cryp.dst=cout;
+        }
 
-	    cryp.len=cinl;
+        cryp.len=cinl;
 
-	    if (ioctl(fd, CIOCCRYPT, &cryp) == -1)
-		{
-		err("CIOCCRYPT(2) failed");
-		printf("src=%p dst=%p\n",cryp.src,cryp.dst);
-		abort();
-		return 0;
-		}
-		
-	    if (cout)
-		{
-		memcpy(out,cout,inl);
-		free(cout);
-		}
-	    if (cin)
-		free(cin);
-	    }
-	else 
-	    {	    
-	    err("CIOCCRYPT failed");
-	    abort();
-	    return 0;
-	    }
-	}
+        if (ioctl(fd, CIOCCRYPT, &cryp) == -1)
+        {
+        err("CIOCCRYPT(2) failed");
+        printf("src=%p dst=%p\n",cryp.src,cryp.dst);
+        abort();
+        return 0;
+        }
+        
+        if (cout)
+        {
+        memcpy(out,cout,inl);
+        free(cout);
+        }
+        if (cin)
+        free(cin);
+        }
+    else 
+        {        
+        err("CIOCCRYPT failed");
+        abort();
+        return 0;
+        }
+    }
 
     if (ctx->encrypt)
-	memcpy(ctx->iv,&out[cryp.len-ctx->cipher->iv_len],ctx->cipher->iv_len);
+    memcpy(ctx->iv,&out[cryp.len-ctx->cipher->iv_len],ctx->cipher->iv_len);
     else
-	memcpy(ctx->iv,lb,ctx->cipher->iv_len);
+    memcpy(ctx->iv,lb,ctx->cipher->iv_len);
 
     return 1;
     }
 
 static int dev_crypto_des_ede3_init_key(EVP_CIPHER_CTX *ctx,
-					const unsigned char *key,
-					const unsigned char *iv, int enc)
+                    const unsigned char *key,
+                    const unsigned char *iv, int enc)
     { return dev_crypto_init_key(ctx,CRYPTO_3DES_CBC,key,24); }
 
 #define dev_crypto_des_ede3_cbc_cipher dev_crypto_cipher
 
 BLOCK_CIPHER_def_cbc(dev_crypto_des_ede3, session_op, NID_des_ede3, 8, 24, 8,
-		     0, dev_crypto_des_ede3_init_key,
-		     dev_crypto_cleanup, 
-		     EVP_CIPHER_set_asn1_iv,
-		     EVP_CIPHER_get_asn1_iv,
-		     NULL)
+             0, dev_crypto_des_ede3_init_key,
+             dev_crypto_cleanup, 
+             EVP_CIPHER_set_asn1_iv,
+             EVP_CIPHER_get_asn1_iv,
+             NULL)
 
 static int dev_crypto_rc4_init_key(EVP_CIPHER_CTX *ctx,
-					const unsigned char *key,
-					const unsigned char *iv, int enc)
+                    const unsigned char *key,
+                    const unsigned char *iv, int enc)
     { return dev_crypto_init_key(ctx,CRYPTO_ARC4,key,16); }
 
 static const EVP_CIPHER r4_cipher=
     {
     NID_rc4,
-    1,16,0,	/* FIXME: key should be up to 256 bytes */
+    1,16,0,    /* FIXME: key should be up to 256 bytes */
     EVP_CIPH_VARIABLE_LENGTH,
     dev_crypto_rc4_init_key,
     dev_crypto_cipher,
@@ -282,7 +282,7 @@ typedef struct
 static int dev_crypto_init_digest(MD_DATA *md_data,int mac)
     {
     if (!dev_crypto_init(&md_data->sess))
-	return 0;
+    return 0;
 
     md_data->len=0;
     md_data->data=NULL;
@@ -290,20 +290,20 @@ static int dev_crypto_init_digest(MD_DATA *md_data,int mac)
     md_data->sess.mac=mac;
 
     if (ioctl(fd,CIOCGSESSION,&md_data->sess) == -1)
-	{
-	err("CIOCGSESSION failed");
-	return 0;
-	}
+    {
+    err("CIOCGSESSION failed");
+    return 0;
+    }
     return 1;
     }
 
 static int dev_crypto_cleanup_digest(MD_DATA *md_data)
     {
     if (ioctl(fd,CIOCFSESSION,&md_data->sess.ses) == -1)
-	{
-	err("CIOCFSESSION failed");
-	return 0;
-	}
+    {
+    err("CIOCFSESSION failed");
+    return 0;
+    }
 
     return 1;
     }
@@ -317,17 +317,17 @@ static int do_digest(int ses,unsigned char *md,const void *data,int len)
     {
     struct crypt_op cryp;
     static unsigned char md5zero[16]=
-	{
-	0xd4,0x1d,0x8c,0xd9,0x8f,0x00,0xb2,0x04,
-	0xe9,0x80,0x09,0x98,0xec,0xf8,0x42,0x7e
-	};
+    {
+    0xd4,0x1d,0x8c,0xd9,0x8f,0x00,0xb2,0x04,
+    0xe9,0x80,0x09,0x98,0xec,0xf8,0x42,0x7e
+    };
 
     /* some cards can't do zero length */
     if (!len)
-	{
-	memcpy(md,md5zero,16);
-	return 1;
-	}
+    {
+    memcpy(md,md5zero,16);
+    return 1;
+    }
 
     memset(&cryp,'\0',sizeof cryp);
     cryp.ses=ses;
@@ -338,50 +338,50 @@ static int do_digest(int ses,unsigned char *md,const void *data,int len)
     cryp.mac=(caddr_t)md;
 
     if (ioctl(fd, CIOCCRYPT, &cryp) == -1)
-	{
-	if (errno == EINVAL) /* buffer is misaligned */
-	    {
-	    char *dcopy;
+    {
+    if (errno == EINVAL) /* buffer is misaligned */
+        {
+        char *dcopy;
 
-	    dcopy=malloc(len);
-	    memcpy(dcopy,data,len);
-	    cryp.src=dcopy;
-	    cryp.dst=cryp.src; // FIXME!!!
+        dcopy=malloc(len);
+        memcpy(dcopy,data,len);
+        cryp.src=dcopy;
+        cryp.dst=cryp.src; // FIXME!!!
 
-	    if (ioctl(fd, CIOCCRYPT, &cryp) == -1)
-		{
-		err("CIOCCRYPT(MAC2) failed");
-		abort();
-		return 0;
-		}
-	    free(dcopy);
-	    }
-	else
-	    {
-	    err("CIOCCRYPT(MAC) failed");
-	    abort();
-	    return 0;
-	    }
-	}
+        if (ioctl(fd, CIOCCRYPT, &cryp) == -1)
+        {
+        err("CIOCCRYPT(MAC2) failed");
+        abort();
+        return 0;
+        }
+        free(dcopy);
+        }
+    else
+        {
+        err("CIOCCRYPT(MAC) failed");
+        abort();
+        return 0;
+        }
+    }
     //    printf("done\n");
 
     return 1;
     }
 
 static int dev_crypto_md5_update(EVP_MD_CTX *ctx,const void *data,
-				 unsigned long len)
+                 unsigned long len)
     {
     MD_DATA *md_data=ctx->md_data;
 
     if (ctx->flags&EVP_MD_CTX_FLAG_ONESHOT)
-	return do_digest(md_data->sess.ses,md_data->md,data,len);
+    return do_digest(md_data->sess.ses,md_data->md,data,len);
 
     md_data->data=realloc(md_data->data,md_data->len+len);
     memcpy(md_data->data+md_data->len,data,len);
     md_data->len+=len;
 
     return 1;
-    }	
+    }    
 
 static int dev_crypto_md5_final(EVP_MD_CTX *ctx,unsigned char *md)
     {
@@ -389,17 +389,17 @@ static int dev_crypto_md5_final(EVP_MD_CTX *ctx,unsigned char *md)
     MD_DATA *md_data=ctx->md_data;
 
     if (ctx->flags&EVP_MD_CTX_FLAG_ONESHOT)
-	{
-	memcpy(md,md_data->md,MD5_DIGEST_LENGTH);
-	ret=1;
-	}
+    {
+    memcpy(md,md_data->md,MD5_DIGEST_LENGTH);
+    ret=1;
+    }
     else
-	{
-	ret=do_digest(md_data->sess.ses,md,md_data->data,md_data->len);
-	free(md_data->data);
-	md_data->data=NULL;
-	md_data->len=0;
-	}
+    {
+    ret=do_digest(md_data->sess.ses,md,md_data->data,md_data->len);
+    free(md_data->data);
+    md_data->data=NULL;
+    md_data->len=0;
+    }
 
     return ret;
     }
@@ -428,7 +428,7 @@ static const EVP_MD md5_md=
     NID_md5,
     NID_md5WithRSAEncryption,
     MD5_DIGEST_LENGTH,
-    EVP_MD_FLAG_ONESHOT,	// XXX: set according to device info...
+    EVP_MD_FLAG_ONESHOT,    // XXX: set according to device info...
     dev_crypto_md5_init,
     dev_crypto_md5_update,
     dev_crypto_md5_final,

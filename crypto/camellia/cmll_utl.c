@@ -55,7 +55,7 @@
 #include "cmll_locl.h"
 
 int Camellia_set_key(const unsigned char *userKey, const int bits,
-	CAMELLIA_KEY *key)
-	{
-	return private_Camellia_set_key(userKey, bits, key);
-	}
+    CAMELLIA_KEY *key)
+    {
+    return private_Camellia_set_key(userKey, bits, key);
+    }

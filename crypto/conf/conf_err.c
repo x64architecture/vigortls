@@ -69,34 +69,34 @@
 #define ERR_REASON(reason) ERR_PACK(ERR_LIB_CONF,0,reason)
 
 static ERR_STRING_DATA CONF_str_functs[]=
-	{
-{ERR_FUNC(CONF_F_CONF_DUMP_FP),	"CONF_dump_fp"},
-{ERR_FUNC(CONF_F_CONF_LOAD),	"CONF_load"},
-{ERR_FUNC(CONF_F_CONF_LOAD_BIO),	"CONF_load_bio"},
-{ERR_FUNC(CONF_F_CONF_LOAD_FP),	"CONF_load_fp"},
-{ERR_FUNC(CONF_F_CONF_MODULES_LOAD),	"CONF_modules_load"},
-{ERR_FUNC(CONF_F_CONF_PARSE_LIST),	"CONF_parse_list"},
-{ERR_FUNC(CONF_F_DEF_LOAD),	"DEF_LOAD"},
-{ERR_FUNC(CONF_F_DEF_LOAD_BIO),	"DEF_LOAD_BIO"},
-{ERR_FUNC(CONF_F_MODULE_INIT),	"MODULE_INIT"},
-{ERR_FUNC(CONF_F_MODULE_LOAD_DSO),	"MODULE_LOAD_DSO"},
-{ERR_FUNC(CONF_F_MODULE_RUN),	"MODULE_RUN"},
-{ERR_FUNC(CONF_F_NCONF_DUMP_BIO),	"NCONF_dump_bio"},
-{ERR_FUNC(CONF_F_NCONF_DUMP_FP),	"NCONF_dump_fp"},
-{ERR_FUNC(CONF_F_NCONF_GET_NUMBER),	"NCONF_get_number"},
-{ERR_FUNC(CONF_F_NCONF_GET_NUMBER_E),	"NCONF_get_number_e"},
-{ERR_FUNC(CONF_F_NCONF_GET_SECTION),	"NCONF_get_section"},
-{ERR_FUNC(CONF_F_NCONF_GET_STRING),	"NCONF_get_string"},
-{ERR_FUNC(CONF_F_NCONF_LOAD),	"NCONF_load"},
-{ERR_FUNC(CONF_F_NCONF_LOAD_BIO),	"NCONF_load_bio"},
-{ERR_FUNC(CONF_F_NCONF_LOAD_FP),	"NCONF_load_fp"},
-{ERR_FUNC(CONF_F_NCONF_NEW),	"NCONF_new"},
-{ERR_FUNC(CONF_F_STR_COPY),	"STR_COPY"},
+    {
+{ERR_FUNC(CONF_F_CONF_DUMP_FP),    "CONF_dump_fp"},
+{ERR_FUNC(CONF_F_CONF_LOAD),    "CONF_load"},
+{ERR_FUNC(CONF_F_CONF_LOAD_BIO),    "CONF_load_bio"},
+{ERR_FUNC(CONF_F_CONF_LOAD_FP),    "CONF_load_fp"},
+{ERR_FUNC(CONF_F_CONF_MODULES_LOAD),    "CONF_modules_load"},
+{ERR_FUNC(CONF_F_CONF_PARSE_LIST),    "CONF_parse_list"},
+{ERR_FUNC(CONF_F_DEF_LOAD),    "DEF_LOAD"},
+{ERR_FUNC(CONF_F_DEF_LOAD_BIO),    "DEF_LOAD_BIO"},
+{ERR_FUNC(CONF_F_MODULE_INIT),    "MODULE_INIT"},
+{ERR_FUNC(CONF_F_MODULE_LOAD_DSO),    "MODULE_LOAD_DSO"},
+{ERR_FUNC(CONF_F_MODULE_RUN),    "MODULE_RUN"},
+{ERR_FUNC(CONF_F_NCONF_DUMP_BIO),    "NCONF_dump_bio"},
+{ERR_FUNC(CONF_F_NCONF_DUMP_FP),    "NCONF_dump_fp"},
+{ERR_FUNC(CONF_F_NCONF_GET_NUMBER),    "NCONF_get_number"},
+{ERR_FUNC(CONF_F_NCONF_GET_NUMBER_E),    "NCONF_get_number_e"},
+{ERR_FUNC(CONF_F_NCONF_GET_SECTION),    "NCONF_get_section"},
+{ERR_FUNC(CONF_F_NCONF_GET_STRING),    "NCONF_get_string"},
+{ERR_FUNC(CONF_F_NCONF_LOAD),    "NCONF_load"},
+{ERR_FUNC(CONF_F_NCONF_LOAD_BIO),    "NCONF_load_bio"},
+{ERR_FUNC(CONF_F_NCONF_LOAD_FP),    "NCONF_load_fp"},
+{ERR_FUNC(CONF_F_NCONF_NEW),    "NCONF_new"},
+{ERR_FUNC(CONF_F_STR_COPY),    "STR_COPY"},
 {0,NULL}
-	};
+    };
 
 static ERR_STRING_DATA CONF_str_reasons[]=
-	{
+    {
 {ERR_REASON(CONF_R_ERROR_LOADING_DSO)    ,"error loading dso"},
 {ERR_REASON(CONF_R_LIST_CANNOT_BE_NULL)  ,"list cannot be null"},
 {ERR_REASON(CONF_R_MISSING_CLOSE_SQUARE_BRACKET),"missing close square bracket"},
@@ -114,18 +114,18 @@ static ERR_STRING_DATA CONF_str_reasons[]=
 {ERR_REASON(CONF_R_UNKNOWN_MODULE_NAME)  ,"unknown module name"},
 {ERR_REASON(CONF_R_VARIABLE_HAS_NO_VALUE),"variable has no value"},
 {0,NULL}
-	};
+    };
 
 #endif
 
 void ERR_load_CONF_strings(void)
-	{
+    {
 #ifndef OPENSSL_NO_ERR
 
-	if (ERR_func_error_string(CONF_str_functs[0].error) == NULL)
-		{
-		ERR_load_strings(0,CONF_str_functs);
-		ERR_load_strings(0,CONF_str_reasons);
-		}
+    if (ERR_func_error_string(CONF_str_functs[0].error) == NULL)
+        {
+        ERR_load_strings(0,CONF_str_functs);
+        ERR_load_strings(0,CONF_str_reasons);
+        }
 #endif
-	}
+    }

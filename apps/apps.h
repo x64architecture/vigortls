@@ -139,7 +139,7 @@ long app_RAND_load_files(char *file); /* `file' is a list of files to read,
 
 #ifndef MONOLITH
 
-#define MAIN(a,v)	main(a,v)
+#define MAIN(a,v)    main(a,v)
 
 #ifndef NON_MAIN
 CONF *config=NULL;
@@ -151,7 +151,7 @@ extern BIO *bio_err;
 
 #else
 
-#define MAIN(a,v)	PROG(a,v)
+#define MAIN(a,v)    PROG(a,v)
 extern CONF *config;
 extern char *default_config_file;
 extern BIO *bio_err;
@@ -161,7 +161,7 @@ extern BIO *bio_err;
 #include <signal.h>
 
 #ifdef SIGPIPE
-#define do_pipe_sig()	signal(SIGPIPE,SIG_IGN)
+#define do_pipe_sig()    signal(SIGPIPE,SIG_IGN)
 #else
 #define do_pipe_sig()
 #endif
@@ -174,31 +174,31 @@ extern BIO *bio_err;
 
 #if defined(MONOLITH) && !defined(OPENSSL_C)
 #  define apps_startup() \
-		do_pipe_sig()
+        do_pipe_sig()
 #  define apps_shutdown()
 #else
 #  ifndef OPENSSL_NO_ENGINE
 #    define apps_startup() \
-			do { do_pipe_sig(); CRYPTO_malloc_init(); \
-			ERR_load_crypto_strings(); OpenSSL_add_all_algorithms(); \
-			ENGINE_load_builtin_engines(); setup_ui_method(); } while(0)
+            do { do_pipe_sig(); CRYPTO_malloc_init(); \
+            ERR_load_crypto_strings(); OpenSSL_add_all_algorithms(); \
+            ENGINE_load_builtin_engines(); setup_ui_method(); } while(0)
 #    define apps_shutdown() \
-			do { CONF_modules_unload(1); destroy_ui_method(); \
-			OBJ_cleanup(); EVP_cleanup(); ENGINE_cleanup(); \
-			CRYPTO_cleanup_all_ex_data(); ERR_remove_thread_state(NULL); \
-			RAND_cleanup(); \
-			ERR_free_strings(); zlib_cleanup();} while(0)
+            do { CONF_modules_unload(1); destroy_ui_method(); \
+            OBJ_cleanup(); EVP_cleanup(); ENGINE_cleanup(); \
+            CRYPTO_cleanup_all_ex_data(); ERR_remove_thread_state(NULL); \
+            RAND_cleanup(); \
+            ERR_free_strings(); zlib_cleanup();} while(0)
 #  else
 #    define apps_startup() \
-			do { do_pipe_sig(); CRYPTO_malloc_init(); \
-			ERR_load_crypto_strings(); OpenSSL_add_all_algorithms(); \
-			setup_ui_method(); } while(0)
+            do { do_pipe_sig(); CRYPTO_malloc_init(); \
+            ERR_load_crypto_strings(); OpenSSL_add_all_algorithms(); \
+            setup_ui_method(); } while(0)
 #    define apps_shutdown() \
-			do { CONF_modules_unload(1); destroy_ui_method(); \
-			OBJ_cleanup(); EVP_cleanup(); \
-			CRYPTO_cleanup_all_ex_data(); ERR_remove_thread_state(NULL); \
-			RAND_cleanup(); \
-			ERR_free_strings(); zlib_cleanup(); } while(0)
+            do { CONF_modules_unload(1); destroy_ui_method(); \
+            OBJ_cleanup(); EVP_cleanup(); \
+            CRYPTO_cleanup_all_ex_data(); ERR_remove_thread_state(NULL); \
+            RAND_cleanup(); \
+            ERR_free_strings(); zlib_cleanup(); } while(0)
 #  endif
 #endif
 
@@ -210,20 +210,20 @@ extern BIO *bio_err;
 
 
 typedef struct args_st
-	{
-	char **data;
-	int count;
-	} ARGS;
+    {
+    char **data;
+    int count;
+    } ARGS;
 
 #define PW_MIN_LENGTH 4
 typedef struct pw_cb_data
-	{
-	const void *password;
-	const char *prompt_info;
-	} PW_CB_DATA;
+    {
+    const void *password;
+    const char *prompt_info;
+    } PW_CB_DATA;
 
 int password_callback(char *buf, int bufsiz, int verify,
-	PW_CB_DATA *cb_data);
+    PW_CB_DATA *cb_data);
 
 int setup_ui_method(void);
 void destroy_ui_method(void);
@@ -244,15 +244,15 @@ int copy_extensions(X509 *x, X509_REQ *req, int copy_type);
 int app_passwd(BIO *err, char *arg1, char *arg2, char **pass1, char **pass2);
 int add_oid_section(BIO *err, CONF *conf);
 X509 *load_cert(BIO *err, const char *file, int format,
-	const char *pass, ENGINE *e, const char *cert_descrip);
+    const char *pass, ENGINE *e, const char *cert_descrip);
 EVP_PKEY *load_key(BIO *err, const char *file, int format, int maybe_stdin,
-	const char *pass, ENGINE *e, const char *key_descrip);
+    const char *pass, ENGINE *e, const char *key_descrip);
 EVP_PKEY *load_pubkey(BIO *err, const char *file, int format, int maybe_stdin,
-	const char *pass, ENGINE *e, const char *key_descrip);
+    const char *pass, ENGINE *e, const char *key_descrip);
 STACK_OF(X509) *load_certs(BIO *err, const char *file, int format,
-	const char *pass, ENGINE *e, const char *cert_descrip);
+    const char *pass, ENGINE *e, const char *cert_descrip);
 STACK_OF(X509_CRL) *load_crls(BIO *err, const char *file, int format,
-	const char *pass, ENGINE *e, const char *cert_descrip);
+    const char *pass, ENGINE *e, const char *cert_descrip);
 X509_STORE *setup_verify(BIO *bp, char *CAfile, char *CApath);
 #ifndef OPENSSL_NO_ENGINE
 ENGINE *setup_engine(BIO *err, const char *engine, int debug);
@@ -260,9 +260,9 @@ ENGINE *setup_engine(BIO *err, const char *engine, int debug);
 
 #ifndef OPENSSL_NO_OCSP
 OCSP_RESPONSE *process_responder(BIO *err, OCSP_REQUEST *req,
-			char *host, char *path, char *port, int use_ssl,
-			STACK_OF(CONF_VALUE) *headers,
-			int req_timeout);
+            char *host, char *path, char *port, int use_ssl,
+            STACK_OF(CONF_VALUE) *headers,
+            int req_timeout);
 #endif
 
 int load_config(BIO *err, CONF *cnf);
@@ -270,7 +270,7 @@ char *make_config_name(void);
 
 /* Functions defined in ca.c and also used in ocsp.c */
 int unpack_revinfo(ASN1_TIME **prevtm, int *preason, ASN1_OBJECT **phold,
-			ASN1_GENERALIZEDTIME **pinvtm, const char *str);
+            ASN1_GENERALIZEDTIME **pinvtm, const char *str);
 
 #define DB_type         0
 #define DB_exp_date     1
@@ -280,19 +280,19 @@ int unpack_revinfo(ASN1_TIME **prevtm, int *preason, ASN1_OBJECT **phold,
 #define DB_name         5       /* index - unique when active and not disabled */
 #define DB_NUMBER       6
 
-#define DB_TYPE_REV	'R'
-#define DB_TYPE_EXP	'E'
-#define DB_TYPE_VAL	'V'
+#define DB_TYPE_REV    'R'
+#define DB_TYPE_EXP    'E'
+#define DB_TYPE_VAL    'V'
 
 typedef struct db_attr_st
-	{
-	int unique_subject;
-	} DB_ATTR;
+    {
+    int unique_subject;
+    } DB_ATTR;
 typedef struct ca_db_st
-	{
-	DB_ATTR attributes;
-	TXT_DB *db;
-	} CA_DB;
+    {
+    DB_ATTR attributes;
+    TXT_DB *db;
+    } CA_DB;
 
 BIGNUM *load_serial(char *serialfile, int create, ASN1_INTEGER **retai);
 int save_serial(char *serialfile, char *suffix, BIGNUM *serial, ASN1_INTEGER **retai);
@@ -304,25 +304,25 @@ int save_index(const char *dbfile, const char *suffix, CA_DB *db);
 int rotate_index(const char *dbfile, const char *new_suffix, const char *old_suffix);
 void free_index(CA_DB *db);
 #define index_name_cmp_noconst(a, b) \
-	index_name_cmp((const OPENSSL_CSTRING *)CHECKED_PTR_OF(OPENSSL_STRING, a), \
-	(const OPENSSL_CSTRING *)CHECKED_PTR_OF(OPENSSL_STRING, b))
+    index_name_cmp((const OPENSSL_CSTRING *)CHECKED_PTR_OF(OPENSSL_STRING, a), \
+    (const OPENSSL_CSTRING *)CHECKED_PTR_OF(OPENSSL_STRING, b))
 int index_name_cmp(const OPENSSL_CSTRING *a, const OPENSSL_CSTRING *b);
 int parse_yesno(const char *str, int def);
 
 X509_NAME *parse_name(char *str, long chtype, int multirdn);
 int args_verify(char ***pargs, int *pargc,
-			int *badarg, BIO *err, X509_VERIFY_PARAM **pm);
+            int *badarg, BIO *err, X509_VERIFY_PARAM **pm);
 void policies_print(BIO *out, X509_STORE_CTX *ctx);
 int bio_to_mem(unsigned char **out, int maxlen, BIO *in);
 int pkey_ctrl_string(EVP_PKEY_CTX *ctx, char *value);
 int init_gen_str(BIO *err, EVP_PKEY_CTX **pctx,
-			const char *algname, ENGINE *e, int do_param);
+            const char *algname, ENGINE *e, int do_param);
 int do_X509_sign(BIO *err, X509 *x, EVP_PKEY *pkey, const EVP_MD *md,
-			STACK_OF(OPENSSL_STRING) *sigopts);
+            STACK_OF(OPENSSL_STRING) *sigopts);
 int do_X509_REQ_sign(BIO *err, X509_REQ *x, EVP_PKEY *pkey, const EVP_MD *md,
-			STACK_OF(OPENSSL_STRING) *sigopts);
+            STACK_OF(OPENSSL_STRING) *sigopts);
 int do_X509_CRL_sign(BIO *err, X509_CRL *x, EVP_PKEY *pkey, const EVP_MD *md,
-			STACK_OF(OPENSSL_STRING) *sigopts);
+            STACK_OF(OPENSSL_STRING) *sigopts);
 #ifndef OPENSSL_NO_PSK
 extern char *psk_key;
 #endif
@@ -339,29 +339,29 @@ unsigned char *next_protos_parse(unsigned short *outlen, const char *in);
 #define FORMAT_PKCS12   5
 #define FORMAT_SMIME    6
 #define FORMAT_ENGINE   7
-#define FORMAT_IISSGC	8	/* XXX this stupid macro helps us to avoid
-				 * adding yet another param to load_*key() */
-#define FORMAT_PEMRSA	9	/* PEM RSAPubicKey format */
-#define FORMAT_ASN1RSA	10	/* DER RSAPubicKey format */
-#define FORMAT_MSBLOB	11	/* MS Key blob format */
-#define FORMAT_PVK	12	/* MS PVK file format */
+#define FORMAT_IISSGC    8    /* XXX this stupid macro helps us to avoid
+                 * adding yet another param to load_*key() */
+#define FORMAT_PEMRSA    9    /* PEM RSAPubicKey format */
+#define FORMAT_ASN1RSA    10    /* DER RSAPubicKey format */
+#define FORMAT_MSBLOB    11    /* MS Key blob format */
+#define FORMAT_PVK    12    /* MS PVK file format */
 
-#define EXT_COPY_NONE	0
-#define EXT_COPY_ADD	1
-#define EXT_COPY_ALL	2
+#define EXT_COPY_NONE    0
+#define EXT_COPY_ADD    1
+#define EXT_COPY_ALL    2
 
-#define NETSCAPE_CERT_HDR	"certificate"
+#define NETSCAPE_CERT_HDR    "certificate"
 
-#define APP_PASS_LEN	1024
+#define APP_PASS_LEN    1024
 
-#define SERIAL_RAND_BITS	64
+#define SERIAL_RAND_BITS    64
 
 int app_isdir(const char *);
 int raw_read_stdin(void *,int);
 int raw_write_stdout(const void *,int);
 
-#define TM_START	0
-#define TM_STOP		1
+#define TM_START    0
+#define TM_STOP        1
 double app_tminterval (int stop,int usertime);
 
 #define OPENSSL_NO_SSL_INTERN

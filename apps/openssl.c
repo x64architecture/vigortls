@@ -151,232 +151,232 @@ BIO *bio_err=NULL;
 
 
 static void lock_dbg_cb(int mode, int type, const char *file, int line)
-	{
-	static int modes[CRYPTO_NUM_LOCKS]; /* = {0, 0, ... } */
-	const char *errstr = NULL;
-	int rw;
-	
-	rw = mode & (CRYPTO_READ|CRYPTO_WRITE);
-	if (!((rw == CRYPTO_READ) || (rw == CRYPTO_WRITE)))
-		{
-		errstr = "invalid mode";
-		goto err;
-		}
+    {
+    static int modes[CRYPTO_NUM_LOCKS]; /* = {0, 0, ... } */
+    const char *errstr = NULL;
+    int rw;
+    
+    rw = mode & (CRYPTO_READ|CRYPTO_WRITE);
+    if (!((rw == CRYPTO_READ) || (rw == CRYPTO_WRITE)))
+        {
+        errstr = "invalid mode";
+        goto err;
+        }
 
-	if (type < 0 || type >= CRYPTO_NUM_LOCKS)
-		{
-		errstr = "type out of bounds";
-		goto err;
-		}
+    if (type < 0 || type >= CRYPTO_NUM_LOCKS)
+        {
+        errstr = "type out of bounds";
+        goto err;
+        }
 
-	if (mode & CRYPTO_LOCK)
-		{
-		if (modes[type])
-			{
-			errstr = "already locked";
-			/* must not happen in a single-threaded program
-			 * (would deadlock) */
-			goto err;
-			}
+    if (mode & CRYPTO_LOCK)
+        {
+        if (modes[type])
+            {
+            errstr = "already locked";
+            /* must not happen in a single-threaded program
+             * (would deadlock) */
+            goto err;
+            }
 
-		modes[type] = rw;
-		}
-	else if (mode & CRYPTO_UNLOCK)
-		{
-		if (!modes[type])
-			{
-			errstr = "not locked";
-			goto err;
-			}
-		
-		if (modes[type] != rw)
-			{
-			errstr = (rw == CRYPTO_READ) ?
-				"CRYPTO_r_unlock on write lock" :
-				"CRYPTO_w_unlock on read lock";
-			}
+        modes[type] = rw;
+        }
+    else if (mode & CRYPTO_UNLOCK)
+        {
+        if (!modes[type])
+            {
+            errstr = "not locked";
+            goto err;
+            }
+        
+        if (modes[type] != rw)
+            {
+            errstr = (rw == CRYPTO_READ) ?
+                "CRYPTO_r_unlock on write lock" :
+                "CRYPTO_w_unlock on read lock";
+            }
 
-		modes[type] = 0;
-		}
-	else
-		{
-		errstr = "invalid mode";
-		goto err;
-		}
+        modes[type] = 0;
+        }
+    else
+        {
+        errstr = "invalid mode";
+        goto err;
+        }
 
  err:
-	if (errstr)
-		{
-		/* we cannot use bio_err here */
-		fprintf(stderr, "openssl (lock_dbg_cb): %s (mode=%d, type=%d) at %s:%d\n",
-			errstr, mode, type, file, line);
-		}
-	}
+    if (errstr)
+        {
+        /* we cannot use bio_err here */
+        fprintf(stderr, "openssl (lock_dbg_cb): %s (mode=%d, type=%d) at %s:%d\n",
+            errstr, mode, type, file, line);
+        }
+    }
 
 #define ARGV Argv
 
 int main(int Argc, char *ARGV[])
-	{
-	ARGS arg;
-#define PROG_NAME_SIZE	39
-	char pname[PROG_NAME_SIZE+1];
-	FUNCTION f,*fp;
-	MS_STATIC const char *prompt;
-	MS_STATIC char buf[1024];
-	char *to_free=NULL;
-	int n,i,ret=0;
-	int argc;
-	char **argv,*p;
-	LHASH_OF(FUNCTION) *prog=NULL;
-	long errline;
+    {
+    ARGS arg;
+#define PROG_NAME_SIZE    39
+    char pname[PROG_NAME_SIZE+1];
+    FUNCTION f,*fp;
+    MS_STATIC const char *prompt;
+    MS_STATIC char buf[1024];
+    char *to_free=NULL;
+    int n,i,ret=0;
+    int argc;
+    char **argv,*p;
+    LHASH_OF(FUNCTION) *prog=NULL;
+    long errline;
 
-	arg.data=NULL;
-	arg.count=0;
+    arg.data=NULL;
+    arg.count=0;
 
-	if (bio_err == NULL)
-		if ((bio_err=BIO_new(BIO_s_file())) != NULL)
-			BIO_set_fp(bio_err,stderr,BIO_NOCLOSE|BIO_FP_TEXT);
+    if (bio_err == NULL)
+        if ((bio_err=BIO_new(BIO_s_file())) != NULL)
+            BIO_set_fp(bio_err,stderr,BIO_NOCLOSE|BIO_FP_TEXT);
 
-	if (getenv("OPENSSL_DEBUG_MEMORY") != NULL) /* if not defined, use compiled-in library defaults */
-		{
-		if (!(0 == strcmp(getenv("OPENSSL_DEBUG_MEMORY"), "off")))
-			{
-			CRYPTO_malloc_debug_init();
-			CRYPTO_set_mem_debug_options(V_CRYPTO_MDEBUG_ALL);
-			}
-		else
-			{
-			/* OPENSSL_DEBUG_MEMORY=off */
-			CRYPTO_set_mem_debug_functions(0, 0, 0, 0, 0);
-			}
-		}
-	CRYPTO_mem_ctrl(CRYPTO_MEM_CHECK_ON);
+    if (getenv("OPENSSL_DEBUG_MEMORY") != NULL) /* if not defined, use compiled-in library defaults */
+        {
+        if (!(0 == strcmp(getenv("OPENSSL_DEBUG_MEMORY"), "off")))
+            {
+            CRYPTO_malloc_debug_init();
+            CRYPTO_set_mem_debug_options(V_CRYPTO_MDEBUG_ALL);
+            }
+        else
+            {
+            /* OPENSSL_DEBUG_MEMORY=off */
+            CRYPTO_set_mem_debug_functions(0, 0, 0, 0, 0);
+            }
+        }
+    CRYPTO_mem_ctrl(CRYPTO_MEM_CHECK_ON);
 
 #if 0
-	if (getenv("OPENSSL_DEBUG_LOCKING") != NULL)
+    if (getenv("OPENSSL_DEBUG_LOCKING") != NULL)
 #endif
-		{
-		CRYPTO_set_locking_callback(lock_dbg_cb);
-		}
+        {
+        CRYPTO_set_locking_callback(lock_dbg_cb);
+        }
 
-	apps_startup();
+    apps_startup();
 
-	/* Lets load up our environment a little */
-	p=getenv("OPENSSL_CONF");
-	if (p == NULL)
-		p=getenv("SSLEAY_CONF");
-	if (p == NULL)
-		p=to_free=make_config_name();
+    /* Lets load up our environment a little */
+    p=getenv("OPENSSL_CONF");
+    if (p == NULL)
+        p=getenv("SSLEAY_CONF");
+    if (p == NULL)
+        p=to_free=make_config_name();
 
-	default_config_file=p;
+    default_config_file=p;
 
-	config=NCONF_new(NULL);
-	i=NCONF_load(config,p,&errline);
-	if (i == 0)
-		{
-		if (ERR_GET_REASON(ERR_peek_last_error())
-		    == CONF_R_NO_SUCH_FILE)
-			{
-			BIO_printf(bio_err,
-				   "WARNING: can't open config file: %s\n",p);
-			ERR_clear_error();
-			NCONF_free(config);
-			config = NULL;
-			}
-		else
-			{
-			ERR_print_errors(bio_err);
-			NCONF_free(config);
-			exit(1);
-			}
-		}
+    config=NCONF_new(NULL);
+    i=NCONF_load(config,p,&errline);
+    if (i == 0)
+        {
+        if (ERR_GET_REASON(ERR_peek_last_error())
+            == CONF_R_NO_SUCH_FILE)
+            {
+            BIO_printf(bio_err,
+                   "WARNING: can't open config file: %s\n",p);
+            ERR_clear_error();
+            NCONF_free(config);
+            config = NULL;
+            }
+        else
+            {
+            ERR_print_errors(bio_err);
+            NCONF_free(config);
+            exit(1);
+            }
+        }
 
-	prog=prog_init();
+    prog=prog_init();
 
-	/* first check the program name */
-	program_name(Argv[0],pname,sizeof pname);
+    /* first check the program name */
+    program_name(Argv[0],pname,sizeof pname);
 
-	f.name=pname;
-	fp=lh_FUNCTION_retrieve(prog,&f);
-	if (fp != NULL)
-		{
-		Argv[0]=pname;
-		ret=fp->func(Argc,Argv);
-		goto end;
-		}
+    f.name=pname;
+    fp=lh_FUNCTION_retrieve(prog,&f);
+    if (fp != NULL)
+        {
+        Argv[0]=pname;
+        ret=fp->func(Argc,Argv);
+        goto end;
+        }
 
-	/* ok, now check that there are not arguments, if there are,
-	 * run with them, shifting the ssleay off the front */
-	if (Argc != 1)
-		{
-		Argc--;
-		Argv++;
-		ret=do_cmd(prog,Argc,Argv);
-		if (ret < 0) ret=0;
-		goto end;
-		}
+    /* ok, now check that there are not arguments, if there are,
+     * run with them, shifting the ssleay off the front */
+    if (Argc != 1)
+        {
+        Argc--;
+        Argv++;
+        ret=do_cmd(prog,Argc,Argv);
+        if (ret < 0) ret=0;
+        goto end;
+        }
 
-	/* ok, lets enter the old 'OpenSSL>' mode */
-	
-	for (;;)
-		{
-		ret=0;
-		p=buf;
-		n=sizeof buf;
-		i=0;
-		for (;;)
-			{
-			p[0]='\0';
-			if (i++)
-				prompt=">";
-			else	prompt="OpenSSL> ";
-			fputs(prompt,stdout);
-			fflush(stdout);
-			if (!fgets(p,n,stdin))
-				goto end;
-			if (p[0] == '\0') goto end;
-			i=strlen(p);
-			if (i <= 1) break;
-			if (p[i-2] != '\\') break;
-			i-=2;
-			p+=i;
-			n-=i;
-			}
-		if (!chopup_args(&arg,buf,&argc,&argv)) break;
+    /* ok, lets enter the old 'OpenSSL>' mode */
+    
+    for (;;)
+        {
+        ret=0;
+        p=buf;
+        n=sizeof buf;
+        i=0;
+        for (;;)
+            {
+            p[0]='\0';
+            if (i++)
+                prompt=">";
+            else    prompt="OpenSSL> ";
+            fputs(prompt,stdout);
+            fflush(stdout);
+            if (!fgets(p,n,stdin))
+                goto end;
+            if (p[0] == '\0') goto end;
+            i=strlen(p);
+            if (i <= 1) break;
+            if (p[i-2] != '\\') break;
+            i-=2;
+            p+=i;
+            n-=i;
+            }
+        if (!chopup_args(&arg,buf,&argc,&argv)) break;
 
-		ret=do_cmd(prog,argc,argv);
-		if (ret < 0)
-			{
-			ret=0;
-			goto end;
-			}
-		if (ret != 0)
-			BIO_printf(bio_err,"error in %s\n",argv[0]);
-		(void)BIO_flush(bio_err);
-		}
-	BIO_printf(bio_err,"bad exit\n");
-	ret=1;
+        ret=do_cmd(prog,argc,argv);
+        if (ret < 0)
+            {
+            ret=0;
+            goto end;
+            }
+        if (ret != 0)
+            BIO_printf(bio_err,"error in %s\n",argv[0]);
+        (void)BIO_flush(bio_err);
+        }
+    BIO_printf(bio_err,"bad exit\n");
+    ret=1;
 end:
-	if (to_free)
-		free(to_free);
-	if (config != NULL)
-		{
-		NCONF_free(config);
-		config=NULL;
-		}
-	if (prog != NULL) lh_FUNCTION_free(prog);
-	if (arg.data != NULL) free(arg.data);
+    if (to_free)
+        free(to_free);
+    if (config != NULL)
+        {
+        NCONF_free(config);
+        config=NULL;
+        }
+    if (prog != NULL) lh_FUNCTION_free(prog);
+    if (arg.data != NULL) free(arg.data);
 
-	apps_shutdown();
+    apps_shutdown();
 
-	CRYPTO_mem_leaks(bio_err);
-	if (bio_err != NULL)
-		{
-		BIO_free(bio_err);
-		bio_err=NULL;
-		}
-	OPENSSL_EXIT(ret);
-	}
+    CRYPTO_mem_leaks(bio_err);
+    if (bio_err != NULL)
+        {
+        BIO_free(bio_err);
+        bio_err=NULL;
+        }
+    OPENSSL_EXIT(ret);
+    }
 
 #define LIST_STANDARD_COMMANDS "list-standard-commands"
 #define LIST_MESSAGE_DIGEST_COMMANDS "list-message-digest-commands"
@@ -387,144 +387,144 @@ end:
 
 
 static int do_cmd(LHASH_OF(FUNCTION) *prog, int argc, char *argv[])
-	{
-	FUNCTION f,*fp;
-	int i,ret=1,tp,nl;
+    {
+    FUNCTION f,*fp;
+    int i,ret=1,tp,nl;
 
-	if ((argc <= 0) || (argv[0] == NULL))
-		{ ret=0; goto end; }
-	f.name=argv[0];
-	fp=lh_FUNCTION_retrieve(prog,&f);
-	if (fp == NULL)
-		{
-		if (EVP_get_digestbyname(argv[0]))
-			{
-			f.type = FUNC_TYPE_MD;
-			f.func = dgst_main;
-			fp = &f;
-			}
-		else if (EVP_get_cipherbyname(argv[0]))
-			{
-			f.type = FUNC_TYPE_CIPHER;
-			f.func = enc_main;
-			fp = &f;
-			}
-		}
-	if (fp != NULL)
-		{
-		ret=fp->func(argc,argv);
-		}
-	else if ((strncmp(argv[0],"no-",3)) == 0)
-		{
-		BIO *bio_stdout = BIO_new_fp(stdout,BIO_NOCLOSE);
-		f.name=argv[0]+3;
-		ret = (lh_FUNCTION_retrieve(prog,&f) != NULL);
-		if (!ret)
-			BIO_printf(bio_stdout, "%s\n", argv[0]);
-		else
-			BIO_printf(bio_stdout, "%s\n", argv[0]+3);
-		BIO_free_all(bio_stdout);
-		goto end;
-		}
-	else if ((strcmp(argv[0],"quit") == 0) ||
-		(strcmp(argv[0],"q") == 0) ||
-		(strcmp(argv[0],"exit") == 0) ||
-		(strcmp(argv[0],"bye") == 0))
-		{
-		ret= -1;
-		goto end;
-		}
-	else if ((strcmp(argv[0],LIST_STANDARD_COMMANDS) == 0) ||
-		(strcmp(argv[0],LIST_MESSAGE_DIGEST_COMMANDS) == 0) ||
-		(strcmp(argv[0],LIST_MESSAGE_DIGEST_ALGORITHMS) == 0) ||
-		(strcmp(argv[0],LIST_CIPHER_COMMANDS) == 0) ||
-		(strcmp(argv[0],LIST_CIPHER_ALGORITHMS) == 0) ||
-		(strcmp(argv[0],LIST_PUBLIC_KEY_ALGORITHMS) == 0))
-		{
-		int list_type;
-		BIO *bio_stdout;
+    if ((argc <= 0) || (argv[0] == NULL))
+        { ret=0; goto end; }
+    f.name=argv[0];
+    fp=lh_FUNCTION_retrieve(prog,&f);
+    if (fp == NULL)
+        {
+        if (EVP_get_digestbyname(argv[0]))
+            {
+            f.type = FUNC_TYPE_MD;
+            f.func = dgst_main;
+            fp = &f;
+            }
+        else if (EVP_get_cipherbyname(argv[0]))
+            {
+            f.type = FUNC_TYPE_CIPHER;
+            f.func = enc_main;
+            fp = &f;
+            }
+        }
+    if (fp != NULL)
+        {
+        ret=fp->func(argc,argv);
+        }
+    else if ((strncmp(argv[0],"no-",3)) == 0)
+        {
+        BIO *bio_stdout = BIO_new_fp(stdout,BIO_NOCLOSE);
+        f.name=argv[0]+3;
+        ret = (lh_FUNCTION_retrieve(prog,&f) != NULL);
+        if (!ret)
+            BIO_printf(bio_stdout, "%s\n", argv[0]);
+        else
+            BIO_printf(bio_stdout, "%s\n", argv[0]+3);
+        BIO_free_all(bio_stdout);
+        goto end;
+        }
+    else if ((strcmp(argv[0],"quit") == 0) ||
+        (strcmp(argv[0],"q") == 0) ||
+        (strcmp(argv[0],"exit") == 0) ||
+        (strcmp(argv[0],"bye") == 0))
+        {
+        ret= -1;
+        goto end;
+        }
+    else if ((strcmp(argv[0],LIST_STANDARD_COMMANDS) == 0) ||
+        (strcmp(argv[0],LIST_MESSAGE_DIGEST_COMMANDS) == 0) ||
+        (strcmp(argv[0],LIST_MESSAGE_DIGEST_ALGORITHMS) == 0) ||
+        (strcmp(argv[0],LIST_CIPHER_COMMANDS) == 0) ||
+        (strcmp(argv[0],LIST_CIPHER_ALGORITHMS) == 0) ||
+        (strcmp(argv[0],LIST_PUBLIC_KEY_ALGORITHMS) == 0))
+        {
+        int list_type;
+        BIO *bio_stdout;
 
-		if (strcmp(argv[0],LIST_STANDARD_COMMANDS) == 0)
-			list_type = FUNC_TYPE_GENERAL;
-		else if (strcmp(argv[0],LIST_MESSAGE_DIGEST_COMMANDS) == 0)
-			list_type = FUNC_TYPE_MD;
-		else if (strcmp(argv[0],LIST_MESSAGE_DIGEST_ALGORITHMS) == 0)
-			list_type = FUNC_TYPE_MD_ALG;
-		else if (strcmp(argv[0],LIST_PUBLIC_KEY_ALGORITHMS) == 0)
-			list_type = FUNC_TYPE_PKEY;
-		else if (strcmp(argv[0],LIST_CIPHER_ALGORITHMS) == 0)
-			list_type = FUNC_TYPE_CIPHER_ALG;
-		else /* strcmp(argv[0],LIST_CIPHER_COMMANDS) == 0 */
-			list_type = FUNC_TYPE_CIPHER;
-		bio_stdout = BIO_new_fp(stdout,BIO_NOCLOSE);
+        if (strcmp(argv[0],LIST_STANDARD_COMMANDS) == 0)
+            list_type = FUNC_TYPE_GENERAL;
+        else if (strcmp(argv[0],LIST_MESSAGE_DIGEST_COMMANDS) == 0)
+            list_type = FUNC_TYPE_MD;
+        else if (strcmp(argv[0],LIST_MESSAGE_DIGEST_ALGORITHMS) == 0)
+            list_type = FUNC_TYPE_MD_ALG;
+        else if (strcmp(argv[0],LIST_PUBLIC_KEY_ALGORITHMS) == 0)
+            list_type = FUNC_TYPE_PKEY;
+        else if (strcmp(argv[0],LIST_CIPHER_ALGORITHMS) == 0)
+            list_type = FUNC_TYPE_CIPHER_ALG;
+        else /* strcmp(argv[0],LIST_CIPHER_COMMANDS) == 0 */
+            list_type = FUNC_TYPE_CIPHER;
+        bio_stdout = BIO_new_fp(stdout,BIO_NOCLOSE);
 
-		if (!load_config(bio_err, NULL))
-			goto end;
+        if (!load_config(bio_err, NULL))
+            goto end;
 
-		if (list_type == FUNC_TYPE_PKEY)
-			list_pkey(bio_stdout);	
-		if (list_type == FUNC_TYPE_MD_ALG)
-			list_md(bio_stdout);	
-		if (list_type == FUNC_TYPE_CIPHER_ALG)
-			list_cipher(bio_stdout);	
-		else
-			{
-			for (fp=functions; fp->name != NULL; fp++)
-				if (fp->type == list_type)
-					BIO_printf(bio_stdout, "%s\n",
-								fp->name);
-			}
-		BIO_free_all(bio_stdout);
-		ret=0;
-		goto end;
-		}
-	else
-		{
-		BIO_printf(bio_err,"openssl:Error: '%s' is an invalid command.\n",
-			argv[0]);
-		BIO_printf(bio_err, "\nStandard commands");
-		i=0;
-		tp=0;
-		for (fp=functions; fp->name != NULL; fp++)
-			{
-			nl=0;
+        if (list_type == FUNC_TYPE_PKEY)
+            list_pkey(bio_stdout);    
+        if (list_type == FUNC_TYPE_MD_ALG)
+            list_md(bio_stdout);    
+        if (list_type == FUNC_TYPE_CIPHER_ALG)
+            list_cipher(bio_stdout);    
+        else
+            {
+            for (fp=functions; fp->name != NULL; fp++)
+                if (fp->type == list_type)
+                    BIO_printf(bio_stdout, "%s\n",
+                                fp->name);
+            }
+        BIO_free_all(bio_stdout);
+        ret=0;
+        goto end;
+        }
+    else
+        {
+        BIO_printf(bio_err,"openssl:Error: '%s' is an invalid command.\n",
+            argv[0]);
+        BIO_printf(bio_err, "\nStandard commands");
+        i=0;
+        tp=0;
+        for (fp=functions; fp->name != NULL; fp++)
+            {
+            nl=0;
 #ifdef OPENSSL_NO_CAMELLIA
-			if (((i++) % 5) == 0)
+            if (((i++) % 5) == 0)
 #else
-			if (((i++) % 4) == 0)
+            if (((i++) % 4) == 0)
 #endif
-				{
-				BIO_printf(bio_err,"\n");
-				nl=1;
-				}
-			if (fp->type != tp)
-				{
-				tp=fp->type;
-				if (!nl) BIO_printf(bio_err,"\n");
-				if (tp == FUNC_TYPE_MD)
-					{
-					i=1;
-					BIO_printf(bio_err,
-						"\nMessage Digest commands (see the `dgst' command for more details)\n");
-					}
-				else if (tp == FUNC_TYPE_CIPHER)
-					{
-					i=1;
-					BIO_printf(bio_err,"\nCipher commands (see the `enc' command for more details)\n");
-					}
-				}
+                {
+                BIO_printf(bio_err,"\n");
+                nl=1;
+                }
+            if (fp->type != tp)
+                {
+                tp=fp->type;
+                if (!nl) BIO_printf(bio_err,"\n");
+                if (tp == FUNC_TYPE_MD)
+                    {
+                    i=1;
+                    BIO_printf(bio_err,
+                        "\nMessage Digest commands (see the `dgst' command for more details)\n");
+                    }
+                else if (tp == FUNC_TYPE_CIPHER)
+                    {
+                    i=1;
+                    BIO_printf(bio_err,"\nCipher commands (see the `enc' command for more details)\n");
+                    }
+                }
 #ifdef OPENSSL_NO_CAMELLIA
-			BIO_printf(bio_err,"%-15s",fp->name);
+            BIO_printf(bio_err,"%-15s",fp->name);
 #else
-			BIO_printf(bio_err,"%-18s",fp->name);
+            BIO_printf(bio_err,"%-18s",fp->name);
 #endif
-			}
-		BIO_printf(bio_err,"\n\n");
-		ret=0;
-		}
+            }
+        BIO_printf(bio_err,"\n\n");
+        ret=0;
+        }
 end:
-	return (ret);
-	}
+    return (ret);
+    }
 
 static int SortFnByName(const void *_f1,const void *_f2)
     {
@@ -532,111 +532,111 @@ static int SortFnByName(const void *_f1,const void *_f2)
     const FUNCTION *f2=_f2;
 
     if (f1->type != f2->type)
-	return f1->type-f2->type;
+    return f1->type-f2->type;
     return strcmp(f1->name,f2->name);
     }
 
 static void list_pkey(BIO *out)
-	{
-	int i;
-	for (i = 0; i < EVP_PKEY_asn1_get_count(); i++)
-		{
-		const EVP_PKEY_ASN1_METHOD *ameth;
-		int pkey_id, pkey_base_id, pkey_flags;
-		const char *pinfo, *pem_str;
-		ameth = EVP_PKEY_asn1_get0(i);
-		EVP_PKEY_asn1_get0_info(&pkey_id, &pkey_base_id, &pkey_flags,
-						&pinfo, &pem_str, ameth);
-		if (pkey_flags & ASN1_PKEY_ALIAS)
-			{
-			BIO_printf(out, "Name: %s\n", 
-					OBJ_nid2ln(pkey_id));
-			BIO_printf(out, "\tType: Alias to %s\n",
-					OBJ_nid2ln(pkey_base_id));
-			}
-		else
-			{
-			BIO_printf(out, "Name: %s\n", pinfo);
-			BIO_printf(out, "\tType: %s Algorithm\n", 
-				pkey_flags & ASN1_PKEY_DYNAMIC ?
-					"External" : "Builtin");
-			BIO_printf(out, "\tOID: %s\n", OBJ_nid2ln(pkey_id));
-			if (pem_str == NULL)
-				pem_str = "(none)";
-			BIO_printf(out, "\tPEM string: %s\n", pem_str);
-			}
-					
-		}
-	}
+    {
+    int i;
+    for (i = 0; i < EVP_PKEY_asn1_get_count(); i++)
+        {
+        const EVP_PKEY_ASN1_METHOD *ameth;
+        int pkey_id, pkey_base_id, pkey_flags;
+        const char *pinfo, *pem_str;
+        ameth = EVP_PKEY_asn1_get0(i);
+        EVP_PKEY_asn1_get0_info(&pkey_id, &pkey_base_id, &pkey_flags,
+                        &pinfo, &pem_str, ameth);
+        if (pkey_flags & ASN1_PKEY_ALIAS)
+            {
+            BIO_printf(out, "Name: %s\n", 
+                    OBJ_nid2ln(pkey_id));
+            BIO_printf(out, "\tType: Alias to %s\n",
+                    OBJ_nid2ln(pkey_base_id));
+            }
+        else
+            {
+            BIO_printf(out, "Name: %s\n", pinfo);
+            BIO_printf(out, "\tType: %s Algorithm\n", 
+                pkey_flags & ASN1_PKEY_DYNAMIC ?
+                    "External" : "Builtin");
+            BIO_printf(out, "\tOID: %s\n", OBJ_nid2ln(pkey_id));
+            if (pem_str == NULL)
+                pem_str = "(none)";
+            BIO_printf(out, "\tPEM string: %s\n", pem_str);
+            }
+                    
+        }
+    }
 
 static void list_cipher_fn(const EVP_CIPHER *c,
-			const char *from, const char *to, void *arg)
-	{
-	if (c)
-		BIO_printf(arg, "%s\n", EVP_CIPHER_name(c));
-	else
-		{
-		if (!from)
-			from = "<undefined>";
-		if (!to)
-			to = "<undefined>";
-		BIO_printf(arg, "%s => %s\n", from, to);
-		}
-	}
+            const char *from, const char *to, void *arg)
+    {
+    if (c)
+        BIO_printf(arg, "%s\n", EVP_CIPHER_name(c));
+    else
+        {
+        if (!from)
+            from = "<undefined>";
+        if (!to)
+            to = "<undefined>";
+        BIO_printf(arg, "%s => %s\n", from, to);
+        }
+    }
 
 static void list_cipher(BIO *out)
-	{
-	EVP_CIPHER_do_all_sorted(list_cipher_fn, out);
-	}
+    {
+    EVP_CIPHER_do_all_sorted(list_cipher_fn, out);
+    }
 
 static void list_md_fn(const EVP_MD *m,
-			const char *from, const char *to, void *arg)
-	{
-	if (m)
-		BIO_printf(arg, "%s\n", EVP_MD_name(m));
-	else
-		{
-		if (!from)
-			from = "<undefined>";
-		if (!to)
-			to = "<undefined>";
-		BIO_printf(arg, "%s => %s\n", from, to);
-		}
-	}
+            const char *from, const char *to, void *arg)
+    {
+    if (m)
+        BIO_printf(arg, "%s\n", EVP_MD_name(m));
+    else
+        {
+        if (!from)
+            from = "<undefined>";
+        if (!to)
+            to = "<undefined>";
+        BIO_printf(arg, "%s => %s\n", from, to);
+        }
+    }
 
 static void list_md(BIO *out)
-	{
-	EVP_MD_do_all_sorted(list_md_fn, out);
-	}
+    {
+    EVP_MD_do_all_sorted(list_md_fn, out);
+    }
 
 static int MS_CALLBACK function_cmp(const FUNCTION *a, const FUNCTION *b)
-	{
-	return strncmp(a->name,b->name,8);
-	}
+    {
+    return strncmp(a->name,b->name,8);
+    }
 static IMPLEMENT_LHASH_COMP_FN(function, FUNCTION)
 
 static unsigned long MS_CALLBACK function_hash(const FUNCTION *a)
-	{
-	return lh_strhash(a->name);
-	}	
+    {
+    return lh_strhash(a->name);
+    }    
 static IMPLEMENT_LHASH_HASH_FN(function, FUNCTION)
 
 static LHASH_OF(FUNCTION) *prog_init(void)
-	{
-	LHASH_OF(FUNCTION) *ret;
-	FUNCTION *f;
-	size_t i;
+    {
+    LHASH_OF(FUNCTION) *ret;
+    FUNCTION *f;
+    size_t i;
 
-	/* Purely so it looks nice when the user hits ? */
-	for(i=0,f=functions ; f->name != NULL ; ++f,++i)
-	    ;
-	qsort(functions,i,sizeof *functions,SortFnByName);
+    /* Purely so it looks nice when the user hits ? */
+    for(i=0,f=functions ; f->name != NULL ; ++f,++i)
+        ;
+    qsort(functions,i,sizeof *functions,SortFnByName);
 
-	if ((ret=lh_FUNCTION_new()) == NULL)
-		return (NULL);
+    if ((ret=lh_FUNCTION_new()) == NULL)
+        return (NULL);
 
-	for (f=functions; f->name != NULL; f++)
-		(void)lh_FUNCTION_insert(ret,f);
-	return (ret);
-	}
+    for (f=functions; f->name != NULL; f++)
+        (void)lh_FUNCTION_insert(ret,f);
+    return (ret);
+    }
 

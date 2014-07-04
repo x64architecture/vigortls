@@ -77,21 +77,21 @@ const char *LP_find_file(LP_DIR_CTX **ctx, const char *directory)
     {
       *ctx = (LP_DIR_CTX *)malloc(sizeof(LP_DIR_CTX));
       if (*ctx == NULL)
-	{
-	  errno = ENOMEM;
-	  return 0;
-	}
+    {
+      errno = ENOMEM;
+      return 0;
+    }
       memset(*ctx, '\0', sizeof(LP_DIR_CTX));
 
       (*ctx)->dir = opendir(directory);
       if ((*ctx)->dir == NULL)
-	{
-	  int save_errno = errno; /* Probably not needed, but I'm paranoid */
-	  free(*ctx);
-	  *ctx = NULL;
-	  errno = save_errno;
-	  return 0;
-	}
+    {
+      int save_errno = errno; /* Probably not needed, but I'm paranoid */
+      free(*ctx);
+      *ctx = NULL;
+      errno = save_errno;
+      return 0;
+    }
     }
 
   direntry = readdir((*ctx)->dir);
@@ -113,14 +113,14 @@ int LP_find_file_end(LP_DIR_CTX **ctx)
 
       free(*ctx);
       switch (ret)
-	{
-	case 0:
-	  return 1;
-	case -1:
-	  return 0;
-	default:
-	  break;
-	}
+    {
+    case 0:
+      return 1;
+    case -1:
+      return 0;
+    default:
+      break;
+    }
     }
   errno = EINVAL;
   return 0;

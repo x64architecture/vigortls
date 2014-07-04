@@ -65,24 +65,24 @@
 #include <openssl/blowfish.h>
 
 static int bf_init_key(EVP_CIPHER_CTX *ctx, const unsigned char *key,
-		       const unsigned char *iv, int enc);
+               const unsigned char *iv, int enc);
 
 typedef struct
-	{
-	BF_KEY ks;
-	} EVP_BF_KEY;
+    {
+    BF_KEY ks;
+    } EVP_BF_KEY;
 
-#define data(ctx)	EVP_C_DATA(EVP_BF_KEY,ctx)
+#define data(ctx)    EVP_C_DATA(EVP_BF_KEY,ctx)
 
 IMPLEMENT_BLOCK_CIPHER(bf, ks, BF, EVP_BF_KEY, NID_bf, 8, 16, 8, 64,
-			EVP_CIPH_VARIABLE_LENGTH, bf_init_key, NULL, 
-			EVP_CIPHER_set_asn1_iv, EVP_CIPHER_get_asn1_iv, NULL)
-	
+            EVP_CIPH_VARIABLE_LENGTH, bf_init_key, NULL, 
+            EVP_CIPHER_set_asn1_iv, EVP_CIPHER_get_asn1_iv, NULL)
+    
 static int bf_init_key(EVP_CIPHER_CTX *ctx, const unsigned char *key,
-		       const unsigned char *iv, int enc)
-	{
-	BF_set_key(&data(ctx)->ks,EVP_CIPHER_CTX_key_length(ctx),key);
-	return 1;
-	}
+               const unsigned char *iv, int enc)
+    {
+    BF_set_key(&data(ctx)->ks,EVP_CIPHER_CTX_key_length(ctx),key);
+    return 1;
+    }
 
 #endif

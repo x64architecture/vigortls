@@ -194,7 +194,7 @@ static int pad_unknown(void)
     unsigned long l;
     while ((l = ERR_get_error()) != 0)
       if (ERR_GET_REASON(l) == RSA_R_UNKNOWN_PADDING_TYPE)
-	return (1);
+    return (1);
     return (0);
 }
 
@@ -223,102 +223,102 @@ int main(int argc, char *argv[])
     plen = sizeof(ptext_ex) - 1;
 
     for (v = 0; v < 6; v++)
-	{
-	key = RSA_new();
-	switch (v%3) {
+    {
+    key = RSA_new();
+    switch (v%3) {
     case 0:
-	clen = key1(key, ctext_ex);
-	break;
+    clen = key1(key, ctext_ex);
+    break;
     case 1:
-	clen = key2(key, ctext_ex);
-	break;
+    clen = key2(key, ctext_ex);
+    break;
     case 2:
-	clen = key3(key, ctext_ex);
-	break;
-	}
-	if (v/3 >= 1) key->flags |= RSA_FLAG_NO_CONSTTIME;
+    clen = key3(key, ctext_ex);
+    break;
+    }
+    if (v/3 >= 1) key->flags |= RSA_FLAG_NO_CONSTTIME;
 
-	num = RSA_public_encrypt(plen, ptext_ex, ctext, key,
-				 RSA_PKCS1_PADDING);
-	if (num != clen)
-	    {
-	    printf("PKCS#1 v1.5 encryption failed!\n");
-	    err=1;
-	    goto oaep;
-	    }
+    num = RSA_public_encrypt(plen, ptext_ex, ctext, key,
+                 RSA_PKCS1_PADDING);
+    if (num != clen)
+        {
+        printf("PKCS#1 v1.5 encryption failed!\n");
+        err=1;
+        goto oaep;
+        }
   
-	num = RSA_private_decrypt(num, ctext, ptext, key,
-				  RSA_PKCS1_PADDING);
-	if (num != plen || memcmp(ptext, ptext_ex, num) != 0)
-	    {
-	    printf("PKCS#1 v1.5 decryption failed!\n");
-	    err=1;
-	    }
-	else
-	    printf("PKCS #1 v1.5 encryption/decryption ok\n");
+    num = RSA_private_decrypt(num, ctext, ptext, key,
+                  RSA_PKCS1_PADDING);
+    if (num != plen || memcmp(ptext, ptext_ex, num) != 0)
+        {
+        printf("PKCS#1 v1.5 decryption failed!\n");
+        err=1;
+        }
+    else
+        printf("PKCS #1 v1.5 encryption/decryption ok\n");
 
     oaep:
-	ERR_clear_error();
-	num = RSA_public_encrypt(plen, ptext_ex, ctext, key,
-				 RSA_PKCS1_OAEP_PADDING);
-	if (num == -1 && pad_unknown())
-	    {
-	    printf("No OAEP support\n");
-	    goto next;
-	    }
-	if (num != clen)
-	    {
-	    printf("OAEP encryption failed!\n");
-	    err=1;
-	    goto next;
-	    }
+    ERR_clear_error();
+    num = RSA_public_encrypt(plen, ptext_ex, ctext, key,
+                 RSA_PKCS1_OAEP_PADDING);
+    if (num == -1 && pad_unknown())
+        {
+        printf("No OAEP support\n");
+        goto next;
+        }
+    if (num != clen)
+        {
+        printf("OAEP encryption failed!\n");
+        err=1;
+        goto next;
+        }
 
-	num = RSA_private_decrypt(num, ctext, ptext, key,
-				  RSA_PKCS1_OAEP_PADDING);
-	if (num != plen || memcmp(ptext, ptext_ex, num) != 0)
-	    {
-	    printf("OAEP decryption (encrypted data) failed!\n");
-	    err=1;
-	    }
-	else if (memcmp(ctext, ctext_ex, num) == 0)
-	    printf("OAEP test vector %d passed!\n", v);
+    num = RSA_private_decrypt(num, ctext, ptext, key,
+                  RSA_PKCS1_OAEP_PADDING);
+    if (num != plen || memcmp(ptext, ptext_ex, num) != 0)
+        {
+        printf("OAEP decryption (encrypted data) failed!\n");
+        err=1;
+        }
+    else if (memcmp(ctext, ctext_ex, num) == 0)
+        printf("OAEP test vector %d passed!\n", v);
     
-	/* Different ciphertexts (rsa_oaep.c without -DPKCS_TESTVECT).
-	   Try decrypting ctext_ex */
+    /* Different ciphertexts (rsa_oaep.c without -DPKCS_TESTVECT).
+       Try decrypting ctext_ex */
 
-	num = RSA_private_decrypt(clen, ctext_ex, ptext, key,
-				  RSA_PKCS1_OAEP_PADDING);
+    num = RSA_private_decrypt(clen, ctext_ex, ptext, key,
+                  RSA_PKCS1_OAEP_PADDING);
 
-	if (num != plen || memcmp(ptext, ptext_ex, num) != 0)
-	    {
-	    printf("OAEP decryption (test vector data) failed!\n");
-	    err=1;
-	    }
-	else
-	    printf("OAEP encryption/decryption ok\n");
+    if (num != plen || memcmp(ptext, ptext_ex, num) != 0)
+        {
+        printf("OAEP decryption (test vector data) failed!\n");
+        err=1;
+        }
+    else
+        printf("OAEP encryption/decryption ok\n");
 
-	/* Try decrypting corrupted ciphertexts */
-	for(n = 0 ; n < clen ; ++n)
-	    {
-	    int b;
-	    unsigned char saved = ctext[n];
-	    for(b = 0 ; b < 256 ; ++b)
-		{
-		if (b == saved)
-		    continue;
-		ctext[n] = b;
-		num = RSA_private_decrypt(num, ctext, ptext, key,
-					  RSA_PKCS1_OAEP_PADDING);
-		if (num > 0)
-		    {
-		    printf("Corrupt data decrypted!\n");
-		    err = 1;
-		    }
-		}
-	    }
+    /* Try decrypting corrupted ciphertexts */
+    for(n = 0 ; n < clen ; ++n)
+        {
+        int b;
+        unsigned char saved = ctext[n];
+        for(b = 0 ; b < 256 ; ++b)
+        {
+        if (b == saved)
+            continue;
+        ctext[n] = b;
+        num = RSA_private_decrypt(num, ctext, ptext, key,
+                      RSA_PKCS1_OAEP_PADDING);
+        if (num > 0)
+            {
+            printf("Corrupt data decrypted!\n");
+            err = 1;
+            }
+        }
+        }
     next:
-	RSA_free(key);
-	}
+    RSA_free(key);
+    }
 
     CRYPTO_cleanup_all_ex_data();
     ERR_remove_thread_state(NULL);
