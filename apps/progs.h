@@ -209,9 +209,6 @@ FUNCTION functions[] = {
 #ifndef OPENSSL_NO_IDEA
 	{FUNC_TYPE_CIPHER,"idea",enc_main},
 #endif
-#ifndef OPENSSL_NO_SEED
-	{FUNC_TYPE_CIPHER,"seed",enc_main},
-#endif
 #ifndef OPENSSL_NO_RC4
 	{FUNC_TYPE_CIPHER,"rc4",enc_main},
 #endif
@@ -277,18 +274,6 @@ FUNCTION functions[] = {
 #endif
 #ifndef OPENSSL_NO_IDEA
 	{FUNC_TYPE_CIPHER,"idea-ofb",enc_main},
-#endif
-#ifndef OPENSSL_NO_SEED
-	{FUNC_TYPE_CIPHER,"seed-cbc",enc_main},
-#endif
-#ifndef OPENSSL_NO_SEED
-	{FUNC_TYPE_CIPHER,"seed-ecb",enc_main},
-#endif
-#ifndef OPENSSL_NO_SEED
-	{FUNC_TYPE_CIPHER,"seed-cfb",enc_main},
-#endif
-#ifndef OPENSSL_NO_SEED
-	{FUNC_TYPE_CIPHER,"seed-ofb",enc_main},
 #endif
 #ifndef OPENSSL_NO_RC2
 	{FUNC_TYPE_CIPHER,"rc2-cbc",enc_main},

@@ -945,7 +945,7 @@ speed.o: ../include/openssl/ossl_typ.h ../include/openssl/pkcs7.h
 speed.o: ../include/openssl/rand.h ../include/openssl/rc2.h
 speed.o: ../include/openssl/rc4.h ../include/openssl/ripemd.h
 speed.o: ../include/openssl/rsa.h ../include/openssl/safestack.h
-speed.o: ../include/openssl/seed.h ../include/openssl/sha.h
+speed.o: ../include/openssl/sha.h
 speed.o: ../include/openssl/stack.h ../include/openssl/symhacks.h
 speed.o: ../include/openssl/txt_db.h ../include/openssl/ui.h
 speed.o: ../include/openssl/ui_compat.h ../include/openssl/whrlpool.h

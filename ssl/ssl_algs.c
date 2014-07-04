@@ -100,10 +100,6 @@ int SSL_library_init(void)
     EVP_add_cipher(EVP_camellia_128_cbc());
     EVP_add_cipher(EVP_camellia_256_cbc());
 #endif
-
-#ifndef OPENSSL_NO_SEED
-    EVP_add_cipher(EVP_seed_cbc());
-#endif
   
 #ifndef OPENSSL_NO_MD5
     EVP_add_digest(EVP_md5());
