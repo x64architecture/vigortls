@@ -25,7 +25,6 @@ my @dirs = (
 "crypto/cast",
 "crypto/aes",
 "crypto/camellia",
-"crypto/seed",
 "crypto/modes",
 "crypto/bn",
 "crypto/rsa",

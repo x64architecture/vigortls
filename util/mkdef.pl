@@ -264,7 +264,6 @@ $crypto.=" crypto/sha/sha.h" ; # unless $no_sha;
 $crypto.=" crypto/ripemd/ripemd.h" ; # unless $no_ripemd;
 $crypto.=" crypto/aes/aes.h" ; # unless $no_aes;
 $crypto.=" crypto/camellia/camellia.h" ; # unless $no_camellia;
-$crypto.=" crypto/seed/seed.h"; # unless $no_seed;
 
 $crypto.=" crypto/bn/bn.h";
 $crypto.=" crypto/rsa/rsa.h" ; # unless $no_rsa;
