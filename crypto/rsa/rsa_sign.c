@@ -86,7 +86,7 @@ int RSA_sign(int type, const unsigned char *m, unsigned int m_len,
 	if(type == NID_md5_sha1) {
 		if(m_len != SSL_SIG_LENGTH) {
 			RSAerr(RSA_F_RSA_SIGN,RSA_R_INVALID_MESSAGE_LENGTH);
-			return(0);
+			return (0);
 		}
 		i = SSL_SIG_LENGTH;
 		s = m;
@@ -96,12 +96,12 @@ int RSA_sign(int type, const unsigned char *m, unsigned int m_len,
 		if (sig.algor->algorithm == NULL)
 			{
 			RSAerr(RSA_F_RSA_SIGN,RSA_R_UNKNOWN_ALGORITHM_TYPE);
-			return(0);
+			return (0);
 			}
 		if (sig.algor->algorithm->length == 0)
 			{
 			RSAerr(RSA_F_RSA_SIGN,RSA_R_THE_ASN1_OBJECT_IDENTIFIER_IS_NOT_KNOWN_FOR_THIS_MD);
-			return(0);
+			return (0);
 			}
 		parameter.type=V_ASN1_NULL;
 		parameter.value.ptr=NULL;
@@ -117,14 +117,14 @@ int RSA_sign(int type, const unsigned char *m, unsigned int m_len,
 	if (i > (j-RSA_PKCS1_PADDING_SIZE))
 		{
 		RSAerr(RSA_F_RSA_SIGN,RSA_R_DIGEST_TOO_BIG_FOR_RSA_KEY);
-		return(0);
+		return (0);
 		}
 	if(type != NID_md5_sha1) {
 		tmps=(unsigned char *)malloc((unsigned int)j+1);
 		if (tmps == NULL)
 			{
 			RSAerr(RSA_F_RSA_SIGN,ERR_R_MALLOC_FAILURE);
-			return(0);
+			return (0);
 			}
 		p=tmps;
 		i2d_X509_SIG(&sig,&p);
@@ -140,7 +140,7 @@ int RSA_sign(int type, const unsigned char *m, unsigned int m_len,
 		OPENSSL_cleanse(tmps,(unsigned int)j+1);
 		free(tmps);
 	}
-	return(ret);
+	return (ret);
 	}
 
 int int_rsa_verify(int dtype, const unsigned char *m,
@@ -156,7 +156,7 @@ int int_rsa_verify(int dtype, const unsigned char *m,
 	if (siglen != (unsigned int)RSA_size(rsa))
 		{
 		RSAerr(RSA_F_INT_RSA_VERIFY,RSA_R_WRONG_SIGNATURE_LENGTH);
-		return(0);
+		return (0);
 		}
 
 	if((dtype == NID_md5_sha1) && rm)
@@ -281,7 +281,7 @@ err:
 		OPENSSL_cleanse(s,(unsigned int)siglen);
 		free(s);
 		}
-	return(ret);
+	return (ret);
 	}
 
 int RSA_verify(int dtype, const unsigned char *m, unsigned int m_len,

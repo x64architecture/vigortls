@@ -110,7 +110,7 @@ static DSO_METHOD dso_meth_dl = {
 
 DSO_METHOD *DSO_METHOD_dl(void)
 	{
-	return(&dso_meth_dl);
+	return (&dso_meth_dl);
 	}
 
 /* For this DSO_METHOD, our meth_data STACK will contain;
@@ -149,14 +149,14 @@ static int dl_load(DSO *dso)
 	/* Success, stick the converted filename we've loaded under into the DSO
 	 * (it also serves as the indicator that we are currently loaded). */
 	dso->loaded_filename = filename;
-	return(1);
+	return (1);
 err:
 	/* Cleanup! */
 	if(filename != NULL)
 		free(filename);
 	if(ptr != NULL)
 		shl_unload(ptr);
-	return(0);
+	return (0);
 	}
 
 static int dl_unload(DSO *dso)
@@ -165,10 +165,10 @@ static int dl_unload(DSO *dso)
 	if(dso == NULL)
 		{
 		DSOerr(DSO_F_DL_UNLOAD,ERR_R_PASSED_NULL_PARAMETER);
-		return(0);
+		return (0);
 		}
 	if(sk_num(dso->meth_data) < 1)
-		return(1);
+		return (1);
 	/* Is this statement legal? */
 	ptr = (shl_t)sk_pop(dso->meth_data);
 	if(ptr == NULL)
@@ -177,10 +177,10 @@ static int dl_unload(DSO *dso)
 		/* Should push the value back onto the stack in
 		 * case of a retry. */
 		sk_push(dso->meth_data, (char *)ptr);
-		return(0);
+		return (0);
 		}
 	shl_unload(ptr);
-	return(1);
+	return (1);
 	}
 
 static void *dl_bind_var(DSO *dso, const char *symname)
@@ -191,27 +191,27 @@ static void *dl_bind_var(DSO *dso, const char *symname)
 	if((dso == NULL) || (symname == NULL))
 		{
 		DSOerr(DSO_F_DL_BIND_VAR,ERR_R_PASSED_NULL_PARAMETER);
-		return(NULL);
+		return (NULL);
 		}
 	if(sk_num(dso->meth_data) < 1)
 		{
 		DSOerr(DSO_F_DL_BIND_VAR,DSO_R_STACK_ERROR);
-		return(NULL);
+		return (NULL);
 		}
 	ptr = (shl_t)sk_value(dso->meth_data, sk_num(dso->meth_data) - 1);
 	if(ptr == NULL)
 		{
 		DSOerr(DSO_F_DL_BIND_VAR,DSO_R_NULL_HANDLE);
-		return(NULL);
+		return (NULL);
 		}
 	if (shl_findsym(&ptr, symname, TYPE_UNDEFINED, &sym) < 0)
 		{
 		DSOerr(DSO_F_DL_BIND_VAR,DSO_R_SYM_FAILURE);
 		ERR_add_error_data(4, "symname(", symname, "): ",
 			strerror(errno));
-		return(NULL);
+		return (NULL);
 		}
-	return(sym);
+	return (sym);
 	}
 
 static DSO_FUNC_TYPE dl_bind_func(DSO *dso, const char *symname)
@@ -222,27 +222,27 @@ static DSO_FUNC_TYPE dl_bind_func(DSO *dso, const char *symname)
 	if((dso == NULL) || (symname == NULL))
 		{
 		DSOerr(DSO_F_DL_BIND_FUNC,ERR_R_PASSED_NULL_PARAMETER);
-		return(NULL);
+		return (NULL);
 		}
 	if(sk_num(dso->meth_data) < 1)
 		{
 		DSOerr(DSO_F_DL_BIND_FUNC,DSO_R_STACK_ERROR);
-		return(NULL);
+		return (NULL);
 		}
 	ptr = (shl_t)sk_value(dso->meth_data, sk_num(dso->meth_data) - 1);
 	if(ptr == NULL)
 		{
 		DSOerr(DSO_F_DL_BIND_FUNC,DSO_R_NULL_HANDLE);
-		return(NULL);
+		return (NULL);
 		}
 	if (shl_findsym(&ptr, symname, TYPE_UNDEFINED, &sym) < 0)
 		{
 		DSOerr(DSO_F_DL_BIND_FUNC,DSO_R_SYM_FAILURE);
 		ERR_add_error_data(4, "symname(", symname, "): ",
 			strerror(errno));
-		return(NULL);
+		return (NULL);
 		}
-	return((DSO_FUNC_TYPE)sym);
+	return ((DSO_FUNC_TYPE)sym);
 	}
 
 static char *dl_merger(DSO *dso, const char *filespec1, const char *filespec2)
@@ -253,7 +253,7 @@ static char *dl_merger(DSO *dso, const char *filespec1, const char *filespec2)
 		{
 		DSOerr(DSO_F_DL_MERGER,
 				ERR_R_PASSED_NULL_PARAMETER);
-		return(NULL);
+		return (NULL);
 		}
 	/* If the first file specification is a rooted path, it rules.
 	   same goes if the second file specification is missing. */
@@ -264,7 +264,7 @@ static char *dl_merger(DSO *dso, const char *filespec1, const char *filespec2)
 			{
 			DSOerr(DSO_F_DL_MERGER,
 				ERR_R_MALLOC_FAILURE);
-			return(NULL);
+			return (NULL);
 			}
 		strcpy(merged, filespec1);
 		}
@@ -276,7 +276,7 @@ static char *dl_merger(DSO *dso, const char *filespec1, const char *filespec2)
 			{
 			DSOerr(DSO_F_DL_MERGER,
 				ERR_R_MALLOC_FAILURE);
-			return(NULL);
+			return (NULL);
 			}
 		strcpy(merged, filespec2);
 		}
@@ -302,13 +302,13 @@ static char *dl_merger(DSO *dso, const char *filespec1, const char *filespec2)
 			{
 			DSOerr(DSO_F_DL_MERGER,
 				ERR_R_MALLOC_FAILURE);
-			return(NULL);
+			return (NULL);
 			}
 		strcpy(merged, filespec2);
 		merged[spec2len] = '/';
 		strcpy(&merged[spec2len + 1], filespec1);
 		}
-	return(merged);
+	return (merged);
 	}
 
 /* This function is identical to the one in dso_dlfcn.c, but as it is highly
@@ -340,7 +340,7 @@ static char *dl_name_converter(DSO *dso, const char *filename)
 		{
 		DSOerr(DSO_F_DL_NAME_CONVERTER,
 				DSO_R_NAME_TRANSLATION_FAILED); 
-		return(NULL);   
+		return (NULL);   
 		}
 	if(transform)
 		{
@@ -351,7 +351,7 @@ static char *dl_name_converter(DSO *dso, const char *filename)
 		}
 	else
 		sprintf(translated, "%s", filename);
-	return(translated);
+	return (translated);
 	}
 
 static int dl_pathbyaddr(void *addr,char *path,int sz)

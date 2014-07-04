@@ -257,7 +257,7 @@ static int zlib_compress_block(COMP_CTX *ctx, unsigned char *out,
 		l=olen-1;
 		i=compress(&(out[1]),&l,in,(unsigned long)ilen);
 		if (i != Z_OK)
-			return(-1);
+			return (-1);
 		if (ilen > l)
 			{
 			clear=0;
@@ -274,7 +274,7 @@ static int zlib_compress_block(COMP_CTX *ctx, unsigned char *out,
 	fprintf(stderr,"compress(%4d)->%4d %s\n",
 		ilen,(int)l,(clear)?"clear":"zlib");
 #endif
-	return((int)l);
+	return ((int)l);
 	}
 
 static int zlib_expand_block(COMP_CTX *ctx, unsigned char *out,
@@ -288,7 +288,7 @@ static int zlib_expand_block(COMP_CTX *ctx, unsigned char *out,
 		l=olen;
 		i=zz_uncompress(out,&l,&(in[1]),(unsigned long)ilen-1);
 		if (i != Z_OK)
-			return(-1);
+			return (-1);
 		}
 	else
 		{
@@ -299,7 +299,7 @@ static int zlib_expand_block(COMP_CTX *ctx, unsigned char *out,
         fprintf(stderr,"expand  (%4d)->%4d %s\n",
 		ilen,(int)l,in[0]?"zlib":"clear");
 #endif
-	return((int)l);
+	return ((int)l);
 	}
 
 static int zz_uncompress (Bytef *dest, uLongf *destLen, const Bytef *source,
@@ -410,7 +410,7 @@ COMP_METHOD *COMP_zlib(void)
 err:	
 #endif
 
-	return(meth);
+	return (meth);
 	}
 
 void COMP_zlib_cleanup(void)

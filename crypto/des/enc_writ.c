@@ -99,7 +99,7 @@ int DES_enc_write(int fd, const void *_buf, int len,
 	if (outbuf == NULL)
 		{
 		outbuf=malloc(BSIZE+HDRSIZE);
-		if (outbuf == NULL) return(-1);
+		if (outbuf == NULL) return (-1);
 		}
 	/* If we are sending less than 8 bytes, the same char will look
 	 * the same if we don't pad it out with random bytes */
@@ -117,11 +117,11 @@ int DES_enc_write(int fd, const void *_buf, int len,
 			k=DES_enc_write(fd,&(buf[i]),
 				((len-i) > MAXWRITE)?MAXWRITE:(len-i),sched,iv);
 			if (k < 0)
-				return(k);
+				return (k);
 			else
 				j+=k;
 			}
-		return(j);
+		return (j);
 		}
 
 	/* write length first */
@@ -170,10 +170,10 @@ int DES_enc_write(int fd, const void *_buf, int len,
 #endif
 			        /* This is really a bad error - very bad
 				 * It will stuff-up both ends. */
-				return(-1);
+				return (-1);
 			}
 		}
 
-	return(len);
+	return (len);
 #endif /* OPENSSL_NO_POSIX_IO */
 	}

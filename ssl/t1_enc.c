@@ -516,11 +516,11 @@ int tls1_change_cipher_state(SSL *s, int which)
 	OPENSSL_cleanse(tmp2,sizeof(tmp1));
 	OPENSSL_cleanse(iv1,sizeof(iv1));
 	OPENSSL_cleanse(iv2,sizeof(iv2));
-	return(1);
+	return (1);
 err:
 	SSLerr(SSL_F_TLS1_CHANGE_CIPHER_STATE,ERR_R_MALLOC_FAILURE);
 err2:
-	return(0);
+	return (0);
 	}
 
 int tls1_setup_key_block(SSL *s)
@@ -534,12 +534,12 @@ int tls1_setup_key_block(SSL *s)
 	int ret=0;
 
 	if (s->s3->tmp.key_block_length != 0)
-		return(1);
+		return (1);
 
 	if (!ssl_cipher_get_evp(s->session,&c,&hash,&mac_type,&mac_secret_size,&comp))
 		{
 		SSLerr(SSL_F_TLS1_SETUP_KEY_BLOCK,SSL_R_CIPHER_OR_HASH_UNAVAILABLE);
-		return(0);
+		return (0);
 		}
 
 	s->s3->tmp.new_sym_enc=c;
@@ -596,7 +596,7 @@ err:
 		OPENSSL_cleanse(p2,num);
 		free(p2);
 		}
-	return(ret);
+	return (ret);
 	}
 
 /* tls1_enc encrypts/decrypts the record in |s->wrec| / |s->rrec|, respectively.
@@ -788,7 +788,7 @@ int tls1_cert_verify_mac(SSL *s, int md_nid, unsigned char *out)
 	EVP_MD_CTX_copy_ex(&ctx,d);
 	EVP_DigestFinal_ex(&ctx,out,&ret);
 	EVP_MD_CTX_cleanup(&ctx);
-	return((int)ret);
+	return ((int)ret);
 	}
 
 int tls1_final_finish_mac(SSL *s,
@@ -946,7 +946,7 @@ int tls1_mac(SSL *ssl, unsigned char *md, int send)
 			}
 		}
 
-	return(md_size);
+	return (md_size);
 	}
 
 int tls1_generate_master_secret(SSL *s, unsigned char *out, unsigned char *p,
@@ -977,7 +977,7 @@ int tls1_generate_master_secret(SSL *s, unsigned char *out, unsigned char *p,
 		p,len,
 		s->session->master_key,buff,sizeof buff);
 
-	return(SSL3_MASTER_SECRET_SIZE);
+	return (SSL3_MASTER_SECRET_SIZE);
 	}
 
 int tls1_export_keying_material(SSL *s, unsigned char *out, size_t olen,
@@ -1058,47 +1058,47 @@ err2:
 ret:
 	if (buff != NULL) free(buff);
 	if (val != NULL) free(val);
-	return(rv);
+	return (rv);
 	}
 
 int tls1_alert_code(int code)
 	{
 	switch (code)
 		{
-	case SSL_AD_CLOSE_NOTIFY:	return(SSL3_AD_CLOSE_NOTIFY);
-	case SSL_AD_UNEXPECTED_MESSAGE:	return(SSL3_AD_UNEXPECTED_MESSAGE);
-	case SSL_AD_BAD_RECORD_MAC:	return(SSL3_AD_BAD_RECORD_MAC);
-	case SSL_AD_DECRYPTION_FAILED:	return(TLS1_AD_DECRYPTION_FAILED);
-	case SSL_AD_RECORD_OVERFLOW:	return(TLS1_AD_RECORD_OVERFLOW);
-	case SSL_AD_DECOMPRESSION_FAILURE:return(SSL3_AD_DECOMPRESSION_FAILURE);
-	case SSL_AD_HANDSHAKE_FAILURE:	return(SSL3_AD_HANDSHAKE_FAILURE);
-	case SSL_AD_NO_CERTIFICATE:	return(-1);
-	case SSL_AD_BAD_CERTIFICATE:	return(SSL3_AD_BAD_CERTIFICATE);
-	case SSL_AD_UNSUPPORTED_CERTIFICATE:return(SSL3_AD_UNSUPPORTED_CERTIFICATE);
-	case SSL_AD_CERTIFICATE_REVOKED:return(SSL3_AD_CERTIFICATE_REVOKED);
-	case SSL_AD_CERTIFICATE_EXPIRED:return(SSL3_AD_CERTIFICATE_EXPIRED);
-	case SSL_AD_CERTIFICATE_UNKNOWN:return(SSL3_AD_CERTIFICATE_UNKNOWN);
-	case SSL_AD_ILLEGAL_PARAMETER:	return(SSL3_AD_ILLEGAL_PARAMETER);
-	case SSL_AD_UNKNOWN_CA:		return(TLS1_AD_UNKNOWN_CA);
-	case SSL_AD_ACCESS_DENIED:	return(TLS1_AD_ACCESS_DENIED);
-	case SSL_AD_DECODE_ERROR:	return(TLS1_AD_DECODE_ERROR);
-	case SSL_AD_DECRYPT_ERROR:	return(TLS1_AD_DECRYPT_ERROR);
-	case SSL_AD_EXPORT_RESTRICTION:	return(TLS1_AD_EXPORT_RESTRICTION);
-	case SSL_AD_PROTOCOL_VERSION:	return(TLS1_AD_PROTOCOL_VERSION);
-	case SSL_AD_INSUFFICIENT_SECURITY:return(TLS1_AD_INSUFFICIENT_SECURITY);
-	case SSL_AD_INTERNAL_ERROR:	return(TLS1_AD_INTERNAL_ERROR);
-	case SSL_AD_USER_CANCELLED:	return(TLS1_AD_USER_CANCELLED);
-	case SSL_AD_NO_RENEGOTIATION:	return(TLS1_AD_NO_RENEGOTIATION);
-	case SSL_AD_UNSUPPORTED_EXTENSION: return(TLS1_AD_UNSUPPORTED_EXTENSION);
-	case SSL_AD_CERTIFICATE_UNOBTAINABLE: return(TLS1_AD_CERTIFICATE_UNOBTAINABLE);
-	case SSL_AD_UNRECOGNIZED_NAME:	return(TLS1_AD_UNRECOGNIZED_NAME);
-	case SSL_AD_BAD_CERTIFICATE_STATUS_RESPONSE: return(TLS1_AD_BAD_CERTIFICATE_STATUS_RESPONSE);
-	case SSL_AD_BAD_CERTIFICATE_HASH_VALUE: return(TLS1_AD_BAD_CERTIFICATE_HASH_VALUE);
-	case SSL_AD_UNKNOWN_PSK_IDENTITY:return(TLS1_AD_UNKNOWN_PSK_IDENTITY);
+	case SSL_AD_CLOSE_NOTIFY:	return (SSL3_AD_CLOSE_NOTIFY);
+	case SSL_AD_UNEXPECTED_MESSAGE:	return (SSL3_AD_UNEXPECTED_MESSAGE);
+	case SSL_AD_BAD_RECORD_MAC:	return (SSL3_AD_BAD_RECORD_MAC);
+	case SSL_AD_DECRYPTION_FAILED:	return (TLS1_AD_DECRYPTION_FAILED);
+	case SSL_AD_RECORD_OVERFLOW:	return (TLS1_AD_RECORD_OVERFLOW);
+	case SSL_AD_DECOMPRESSION_FAILURE:return (SSL3_AD_DECOMPRESSION_FAILURE);
+	case SSL_AD_HANDSHAKE_FAILURE:	return (SSL3_AD_HANDSHAKE_FAILURE);
+	case SSL_AD_NO_CERTIFICATE:	return (-1);
+	case SSL_AD_BAD_CERTIFICATE:	return (SSL3_AD_BAD_CERTIFICATE);
+	case SSL_AD_UNSUPPORTED_CERTIFICATE:return (SSL3_AD_UNSUPPORTED_CERTIFICATE);
+	case SSL_AD_CERTIFICATE_REVOKED:return (SSL3_AD_CERTIFICATE_REVOKED);
+	case SSL_AD_CERTIFICATE_EXPIRED:return (SSL3_AD_CERTIFICATE_EXPIRED);
+	case SSL_AD_CERTIFICATE_UNKNOWN:return (SSL3_AD_CERTIFICATE_UNKNOWN);
+	case SSL_AD_ILLEGAL_PARAMETER:	return (SSL3_AD_ILLEGAL_PARAMETER);
+	case SSL_AD_UNKNOWN_CA:		return (TLS1_AD_UNKNOWN_CA);
+	case SSL_AD_ACCESS_DENIED:	return (TLS1_AD_ACCESS_DENIED);
+	case SSL_AD_DECODE_ERROR:	return (TLS1_AD_DECODE_ERROR);
+	case SSL_AD_DECRYPT_ERROR:	return (TLS1_AD_DECRYPT_ERROR);
+	case SSL_AD_EXPORT_RESTRICTION:	return (TLS1_AD_EXPORT_RESTRICTION);
+	case SSL_AD_PROTOCOL_VERSION:	return (TLS1_AD_PROTOCOL_VERSION);
+	case SSL_AD_INSUFFICIENT_SECURITY:return (TLS1_AD_INSUFFICIENT_SECURITY);
+	case SSL_AD_INTERNAL_ERROR:	return (TLS1_AD_INTERNAL_ERROR);
+	case SSL_AD_USER_CANCELLED:	return (TLS1_AD_USER_CANCELLED);
+	case SSL_AD_NO_RENEGOTIATION:	return (TLS1_AD_NO_RENEGOTIATION);
+	case SSL_AD_UNSUPPORTED_EXTENSION: return (TLS1_AD_UNSUPPORTED_EXTENSION);
+	case SSL_AD_CERTIFICATE_UNOBTAINABLE: return (TLS1_AD_CERTIFICATE_UNOBTAINABLE);
+	case SSL_AD_UNRECOGNIZED_NAME:	return (TLS1_AD_UNRECOGNIZED_NAME);
+	case SSL_AD_BAD_CERTIFICATE_STATUS_RESPONSE: return (TLS1_AD_BAD_CERTIFICATE_STATUS_RESPONSE);
+	case SSL_AD_BAD_CERTIFICATE_HASH_VALUE: return (TLS1_AD_BAD_CERTIFICATE_HASH_VALUE);
+	case SSL_AD_UNKNOWN_PSK_IDENTITY:return (TLS1_AD_UNKNOWN_PSK_IDENTITY);
 #if 0 /* not appropriate for TLS, not used for DTLS */
 	case DTLS1_AD_MISSING_HANDSHAKE_MESSAGE: return 
 					  (DTLS1_AD_MISSING_HANDSHAKE_MESSAGE);
 #endif
-	default:			return(-1);
+	default:			return (-1);
 		}
 	}

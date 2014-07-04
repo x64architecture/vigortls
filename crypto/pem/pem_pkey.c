@@ -134,7 +134,7 @@ err:
 	free(nm);
 	OPENSSL_cleanse(data, len);
 	free(data);
-	return(ret);
+	return (ret);
 	}
 
 int PEM_write_bio_PrivateKey(BIO *bp, EVP_PKEY *x, const EVP_CIPHER *enc,
@@ -190,7 +190,7 @@ err:
 		PEMerr(PEM_F_PEM_READ_BIO_PARAMETERS,ERR_R_ASN1_LIB);
 	free(nm);
 	free(data);
-	return(ret);
+	return (ret);
 	}
 
 int PEM_write_bio_Parameters(BIO *bp, EVP_PKEY *x)
@@ -214,12 +214,12 @@ EVP_PKEY *PEM_read_PrivateKey(FILE *fp, EVP_PKEY **x, pem_password_cb *cb, void 
         if ((b=BIO_new(BIO_s_file())) == NULL)
 		{
 		PEMerr(PEM_F_PEM_READ_PRIVATEKEY,ERR_R_BUF_LIB);
-                return(0);
+                return (0);
 		}
         BIO_set_fp(b,fp,BIO_NOCLOSE);
         ret=PEM_read_bio_PrivateKey(b,x,cb,u);
         BIO_free(b);
-        return(ret);
+        return (ret);
 	}
 
 int PEM_write_PrivateKey(FILE *fp, EVP_PKEY *x, const EVP_CIPHER *enc,

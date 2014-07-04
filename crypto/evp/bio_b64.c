@@ -106,7 +106,7 @@ static BIO_METHOD methods_b64=
 
 BIO_METHOD *BIO_f_base64(void)
 	{
-	return(&methods_b64);
+	return (&methods_b64);
 	}
 
 static int b64_new(BIO *bi)
@@ -114,7 +114,7 @@ static int b64_new(BIO *bi)
 	BIO_B64_CTX *ctx;
 
 	ctx=(BIO_B64_CTX *)malloc(sizeof(BIO_B64_CTX));
-	if (ctx == NULL) return(0);
+	if (ctx == NULL) return (0);
 
 	ctx->buf_len=0;
 	ctx->tmp_len=0;
@@ -128,17 +128,17 @@ static int b64_new(BIO *bi)
 	bi->ptr=(char *)ctx;
 	bi->flags=0;
 	bi->num = 0;
-	return(1);
+	return (1);
 	}
 
 static int b64_free(BIO *a)
 	{
-	if (a == NULL) return(0);
+	if (a == NULL) return (0);
 	free(a->ptr);
 	a->ptr=NULL;
 	a->init=0;
 	a->flags=0;
-	return(1);
+	return (1);
 	}
 	
 static int b64_read(BIO *b, char *out, int outl)
@@ -147,10 +147,10 @@ static int b64_read(BIO *b, char *out, int outl)
 	BIO_B64_CTX *ctx;
 	unsigned char *p,*q;
 
-	if (out == NULL) return(0);
+	if (out == NULL) return (0);
 	ctx=(BIO_B64_CTX *)b->ptr;
 
-	if ((ctx == NULL) || (b->next_bio == NULL)) return(0);
+	if ((ctx == NULL) || (b->next_bio == NULL)) return (0);
 
 	BIO_clear_retry_flags(b);
 
@@ -368,7 +368,7 @@ static int b64_read(BIO *b, char *out, int outl)
 		}
 	/* BIO_clear_retry_flags(b); */
 	BIO_copy_next_retry(b);
-	return((ret == 0)?ret_code:ret);
+	return ((ret == 0)?ret_code:ret);
 	}
 
 static int b64_write(BIO *b, const char *in, int inl)
@@ -400,7 +400,7 @@ static int b64_write(BIO *b, const char *in, int inl)
 		if (i <= 0)
 			{
 			BIO_copy_next_retry(b);
-			return(i);
+			return (i);
 			}
 		OPENSSL_assert(i <= n);
 		ctx->buf_off+=i;
@@ -412,7 +412,7 @@ static int b64_write(BIO *b, const char *in, int inl)
 	ctx->buf_off=0;
 	ctx->buf_len=0;
 
-	if ((in == NULL) || (inl <= 0)) return(0);
+	if ((in == NULL) || (inl <= 0)) return (0);
 
 	while (inl > 0)
 		{
@@ -475,7 +475,7 @@ static int b64_write(BIO *b, const char *in, int inl)
 			if (i <= 0)
 				{
 				BIO_copy_next_retry(b);
-				return((ret == 0)?i:ret);
+				return ((ret == 0)?i:ret);
 				}
 			OPENSSL_assert(i <= n);
 			n-=i;
@@ -486,7 +486,7 @@ static int b64_write(BIO *b, const char *in, int inl)
 		ctx->buf_len=0;
 		ctx->buf_off=0;
 		}
-	return(ret);
+	return (ret);
 	}
 
 static long b64_ctrl(BIO *b, int cmd, long num, void *ptr)
@@ -576,21 +576,21 @@ again:
 		ret=BIO_ctrl(b->next_bio,cmd,num,ptr);
 		break;
 		}
-	return(ret);
+	return (ret);
 	}
 
 static long b64_callback_ctrl(BIO *b, int cmd, bio_info_cb *fp)
 	{
 	long ret=1;
 
-	if (b->next_bio == NULL) return(0);
+	if (b->next_bio == NULL) return (0);
 	switch (cmd)
 		{
 	default:
 		ret=BIO_callback_ctrl(b->next_bio,cmd,fp);
 		break;
 		}
-	return(ret);
+	return (ret);
 	}
 
 static int b64_puts(BIO *b, const char *str)

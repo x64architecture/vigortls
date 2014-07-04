@@ -66,7 +66,7 @@
 int i2d_ASN1_UTCTIME(ASN1_UTCTIME *a, unsigned char **pp)
 	{
 #ifndef CHARSET_EBCDIC
-	return(i2d_ASN1_bytes((ASN1_STRING *)a,pp,
+	return (i2d_ASN1_bytes((ASN1_STRING *)a,pp,
 		V_ASN1_UTCTIME,V_ASN1_UNIVERSAL));
 #else
 	/* KLUDGE! We convert to ascii before writing DER */
@@ -92,7 +92,7 @@ ASN1_UTCTIME *d2i_ASN1_UTCTIME(ASN1_UTCTIME **a, unsigned char **pp,
 	if (ret == NULL)
 		{
 		ASN1err(ASN1_F_D2I_ASN1_UTCTIME,ERR_R_NESTED_ASN1_ERROR);
-		return(NULL);
+		return (NULL);
 		}
 #ifdef CHARSET_EBCDIC
 	ascii2ebcdic(ret->data, ret->data, ret->length);
@@ -103,11 +103,11 @@ ASN1_UTCTIME *d2i_ASN1_UTCTIME(ASN1_UTCTIME **a, unsigned char **pp,
 		goto err;
 		}
 
-	return(ret);
+	return (ret);
 err:
 	if ((ret != NULL) && ((a == NULL) || (*a != ret)))
 		M_ASN1_UTCTIME_free(ret);
-	return(NULL);
+	return (NULL);
 	}
 
 #endif
@@ -119,7 +119,7 @@ int ASN1_UTCTIME_check(ASN1_UTCTIME *d)
 	char *a;
 	int n,i,l,o;
 
-	if (d->type != V_ASN1_UTCTIME) return(0);
+	if (d->type != V_ASN1_UTCTIME) return (0);
 	l=d->length;
 	a=(char *)d->data;
 	o=0;
@@ -157,9 +157,9 @@ int ASN1_UTCTIME_check(ASN1_UTCTIME *d)
 			o++;
 			}
 		}
-	return(o == l);
+	return (o == l);
 err:
-	return(0);
+	return (0);
 	}
 
 int ASN1_UTCTIME_set_string(ASN1_UTCTIME *s, const char *str)
@@ -178,10 +178,10 @@ int ASN1_UTCTIME_set_string(ASN1_UTCTIME *s, const char *str)
 				return 0;
 			s->type = V_ASN1_UTCTIME;
 			}
-		return(1);
+		return (1);
 		}
 	else
-		return(0);
+		return (0);
 	}
 
 ASN1_UTCTIME *ASN1_UTCTIME_set(ASN1_UTCTIME *s, time_t t)
@@ -200,11 +200,11 @@ ASN1_UTCTIME *ASN1_UTCTIME_adj(ASN1_UTCTIME *s, time_t t,
 	if (s == NULL)
 		s=M_ASN1_UTCTIME_new();
 	if (s == NULL)
-		return(NULL);
+		return (NULL);
 
 	ts=OPENSSL_gmtime(&t, &data);
 	if (ts == NULL)
-		return(NULL);
+		return (NULL);
 
 	if (offset_day || offset_sec)
 		{ 
@@ -222,7 +222,7 @@ ASN1_UTCTIME *ASN1_UTCTIME_adj(ASN1_UTCTIME *s, time_t t,
 		if (p == NULL)
 			{
 			ASN1err(ASN1_F_ASN1_UTCTIME_ADJ,ERR_R_MALLOC_FAILURE);
-			return(NULL);
+			return (NULL);
 			}
 		if (s->data != NULL)
 			free(s->data);
@@ -236,7 +236,7 @@ ASN1_UTCTIME *ASN1_UTCTIME_adj(ASN1_UTCTIME *s, time_t t,
 #ifdef CHARSET_EBCDIC_not
 	ebcdic2ascii(s->data, s->data, s->length);
 #endif
-	return(s);
+	return (s);
 	}
 
 

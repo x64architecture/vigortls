@@ -116,7 +116,7 @@ int i2c_ASN1_INTEGER(ASN1_INTEGER *a, unsigned char **pp)
 	int pad=0,ret,i,neg;
 	unsigned char *p,*n,pb=0;
 
-	if (a == NULL) return(0);
+	if (a == NULL) return (0);
 	neg=a->type & V_ASN1_NEG;
 	if (a->length == 0)
 		ret=1;
@@ -145,7 +145,7 @@ int i2c_ASN1_INTEGER(ASN1_INTEGER *a, unsigned char **pp)
 		}
 		ret+=pad;
 		}
-	if (pp == NULL) return(ret);
+	if (pp == NULL) return (ret);
 	p= *pp;
 
 	if (pad) *(p++)=pb;
@@ -170,7 +170,7 @@ int i2c_ASN1_INTEGER(ASN1_INTEGER *a, unsigned char **pp)
 	}
 
 	*pp+=ret;
-	return(ret);
+	return (ret);
 	}
 
 /* Convert just ASN1 INTEGER content octets to ASN1_INTEGER structure */
@@ -185,7 +185,7 @@ ASN1_INTEGER *c2i_ASN1_INTEGER(ASN1_INTEGER **a, const unsigned char **pp,
 
 	if ((a == NULL) || ((*a) == NULL))
 		{
-		if ((ret=M_ASN1_INTEGER_new()) == NULL) return(NULL);
+		if ((ret=M_ASN1_INTEGER_new()) == NULL) return (NULL);
 		ret->type=V_ASN1_INTEGER;
 		}
 	else
@@ -254,12 +254,12 @@ ASN1_INTEGER *c2i_ASN1_INTEGER(ASN1_INTEGER **a, const unsigned char **pp,
 	ret->length=(int)len;
 	if (a != NULL) (*a)=ret;
 	*pp=pend;
-	return(ret);
+	return (ret);
 err:
 	ASN1err(ASN1_F_C2I_ASN1_INTEGER,i);
 	if ((ret != NULL) && ((a == NULL) || (*a != ret)))
 		M_ASN1_INTEGER_free(ret);
-	return(NULL);
+	return (NULL);
 	}
 
 
@@ -280,7 +280,7 @@ ASN1_INTEGER *d2i_ASN1_UINTEGER(ASN1_INTEGER **a, const unsigned char **pp,
 
 	if ((a == NULL) || ((*a) == NULL))
 		{
-		if ((ret=M_ASN1_INTEGER_new()) == NULL) return(NULL);
+		if ((ret=M_ASN1_INTEGER_new()) == NULL) return (NULL);
 		ret->type=V_ASN1_INTEGER;
 		}
 	else
@@ -324,12 +324,12 @@ ASN1_INTEGER *d2i_ASN1_UINTEGER(ASN1_INTEGER **a, const unsigned char **pp,
 	ret->length=(int)len;
 	if (a != NULL) (*a)=ret;
 	*pp=p;
-	return(ret);
+	return (ret);
 err:
 	ASN1err(ASN1_F_D2I_ASN1_UINTEGER,i);
 	if ((ret != NULL) && ((a == NULL) || (*a != ret)))
 		M_ASN1_INTEGER_free(ret);
-	return(NULL);
+	return (NULL);
 	}
 
 int ASN1_INTEGER_set(ASN1_INTEGER *a, long v)
@@ -350,7 +350,7 @@ int ASN1_INTEGER_set(ASN1_INTEGER *a, long v)
 	if (a->data == NULL)
 		{
 		ASN1err(ASN1_F_ASN1_INTEGER_SET,ERR_R_MALLOC_FAILURE);
-		return(0);
+		return (0);
 		}
 	d=v;
 	if (d < 0)
@@ -369,7 +369,7 @@ int ASN1_INTEGER_set(ASN1_INTEGER *a, long v)
 	for (k=i-1; k >=0; k--)
 		a->data[j++]=buf[k];
 	a->length=j;
-	return(1);
+	return (1);
 	}
 
 long ASN1_INTEGER_get(const ASN1_INTEGER *a)
@@ -377,7 +377,7 @@ long ASN1_INTEGER_get(const ASN1_INTEGER *a)
 	int neg=0,i;
 	long r=0;
 
-	if (a == NULL) return(0L);
+	if (a == NULL) return (0L);
 	i=a->type;
 	if (i == V_ASN1_NEG_INTEGER)
 		neg=1;
@@ -398,7 +398,7 @@ long ASN1_INTEGER_get(const ASN1_INTEGER *a)
 		r|=(unsigned char)a->data[i];
 		}
 	if (neg) r= -r;
-	return(r);
+	return (r);
 	}
 
 ASN1_INTEGER *BN_to_ASN1_INTEGER(const BIGNUM *bn, ASN1_INTEGER *ai)
@@ -437,10 +437,10 @@ ASN1_INTEGER *BN_to_ASN1_INTEGER(const BIGNUM *bn, ASN1_INTEGER *ai)
 		ret->data[0] = 0;
 		ret->length = 1;
 		}
-	return(ret);
+	return (ret);
 err:
 	if (ret != ai) M_ASN1_INTEGER_free(ret);
-	return(NULL);
+	return (NULL);
 	}
 
 BIGNUM *ASN1_INTEGER_to_BN(const ASN1_INTEGER *ai, BIGNUM *bn)
@@ -451,7 +451,7 @@ BIGNUM *ASN1_INTEGER_to_BN(const ASN1_INTEGER *ai, BIGNUM *bn)
 		ASN1err(ASN1_F_ASN1_INTEGER_TO_BN,ASN1_R_BN_LIB);
 	else if(ai->type == V_ASN1_NEG_INTEGER)
 		BN_set_negative(ret, 1);
-	return(ret);
+	return (ret);
 	}
 
 IMPLEMENT_STACK_OF(ASN1_INTEGER)

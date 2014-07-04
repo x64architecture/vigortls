@@ -192,7 +192,7 @@ int MS_CALLBACK verify_callback(int ok, X509_STORE_CTX *ctx)
 		policies_print(bio_err, ctx);
 
 	BIO_printf(bio_err,"verify return:%d\n",ok);
-	return(ok);
+	return (ok);
 	}
 
 int set_cert_stuff(SSL_CTX *ctx, char *cert_file, char *key_file)
@@ -209,7 +209,7 @@ int set_cert_stuff(SSL_CTX *ctx, char *cert_file, char *key_file)
 			{
 			BIO_printf(bio_err,"unable to get certificate from '%s'\n",cert_file);
 			ERR_print_errors(bio_err);
-			return(0);
+			return (0);
 			}
 		if (key_file == NULL) key_file=cert_file;
 		if (SSL_CTX_use_PrivateKey_file(ctx,key_file,
@@ -217,7 +217,7 @@ int set_cert_stuff(SSL_CTX *ctx, char *cert_file, char *key_file)
 			{
 			BIO_printf(bio_err,"unable to get private key from '%s'\n",key_file);
 			ERR_print_errors(bio_err);
-			return(0);
+			return (0);
 			}
 
 		/*
@@ -244,10 +244,10 @@ int set_cert_stuff(SSL_CTX *ctx, char *cert_file, char *key_file)
 		if (!SSL_CTX_check_private_key(ctx))
 			{
 			BIO_printf(bio_err,"Private key does not match the certificate public key\n");
-			return(0);
+			return (0);
 			}
 		}
-	return(1);
+	return (1);
 	}
 
 int set_cert_key_stuff(SSL_CTX *ctx, X509 *cert, EVP_PKEY *key)
@@ -284,14 +284,14 @@ long MS_CALLBACK bio_dump_callback(BIO *bio, int cmd, const char *argp,
 	BIO *out;
 
 	out=(BIO *)BIO_get_callback_arg(bio);
-	if (out == NULL) return(ret);
+	if (out == NULL) return (ret);
 
 	if (cmd == (BIO_CB_READ|BIO_CB_RETURN))
 		{
 		BIO_printf(out,"read from %p [%p] (%lu bytes => %ld (0x%lX))\n",
  			(void *)bio,argp,(unsigned long)argi,ret,ret);
 		BIO_dump(out,argp,(int)ret);
-		return(ret);
+		return (ret);
 		}
 	else if (cmd == (BIO_CB_WRITE|BIO_CB_RETURN))
 		{
@@ -299,7 +299,7 @@ long MS_CALLBACK bio_dump_callback(BIO *bio, int cmd, const char *argp,
 			(void *)bio,argp,(unsigned long)argi,ret,ret);
 		BIO_dump(out,argp,(int)ret);
 		}
-	return(ret);
+	return (ret);
 	}
 
 void MS_CALLBACK apps_ssl_info_callback(const SSL *s, int where, int ret)

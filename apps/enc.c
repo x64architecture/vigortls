@@ -697,7 +697,7 @@ int set_hex(char *in, unsigned char *out, int size)
 	if (n > (size*2))
 		{
 		BIO_printf(bio_err,"hex string is too long\n");
-		return(0);
+		return (0);
 		}
 	memset(out,0,size);
 	for (i=0; i<n; i++)
@@ -714,12 +714,12 @@ int set_hex(char *in, unsigned char *out, int size)
 		else
 			{
 			BIO_printf(bio_err,"non-hex digit\n");
-			return(0);
+			return (0);
 			}
 		if (i&1)
 			out[i/2]|=j;
 		else
 			out[i/2]=(j<<4);
 		}
-	return(1);
+	return (1);
 	}

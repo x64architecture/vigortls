@@ -118,7 +118,7 @@
 #if 0 /* now just a #define */
 int BN_mod(BIGNUM *rem, const BIGNUM *m, const BIGNUM *d, BN_CTX *ctx)
 	{
-	return(BN_div(NULL,rem,m,d,ctx));
+	return (BN_div(NULL,rem,m,d,ctx));
 	/* note that  rem->neg == m->neg  (unless the remainder is zero) */
 	}
 #endif
@@ -196,7 +196,7 @@ int BN_mod_mul(BIGNUM *r, const BIGNUM *a, const BIGNUM *b, const BIGNUM *m,
 	ret=1;
 err:
 	BN_CTX_end(ctx);
-	return(ret);
+	return (ret);
 	}
 
 

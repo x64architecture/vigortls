@@ -93,6 +93,6 @@ int _des_crypt(char *buf, int len, struct desparams *desp)
 		*(a++)= *(b++); *(a++)= *(b++);
 #endif
 		}
-	return(1);	
+	return (1);	
 	}
 

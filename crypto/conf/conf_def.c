@@ -430,7 +430,7 @@ again:
 		}
 	if (buff != NULL) BUF_MEM_free(buff);
 	if (section != NULL) free(section);
-	return(1);
+	return (1);
 err:
 	if (buff != NULL) BUF_MEM_free(buff);
 	if (section != NULL) free(section);
@@ -448,7 +448,7 @@ err:
 		if (v->value != NULL) free(v->value);
 		if (v != NULL) free(v);
 		}
-	return(0);
+	return (0);
 	}
 
 static void clear_comments(CONF *conf, char *p)
@@ -502,7 +502,7 @@ static int str_copy(CONF *conf, char *section, char **pto, char *from)
 	char *s,*e,*rp,*p,*rrp,*np,*cp,v;
 	BUF_MEM *buf;
 
-	if ((buf=BUF_MEM_new()) == NULL) return(0);
+	if ((buf=BUF_MEM_new()) == NULL) return (0);
 
 	len=strlen(from)+1;
 	if (!BUF_MEM_grow(buf,len)) goto err;
@@ -636,17 +636,17 @@ static int str_copy(CONF *conf, char *section, char **pto, char *from)
 	if (*pto != NULL) free(*pto);
 	*pto=buf->data;
 	free(buf);
-	return(1);
+	return (1);
 err:
 	if (buf != NULL) BUF_MEM_free(buf);
-	return(0);
+	return (0);
 	}
 
 static char *eat_ws(CONF *conf, char *p)
 	{
 	while (IS_WS(conf,*p) && (!IS_EOF(conf,*p)))
 		p++;
-	return(p);
+	return (p);
 	}
 
 static char *eat_alpha_numeric(CONF *conf, char *p)
@@ -659,7 +659,7 @@ static char *eat_alpha_numeric(CONF *conf, char *p)
 			continue;
 			}
 		if (!IS_ALPHA_NUMERIC_PUNCT(conf,*p))
-			return(p);
+			return (p);
 		p++;
 		}
 	}
@@ -674,12 +674,12 @@ static char *scan_quote(CONF *conf, char *p)
 		if (IS_ESC(conf,*p))
 			{
 			p++;
-			if (IS_EOF(conf,*p)) return(p);
+			if (IS_EOF(conf,*p)) return (p);
 			}
 		p++;
 		}
 	if (*p == q) p++;
-	return(p);
+	return (p);
 	}
 
 
@@ -704,7 +704,7 @@ static char *scan_dquote(CONF *conf, char *p)
 		p++;
 		}
 	if (*p == q) p++;
-	return(p);
+	return (p);
 	}
 
 static void dump_value_doall_arg(CONF_VALUE *a, BIO *out)

@@ -70,7 +70,7 @@ X509_INFO *X509_INFO_new(void)
 	if (ret == NULL)
 		{
 		ASN1err(ASN1_F_X509_INFO_NEW,ERR_R_MALLOC_FAILURE);
-		return(NULL);
+		return (NULL);
 		}
  
         ret->enc_cipher.cipher=NULL;
@@ -81,7 +81,7 @@ X509_INFO *X509_INFO_new(void)
 	ret->x509=NULL;
 	ret->crl=NULL;
 	ret->x_pkey=NULL;
-	return(ret);
+	return (ret);
 	}
 
 void X509_INFO_free(X509_INFO *x)

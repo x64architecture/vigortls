@@ -97,6 +97,6 @@ int PEM_SignFinal(EVP_MD_CTX *ctx, unsigned char *sigret, unsigned int *siglen,
 err:
 	/* ctx has been zeroed by EVP_SignFinal() */
 	if (m != NULL) free(m);
-	return(ret);
+	return (ret);
 	}
 

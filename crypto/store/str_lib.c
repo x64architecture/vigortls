@@ -175,7 +175,7 @@ STORE *STORE_new_engine(ENGINE *engine)
 
 	ret->engine = e;
 
-	return(ret);
+	return (ret);
 	}
 
 void STORE_free(STORE *store)
@@ -211,12 +211,12 @@ int STORE_get_ex_new_index(long argl, void *argp, CRYPTO_EX_new *new_func,
 
 int STORE_set_ex_data(STORE *r, int idx, void *arg)
 	{
-	return(CRYPTO_set_ex_data(&r->ex_data,idx,arg));
+	return (CRYPTO_set_ex_data(&r->ex_data,idx,arg));
 	}
 
 void *STORE_get_ex_data(STORE *r, int idx)
 	{
-	return(CRYPTO_get_ex_data(&r->ex_data,idx));
+	return (CRYPTO_get_ex_data(&r->ex_data,idx));
 	}
 
 const STORE_METHOD *STORE_get_method(STORE *store)

@@ -80,7 +80,7 @@
 int main(int argc, char *argv[])
 {
     printf("No DSA support\n");
-    return(0);
+    return (0);
 }
 #else
 #include <openssl/dsa.h>
@@ -227,7 +227,7 @@ end:
 		bio_err = NULL;
 		}
 	EXIT(!ret);
-	return(0);
+	return (0);
 	}
 
 static int MS_CALLBACK dsa_cb(int p, int n, BN_GENCB *arg)

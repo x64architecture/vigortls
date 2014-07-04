@@ -130,7 +130,7 @@ int i2d_RSA_NET(const RSA *a, unsigned char **pp,
 	EVP_CIPHER_CTX ctx;
 	EVP_CIPHER_CTX_init(&ctx);
 
-	if (a == NULL) return(0);
+	if (a == NULL) return (0);
 
 	if ((pkey=NETSCAPE_PKEY_new()) == NULL) goto err;
 	if ((enckey=NETSCAPE_ENCRYPTED_PKEY_new()) == NULL) goto err;
@@ -231,7 +231,7 @@ err:
 	EVP_CIPHER_CTX_cleanup(&ctx);
 	NETSCAPE_ENCRYPTED_PKEY_free(enckey);
 	NETSCAPE_PKEY_free(pkey);
-	return(ret);
+	return (ret);
 	}
 
 
@@ -339,7 +339,7 @@ static RSA *d2i_RSA_NET_2(RSA **a, ASN1_OCTET_STRING *os,
 err:
 	EVP_CIPHER_CTX_cleanup(&ctx);
 	NETSCAPE_PKEY_free(pkey);
-	return(ret);
+	return (ret);
 	}
 
 #endif /* OPENSSL_NO_RC4 */

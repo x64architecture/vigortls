@@ -84,7 +84,7 @@ X509_LOOKUP_METHOD x509_file_lookup=
 
 X509_LOOKUP_METHOD *X509_LOOKUP_file(void)
 	{
-	return(&x509_file_lookup);
+	return (&x509_file_lookup);
 	}
 
 static int by_file_ctrl(X509_LOOKUP *ctx, int cmd, const char *argp, long argl,
@@ -122,7 +122,7 @@ static int by_file_ctrl(X509_LOOKUP *ctx, int cmd, const char *argp, long argl,
 			}
 		break;
 		}
-	return(ok);
+	return (ok);
 	}
 
 int X509_load_cert_file(X509_LOOKUP *ctx, const char *file, int type)
@@ -132,7 +132,7 @@ int X509_load_cert_file(X509_LOOKUP *ctx, const char *file, int type)
 	int i,count=0;
 	X509 *x=NULL;
 
-	if (file == NULL) return(1);
+	if (file == NULL) return (1);
 	in=BIO_new(BIO_s_file_internal());
 
 	if ((in == NULL) || (BIO_read_filename(in,file) <= 0))
@@ -189,7 +189,7 @@ int X509_load_cert_file(X509_LOOKUP *ctx, const char *file, int type)
 err:
 	if (x != NULL) X509_free(x);
 	if (in != NULL) BIO_free(in);
-	return(ret);
+	return (ret);
 	}
 
 int X509_load_crl_file(X509_LOOKUP *ctx, const char *file, int type)
@@ -199,7 +199,7 @@ int X509_load_crl_file(X509_LOOKUP *ctx, const char *file, int type)
 	int i,count=0;
 	X509_CRL *x=NULL;
 
-	if (file == NULL) return(1);
+	if (file == NULL) return (1);
 	in=BIO_new(BIO_s_file_internal());
 
 	if ((in == NULL) || (BIO_read_filename(in,file) <= 0))
@@ -256,7 +256,7 @@ int X509_load_crl_file(X509_LOOKUP *ctx, const char *file, int type)
 err:
 	if (x != NULL) X509_CRL_free(x);
 	if (in != NULL) BIO_free(in);
-	return(ret);
+	return (ret);
 	}
 
 int X509_load_cert_crl_file(X509_LOOKUP *ctx, const char *file, int type)

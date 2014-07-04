@@ -121,7 +121,7 @@ static BIO_METHOD methods_ber=
 
 BIO_METHOD *BIO_f_ber(void)
 	{
-	return(&methods_ber);
+	return (&methods_ber);
 	}
 
 static int ber_new(BIO *bi)
@@ -129,26 +129,26 @@ static int ber_new(BIO *bi)
 	BIO_BER_CTX *ctx;
 
 	ctx=calloc(1, sizeof(BIO_BER_CTX));
-	if (ctx == NULL) return(0);
+	if (ctx == NULL) return (0);
 
 	bi->init=0;
 	bi->ptr=(char *)ctx;
 	bi->flags=0;
-	return(1);
+	return (1);
 	}
 
 static int ber_free(BIO *a)
 	{
 	BIO_BER_CTX *b;
 
-	if (a == NULL) return(0);
+	if (a == NULL) return (0);
 	b=(BIO_BER_CTX *)a->ptr;
 	OPENSSL_cleanse(a->ptr,sizeof(BIO_BER_CTX));
 	free(a->ptr);
 	a->ptr=NULL;
 	a->init=0;
 	a->flags=0;
-	return(1);
+	return (1);
 	}
 
 int bio_ber_get_header(BIO *bio, BIO_BER_CTX *ctx)
@@ -187,7 +187,7 @@ int bio_ber_get_header(BIO *bio, BIO_BER_CTX *ctx)
 		if (i <= 0)
 			{
 			BIO_copy_next_retry(b);
-			return(i);
+			return (i);
 			}
 		else
 			ctx->buf_len+=i;
@@ -205,7 +205,7 @@ int bio_ber_get_header(BIO *bio, BIO_BER_CTX *ctx)
 			ERR_clear_error(); /* clear the error */
 			BIO_set_retry_read(b);
 			}
-		return(-1);
+		return (-1);
 		}
 
 	/* We have no error, we have a header, so make use of it */
@@ -215,7 +215,7 @@ int bio_ber_get_header(BIO *bio, BIO_BER_CTX *ctx)
 		BIOerr(BIO_F_BIO_BER_GET_HEADER,BIO_R_TAG_MISMATCH);
 		sprintf(buf,"tag=%d, got %d",ctx->tag,tag);
 		ERR_add_error_data(1,buf);
-		return(-1);
+		return (-1);
 		}
 	if (ret & 0x01)
 	if (ret & V_ASN1_CONSTRUCTED)
@@ -228,12 +228,12 @@ static int ber_read(BIO *b, char *out, int outl)
 
 	BIO_clear_retry_flags(b);
 
-	if (out == NULL) return(0);
+	if (out == NULL) return (0);
 	ctx=(BIO_BER_CTX *)b->ptr;
 
-	if ((ctx == NULL) || (b->next_bio == NULL)) return(0);
+	if ((ctx == NULL) || (b->next_bio == NULL)) return (0);
 
-	if (ctx->finished) return(0);
+	if (ctx->finished) return (0);
 
 again:
 	/* First see if we are half way through reading a block */
@@ -247,7 +247,7 @@ again:
 		if (i <= 0)
 			{
 			BIO_copy_next_retry(b);
-			return(i);
+			return (i);
 			}
 		ctx->num_left-=i;
 		outl-=i;
@@ -259,7 +259,7 @@ again:
 				ctx->finished=1;
 			}
 		if (outl <= 0)
-			return(ret);
+			return (ret);
 		else
 			goto again;
 		}
@@ -284,14 +284,14 @@ static int ber_write(BIO *b, char *in, int inl)
 		if (i <= 0)
 			{
 			BIO_copy_next_retry(b);
-			return(i);
+			return (i);
 			}
 		ctx->buf_off+=i;
 		n-=i;
 		}
 	/* at this point all pending data has been written */
 
-	if ((in == NULL) || (inl <= 0)) return(0);
+	if ((in == NULL) || (inl <= 0)) return (0);
 
 	ctx->buf_off=0;
 	while (inl > 0)
@@ -311,7 +311,7 @@ static int ber_write(BIO *b, char *in, int inl)
 			if (i <= 0)
 				{
 				BIO_copy_next_retry(b);
-				return(i);
+				return (i);
 				}
 			n-=i;
 			ctx->buf_off+=i;
@@ -320,7 +320,7 @@ static int ber_write(BIO *b, char *in, int inl)
 		ctx->buf_off=0;
 		}
 	BIO_copy_next_retry(b);
-	return(ret);
+	return (ret);
 	}
 
 static long ber_ctrl(BIO *b, int cmd, long num, char *ptr)
@@ -406,21 +406,21 @@ again:
 		ret=BIO_ctrl(b->next_bio,cmd,num,ptr);
 		break;
 		}
-	return(ret);
+	return (ret);
 	}
 
 static long ber_callback_ctrl(BIO *b, int cmd, void *(*fp)())
 	{
 	long ret=1;
 
-	if (b->next_bio == NULL) return(0);
+	if (b->next_bio == NULL) return (0);
 	switch (cmd)
 		{
 	default:
 		ret=BIO_callback_ctrl(b->next_bio,cmd,fp);
 		break;
 		}
-	return(ret);
+	return (ret);
 	}
 
 /*

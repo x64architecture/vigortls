@@ -181,7 +181,7 @@ err:
 	if ((pub_key != NULL)  && (dh->pub_key == NULL))  BN_free(pub_key);
 	if ((priv_key != NULL) && (dh->priv_key == NULL)) BN_free(priv_key);
 	BN_CTX_free(ctx);
-	return(ok);
+	return (ok);
 	}
 
 static int compute_key(unsigned char *key, const BIGNUM *pub_key, DH *dh)
@@ -241,7 +241,7 @@ err:
 		BN_CTX_end(ctx);
 		BN_CTX_free(ctx);
 		}
-	return(ret);
+	return (ret);
 	}
 
 static int dh_bn_mod_exp(const DH *dh, BIGNUM *r,
@@ -265,12 +265,12 @@ static int dh_bn_mod_exp(const DH *dh, BIGNUM *r,
 static int dh_init(DH *dh)
 	{
 	dh->flags |= DH_FLAG_CACHE_MONT_P;
-	return(1);
+	return (1);
 	}
 
 static int dh_finish(DH *dh)
 	{
 	if(dh->method_mont_p)
 		BN_MONT_CTX_free(dh->method_mont_p);
-	return(1);
+	return (1);
 	}

@@ -681,7 +681,7 @@ int uufwrite(unsigned char *data, int size, unsigned int num, FILE *fp)
 			{
 			memcpy(&(uubuf[uubufnum]),data,(unsigned int)num);
 			uubufnum+=num;
-			return(num);
+			return (num);
 			}
 		else
 			{
@@ -713,7 +713,7 @@ int uufwrite(unsigned char *data, int size, unsigned int num, FILE *fp)
 		memcpy(uubuf,&(data[i]),(unsigned int)rem);
 		uubufnum=rem;
 		}
-	return(ret);
+	return (ret);
 	}
 
 void uufwriteEnd(FILE *fp)
@@ -749,13 +749,13 @@ int uufread(unsigned char *out, int size, unsigned int num, FILE *fp)
 			if (b[0] == '\0')
 				{
 				fprintf(stderr,"no 'begin' found in uuencoded input\n");
-				return(-1);
+				return (-1);
 				}
 			if (strncmp((char *)b,"begin ",6) == 0) break;
 			}
 		start=0;
 		}
-	if (done) return(0);
+	if (done) return (0);
 	tot=0;
 	if (valid)
 		{
@@ -793,7 +793,7 @@ int uufread(unsigned char *out, int size, unsigned int num, FILE *fp)
 		memcpy(&(out[tot]),bb,(unsigned int)i);
 		tot+=i;
 		}
-	return(tot);
+	return (tot);
 	}
 
 #define ccc2l(c,l)      (l =((DES_LONG)(*((c)++)))<<16, \
@@ -832,7 +832,7 @@ int uuencode(unsigned char *in, int num, unsigned char *out)
 		}
 	*p='\0';
 	l=0;
-	return(tot);
+	return (tot);
 	}
 
 int uudecode(unsigned char *in, int num, unsigned char *out)
@@ -854,7 +854,7 @@ int uudecode(unsigned char *in, int num, unsigned char *out)
 		if (n > 60)
 			{
 			fprintf(stderr,"uuencoded line length too long\n");
-			return(-1);
+			return (-1);
 			}
 		j++;
 
@@ -892,7 +892,7 @@ int uudecode(unsigned char *in, int num, unsigned char *out)
 					space=0;
 					fprintf(stderr,"bad uuencoded data values\n");
 					w=x=y=z=0;
-					return(-1);
+					return (-1);
 					break;
 					}
 				}
@@ -903,11 +903,11 @@ int uudecode(unsigned char *in, int num, unsigned char *out)
 			{
 			fprintf(stderr,"missing nl in uuencoded line\n");
 			w=x=y=z=0;
-			return(-1);
+			return (-1);
 			}
 		j++;
 		}
 	*out='\0';
 	w=x=y=z=0;
-	return(n);
+	return (n);
 	}

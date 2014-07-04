@@ -210,7 +210,7 @@ err:
 	BN_clear_free(&xr);
 	if (kinv != NULL) /* dsa->kinv is NULL now if we used it */
 	    BN_clear_free(kinv);
-	return(ret);
+	return (ret);
 	}
 
 static int dsa_sign_setup(DSA *dsa, BN_CTX *ctx_in, BIGNUM **kinvp, BIGNUM **rp)
@@ -301,7 +301,7 @@ err:
 	if (ctx_in == NULL) BN_CTX_free(ctx);
 	BN_clear_free(&k);
 	BN_clear_free(&kq);
-	return(ret);
+	return (ret);
 	}
 
 static int dsa_do_verify(const unsigned char *dgst, int dgst_len, DSA_SIG *sig,
@@ -394,19 +394,19 @@ static int dsa_do_verify(const unsigned char *dgst, int dgst_len, DSA_SIG *sig,
 	BN_free(&u1);
 	BN_free(&u2);
 	BN_free(&t1);
-	return(ret);
+	return (ret);
 	}
 
 static int dsa_init(DSA *dsa)
 {
 	dsa->flags|=DSA_FLAG_CACHE_MONT_P;
-	return(1);
+	return (1);
 }
 
 static int dsa_finish(DSA *dsa)
 {
 	if(dsa->method_mont_p)
 		BN_MONT_CTX_free(dsa->method_mont_p);
-	return(1);
+	return (1);
 }
 

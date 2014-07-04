@@ -63,7 +63,7 @@ char *DES_crypt(const char *buf, const char *salt)
 	static char buff[14];
 
 #ifndef CHARSET_EBCDIC
-	return(DES_fcrypt(buf,salt,buff));
+	return (DES_fcrypt(buf,salt,buff));
 #else
 	char e_salt[2+1];
 	char e_buf[32+1];	/* replace 32 by 8 ? */
@@ -165,6 +165,6 @@ r=(r+7)/8;
 		ret[i]=cov_2char[c];
 		}
 	ret[13]='\0';
-	return(ret);
+	return (ret);
 	}
 

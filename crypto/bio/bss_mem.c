@@ -87,7 +87,7 @@ static BIO_METHOD mem_method=
 
 BIO_METHOD *BIO_s_mem(void)
 	{
-	return(&mem_method);
+	return (&mem_method);
 	}
 
 BIO *BIO_new_mem_buf(void *buf, int len)
@@ -117,17 +117,17 @@ static int mem_new(BIO *bi)
 	BUF_MEM *b;
 
 	if ((b=BUF_MEM_new()) == NULL)
-		return(0);
+		return (0);
 	bi->shutdown=1;
 	bi->init=1;
 	bi->num= -1;
 	bi->ptr=(char *)b;
-	return(1);
+	return (1);
 	}
 
 static int mem_free(BIO *a)
 	{
-	if (a == NULL) return(0);
+	if (a == NULL) return (0);
 	if (a->shutdown)
 		{
 		if ((a->init) && (a->ptr != NULL))
@@ -139,7 +139,7 @@ static int mem_free(BIO *a)
 			a->ptr=NULL;
 			}
 		}
-	return(1);
+	return (1);
 	}
 	
 static int mem_read(BIO *b, char *out, int outl)
@@ -163,7 +163,7 @@ static int mem_read(BIO *b, char *out, int outl)
 		if (ret != 0)
 			BIO_set_retry_read(b);
 		}
-	return(ret);
+	return (ret);
 	}
 
 static int mem_write(BIO *b, const char *in, int inl)
@@ -191,7 +191,7 @@ static int mem_write(BIO *b, const char *in, int inl)
 	memcpy(&(bm->data[blen]),in,inl);
 	ret=inl;
 end:
-	return(ret);
+	return (ret);
 	}
 
 static long mem_ctrl(BIO *b, int cmd, long num, void *ptr)
@@ -268,7 +268,7 @@ static long mem_ctrl(BIO *b, int cmd, long num, void *ptr)
 		ret=0;
 		break;
 		}
-	return(ret);
+	return (ret);
 	}
 
 static int mem_gets(BIO *bp, char *buf, int size)
@@ -304,7 +304,7 @@ static int mem_gets(BIO *bp, char *buf, int size)
 	i=mem_read(bp,buf,i);
 	if (i > 0) buf[i]='\0';
 	ret=i;
-	return(ret);
+	return (ret);
 	}
 
 static int mem_puts(BIO *bp, const char *str)
@@ -314,6 +314,6 @@ static int mem_puts(BIO *bp, const char *str)
 	n=strlen(str);
 	ret=mem_write(bp,str,n);
 	/* memory semantics is that it will always work */
-	return(ret);
+	return (ret);
 	}
 

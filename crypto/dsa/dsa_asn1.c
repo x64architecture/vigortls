@@ -159,11 +159,11 @@ int DSA_sign(int type, const unsigned char *dgst, int dlen, unsigned char *sig,
 	if (s == NULL)
 		{
 		*siglen=0;
-		return(0);
+		return (0);
 		}
 	*siglen=i2d_DSA_SIG(s,&sig);
 	DSA_SIG_free(s);
-	return(1);
+	return (1);
 	}
 
 /* data has already been hashed (probably with SHA or SHA-1). */
@@ -179,10 +179,10 @@ int DSA_verify(int type, const unsigned char *dgst, int dgst_len,
 	int ret=-1;
 
 	s = DSA_SIG_new();
-	if (s == NULL) return(ret);
+	if (s == NULL) return (ret);
 	if (d2i_DSA_SIG(&s,&sigbuf,siglen) == NULL) goto err;
 	ret=DSA_do_verify(dgst,dgst_len,s,dsa);
 err:
 	DSA_SIG_free(s);
-	return(ret);
+	return (ret);
 	}

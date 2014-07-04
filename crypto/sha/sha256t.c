@@ -14,7 +14,7 @@
 int main(int argc, char *argv[])
 {
     printf("No SHA256 support\n");
-    return(0);
+    return (0);
 }
 #else
 

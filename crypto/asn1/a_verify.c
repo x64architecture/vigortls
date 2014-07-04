@@ -125,7 +125,7 @@ int ASN1_verify(i2d_of_void *i2d, X509_ALGOR *a, ASN1_BIT_STRING *signature,
 	ret=1;
 err:
 	EVP_MD_CTX_cleanup(&ctx);
-	return(ret);
+	return (ret);
 	}
 
 #endif
@@ -228,7 +228,7 @@ int ASN1_item_verify(const ASN1_ITEM *it, X509_ALGOR *a,
 	ret=1;
 err:
 	EVP_MD_CTX_cleanup(&ctx);
-	return(ret);
+	return (ret);
 	}
 
 

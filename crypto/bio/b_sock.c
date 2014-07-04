@@ -168,7 +168,7 @@ int BIO_get_port(const char *str, unsigned short *port_ptr)
 	if (str == NULL)
 		{
 		BIOerr(BIO_F_BIO_GET_PORT,BIO_R_NO_PORT_DEFINED);
-		return(0);
+		return (0);
 		}
 	i=atoi(str);
 	if (i != 0)
@@ -211,11 +211,11 @@ int BIO_get_port(const char *str, unsigned short *port_ptr)
 				{
 				SYSerr(SYS_F_GETSERVBYNAME,get_last_socket_error());
 				ERR_add_error_data(3,"service='",str,"'");
-				return(0);
+				return (0);
 				}
 			}
 		}
-	return(1);
+	return (1);
 	}
 
 int BIO_sock_error(int sock)
@@ -231,9 +231,9 @@ int BIO_sock_error(int sock)
 	 */
 	i=getsockopt(sock,SOL_SOCKET,SO_ERROR,(void *)&j,(void *)&size);
 	if (i < 0)
-		return(1);
+		return (1);
 	else
-		return(j);
+		return (j);
 	}
 
 #if 0
@@ -245,34 +245,34 @@ long BIO_ghbn_ctrl(int cmd, int iarg, char *parg)
 	switch (cmd)
 		{
 	case BIO_GHBN_CTRL_HITS:
-		return(BIO_ghbn_hits);
+		return (BIO_ghbn_hits);
 		/* break; */
 	case BIO_GHBN_CTRL_MISSES:
-		return(BIO_ghbn_miss);
+		return (BIO_ghbn_miss);
 		/* break; */
 	case BIO_GHBN_CTRL_CACHE_SIZE:
-		return(GHBN_NUM);
+		return (GHBN_NUM);
 		/* break; */
 	case BIO_GHBN_CTRL_GET_ENTRY:
 		if ((iarg >= 0) && (iarg <GHBN_NUM) &&
 			(ghbn_cache[iarg].order > 0))
 			{
 			p=(char **)parg;
-			if (p == NULL) return(0);
+			if (p == NULL) return (0);
 			*p=ghbn_cache[iarg].name;
 			ghbn_cache[iarg].name[128]='\0';
-			return(1);
+			return (1);
 			}
-		return(0);
+		return (0);
 		/* break; */
 	case BIO_GHBN_CTRL_FLUSH:
 		for (i=0; i<GHBN_NUM; i++)
 			ghbn_cache[i].order=0;
 		break;
 	default:
-		return(0);
+		return (0);
 		}
-	return(1);
+	return (1);
 	}
 #endif
 
@@ -284,7 +284,7 @@ static struct hostent *ghbn_dup(struct hostent *a)
 
 	MemCheck_off();
 	ret=(struct hostent *)malloc(sizeof(struct hostent));
-	if (ret == NULL) return(NULL);
+	if (ret == NULL) return (NULL);
 	memset(ret,0,sizeof(struct hostent));
 
 	for (i=0; a->h_aliases[i] != NULL; i++)
@@ -328,7 +328,7 @@ err:
 		ret=NULL;
 		}
 	MemCheck_on();
-	return(ret);
+	return (ret);
 	}
 
 static void ghbn_free(struct hostent *a)
@@ -443,7 +443,7 @@ end:
 #  if 0
 	CRYPTO_w_unlock(CRYPTO_LOCK_GETHOSTBYNAME);
 #  endif
-	return(ret);
+	return (ret);
 #endif
 	}
 
@@ -469,12 +469,12 @@ int BIO_sock_init(void)
 			err=WSAGetLastError();
 			SYSerr(SYS_F_WSASTARTUP,err);
 			BIOerr(BIO_F_BIO_SOCK_INIT,BIO_R_WSASTARTUP);
-			return(-1);
+			return (-1);
 			}
 		}
 #endif /* OPENSSL_SYS_WINDOWS */
 
-	return(1);
+	return (1);
 	}
 
 void BIO_sock_cleanup(void)
@@ -498,7 +498,7 @@ int BIO_socket_ioctl(int fd, long type, void *arg)
 
 	if (i < 0)
 		SYSerr(SYS_F_IOCTLSOCKET,get_last_socket_error());
-	return(i);
+	return (i);
 	}
 #endif /* __VMS_VER */
 
@@ -520,9 +520,9 @@ int BIO_get_accept_socket(char *host, int bind_mode)
 	unsigned long l;
 	int err_num;
 
-	if (BIO_sock_init() != 1) return(INVALID_SOCKET);
+	if (BIO_sock_init() != 1) return (INVALID_SOCKET);
 
-	if ((str=BUF_strdup(host)) == NULL) return(INVALID_SOCKET);
+	if ((str=BUF_strdup(host)) == NULL) return (INVALID_SOCKET);
 
 	h=p=NULL;
 	h=str;
@@ -704,7 +704,7 @@ err:
 		closesocket(s);
 		s= INVALID_SOCKET;
 		}
-	return(s);
+	return (s);
 	}
 
 int BIO_accept(int sock, char **addr)
@@ -822,7 +822,7 @@ int BIO_accept(int sock, char **addr)
 		     (unsigned char)(l     )&0xff,
 		     port);
 end:
-	return(ret);
+	return (ret);
 	}
 
 int BIO_set_tcp_ndelay(int s, int on)
@@ -841,7 +841,7 @@ int BIO_set_tcp_ndelay(int s, int on)
 	
 	ret=setsockopt(s,opt,TCP_NODELAY,(char *)&on,sizeof(on));
 #endif
-	return(ret == 0);
+	return (ret == 0);
 	}
 
 int BIO_socket_nbio(int s, int mode)
@@ -853,6 +853,6 @@ int BIO_socket_nbio(int s, int mode)
 #ifdef FIONBIO
 	ret=BIO_socket_ioctl(s,FIONBIO,&l);
 #endif
-	return(ret == 0);
+	return (ret == 0);
 	}
 #endif

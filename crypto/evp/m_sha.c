@@ -94,6 +94,6 @@ static const EVP_MD sha_md=
 
 const EVP_MD *EVP_sha(void)
 	{
-	return(&sha_md);
+	return (&sha_md);
 	}
 #endif

@@ -67,14 +67,14 @@ int X509_certificate_type(X509 *x, EVP_PKEY *pkey)
 	EVP_PKEY *pk;
 	int ret=0,i;
 
-	if (x == NULL) return(0);
+	if (x == NULL) return (0);
 
 	if (pkey == NULL)
 		pk=X509_get_pubkey(x);
 	else
 		pk=pkey;
 
-	if (pk == NULL) return(0);
+	if (pk == NULL) return (0);
 
 	switch (pk->type)
 		{
@@ -126,6 +126,6 @@ int X509_certificate_type(X509 *x, EVP_PKEY *pkey)
 					   for, not bytes */
 		ret|=EVP_PKT_EXP;
 	if(pkey==NULL) EVP_PKEY_free(pk);
-	return(ret);
+	return (ret);
 	}
 

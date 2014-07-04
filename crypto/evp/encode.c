@@ -217,7 +217,7 @@ int EVP_EncodeBlock(unsigned char *t, const unsigned char *f, int dlen)
 		}
 
 	*t='\0';
-	return(ret);
+	return (ret);
 	}
 
 void EVP_DecodeInit(EVP_ENCODE_CTX *ctx)
@@ -353,7 +353,7 @@ end:
 	ctx->num=n;
 	ctx->line_num=ln;
 	ctx->expect_nl=exp_nl;
-	return(rv);
+	return (rv);
 	}
 
 int EVP_DecodeBlock(unsigned char *t, const unsigned char *f, int n)
@@ -373,7 +373,7 @@ int EVP_DecodeBlock(unsigned char *t, const unsigned char *f, int n)
 	while ((n > 3) && (B64_NOT_BASE64(conv_ascii2bin(f[n-1]))))
 		n--;
 
-	if (n%4 != 0) return(-1);
+	if (n%4 != 0) return (-1);
 
 	for (i=0; i<n; i+=4)
 		{
@@ -383,7 +383,7 @@ int EVP_DecodeBlock(unsigned char *t, const unsigned char *f, int n)
 		d=conv_ascii2bin(*(f++));
 		if (	(a & 0x80) || (b & 0x80) ||
 			(c & 0x80) || (d & 0x80))
-			return(-1);
+			return (-1);
 		l=(	(((unsigned long)a)<<18L)|
 			(((unsigned long)b)<<12L)|
 			(((unsigned long)c)<< 6L)|
@@ -393,7 +393,7 @@ int EVP_DecodeBlock(unsigned char *t, const unsigned char *f, int n)
 		*(t++)=(unsigned char)(l     )&0xff;
 		ret+=3;
 		}
-	return(ret);
+	return (ret);
 	}
 
 int EVP_DecodeFinal(EVP_ENCODE_CTX *ctx, unsigned char *out, int *outl)
@@ -404,13 +404,13 @@ int EVP_DecodeFinal(EVP_ENCODE_CTX *ctx, unsigned char *out, int *outl)
 	if (ctx->num != 0)
 		{
 		i=EVP_DecodeBlock(out,ctx->enc_data,ctx->num);
-		if (i < 0) return(-1);
+		if (i < 0) return (-1);
 		ctx->num=0;
 		*outl=i;
-		return(1);
+		return (1);
 		}
 	else
-		return(1);
+		return (1);
 	}
 
 #ifdef undef
@@ -418,12 +418,12 @@ int EVP_DecodeValid(unsigned char *buf, int len)
 	{
 	int i,num=0,bad=0;
 
-	if (len == 0) return(-1);
+	if (len == 0) return (-1);
 	while (conv_ascii2bin(*buf) == B64_WS)
 		{
 		buf++;
 		len--;
-		if (len == 0) return(-1);
+		if (len == 0) return (-1);
 		}
 
 	for (i=len; i >= 4; i-=4)
@@ -432,15 +432,15 @@ int EVP_DecodeValid(unsigned char *buf, int len)
 			(conv_ascii2bin(buf[1]) >= 0x40) ||
 			(conv_ascii2bin(buf[2]) >= 0x40) ||
 			(conv_ascii2bin(buf[3]) >= 0x40))
-			return(-1);
+			return (-1);
 		buf+=4;
 		num+=1+(buf[2] != '=')+(buf[3] != '=');
 		}
 	if ((i == 1) && (conv_ascii2bin(buf[0]) == B64_EOLN))
-		return(num);
+		return (num);
 	if ((i == 2) && (conv_ascii2bin(buf[0]) == B64_EOLN) &&
 		(conv_ascii2bin(buf[0]) == B64_EOLN))
-		return(num);
-	return(1);
+		return (num);
+	return (1);
 	}
 #endif

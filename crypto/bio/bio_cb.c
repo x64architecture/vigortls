@@ -137,5 +137,5 @@ long MS_CALLBACK BIO_debug_callback(BIO *bio, int cmd, const char *argp,
 		BIO_write(b,buf,strlen(buf));
 	else
 		fputs(buf,stderr);
-	return(r);
+	return (r);
 	}

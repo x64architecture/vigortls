@@ -306,7 +306,7 @@ exit_loop:
 	if (cb != NULL)
 		ret=cb((BIO *)b,c->state,ret);
 end:
-	return(ret);
+	return (ret);
 	}
 
 BIO_CONNECT *BIO_CONNECT_new(void)
@@ -314,7 +314,7 @@ BIO_CONNECT *BIO_CONNECT_new(void)
 	BIO_CONNECT *ret;
 
 	if ((ret=(BIO_CONNECT *)malloc(sizeof(BIO_CONNECT))) == NULL)
-		return(NULL);
+		return (NULL);
 	ret->state=BIO_CONN_S_BEFORE;
 	ret->param_hostname=NULL;
 	ret->param_port=NULL;
@@ -326,7 +326,7 @@ BIO_CONNECT *BIO_CONNECT_new(void)
 	ret->ip[3]=0;
 	ret->port=0;
 	memset((char *)&ret->them,0,sizeof(ret->them));
-	return(ret);
+	return (ret);
 	}
 
 void BIO_CONNECT_free(BIO_CONNECT *a)
@@ -343,7 +343,7 @@ void BIO_CONNECT_free(BIO_CONNECT *a)
 
 BIO_METHOD *BIO_s_connect(void)
 	{
-	return(&methods_connectp);
+	return (&methods_connectp);
 	}
 
 static int conn_new(BIO *bi)
@@ -352,9 +352,9 @@ static int conn_new(BIO *bi)
 	bi->num=INVALID_SOCKET;
 	bi->flags=0;
 	if ((bi->ptr=(char *)BIO_CONNECT_new()) == NULL)
-		return(0);
+		return (0);
 	else
-		return(1);
+		return (1);
 	}
 
 static void conn_close_socket(BIO *bio)
@@ -376,7 +376,7 @@ static int conn_free(BIO *a)
 	{
 	BIO_CONNECT *data;
 
-	if (a == NULL) return(0);
+	if (a == NULL) return (0);
 	data=(BIO_CONNECT *)a->ptr;
 	 
 	if (a->shutdown)
@@ -387,7 +387,7 @@ static int conn_free(BIO *a)
 		a->flags=0;
 		a->init=0;
 		}
-	return(1);
+	return (1);
 	}
 	
 static int conn_read(BIO *b, char *out, int outl)
@@ -400,7 +400,7 @@ static int conn_read(BIO *b, char *out, int outl)
 		{
 		ret=conn_state(b,data);
 		if (ret <= 0)
-				return(ret);
+				return (ret);
 		}
 
 	if (out != NULL)
@@ -414,7 +414,7 @@ static int conn_read(BIO *b, char *out, int outl)
 				BIO_set_retry_read(b);
 			}
 		}
-	return(ret);
+	return (ret);
 	}
 
 static int conn_write(BIO *b, const char *in, int inl)
@@ -426,7 +426,7 @@ static int conn_write(BIO *b, const char *in, int inl)
 	if (data->state != BIO_CONN_S_OK)
 		{
 		ret=conn_state(b,data);
-		if (ret <= 0) return(ret);
+		if (ret <= 0) return (ret);
 		}
 
 	clear_socket_error();
@@ -437,7 +437,7 @@ static int conn_write(BIO *b, const char *in, int inl)
 		if (BIO_sock_should_retry(ret))
 			BIO_set_retry_write(b);
 		}
-	return(ret);
+	return (ret);
 	}
 
 static long conn_ctrl(BIO *b, int cmd, long num, void *ptr)
@@ -591,7 +591,7 @@ static long conn_ctrl(BIO *b, int cmd, long num, void *ptr)
 		ret=0;
 		break;
 		}
-	return(ret);
+	return (ret);
 	}
 
 static long conn_callback_ctrl(BIO *b, int cmd, bio_info_cb *fp)
@@ -612,7 +612,7 @@ static long conn_callback_ctrl(BIO *b, int cmd, bio_info_cb *fp)
 		ret=0;
 		break;
 		}
-	return(ret);
+	return (ret);
 	}
 
 static int conn_puts(BIO *bp, const char *str)
@@ -621,7 +621,7 @@ static int conn_puts(BIO *bp, const char *str)
 
 	n=strlen(str);
 	ret=conn_write(bp,str,n);
-	return(ret);
+	return (ret);
 	}
 
 BIO *BIO_new_connect(char *str)
@@ -629,13 +629,13 @@ BIO *BIO_new_connect(char *str)
 	BIO *ret;
 
 	ret=BIO_new(BIO_s_connect());
-	if (ret == NULL) return(NULL);
+	if (ret == NULL) return (NULL);
 	if (BIO_set_conn_hostname(ret,str))
-		return(ret);
+		return (ret);
 	else
 		{
 		BIO_free(ret);
-		return(NULL);
+		return (NULL);
 		}
 	}
 

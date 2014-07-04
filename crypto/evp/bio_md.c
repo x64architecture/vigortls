@@ -89,7 +89,7 @@ static BIO_METHOD methods_md=
 
 BIO_METHOD *BIO_f_md(void)
 	{
-	return(&methods_md);
+	return (&methods_md);
 	}
 
 static int md_new(BIO *bi)
@@ -97,22 +97,22 @@ static int md_new(BIO *bi)
 	EVP_MD_CTX *ctx;
 
 	ctx=EVP_MD_CTX_create();
-	if (ctx == NULL) return(0);
+	if (ctx == NULL) return (0);
 
 	bi->init=0;
 	bi->ptr=(char *)ctx;
 	bi->flags=0;
-	return(1);
+	return (1);
 	}
 
 static int md_free(BIO *a)
 	{
-	if (a == NULL) return(0);
+	if (a == NULL) return (0);
 	EVP_MD_CTX_destroy(a->ptr);
 	a->ptr=NULL;
 	a->init=0;
 	a->flags=0;
-	return(1);
+	return (1);
 	}
 	
 static int md_read(BIO *b, char *out, int outl)
@@ -120,10 +120,10 @@ static int md_read(BIO *b, char *out, int outl)
 	int ret=0;
 	EVP_MD_CTX *ctx;
 
-	if (out == NULL) return(0);
+	if (out == NULL) return (0);
 	ctx=b->ptr;
 
-	if ((ctx == NULL) || (b->next_bio == NULL)) return(0);
+	if ((ctx == NULL) || (b->next_bio == NULL)) return (0);
 
 	ret=BIO_read(b->next_bio,out,outl);
 	if (b->init)
@@ -136,7 +136,7 @@ static int md_read(BIO *b, char *out, int outl)
 		}
 	BIO_clear_retry_flags(b);
 	BIO_copy_next_retry(b);
-	return(ret);
+	return (ret);
 	}
 
 static int md_write(BIO *b, const char *in, int inl)
@@ -144,7 +144,7 @@ static int md_write(BIO *b, const char *in, int inl)
 	int ret=0;
 	EVP_MD_CTX *ctx;
 
-	if ((in == NULL) || (inl <= 0)) return(0);
+	if ((in == NULL) || (inl <= 0)) return (0);
 	ctx=b->ptr;
 
 	if ((ctx != NULL) && (b->next_bio != NULL))
@@ -166,7 +166,7 @@ static int md_write(BIO *b, const char *in, int inl)
 		BIO_clear_retry_flags(b);
 		BIO_copy_next_retry(b);
 		}
-	return(ret);
+	return (ret);
 	}
 
 static long md_ctrl(BIO *b, int cmd, long num, void *ptr)
@@ -232,21 +232,21 @@ static long md_ctrl(BIO *b, int cmd, long num, void *ptr)
 		ret=BIO_ctrl(b->next_bio,cmd,num,ptr);
 		break;
 		}
-	return(ret);
+	return (ret);
 	}
 
 static long md_callback_ctrl(BIO *b, int cmd, bio_info_cb *fp)
 	{
 	long ret=1;
 
-	if (b->next_bio == NULL) return(0);
+	if (b->next_bio == NULL) return (0);
 	switch (cmd)
 		{
 	default:
 		ret=BIO_callback_ctrl(b->next_bio,cmd,fp);
 		break;
 		}
-	return(ret);
+	return (ret);
 	}
 
 static int md_gets(BIO *bp, char *buf, int size)
@@ -257,11 +257,11 @@ static int md_gets(BIO *bp, char *buf, int size)
 
 	ctx=bp->ptr;
 	if (size < ctx->digest->md_size)
-		return(0);
+		return (0);
 	if (EVP_DigestFinal_ex(ctx,(unsigned char *)buf,&ret)<=0) 
 		return -1;
 		
-	return((int)ret);
+	return ((int)ret);
 	}
 
 /*
@@ -269,7 +269,7 @@ static int md_puts(bp,str)
 BIO *bp;
 char *str;
 	{
-	return(-1);
+	return (-1);
 	}
 */
 

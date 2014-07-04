@@ -80,7 +80,7 @@ int i2d_ASN1_GENERALIZEDTIME(ASN1_GENERALIZEDTIME *a, unsigned char **pp)
 
 	a = (ASN1_GENERALIZEDTIME *) &tmpstr;
 #endif
-	return(i2d_ASN1_bytes((ASN1_STRING *)a,pp,
+	return (i2d_ASN1_bytes((ASN1_STRING *)a,pp,
 		V_ASN1_GENERALIZEDTIME,V_ASN1_UNIVERSAL));
 	}
 
@@ -95,7 +95,7 @@ ASN1_GENERALIZEDTIME *d2i_ASN1_GENERALIZEDTIME(ASN1_GENERALIZEDTIME **a,
 	if (ret == NULL)
 		{
 		ASN1err(ASN1_F_D2I_ASN1_GENERALIZEDTIME,ERR_R_NESTED_ASN1_ERROR);
-		return(NULL);
+		return (NULL);
 		}
 #ifdef CHARSET_EBCDIC
 	ascii2ebcdic(ret->data, ret->data, ret->length);
@@ -106,11 +106,11 @@ ASN1_GENERALIZEDTIME *d2i_ASN1_GENERALIZEDTIME(ASN1_GENERALIZEDTIME **a,
 		goto err;
 		}
 
-	return(ret);
+	return (ret);
 err:
 	if ((ret != NULL) && ((a == NULL) || (*a != ret)))
 		M_ASN1_GENERALIZEDTIME_free(ret);
-	return(NULL);
+	return (NULL);
 	}
 
 #endif
@@ -122,7 +122,7 @@ int ASN1_GENERALIZEDTIME_check(ASN1_GENERALIZEDTIME *d)
 	char *a;
 	int n,i,l,o;
 
-	if (d->type != V_ASN1_GENERALIZEDTIME) return(0);
+	if (d->type != V_ASN1_GENERALIZEDTIME) return (0);
 	l=d->length;
 	a=(char *)d->data;
 	o=0;
@@ -181,9 +181,9 @@ int ASN1_GENERALIZEDTIME_check(ASN1_GENERALIZEDTIME *d)
 		/* Missing time zone information. */
 		goto err;
 		}
-	return(o == l);
+	return (o == l);
 err:
-	return(0);
+	return (0);
 	}
 
 int ASN1_GENERALIZEDTIME_set_string(ASN1_GENERALIZEDTIME *s, const char *str)
@@ -202,10 +202,10 @@ int ASN1_GENERALIZEDTIME_set_string(ASN1_GENERALIZEDTIME *s, const char *str)
 				return 0;
 			s->type=V_ASN1_GENERALIZEDTIME;
 			}
-		return(1);
+		return (1);
 		}
 	else
-		return(0);
+		return (0);
 	}
 
 ASN1_GENERALIZEDTIME *ASN1_GENERALIZEDTIME_set(ASN1_GENERALIZEDTIME *s,
@@ -225,11 +225,11 @@ ASN1_GENERALIZEDTIME *ASN1_GENERALIZEDTIME_adj(ASN1_GENERALIZEDTIME *s,
 	if (s == NULL)
 		s=M_ASN1_GENERALIZEDTIME_new();
 	if (s == NULL)
-		return(NULL);
+		return (NULL);
 
 	ts=OPENSSL_gmtime(&t, &data);
 	if (ts == NULL)
-		return(NULL);
+		return (NULL);
 
 	if (offset_day || offset_sec)
 		{ 
@@ -245,7 +245,7 @@ ASN1_GENERALIZEDTIME *ASN1_GENERALIZEDTIME_adj(ASN1_GENERALIZEDTIME *s,
 			{
 			ASN1err(ASN1_F_ASN1_GENERALIZEDTIME_ADJ,
 				ERR_R_MALLOC_FAILURE);
-			return(NULL);
+			return (NULL);
 			}
 		if (s->data != NULL)
 			free(s->data);
@@ -259,5 +259,5 @@ ASN1_GENERALIZEDTIME *ASN1_GENERALIZEDTIME_adj(ASN1_GENERALIZEDTIME *s,
 #ifdef CHARSET_EBCDIC_not
 	ebcdic2ascii(s->data, s->data, s->length);
 #endif
-	return(s);
+	return (s);
 	}

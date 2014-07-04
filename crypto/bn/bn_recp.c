@@ -73,11 +73,11 @@ BN_RECP_CTX *BN_RECP_CTX_new(void)
 	BN_RECP_CTX *ret;
 
 	if ((ret=(BN_RECP_CTX *)malloc(sizeof(BN_RECP_CTX))) == NULL)
-		return(NULL);
+		return (NULL);
 
 	BN_RECP_CTX_init(ret);
 	ret->flags=BN_FLG_MALLOCED;
-	return(ret);
+	return (ret);
 	}
 
 void BN_RECP_CTX_free(BN_RECP_CTX *recp)
@@ -97,7 +97,7 @@ int BN_RECP_CTX_set(BN_RECP_CTX *recp, const BIGNUM *d, BN_CTX *ctx)
 	BN_zero(&(recp->Nr));
 	recp->num_bits=BN_num_bits(d);
 	recp->shift=0;
-	return(1);
+	return (1);
 	}
 
 int BN_mod_mul_reciprocal(BIGNUM *r, const BIGNUM *x, const BIGNUM *y,
@@ -124,7 +124,7 @@ int BN_mod_mul_reciprocal(BIGNUM *r, const BIGNUM *x, const BIGNUM *y,
 err:
 	BN_CTX_end(ctx);
 	bn_check_top(r);
-	return(ret);
+	return (ret);
 	}
 
 int BN_div_recp(BIGNUM *dv, BIGNUM *rem, const BIGNUM *m,
@@ -151,7 +151,7 @@ int BN_div_recp(BIGNUM *dv, BIGNUM *rem, const BIGNUM *m,
 		BN_zero(d);
 		if (!BN_copy(r,m)) return 0;
 		BN_CTX_end(ctx);
-		return(1);
+		return (1);
 		}
 
 	/* We want the remainder
@@ -206,7 +206,7 @@ err:
 	BN_CTX_end(ctx);
 	bn_check_top(dv);
 	bn_check_top(rem);
-	return(ret);
+	return (ret);
 	} 
 
 /* len is the expected size of the result
@@ -230,5 +230,5 @@ int BN_reciprocal(BIGNUM *r, const BIGNUM *m, int len, BN_CTX *ctx)
 err:
 	bn_check_top(r);
 	BN_CTX_end(ctx);
-	return(ret);
+	return (ret);
 	}

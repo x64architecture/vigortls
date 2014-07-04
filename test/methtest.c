@@ -101,5 +101,5 @@ err:
 	ERR_load_crypto_strings();
 	ERR_print_errors_fp(stderr);
 	EXIT(1);
-	return(0);
+	return (0);
 	}

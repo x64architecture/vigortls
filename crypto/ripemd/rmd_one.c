@@ -73,6 +73,6 @@ unsigned char *RIPEMD160(const unsigned char *d, size_t n,
 	RIPEMD160_Update(&c,d,n);
 	RIPEMD160_Final(md,&c);
 	OPENSSL_cleanse(&c,sizeof(c)); /* security consideration */
-	return(md);
+	return (md);
 	}
 

@@ -206,12 +206,12 @@ static DH *get_dh512(void)
 	{
 	DH *dh=NULL;
 
-	if ((dh=DH_new()) == NULL) return(NULL);
+	if ((dh=DH_new()) == NULL) return (NULL);
 	dh->p=BN_bin2bn(dh512_p,sizeof(dh512_p),NULL);
 	dh->g=BN_bin2bn(dh512_g,sizeof(dh512_g),NULL);
 	if ((dh->p == NULL) || (dh->g == NULL))
-		return(NULL);
-	return(dh);
+		return (NULL);
+	return (dh);
 	}
 
 
@@ -560,7 +560,7 @@ typedef struct
 
 BIO_METHOD *BIO_f_ebcdic_filter()
 {
-	return(&methods_ebcdic);
+	return (&methods_ebcdic);
 }
 
 static int ebcdic_new(BIO *bi)
@@ -574,31 +574,31 @@ static int ebcdic_new(BIO *bi)
 	bi->ptr=(char *)wbuf;
 	bi->init=1;
 	bi->flags=0;
-	return(1);
+	return (1);
 }
 
 static int ebcdic_free(BIO *a)
 {
-	if (a == NULL) return(0);
+	if (a == NULL) return (0);
 	if (a->ptr != NULL)
 		free(a->ptr);
 	a->ptr=NULL;
 	a->init=0;
 	a->flags=0;
-	return(1);
+	return (1);
 }
 	
 static int ebcdic_read(BIO *b, char *out, int outl)
 {
 	int ret=0;
 
-	if (out == NULL || outl == 0) return(0);
-	if (b->next_bio == NULL) return(0);
+	if (out == NULL || outl == 0) return (0);
+	if (b->next_bio == NULL) return (0);
 
 	ret=BIO_read(b->next_bio,out,outl);
 	if (ret > 0)
 		ascii2ebcdic(out,out,ret);
-	return(ret);
+	return (ret);
 }
 
 static int ebcdic_write(BIO *b, const char *in, int inl)
@@ -608,8 +608,8 @@ static int ebcdic_write(BIO *b, const char *in, int inl)
 	int num;
 	unsigned char n;
 
-	if ((in == NULL) || (inl <= 0)) return(0);
-	if (b->next_bio == NULL) return(0);
+	if ((in == NULL) || (inl <= 0)) return (0);
+	if (b->next_bio == NULL) return (0);
 
 	wbuf=(EBCDIC_OUTBUFF *)b->ptr;
 
@@ -631,14 +631,14 @@ static int ebcdic_write(BIO *b, const char *in, int inl)
 
 	ret=BIO_write(b->next_bio, wbuf->buff, inl);
 
-	return(ret);
+	return (ret);
 }
 
 static long ebcdic_ctrl(BIO *b, int cmd, long num, void *ptr)
 {
 	long ret;
 
-	if (b->next_bio == NULL) return(0);
+	if (b->next_bio == NULL) return (0);
 	switch (cmd)
 	{
 	case BIO_CTRL_DUP:
@@ -648,14 +648,14 @@ static long ebcdic_ctrl(BIO *b, int cmd, long num, void *ptr)
 		ret=BIO_ctrl(b->next_bio,cmd,num,ptr);
 		break;
 	}
-	return(ret);
+	return (ret);
 }
 
 static int ebcdic_gets(BIO *bp, char *buf, int size)
 {
 	int i, ret=0;
-	if (bp->next_bio == NULL) return(0);
-/*	return(BIO_gets(bp->next_bio,buf,size));*/
+	if (bp->next_bio == NULL) return (0);
+/*	return (BIO_gets(bp->next_bio,buf,size));*/
 	for (i=0; i<size-1; ++i)
 	{
 		ret = ebcdic_read(bp,&buf[i],1);
@@ -674,7 +674,7 @@ static int ebcdic_gets(BIO *bp, char *buf, int size)
 
 static int ebcdic_puts(BIO *bp, const char *str)
 {
-	if (bp->next_bio == NULL) return(0);
+	if (bp->next_bio == NULL) return (0);
 	return ebcdic_write(bp, str, strlen(str));
 }
 #endif
@@ -2262,7 +2262,7 @@ err:
 		}
 	if (ret >= 0)
 		BIO_printf(bio_s_out,"ACCEPT\n");
-	return(ret);
+	return (ret);
 	}
 
 static void close_accept_socket(void)
@@ -2309,7 +2309,7 @@ static int init_ssl_connection(SSL *con)
 		if (BIO_sock_should_retry(i))
 			{
 			BIO_printf(bio_s_out,"DELAY\n");
-			return(1);
+			return (1);
 			}
 
 		BIO_printf(bio_err,"ERROR\n");
@@ -2321,7 +2321,7 @@ static int init_ssl_connection(SSL *con)
 			}
 		else
 			ERR_print_errors(bio_err);
-		return(0);
+		return (0);
 		}
 
 	PEM_write_bio_SSL_SESSION(bio_s_out,SSL_get_session(con));
@@ -2406,7 +2406,7 @@ static int init_ssl_connection(SSL *con)
 			}
 		}
 
-	return(1);
+	return (1);
 	}
 
 static DH *load_dh_param(const char *dhfile)
@@ -2419,7 +2419,7 @@ static DH *load_dh_param(const char *dhfile)
 	ret=PEM_read_bio_DHparams(bio,NULL,NULL,NULL);
 err:
 	if (bio != NULL) BIO_free(bio);
-	return(ret);
+	return (ret);
 	}
 #ifndef OPENSSL_NO_KRB5
 	char *client_princ;
@@ -2432,7 +2432,7 @@ static int load_CA(SSL_CTX *ctx, char *file)
 	X509 *x=NULL;
 
 	if ((in=fopen(file,"r")) == NULL)
-		return(0);
+		return (0);
 
 	for (;;)
 		{
@@ -2442,7 +2442,7 @@ static int load_CA(SSL_CTX *ctx, char *file)
 		}
 	if (x != NULL) X509_free(x);
 	fclose(in);
-	return(1);
+	return (1);
 	}
 #endif
 
@@ -2459,7 +2459,7 @@ static int www_body(char *hostname, int s, unsigned char *context)
 #endif
 
 	buf=malloc(bufsize);
-	if (buf == NULL) return(0);
+	if (buf == NULL) return (0);
 	io=BIO_new(BIO_f_buffer());
 	ssl_bio=BIO_new(BIO_f_ssl());
 	if ((io == NULL) || (ssl_bio == NULL)) goto err;
@@ -2842,7 +2842,7 @@ err:
 	if (buf != NULL) free(buf);
 	if (io != NULL) BIO_free_all(io);
 /*	if (ssl_bio != NULL) BIO_free(ssl_bio);*/
-	return(ret);
+	return (ret);
 	}
 
 static RSA MS_CALLBACK *tmp_rsa_cb(SSL *s, int is_export, int keylength)
@@ -2872,7 +2872,7 @@ static RSA MS_CALLBACK *tmp_rsa_cb(SSL *s, int is_export, int keylength)
 			}
 		BN_free(bn);
 		}
-	return(rsa_tmp);
+	return (rsa_tmp);
 	}
 
 #define MAX_SESSION_ID_ATTEMPTS 10

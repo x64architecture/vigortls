@@ -155,7 +155,7 @@ static DSO_METHOD dso_meth_win32 = {
 
 DSO_METHOD *DSO_METHOD_win32(void)
 	{
-	return(&dso_meth_win32);
+	return (&dso_meth_win32);
 	}
 
 /* For this DSO_METHOD, our meth_data STACK will contain;
@@ -195,7 +195,7 @@ static int win32_load(DSO *dso)
 		}
 	/* Success */
 	dso->loaded_filename = filename;
-	return(1);
+	return (1);
 err:
 	/* Cleanup !*/
 	if(filename != NULL)
@@ -204,7 +204,7 @@ err:
 		free(p);
 	if(h != NULL)
 		FreeLibrary(h);
-	return(0);
+	return (0);
 	}
 
 static int win32_unload(DSO *dso)
@@ -213,15 +213,15 @@ static int win32_unload(DSO *dso)
 	if(dso == NULL)
 		{
 		DSOerr(DSO_F_WIN32_UNLOAD,ERR_R_PASSED_NULL_PARAMETER);
-		return(0);
+		return (0);
 		}
 	if(sk_void_num(dso->meth_data) < 1)
-		return(1);
+		return (1);
 	p = sk_void_pop(dso->meth_data);
 	if(p == NULL)
 		{
 		DSOerr(DSO_F_WIN32_UNLOAD,DSO_R_NULL_HANDLE);
-		return(0);
+		return (0);
 		}
 	if(!FreeLibrary(*p))
 		{
@@ -229,11 +229,11 @@ static int win32_unload(DSO *dso)
 		/* We should push the value back onto the stack in
 		 * case of a retry. */
 		sk_void_push(dso->meth_data, p);
-		return(0);
+		return (0);
 		}
 	/* Cleanup */
 	free(p);
-	return(1);
+	return (1);
 	}
 
 /* Using GetProcAddress for variables? TODO: Check this out in
@@ -246,27 +246,27 @@ static void *win32_bind_var(DSO *dso, const char *symname)
 	if((dso == NULL) || (symname == NULL))
 		{
 		DSOerr(DSO_F_WIN32_BIND_VAR,ERR_R_PASSED_NULL_PARAMETER);
-		return(NULL);
+		return (NULL);
 		}
 	if(sk_void_num(dso->meth_data) < 1)
 		{
 		DSOerr(DSO_F_WIN32_BIND_VAR,DSO_R_STACK_ERROR);
-		return(NULL);
+		return (NULL);
 		}
 	ptr = sk_void_value(dso->meth_data, sk_void_num(dso->meth_data) - 1);
 	if(ptr == NULL)
 		{
 		DSOerr(DSO_F_WIN32_BIND_VAR,DSO_R_NULL_HANDLE);
-		return(NULL);
+		return (NULL);
 		}
 	sym = GetProcAddress(*ptr, symname);
 	if(sym == NULL)
 		{
 		DSOerr(DSO_F_WIN32_BIND_VAR,DSO_R_SYM_FAILURE);
 		ERR_add_error_data(3, "symname(", symname, ")");
-		return(NULL);
+		return (NULL);
 		}
-	return(sym);
+	return (sym);
 	}
 
 static DSO_FUNC_TYPE win32_bind_func(DSO *dso, const char *symname)
@@ -277,27 +277,27 @@ static DSO_FUNC_TYPE win32_bind_func(DSO *dso, const char *symname)
 	if((dso == NULL) || (symname == NULL))
 		{
 		DSOerr(DSO_F_WIN32_BIND_FUNC,ERR_R_PASSED_NULL_PARAMETER);
-		return(NULL);
+		return (NULL);
 		}
 	if(sk_void_num(dso->meth_data) < 1)
 		{
 		DSOerr(DSO_F_WIN32_BIND_FUNC,DSO_R_STACK_ERROR);
-		return(NULL);
+		return (NULL);
 		}
 	ptr = sk_void_value(dso->meth_data, sk_void_num(dso->meth_data) - 1);
 	if(ptr == NULL)
 		{
 		DSOerr(DSO_F_WIN32_BIND_FUNC,DSO_R_NULL_HANDLE);
-		return(NULL);
+		return (NULL);
 		}
 	sym = GetProcAddress(*ptr, symname);
 	if(sym == NULL)
 		{
 		DSOerr(DSO_F_WIN32_BIND_FUNC,DSO_R_SYM_FAILURE);
 		ERR_add_error_data(3, "symname(", symname, ")");
-		return(NULL);
+		return (NULL);
 		}
-	return((DSO_FUNC_TYPE)sym);
+	return ((DSO_FUNC_TYPE)sym);
 	}
 
 struct file_st
@@ -321,7 +321,7 @@ static struct file_st *win32_splitter(DSO *dso, const char *filename,
 		{
 		DSOerr(DSO_F_WIN32_SPLITTER,DSO_R_NO_FILENAME);
 		/*goto err;*/
-		return(NULL);
+		return (NULL);
 		}
 
 	result = malloc(sizeof(struct file_st));
@@ -329,7 +329,7 @@ static struct file_st *win32_splitter(DSO *dso, const char *filename,
 		{
 		DSOerr(DSO_F_WIN32_SPLITTER,
 			ERR_R_MALLOC_FAILURE);
-		return(NULL);
+		return (NULL);
 		}
 
 	memset(result, 0, sizeof(struct file_st));
@@ -356,7 +356,7 @@ static struct file_st *win32_splitter(DSO *dso, const char *filename,
 					DSO_R_INCORRECT_FILE_SYNTAX);
 				/*goto err;*/
 				free(result);
-				return(NULL);
+				return (NULL);
 				}
 			result->device = start;
 			result->devicelen = (int)(filename - start);
@@ -428,7 +428,7 @@ static struct file_st *win32_splitter(DSO *dso, const char *filename,
 	if(!result->dirlen) result->dir = NULL;
 	if(!result->filelen) result->file = NULL;
 
-	return(result);
+	return (result);
 	}
 
 static char *win32_joiner(DSO *dso, const struct file_st *file_split)
@@ -441,7 +441,7 @@ static char *win32_joiner(DSO *dso, const struct file_st *file_split)
 		{
 		DSOerr(DSO_F_WIN32_JOINER,
 				ERR_R_PASSED_NULL_PARAMETER);
-		return(NULL);
+		return (NULL);
 		}
 	if(file_split->node)
 		{
@@ -468,7 +468,7 @@ static char *win32_joiner(DSO *dso, const struct file_st *file_split)
 	if(!len)
 		{
 		DSOerr(DSO_F_WIN32_JOINER, DSO_R_EMPTY_FILE_STRUCTURE);
-		return(NULL);
+		return (NULL);
 		}
 
 	result = malloc(len + 1);
@@ -476,7 +476,7 @@ static char *win32_joiner(DSO *dso, const struct file_st *file_split)
 		{
 		DSOerr(DSO_F_WIN32_JOINER,
 			ERR_R_MALLOC_FAILURE);
-		return(NULL);
+		return (NULL);
 		}
 
 	if(file_split->node)
@@ -540,7 +540,7 @@ static char *win32_joiner(DSO *dso, const struct file_st *file_split)
 	strncpy(&result[offset], file_split->file,
 		file_split->filelen); offset += file_split->filelen;
 	result[offset] = '\0';
-	return(result);
+	return (result);
 	}
 
 static char *win32_merger(DSO *dso, const char *filespec1, const char *filespec2)
@@ -553,7 +553,7 @@ static char *win32_merger(DSO *dso, const char *filespec1, const char *filespec2
 		{
 		DSOerr(DSO_F_WIN32_MERGER,
 				ERR_R_PASSED_NULL_PARAMETER);
-		return(NULL);
+		return (NULL);
 		}
 	if (!filespec2)
 		{
@@ -562,7 +562,7 @@ static char *win32_merger(DSO *dso, const char *filespec1, const char *filespec2
 			{
 			DSOerr(DSO_F_WIN32_MERGER,
 				ERR_R_MALLOC_FAILURE);
-			return(NULL);
+			return (NULL);
 			}
 		strcpy(merged, filespec1);
 		}
@@ -573,7 +573,7 @@ static char *win32_merger(DSO *dso, const char *filespec1, const char *filespec2
 			{
 			DSOerr(DSO_F_WIN32_MERGER,
 				ERR_R_MALLOC_FAILURE);
-			return(NULL);
+			return (NULL);
 			}
 		strcpy(merged, filespec2);
 		}
@@ -584,7 +584,7 @@ static char *win32_merger(DSO *dso, const char *filespec1, const char *filespec2
 			{
 			DSOerr(DSO_F_WIN32_MERGER,
 				ERR_R_MALLOC_FAILURE);
-			return(NULL);
+			return (NULL);
 			}
 		filespec2_split = win32_splitter(dso, filespec2, 1);
 		if (!filespec2_split)
@@ -592,7 +592,7 @@ static char *win32_merger(DSO *dso, const char *filespec1, const char *filespec2
 			DSOerr(DSO_F_WIN32_MERGER,
 				ERR_R_MALLOC_FAILURE);
 			free(filespec1_split);
-			return(NULL);
+			return (NULL);
 			}
 
 		/* Fill in into filespec1_split */
@@ -624,7 +624,7 @@ static char *win32_merger(DSO *dso, const char *filespec1, const char *filespec2
 		}
 	free(filespec1_split);
 	free(filespec2_split);
-	return(merged);
+	return (merged);
 	}
 
 static char *win32_name_converter(DSO *dso, const char *filename)
@@ -646,13 +646,13 @@ static char *win32_name_converter(DSO *dso, const char *filename)
 		{
 		DSOerr(DSO_F_WIN32_NAME_CONVERTER,
 				DSO_R_NAME_TRANSLATION_FAILED); 
-		return(NULL);   
+		return (NULL);   
 		}
 	if(transform)
 		sprintf(translated, "%s.dll", filename);
 	else
 		sprintf(translated, "%s", filename);
-	return(translated);
+	return (translated);
 	}
 
 static const char *openssl_strnchr(const char *string, int c, size_t len)

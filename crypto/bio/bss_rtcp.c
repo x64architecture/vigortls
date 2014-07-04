@@ -112,7 +112,7 @@ static BIO_METHOD rtcp_method=
 
 BIO_METHOD *BIO_s_rtcp(void)
 	{
-	return(&rtcp_method);
+	return (&rtcp_method);
 	}
 /*****************************************************************************/
 /* Decnet I/O routines.
@@ -160,15 +160,15 @@ static int rtcp_new(BIO *bi)
 	ctx = (struct rpc_ctx *) bi->ptr;
 	ctx->filled = 0;
 	ctx->pos = 0;
-	return(1);
+	return (1);
 }
 
 static int rtcp_free(BIO *a)
 {
-	if (a == NULL) return(0);
+	if (a == NULL) return (0);
 	if ( a->ptr ) free ( a->ptr );
 	a->ptr = NULL;
-	return(1);
+	return (1);
 }
 	
 static int rtcp_read(BIO *b, char *out, int outl)
@@ -244,7 +244,7 @@ static int rtcp_write(BIO *b, const char *in, int inl)
 
 	}
     }
-    return(i);
+    return (i);
 }
 
 static long rtcp_ctrl(BIO *b, int cmd, long num, void *ptr)
@@ -275,18 +275,18 @@ static long rtcp_ctrl(BIO *b, int cmd, long num, void *ptr)
 		ret=0;
 		break;
 		}
-	return(ret);
+	return (ret);
 	}
 
 static int rtcp_gets(BIO *bp, char *buf, int size)
 	{
-	return(0);
+	return (0);
 	}
 
 static int rtcp_puts(BIO *bp, const char *str)
 {
     int length;
-    if (str == NULL) return(0);
+    if (str == NULL) return (0);
     length = strlen ( str );
     if ( length == 0 ) return (0);
     return rtcp_write ( bp,str, length );

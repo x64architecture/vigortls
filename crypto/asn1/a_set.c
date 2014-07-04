@@ -96,11 +96,11 @@ int i2d_ASN1_SET(STACK_OF(OPENSSL_BLOCK) *a, unsigned char **pp,
         MYBLOB *rgSetBlob;
         int totSize;
 
-	if (a == NULL) return(0);
+	if (a == NULL) return (0);
 	for (i=sk_OPENSSL_BLOCK_num(a)-1; i>=0; i--)
 		ret+=i2d(sk_OPENSSL_BLOCK_value(a,i),NULL);
 	r=ASN1_object_size(1,ret,ex_tag);
-	if (pp == NULL) return(r);
+	if (pp == NULL) return (r);
 
 	p= *pp;
 	ASN1_put_object(&p,1,ret,ex_tag,ex_class);
@@ -115,7 +115,7 @@ int i2d_ASN1_SET(STACK_OF(OPENSSL_BLOCK) *a, unsigned char **pp,
                 	i2d(sk_OPENSSL_BLOCK_value(a,i),&p);
 
 		*pp=p;
-		return(r);
+		return (r);
 		}
 
         pStart  = p; /* Catch the beg of Setblobs*/
@@ -124,7 +124,7 @@ int i2d_ASN1_SET(STACK_OF(OPENSSL_BLOCK) *a, unsigned char **pp,
 		if (rgSetBlob == NULL)
 			{
 			ASN1err(ASN1_F_I2D_ASN1_SET,ERR_R_MALLOC_FAILURE);
-			return(0);
+			return (0);
 			}
 
         for (i=0; i<sk_OPENSSL_BLOCK_num(a); i++)
@@ -144,7 +144,7 @@ SetBlob
 		if (!(pTempMem = malloc(totSize)))
 			{
 			ASN1err(ASN1_F_I2D_ASN1_SET,ERR_R_MALLOC_FAILURE);
-			return(0);
+			return (0);
 			}
 
 /* Copy to temp mem */
@@ -160,7 +160,7 @@ SetBlob
         free(pTempMem);
         free(rgSetBlob);
 
-        return(r);
+        return (r);
         }
 
 STACK_OF(OPENSSL_BLOCK) *d2i_ASN1_SET(STACK_OF(OPENSSL_BLOCK) **a,
@@ -226,7 +226,7 @@ STACK_OF(OPENSSL_BLOCK) *d2i_ASN1_SET(STACK_OF(OPENSSL_BLOCK) **a,
 		}
 	if (a != NULL) (*a)=ret;
 	*pp=c.p;
-	return(ret);
+	return (ret);
 err:
 	if ((ret != NULL) && ((a == NULL) || (*a != ret)))
 		{
@@ -235,7 +235,7 @@ err:
 		else
 			sk_OPENSSL_BLOCK_free(ret);
 		}
-	return(NULL);
+	return (NULL);
 	}
 
 #endif

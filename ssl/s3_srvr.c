@@ -171,9 +171,9 @@ static const SSL_METHOD *ssl3_get_server_method(int ver);
 static const SSL_METHOD *ssl3_get_server_method(int ver)
 	{
 	if (ver == SSL3_VERSION)
-		return(SSLv3_server_method());
+		return (SSLv3_server_method());
 	else
-		return(NULL);
+		return (NULL);
 	}
 
 #ifndef OPENSSL_NO_SRP
@@ -230,7 +230,7 @@ int ssl3_accept(SSL *s)
 	if (s->cert == NULL)
 		{
 		SSLerr(SSL_F_SSL3_ACCEPT,SSL_R_NO_CERTIFICATE_SET);
-		return(-1);
+		return (-1);
 		}
 
 	for (;;)
@@ -832,7 +832,7 @@ end:
 	s->in_handshake--;
 	if (cb != NULL)
 		cb(s,SSL_CB_ACCEPT_EXIT,ret);
-	return(ret);
+	return (ret);
 	}
 
 int ssl3_send_hello_request(SSL *s)
@@ -854,7 +854,7 @@ int ssl3_send_hello_request(SSL *s)
 		}
 
 	/* SSL3_ST_SW_HELLO_REQ_B */
-	return(ssl3_do_write(s,SSL3_RT_HANDSHAKE));
+	return (ssl3_do_write(s,SSL3_RT_HANDSHAKE));
 	}
 
 int ssl3_check_client_hello(SSL *s)
@@ -870,7 +870,7 @@ int ssl3_check_client_hello(SSL *s)
 		-1,
 		s->max_cert_list,
 		&ok);
-	if (!ok) return((int)n);
+	if (!ok) return ((int)n);
 	s->s3->tmp.reuse_message = 1;
 	if (s->s3->tmp.message_type == SSL3_MT_CLIENT_HELLO)
 		{
@@ -933,7 +933,7 @@ int ssl3_get_client_hello(SSL *s)
 		SSL3_RT_MAX_PLAIN_LENGTH,
 		&ok);
 
-	if (!ok) return((int)n);
+	if (!ok) return ((int)n);
 	s->first_packet=0;
 	d=p=(unsigned char *)s->init_msg;
 
@@ -1406,7 +1406,7 @@ f_err:
 		}
 err:
 	if (ciphers != NULL) sk_SSL_CIPHER_free(ciphers);
-	return(ret);
+	return (ret);
 	}
 
 int ssl3_send_server_hello(SSL *s)
@@ -1501,7 +1501,7 @@ int ssl3_send_server_hello(SSL *s)
 		}
 
 	/* SSL3_ST_SW_SRVR_HELLO_B */
-	return(ssl3_do_write(s,SSL3_RT_HANDSHAKE));
+	return (ssl3_do_write(s,SSL3_RT_HANDSHAKE));
 	}
 
 int ssl3_send_server_done(SSL *s)
@@ -1525,7 +1525,7 @@ int ssl3_send_server_done(SSL *s)
 		}
 
 	/* SSL3_ST_SW_SRVR_DONE_B */
-	return(ssl3_do_write(s,SSL3_RT_HANDSHAKE));
+	return (ssl3_do_write(s,SSL3_RT_HANDSHAKE));
 	}
 
 int ssl3_send_server_key_exchange(SSL *s)
@@ -1974,7 +1974,7 @@ int ssl3_send_server_key_exchange(SSL *s)
 
 	s->state = SSL3_ST_SW_KEY_EXCH_B;
 	EVP_MD_CTX_cleanup(&md_ctx);
-	return(ssl3_do_write(s,SSL3_RT_HANDSHAKE));
+	return (ssl3_do_write(s,SSL3_RT_HANDSHAKE));
 f_err:
 	ssl3_send_alert(s,SSL3_AL_FATAL,al);
 err:
@@ -1983,7 +1983,7 @@ err:
 	BN_CTX_free(bn_ctx);
 #endif
 	EVP_MD_CTX_cleanup(&md_ctx);
-	return(-1);
+	return (-1);
 	}
 
 int ssl3_send_certificate_request(SSL *s)
@@ -2083,9 +2083,9 @@ int ssl3_send_certificate_request(SSL *s)
 		}
 
 	/* SSL3_ST_SW_CERT_REQ_B */
-	return(ssl3_do_write(s,SSL3_RT_HANDSHAKE));
+	return (ssl3_do_write(s,SSL3_RT_HANDSHAKE));
 err:
-	return(-1);
+	return (-1);
 	}
 
 int ssl3_get_client_key_exchange(SSL *s)
@@ -2116,7 +2116,7 @@ int ssl3_get_client_key_exchange(SSL *s)
 		2048, /* ??? */
 		&ok);
 
-	if (!ok) return((int)n);
+	if (!ok) return ((int)n);
 	p=(unsigned char *)s->init_msg;
 
 	alg_k=s->s3->tmp.new_cipher->algorithm_mkey;
@@ -2824,7 +2824,7 @@ int ssl3_get_client_key_exchange(SSL *s)
 		goto f_err;
 		}
 
-	return(1);
+	return (1);
 f_err:
 	ssl3_send_alert(s,SSL3_AL_FATAL,al);
 #if !defined(OPENSSL_NO_RSA) || !defined(OPENSSL_NO_ECDH) || defined(OPENSSL_NO_SRP)
@@ -2837,7 +2837,7 @@ err:
 		EC_KEY_free(srvr_ecdh);
 	BN_CTX_free(bn_ctx);
 #endif
-	return(-1);
+	return (-1);
 	}
 
 int ssl3_get_cert_verify(SSL *s)
@@ -2859,7 +2859,7 @@ int ssl3_get_cert_verify(SSL *s)
 		516, /* Enough for 4096 bit RSA key with TLS v1.2 */
 		&ok);
 
-	if (!ok) return((int)n);
+	if (!ok) return ((int)n);
 
 	if (s->session->peer != NULL)
 		{
@@ -3093,7 +3093,7 @@ end:
 		}
 	EVP_MD_CTX_cleanup(&mctx);
 	EVP_PKEY_free(pkey);
-	return(ret);
+	return (ret);
 	}
 
 int ssl3_get_client_certificate(SSL *s)
@@ -3112,7 +3112,7 @@ int ssl3_get_client_certificate(SSL *s)
 		s->max_cert_list,
 		&ok);
 
-	if (!ok) return((int)n);
+	if (!ok) return ((int)n);
 
 	if	(s->s3->tmp.message_type == SSL3_MT_CLIENT_KEY_EXCHANGE)
 		{
@@ -3131,7 +3131,7 @@ int ssl3_get_client_certificate(SSL *s)
 			goto f_err;
 			}
 		s->s3->tmp.reuse_message=1;
-		return(1);
+		return (1);
 		}
 
 	if (s->s3->tmp.message_type != SSL3_MT_CERTIFICATE)
@@ -3255,7 +3255,7 @@ f_err:
 err:
 	if (x != NULL) X509_free(x);
 	if (sk != NULL) sk_X509_pop_free(sk,X509_free);
-	return(ret);
+	return (ret);
 	}
 
 int ssl3_send_server_certificate(SSL *s)
@@ -3273,7 +3273,7 @@ int ssl3_send_server_certificate(SSL *s)
 			    (s->s3->tmp.new_cipher->algorithm_mkey & SSL_kKRB5))
 				{
 				SSLerr(SSL_F_SSL3_SEND_SERVER_CERTIFICATE,ERR_R_INTERNAL_ERROR);
-				return(0);
+				return (0);
 				}
 			}
 
@@ -3284,7 +3284,7 @@ int ssl3_send_server_certificate(SSL *s)
 		}
 
 	/* SSL3_ST_SW_CERT_B */
-	return(ssl3_do_write(s,SSL3_RT_HANDSHAKE));
+	return (ssl3_do_write(s,SSL3_RT_HANDSHAKE));
 	}
 
 #ifndef OPENSSL_NO_TLSEXT
@@ -3422,7 +3422,7 @@ int ssl3_send_newsession_ticket(SSL *s)
 		}
 
 	/* SSL3_ST_SW_SESSION_TICKET_B */
-	return(ssl3_do_write(s,SSL3_RT_HANDSHAKE));
+	return (ssl3_do_write(s,SSL3_RT_HANDSHAKE));
 	}
 
 int ssl3_send_cert_status(SSL *s)
@@ -3457,7 +3457,7 @@ int ssl3_send_cert_status(SSL *s)
 		}
 
 	/* SSL3_ST_SW_CERT_STATUS_B */
-	return(ssl3_do_write(s,SSL3_RT_HANDSHAKE));
+	return (ssl3_do_write(s,SSL3_RT_HANDSHAKE));
 	}
 
 # ifndef OPENSSL_NO_NEXTPROTONEG
@@ -3486,7 +3486,7 @@ int ssl3_get_next_proto(SSL *s)
 		&ok);
 
 	if (!ok)
-		return((int)n);
+		return ((int)n);
 
 	/* s->state doesn't reflect whether ChangeCipherSpec has been received
 	 * in this handshake, but s->s3->change_cipher_spec does (will be reset

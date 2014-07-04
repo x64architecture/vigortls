@@ -599,7 +599,7 @@ bad:
 		BIO_printf(out, "\t\tEC_GROUP_free(group);\n");
 		BIO_printf(out, "\t\tgroup = NULL;\n");
 		BIO_printf(out, "\t\t}\n");
-		BIO_printf(out, "\treturn(group);\n\t}\n");
+		BIO_printf(out, "\treturn (group);\n\t}\n");
 	}
 
 	if (!noout)

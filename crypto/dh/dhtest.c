@@ -190,7 +190,7 @@ err:
 	if(a != NULL) DH_free(a);
 	BIO_free(out);
 	EXIT(ret);
-	return(ret);
+	return (ret);
 	}
 
 static int MS_CALLBACK cb(int p, int n, BN_GENCB *arg)

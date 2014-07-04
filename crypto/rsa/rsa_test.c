@@ -194,8 +194,8 @@ static int pad_unknown(void)
     unsigned long l;
     while ((l = ERR_get_error()) != 0)
       if (ERR_GET_REASON(l) == RSA_R_UNKNOWN_PADDING_TYPE)
-	return(1);
-    return(0);
+	return (1);
+    return (0);
 }
 
 static const char rnd_seed[] = "string to make the random number generator think it has entropy";

@@ -102,7 +102,7 @@ X509_ATTRIBUTE *X509_ATTRIBUTE_create(int nid, int atrtype, void *value)
 	ASN1_TYPE *val=NULL;
 
 	if ((ret=X509_ATTRIBUTE_new()) == NULL)
-		return(NULL);
+		return (NULL);
 	ret->object=OBJ_nid2obj(nid);
 	ret->single=0;
 	if ((ret->value.set=sk_ASN1_TYPE_new_null()) == NULL) goto err;
@@ -110,9 +110,9 @@ X509_ATTRIBUTE *X509_ATTRIBUTE_create(int nid, int atrtype, void *value)
 	if (!sk_ASN1_TYPE_push(ret->value.set,val)) goto err;
 
 	ASN1_TYPE_set(val,atrtype,value);
-	return(ret);
+	return (ret);
 err:
 	if (ret != NULL) X509_ATTRIBUTE_free(ret);
 	if (val != NULL) ASN1_TYPE_free(val);
-	return(NULL);
+	return (NULL);
 	}

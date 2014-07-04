@@ -80,7 +80,7 @@ EVP_PKEY *d2i_PublicKey(int type, EVP_PKEY **a, const unsigned char **pp,
 		if ((ret=EVP_PKEY_new()) == NULL)
 			{
 			ASN1err(ASN1_F_D2I_PUBLICKEY,ERR_R_EVP_LIB);
-			return(NULL);
+			return (NULL);
 			}
 		}
 	else	ret= *a;
@@ -127,9 +127,9 @@ EVP_PKEY *d2i_PublicKey(int type, EVP_PKEY **a, const unsigned char **pp,
 		/* break; */
 		}
 	if (a != NULL) (*a)=ret;
-	return(ret);
+	return (ret);
 err:
 	if ((ret != NULL) && ((a == NULL) || (*a != ret))) EVP_PKEY_free(ret);
-	return(NULL);
+	return (NULL);
 	}
 

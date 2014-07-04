@@ -89,7 +89,7 @@ static const EVP_MD null_md=
 
 const EVP_MD *EVP_md_null(void)
 	{
-	return(&null_md);
+	return (&null_md);
 	}
 
 

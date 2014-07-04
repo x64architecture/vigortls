@@ -101,7 +101,7 @@ int EVP_PKEY_save_parameters(EVP_PKEY *pkey, int mode)
 
 		if (mode >= 0)
 			pkey->save_parameters=mode;
-		return(ret);
+		return (ret);
 		}
 #endif
 #ifndef OPENSSL_NO_EC
@@ -111,10 +111,10 @@ int EVP_PKEY_save_parameters(EVP_PKEY *pkey, int mode)
 
 		if (mode >= 0)
 			pkey->save_parameters = mode;
-		return(ret);
+		return (ret);
 		}
 #endif
-	return(0);
+	return (0);
 	}
 
 int EVP_PKEY_copy_parameters(EVP_PKEY *to, const EVP_PKEY *from)
@@ -183,7 +183,7 @@ EVP_PKEY *EVP_PKEY_new(void)
 	if (ret == NULL)
 		{
 		EVPerr(EVP_F_EVP_PKEY_NEW,ERR_R_MALLOC_FAILURE);
-		return(NULL);
+		return (NULL);
 		}
 	ret->type=EVP_PKEY_NONE;
 	ret->save_type=EVP_PKEY_NONE;
@@ -193,7 +193,7 @@ EVP_PKEY *EVP_PKEY_new(void)
 	ret->pkey.ptr=NULL;
 	ret->attributes=NULL;
 	ret->save_parameters=1;
-	return(ret);
+	return (ret);
 	}
 
 /* Setup a public key ASN1 method and ENGINE from a NID or a string.

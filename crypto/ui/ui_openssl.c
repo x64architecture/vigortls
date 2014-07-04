@@ -583,6 +583,6 @@ static int noecho_fgets(char *buf, int size, FILE *tty)
 			break;
 			}
 		}
-	return(strlen(buf));
+	return (strlen(buf));
 	}
 #endif

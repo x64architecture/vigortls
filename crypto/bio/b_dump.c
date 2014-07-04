@@ -154,7 +154,7 @@ int BIO_dump_indent_cb(int (*cb)(const void *data, size_t len, void *u),
 		ret+=cb((void *)buf,strlen(buf),u);
 		}
 #endif
-	return(ret);
+	return (ret);
 	}
 
 #ifndef OPENSSL_NO_FP_API

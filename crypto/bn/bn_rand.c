@@ -205,7 +205,7 @@ err:
 		free(buf);
 		}
 	bn_check_top(rnd);
-	return(ret);
+	return (ret);
 	}
 
 int     BN_rand(BIGNUM *rnd, int bits, int top, int bottom)

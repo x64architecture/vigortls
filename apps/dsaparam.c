@@ -388,7 +388,7 @@ bad:
 
 		printf("DSA *get_dsa%d()\n\t{\n",bits_p);
 		printf("\tDSA *dsa;\n\n");
-		printf("\tif ((dsa=DSA_new()) == NULL) return(NULL);\n");
+		printf("\tif ((dsa=DSA_new()) == NULL) return (NULL);\n");
 		printf("\tdsa->p=BN_bin2bn(dsa%d_p,sizeof(dsa%d_p),NULL);\n",
 			bits_p,bits_p);
 		printf("\tdsa->q=BN_bin2bn(dsa%d_q,sizeof(dsa%d_q),NULL);\n",
@@ -396,8 +396,8 @@ bad:
 		printf("\tdsa->g=BN_bin2bn(dsa%d_g,sizeof(dsa%d_g),NULL);\n",
 			bits_p,bits_p);
 		printf("\tif ((dsa->p == NULL) || (dsa->q == NULL) || (dsa->g == NULL))\n");
-		printf("\t\t{ DSA_free(dsa); return(NULL); }\n");
-		printf("\treturn(dsa);\n\t}\n");
+		printf("\t\t{ DSA_free(dsa); return (NULL); }\n");
+		printf("\treturn (dsa);\n\t}\n");
 		}
 
 

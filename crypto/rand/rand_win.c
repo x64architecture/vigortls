@@ -608,7 +608,7 @@ int RAND_poll(void)
 	printf("Exiting RAND_poll\n");
 #endif
 
-	return(1);
+	return (1);
 }
 
 int RAND_event(UINT iMsg, WPARAM wParam, LPARAM lParam)

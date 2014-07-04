@@ -37,5 +37,5 @@ int main(int argc, char *argv[])
 	printf("No %s support\n", program);
 
 	free(program);
-	return(0);
+	return (0);
 	}

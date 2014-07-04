@@ -87,10 +87,10 @@ int ECDSA_verify(int type, const unsigned char *dgst, int dgst_len,
 	int ret=-1;
 
 	s = ECDSA_SIG_new();
-	if (s == NULL) return(ret);
+	if (s == NULL) return (ret);
 	if (d2i_ECDSA_SIG(&s, &sigbuf, sig_len) == NULL) goto err;
 	ret=ECDSA_do_verify(dgst, dgst_len, s, eckey);
 err:
 	ECDSA_SIG_free(s);
-	return(ret);
+	return (ret);
 	}

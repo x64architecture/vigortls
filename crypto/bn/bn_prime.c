@@ -346,7 +346,7 @@ err:
 	if (mont != NULL)
 		BN_MONT_CTX_free(mont);
 
-	return(ret);
+	return (ret);
 	}
 
 static int witness(BIGNUM *w, const BIGNUM *a, const BIGNUM *a1,
@@ -381,7 +381,7 @@ static int probable_prime(BIGNUM *rnd, int bits)
 	BN_ULONG delta,maxdelta;
 
 again:
-	if (!BN_rand(rnd,bits,1,1)) return(0);
+	if (!BN_rand(rnd,bits,1,1)) return (0);
 	/* we now have a random number 'rand' to test. */
 	for (i=1; i<NUMPRIMES; i++)
 		mods[i]=(prime_t)BN_mod_word(rnd,(BN_ULONG)primes[i]);
@@ -398,9 +398,9 @@ again:
 			goto loop;
 			}
 		}
-	if (!BN_add_word(rnd,delta)) return(0);
+	if (!BN_add_word(rnd,delta)) return (0);
 	bn_check_top(rnd);
-	return(1);
+	return (1);
 	}
 
 static int probable_prime_dh(BIGNUM *rnd, int bits,
@@ -438,7 +438,7 @@ static int probable_prime_dh(BIGNUM *rnd, int bits,
 err:
 	BN_CTX_end(ctx);
 	bn_check_top(rnd);
-	return(ret);
+	return (ret);
 	}
 
 static int probable_prime_dh_safe(BIGNUM *p, int bits, const BIGNUM *padd,
@@ -490,5 +490,5 @@ static int probable_prime_dh_safe(BIGNUM *p, int bits, const BIGNUM *padd,
 err:
 	BN_CTX_end(ctx);
 	bn_check_top(p);
-	return(ret);
+	return (ret);
 	}

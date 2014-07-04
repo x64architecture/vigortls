@@ -84,7 +84,7 @@ int ASN1_ENUMERATED_set(ASN1_ENUMERATED *a, long v)
 	if (a->data == NULL)
 		{
 		ASN1err(ASN1_F_ASN1_ENUMERATED_SET,ERR_R_MALLOC_FAILURE);
-		return(0);
+		return (0);
 		}
 	d=v;
 	if (d < 0)
@@ -103,7 +103,7 @@ int ASN1_ENUMERATED_set(ASN1_ENUMERATED *a, long v)
 	for (k=i-1; k >=0; k--)
 		a->data[j++]=buf[k];
 	a->length=j;
-	return(1);
+	return (1);
 	}
 
 long ASN1_ENUMERATED_get(ASN1_ENUMERATED *a)
@@ -111,7 +111,7 @@ long ASN1_ENUMERATED_get(ASN1_ENUMERATED *a)
 	int neg=0,i;
 	long r=0;
 
-	if (a == NULL) return(0L);
+	if (a == NULL) return (0L);
 	i=a->type;
 	if (i == V_ASN1_NEG_ENUMERATED)
 		neg=1;
@@ -121,7 +121,7 @@ long ASN1_ENUMERATED_get(ASN1_ENUMERATED *a)
 	if (a->length > (int)sizeof(long))
 		{
 		/* hmm... a bit ugly */
-		return(0xffffffffL);
+		return (0xffffffffL);
 		}
 	if (a->data == NULL)
 		return 0;
@@ -132,7 +132,7 @@ long ASN1_ENUMERATED_get(ASN1_ENUMERATED *a)
 		r|=(unsigned char)a->data[i];
 		}
 	if (neg) r= -r;
-	return(r);
+	return (r);
 	}
 
 ASN1_ENUMERATED *BN_to_ASN1_ENUMERATED(BIGNUM *bn, ASN1_ENUMERATED *ai)
@@ -165,10 +165,10 @@ ASN1_ENUMERATED *BN_to_ASN1_ENUMERATED(BIGNUM *bn, ASN1_ENUMERATED *ai)
 		}
 
 	ret->length=BN_bn2bin(bn,ret->data);
-	return(ret);
+	return (ret);
 err:
 	if (ret != ai) M_ASN1_ENUMERATED_free(ret);
-	return(NULL);
+	return (NULL);
 	}
 
 BIGNUM *ASN1_ENUMERATED_to_BN(ASN1_ENUMERATED *ai, BIGNUM *bn)
@@ -178,5 +178,5 @@ BIGNUM *ASN1_ENUMERATED_to_BN(ASN1_ENUMERATED *ai, BIGNUM *bn)
 	if ((ret=BN_bin2bn(ai->data,ai->length,bn)) == NULL)
 		ASN1err(ASN1_F_ASN1_ENUMERATED_TO_BN,ASN1_R_BN_LIB);
 	else if(ai->type == V_ASN1_NEG_ENUMERATED) BN_set_negative(ret,1);
-	return(ret);
+	return (ret);
 	}

@@ -89,7 +89,7 @@ int X509_PUBKEY_set(X509_PUBKEY **x, EVP_PKEY *pkey)
 	{
 	X509_PUBKEY *pk=NULL;
 
-	if (x == NULL) return(0);
+	if (x == NULL) return (0);
 
 	if ((pk=X509_PUBKEY_new()) == NULL) goto error;
 
@@ -189,7 +189,7 @@ EVP_PKEY *X509_PUBKEY_get(X509_PUBKEY *key)
 	error:
 	if (ret != NULL)
 		EVP_PKEY_free(ret);
-	return(NULL);
+	return (NULL);
 	}
 
 /* Now two pseudo ASN1 routines that take an EVP_PKEY structure
@@ -314,33 +314,33 @@ EC_KEY *d2i_EC_PUBKEY(EC_KEY **a, const unsigned char **pp, long length)
 	const unsigned char *q;
 	q = *pp;
 	pkey = d2i_PUBKEY(NULL, &q, length);
-	if (!pkey) return(NULL);
+	if (!pkey) return (NULL);
 	key = EVP_PKEY_get1_EC_KEY(pkey);
 	EVP_PKEY_free(pkey);
-	if (!key)  return(NULL);
+	if (!key)  return (NULL);
 	*pp = q;
 	if (a)
 		{
 		EC_KEY_free(*a);
 		*a = key;
 		}
-	return(key);
+	return (key);
 	}
 
 int i2d_EC_PUBKEY(EC_KEY *a, unsigned char **pp)
 	{
 	EVP_PKEY *pktmp;
 	int ret;
-	if (!a)	return(0);
+	if (!a)	return (0);
 	if ((pktmp = EVP_PKEY_new()) == NULL)
 		{
 		ASN1err(ASN1_F_I2D_EC_PUBKEY, ERR_R_MALLOC_FAILURE);
-		return(0);
+		return (0);
 		}
 	EVP_PKEY_set1_EC_KEY(pktmp, a);
 	ret = i2d_PUBKEY(pktmp, pp);
 	EVP_PKEY_free(pktmp);
-	return(ret);
+	return (ret);
 	}
 #endif
 

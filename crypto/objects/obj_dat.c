@@ -101,12 +101,12 @@ static int new_nid=NUM_NID;
 static LHASH_OF(ADDED_OBJ) *added=NULL;
 
 static int sn_cmp(const ASN1_OBJECT * const *a, const unsigned int *b)
-	{ return(strcmp((*a)->sn,nid_objs[*b].sn)); }
+	{ return (strcmp((*a)->sn,nid_objs[*b].sn)); }
 
 IMPLEMENT_OBJ_BSEARCH_CMP_FN(const ASN1_OBJECT *, unsigned int, sn);
 
 static int ln_cmp(const ASN1_OBJECT * const *a, const unsigned int *b)
-	{ return(strcmp((*a)->ln,nid_objs[*b].ln)); }
+	{ return (strcmp((*a)->ln,nid_objs[*b].ln)); }
 
 IMPLEMENT_OBJ_BSEARCH_CMP_FN(const ASN1_OBJECT *, unsigned int, ln);
 
@@ -141,7 +141,7 @@ static unsigned long added_obj_hash(const ADDED_OBJ *ca)
 		}
 	ret&=0x3fffffffL;
 	ret|=ca->type<<30L;
-	return(ret);
+	return (ret);
 	}
 static IMPLEMENT_LHASH_HASH_FN(added_obj, ADDED_OBJ)
 
@@ -151,25 +151,25 @@ static int added_obj_cmp(const ADDED_OBJ *ca, const ADDED_OBJ *cb)
 	int i;
 
 	i=ca->type-cb->type;
-	if (i) return(i);
+	if (i) return (i);
 	a=ca->obj;
 	b=cb->obj;
 	switch (ca->type)
 		{
 	case ADDED_DATA:
 		i=(a->length - b->length);
-		if (i) return(i);
-		return(memcmp(a->data,b->data,(size_t)a->length));
+		if (i) return (i);
+		return (memcmp(a->data,b->data,(size_t)a->length));
 	case ADDED_SNAME:
-		if (a->sn == NULL) return(-1);
-		else if (b->sn == NULL) return(1);
-		else return(strcmp(a->sn,b->sn));
+		if (a->sn == NULL) return (-1);
+		else if (b->sn == NULL) return (1);
+		else return (strcmp(a->sn,b->sn));
 	case ADDED_LNAME:
-		if (a->ln == NULL) return(-1);
-		else if (b->ln == NULL) return(1);
-		else return(strcmp(a->ln,b->ln));
+		if (a->ln == NULL) return (-1);
+		else if (b->ln == NULL) return (1);
+		else return (strcmp(a->ln,b->ln));
 	case ADDED_NID:
-		return(a->nid-b->nid);
+		return (a->nid-b->nid);
 	default:
 		/* abort(); */
 		return 0;
@@ -179,9 +179,9 @@ static IMPLEMENT_LHASH_COMP_FN(added_obj, ADDED_OBJ)
 
 static int init_added(void)
 	{
-	if (added != NULL) return(1);
+	if (added != NULL) return (1);
 	added=lh_ADDED_OBJ_new();
-	return(added != NULL);
+	return (added != NULL);
 	}
 
 static void cleanup1_doall(ADDED_OBJ *a)
@@ -241,7 +241,7 @@ int OBJ_new_nid(int num)
 
 	i=new_nid;
 	new_nid+=num;
-	return(i);
+	return (i);
 	}
 
 int OBJ_add_object(const ASN1_OBJECT *obj)
@@ -251,7 +251,7 @@ int OBJ_add_object(const ASN1_OBJECT *obj)
 	int i;
 
 	if (added == NULL)
-		if (!init_added()) return(0);
+		if (!init_added()) return (0);
 	if ((o=OBJ_dup(obj)) == NULL) goto err;
 	if (!(ao[ADDED_NID]=(ADDED_OBJ *)malloc(sizeof(ADDED_OBJ)))) goto err2;
 	if ((o->length != 0) && (obj->data != NULL))
@@ -276,14 +276,14 @@ int OBJ_add_object(const ASN1_OBJECT *obj)
 	o->flags&= ~(ASN1_OBJECT_FLAG_DYNAMIC|ASN1_OBJECT_FLAG_DYNAMIC_STRINGS|
 			ASN1_OBJECT_FLAG_DYNAMIC_DATA);
 
-	return(o->nid);
+	return (o->nid);
 err2:
 	OBJerr(OBJ_F_OBJ_ADD_OBJECT,ERR_R_MALLOC_FAILURE);
 err:
 	for (i=ADDED_DATA; i<=ADDED_NID; i++)
 		if (ao[i] != NULL) free(ao[i]);
 	if (o != NULL) free(o);
-	return(NID_undef);
+	return (NID_undef);
 	}
 
 ASN1_OBJECT *OBJ_nid2obj(int n)
@@ -296,12 +296,12 @@ ASN1_OBJECT *OBJ_nid2obj(int n)
 		if ((n != NID_undef) && (nid_objs[n].nid == NID_undef))
 			{
 			OBJerr(OBJ_F_OBJ_NID2OBJ,OBJ_R_UNKNOWN_NID);
-			return(NULL);
+			return (NULL);
 			}
-		return((ASN1_OBJECT *)&(nid_objs[n]));
+		return ((ASN1_OBJECT *)&(nid_objs[n]));
 		}
 	else if (added == NULL)
-		return(NULL);
+		return (NULL);
 	else
 		{
 		ad.type=ADDED_NID;
@@ -309,11 +309,11 @@ ASN1_OBJECT *OBJ_nid2obj(int n)
 		ob.nid=n;
 		adp=lh_ADDED_OBJ_retrieve(added,&ad);
 		if (adp != NULL)
-			return(adp->obj);
+			return (adp->obj);
 		else
 			{
 			OBJerr(OBJ_F_OBJ_NID2OBJ,OBJ_R_UNKNOWN_NID);
-			return(NULL);
+			return (NULL);
 			}
 		}
 	}
@@ -328,12 +328,12 @@ const char *OBJ_nid2sn(int n)
 		if ((n != NID_undef) && (nid_objs[n].nid == NID_undef))
 			{
 			OBJerr(OBJ_F_OBJ_NID2SN,OBJ_R_UNKNOWN_NID);
-			return(NULL);
+			return (NULL);
 			}
-		return(nid_objs[n].sn);
+		return (nid_objs[n].sn);
 		}
 	else if (added == NULL)
-		return(NULL);
+		return (NULL);
 	else
 		{
 		ad.type=ADDED_NID;
@@ -341,11 +341,11 @@ const char *OBJ_nid2sn(int n)
 		ob.nid=n;
 		adp=lh_ADDED_OBJ_retrieve(added,&ad);
 		if (adp != NULL)
-			return(adp->obj->sn);
+			return (adp->obj->sn);
 		else
 			{
 			OBJerr(OBJ_F_OBJ_NID2SN,OBJ_R_UNKNOWN_NID);
-			return(NULL);
+			return (NULL);
 			}
 		}
 	}
@@ -360,12 +360,12 @@ const char *OBJ_nid2ln(int n)
 		if ((n != NID_undef) && (nid_objs[n].nid == NID_undef))
 			{
 			OBJerr(OBJ_F_OBJ_NID2LN,OBJ_R_UNKNOWN_NID);
-			return(NULL);
+			return (NULL);
 			}
-		return(nid_objs[n].ln);
+		return (nid_objs[n].ln);
 		}
 	else if (added == NULL)
-		return(NULL);
+		return (NULL);
 	else
 		{
 		ad.type=ADDED_NID;
@@ -373,11 +373,11 @@ const char *OBJ_nid2ln(int n)
 		ob.nid=n;
 		adp=lh_ADDED_OBJ_retrieve(added,&ad);
 		if (adp != NULL)
-			return(adp->obj->ln);
+			return (adp->obj->ln);
 		else
 			{
 			OBJerr(OBJ_F_OBJ_NID2LN,OBJ_R_UNKNOWN_NID);
-			return(NULL);
+			return (NULL);
 			}
 		}
 	}
@@ -389,8 +389,8 @@ static int obj_cmp(const ASN1_OBJECT * const *ap, const unsigned int *bp)
 	const ASN1_OBJECT *b= &nid_objs[*bp];
 
 	j=(a->length - b->length);
-        if (j) return(j);
-	return(memcmp(a->data,b->data,a->length));
+        if (j) return (j);
+	return (memcmp(a->data,b->data,a->length));
 	}
 
 IMPLEMENT_OBJ_BSEARCH_CMP_FN(const ASN1_OBJECT *, unsigned int, obj);
@@ -401,9 +401,9 @@ int OBJ_obj2nid(const ASN1_OBJECT *a)
 	ADDED_OBJ ad,*adp;
 
 	if (a == NULL)
-		return(NID_undef);
+		return (NID_undef);
 	if (a->nid != 0)
-		return(a->nid);
+		return (a->nid);
 
 	if (added != NULL)
 		{
@@ -414,8 +414,8 @@ int OBJ_obj2nid(const ASN1_OBJECT *a)
 		}
 	op=OBJ_bsearch_obj(&a, obj_objs, NUM_OBJ);
 	if (op == NULL)
-		return(NID_undef);
-	return(nid_objs[*op].nid);
+		return (NID_undef);
+	return (nid_objs[*op].nid);
 	}
 
 /* Convert an object name into an ASN1_OBJECT
@@ -473,7 +473,7 @@ int OBJ_obj2txt(char *buf, int buf_len, const ASN1_OBJECT *a, int no_name)
 
 	if ((a == NULL) || (a->data == NULL)) {
 		buf[0]='\0';
-		return(0);
+		return (0);
 	}
 
 
@@ -651,8 +651,8 @@ int OBJ_ln2nid(const char *s)
 		if (adp != NULL) return (adp->obj->nid);
 		}
 	op=OBJ_bsearch_ln(&oo, ln_objs, NUM_LN);
-	if (op == NULL) return(NID_undef);
-	return(nid_objs[*op].nid);
+	if (op == NULL) return (NID_undef);
+	return (nid_objs[*op].nid);
 	}
 
 int OBJ_sn2nid(const char *s)
@@ -671,8 +671,8 @@ int OBJ_sn2nid(const char *s)
 		if (adp != NULL) return (adp->obj->nid);
 		}
 	op=OBJ_bsearch_sn(&oo, sn_objs, NUM_SN);
-	if (op == NULL) return(NID_undef);
-	return(nid_objs[*op].nid);
+	if (op == NULL) return (NID_undef);
+	return (nid_objs[*op].nid);
 	}
 
 const void *OBJ_bsearch_(const void *key, const void *base, int num, int size,
@@ -690,7 +690,7 @@ const void *OBJ_bsearch_ex_(const void *key, const void *base_, int num,
 	int l,h,i=0,c=0;
 	const char *p = NULL;
 
-	if (num == 0) return(NULL);
+	if (num == 0) return (NULL);
 	l=0;
 	h=num;
 	while (l < h)
@@ -729,7 +729,7 @@ const void *OBJ_bsearch_ex_(const void *key, const void *base_, int num,
 			i--;
 		p = &(base[i*size]);
 		}
-	return(p);
+	return (p);
 	}
 
 int OBJ_create_objects(BIO *in)
@@ -742,9 +742,9 @@ int OBJ_create_objects(BIO *in)
 		{
 		s=o=NULL;
 		i=BIO_gets(in,buf,512);
-		if (i <= 0) return(num);
+		if (i <= 0) return (num);
 		buf[i-1]='\0';
-		if (!isalnum((unsigned char)buf[0])) return(num);
+		if (!isalnum((unsigned char)buf[0])) return (num);
 		o=s=buf;
 		while (isdigit((unsigned char)*s) || (*s == '.'))
 			s++;
@@ -773,11 +773,11 @@ int OBJ_create_objects(BIO *in)
 			}
 		else
 			s=NULL;
-		if ((o == NULL) || (*o == '\0')) return(num);
-		if (!OBJ_create(o,s,l)) return(num);
+		if ((o == NULL) || (*o == '\0')) return (num);
+		if (!OBJ_create(o,s,l)) return (num);
 		num++;
 		}
-	/* return(num); */
+	/* return (num); */
 	}
 
 int OBJ_create(const char *oid, const char *sn, const char *ln)
@@ -788,12 +788,12 @@ int OBJ_create(const char *oid, const char *sn, const char *ln)
 	int i;
 
 	i=a2d_ASN1_OBJECT(NULL,0,oid,-1);
-	if (i <= 0) return(0);
+	if (i <= 0) return (0);
 
 	if ((buf=(unsigned char *)malloc(i)) == NULL)
 		{
 		OBJerr(OBJ_F_OBJ_CREATE,ERR_R_MALLOC_FAILURE);
-		return(0);
+		return (0);
 		}
 	i=a2d_ASN1_OBJECT(buf,i,oid,-1);
 	if (i == 0)
@@ -805,6 +805,6 @@ int OBJ_create(const char *oid, const char *sn, const char *ln)
 err:
 	ASN1_OBJECT_free(op);
 	free(buf);
-	return(ok);
+	return (ok);
 	}
 

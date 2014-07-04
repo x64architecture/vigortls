@@ -101,17 +101,17 @@ X509_REQ *X509_to_X509_REQ(X509 *x, EVP_PKEY *pkey, const EVP_MD *md)
 		if (!X509_REQ_sign(ret,pkey,md))
 			goto err;
 		}
-	return(ret);
+	return (ret);
 err:
 	X509_REQ_free(ret);
-	return(NULL);
+	return (NULL);
 	}
 
 EVP_PKEY *X509_REQ_get_pubkey(X509_REQ *req)
 	{
 	if ((req == NULL) || (req->req_info == NULL))
-		return(NULL);
-	return(X509_PUBKEY_get(req->req_info->pubkey));
+		return (NULL);
+	return (X509_PUBKEY_get(req->req_info->pubkey));
 	}
 
 int X509_REQ_check_private_key(X509_REQ *x, EVP_PKEY *k)
@@ -149,7 +149,7 @@ int X509_REQ_check_private_key(X509_REQ *x, EVP_PKEY *k)
 		}
 
 	EVP_PKEY_free(xk);
-	return(ok);
+	return (ok);
 	}
 
 /* It seems several organisations had the same idea of including a list of
@@ -189,7 +189,7 @@ STACK_OF(X509_EXTENSION) *X509_REQ_get_extensions(X509_REQ *req)
 	const unsigned char *p;
 
 	if ((req == NULL) || (req->req_info == NULL) || !ext_nids)
-		return(NULL);
+		return (NULL);
 	for (pnid = ext_nids; *pnid != NID_undef; pnid++)
 		{
 		idx = X509_REQ_get_attr_by_NID(req, *pnid, -1);

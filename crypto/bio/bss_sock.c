@@ -89,7 +89,7 @@ static BIO_METHOD methods_sockp=
 
 BIO_METHOD *BIO_s_socket(void)
 	{
-	return(&methods_sockp);
+	return (&methods_sockp);
 	}
 
 BIO *BIO_new_socket(int fd, int close_flag)
@@ -97,9 +97,9 @@ BIO *BIO_new_socket(int fd, int close_flag)
 	BIO *ret;
 
 	ret=BIO_new(BIO_s_socket());
-	if (ret == NULL) return(NULL);
+	if (ret == NULL) return (NULL);
 	BIO_set_fd(ret,fd,close_flag);
-	return(ret);
+	return (ret);
 	}
 
 static int sock_new(BIO *bi)
@@ -108,12 +108,12 @@ static int sock_new(BIO *bi)
 	bi->num=0;
 	bi->ptr=NULL;
 	bi->flags=0;
-	return(1);
+	return (1);
 	}
 
 static int sock_free(BIO *a)
 	{
-	if (a == NULL) return(0);
+	if (a == NULL) return (0);
 	if (a->shutdown)
 		{
 		if (a->init)
@@ -123,7 +123,7 @@ static int sock_free(BIO *a)
 		a->init=0;
 		a->flags=0;
 		}
-	return(1);
+	return (1);
 	}
 	
 static int sock_read(BIO *b, char *out, int outl)
@@ -141,7 +141,7 @@ static int sock_read(BIO *b, char *out, int outl)
 				BIO_set_retry_read(b);
 			}
 		}
-	return(ret);
+	return (ret);
 	}
 
 static int sock_write(BIO *b, const char *in, int inl)
@@ -156,7 +156,7 @@ static int sock_write(BIO *b, const char *in, int inl)
 		if (BIO_sock_should_retry(ret))
 			BIO_set_retry_write(b);
 		}
-	return(ret);
+	return (ret);
 	}
 
 static long sock_ctrl(BIO *b, int cmd, long num, void *ptr)
@@ -196,7 +196,7 @@ static long sock_ctrl(BIO *b, int cmd, long num, void *ptr)
 		ret=0;
 		break;
 		}
-	return(ret);
+	return (ret);
 	}
 
 static int sock_puts(BIO *bp, const char *str)
@@ -205,7 +205,7 @@ static int sock_puts(BIO *bp, const char *str)
 
 	n=strlen(str);
 	ret=sock_write(bp,str,n);
-	return(ret);
+	return (ret);
 	}
 
 int BIO_sock_should_retry(int i)
@@ -218,12 +218,12 @@ int BIO_sock_should_retry(int i)
 
 #if defined(OPENSSL_SYS_WINDOWS) && 0 /* more microsoft stupidity? perhaps not? Ben 4/1/99 */
 		if ((i == -1) && (err == 0))
-			return(1);
+			return (1);
 #endif
 
-		return(BIO_sock_non_fatal_error(err));
+		return (BIO_sock_non_fatal_error(err));
 		}
-	return(0);
+	return (0);
 	}
 
 int BIO_sock_non_fatal_error(int err)
@@ -277,12 +277,12 @@ int BIO_sock_non_fatal_error(int err)
 #ifdef EALREADY
 	case EALREADY:
 #endif
-		return(1);
+		return (1);
 		/* break; */
 	default:
 		break;
 		}
-	return(0);
+	return (0);
 	}
 
 #endif  /* #ifndef OPENSSL_NO_SOCK */

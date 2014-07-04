@@ -387,12 +387,12 @@ err:
 		DHerr(DH_F_DO_DH_PRINT,reason);
 		}
 	if (m != NULL) free(m);
-	return(ret);
+	return (ret);
 	}
 
 static int int_dh_size(const EVP_PKEY *pkey)
 	{
-	return(DH_size(pkey->pkey.dh));
+	return (DH_size(pkey->pkey.dh));
 	}
 
 static int dh_bits(const EVP_PKEY *pkey)

@@ -1600,7 +1600,7 @@ static int certify(X509 **xret, char *infile, EVP_PKEY *pkey, X509 *x509,
 err:
 	if (req != NULL) X509_REQ_free(req);
 	if (in != NULL) BIO_free(in);
-	return(ok);
+	return (ok);
 	}
 
 static int certify_cert(X509 **xret, char *infile, EVP_PKEY *pkey, X509 *x509,
@@ -1655,7 +1655,7 @@ static int certify_cert(X509 **xret, char *infile, EVP_PKEY *pkey, X509 *x509,
 err:
 	if (rreq != NULL) X509_REQ_free(rreq);
 	if (req != NULL) X509_free(req);
-	return(ok);
+	return (ok);
 	}
 
 static int do_body(X509 **xret, EVP_PKEY *pkey, X509 *x509, const EVP_MD *dgst,
@@ -1688,7 +1688,7 @@ static int do_body(X509 **xret, EVP_PKEY *pkey, X509 *x509, const EVP_MD *dgst,
 	if (tmptm == NULL)
 		{
 		BIO_printf(bio_err,"malloc error\n");
-		return(0);
+		return (0);
 		}
 
 	for (i=0; i<DB_NUMBER; i++)
@@ -2197,7 +2197,7 @@ err:
 		}
 	else
 		*xret=ret;
-	return(ok);
+	return (ok);
 	}
 
 static void write_new_certificate(BIO *bp, X509 *x, int output_der, int notext)
@@ -2361,7 +2361,7 @@ err:
 	if (spki != NULL) NETSCAPE_SPKI_free(spki);
 	if (ne != NULL) X509_NAME_ENTRY_free(ne);
 
-	return(ok);
+	return (ok);
 	}
 
 static int check_time_format(const char *str)
@@ -2484,7 +2484,7 @@ err:
 		if (row[i] != NULL) 
 			free(row[i]);
 		}
-	return(ok);
+	return (ok);
 	}
 
 static int get_certificate_status(const char *serial, CA_DB *db)
@@ -2572,7 +2572,7 @@ err:
 		if (row[i] != NULL)
 			free(row[i]);
 		}
-	return(ok);
+	return (ok);
 	}
 
 static int do_updatedb (CA_DB *db)

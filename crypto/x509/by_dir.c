@@ -118,7 +118,7 @@ X509_LOOKUP_METHOD x509_dir_lookup=
 
 X509_LOOKUP_METHOD *X509_LOOKUP_hash_dir(void)
 	{
-	return(&x509_dir_lookup);
+	return (&x509_dir_lookup);
 	}
 
 static int dir_ctrl(X509_LOOKUP *ctx, int cmd, const char *argp, long argl,
@@ -150,7 +150,7 @@ static int dir_ctrl(X509_LOOKUP *ctx, int cmd, const char *argp, long argl,
 			ret=add_cert_dir(ld,argp,(int)argl);
 		break;
 		}
-	return(ret);
+	return (ret);
 	}
 
 static int new_dir(X509_LOOKUP *lu)
@@ -158,15 +158,15 @@ static int new_dir(X509_LOOKUP *lu)
 	BY_DIR *a;
 
 	if ((a=(BY_DIR *)malloc(sizeof(BY_DIR))) == NULL)
-		return(0);
+		return (0);
 	if ((a->buffer=BUF_MEM_new()) == NULL)
 		{
 		free(a);
-		return(0);
+		return (0);
 		}
 	a->dirs=NULL;
 	lu->method_data=(char *)a;
-	return(1);
+	return (1);
 	}
 
 static void by_dir_hash_free(BY_DIR_HASH *hash)
@@ -289,7 +289,7 @@ static int get_cert_by_subject(X509_LOOKUP *xl, int type, X509_NAME *name,
 	X509_OBJECT stmp,*tmp;
 	const char *postfix="";
 
-	if (name == NULL) return(0);
+	if (name == NULL) return (0);
 
 	stmp.type=type;
 	if (type == X509_LU_X509)
@@ -459,5 +459,5 @@ static int get_cert_by_subject(X509_LOOKUP *xl, int type, X509_NAME *name,
 		}
 finish:
 	if (b != NULL) BUF_MEM_free(b);
-	return(ok);
+	return (ok);
 	}

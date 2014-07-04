@@ -117,7 +117,7 @@ static BIO_METHOD methods_slg=
 
 BIO_METHOD *BIO_s_log(void)
 	{
-	return(&methods_slg);
+	return (&methods_slg);
 	}
 
 static int MS_CALLBACK slg_new(BIO *bi)
@@ -126,14 +126,14 @@ static int MS_CALLBACK slg_new(BIO *bi)
 	bi->num=0;
 	bi->ptr=NULL;
 	xopenlog(bi, "application", LOG_DAEMON);
-	return(1);
+	return (1);
 	}
 
 static int MS_CALLBACK slg_free(BIO *a)
 	{
-	if (a == NULL) return(0);
+	if (a == NULL) return (0);
 	xcloselog(a);
-	return(1);
+	return (1);
 	}
 	
 static int MS_CALLBACK slg_write(BIO *b, const char *in, int inl)
@@ -173,7 +173,7 @@ static int MS_CALLBACK slg_write(BIO *b, const char *in, int inl)
 		};
 
 	if((buf= (char *)malloc(inl+ 1)) == NULL){
-		return(0);
+		return (0);
 	}
 	strncpy(buf, in, inl);
 	buf[inl]= '\0';
@@ -186,7 +186,7 @@ static int MS_CALLBACK slg_write(BIO *b, const char *in, int inl)
 	xsyslog(b, priority, pp);
 
 	free(buf);
-	return(ret);
+	return (ret);
 	}
 
 static long MS_CALLBACK slg_ctrl(BIO *b, int cmd, long num, void *ptr)
@@ -200,7 +200,7 @@ static long MS_CALLBACK slg_ctrl(BIO *b, int cmd, long num, void *ptr)
 	default:
 		break;
 		}
-	return(0);
+	return (0);
 	}
 
 static int MS_CALLBACK slg_puts(BIO *bp, const char *str)
@@ -209,7 +209,7 @@ static int MS_CALLBACK slg_puts(BIO *bp, const char *str)
 
 	n=strlen(str);
 	ret=slg_write(bp,str,n);
-	return(ret);
+	return (ret);
 	}
 
 #if defined(OPENSSL_SYS_WIN32)

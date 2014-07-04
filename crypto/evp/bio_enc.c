@@ -102,7 +102,7 @@ static BIO_METHOD methods_enc=
 
 BIO_METHOD *BIO_f_cipher(void)
 	{
-	return(&methods_enc);
+	return (&methods_enc);
 	}
 
 static int enc_new(BIO *bi)
@@ -110,7 +110,7 @@ static int enc_new(BIO *bi)
 	BIO_ENC_CTX *ctx;
 
 	ctx=(BIO_ENC_CTX *)malloc(sizeof(BIO_ENC_CTX));
-	if (ctx == NULL) return(0);
+	if (ctx == NULL) return (0);
 	EVP_CIPHER_CTX_init(&ctx->cipher);
 
 	ctx->buf_len=0;
@@ -122,14 +122,14 @@ static int enc_new(BIO *bi)
 	bi->init=0;
 	bi->ptr=(char *)ctx;
 	bi->flags=0;
-	return(1);
+	return (1);
 	}
 
 static int enc_free(BIO *a)
 	{
 	BIO_ENC_CTX *b;
 
-	if (a == NULL) return(0);
+	if (a == NULL) return (0);
 	b=(BIO_ENC_CTX *)a->ptr;
 	EVP_CIPHER_CTX_cleanup(&(b->cipher));
 	OPENSSL_cleanse(a->ptr,sizeof(BIO_ENC_CTX));
@@ -137,7 +137,7 @@ static int enc_free(BIO *a)
 	a->ptr=NULL;
 	a->init=0;
 	a->flags=0;
-	return(1);
+	return (1);
 	}
 	
 static int enc_read(BIO *b, char *out, int outl)
@@ -145,10 +145,10 @@ static int enc_read(BIO *b, char *out, int outl)
 	int ret=0,i;
 	BIO_ENC_CTX *ctx;
 
-	if (out == NULL) return(0);
+	if (out == NULL) return (0);
 	ctx=(BIO_ENC_CTX *)b->ptr;
 
-	if ((ctx == NULL) || (b->next_bio == NULL)) return(0);
+	if ((ctx == NULL) || (b->next_bio == NULL)) return (0);
 
 	/* First check if there are bytes decoded/encoded */
 	if (ctx->buf_len > 0)
@@ -225,7 +225,7 @@ static int enc_read(BIO *b, char *out, int outl)
 
 	BIO_clear_retry_flags(b);
 	BIO_copy_next_retry(b);
-	return((ret == 0)?ctx->cont:ret);
+	return ((ret == 0)?ctx->cont:ret);
 	}
 
 static int enc_write(BIO *b, const char *in, int inl)
@@ -244,14 +244,14 @@ static int enc_write(BIO *b, const char *in, int inl)
 		if (i <= 0)
 			{
 			BIO_copy_next_retry(b);
-			return(i);
+			return (i);
 			}
 		ctx->buf_off+=i;
 		n-=i;
 		}
 	/* at this point all pending data has been written */
 
-	if ((in == NULL) || (inl <= 0)) return(0);
+	if ((in == NULL) || (inl <= 0)) return (0);
 
 	ctx->buf_off=0;
 	while (inl > 0)
@@ -280,7 +280,7 @@ static int enc_write(BIO *b, const char *in, int inl)
 		ctx->buf_off=0;
 		}
 	BIO_copy_next_retry(b);
-	return(ret);
+	return (ret);
 	}
 
 static long enc_ctrl(BIO *b, int cmd, long num, void *ptr)
@@ -370,21 +370,21 @@ again:
 		ret=BIO_ctrl(b->next_bio,cmd,num,ptr);
 		break;
 		}
-	return(ret);
+	return (ret);
 	}
 
 static long enc_callback_ctrl(BIO *b, int cmd, bio_info_cb *fp)
 	{
 	long ret=1;
 
-	if (b->next_bio == NULL) return(0);
+	if (b->next_bio == NULL) return (0);
 	switch (cmd)
 		{
 	default:
 		ret=BIO_callback_ctrl(b->next_bio,cmd,fp);
 		break;
 		}
-	return(ret);
+	return (ret);
 	}
 
 /*

@@ -112,7 +112,7 @@ static ECDSA_DATA *ECDSA_DATA_new_method(ENGINE *engine)
 	if (ret == NULL)
 	{
 		ECDSAerr(ECDSA_F_ECDSA_DATA_NEW_METHOD, ERR_R_MALLOC_FAILURE);
-		return(NULL);
+		return (NULL);
 	}
 
 	ret->init = NULL;
@@ -145,7 +145,7 @@ static ECDSA_DATA *ECDSA_DATA_new_method(ENGINE *engine)
 		ret=NULL;
 	}
 #endif	
-	return(ret);
+	return (ret);
 }
 
 static void *ecdsa_data_new(void)
@@ -237,7 +237,7 @@ int ECDSA_size(const EC_KEY *r)
 	i+=i; /* r and s */
 	ret=ASN1_object_size(1,i,V_ASN1_SEQUENCE);
 	BN_clear_free(order);
-	return(ret);
+	return (ret);
 }
 
 
@@ -254,7 +254,7 @@ int ECDSA_set_ex_data(EC_KEY *d, int idx, void *arg)
 	ecdsa = ecdsa_check(d);
 	if (ecdsa == NULL)
 		return 0;
-	return(CRYPTO_set_ex_data(&ecdsa->ex_data,idx,arg));
+	return (CRYPTO_set_ex_data(&ecdsa->ex_data,idx,arg));
 }
 
 void *ECDSA_get_ex_data(EC_KEY *d, int idx)
@@ -263,5 +263,5 @@ void *ECDSA_get_ex_data(EC_KEY *d, int idx)
 	ecdsa = ecdsa_check(d);
 	if (ecdsa == NULL)
 		return NULL;
-	return(CRYPTO_get_ex_data(&ecdsa->ex_data,idx));
+	return (CRYPTO_get_ex_data(&ecdsa->ex_data,idx));
 }

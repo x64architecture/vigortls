@@ -69,16 +69,16 @@ ASN1_OBJECT *OBJ_dup(const ASN1_OBJECT *o)
 	char *ln=NULL,*sn=NULL;
 	unsigned char *data=NULL;
 
-	if (o == NULL) return(NULL);
+	if (o == NULL) return (NULL);
 	if (!(o->flags & ASN1_OBJECT_FLAG_DYNAMIC))
-		return((ASN1_OBJECT *)o); /* XXX: ugh! Why? What kind of
+		return ((ASN1_OBJECT *)o); /* XXX: ugh! Why? What kind of
 					     duplication is this??? */
 
 	r=ASN1_OBJECT_new();
 	if (r == NULL)
 		{
 		OBJerr(OBJ_F_OBJ_DUP,ERR_R_ASN1_LIB);
-		return(NULL);
+		return (NULL);
 		}
 	data=malloc(o->length);
 	if (data == NULL)
@@ -109,14 +109,14 @@ ASN1_OBJECT *OBJ_dup(const ASN1_OBJECT *o)
 		}
 	r->flags=o->flags|(ASN1_OBJECT_FLAG_DYNAMIC|
 		ASN1_OBJECT_FLAG_DYNAMIC_STRINGS|ASN1_OBJECT_FLAG_DYNAMIC_DATA);
-	return(r);
+	return (r);
 err:
 	OBJerr(OBJ_F_OBJ_DUP,ERR_R_MALLOC_FAILURE);
 	if (ln != NULL)		free(ln);
 	if (sn != NULL)		free(sn);
 	if (data != NULL)	free(data);
 	if (r != NULL)		free(r);
-	return(NULL);
+	return (NULL);
 	}
 
 int OBJ_cmp(const ASN1_OBJECT *a, const ASN1_OBJECT *b)
@@ -124,6 +124,6 @@ int OBJ_cmp(const ASN1_OBJECT *a, const ASN1_OBJECT *b)
 	int ret;
 
 	ret=(a->length-b->length);
-	if (ret) return(ret);
-	return(memcmp(a->data,b->data,a->length));
+	if (ret) return (ret);
+	return (memcmp(a->data,b->data,a->length));
 	}

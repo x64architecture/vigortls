@@ -150,7 +150,7 @@ static int remove_session_lock(SSL_CTX *ctx, SSL_SESSION *c, int lck);
 SSL_SESSION *SSL_get_session(const SSL *ssl)
 /* aka SSL_get0_session; gets 0 objects, just returns a copy of the pointer */
 	{
-	return(ssl->session);
+	return (ssl->session);
 	}
 
 SSL_SESSION *SSL_get1_session(SSL *ssl)
@@ -165,7 +165,7 @@ SSL_SESSION *SSL_get1_session(SSL *ssl)
 	if(sess)
 		sess->references++;
 	CRYPTO_w_unlock(CRYPTO_LOCK_SSL_SESSION);
-	return(sess);
+	return (sess);
 	}
 
 int SSL_SESSION_get_ex_new_index(long argl, void *argp, CRYPTO_EX_new *new_func,
@@ -177,12 +177,12 @@ int SSL_SESSION_get_ex_new_index(long argl, void *argp, CRYPTO_EX_new *new_func,
 
 int SSL_SESSION_set_ex_data(SSL_SESSION *s, int idx, void *arg)
 	{
-	return(CRYPTO_set_ex_data(&s->ex_data,idx,arg));
+	return (CRYPTO_set_ex_data(&s->ex_data,idx,arg));
 	}
 
 void *SSL_SESSION_get_ex_data(const SSL_SESSION *s, int idx)
 	{
-	return(CRYPTO_get_ex_data(&s->ex_data,idx));
+	return (CRYPTO_get_ex_data(&s->ex_data,idx));
 	}
 
 SSL_SESSION *SSL_SESSION_new(void)
@@ -219,7 +219,7 @@ SSL_SESSION *SSL_SESSION_new(void)
 #ifndef OPENSSL_NO_SRP
 	ss->srp_username=NULL;
 #endif
-	return(ss);
+	return (ss);
 	}
 
 const unsigned char *SSL_SESSION_get_id(const SSL_SESSION *s, unsigned int *len)
@@ -275,7 +275,7 @@ int ssl_get_new_session(SSL *s, int session)
 	SSL_SESSION *ss=NULL;
 	GEN_SESSION_CB cb = def_generate_session_id;
 
-	if ((ss=SSL_SESSION_new()) == NULL) return(0);
+	if ((ss=SSL_SESSION_new()) == NULL) return (0);
 
 	/* If the context has a default timeout, use it */
 	if (s->session_ctx->session_timeout == 0)
@@ -330,7 +330,7 @@ int ssl_get_new_session(SSL *s, int session)
 			{
 			SSLerr(SSL_F_SSL_GET_NEW_SESSION,SSL_R_UNSUPPORTED_SSL_VERSION);
 			SSL_SESSION_free(ss);
-			return(0);
+			return (0);
 			}
 #ifndef OPENSSL_NO_TLSEXT
 		/* If RFC4507 ticket use empty session ID */
@@ -355,7 +355,7 @@ int ssl_get_new_session(SSL *s, int session)
 			SSLerr(SSL_F_SSL_GET_NEW_SESSION,
 				SSL_R_SSL_SESSION_ID_CALLBACK_FAILED);
 			SSL_SESSION_free(ss);
-			return(0);
+			return (0);
 			}
 		/* Don't allow the callback to set the session length to zero.
 		 * nor set it higher than it was. */
@@ -365,7 +365,7 @@ int ssl_get_new_session(SSL *s, int session)
 			SSLerr(SSL_F_SSL_GET_NEW_SESSION,
 				SSL_R_SSL_SESSION_ID_HAS_BAD_LENGTH);
 			SSL_SESSION_free(ss);
-			return(0);
+			return (0);
 			}
 		/* If the session length was shrunk and we're SSLv2, pad it */
 		if((tmp < ss->session_id_length) && (s->version == SSL2_VERSION))
@@ -379,7 +379,7 @@ int ssl_get_new_session(SSL *s, int session)
 			SSLerr(SSL_F_SSL_GET_NEW_SESSION,
 				SSL_R_SSL_SESSION_ID_CONFLICT);
 			SSL_SESSION_free(ss);
-			return(0);
+			return (0);
 			}
 #ifndef OPENSSL_NO_TLSEXT
 		sess_id_done:
@@ -436,7 +436,7 @@ int ssl_get_new_session(SSL *s, int session)
 	ss->ssl_version=s->version;
 	ss->verify_result = X509_V_OK;
 
-	return(1);
+	return (1);
 	}
 
 /* ssl_get_prev attempts to find an SSL_SESSION to be used to resume this
@@ -690,7 +690,7 @@ int SSL_CTX_add_session(SSL_CTX *ctx, SSL_SESSION *c)
 			}
 		}
 	CRYPTO_w_unlock(CRYPTO_LOCK_SSL_CTX);
-	return(ret);
+	return (ret);
 	}
 
 int SSL_CTX_remove_session(SSL_CTX *ctx, SSL_SESSION *c)
@@ -725,7 +725,7 @@ static int remove_session_lock(SSL_CTX *ctx, SSL_SESSION *c, int lck)
 		}
 	else
 		ret=0;
-	return(ret);
+	return (ret);
 	}
 
 void SSL_SESSION_free(SSL_SESSION *ss)
@@ -792,13 +792,13 @@ int SSL_set_session(SSL *s, SSL_SESSION *session)
 		if (meth == NULL)
 			{
 			SSLerr(SSL_F_SSL_SET_SESSION,SSL_R_UNABLE_TO_FIND_SSL_METHOD);
-			return(0);
+			return (0);
 			}
 
 		if (meth != s->method)
 			{
 			if (!SSL_set_ssl_method(s,meth))
-				return(0);
+				return (0);
 			}
 
 #ifndef OPENSSL_NO_KRB5
@@ -837,37 +837,37 @@ int SSL_set_session(SSL *s, SSL_SESSION *session)
 		if (meth != s->method)
 			{
 			if (!SSL_set_ssl_method(s,meth))
-				return(0);
+				return (0);
 			}
 		ret=1;
 		}
-	return(ret);
+	return (ret);
 	}
 
 long SSL_SESSION_set_timeout(SSL_SESSION *s, long t)
 	{
-	if (s == NULL) return(0);
+	if (s == NULL) return (0);
 	s->timeout=t;
-	return(1);
+	return (1);
 	}
 
 long SSL_SESSION_get_timeout(const SSL_SESSION *s)
 	{
-	if (s == NULL) return(0);
-	return(s->timeout);
+	if (s == NULL) return (0);
+	return (s->timeout);
 	}
 /* XXX 2038 */
 long SSL_SESSION_get_time(const SSL_SESSION *s)
 	{
-	if (s == NULL) return(0);
-	return(s->time);
+	if (s == NULL) return (0);
+	return (s->time);
 	}
 /* XXX 2038 */
 long SSL_SESSION_set_time(SSL_SESSION *s, long t)
 	{
-	if (s == NULL) return(0);
+	if (s == NULL) return (0);
 	s->time=t;
-	return(t);
+	return (t);
 	}
 
 X509 *SSL_SESSION_get0_peer(SSL_SESSION *s)
@@ -892,35 +892,35 @@ int SSL_SESSION_set1_id_context(SSL_SESSION *s,const unsigned char *sid_ctx,
 long SSL_CTX_set_timeout(SSL_CTX *s, long t)
 	{
 	long l;
-	if (s == NULL) return(0);
+	if (s == NULL) return (0);
 	l=s->session_timeout;
 	s->session_timeout=t;
-	return(l);
+	return (l);
 	}
 
 long SSL_CTX_get_timeout(const SSL_CTX *s)
 	{
-	if (s == NULL) return(0);
-	return(s->session_timeout);
+	if (s == NULL) return (0);
+	return (s->session_timeout);
 	}
 
 #ifndef OPENSSL_NO_TLSEXT
 int SSL_set_session_secret_cb(SSL *s, int (*tls_session_secret_cb)(SSL *s, void *secret, int *secret_len,
 	STACK_OF(SSL_CIPHER) *peer_ciphers, SSL_CIPHER **cipher, void *arg), void *arg)
 	{
-	if (s == NULL) return(0);
+	if (s == NULL) return (0);
 	s->tls_session_secret_cb = tls_session_secret_cb;
 	s->tls_session_secret_cb_arg = arg;
-	return(1);
+	return (1);
 	}
 
 int SSL_set_session_ticket_ext_cb(SSL *s, tls_session_ticket_ext_cb_fn cb,
 				  void *arg)
 	{
-	if (s == NULL) return(0);
+	if (s == NULL) return (0);
 	s->tls_session_ticket_ext_cb = cb;
 	s->tls_session_ticket_ext_cb_arg = arg;
-	return(1);
+	return (1);
 	}
 
 int SSL_set_session_ticket_ext(SSL *s, void *ext_data, int ext_len)
@@ -1009,10 +1009,10 @@ int ssl_clear_bad_session(SSL *s)
 		!(SSL_in_init(s) || SSL_in_before(s)))
 		{
 		SSL_CTX_remove_session(s->ctx,s->session);
-		return(1);
+		return (1);
 		}
 	else
-		return(0);
+		return (0);
 	}
 
 /* locked by SSL_CTX in the calling function */

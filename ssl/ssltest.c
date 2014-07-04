@@ -1744,7 +1744,7 @@ err:
 	if (s_to_c != NULL) BIO_free(s_to_c);
 	if (c_bio != NULL) BIO_free_all(c_bio);
 	if (s_bio != NULL) BIO_free_all(s_bio);
-	return(ret);
+	return (ret);
 	}
 
 static int get_proxy_auth_ex_data_idx(void)
@@ -1896,7 +1896,7 @@ static int MS_CALLBACK verify_callback(int ok, X509_STORE_CTX *ctx)
 			}
 		}
 
-	return(ok);
+	return (ok);
 	}
 
 static void process_proxy_debug(int indent, const char *format, ...)
@@ -2157,7 +2157,7 @@ static int MS_CALLBACK app_verify_callback(X509_STORE_CTX *ctx, void *arg)
 			{
 			fprintf(stderr,"cert depth=%d %s\n",ctx->error_depth,buf);
 			}
-		return(1);
+		return (1);
 		}
 	if (cb_arg->proxy_auth)
 		{
@@ -2225,7 +2225,7 @@ static int MS_CALLBACK app_verify_callback(X509_STORE_CTX *ctx, void *arg)
 					cb_arg->proxy_cond);
 			}
 		}
-	return(ok);
+	return (ok);
 	}
 
 static RSA *rsa_tmp=NULL;
@@ -2255,7 +2255,7 @@ end:
 		(void)BIO_flush(bio_err);
 		}
 	if(bn) BN_free(bn);
-	return(rsa_tmp);
+	return (rsa_tmp);
 	}
 
 static void free_tmp_rsa(void)
@@ -2288,12 +2288,12 @@ static DH *get_dh512()
 		};
 	DH *dh;
 
-	if ((dh=DH_new()) == NULL) return(NULL);
+	if ((dh=DH_new()) == NULL) return (NULL);
 	dh->p=BN_bin2bn(dh512_p,sizeof(dh512_p),NULL);
 	dh->g=BN_bin2bn(dh512_g,sizeof(dh512_g),NULL);
 	if ((dh->p == NULL) || (dh->g == NULL))
-		{ DH_free(dh); return(NULL); }
-	return(dh);
+		{ DH_free(dh); return (NULL); }
+	return (dh);
 	}
 
 static DH *get_dh1024()
@@ -2316,12 +2316,12 @@ static DH *get_dh1024()
 		};
 	DH *dh;
 
-	if ((dh=DH_new()) == NULL) return(NULL);
+	if ((dh=DH_new()) == NULL) return (NULL);
 	dh->p=BN_bin2bn(dh1024_p,sizeof(dh1024_p),NULL);
 	dh->g=BN_bin2bn(dh1024_g,sizeof(dh1024_g),NULL);
 	if ((dh->p == NULL) || (dh->g == NULL))
-		{ DH_free(dh); return(NULL); }
-	return(dh);
+		{ DH_free(dh); return (NULL); }
+	return (dh);
 	}
 
 static DH *get_dh1024dsa()
@@ -2354,13 +2354,13 @@ static DH *get_dh1024dsa()
 		};
 	DH *dh;
 
-	if ((dh=DH_new()) == NULL) return(NULL);
+	if ((dh=DH_new()) == NULL) return (NULL);
 	dh->p=BN_bin2bn(dh1024_p,sizeof(dh1024_p),NULL);
 	dh->g=BN_bin2bn(dh1024_g,sizeof(dh1024_g),NULL);
 	if ((dh->p == NULL) || (dh->g == NULL))
-		{ DH_free(dh); return(NULL); }
+		{ DH_free(dh); return (NULL); }
 	dh->length = 160;
-	return(dh);
+	return (dh);
 	}
 
 #ifndef OPENSSL_NO_PSK

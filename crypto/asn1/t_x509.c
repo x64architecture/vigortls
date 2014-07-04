@@ -86,12 +86,12 @@ int X509_print_ex_fp(FILE *fp, X509 *x, unsigned long nmflag, unsigned long cfla
         if ((b=BIO_new(BIO_s_file())) == NULL)
 		{
 		X509err(X509_F_X509_PRINT_EX_FP,ERR_R_BUF_LIB);
-                return(0);
+                return (0);
 		}
         BIO_set_fp(b,fp,BIO_NOCLOSE);
         ret=X509_print_ex(b, x, nmflag, cflag);
         BIO_free(b);
-        return(ret);
+        return (ret);
         }
 #endif
 
@@ -238,7 +238,7 @@ int X509_print_ex(BIO *bp, X509 *x, unsigned long nmflags, unsigned long cflag)
 	ret=1;
 err:
 	if (m != NULL) free(m);
-	return(ret);
+	return (ret);
 	}
 
 int X509_ocspid_print (BIO *bp, X509 *x)
@@ -286,7 +286,7 @@ int X509_ocspid_print (BIO *bp, X509 *x)
 	return (1);
 err:
 	if (der != NULL) free(der);
-	return(0);
+	return (0);
 	}
 
 int X509_signature_dump(BIO *bp, const ASN1_STRING *sig, int indent)
@@ -342,7 +342,7 @@ int ASN1_STRING_print(BIO *bp, const ASN1_STRING *v)
 	char buf[80];
 	const char *p;
 
-	if (v == NULL) return(0);
+	if (v == NULL) return (0);
 	n=0;
 	p=(const char *)v->data;
 	for (i=0; i<v->length; i++)
@@ -356,14 +356,14 @@ int ASN1_STRING_print(BIO *bp, const ASN1_STRING *v)
 		if (n >= 80)
 			{
 			if (BIO_write(bp,buf,n) <= 0)
-				return(0);
+				return (0);
 			n=0;
 			}
 		}
 	if (n > 0)
 		if (BIO_write(bp,buf,n) <= 0)
-			return(0);
-	return(1);
+			return (0);
+	return (1);
 	}
 
 int ASN1_TIME_print(BIO *bp, const ASN1_TIME *tm)
@@ -372,7 +372,7 @@ int ASN1_TIME_print(BIO *bp, const ASN1_TIME *tm)
 	if(tm->type == V_ASN1_GENERALIZEDTIME)
 				return ASN1_GENERALIZEDTIME_print(bp, tm);
 	BIO_write(bp,"Bad time value",14);
-	return(0);
+	return (0);
 }
 
 static const char *mon[12]=
@@ -421,12 +421,12 @@ int ASN1_GENERALIZEDTIME_print(BIO *bp, const ASN1_GENERALIZEDTIME *tm)
 
 	if (BIO_printf(bp,"%s %2d %02d:%02d:%02d%.*s %d%s",
 		mon[M-1],d,h,m,s,f_len,f,y,(gmt)?" GMT":"") <= 0)
-		return(0);
+		return (0);
 	else
-		return(1);
+		return (1);
 err:
 	BIO_write(bp,"Bad time value",14);
-	return(0);
+	return (0);
 	}
 
 int ASN1_UTCTIME_print(BIO *bp, const ASN1_UTCTIME *tm)
@@ -457,12 +457,12 @@ int ASN1_UTCTIME_print(BIO *bp, const ASN1_UTCTIME *tm)
 
 	if (BIO_printf(bp,"%s %2d %02d:%02d:%02d %d%s",
 		mon[M-1],d,h,m,s,y+1900,(gmt)?" GMT":"") <= 0)
-		return(0);
+		return (0);
 	else
-		return(1);
+		return (1);
 err:
 	BIO_write(bp,"Bad time value",14);
-	return(0);
+	return (0);
 	}
 
 int X509_NAME_print(BIO *bp, X509_NAME *name, int obase)
@@ -522,5 +522,5 @@ err:
 		X509err(X509_F_X509_NAME_PRINT,ERR_R_BUF_LIB);
 		}
 	free(b);
-	return(ret);
+	return (ret);
 	}

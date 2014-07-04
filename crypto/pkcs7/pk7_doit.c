@@ -385,7 +385,7 @@ BIO *PKCS7_dataInit(PKCS7 *p7, BIO *bio)
 			bio=BIO_new(BIO_s_mem());
 			if (bio == NULL)
 				goto err;
-			BIO_set_mem_eof_return(bio,0);
+			BIO_set_mem_eof_return (bio,0);
 			}
 		}
 	if (out)
@@ -402,7 +402,7 @@ err:
 			BIO_free_all(btmp);
 		out=NULL;
 		}
-	return(out);
+	return (out);
 	}
 
 static int pkcs7_cmp_ri(PKCS7_RECIP_INFO *ri, X509 *pcert)
@@ -642,7 +642,7 @@ BIO *PKCS7_dataDecode(PKCS7 *p7, EVP_PKEY *pkey, BIO *in_bio, X509 *pcert)
 		/* We need to set this so that when we have read all
 		 * the data, the encrypt BIO, if present, will read
 		 * EOF and encode the last few bytes */
-		BIO_set_mem_eof_return(bio,0);
+		BIO_set_mem_eof_return (bio,0);
 
 		if (data_body->length > 0)
 			BIO_write(bio,(char *)data_body->data,data_body->length);
@@ -651,7 +651,7 @@ BIO *PKCS7_dataDecode(PKCS7 *p7, EVP_PKEY *pkey, BIO *in_bio, X509 *pcert)
 		      bio = BIO_new_mem_buf(data_body->data,data_body->length);
 		else {
 			bio=BIO_new(BIO_s_mem());
-			BIO_set_mem_eof_return(bio,0);
+			BIO_set_mem_eof_return (bio,0);
 		}
 		if (bio == NULL)
 			goto err;
@@ -679,7 +679,7 @@ err:
 		if (bio != NULL) BIO_free_all(bio);
 		out=NULL;
 		}
-	return(out);
+	return (out);
 	}
 
 static BIO *PKCS7_find_digest(EVP_MD_CTX **pmd, BIO *bio, int nid)
@@ -893,13 +893,13 @@ int PKCS7_dataFinal(PKCS7 *p7, BIO *bio)
 		 * instead of making an extra copy.
 		 */
 		BIO_set_flags(btmp, BIO_FLAGS_MEM_RDONLY);
-		BIO_set_mem_eof_return(btmp, 0);
+		BIO_set_mem_eof_return (btmp, 0);
 		ASN1_STRING_set0(os, (unsigned char *)cont, contlen);
 		}
 	ret=1;
 err:
 	EVP_MD_CTX_cleanup(&ctx_tmp);
-	return(ret);
+	return (ret);
 	}
 
 int PKCS7_SIGNER_INFO_sign(PKCS7_SIGNER_INFO *si)
@@ -1143,7 +1143,7 @@ for (ii=0; ii<md_len; ii++) printf("%02X",md_dat[ii]); printf(" calc\n");
 		ret=1;
 err:
 	EVP_MD_CTX_cleanup(&mdc_tmp);
-	return(ret);
+	return (ret);
 	}
 
 PKCS7_ISSUER_AND_SERIAL *PKCS7_get_issuer_and_serial(PKCS7 *p7, int idx)
@@ -1161,19 +1161,19 @@ PKCS7_ISSUER_AND_SERIAL *PKCS7_get_issuer_and_serial(PKCS7 *p7, int idx)
 	if (rsk == NULL)
 		return NULL;
 	ri=sk_PKCS7_RECIP_INFO_value(rsk,0);
-	if (sk_PKCS7_RECIP_INFO_num(rsk) <= idx) return(NULL);
+	if (sk_PKCS7_RECIP_INFO_num(rsk) <= idx) return (NULL);
 	ri=sk_PKCS7_RECIP_INFO_value(rsk,idx);
-	return(ri->issuer_and_serial);
+	return (ri->issuer_and_serial);
 	}
 
 ASN1_TYPE *PKCS7_get_signed_attribute(PKCS7_SIGNER_INFO *si, int nid)
 	{
-	return(get_attribute(si->auth_attr,nid));
+	return (get_attribute(si->auth_attr,nid));
 	}
 
 ASN1_TYPE *PKCS7_get_attribute(PKCS7_SIGNER_INFO *si, int nid)
 	{
-	return(get_attribute(si->unauth_attr,nid));
+	return (get_attribute(si->unauth_attr,nid));
 	}
 
 static ASN1_TYPE *get_attribute(STACK_OF(X509_ATTRIBUTE) *sk, int nid)
@@ -1183,19 +1183,19 @@ static ASN1_TYPE *get_attribute(STACK_OF(X509_ATTRIBUTE) *sk, int nid)
 	ASN1_OBJECT *o;
 
 	o=OBJ_nid2obj(nid);
-	if (!o || !sk) return(NULL);
+	if (!o || !sk) return (NULL);
 	for (i=0; i<sk_X509_ATTRIBUTE_num(sk); i++)
 		{
 		xa=sk_X509_ATTRIBUTE_value(sk,i);
 		if (OBJ_cmp(xa->object,o) == 0)
 			{
 			if (!xa->single && sk_ASN1_TYPE_num(xa->value.set))
-				return(sk_ASN1_TYPE_value(xa->value.set,0));
+				return (sk_ASN1_TYPE_value(xa->value.set,0));
 			else
-				return(NULL);
+				return (NULL);
 			}
 		}
-	return(NULL);
+	return (NULL);
 	}
 
 ASN1_OCTET_STRING *PKCS7_digest_from_attributes(STACK_OF(X509_ATTRIBUTE) *sk)
@@ -1220,9 +1220,9 @@ int PKCS7_set_signed_attributes(PKCS7_SIGNER_INFO *p7si,
 		if ((sk_X509_ATTRIBUTE_set(p7si->auth_attr,i,
 			X509_ATTRIBUTE_dup(sk_X509_ATTRIBUTE_value(sk,i))))
 		    == NULL)
-			return(0);
+			return (0);
 		}
-	return(1);
+	return (1);
 	}
 
 int PKCS7_set_attributes(PKCS7_SIGNER_INFO *p7si, STACK_OF(X509_ATTRIBUTE) *sk)
@@ -1240,21 +1240,21 @@ int PKCS7_set_attributes(PKCS7_SIGNER_INFO *p7si, STACK_OF(X509_ATTRIBUTE) *sk)
 		if ((sk_X509_ATTRIBUTE_set(p7si->unauth_attr,i,
                         X509_ATTRIBUTE_dup(sk_X509_ATTRIBUTE_value(sk,i))))
 		    == NULL)
-			return(0);
+			return (0);
 		}
-	return(1);
+	return (1);
 	}
 
 int PKCS7_add_signed_attribute(PKCS7_SIGNER_INFO *p7si, int nid, int atrtype,
 	     void *value)
 	{
-	return(add_attribute(&(p7si->auth_attr),nid,atrtype,value));
+	return (add_attribute(&(p7si->auth_attr),nid,atrtype,value));
 	}
 
 int PKCS7_add_attribute(PKCS7_SIGNER_INFO *p7si, int nid, int atrtype,
 	     void *value)
 	{
-	return(add_attribute(&(p7si->unauth_attr),nid,atrtype,value));
+	return (add_attribute(&(p7si->unauth_attr),nid,atrtype,value));
 	}
 
 static int add_attribute(STACK_OF(X509_ATTRIBUTE) **sk, int nid, int atrtype,
@@ -1300,6 +1300,6 @@ new_attrib:
 		goto new_attrib;
 		}
 end:
-	return(1);
+	return (1);
 	}
 

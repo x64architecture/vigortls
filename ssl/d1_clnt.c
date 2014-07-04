@@ -129,9 +129,9 @@ static int dtls1_get_hello_verify(SSL *s);
 static const SSL_METHOD *dtls1_get_client_method(int ver)
 	{
 	if (ver == DTLS1_VERSION || ver == DTLS1_BAD_VER)
-		return(DTLSv1_client_method());
+		return (DTLSv1_client_method());
 	else
-		return(NULL);
+		return (NULL);
 	}
 
 IMPLEMENT_dtls1_meth_func(DTLSv1_client_method,
@@ -599,7 +599,7 @@ end:
 		BUF_MEM_free(buf);
 	if (cb != NULL)
 		cb(s,SSL_CB_CONNECT_EXIT,ret);
-	return(ret);
+	return (ret);
 	}
 
 int dtls1_client_hello(SSL *s)
@@ -722,9 +722,9 @@ int dtls1_client_hello(SSL *s)
 		}
 
 	/* SSL3_ST_CW_CLNT_HELLO_B */
-	return(dtls1_do_write(s,SSL3_RT_HANDSHAKE));
+	return (dtls1_do_write(s,SSL3_RT_HANDSHAKE));
 err:
-	return(-1);
+	return (-1);
 	}
 
 static int dtls1_get_hello_verify(SSL *s)
@@ -740,13 +740,13 @@ static int dtls1_get_hello_verify(SSL *s)
 		s->max_cert_list,
 		&ok);
 
-	if (!ok) return((int)n);
+	if (!ok) return ((int)n);
 
 	if (s->s3->tmp.message_type != DTLS1_MT_HELLO_VERIFY_REQUEST)
 		{
 		s->d1->send_cookie = 0;
 		s->s3->tmp.reuse_message=1;
-		return(1);
+		return (1);
 		}
 
 	data = (unsigned char *)s->init_msg;
@@ -1331,7 +1331,7 @@ int dtls1_send_client_key_exchange(SSL *s)
 		}
 	
 	/* SSL3_ST_CW_KEY_EXCH_B */
-	return(dtls1_do_write(s,SSL3_RT_HANDSHAKE));
+	return (dtls1_do_write(s,SSL3_RT_HANDSHAKE));
 err:
 #ifndef OPENSSL_NO_ECDH
 	BN_CTX_free(bn_ctx);
@@ -1340,7 +1340,7 @@ err:
 		EC_KEY_free(clnt_ecdh);
 	EVP_PKEY_free(srvr_pub_pkey);
 #endif
-	return(-1);
+	return (-1);
 	}
 
 int dtls1_send_client_verify(SSL *s)
@@ -1431,9 +1431,9 @@ int dtls1_send_client_verify(SSL *s)
 		}
 
 	/* s->state = SSL3_ST_CW_CERT_VRFY_B */
-	return(dtls1_do_write(s,SSL3_RT_HANDSHAKE));
+	return (dtls1_do_write(s,SSL3_RT_HANDSHAKE));
 err:
-	return(-1);
+	return (-1);
 	}
 
 int dtls1_send_client_certificate(SSL *s)
@@ -1457,14 +1457,14 @@ int dtls1_send_client_certificate(SSL *s)
 	if (s->state == SSL3_ST_CW_CERT_B)
 		{
 		/* If we get an error, we need to
-		 * ssl->rwstate=SSL_X509_LOOKUP; return(-1);
+		 * ssl->rwstate=SSL_X509_LOOKUP; return (-1);
 		 * We then get retied later */
 		i=0;
 		i = ssl_do_client_cert_cb(s, &x509, &pkey);
 		if (i < 0)
 			{
 			s->rwstate=SSL_X509_LOOKUP;
-			return(-1);
+			return (-1);
 			}
 		s->rwstate=SSL_NOTHING;
 		if ((i == 1) && (pkey != NULL) && (x509 != NULL))
@@ -1488,7 +1488,7 @@ int dtls1_send_client_certificate(SSL *s)
 				{
 				s->s3->tmp.cert_req=0;
 				ssl3_send_alert(s,SSL3_AL_WARNING,SSL_AD_NO_CERTIFICATE);
-				return(1);
+				return (1);
 				}
 			else
 				{
@@ -1514,7 +1514,7 @@ int dtls1_send_client_certificate(SSL *s)
 		dtls1_buffer_message(s, 0);
 		}
 	/* SSL3_ST_CW_CERT_D */
-	return(dtls1_do_write(s,SSL3_RT_HANDSHAKE));
+	return (dtls1_do_write(s,SSL3_RT_HANDSHAKE));
 	}
 
 

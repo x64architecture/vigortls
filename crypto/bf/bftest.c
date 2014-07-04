@@ -70,7 +70,7 @@
 int main(int argc, char *argv[])
 {
     printf("No BF support\n");
-    return(0);
+    return (0);
 }
 #else
 #include <openssl/blowfish.h>
@@ -279,7 +279,7 @@ int main(int argc, char *argv[])
 		ret=test();
 
 	EXIT(ret);
-	return(0);
+	return (0);
 	}
 
 static int print_test_data(void)
@@ -346,7 +346,7 @@ static int print_test_data(void)
 	for (j=0; j<strlen(cbc_data)+1; j++)
 		printf("%02X",ofb64_ok[j]);
 	printf("\n");
-	return(0);
+	return (0);
 	}
 
 static int test(void)
@@ -532,6 +532,6 @@ static int test(void)
 		err=1;
 		}
 
-	return(err);
+	return (err);
 	}
 #endif

@@ -335,7 +335,7 @@ static unsigned long err_string_data_hash(const ERR_STRING_DATA *a)
 
 	l=a->error;
 	ret=l^ERR_GET_LIB(l)^ERR_GET_FUNC(l);
-	return(ret^ret%19*13);
+	return (ret^ret%19*13);
 	}
 static IMPLEMENT_LHASH_HASH_FN(err_string_data, ERR_STRING_DATA)
 
@@ -754,37 +754,37 @@ void ERR_clear_error(void)
 
 
 unsigned long ERR_get_error(void)
-	{ return(get_error_values(1,0,NULL,NULL,NULL,NULL)); }
+	{ return (get_error_values(1,0,NULL,NULL,NULL,NULL)); }
 
 unsigned long ERR_get_error_line(const char **file,
 	     int *line)
-	{ return(get_error_values(1,0,file,line,NULL,NULL)); }
+	{ return (get_error_values(1,0,file,line,NULL,NULL)); }
 
 unsigned long ERR_get_error_line_data(const char **file, int *line,
 	     const char **data, int *flags)
-	{ return(get_error_values(1,0,file,line,data,flags)); }
+	{ return (get_error_values(1,0,file,line,data,flags)); }
 
 
 unsigned long ERR_peek_error(void)
-	{ return(get_error_values(0,0,NULL,NULL,NULL,NULL)); }
+	{ return (get_error_values(0,0,NULL,NULL,NULL,NULL)); }
 
 unsigned long ERR_peek_error_line(const char **file, int *line)
-	{ return(get_error_values(0,0,file,line,NULL,NULL)); }
+	{ return (get_error_values(0,0,file,line,NULL,NULL)); }
 
 unsigned long ERR_peek_error_line_data(const char **file, int *line,
 	     const char **data, int *flags)
-	{ return(get_error_values(0,0,file,line,data,flags)); }
+	{ return (get_error_values(0,0,file,line,data,flags)); }
 
 
 unsigned long ERR_peek_last_error(void)
-	{ return(get_error_values(0,1,NULL,NULL,NULL,NULL)); }
+	{ return (get_error_values(0,1,NULL,NULL,NULL,NULL)); }
 
 unsigned long ERR_peek_last_error_line(const char **file, int *line)
-	{ return(get_error_values(0,1,file,line,NULL,NULL)); }
+	{ return (get_error_values(0,1,file,line,NULL,NULL)); }
 
 unsigned long ERR_peek_last_error_line_data(const char **file, int *line,
 	     const char **data, int *flags)
-	{ return(get_error_values(0,1,file,line,data,flags)); }
+	{ return (get_error_values(0,1,file,line,data,flags)); }
 
 
 static unsigned long get_error_values(int inc, int top, const char **file, int *line,
@@ -952,7 +952,7 @@ const char *ERR_lib_error_string(unsigned long e)
 	l=ERR_GET_LIB(e);
 	d.error=ERR_PACK(l,0,0);
 	p=ERRFN(err_get_item)(&d);
-	return((p == NULL)?NULL:p->string);
+	return ((p == NULL)?NULL:p->string);
 	}
 
 const char *ERR_func_error_string(unsigned long e)
@@ -965,7 +965,7 @@ const char *ERR_func_error_string(unsigned long e)
 	f=ERR_GET_FUNC(e);
 	d.error=ERR_PACK(l,f,0);
 	p=ERRFN(err_get_item)(&d);
-	return((p == NULL)?NULL:p->string);
+	return ((p == NULL)?NULL:p->string);
 	}
 
 const char *ERR_reason_error_string(unsigned long e)
@@ -983,7 +983,7 @@ const char *ERR_reason_error_string(unsigned long e)
 		d.error=ERR_PACK(0,0,r);
 		p=ERRFN(err_get_item)(&d);
 		}
-	return((p == NULL)?NULL:p->string);
+	return ((p == NULL)?NULL:p->string);
 	}
 
 void ERR_remove_thread_state(const CRYPTO_THREADID *id)
@@ -1023,7 +1023,7 @@ ERR_STATE *ERR_get_state(void)
 	if (ret == NULL)
 		{
 		ret=(ERR_STATE *)malloc(sizeof(ERR_STATE));
-		if (ret == NULL) return(&fallback);
+		if (ret == NULL) return (&fallback);
 		CRYPTO_THREADID_cpy(&ret->tid, &tid);
 		ret->top=0;
 		ret->bottom=0;
@@ -1037,7 +1037,7 @@ ERR_STATE *ERR_get_state(void)
 		if (ERRFN(thread_get_item)(ret) != ret)
 			{
 			ERR_STATE_free(ret); /* could not insert it */
-			return(&fallback);
+			return (&fallback);
 			}
 		/* If a race occured in this function and we came second, tmpp
 		 * is the first one that we just replaced. */

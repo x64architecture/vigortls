@@ -635,7 +635,7 @@ static int multi_split(BIO *bio, char *bound, STACK_OF(BIO) **ret)
 				first = 0;
 				if(bpart) sk_BIO_push(parts, bpart);
 				bpart = BIO_new(BIO_s_mem());
-				BIO_set_mem_eof_return(bpart, 0);
+				BIO_set_mem_eof_return (bpart, 0);
 			} else if (eol)
 				BIO_write(bpart, "\r\n", 2);
 			eol = next_eol;
@@ -865,7 +865,7 @@ static int mime_hdr_cmp(const MIME_HEADER * const *a,
 	if (!(*a)->name || !(*b)->name)
 		return !!(*a)->name - !!(*b)->name;
 
-	return(strcmp((*a)->name, (*b)->name));
+	return (strcmp((*a)->name, (*b)->name));
 }
 
 static int mime_param_cmp(const MIME_PARAM * const *a,
@@ -873,7 +873,7 @@ static int mime_param_cmp(const MIME_PARAM * const *a,
 {
 	if (!(*a)->param_name || !(*b)->param_name)
 		return !!(*a)->param_name - !!(*b)->param_name;
-	return(strcmp((*a)->param_name, (*b)->param_name));
+	return (strcmp((*a)->param_name, (*b)->param_name));
 }
 
 /* Find a header with a given name (if possible) */

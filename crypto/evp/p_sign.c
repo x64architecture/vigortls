@@ -125,15 +125,15 @@ int EVP_SignFinal(EVP_MD_CTX *ctx, unsigned char *sigret, unsigned int *siglen,
 	if (!ok)
 		{
 		EVPerr(EVP_F_EVP_SIGNFINAL,EVP_R_WRONG_PUBLIC_KEY_TYPE);
-		return(0);
+		return (0);
 		}
 
 	if (ctx->digest->sign == NULL)
 		{
 		EVPerr(EVP_F_EVP_SIGNFINAL,EVP_R_NO_SIGN_FUNCTION_CONFIGURED);
-		return(0);
+		return (0);
 		}
-	return(ctx->digest->sign(ctx->digest->type,m,m_len,sigret,siglen,
+	return (ctx->digest->sign(ctx->digest->type,m,m_len,sigret,siglen,
 		pkey->pkey.ptr));
 	}
 

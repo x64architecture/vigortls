@@ -82,11 +82,11 @@ CONF_VALUE *_CONF_get_section(const CONF *conf, const char *section)
 	{
 	CONF_VALUE *v,vv;
 
-	if ((conf == NULL) || (section == NULL)) return(NULL);
+	if ((conf == NULL) || (section == NULL)) return (NULL);
 	vv.name=NULL;
 	vv.section=(char *)section;
 	v=lh_CONF_VALUE_retrieve(conf->data,&vv);
-	return(v);
+	return (v);
 	}
 
 /* Up until OpenSSL 0.9.5a, this was CONF_get_section */
@@ -97,9 +97,9 @@ STACK_OF(CONF_VALUE) *_CONF_get_section_values(const CONF *conf,
 
 	v=_CONF_get_section(conf,section);
 	if (v != NULL)
-		return((STACK_OF(CONF_VALUE) *)v->value);
+		return ((STACK_OF(CONF_VALUE) *)v->value);
 	else
-		return(NULL);
+		return (NULL);
 	}
 
 int _CONF_add_string(CONF *conf, CONF_VALUE *section, CONF_VALUE *value)
@@ -131,7 +131,7 @@ char *_CONF_get_string(const CONF *conf, const char *section, const char *name)
 	CONF_VALUE *v,vv;
 	char *p;
 
-	if (name == NULL) return(NULL);
+	if (name == NULL) return (NULL);
 	if (conf != NULL)
 		{
 		if (section != NULL)
@@ -139,23 +139,23 @@ char *_CONF_get_string(const CONF *conf, const char *section, const char *name)
 			vv.name=(char *)name;
 			vv.section=(char *)section;
 			v=lh_CONF_VALUE_retrieve(conf->data,&vv);
-			if (v != NULL) return(v->value);
+			if (v != NULL) return (v->value);
 			if (strcmp(section,"ENV") == 0)
 				{
 				p=getenv(name);
-				if (p != NULL) return(p);
+				if (p != NULL) return (p);
 				}
 			}
 		vv.section="default";
 		vv.name=(char *)name;
 		v=lh_CONF_VALUE_retrieve(conf->data,&vv);
 		if (v != NULL)
-			return(v->value);
+			return (v->value);
 		else
-			return(NULL);
+			return (NULL);
 		}
 	else
-		return(getenv(name));
+		return (getenv(name));
 	}
 
 #if 0 /* There's no way to provide error checking with this function, so
@@ -167,13 +167,13 @@ long _CONF_get_number(CONF *conf, char *section, char *name)
 	long ret=0;
 
 	str=_CONF_get_string(conf,section,name);
-	if (str == NULL) return(0);
+	if (str == NULL) return (0);
 	for (;;)
 		{
 		if (conf->meth->is_number(conf, *str))
 			ret=ret*10+conf->meth->to_int(conf, *str);
 		else
-			return(ret);
+			return (ret);
 		str++;
 		}
 	}
@@ -192,18 +192,18 @@ static int conf_value_cmp(const CONF_VALUE *a, const CONF_VALUE *b)
 	if (a->section != b->section)
 		{
 		i=strcmp(a->section,b->section);
-		if (i) return(i);
+		if (i) return (i);
 		}
 
 	if ((a->name != NULL) && (b->name != NULL))
 		{
 		i=strcmp(a->name,b->name);
-		return(i);
+		return (i);
 		}
 	else if (a->name == b->name)
-		return(0);
+		return (0);
 	else
-		return((a->name == NULL)?-1:1);
+		return ((a->name == NULL)?-1:1);
 	}
 static IMPLEMENT_LHASH_COMP_FN(conf_value, CONF_VALUE)
 
@@ -295,7 +295,7 @@ err:
 		if (v != NULL) free(v);
 		v=NULL;
 		}
-	return(v);
+	return (v);
 	}
 
 IMPLEMENT_STACK_OF(CONF_VALUE)

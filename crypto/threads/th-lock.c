@@ -109,7 +109,7 @@ void CRYPTO_thread_setup(void)
 
 	CRYPTO_set_locking_callback((void (*)(int,int,char *,int))win32_locking_callback);
 	/* id callback defined */
-	return(1);
+	return (1);
 	}
 
 static void CRYPTO_thread_cleanup(void)
@@ -202,7 +202,7 @@ unsigned long pthreads_thread_id(void)
 	unsigned long ret;
 
 	ret=(unsigned long)pthread_self();
-	return(ret);
+	return (ret);
 	}
 
 #endif /* PTHREADS */

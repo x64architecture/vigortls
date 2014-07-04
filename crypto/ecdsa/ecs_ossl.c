@@ -215,7 +215,7 @@ err:
 		EC_POINT_free(tmp_point);
 	if (X)
 		BN_clear_free(X);
-	return(ret);
+	return (ret);
 }
 
 

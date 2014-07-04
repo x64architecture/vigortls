@@ -114,7 +114,7 @@ DH *DH_new_method(ENGINE *engine)
 	if (ret == NULL)
 		{
 		DHerr(DH_F_DH_NEW_METHOD,ERR_R_MALLOC_FAILURE);
-		return(NULL);
+		return (NULL);
 		}
 
 	ret->meth = DH_get_default_method();
@@ -169,7 +169,7 @@ DH *DH_new_method(ENGINE *engine)
 		free(ret);
 		ret=NULL;
 		}
-	return(ret);
+	return (ret);
 	}
 
 void DH_free(DH *r)
@@ -234,15 +234,15 @@ int DH_get_ex_new_index(long argl, void *argp, CRYPTO_EX_new *new_func,
 
 int DH_set_ex_data(DH *d, int idx, void *arg)
 	{
-	return(CRYPTO_set_ex_data(&d->ex_data,idx,arg));
+	return (CRYPTO_set_ex_data(&d->ex_data,idx,arg));
 	}
 
 void *DH_get_ex_data(DH *d, int idx)
 	{
-	return(CRYPTO_get_ex_data(&d->ex_data,idx));
+	return (CRYPTO_get_ex_data(&d->ex_data,idx));
 	}
 
 int DH_size(const DH *dh)
 	{
-	return(BN_num_bytes(dh->p));
+	return (BN_num_bytes(dh->p));
 	}

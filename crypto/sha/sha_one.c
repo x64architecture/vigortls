@@ -73,6 +73,6 @@ unsigned char *SHA(const unsigned char *d, size_t n, unsigned char *md)
 	SHA_Update(&c,d,n);
 	SHA_Final(md,&c);
 	OPENSSL_cleanse(&c,sizeof(c));
-	return(md);
+	return (md);
 	}
 #endif

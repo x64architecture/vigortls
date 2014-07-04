@@ -433,7 +433,7 @@ void ssl_load_ciphers(void)
 static int sk_comp_cmp(const SSL_COMP * const *a,
 			const SSL_COMP * const *b)
 	{
-	return((*a)->id-(*b)->id);
+	return ((*a)->id-(*b)->id);
 	}
 
 static void load_builtin_compressions(void)
@@ -489,7 +489,7 @@ int ssl_cipher_get_evp(const SSL_SESSION *s, const EVP_CIPHER **enc,
 	const SSL_CIPHER *c;
 
 	c=s->cipher;
-	if (c == NULL) return(0);
+	if (c == NULL) return (0);
 	if (comp != NULL)
 		{
 		SSL_COMP ctmp;
@@ -509,7 +509,7 @@ int ssl_cipher_get_evp(const SSL_SESSION *s, const EVP_CIPHER **enc,
 			}
 		}
 
-	if ((enc == NULL) || (md == NULL)) return(0);
+	if ((enc == NULL) || (md == NULL)) return (0);
 
 	switch (c->algorithm_enc)
 		{
@@ -631,10 +631,10 @@ int ssl_cipher_get_evp(const SSL_SESSION *s, const EVP_CIPHER **enc,
 			 c->algorithm_mac == SSL_SHA1 &&
 			 (evp=EVP_get_cipherbyname("AES-256-CBC-HMAC-SHA1")))
 			*enc = evp, *md = NULL;
-		return(1);
+		return (1);
 		}
 	else
-		return(0);
+		return (0);
 	}
 
 int ssl_get_handshake_digest(int idx, long *mask, const EVP_MD **md) 
@@ -1041,7 +1041,7 @@ static int ssl_cipher_strength_sort(CIPHER_ORDER **head_p,
 	if (!number_uses)
 		{
 		SSLerr(SSL_F_SSL_CIPHER_STRENGTH_SORT,ERR_R_MALLOC_FAILURE);
-		return(0);
+		return (0);
 		}
 
 	/*
@@ -1063,7 +1063,7 @@ static int ssl_cipher_strength_sort(CIPHER_ORDER **head_p,
 			ssl_cipher_apply_rule(0, 0, 0, 0, 0, 0, 0, CIPHER_ORD, i, head_p, tail_p);
 
 	free(number_uses);
-	return(1);
+	return (1);
 	}
 
 static int ssl_cipher_process_rulestr(const char *rule_str,
@@ -1313,7 +1313,7 @@ static int ssl_cipher_process_rulestr(const char *rule_str,
 		if (*l == '\0') break; /* done */
 		}
 
-	return(retval);
+	return (retval);
 	}
 
 STACK_OF(SSL_CIPHER) *ssl_create_cipher_list(const SSL_METHOD *ssl_method,
@@ -1350,7 +1350,7 @@ STACK_OF(SSL_CIPHER) *ssl_create_cipher_list(const SSL_METHOD *ssl_method,
 	if (co_list == NULL)
 		{
 		SSLerr(SSL_F_SSL_CREATE_CIPHER_LIST,ERR_R_MALLOC_FAILURE);
-		return(NULL);	/* Failure */
+		return (NULL);	/* Failure */
 		}
 
 	ssl_cipher_collect_ciphers(ssl_method, num_of_ciphers,
@@ -1415,7 +1415,7 @@ STACK_OF(SSL_CIPHER) *ssl_create_cipher_list(const SSL_METHOD *ssl_method,
 		{
 		free(co_list);
 		SSLerr(SSL_F_SSL_CREATE_CIPHER_LIST,ERR_R_MALLOC_FAILURE);
-		return(NULL);	/* Failure */
+		return (NULL);	/* Failure */
 		}
 	ssl_cipher_collect_aliases(ca_list, num_of_group_aliases,
 	                           disabled_mkey, disabled_auth, disabled_enc,
@@ -1444,7 +1444,7 @@ STACK_OF(SSL_CIPHER) *ssl_create_cipher_list(const SSL_METHOD *ssl_method,
 	if (!ok)
 		{	/* Rule processing failure */
 		free(co_list);
-		return(NULL);
+		return (NULL);
 		}
 	
 	/*
@@ -1454,7 +1454,7 @@ STACK_OF(SSL_CIPHER) *ssl_create_cipher_list(const SSL_METHOD *ssl_method,
 	if ((cipherstack = sk_SSL_CIPHER_new_null()) == NULL)
 		{
 		free(co_list);
-		return(NULL);
+		return (NULL);
 		}
 
 	/*
@@ -1483,7 +1483,7 @@ STACK_OF(SSL_CIPHER) *ssl_create_cipher_list(const SSL_METHOD *ssl_method,
 	(void)sk_SSL_CIPHER_set_cmp_func(*cipher_list_by_id,ssl_cipher_ptr_id_cmp);
 
 	sk_SSL_CIPHER_sort(*cipher_list_by_id);
-	return(cipherstack);
+	return (cipherstack);
 	}
 
 char *SSL_CIPHER_description(const SSL_CIPHER *cipher, char *buf, int len)
@@ -1656,35 +1656,35 @@ char *SSL_CIPHER_description(const SSL_CIPHER *cipher, char *buf, int len)
 		{
 		len=128;
 		buf=malloc(len);
-		if (buf == NULL) return("malloc Error");
+		if (buf == NULL) return ("malloc Error");
 		}
 	else if (len < 128)
-		return("Buffer too small");
+		return ("Buffer too small");
 
 	BIO_snprintf(buf,len,format,cipher->name,ver,kx,au,enc,mac,exp_str);
-	return(buf);
+	return (buf);
 	}
 
 char *SSL_CIPHER_get_version(const SSL_CIPHER *c)
 	{
 	int i;
 
-	if (c == NULL) return("(NONE)");
+	if (c == NULL) return ("(NONE)");
 	i=(int)(c->id>>24L);
 	if (i == 3)
-		return("TLSv1/SSLv3");
+		return ("TLSv1/SSLv3");
 	else if (i == 2)
-		return("SSLv2");
+		return ("SSLv2");
 	else
-		return("unknown");
+		return ("unknown");
 	}
 
 /* return the actual cipher being used */
 const char *SSL_CIPHER_get_name(const SSL_CIPHER *c)
 	{
 	if (c != NULL)
-		return(c->name);
-	return("(NONE)");
+		return (c->name);
+	return ("(NONE)");
 	}
 
 /* number of bits for symmetric cipher */
@@ -1697,7 +1697,7 @@ int SSL_CIPHER_get_bits(const SSL_CIPHER *c, int *alg_bits)
 		if (alg_bits != NULL) *alg_bits = c->alg_bits;
 		ret = c->strength_bits;
 		}
-	return(ret);
+	return (ret);
 	}
 
 unsigned long SSL_CIPHER_get_id(const SSL_CIPHER *c)
@@ -1710,15 +1710,15 @@ SSL_COMP *ssl3_comp_find(STACK_OF(SSL_COMP) *sk, int n)
 	SSL_COMP *ctmp;
 	int i,nn;
 
-	if ((n == 0) || (sk == NULL)) return(NULL);
+	if ((n == 0) || (sk == NULL)) return (NULL);
 	nn=sk_SSL_COMP_num(sk);
 	for (i=0; i<nn; i++)
 		{
 		ctmp=sk_SSL_COMP_value(sk,i);
 		if (ctmp->id == n)
-			return(ctmp);
+			return (ctmp);
 		}
-	return(NULL);
+	return (NULL);
 	}
 
 #ifdef OPENSSL_NO_COMP
@@ -1739,7 +1739,7 @@ const char *SSL_COMP_get_name(const void *comp)
 STACK_OF(SSL_COMP) *SSL_COMP_get_compression_methods(void)
 	{
 	load_builtin_compressions();
-	return(ssl_comp_methods);
+	return (ssl_comp_methods);
 	}
 
 int SSL_COMP_add_compression_method(int id, COMP_METHOD *cm)
@@ -1776,7 +1776,7 @@ int SSL_COMP_add_compression_method(int id, COMP_METHOD *cm)
 		free(comp);
 		MemCheck_on();
 		SSLerr(SSL_F_SSL_COMP_ADD_COMPRESSION_METHOD,SSL_R_DUPLICATE_COMPRESSION_ID);
-		return(1);
+		return (1);
 		}
 	else if ((ssl_comp_methods == NULL)
 		|| !sk_SSL_COMP_push(ssl_comp_methods,comp))
@@ -1784,12 +1784,12 @@ int SSL_COMP_add_compression_method(int id, COMP_METHOD *cm)
 		free(comp);
 		MemCheck_on();
 		SSLerr(SSL_F_SSL_COMP_ADD_COMPRESSION_METHOD,ERR_R_MALLOC_FAILURE);
-		return(1);
+		return (1);
 		}
 	else
 		{
 		MemCheck_on();
-		return(0);
+		return (0);
 		}
 	}
 

@@ -65,7 +65,7 @@ static DSO_METHOD *default_DSO_meth = NULL;
 
 DSO *DSO_new(void)
 	{
-	return(DSO_new_method(NULL));
+	return (DSO_new_method(NULL));
 	}
 
 void DSO_set_default_method(DSO_METHOD *meth)
@@ -75,12 +75,12 @@ void DSO_set_default_method(DSO_METHOD *meth)
 
 DSO_METHOD *DSO_get_default_method(void)
 	{
-	return(default_DSO_meth);
+	return (default_DSO_meth);
 	}
 
 DSO_METHOD *DSO_get_method(DSO *dso)
 	{
-	return(dso->meth);
+	return (dso->meth);
 	}
 
 DSO_METHOD *DSO_set_method(DSO *dso, DSO_METHOD *meth)
@@ -88,7 +88,7 @@ DSO_METHOD *DSO_set_method(DSO *dso, DSO_METHOD *meth)
 	DSO_METHOD *mtmp;
 	mtmp = dso->meth;
 	dso->meth = meth;
-	return(mtmp);
+	return (mtmp);
 	}
 
 DSO *DSO_new_method(DSO_METHOD *meth)
@@ -104,7 +104,7 @@ DSO *DSO_new_method(DSO_METHOD *meth)
 	if(ret == NULL)
 		{
 		DSOerr(DSO_F_DSO_NEW_METHOD,ERR_R_MALLOC_FAILURE);
-		return(NULL);
+		return (NULL);
 		}
 	memset(ret, 0, sizeof(DSO));
 	ret->meth_data = sk_void_new_null();
@@ -113,7 +113,7 @@ DSO *DSO_new_method(DSO_METHOD *meth)
 		/* sk_new doesn't generate any errors so we do */
 		DSOerr(DSO_F_DSO_NEW_METHOD,ERR_R_MALLOC_FAILURE);
 		free(ret);
-		return(NULL);
+		return (NULL);
 		}
 	if(meth == NULL)
 		ret->meth = default_DSO_meth;
@@ -125,7 +125,7 @@ DSO *DSO_new_method(DSO_METHOD *meth)
 		free(ret);
 		ret=NULL;
 		}
-	return(ret);
+	return (ret);
 	}
 
 int DSO_free(DSO *dso)
@@ -135,14 +135,14 @@ int DSO_free(DSO *dso)
 	if(dso == NULL)
 		{
 		DSOerr(DSO_F_DSO_FREE,ERR_R_PASSED_NULL_PARAMETER);
-		return(0);
+		return (0);
 		}
  
 	i=CRYPTO_add(&dso->references,-1,CRYPTO_LOCK_DSO);
 #ifdef REF_PRINT
 	REF_PRINT("DSO",dso);
 #endif
-	if(i > 0) return(1);
+	if(i > 0) return (1);
 #ifdef REF_CHECK
 	if(i < 0)
 		{
@@ -154,13 +154,13 @@ int DSO_free(DSO *dso)
 	if((dso->meth->dso_unload != NULL) && !dso->meth->dso_unload(dso))
 		{
 		DSOerr(DSO_F_DSO_FREE,DSO_R_UNLOAD_FAILED);
-		return(0);
+		return (0);
 		}
  
 	if((dso->meth->finish != NULL) && !dso->meth->finish(dso))
 		{
 		DSOerr(DSO_F_DSO_FREE,DSO_R_FINISH_FAILED);
-		return(0);
+		return (0);
 		}
 	
 	sk_void_free(dso->meth_data);
@@ -170,12 +170,12 @@ int DSO_free(DSO *dso)
 		free(dso->loaded_filename);
  
 	free(dso);
-	return(1);
+	return (1);
 	}
 
 int DSO_flags(DSO *dso)
 	{
-	return((dso == NULL) ? 0 : dso->flags);
+	return ((dso == NULL) ? 0 : dso->flags);
 	}
 
 
@@ -184,11 +184,11 @@ int DSO_up_ref(DSO *dso)
 	if (dso == NULL)
 		{
 		DSOerr(DSO_F_DSO_UP_REF,ERR_R_PASSED_NULL_PARAMETER);
-		return(0);
+		return (0);
 		}
 
 	CRYPTO_add(&dso->references,1,CRYPTO_LOCK_DSO);
-	return(1);
+	return (1);
 	}
 
 DSO *DSO_load(DSO *dso, const char *filename, DSO_METHOD *meth, int flags)
@@ -245,11 +245,11 @@ DSO *DSO_load(DSO *dso, const char *filename, DSO_METHOD *meth, int flags)
 		goto err;
 		}
 	/* Load succeeded */
-	return(ret);
+	return (ret);
 err:
 	if(allocated)
 		DSO_free(ret);
-	return(NULL);
+	return (NULL);
 	}
 
 void *DSO_bind_var(DSO *dso, const char *symname)
@@ -259,20 +259,20 @@ void *DSO_bind_var(DSO *dso, const char *symname)
 	if((dso == NULL) || (symname == NULL))
 		{
 		DSOerr(DSO_F_DSO_BIND_VAR,ERR_R_PASSED_NULL_PARAMETER);
-		return(NULL);
+		return (NULL);
 		}
 	if(dso->meth->dso_bind_var == NULL)
 		{
 		DSOerr(DSO_F_DSO_BIND_VAR,DSO_R_UNSUPPORTED);
-		return(NULL);
+		return (NULL);
 		}
 	if((ret = dso->meth->dso_bind_var(dso, symname)) == NULL)
 		{
 		DSOerr(DSO_F_DSO_BIND_VAR,DSO_R_SYM_FAILURE);
-		return(NULL);
+		return (NULL);
 		}
 	/* Success */
-	return(ret);
+	return (ret);
 	}
 
 DSO_FUNC_TYPE DSO_bind_func(DSO *dso, const char *symname)
@@ -282,20 +282,20 @@ DSO_FUNC_TYPE DSO_bind_func(DSO *dso, const char *symname)
 	if((dso == NULL) || (symname == NULL))
 		{
 		DSOerr(DSO_F_DSO_BIND_FUNC,ERR_R_PASSED_NULL_PARAMETER);
-		return(NULL);
+		return (NULL);
 		}
 	if(dso->meth->dso_bind_func == NULL)
 		{
 		DSOerr(DSO_F_DSO_BIND_FUNC,DSO_R_UNSUPPORTED);
-		return(NULL);
+		return (NULL);
 		}
 	if((ret = dso->meth->dso_bind_func(dso, symname)) == NULL)
 		{
 		DSOerr(DSO_F_DSO_BIND_FUNC,DSO_R_SYM_FAILURE);
-		return(NULL);
+		return (NULL);
 		}
 	/* Success */
-	return(ret);
+	return (ret);
 	}
 
 /* I don't really like these *_ctrl functions very much to be perfectly
@@ -311,7 +311,7 @@ long DSO_ctrl(DSO *dso, int cmd, long larg, void *parg)
 	if(dso == NULL)
 		{
 		DSOerr(DSO_F_DSO_CTRL,ERR_R_PASSED_NULL_PARAMETER);
-		return(-1);
+		return (-1);
 		}
 	/* We should intercept certain generic commands and only pass control
 	 * to the method-specific ctrl() function if it's something we don't
@@ -322,19 +322,19 @@ long DSO_ctrl(DSO *dso, int cmd, long larg, void *parg)
 		return dso->flags;
 	case DSO_CTRL_SET_FLAGS:
 		dso->flags = (int)larg;
-		return(0);
+		return (0);
 	case DSO_CTRL_OR_FLAGS:
 		dso->flags |= (int)larg;
-		return(0);
+		return (0);
 	default:
 		break;
 		}
 	if((dso->meth == NULL) || (dso->meth->dso_ctrl == NULL))
 		{
 		DSOerr(DSO_F_DSO_CTRL,DSO_R_UNSUPPORTED);
-		return(-1);
+		return (-1);
 		}
-	return(dso->meth->dso_ctrl(dso,cmd,larg,parg));
+	return (dso->meth->dso_ctrl(dso,cmd,larg,parg));
 	}
 
 int DSO_set_name_converter(DSO *dso, DSO_NAME_CONVERTER_FUNC cb,
@@ -344,12 +344,12 @@ int DSO_set_name_converter(DSO *dso, DSO_NAME_CONVERTER_FUNC cb,
 		{
 		DSOerr(DSO_F_DSO_SET_NAME_CONVERTER,
 				ERR_R_PASSED_NULL_PARAMETER);
-		return(0);
+		return (0);
 		}
 	if(oldcb)
 		*oldcb = dso->name_converter;
 	dso->name_converter = cb;
-	return(1);
+	return (1);
 	}
 
 const char *DSO_get_filename(DSO *dso)
@@ -357,9 +357,9 @@ const char *DSO_get_filename(DSO *dso)
 	if(dso == NULL)
 		{
 		DSOerr(DSO_F_DSO_GET_FILENAME,ERR_R_PASSED_NULL_PARAMETER);
-		return(NULL);
+		return (NULL);
 		}
-	return(dso->filename);
+	return (dso->filename);
 	}
 
 int DSO_set_filename(DSO *dso, const char *filename)
@@ -369,25 +369,25 @@ int DSO_set_filename(DSO *dso, const char *filename)
 	if((dso == NULL) || (filename == NULL))
 		{
 		DSOerr(DSO_F_DSO_SET_FILENAME,ERR_R_PASSED_NULL_PARAMETER);
-		return(0);
+		return (0);
 		}
 	if(dso->loaded_filename)
 		{
 		DSOerr(DSO_F_DSO_SET_FILENAME,DSO_R_DSO_ALREADY_LOADED);
-		return(0);
+		return (0);
 		}
 	/* We'll duplicate filename */
 	copied = malloc(strlen(filename) + 1);
 	if(copied == NULL)
 		{
 		DSOerr(DSO_F_DSO_SET_FILENAME,ERR_R_MALLOC_FAILURE);
-		return(0);
+		return (0);
 		}
 	BUF_strlcpy(copied, filename, strlen(filename) + 1);
 	if(dso->filename)
 		free(dso->filename);
 	dso->filename = copied;
-	return(1);
+	return (1);
 	}
 
 char *DSO_merge(DSO *dso, const char *filespec1, const char *filespec2)
@@ -397,7 +397,7 @@ char *DSO_merge(DSO *dso, const char *filespec1, const char *filespec2)
 	if(dso == NULL || filespec1 == NULL)
 		{
 		DSOerr(DSO_F_DSO_MERGE,ERR_R_PASSED_NULL_PARAMETER);
-		return(NULL);
+		return (NULL);
 		}
 	if((dso->flags & DSO_FLAG_NO_NAME_TRANSLATION) == 0)
 		{
@@ -407,7 +407,7 @@ char *DSO_merge(DSO *dso, const char *filespec1, const char *filespec2)
 			result = dso->meth->dso_merger(dso,
 				filespec1, filespec2);
 		}
-	return(result);
+	return (result);
 	}
 
 char *DSO_convert_filename(DSO *dso, const char *filename)
@@ -417,14 +417,14 @@ char *DSO_convert_filename(DSO *dso, const char *filename)
 	if(dso == NULL)
 		{
 		DSOerr(DSO_F_DSO_CONVERT_FILENAME,ERR_R_PASSED_NULL_PARAMETER);
-		return(NULL);
+		return (NULL);
 		}
 	if(filename == NULL)
 		filename = dso->filename;
 	if(filename == NULL)
 		{
 		DSOerr(DSO_F_DSO_CONVERT_FILENAME,DSO_R_NO_FILENAME);
-		return(NULL);
+		return (NULL);
 		}
 	if((dso->flags & DSO_FLAG_NO_NAME_TRANSLATION) == 0)
 		{
@@ -440,11 +440,11 @@ char *DSO_convert_filename(DSO *dso, const char *filename)
 			{
 			DSOerr(DSO_F_DSO_CONVERT_FILENAME,
 					ERR_R_MALLOC_FAILURE);
-			return(NULL);
+			return (NULL);
 			}
 		BUF_strlcpy(result, filename, strlen(filename) + 1);
 		}
-	return(result);
+	return (result);
 	}
 
 const char *DSO_get_loaded_filename(DSO *dso)
@@ -453,9 +453,9 @@ const char *DSO_get_loaded_filename(DSO *dso)
 		{
 		DSOerr(DSO_F_DSO_GET_LOADED_FILENAME,
 				ERR_R_PASSED_NULL_PARAMETER);
-		return(NULL);
+		return (NULL);
 		}
-	return(dso->loaded_filename);
+	return (dso->loaded_filename);
 	}
 
 int DSO_pathbyaddr(void *addr,char *path,int sz)

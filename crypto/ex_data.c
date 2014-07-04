@@ -603,7 +603,7 @@ int CRYPTO_set_ex_data(CRYPTO_EX_DATA *ad, int idx, void *val)
 		if ((ad->sk=sk_void_new_null()) == NULL)
 			{
 			CRYPTOerr(CRYPTO_F_CRYPTO_SET_EX_DATA,ERR_R_MALLOC_FAILURE);
-			return(0);
+			return (0);
 			}
 		}
 	i=sk_void_num(ad->sk);
@@ -613,12 +613,12 @@ int CRYPTO_set_ex_data(CRYPTO_EX_DATA *ad, int idx, void *val)
 		if (!sk_void_push(ad->sk,NULL))
 			{
 			CRYPTOerr(CRYPTO_F_CRYPTO_SET_EX_DATA,ERR_R_MALLOC_FAILURE);
-			return(0);
+			return (0);
 			}
 		i++;
 		}
 	sk_void_set(ad->sk,idx,val);
-	return(1);
+	return (1);
 	}
 
 /* For a given CRYPTO_EX_DATA_ variable, get the value corresponding to a
@@ -626,11 +626,11 @@ int CRYPTO_set_ex_data(CRYPTO_EX_DATA *ad, int idx, void *val)
 void *CRYPTO_get_ex_data(const CRYPTO_EX_DATA *ad, int idx)
 	{
 	if (ad->sk == NULL)
-		return(0);
+		return (0);
 	else if (idx >= sk_void_num(ad->sk))
-		return(0);
+		return (0);
 	else
-		return(sk_void_value(ad->sk,idx));
+		return (sk_void_value(ad->sk,idx));
 	}
 
 IMPLEMENT_STACK_OF(CRYPTO_EX_DATA_FUNCS)

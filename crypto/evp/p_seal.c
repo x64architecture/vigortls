@@ -87,9 +87,9 @@ int EVP_SealInit(EVP_CIPHER_CTX *ctx, const EVP_CIPHER *type, unsigned char **ek
 		{
 		ekl[i]=EVP_PKEY_encrypt_old(ek[i],key,EVP_CIPHER_CTX_key_length(ctx),
 			pubk[i]);
-		if (ekl[i] <= 0) return(-1);
+		if (ekl[i] <= 0) return (-1);
 		}
-	return(npubk);
+	return (npubk);
 	}
 
 /* MACRO

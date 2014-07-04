@@ -13,7 +13,7 @@
 int main(int argc, char *argv[])
 {
     printf("No Whirlpool support\n");
-    return(0);
+    return (0);
 }
 #else
 

@@ -152,13 +152,13 @@ static double Time_F(int s)
 	if (s == START)
 		{
 		times(&tstart);
-		return(0);
+		return (0);
 		}
 	else
 		{
 		times(&tend);
 		ret=((double)(tend.tms_utime-tstart.tms_utime))/HZ;
-		return((ret < 1e-3)?1e-3:ret);
+		return ((ret < 1e-3)?1e-3:ret);
 		}
 #else /* !times() */
 	static struct timeb tstart,tend;
@@ -167,14 +167,14 @@ static double Time_F(int s)
 	if (s == START)
 		{
 		ftime(&tstart);
-		return(0);
+		return (0);
 		}
 	else
 		{
 		ftime(&tend);
 		i=(long)tend.millitm-(long)tstart.millitm;
 		ret=((double)(tend.time-tstart.time))+((double)i)/1000.0;
-		return((ret < 0.001)?0.001:ret);
+		return ((ret < 0.001)?0.001:ret);
 		}
 #endif
 	}

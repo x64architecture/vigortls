@@ -365,7 +365,7 @@ dtls1_get_buffered_record(SSL *s)
         pitem_free(item);
         
         /* s->d1->next_expected_seq_num++; */
-        return(1);
+        return (1);
         }
     
     return 0;

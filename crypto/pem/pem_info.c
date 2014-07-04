@@ -77,12 +77,12 @@ STACK_OF(X509_INFO) *PEM_X509_INFO_read(FILE *fp, STACK_OF(X509_INFO) *sk, pem_p
         if ((b=BIO_new(BIO_s_file())) == NULL)
 		{
 		PEMerr(PEM_F_PEM_X509_INFO_READ,ERR_R_BUF_LIB);
-                return(0);
+                return (0);
 		}
         BIO_set_fp(b,fp,BIO_NOCLOSE);
         ret=PEM_X509_INFO_read_bio(b,sk,cb,u);
         BIO_free(b);
-        return(ret);
+        return (ret);
 	}
 #endif
 
@@ -302,7 +302,7 @@ err:
 	if (name != NULL) free(name);
 	if (header != NULL) free(header);
 	if (data != NULL) free(data);
-	return(ret);
+	return (ret);
 	}
 
 
@@ -396,5 +396,5 @@ int PEM_X509_INFO_write_bio(BIO *bp, X509_INFO *xi, EVP_CIPHER *enc,
 err:
 	OPENSSL_cleanse((char *)&ctx,sizeof(ctx));
 	OPENSSL_cleanse(buf,PEM_BUFSIZE);
-	return(ret);
+	return (ret);
 	}

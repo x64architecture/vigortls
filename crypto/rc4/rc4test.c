@@ -66,7 +66,7 @@
 int main(int argc, char *argv[])
 {
     printf("No RC4 support\n");
-    return(0);
+    return (0);
 }
 #else
 #include <openssl/rc4.h>
@@ -234,6 +234,6 @@ int main(int argc, char *argv[])
 		else	printf("ok\n");
 	}
 	EXIT(err);
-	return(0);
+	return (0);
 	}
 #endif

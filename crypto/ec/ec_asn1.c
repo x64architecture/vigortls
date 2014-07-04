@@ -432,7 +432,7 @@ static int ec_asn1_group2fieldid(const EC_GROUP *group, X9_62_FIELDID *field)
 
 err :	if (tmp)
 		BN_free(tmp);
-	return(ok);
+	return (ok);
 }
 
 static int ec_asn1_group2curve(const EC_GROUP *group, X9_62_CURVE *curve)
@@ -566,7 +566,7 @@ err:	if (buffer_1)
 		BN_free(tmp_1);
 	if (tmp_2)
 		BN_free(tmp_2);
-	return(ok);
+	return (ok);
 	}
 
 static ECPARAMETERS *ec_asn1_group2parameters(const EC_GROUP *group,
@@ -687,7 +687,7 @@ err :	if(!ok)
 		BN_free(tmp);
 	if (buffer)
 		free(buffer);
-	return(ret);
+	return (ret);
 	}
 
 ECPKPARAMETERS *ec_asn1_group2pkparameters(const EC_GROUP *group, 
@@ -1013,7 +1013,7 @@ err:	if (!ok)
 		BN_free(b);
 	if (point)	
 		EC_POINT_free(point);
-	return(ret);
+	return (ret);
 }
 
 EC_GROUP *ec_asn1_pkparameters2group(const ECPKPARAMETERS *params)
@@ -1091,7 +1091,7 @@ EC_GROUP *d2i_ECPKParameters(EC_GROUP **a, const unsigned char **in, long len)
 		*a = group;
 
 	ECPKPARAMETERS_free(params);
-	return(group);
+	return (group);
 	}
 
 int i2d_ECPKParameters(const EC_GROUP *a, unsigned char **out)
@@ -1110,7 +1110,7 @@ int i2d_ECPKParameters(const EC_GROUP *a, unsigned char **out)
 		return 0;
 		}	
 	ECPKPARAMETERS_free(tmp);
-	return(ret);
+	return (ret);
 	}
 
 /* some EC_KEY functions */
@@ -1220,7 +1220,7 @@ err:
 	if (priv_key)
 		EC_PRIVATEKEY_free(priv_key);
 
-	return(ret);
+	return (ret);
 	}
 
 int	i2d_ECPrivateKey(EC_KEY *a, unsigned char **out)
@@ -1330,7 +1330,7 @@ err:
 		free(buffer);
 	if (priv_key)
 		EC_PRIVATEKEY_free(priv_key);
-	return(ok?ret:0);
+	return (ok?ret:0);
 	}
 
 int i2d_ECParameters(EC_KEY *a, unsigned char **out)

@@ -15,7 +15,7 @@
 int main(int argc, char *argv[])
 {
     printf("No SHA512 support\n");
-    return(0);
+    return (0);
 }
 #else
 

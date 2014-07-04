@@ -174,7 +174,7 @@ int des_read_pw_string(char *buf, int length, const char *prompt,
 
 	ret=des_read_pw(buf,buff,(length>BUFSIZ)?BUFSIZ:length,prompt,verify);
 	OPENSSL_cleanse(buff,BUFSIZ);
-	return(ret);
+	return (ret);
 	}
 
 static void read_till_nl(FILE *in)
@@ -239,7 +239,7 @@ int des_read_pw(char *buf, char *buff, int size, const char *prompt,
 			is_a_tty=0;
 		else
 #endif
-			return(-1);
+			return (-1);
 		}
 	memcpy(&(tty_new),&(tty_orig),sizeof(tty_orig));
 #endif
@@ -253,7 +253,7 @@ int des_read_pw(char *buf, char *buff, int size, const char *prompt,
 
 #if defined(TTY_set)
 	if (is_a_tty && (TTY_set(fileno(tty),&tty_new) == -1))
-		return(-1);
+		return (-1);
 #endif
 	ps=2;
 
@@ -303,7 +303,7 @@ error:
 	
 	if (ps >= 1) popsig();
 	if (stdin != tty) fclose(tty);
-	return(!ok);
+	return (!ok);
 	}
 
 static void pushsig(void)
@@ -392,6 +392,6 @@ static int noecho_fgets(char *buf, int size, FILE *tty)
 			break;
 			}
 		}
-	return(strlen(buf));
+	return (strlen(buf));
 	}
 #endif

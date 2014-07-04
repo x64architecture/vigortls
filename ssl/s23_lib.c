@@ -75,7 +75,7 @@ const SSL_CIPHER *ssl23_get_cipher(unsigned int u)
     unsigned int uu=ssl3_num_ciphers();
 
     if (u < uu)
-        return(ssl3_get_cipher(u));
+        return (ssl3_get_cipher(u));
     else
         return (NULL);
 }
@@ -115,7 +115,7 @@ int ssl23_read(SSL *s, void *buf, int len)
             return (n);
         if (n == 0) {
             SSLerr(SSL_F_SSL23_READ, SSL_R_SSL_HANDSHAKE_FAILURE);
-            return(-1);
+            return (-1);
         }
         return (SSL_read(s, buf, len));
     } else {

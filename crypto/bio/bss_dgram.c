@@ -129,7 +129,7 @@ typedef struct bio_dgram_data_st
 
 BIO_METHOD *BIO_s_datagram(void)
 	{
-	return(&methods_dgramp);
+	return (&methods_dgramp);
 	}
 
 BIO *BIO_new_dgram(int fd, int close_flag)
@@ -137,9 +137,9 @@ BIO *BIO_new_dgram(int fd, int close_flag)
 	BIO *ret;
 
 	ret=BIO_new(BIO_s_datagram());
-	if (ret == NULL) return(NULL);
+	if (ret == NULL) return (NULL);
 	BIO_set_fd(ret,fd,close_flag);
-	return(ret);
+	return (ret);
 	}
 
 static int dgram_new(BIO *bi)
@@ -154,26 +154,26 @@ static int dgram_new(BIO *bi)
     bi->ptr = data;
 
 	bi->flags=0;
-	return(1);
+	return (1);
 	}
 
 static int dgram_free(BIO *a)
 	{
 	bio_dgram_data *data;
 
-	if (a == NULL) return(0);
+	if (a == NULL) return (0);
 	if ( ! dgram_clear(a))
 		return 0;
 
 	data = (bio_dgram_data *)a->ptr;
 	if(data != NULL) free(data);
 
-	return(1);
+	return (1);
 	}
 
 static int dgram_clear(BIO *a)
 	{
-	if (a == NULL) return(0);
+	if (a == NULL) return (0);
 	if (a->shutdown)
 		{
 		if (a->init)
@@ -183,7 +183,7 @@ static int dgram_clear(BIO *a)
 		a->init=0;
 		a->flags=0;
 		}
-	return(1);
+	return (1);
 	}
 
 static void dgram_adjust_rcv_timeout(BIO *b)
@@ -333,7 +333,7 @@ static int dgram_read(BIO *b, char *out, int outl)
 
 		dgram_reset_rcv_timeout(b);
 		}
-	return(ret);
+	return (ret);
 	}
 
 static int dgram_write(BIO *b, const char *in, int inl)
@@ -372,7 +372,7 @@ static int dgram_write(BIO *b, const char *in, int inl)
 #endif
 			}
 		}
-	return(ret);
+	return (ret);
 	}
 
 static long dgram_ctrl(BIO *b, int cmd, long num, void *ptr)
@@ -772,7 +772,7 @@ static long dgram_ctrl(BIO *b, int cmd, long num, void *ptr)
 		ret=0;
 		break;
 		}
-	return(ret);
+	return (ret);
 	}
 
 static int dgram_puts(BIO *bp, const char *str)
@@ -781,7 +781,7 @@ static int dgram_puts(BIO *bp, const char *str)
 
 	n=strlen(str);
 	ret=dgram_write(bp,str,n);
-	return(ret);
+	return (ret);
 	}
 
 static int BIO_dgram_should_retry(int i)
@@ -801,9 +801,9 @@ static int BIO_dgram_should_retry(int i)
 	 */
 #endif
 
-		return(BIO_dgram_non_fatal_error(err));
+		return (BIO_dgram_non_fatal_error(err));
 		}
-	return(0);
+	return (0);
 	}
 
 int BIO_dgram_non_fatal_error(int err)
@@ -854,12 +854,12 @@ int BIO_dgram_non_fatal_error(int err)
 	case EALREADY:
 #endif
 
-		return(1);
+		return (1);
 		/* break; */
 	default:
 		break;
 		}
-	return(0);
+	return (0);
 	}
 
 static void get_current_time(struct timeval *t)

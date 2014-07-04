@@ -67,7 +67,7 @@ int i2a_ASN1_STRING(BIO *bp, ASN1_STRING *a, int type)
 	static const char *h="0123456789ABCDEF";
 	char buf[2];
 
-	if (a == NULL) return(0);
+	if (a == NULL) return (0);
 
 	if (a->length == 0)
 		{
@@ -89,9 +89,9 @@ int i2a_ASN1_STRING(BIO *bp, ASN1_STRING *a, int type)
 			n+=2;
 			}
 		}
-	return(n);
+	return (n);
 err:
-	return(-1);
+	return (-1);
 	}
 
 int a2i_ASN1_STRING(BIO *bp, ASN1_STRING *bs, char *buf, int size)
@@ -208,6 +208,6 @@ err_sl:
         ASN1err(ASN1_F_A2I_ASN1_STRING,ASN1_R_SHORT_LINE);
         }
     free(s);
-    return(ret);
+    return (ret);
 	}
 

@@ -73,7 +73,7 @@ BN_ULONG bn_mul_add_words(BN_ULONG *rp, const BN_ULONG *ap, int num, BN_ULONG w)
 	BN_ULONG c1=0;
 
 	assert(num >= 0);
-	if (num <= 0) return(c1);
+	if (num <= 0) return (c1);
 
 #ifndef OPENSSL_SMALL_FOOTPRINT
 	while (num&~3)
@@ -91,7 +91,7 @@ BN_ULONG bn_mul_add_words(BN_ULONG *rp, const BN_ULONG *ap, int num, BN_ULONG w)
 		ap++; rp++; num--;
 		}
 	
-	return(c1);
+	return (c1);
 	} 
 
 BN_ULONG bn_mul_words(BN_ULONG *rp, const BN_ULONG *ap, int num, BN_ULONG w)
@@ -99,7 +99,7 @@ BN_ULONG bn_mul_words(BN_ULONG *rp, const BN_ULONG *ap, int num, BN_ULONG w)
 	BN_ULONG c1=0;
 
 	assert(num >= 0);
-	if (num <= 0) return(c1);
+	if (num <= 0) return (c1);
 
 #ifndef OPENSSL_SMALL_FOOTPRINT
 	while (num&~3)
@@ -116,7 +116,7 @@ BN_ULONG bn_mul_words(BN_ULONG *rp, const BN_ULONG *ap, int num, BN_ULONG w)
 		mul(rp[0],ap[0],w,c1);
 		ap++; rp++; num--;
 		}
-	return(c1);
+	return (c1);
 	} 
 
 void bn_sqr_words(BN_ULONG *r, const BN_ULONG *a, int n)
@@ -149,7 +149,7 @@ BN_ULONG bn_mul_add_words(BN_ULONG *rp, const BN_ULONG *ap, int num, BN_ULONG w)
 	BN_ULONG bl,bh;
 
 	assert(num >= 0);
-	if (num <= 0) return((BN_ULONG)0);
+	if (num <= 0) return ((BN_ULONG)0);
 
 	bl=LBITS(w);
 	bh=HBITS(w);
@@ -169,7 +169,7 @@ BN_ULONG bn_mul_add_words(BN_ULONG *rp, const BN_ULONG *ap, int num, BN_ULONG w)
 		mul_add(rp[0],ap[0],bl,bh,c);
 		ap++; rp++; num--;
 		}
-	return(c);
+	return (c);
 	} 
 
 BN_ULONG bn_mul_words(BN_ULONG *rp, const BN_ULONG *ap, int num, BN_ULONG w)
@@ -178,7 +178,7 @@ BN_ULONG bn_mul_words(BN_ULONG *rp, const BN_ULONG *ap, int num, BN_ULONG w)
 	BN_ULONG bl,bh;
 
 	assert(num >= 0);
-	if (num <= 0) return((BN_ULONG)0);
+	if (num <= 0) return ((BN_ULONG)0);
 
 	bl=LBITS(w);
 	bh=HBITS(w);
@@ -198,7 +198,7 @@ BN_ULONG bn_mul_words(BN_ULONG *rp, const BN_ULONG *ap, int num, BN_ULONG w)
 		mul(rp[0],ap[0],bl,bh,carry);
 		ap++; rp++; num--;
 		}
-	return(carry);
+	return (carry);
 	} 
 
 void bn_sqr_words(BN_ULONG *r, const BN_ULONG *a, int n)
@@ -229,7 +229,7 @@ void bn_sqr_words(BN_ULONG *r, const BN_ULONG *a, int n)
 
 BN_ULONG bn_div_words(BN_ULONG h, BN_ULONG l, BN_ULONG d)
 	{
-	return((BN_ULONG)(((((BN_ULLONG)h)<<BN_BITS2)|l)/(BN_ULLONG)d));
+	return ((BN_ULONG)(((((BN_ULLONG)h)<<BN_BITS2)|l)/(BN_ULLONG)d));
 	}
 
 #else
@@ -241,7 +241,7 @@ BN_ULONG bn_div_words(BN_ULONG h, BN_ULONG l, BN_ULONG d)
 	BN_ULONG dh,dl,q,ret=0,th,tl,t;
 	int i,count=2;
 
-	if (d == 0) return(BN_MASK2);
+	if (d == 0) return (BN_MASK2);
 
 	i=BN_num_bits_word(d);
 	assert((i == BN_BITS2) || (h <= (BN_ULONG)1<<i));
@@ -298,7 +298,7 @@ BN_ULONG bn_div_words(BN_ULONG h, BN_ULONG l, BN_ULONG d)
 		l=(l&BN_MASK2l)<<BN_BITS4;
 		}
 	ret|=q;
-	return(ret);
+	return (ret);
 	}
 #endif /* !defined(BN_LLONG) && defined(BN_DIV2W) */
 
@@ -308,7 +308,7 @@ BN_ULONG bn_add_words(BN_ULONG *r, const BN_ULONG *a, const BN_ULONG *b, int n)
 	BN_ULLONG ll=0;
 
 	assert(n >= 0);
-	if (n <= 0) return((BN_ULONG)0);
+	if (n <= 0) return ((BN_ULONG)0);
 
 #ifndef OPENSSL_SMALL_FOOTPRINT
 	while (n&~3)
@@ -335,7 +335,7 @@ BN_ULONG bn_add_words(BN_ULONG *r, const BN_ULONG *a, const BN_ULONG *b, int n)
 		ll>>=BN_BITS2;
 		a++; b++; r++; n--;
 		}
-	return((BN_ULONG)ll);
+	return ((BN_ULONG)ll);
 	}
 #else /* !BN_LLONG */
 BN_ULONG bn_add_words(BN_ULONG *r, const BN_ULONG *a, const BN_ULONG *b, int n)
@@ -343,7 +343,7 @@ BN_ULONG bn_add_words(BN_ULONG *r, const BN_ULONG *a, const BN_ULONG *b, int n)
 	BN_ULONG c,l,t;
 
 	assert(n >= 0);
-	if (n <= 0) return((BN_ULONG)0);
+	if (n <= 0) return ((BN_ULONG)0);
 
 	c=0;
 #ifndef OPENSSL_SMALL_FOOTPRINT
@@ -386,7 +386,7 @@ BN_ULONG bn_add_words(BN_ULONG *r, const BN_ULONG *a, const BN_ULONG *b, int n)
 		r[0]=l;
 		a++; b++; r++; n--;
 		}
-	return((BN_ULONG)c);
+	return ((BN_ULONG)c);
 	}
 #endif /* !BN_LLONG */
 
@@ -396,7 +396,7 @@ BN_ULONG bn_sub_words(BN_ULONG *r, const BN_ULONG *a, const BN_ULONG *b, int n)
 	int c=0;
 
 	assert(n >= 0);
-	if (n <= 0) return((BN_ULONG)0);
+	if (n <= 0) return ((BN_ULONG)0);
 
 #ifndef OPENSSL_SMALL_FOOTPRINT
 	while (n&~3)
@@ -423,7 +423,7 @@ BN_ULONG bn_sub_words(BN_ULONG *r, const BN_ULONG *a, const BN_ULONG *b, int n)
 		if (t1 != t2) c=(t1 < t2);
 		a++; b++; r++; n--;
 		}
-	return(c);
+	return (c);
 	}
 
 #if defined(BN_MUL_COMBA) && !defined(OPENSSL_SMALL_FOOTPRINT)

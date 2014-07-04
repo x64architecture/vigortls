@@ -71,7 +71,7 @@ int EVP_CIPHER_param_to_asn1(EVP_CIPHER_CTX *c, ASN1_TYPE *type)
 		ret=EVP_CIPHER_set_asn1_iv(c, type);
 	else
 		ret=-1;
-	return(ret);
+	return (ret);
 	}
 
 int EVP_CIPHER_asn1_to_param(EVP_CIPHER_CTX *c, ASN1_TYPE *type)
@@ -84,7 +84,7 @@ int EVP_CIPHER_asn1_to_param(EVP_CIPHER_CTX *c, ASN1_TYPE *type)
 		ret=EVP_CIPHER_get_asn1_iv(c, type);
 	else
 		ret=-1;
-	return(ret);
+	return (ret);
 	}
 
 int EVP_CIPHER_get_asn1_iv(EVP_CIPHER_CTX *c, ASN1_TYPE *type)
@@ -98,11 +98,11 @@ int EVP_CIPHER_get_asn1_iv(EVP_CIPHER_CTX *c, ASN1_TYPE *type)
 		OPENSSL_assert(l <= sizeof(c->iv));
 		i=ASN1_TYPE_get_octetstring(type,c->oiv,l);
 		if (i != (int)l)
-			return(-1);
+			return (-1);
 		else if (i > 0)
 			memcpy(c->iv,c->oiv,l);
 		}
-	return(i);
+	return (i);
 	}
 
 int EVP_CIPHER_set_asn1_iv(EVP_CIPHER_CTX *c, ASN1_TYPE *type)
@@ -116,7 +116,7 @@ int EVP_CIPHER_set_asn1_iv(EVP_CIPHER_CTX *c, ASN1_TYPE *type)
 		OPENSSL_assert(j <= sizeof(c->iv));
 		i=ASN1_TYPE_set_octetstring(type,c->oiv,j);
 		}
-	return(i);
+	return (i);
 	}
 
 /* Convert the various cipher NIDs and dummies to a proper OID NID */

@@ -143,7 +143,7 @@ static BIO_METHOD methods_asn1=
 
 BIO_METHOD *BIO_f_asn1(void)
 	{
-	return(&methods_asn1);
+	return (&methods_asn1);
 	}
 
 
@@ -366,7 +366,7 @@ static int asn1_bio_gets(BIO *b, char *str, int size)
 
 static long asn1_bio_callback_ctrl(BIO *b, int cmd, bio_info_cb *fp)
 	{
-	if (b->next_bio == NULL) return(0);
+	if (b->next_bio == NULL) return (0);
 	return BIO_callback_ctrl(b->next_bio,cmd,fp);
 	}
 

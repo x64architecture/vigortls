@@ -86,7 +86,7 @@
 int main(int argc, char *argv[])
 {
     printf("No ECDH support\n");
-    return(0);
+    return (0);
 }
 #else
 #include <openssl/ec.h>
@@ -293,7 +293,7 @@ err:
 	if (y_b) BN_free(y_b);
 	if (b) EC_KEY_free(b);
 	if (a) EC_KEY_free(a);
-	return(ret);
+	return (ret);
 	}
 
 int main(int argc, char *argv[])
@@ -348,7 +348,7 @@ err:
 	ERR_remove_thread_state(NULL);
 	CRYPTO_mem_leaks_fp(stderr);
 	EXIT(ret);
-	return(ret);
+	return (ret);
 	}
 
 #if 0

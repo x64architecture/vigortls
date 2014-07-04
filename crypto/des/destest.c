@@ -72,7 +72,7 @@
 int main(int argc, char *argv[])
 {
     printf("No DES support\n");
-    return(0);
+    return (0);
 }
 #else
 #include <openssl/des.h>
@@ -815,7 +815,7 @@ plain[8+4], plain[8+5], plain[8+6], plain[8+7]);
 		err=1;
 		}
 	printf("\n");
-	return(err);
+	return (err);
 	}
 
 static char *pt(unsigned char *p)
@@ -834,7 +834,7 @@ static char *pt(unsigned char *p)
 		ret[i*2+1]=f[p[i]&0xf];
 		}
 	ret[16]='\0';
-	return(ret);
+	return (ret);
 	}
 
 #ifndef LIBDES_LIT
@@ -865,7 +865,7 @@ static int cfb_test(int bits, unsigned char *cfb_cipher)
 		for (i=0; i<24; i+=8)
 			printf("%s\n",pt(&(cfb_buf1[i])));
 		}
-	return(err);
+	return (err);
 	}
 
 static int cfb64_test(unsigned char *cfb_cipher)
@@ -898,7 +898,7 @@ static int cfb64_test(unsigned char *cfb_cipher)
 		for (i=0; i<24; i+=8)
 			printf("%s\n",pt(&(cfb_buf2[i])));
 		}
-	return(err);
+	return (err);
 	}
 
 static int ede_cfb64_test(unsigned char *cfb_cipher)
@@ -935,7 +935,7 @@ static int ede_cfb64_test(unsigned char *cfb_cipher)
 		for (i=0; i<24; i+=8)
 			printf("%s\n",pt(&(cfb_buf2[i])));
 		}
-	return(err);
+	return (err);
 	}
 
 #endif

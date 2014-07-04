@@ -66,7 +66,7 @@
 #undef sqr
 
 /*
- * "m"(a), "+m"(r)	is the way to favor DirectPath µ-code;
+ * "m"(a), "+m"(r)	is the way to favor DirectPath ï¿½-code;
  * "g"(0)		let the compiler to decide where does it
  *			want to keep the value of zero;
  */
@@ -110,7 +110,7 @@ BN_ULONG bn_mul_add_words(BN_ULONG *rp, const BN_ULONG *ap, int num, BN_ULONG w)
 	{
 	BN_ULONG c1=0;
 
-	if (num <= 0) return(c1);
+	if (num <= 0) return (c1);
 
 	while (num&~3)
 		{
@@ -127,14 +127,14 @@ BN_ULONG bn_mul_add_words(BN_ULONG *rp, const BN_ULONG *ap, int num, BN_ULONG w)
 		mul_add(rp[2],ap[2],w,c1); return c1;
 		}
 	
-	return(c1);
+	return (c1);
 	} 
 
 BN_ULONG bn_mul_words(BN_ULONG *rp, const BN_ULONG *ap, int num, BN_ULONG w)
 	{
 	BN_ULONG c1=0;
 
-	if (num <= 0) return(c1);
+	if (num <= 0) return (c1);
 
 	while (num&~3)
 		{
@@ -150,7 +150,7 @@ BN_ULONG bn_mul_words(BN_ULONG *rp, const BN_ULONG *ap, int num, BN_ULONG w)
 		mul(rp[1],ap[1],w,c1); if (--num == 0) return c1;
 		mul(rp[2],ap[2],w,c1);
 		}
-	return(c1);
+	return (c1);
 	} 
 
 void bn_sqr_words(BN_ULONG *r, const BN_ULONG *a, int n)
@@ -236,7 +236,7 @@ BN_ULONG bn_sub_words(BN_ULONG *r, BN_ULONG *a, BN_ULONG *b, int n)
 	BN_ULONG t1,t2;
 	int c=0;
 
-	if (n <= 0) return((BN_ULONG)0);
+	if (n <= 0) return ((BN_ULONG)0);
 
 	for (;;)
 		{
@@ -264,7 +264,7 @@ BN_ULONG bn_sub_words(BN_ULONG *r, BN_ULONG *a, BN_ULONG *b, int n)
 		b+=4;
 		r+=4;
 		}
-	return(c);
+	return (c);
 	}
 #endif
 

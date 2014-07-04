@@ -212,5 +212,5 @@ int main(int argc,char **argv)
  err:
 	err=((err)?1:0);
 	EXIT(err);
-	return(err);
+	return (err);
 	}

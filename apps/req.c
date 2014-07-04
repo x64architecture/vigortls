@@ -1154,7 +1154,7 @@ static int make_REQ(X509_REQ *req, EVP_PKEY *pkey, char *subj, int multirdn,
 
 	ret=1;
 err:
-	return(ret);
+	return (ret);
 	}
 
 /*
@@ -1450,21 +1450,21 @@ start:
 			}
 		}
 
-	if (buf[0] == '\0') return(0);
+	if (buf[0] == '\0') return (0);
 	else if (buf[0] == '\n')
 		{
 		if ((def == NULL) || (def[0] == '\0'))
-			return(1);
+			return (1);
 		BUF_strlcpy(buf,def,sizeof buf);
 		BUF_strlcat(buf,"\n",sizeof buf);
 		}
-	else if ((buf[0] == '.') && (buf[1] == '\n')) return(1);
+	else if ((buf[0] == '.') && (buf[1] == '\n')) return (1);
 
 	i=strlen(buf);
 	if (buf[i-1] != '\n')
 		{
 		BIO_printf(bio_err,"weird input :-(\n");
-		return(0);
+		return (0);
 		}
 	buf[--i]='\0';
 #ifdef CHARSET_EBCDIC
@@ -1481,7 +1481,7 @@ start:
 				(unsigned char *) buf, -1,-1,mval)) goto err;
 	ret=1;
 err:
-	return(ret);
+	return (ret);
 	}
 
 static int add_attribute_object(X509_REQ *req, char *text, const char *def,
@@ -1515,21 +1515,21 @@ start:
 			}
 		}
 
-	if (buf[0] == '\0') return(0);
+	if (buf[0] == '\0') return (0);
 	else if (buf[0] == '\n')
 		{
 		if ((def == NULL) || (def[0] == '\0'))
-			return(1);
+			return (1);
 		BUF_strlcpy(buf,def,sizeof buf);
 		BUF_strlcat(buf,"\n",sizeof buf);
 		}
-	else if ((buf[0] == '.') && (buf[1] == '\n')) return(1);
+	else if ((buf[0] == '.') && (buf[1] == '\n')) return (1);
 
 	i=strlen(buf);
 	if (buf[i-1] != '\n')
 		{
 		BIO_printf(bio_err,"weird input :-(\n");
-		return(0);
+		return (0);
 		}
 	buf[--i]='\0';
 #ifdef CHARSET_EBCDIC
@@ -1549,9 +1549,9 @@ start:
 		goto err;
 	}
 
-	return(1);
+	return (1);
 err:
-	return(0);
+	return (0);
 	}
 
 static int req_check_len(int len, int n_min, int n_max)
@@ -1559,14 +1559,14 @@ static int req_check_len(int len, int n_min, int n_max)
 	if ((n_min > 0) && (len < n_min))
 		{
 		BIO_printf(bio_err,"string is too short, it needs to be at least %d bytes long\n",n_min);
-		return(0);
+		return (0);
 		}
 	if ((n_max >= 0) && (len > n_max))
 		{
 		BIO_printf(bio_err,"string is too long, it needs to be less than  %d bytes long\n",n_max);
-		return(0);
+		return (0);
 		}
-	return(1);
+	return (1);
 	}
 
 /* Check if the end of a string matches 'end' */

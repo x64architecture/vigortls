@@ -80,9 +80,9 @@ void EVP_set_pw_prompt(const char *prompt)
 char *EVP_get_pw_prompt(void)
 	{
 	if (prompt_string[0] == '\0')
-		return(NULL);
+		return (NULL);
 	else
-		return(prompt_string);
+		return (prompt_string);
 	}
 
 /* For historical reasons, the standard function for reading passwords is
@@ -126,7 +126,7 @@ int EVP_BytesToKey(const EVP_CIPHER *type, const EVP_MD *md,
 	OPENSSL_assert(nkey <= EVP_MAX_KEY_LENGTH);
 	OPENSSL_assert(niv <= EVP_MAX_IV_LENGTH);
 
-	if (data == NULL) return(nkey);
+	if (data == NULL) return (nkey);
 
 	EVP_MD_CTX_init(&c);
 	for (;;)

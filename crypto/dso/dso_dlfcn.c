@@ -133,7 +133,7 @@ static DSO_METHOD dso_meth_dlfcn = {
 
 DSO_METHOD *DSO_METHOD_dlfcn(void)
 	{
-	return(&dso_meth_dlfcn);
+	return (&dso_meth_dlfcn);
 	}
 
 /* Prior to using the dlopen() function, we should decide on the flag
@@ -191,14 +191,14 @@ static int dlfcn_load(DSO *dso)
 		}
 	/* Success */
 	dso->loaded_filename = filename;
-	return(1);
+	return (1);
 err:
 	/* Cleanup! */
 	if(filename != NULL)
 		free(filename);
 	if(ptr != NULL)
 		dlclose(ptr);
-	return(0);
+	return (0);
 }
 
 static int dlfcn_unload(DSO *dso)
@@ -207,10 +207,10 @@ static int dlfcn_unload(DSO *dso)
 	if(dso == NULL)
 		{
 		DSOerr(DSO_F_DLFCN_UNLOAD,ERR_R_PASSED_NULL_PARAMETER);
-		return(0);
+		return (0);
 		}
 	if(sk_void_num(dso->meth_data) < 1)
-		return(1);
+		return (1);
 	ptr = sk_void_pop(dso->meth_data);
 	if(ptr == NULL)
 		{
@@ -218,11 +218,11 @@ static int dlfcn_unload(DSO *dso)
 		/* Should push the value back onto the stack in
 		 * case of a retry. */
 		sk_void_push(dso->meth_data, ptr);
-		return(0);
+		return (0);
 		}
 	/* For now I'm not aware of any errors associated with dlclose() */
 	dlclose(ptr);
-	return(1);
+	return (1);
 	}
 
 static void *dlfcn_bind_var(DSO *dso, const char *symname)
@@ -232,27 +232,27 @@ static void *dlfcn_bind_var(DSO *dso, const char *symname)
 	if((dso == NULL) || (symname == NULL))
 		{
 		DSOerr(DSO_F_DLFCN_BIND_VAR,ERR_R_PASSED_NULL_PARAMETER);
-		return(NULL);
+		return (NULL);
 		}
 	if(sk_void_num(dso->meth_data) < 1)
 		{
 		DSOerr(DSO_F_DLFCN_BIND_VAR,DSO_R_STACK_ERROR);
-		return(NULL);
+		return (NULL);
 		}
 	ptr = sk_void_value(dso->meth_data, sk_void_num(dso->meth_data) - 1);
 	if(ptr == NULL)
 		{
 		DSOerr(DSO_F_DLFCN_BIND_VAR,DSO_R_NULL_HANDLE);
-		return(NULL);
+		return (NULL);
 		}
 	sym = dlsym(ptr, symname);
 	if(sym == NULL)
 		{
 		DSOerr(DSO_F_DLFCN_BIND_VAR,DSO_R_SYM_FAILURE);
 		ERR_add_error_data(4, "symname(", symname, "): ", dlerror());
-		return(NULL);
+		return (NULL);
 		}
-	return(sym);
+	return (sym);
 	}
 
 static DSO_FUNC_TYPE dlfcn_bind_func(DSO *dso, const char *symname)
@@ -266,25 +266,25 @@ static DSO_FUNC_TYPE dlfcn_bind_func(DSO *dso, const char *symname)
 	if((dso == NULL) || (symname == NULL))
 		{
 		DSOerr(DSO_F_DLFCN_BIND_FUNC,ERR_R_PASSED_NULL_PARAMETER);
-		return(NULL);
+		return (NULL);
 		}
 	if(sk_void_num(dso->meth_data) < 1)
 		{
 		DSOerr(DSO_F_DLFCN_BIND_FUNC,DSO_R_STACK_ERROR);
-		return(NULL);
+		return (NULL);
 		}
 	ptr = sk_void_value(dso->meth_data, sk_void_num(dso->meth_data) - 1);
 	if(ptr == NULL)
 		{
 		DSOerr(DSO_F_DLFCN_BIND_FUNC,DSO_R_NULL_HANDLE);
-		return(NULL);
+		return (NULL);
 		}
 	u.dlret = dlsym(ptr, symname);
 	if(u.dlret == NULL)
 		{
 		DSOerr(DSO_F_DLFCN_BIND_FUNC,DSO_R_SYM_FAILURE);
 		ERR_add_error_data(4, "symname(", symname, "): ", dlerror());
-		return(NULL);
+		return (NULL);
 		}
 	return u.sym;
 	}
@@ -298,7 +298,7 @@ static char *dlfcn_merger(DSO *dso, const char *filespec1,
 		{
 		DSOerr(DSO_F_DLFCN_MERGER,
 				ERR_R_PASSED_NULL_PARAMETER);
-		return(NULL);
+		return (NULL);
 		}
 	/* If the first file specification is a rooted path, it rules.
 	   same goes if the second file specification is missing. */
@@ -308,7 +308,7 @@ static char *dlfcn_merger(DSO *dso, const char *filespec1,
 		if(!merged)
 			{
 			DSOerr(DSO_F_DLFCN_MERGER, ERR_R_MALLOC_FAILURE);
-			return(NULL);
+			return (NULL);
 			}
 		strcpy(merged, filespec1);
 		}
@@ -320,7 +320,7 @@ static char *dlfcn_merger(DSO *dso, const char *filespec1,
 			{
 			DSOerr(DSO_F_DLFCN_MERGER,
 				ERR_R_MALLOC_FAILURE);
-			return(NULL);
+			return (NULL);
 			}
 		strcpy(merged, filespec2);
 		}
@@ -346,13 +346,13 @@ static char *dlfcn_merger(DSO *dso, const char *filespec1,
 			{
 			DSOerr(DSO_F_DLFCN_MERGER,
 				ERR_R_MALLOC_FAILURE);
-			return(NULL);
+			return (NULL);
 			}
 		strcpy(merged, filespec2);
 		merged[spec2len] = '/';
 		strcpy(&merged[spec2len + 1], filespec1);
 		}
-	return(merged);
+	return (merged);
 	}
 
 #ifdef OPENSSL_SYS_MACOSX
@@ -384,7 +384,7 @@ static char *dlfcn_name_converter(DSO *dso, const char *filename)
 		{
 		DSOerr(DSO_F_DLFCN_NAME_CONVERTER,
 				DSO_R_NAME_TRANSLATION_FAILED);
-		return(NULL);
+		return (NULL);
 		}
 	if(transform)
 		{
@@ -395,7 +395,7 @@ static char *dlfcn_name_converter(DSO *dso, const char *filename)
 		}
 	else
 		sprintf(translated, "%s", filename);
-	return(translated);
+	return (translated);
 	}
 
 #ifdef __sgi

@@ -517,7 +517,7 @@ err:
 		BN_CTX_free(ctx);
 	if (buffer != NULL)
 		free(buffer);
-	return(ret);
+	return (ret);
 	}
 
 static int eckey_param_decode(EVP_PKEY *pkey,

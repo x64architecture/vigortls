@@ -65,10 +65,10 @@ int ASN1_TYPE_set_octetstring(ASN1_TYPE *a, unsigned char *data, int len)
 	{
 	ASN1_STRING *os;
 
-	if ((os=M_ASN1_OCTET_STRING_new()) == NULL) return(0);
-	if (!M_ASN1_OCTET_STRING_set(os,data,len)) return(0);
+	if ((os=M_ASN1_OCTET_STRING_new()) == NULL) return (0);
+	if (!M_ASN1_OCTET_STRING_set(os,data,len)) return (0);
 	ASN1_TYPE_set(a,V_ASN1_OCTET_STRING,os);
-	return(1);
+	return (1);
 	}
 
 /* int max_len:  for returned value    */
@@ -81,7 +81,7 @@ int ASN1_TYPE_get_octetstring(ASN1_TYPE *a, unsigned char *data,
 	if ((a->type != V_ASN1_OCTET_STRING) || (a->value.octet_string == NULL))
 		{
 		ASN1err(ASN1_F_ASN1_TYPE_GET_OCTETSTRING,ASN1_R_DATA_IS_WRONG);
-		return(-1);
+		return (-1);
 		}
 	p=M_ASN1_STRING_data(a->value.octet_string);
 	ret=M_ASN1_STRING_length(a->value.octet_string);
@@ -90,7 +90,7 @@ int ASN1_TYPE_get_octetstring(ASN1_TYPE *a, unsigned char *data,
 	else
 		num=max_len;
 	memcpy(data,p,num);
-	return(ret);
+	return (ret);
 	}
 
 int ASN1_TYPE_set_int_octetstring(ASN1_TYPE *a, long num, unsigned char *data,
@@ -113,12 +113,12 @@ int ASN1_TYPE_set_int_octetstring(ASN1_TYPE *a, long num, unsigned char *data,
 
 	size=ASN1_object_size(1,n,V_ASN1_SEQUENCE);
 
-	if ((osp=ASN1_STRING_new()) == NULL) return(0);
+	if ((osp=ASN1_STRING_new()) == NULL) return (0);
 	/* Grow the 'string' */
 	if (!ASN1_STRING_set(osp,NULL,size))
 		{
 		ASN1_STRING_free(osp);
-		return(0);
+		return (0);
 		}
 
 	M_ASN1_STRING_length_set(osp, size);
@@ -129,7 +129,7 @@ int ASN1_TYPE_set_int_octetstring(ASN1_TYPE *a, long num, unsigned char *data,
 	M_i2d_ASN1_OCTET_STRING(&os,&p);
 
 	ASN1_TYPE_set(a,V_ASN1_SEQUENCE,osp);
-	return(1);
+	return (1);
 	}
 
 /* we return the actual length..., num may be missing, in which
@@ -184,6 +184,6 @@ err:
 		}
 	if (os != NULL) M_ASN1_OCTET_STRING_free(os);
 	if (ai != NULL) M_ASN1_INTEGER_free(ai);
-	return(ret);
+	return (ret);
 	}
 

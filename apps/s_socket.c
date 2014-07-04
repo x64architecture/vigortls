@@ -127,7 +127,7 @@ static LONG FAR PASCAL topHookProc(HWND hwnd, UINT message, WPARAM wParam,
 static BOOL CALLBACK enumproc(HWND hwnd,LPARAM lParam)
 	{
 	topWnd=hwnd;
-	return(FALSE);
+	return (FALSE);
 	}
 
 #endif /* OPENSSL_SYS_WIN32 */
@@ -161,11 +161,11 @@ static int ssl_sock_init(void)
 			{
 			err=WSAGetLastError();
 			BIO_printf(bio_err,"unable to start WINSOCK, error code=%d\n",err);
-			return(0);
+			return (0);
 			}
 		}
 #endif /* OPENSSL_SYS_WINDOWS */
-	return(1);
+	return (1);
 	}
 
 int init_client(int *sock, char *host, int port, int type)
@@ -184,7 +184,7 @@ static int init_client_ip(int *sock, unsigned char ip[4], int port, int type)
 	struct sockaddr_in them;
 	int s,i;
 
-	if (!ssl_sock_init()) return(0);
+	if (!ssl_sock_init()) return (0);
 
 	memset((char *)&them,0,sizeof(them));
 	them.sin_family=AF_INET;
@@ -201,21 +201,21 @@ static int init_client_ip(int *sock, unsigned char ip[4], int port, int type)
 	else /* ( type == SOCK_DGRAM) */
 		s=socket(AF_INET,SOCK_DGRAM,IPPROTO_UDP);
 			
-	if (s == INVALID_SOCKET) { perror("socket"); return(0); }
+	if (s == INVALID_SOCKET) { perror("socket"); return (0); }
 
 #if defined(SO_KEEPALIVE)
 	if (type == SOCK_STREAM)
 		{
 		i=0;
 		i=setsockopt(s,SOL_SOCKET,SO_KEEPALIVE,(char *)&i,sizeof(i));
-		if (i < 0) { closesocket(s); perror("keepalive"); return(0); }
+		if (i < 0) { closesocket(s); perror("keepalive"); return (0); }
 		}
 #endif
 
 	if (connect(s,(struct sockaddr *)&them,sizeof(them)) == -1)
-		{ closesocket(s); perror("connect"); return(0); }
+		{ closesocket(s); perror("connect"); return (0); }
 	*sock=s;
-	return(1);
+	return (1);
 	}
 
 int do_server(int port, int type, int *ret, int (*cb)(char *hostname, int s, unsigned char *context), unsigned char *context)
@@ -225,12 +225,12 @@ int do_server(int port, int type, int *ret, int (*cb)(char *hostname, int s, uns
 	int accept_socket = 0;
 	int i;
 
-	if (!init_server(&accept_socket,port,type)) return(0);
+	if (!init_server(&accept_socket,port,type)) return (0);
 
 	if (ret != NULL)
 		{
 		*ret=accept_socket;
-		/* return(1);*/
+		/* return (1);*/
 		}
   	for (;;)
   		{
@@ -239,7 +239,7 @@ int do_server(int port, int type, int *ret, int (*cb)(char *hostname, int s, uns
 			if (do_accept(accept_socket,&sock,&name) == 0)
 				{
 				SHUTDOWN(accept_socket);
-				return(0);
+				return (0);
 				}
 			}
 		else
@@ -251,7 +251,7 @@ int do_server(int port, int type, int *ret, int (*cb)(char *hostname, int s, uns
 		if (i < 0)
 			{
 			SHUTDOWN2(accept_socket);
-			return(i);
+			return (i);
 			}
 		}
 	}
@@ -262,7 +262,7 @@ static int init_server_long(int *sock, int port, char *ip, int type)
 	struct sockaddr_in server;
 	int s= -1;
 
-	if (!ssl_sock_init()) return(0);
+	if (!ssl_sock_init()) return (0);
 
 	memset((char *)&server,0,sizeof(server));
 	server.sin_family=AF_INET;
@@ -306,12 +306,12 @@ err:
 		{
 		SHUTDOWN(s);
 		}
-	return(ret);
+	return (ret);
 	}
 
 static int init_server(int *sock, int port, int type)
 	{
-	return(init_server_long(sock, port, NULL, type));
+	return (init_server_long(sock, port, NULL, type));
 	}
 
 static int do_accept(int acc_sock, int *sock, char **host)
@@ -322,7 +322,7 @@ static int do_accept(int acc_sock, int *sock, char **host)
 	int len;
 /*	struct linger ling; */
 
-	if (!ssl_sock_init()) return(0);
+	if (!ssl_sock_init()) return (0);
 
 #ifndef OPENSSL_SYS_WINDOWS
 redoit:
@@ -351,17 +351,17 @@ redoit:
 		fprintf(stderr,"errno=%d ",errno);
 		perror("accept");
 #endif
-		return(0);
+		return (0);
 		}
 
 /*
 	ling.l_onoff=1;
 	ling.l_linger=0;
 	i=setsockopt(ret,SOL_SOCKET,SO_LINGER,(char *)&ling,sizeof(ling));
-	if (i < 0) { perror("linger"); return(0); }
+	if (i < 0) { perror("linger"); return (0); }
 	i=0;
 	i=setsockopt(ret,SOL_SOCKET,SO_KEEPALIVE,(char *)&i,sizeof(i));
-	if (i < 0) { perror("keepalive"); return(0); }
+	if (i < 0) { perror("keepalive"); return (0); }
 */
 
 	if (host == NULL) goto end;
@@ -377,7 +377,7 @@ redoit:
 		{
 		BIO_printf(bio_err,"bad gethostbyaddr\n");
 		*host=NULL;
-		/* return(0); */
+		/* return (0); */
 		}
 	else
 		{
@@ -385,7 +385,7 @@ redoit:
 			{
 			perror("malloc");
 			closesocket(ret);
-			return(0);
+			return (0);
 			}
 		BUF_strlcpy(*host,h1->h_name,strlen(h1->h_name)+1);
 
@@ -394,18 +394,18 @@ redoit:
 			{
 			BIO_printf(bio_err,"gethostbyname failure\n");
 			closesocket(ret);
-			return(0);
+			return (0);
 			}
 		if (h2->h_addrtype != AF_INET)
 			{
 			BIO_printf(bio_err,"gethostbyname addr is not AF_INET\n");
 			closesocket(ret);
-			return(0);
+			return (0);
 			}
 		}
 end:
 	*sock=ret;
-	return(1);
+	return (1);
 	}
 
 int extract_host_port(char *str, char **host_ptr, unsigned char *ip,
@@ -418,7 +418,7 @@ int extract_host_port(char *str, char **host_ptr, unsigned char *ip,
 	if (p == NULL)
 		{
 		BIO_printf(bio_err,"no port defined\n");
-		return(0);
+		return (0);
 		}
 	*(p++)='\0';
 
@@ -428,9 +428,9 @@ int extract_host_port(char *str, char **host_ptr, unsigned char *ip,
 
 	if (!extract_port(p,port_ptr))
 		goto err;
-	return(1);
+	return (1);
 err:
-	return(0);
+	return (0);
 	}
 
 static int host_ip(char *str, unsigned char ip[4])
@@ -455,7 +455,7 @@ static int host_ip(char *str, unsigned char ip[4])
 		{ /* do a gethostbyname */
 		struct hostent *he;
 
-		if (!ssl_sock_init()) return(0);
+		if (!ssl_sock_init()) return (0);
 
 		he=GetHostByName(str);
 		if (he == NULL)
@@ -466,16 +466,16 @@ static int host_ip(char *str, unsigned char ip[4])
 		if (he->h_addrtype != AF_INET)
 			{
 			BIO_printf(bio_err,"gethostbyname addr is not AF_INET\n");
-			return(0);
+			return (0);
 			}
 		ip[0]=he->h_addr_list[0][0];
 		ip[1]=he->h_addr_list[0][1];
 		ip[2]=he->h_addr_list[0][2];
 		ip[3]=he->h_addr_list[0][3];
 		}
-	return(1);
+	return (1);
 err:
-	return(0);
+	return (0);
 	}
 
 int extract_port(char *str, short *port_ptr)
@@ -492,11 +492,11 @@ int extract_port(char *str, short *port_ptr)
 		if (s == NULL)
 			{
 			BIO_printf(bio_err,"getservbyname failure for %s\n",str);
-			return(0);
+			return (0);
 			}
 		*port_ptr=ntohs((unsigned short)s->s_port);
 		}
-	return(1);
+	return (1);
 	}
 
 #define GHBN_NUM	4
@@ -533,7 +533,7 @@ static struct hostent *GetHostByName(char *name)
 		{
 		ghbn_miss++;
 		ret=gethostbyname(name);
-		if (ret == NULL) return(NULL);
+		if (ret == NULL) return (NULL);
 		/* else add to cache */
 		if(strlen(name) < sizeof ghbn_cache[0].name)
 			{
@@ -541,14 +541,14 @@ static struct hostent *GetHostByName(char *name)
 			memcpy((char *)&(ghbn_cache[lowi].ent),ret,sizeof(struct hostent));
 			ghbn_cache[lowi].order=ghbn_miss+ghbn_hits;
 			}
-		return(ret);
+		return (ret);
 		}
 	else
 		{
 		ghbn_hits++;
 		ret= &(ghbn_cache[i].ent);
 		ghbn_cache[i].order=ghbn_miss+ghbn_hits;
-		return(ret);
+		return (ret);
 		}
 	}
 

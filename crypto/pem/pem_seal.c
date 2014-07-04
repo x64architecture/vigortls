@@ -114,7 +114,7 @@ int PEM_SealInit(PEM_ENCODE_SEAL_CTX *ctx, EVP_CIPHER *type, EVP_MD *md_type,
 err:
 	if (s != NULL) free(s);
 	OPENSSL_cleanse(key,EVP_MAX_KEY_LENGTH);
-	return(ret);
+	return (ret);
 	}
 
 void PEM_SealUpdate(PEM_ENCODE_SEAL_CTX *ctx, unsigned char *out, int *outl,
@@ -178,5 +178,5 @@ err:
 	EVP_MD_CTX_cleanup(&ctx->md);
 	EVP_CIPHER_CTX_cleanup(&ctx->cipher);
 	if (s != NULL) free(s);
-	return(ret);
+	return (ret);
 	}

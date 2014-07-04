@@ -84,15 +84,15 @@ int BN_add(BIGNUM *r, const BIGNUM *a, const BIGNUM *b)
 
 		if (BN_ucmp(a,b) < 0)
 			{
-			if (!BN_usub(r,b,a)) return(0);
+			if (!BN_usub(r,b,a)) return (0);
 			r->neg=1;
 			}
 		else
 			{
-			if (!BN_usub(r,a,b)) return(0);
+			if (!BN_usub(r,a,b)) return (0);
 			r->neg=0;
 			}
-		return(1);
+		return (1);
 		}
 
 	ret = BN_uadd(r,a,b);
@@ -179,10 +179,10 @@ int BN_usub(BIGNUM *r, const BIGNUM *a, const BIGNUM *b)
 	if (dif < 0)	/* hmm... should not be happening */
 		{
 		BNerr(BN_F_BN_USUB,BN_R_ARG2_LT_ARG3);
-		return(0);
+		return (0);
 		}
 
-	if (bn_wexpand(r,max) == NULL) return(0);
+	if (bn_wexpand(r,max) == NULL) return (0);
 
 	ap=a->d;
 	bp=b->d;
@@ -251,7 +251,7 @@ int BN_usub(BIGNUM *r, const BIGNUM *a, const BIGNUM *b)
 	r->top=max;
 	r->neg=0;
 	bn_correct_top(r);
-	return(1);
+	return (1);
 	}
 
 int BN_sub(BIGNUM *r, const BIGNUM *a, const BIGNUM *b)
@@ -282,26 +282,26 @@ int BN_sub(BIGNUM *r, const BIGNUM *a, const BIGNUM *b)
 
 	if (add)
 		{
-		if (!BN_uadd(r,a,b)) return(0);
+		if (!BN_uadd(r,a,b)) return (0);
 		r->neg=neg;
-		return(1);
+		return (1);
 		}
 
 	/* We are actually doing a - b :-) */
 
 	max=(a->top > b->top)?a->top:b->top;
-	if (bn_wexpand(r,max) == NULL) return(0);
+	if (bn_wexpand(r,max) == NULL) return (0);
 	if (BN_ucmp(a,b) < 0)
 		{
-		if (!BN_usub(r,b,a)) return(0);
+		if (!BN_usub(r,b,a)) return (0);
 		r->neg=1;
 		}
 	else
 		{
-		if (!BN_usub(r,a,b)) return(0);
+		if (!BN_usub(r,a,b)) return (0);
 		r->neg=0;
 		}
 	bn_check_top(r);
-	return(1);
+	return (1);
 	}
 

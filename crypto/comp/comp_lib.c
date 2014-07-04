@@ -11,7 +11,7 @@ COMP_CTX *COMP_CTX_new(COMP_METHOD *meth)
 	if ((ret=calloc(1, sizeof(COMP_CTX))) == NULL)
 		{
 		/* ZZZZZZZZZZZZZZZZ */
-		return(NULL);
+		return (NULL);
 		}
 	ret->meth=meth;
 	if ((ret->meth->init != NULL) && !ret->meth->init(ret))
@@ -19,7 +19,7 @@ COMP_CTX *COMP_CTX_new(COMP_METHOD *meth)
 		free(ret);
 		ret=NULL;
 		}
-	return(ret);
+	return (ret);
 	}
 
 void COMP_CTX_free(COMP_CTX *ctx)
@@ -40,7 +40,7 @@ int COMP_compress_block(COMP_CTX *ctx, unsigned char *out, int olen,
 	if (ctx->meth->compress == NULL)
 		{
 		/* ZZZZZZZZZZZZZZZZZ */
-		return(-1);
+		return (-1);
 		}
 	ret=ctx->meth->compress(ctx,out,olen,in,ilen);
 	if (ret > 0)
@@ -48,7 +48,7 @@ int COMP_compress_block(COMP_CTX *ctx, unsigned char *out, int olen,
 		ctx->compress_in+=ilen;
 		ctx->compress_out+=ret;
 		}
-	return(ret);
+	return (ret);
 	}
 
 int COMP_expand_block(COMP_CTX *ctx, unsigned char *out, int olen,
@@ -59,7 +59,7 @@ int COMP_expand_block(COMP_CTX *ctx, unsigned char *out, int olen,
 	if (ctx->meth->expand == NULL)
 		{
 		/* ZZZZZZZZZZZZZZZZZ */
-		return(-1);
+		return (-1);
 		}
 	ret=ctx->meth->expand(ctx,out,olen,in,ilen);
 	if (ret > 0)
@@ -67,5 +67,5 @@ int COMP_expand_block(COMP_CTX *ctx, unsigned char *out, int olen,
 		ctx->expand_in+=ilen;
 		ctx->expand_out+=ret;
 		}
-	return(ret);
+	return (ret);
 	}

@@ -95,6 +95,6 @@ static const EVP_MD dss1_md=
 
 const EVP_MD *EVP_dss1(void)
 	{
-	return(&dss1_md);
+	return (&dss1_md);
 	}
 #endif

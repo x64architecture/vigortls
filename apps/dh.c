@@ -301,14 +301,14 @@ bad:
 
 		printf("DH *get_dh%d()\n\t{\n",bits);
 		printf("\tDH *dh;\n\n");
-		printf("\tif ((dh=DH_new()) == NULL) return(NULL);\n");
+		printf("\tif ((dh=DH_new()) == NULL) return (NULL);\n");
 		printf("\tdh->p=BN_bin2bn(dh%d_p,sizeof(dh%d_p),NULL);\n",
 			bits,bits);
 		printf("\tdh->g=BN_bin2bn(dh%d_g,sizeof(dh%d_g),NULL);\n",
 			bits,bits);
 		printf("\tif ((dh->p == NULL) || (dh->g == NULL))\n");
-		printf("\t\treturn(NULL);\n");
-		printf("\treturn(dh);\n\t}\n");
+		printf("\t\treturn (NULL);\n");
+		printf("\treturn (dh);\n\t}\n");
 		free(data);
 		}
 

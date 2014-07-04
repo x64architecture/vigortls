@@ -101,7 +101,7 @@ static RSA_METHOD rsa_null_meth={
 
 const RSA_METHOD *RSA_null_method(void)
 	{
-	return(&rsa_null_meth);
+	return (&rsa_null_meth);
 	}
 
 static int RSA_null_public_encrypt(int flen, const unsigned char *from,
@@ -142,10 +142,10 @@ static int RSA_null_mod_exp(BIGNUM *r0, BIGNUM *I, RSA *rsa)
 
 static int RSA_null_init(RSA *rsa)
 	{
-	return(1);
+	return (1);
 	}
 
 static int RSA_null_finish(RSA *rsa)
 	{
-	return(1);
+	return (1);
 	}

@@ -92,7 +92,7 @@ static BIO_METHOD methods_linebuffer=
 
 BIO_METHOD *BIO_f_linebuffer(void)
 	{
-	return(&methods_linebuffer);
+	return (&methods_linebuffer);
 	}
 
 typedef struct bio_linebuffer_ctx_struct
@@ -107,42 +107,42 @@ static int linebuffer_new(BIO *bi)
 	BIO_LINEBUFFER_CTX *ctx;
 
 	ctx=(BIO_LINEBUFFER_CTX *)malloc(sizeof(BIO_LINEBUFFER_CTX));
-	if (ctx == NULL) return(0);
+	if (ctx == NULL) return (0);
 	ctx->obuf=(char *)malloc(DEFAULT_LINEBUFFER_SIZE);
-	if (ctx->obuf == NULL) { free(ctx); return(0); }
+	if (ctx->obuf == NULL) { free(ctx); return (0); }
 	ctx->obuf_size=DEFAULT_LINEBUFFER_SIZE;
 	ctx->obuf_len=0;
 
 	bi->init=1;
 	bi->ptr=(char *)ctx;
 	bi->flags=0;
-	return(1);
+	return (1);
 	}
 
 static int linebuffer_free(BIO *a)
 	{
 	BIO_LINEBUFFER_CTX *b;
 
-	if (a == NULL) return(0);
+	if (a == NULL) return (0);
 	b=(BIO_LINEBUFFER_CTX *)a->ptr;
 	if (b->obuf != NULL) free(b->obuf);
 	free(a->ptr);
 	a->ptr=NULL;
 	a->init=0;
 	a->flags=0;
-	return(1);
+	return (1);
 	}
 	
 static int linebuffer_read(BIO *b, char *out, int outl)
 	{
 	int ret=0;
  
-	if (out == NULL) return(0);
-	if (b->next_bio == NULL) return(0);
+	if (out == NULL) return (0);
+	if (b->next_bio == NULL) return (0);
 	ret=BIO_read(b->next_bio,out,outl);
 	BIO_clear_retry_flags(b);
 	BIO_copy_next_retry(b);
-	return(ret);
+	return (ret);
 	}
 
 static int linebuffer_write(BIO *b, const char *in, int inl)
@@ -150,9 +150,9 @@ static int linebuffer_write(BIO *b, const char *in, int inl)
 	int i,num=0,foundnl;
 	BIO_LINEBUFFER_CTX *ctx;
 
-	if ((in == NULL) || (inl <= 0)) return(0);
+	if ((in == NULL) || (inl <= 0)) return (0);
 	ctx=(BIO_LINEBUFFER_CTX *)b->ptr;
-	if ((ctx == NULL) || (b->next_bio == NULL)) return(0);
+	if ((ctx == NULL) || (b->next_bio == NULL)) return (0);
 
 	BIO_clear_retry_flags(b);
 
@@ -213,8 +213,8 @@ BIO_write(b->next_bio, "<*<", 3);
 #if 0
 BIO_write(b->next_bio, ">*>", 3);
 #endif
-				if (i < 0) return((num > 0)?num:i);
-				if (i == 0) return(num);
+				if (i < 0) return ((num > 0)?num:i);
+				if (i == 0) return (num);
 				}
 #if 0
 BIO_write(b->next_bio, ">*>", 3);
@@ -239,8 +239,8 @@ BIO_write(b->next_bio, "<*<", 3);
 #if 0
 BIO_write(b->next_bio, ">*>", 3);
 #endif
-				if (i < 0) return((num > 0)?num:i);
-				if (i == 0) return(num);
+				if (i < 0) return ((num > 0)?num:i);
+				if (i == 0) return (num);
 				}
 #if 0
 BIO_write(b->next_bio, ">*>", 3);
@@ -278,7 +278,7 @@ static long linebuffer_ctrl(BIO *b, int cmd, long num, void *ptr)
 		{
 	case BIO_CTRL_RESET:
 		ctx->obuf_len=0;
-		if (b->next_bio == NULL) return(0);
+		if (b->next_bio == NULL) return (0);
 		ret=BIO_ctrl(b->next_bio,cmd,num,ptr);
 		break;
 	case BIO_CTRL_INFO:
@@ -288,7 +288,7 @@ static long linebuffer_ctrl(BIO *b, int cmd, long num, void *ptr)
 		ret=(long)ctx->obuf_len;
 		if (ret == 0)
 			{
-			if (b->next_bio == NULL) return(0);
+			if (b->next_bio == NULL) return (0);
 			ret=BIO_ctrl(b->next_bio,cmd,num,ptr);
 			}
 		break;
@@ -314,14 +314,14 @@ static long linebuffer_ctrl(BIO *b, int cmd, long num, void *ptr)
 			}
 		break;
 	case BIO_C_DO_STATE_MACHINE:
-		if (b->next_bio == NULL) return(0);
+		if (b->next_bio == NULL) return (0);
 		BIO_clear_retry_flags(b);
 		ret=BIO_ctrl(b->next_bio,cmd,num,ptr);
 		BIO_copy_next_retry(b);
 		break;
 
 	case BIO_CTRL_FLUSH:
-		if (b->next_bio == NULL) return(0);
+		if (b->next_bio == NULL) return (0);
 		if (ctx->obuf_len <= 0)
 			{
 			ret=BIO_ctrl(b->next_bio,cmd,num,ptr);
@@ -339,7 +339,7 @@ static long linebuffer_ctrl(BIO *b, int cmd, long num, void *ptr)
 fprintf(stderr,"FLUSH %3d -> %3d\n",ctx->obuf_len,r);
 #endif
 				BIO_copy_next_retry(b);
-				if (r <= 0) return((long)r);
+				if (r <= 0) return ((long)r);
 				if (r < ctx->obuf_len)
 					memmove(ctx->obuf, ctx->obuf + r,
 						ctx->obuf_len - r);
@@ -360,38 +360,38 @@ fprintf(stderr,"FLUSH %3d -> %3d\n",ctx->obuf_len,r);
 			ret=0;
 		break;
 	default:
-		if (b->next_bio == NULL) return(0);
+		if (b->next_bio == NULL) return (0);
 		ret=BIO_ctrl(b->next_bio,cmd,num,ptr);
 		break;
 		}
-	return(ret);
+	return (ret);
 malloc_error:
 	BIOerr(BIO_F_LINEBUFFER_CTRL,ERR_R_MALLOC_FAILURE);
-	return(0);
+	return (0);
 	}
 
 static long linebuffer_callback_ctrl(BIO *b, int cmd, bio_info_cb *fp)
 	{
 	long ret=1;
 
-	if (b->next_bio == NULL) return(0);
+	if (b->next_bio == NULL) return (0);
 	switch (cmd)
 		{
 	default:
 		ret=BIO_callback_ctrl(b->next_bio,cmd,fp);
 		break;
 		}
-	return(ret);
+	return (ret);
 	}
 
 static int linebuffer_gets(BIO *b, char *buf, int size)
 	{
-	if (b->next_bio == NULL) return(0);
-	return(BIO_gets(b->next_bio,buf,size));
+	if (b->next_bio == NULL) return (0);
+	return (BIO_gets(b->next_bio,buf,size));
 	}
 
 static int linebuffer_puts(BIO *b, const char *str)
 	{
-	return(linebuffer_write(b,str,strlen(str)));
+	return (linebuffer_write(b,str,strlen(str)));
 	}
 

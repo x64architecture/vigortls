@@ -63,7 +63,7 @@ int UI_UTIL_read_pw_string(char *buf,int length,const char *prompt,int verify)
 
 	ret=UI_UTIL_read_pw(buf,buff,(length>BUFSIZ)?BUFSIZ:length,prompt,verify);
 	OPENSSL_cleanse(buff,BUFSIZ);
-	return(ret);
+	return (ret);
 	}
 
 int UI_UTIL_read_pw(char *buf,char *buff,int size,const char *prompt,int verify)
@@ -87,5 +87,5 @@ int UI_UTIL_read_pw(char *buf,char *buff,int size,const char *prompt,int verify)
 		}
 	if (ok > 0)
 		ok = 0;
-	return(ok);
+	return (ok);
 	}

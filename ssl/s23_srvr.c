@@ -121,15 +121,15 @@ int ssl23_get_client_hello(SSL *s);
 static const SSL_METHOD *ssl23_get_server_method(int ver)
 	{
 	if (ver == SSL3_VERSION)
-		return(SSLv3_server_method());
+		return (SSLv3_server_method());
 	else if (ver == TLS1_VERSION)
-		return(TLSv1_server_method());
+		return (TLSv1_server_method());
 	else if (ver == TLS1_1_VERSION)
-		return(TLSv1_1_server_method());
+		return (TLSv1_1_server_method());
 	else if (ver == TLS1_2_VERSION)
-		return(TLSv1_2_server_method());
+		return (TLSv1_2_server_method());
 	else
-		return(NULL);
+		return (NULL);
 	}
 
 IMPLEMENT_ssl23_meth_func(SSLv23_server_method,
@@ -225,7 +225,7 @@ end:
 	s->in_handshake--;
 	if (cb != NULL)
 		cb(s,SSL_CB_ACCEPT_EXIT,ret);
-	return(ret);
+	return (ret);
 	}
 
 
@@ -260,7 +260,7 @@ int ssl23_get_client_hello(SSL *s)
 		if (!ssl3_setup_buffers(s)) goto err;
 
 		n=ssl23_read_bytes(s, sizeof buf_space);
-		if (n != sizeof buf_space) return(n); /* n == -1 || n == 0 */
+		if (n != sizeof buf_space) return (n); /* n == -1 || n == 0 */
 
 		p=s->packet;
 
@@ -437,7 +437,7 @@ int ssl23_get_client_hello(SSL *s)
 			}
 
 		j=ssl23_read_bytes(s,n+2);
-		if (j <= 0) return(j);
+		if (j <= 0) return (j);
 
 		ssl3_finish_mac(s, s->packet+2, s->packet_length-2);
 		if (s->msg_callback)
@@ -574,8 +574,8 @@ int ssl23_get_client_hello(SSL *s)
 	s->init_num=0;
 
 	if (buf != buf_space) free(buf);
-	return(SSL_accept(s));
+	return (SSL_accept(s));
 err:
 	if (buf != buf_space) free(buf);
-	return(-1);
+	return (-1);
 	}

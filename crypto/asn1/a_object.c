@@ -69,7 +69,7 @@ int i2d_ASN1_OBJECT(ASN1_OBJECT *a, unsigned char **pp)
 	unsigned char *p;
 	int objsize;
 
-	if ((a == NULL) || (a->data == NULL)) return(0);
+	if ((a == NULL) || (a->data == NULL)) return (0);
 
 	objsize = ASN1_object_size(0,a->length,V_ASN1_OBJECT);
 	if (pp == NULL) return objsize;
@@ -80,7 +80,7 @@ int i2d_ASN1_OBJECT(ASN1_OBJECT *a, unsigned char **pp)
 	p+=a->length;
 
 	*pp=p;
-	return(objsize);
+	return (objsize);
 	}
 
 int a2d_ASN1_OBJECT(unsigned char *out, int olen, const char *buf, int num)
@@ -93,7 +93,7 @@ int a2d_ASN1_OBJECT(unsigned char *out, int olen, const char *buf, int num)
 	BIGNUM *bl = NULL;
 
 	if (num == 0)
-		return(0);
+		return (0);
 	else if (num == -1)
 		num=strlen(buf);
 
@@ -218,13 +218,13 @@ int a2d_ASN1_OBJECT(unsigned char *out, int olen, const char *buf, int num)
 		free(tmp);
 	if (bl)
 		BN_free(bl);
-	return(len);
+	return (len);
 err:
 	if (tmp != ftmp)
 		free(tmp);
 	if (bl)
 		BN_free(bl);
-	return(0);
+	return (0);
 	}
 
 int i2t_ASN1_OBJECT(char *buf, int buf_len, ASN1_OBJECT *a)
@@ -238,7 +238,7 @@ int i2a_ASN1_OBJECT(BIO *bp, ASN1_OBJECT *a)
 	int i;
 
 	if ((a == NULL) || (a->data == NULL))
-		return(BIO_write(bp,"NULL",4));
+		return (BIO_write(bp,"NULL",4));
 	i=i2t_ASN1_OBJECT(buf,sizeof buf,a);
 	if (i > (int)(sizeof(buf) - 1))
 		{
@@ -252,7 +252,7 @@ int i2a_ASN1_OBJECT(BIO *bp, ASN1_OBJECT *a)
 	BIO_write(bp,p,i);
 	if (p != buf)
 		free(p);
-	return(i);
+	return (i);
 	}
 
 ASN1_OBJECT *d2i_ASN1_OBJECT(ASN1_OBJECT **a, const unsigned char **pp,
@@ -281,7 +281,7 @@ ASN1_OBJECT *d2i_ASN1_OBJECT(ASN1_OBJECT **a, const unsigned char **pp,
 	return ret;
 err:
 	ASN1err(ASN1_F_D2I_ASN1_OBJECT,i);
-	return(NULL);
+	return (NULL);
 }
 ASN1_OBJECT *c2i_ASN1_OBJECT(ASN1_OBJECT **a, const unsigned char **pp,
 	     long len)
@@ -307,7 +307,7 @@ ASN1_OBJECT *c2i_ASN1_OBJECT(ASN1_OBJECT **a, const unsigned char **pp,
 	if ((a == NULL) || ((*a) == NULL) ||
 		!((*a)->flags & ASN1_OBJECT_FLAG_DYNAMIC))
 		{
-		if ((ret=ASN1_OBJECT_new()) == NULL) return(NULL);
+		if ((ret=ASN1_OBJECT_new()) == NULL) return (NULL);
 		}
 	else	ret=(*a);
 
@@ -336,12 +336,12 @@ ASN1_OBJECT *c2i_ASN1_OBJECT(ASN1_OBJECT **a, const unsigned char **pp,
 
 	if (a != NULL) (*a)=ret;
 	*pp=p;
-	return(ret);
+	return (ret);
 err:
 	ASN1err(ASN1_F_C2I_ASN1_OBJECT,i);
 	if ((ret != NULL) && ((a == NULL) || (*a != ret)))
 		ASN1_OBJECT_free(ret);
-	return(NULL);
+	return (NULL);
 	}
 
 ASN1_OBJECT *ASN1_OBJECT_new(void)
@@ -352,7 +352,7 @@ ASN1_OBJECT *ASN1_OBJECT_new(void)
 	if (ret == NULL)
 		{
 		ASN1err(ASN1_F_ASN1_OBJECT_NEW,ERR_R_MALLOC_FAILURE);
-		return(NULL);
+		return (NULL);
 		}
 	ret->length=0;
 	ret->data=NULL;
@@ -360,7 +360,7 @@ ASN1_OBJECT *ASN1_OBJECT_new(void)
 	ret->sn=NULL;
 	ret->ln=NULL;
 	ret->flags=ASN1_OBJECT_FLAG_DYNAMIC;
-	return(ret);
+	return (ret);
 	}
 
 void ASN1_OBJECT_free(ASN1_OBJECT *a)
@@ -396,7 +396,7 @@ ASN1_OBJECT *ASN1_OBJECT_create(int nid, unsigned char *data, int len,
 	o.length=len;
 	o.flags=ASN1_OBJECT_FLAG_DYNAMIC|ASN1_OBJECT_FLAG_DYNAMIC_STRINGS|
 		ASN1_OBJECT_FLAG_DYNAMIC_DATA;
-	return(OBJ_dup(&o));
+	return (OBJ_dup(&o));
 	}
 
 IMPLEMENT_STACK_OF(ASN1_OBJECT)

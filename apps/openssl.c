@@ -523,7 +523,7 @@ static int do_cmd(LHASH_OF(FUNCTION) *prog, int argc, char *argv[])
 		ret=0;
 		}
 end:
-	return(ret);
+	return (ret);
 	}
 
 static int SortFnByName(const void *_f1,const void *_f2)
@@ -633,10 +633,10 @@ static LHASH_OF(FUNCTION) *prog_init(void)
 	qsort(functions,i,sizeof *functions,SortFnByName);
 
 	if ((ret=lh_FUNCTION_new()) == NULL)
-		return(NULL);
+		return (NULL);
 
 	for (f=functions; f->name != NULL; f++)
 		(void)lh_FUNCTION_insert(ret,f);
-	return(ret);
+	return (ret);
 	}
 

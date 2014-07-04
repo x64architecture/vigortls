@@ -6,7 +6,7 @@
 int main(int argc, char *argv[])
 	{
 	printf("No SRP support\n");
-	return(0);
+	return (0);
 	}
 
 #else

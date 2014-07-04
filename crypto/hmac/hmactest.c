@@ -66,7 +66,7 @@
 int main(int argc, char *argv[])
 {
     printf("No HMAC support\n");
-    return(0);
+    return (0);
 }
 #else
 #include <openssl/hmac.h>
@@ -158,7 +158,7 @@ int main(int argc, char *argv[])
 		}
 #endif /* OPENSSL_NO_MD5 */
 	EXIT(err);
-	return(0);
+	return (0);
 	}
 
 #ifndef OPENSSL_NO_MD5
@@ -169,7 +169,7 @@ static char *pt(unsigned char *md)
 
 	for (i=0; i<MD5_DIGEST_LENGTH; i++)
 		sprintf(&(buf[i*2]),"%02x",md[i]);
-	return(buf);
+	return (buf);
 	}
 #endif
 #endif

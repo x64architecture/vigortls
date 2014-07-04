@@ -305,7 +305,7 @@ end:
 		ERR_print_errors(bio_err);
 	if (x != NULL) X509_free(x);
 
-	return(ret);
+	return (ret);
 	}
 
 static int MS_CALLBACK cb(int ok, X509_STORE_CTX *ctx)
@@ -358,5 +358,5 @@ static int MS_CALLBACK cb(int ok, X509_STORE_CTX *ctx)
 		policies_print(NULL, ctx);
 	if (!v_verbose)
 		ERR_clear_error();
-	return(ok);
+	return (ok);
 	}

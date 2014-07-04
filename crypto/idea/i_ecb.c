@@ -65,9 +65,9 @@ const char IDEA_version[]="IDEA" OPENSSL_VERSION_PTEXT;
 const char *idea_options(void)
 	{
 	if (sizeof(short) != sizeof(IDEA_INT))
-		return("idea(int)");
+		return ("idea(int)");
 	else
-		return("idea(short)");
+		return ("idea(short)");
 	}
 
 void idea_ecb_encrypt(const unsigned char *in, unsigned char *out,

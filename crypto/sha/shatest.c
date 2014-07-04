@@ -66,7 +66,7 @@
 int main(int argc, char *argv[])
 {
     printf("No SHA0 support\n");
-    return(0);
+    return (0);
 }
 #else
 #include <openssl/evp.h>
@@ -160,7 +160,7 @@ int main(int argc, char *argv[])
 
 	EVP_MD_CTX_cleanup(&c);
 	EXIT(err);
-	return(0);
+	return (0);
 	}
 
 static char *pt(unsigned char *md)
@@ -170,6 +170,6 @@ static char *pt(unsigned char *md)
 
 	for (i=0; i<SHA_DIGEST_LENGTH; i++)
 		sprintf(&(buf[i*2]),"%02x",md[i]);
-	return(buf);
+	return (buf);
 	}
 #endif

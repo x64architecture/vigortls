@@ -118,7 +118,7 @@ DSA *DSA_new_method(ENGINE *engine)
 	if (ret == NULL)
 		{
 		DSAerr(DSA_F_DSA_NEW_METHOD,ERR_R_MALLOC_FAILURE);
-		return(NULL);
+		return (NULL);
 		}
 	ret->meth = DSA_get_default_method();
 #ifndef OPENSSL_NO_ENGINE
@@ -175,7 +175,7 @@ DSA *DSA_new_method(ENGINE *engine)
 		ret=NULL;
 		}
 	
-	return(ret);
+	return (ret);
 	}
 
 void DSA_free(DSA *r)
@@ -251,7 +251,7 @@ int DSA_size(const DSA *r)
 	i=i2d_ASN1_INTEGER(&bs,NULL);
 	i+=i; /* r and s */
 	ret=ASN1_object_size(1,i,V_ASN1_SEQUENCE);
-	return(ret);
+	return (ret);
 	}
 
 int DSA_get_ex_new_index(long argl, void *argp, CRYPTO_EX_new *new_func,
@@ -263,12 +263,12 @@ int DSA_get_ex_new_index(long argl, void *argp, CRYPTO_EX_new *new_func,
 
 int DSA_set_ex_data(DSA *d, int idx, void *arg)
 	{
-	return(CRYPTO_set_ex_data(&d->ex_data,idx,arg));
+	return (CRYPTO_set_ex_data(&d->ex_data,idx,arg));
 	}
 
 void *DSA_get_ex_data(DSA *d, int idx)
 	{
-	return(CRYPTO_get_ex_data(&d->ex_data,idx));
+	return (CRYPTO_get_ex_data(&d->ex_data,idx));
 	}
 
 DH *DSA_dup_DH(const DSA *r)

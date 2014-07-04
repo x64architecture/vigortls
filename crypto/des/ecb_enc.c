@@ -101,7 +101,7 @@ const char *DES_options(void)
 			     size);
 		init=0;
 		}
-	return(buf);
+	return (buf);
 	}
 		
 

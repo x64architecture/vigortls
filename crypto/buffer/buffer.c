@@ -73,12 +73,12 @@ BUF_MEM *BUF_MEM_new(void)
 	if (ret == NULL)
 		{
 		BUFerr(BUF_F_BUF_MEM_NEW,ERR_R_MALLOC_FAILURE);
-		return(NULL);
+		return (NULL);
 		}
 	ret->length=0;
 	ret->max=0;
 	ret->data=NULL;
-	return(ret);
+	return (ret);
 	}
 
 void BUF_MEM_free(BUF_MEM *a)
@@ -102,13 +102,13 @@ int BUF_MEM_grow(BUF_MEM *str, size_t len)
 	if (str->length >= len)
 		{
 		str->length=len;
-		return(len);
+		return (len);
 		}
 	if (str->max >= len)
 		{
 		memset(&str->data[str->length],0,len-str->length);
 		str->length=len;
-		return(len);
+		return (len);
 		}
 	/* This limit is sufficient to ensure (len+3)/3*4 < 2**31 */
 	if (len > LIMIT_BEFORE_EXPANSION)
@@ -133,7 +133,7 @@ int BUF_MEM_grow(BUF_MEM *str, size_t len)
 		memset(&str->data[str->length],0,len-str->length);
 		str->length=len;
 		}
-	return(len);
+	return (len);
 	}
 
 int BUF_MEM_grow_clean(BUF_MEM *str, size_t len)
@@ -145,13 +145,13 @@ int BUF_MEM_grow_clean(BUF_MEM *str, size_t len)
 		{
 		memset(&str->data[len],0,str->length-len);
 		str->length=len;
-		return(len);
+		return (len);
 		}
 	if (str->max >= len)
 		{
 		memset(&str->data[str->length],0,len-str->length);
 		str->length=len;
-		return(len);
+		return (len);
 		}
 	/* This limit is sufficient to ensure (len+3)/3*4 < 2**31 */
 	if (len > LIMIT_BEFORE_EXPANSION)
@@ -176,7 +176,7 @@ int BUF_MEM_grow_clean(BUF_MEM *str, size_t len)
 		memset(&str->data[str->length],0,len-str->length);
 		str->length=len;
 		}
-	return(len);
+	return (len);
 	}
 
 void BUF_reverse(unsigned char *out, const unsigned char *in, size_t size)

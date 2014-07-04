@@ -70,7 +70,7 @@
 int main(int argc, char *argv[])
 {
     printf("No MDC2 support\n");
-    return(0);
+    return (0);
 }
 #else
 #include <openssl/evp.h>
@@ -141,6 +141,6 @@ int main(int argc, char *argv[])
 
 	EVP_MD_CTX_cleanup(&c);
 	EXIT(ret);
-	return(ret);
+	return (ret);
 	}
 #endif

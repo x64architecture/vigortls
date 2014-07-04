@@ -172,7 +172,7 @@ int args_from_file(char *file, int *argc, char **argv[])
 
 	fp=fopen(file,"r");
 	if (fp == NULL)
-		return(0);
+		return (0);
 
 	if (fseek(fp,0,SEEK_END)==0)
 		len=ftell(fp), rewind(fp);
@@ -180,7 +180,7 @@ int args_from_file(char *file, int *argc, char **argv[])
 	if (len<=0)
 		{
 		fclose(fp);
-		return(0);
+		return (0);
 		}
 
 	*argc=0;
@@ -188,10 +188,10 @@ int args_from_file(char *file, int *argc, char **argv[])
 
 	if (buf != NULL) free(buf);
 	buf=(char *)malloc(len+1);
-	if (buf == NULL) return(0);
+	if (buf == NULL) return (0);
 
 	len=fread(buf,1,len,fp);
-	if (len <= 1) return(0);
+	if (len <= 1) return (0);
 	buf[len]='\0';
 
 	i=0;
@@ -240,7 +240,7 @@ int args_from_file(char *file, int *argc, char **argv[])
 		*(p++)='\0';
 		}
 	*argc=num;
-	return(1);
+	return (1);
 	}
 #endif
 
@@ -249,30 +249,30 @@ int str2fmt(char *s)
 	if (s == NULL)
 		return FORMAT_UNDEF;
 	if 	((*s == 'D') || (*s == 'd'))
-		return(FORMAT_ASN1);
+		return (FORMAT_ASN1);
 	else if ((*s == 'T') || (*s == 't'))
-		return(FORMAT_TEXT);
+		return (FORMAT_TEXT);
   	else if ((*s == 'N') || (*s == 'n'))
-  		return(FORMAT_NETSCAPE);
+  		return (FORMAT_NETSCAPE);
   	else if ((*s == 'S') || (*s == 's'))
-  		return(FORMAT_SMIME);
+  		return (FORMAT_SMIME);
  	else if ((*s == 'M') || (*s == 'm'))
- 		return(FORMAT_MSBLOB);
+ 		return (FORMAT_MSBLOB);
 	else if ((*s == '1')
 		|| (strcmp(s,"PKCS12") == 0) || (strcmp(s,"pkcs12") == 0)
 		|| (strcmp(s,"P12") == 0) || (strcmp(s,"p12") == 0))
-		return(FORMAT_PKCS12);
+		return (FORMAT_PKCS12);
 	else if ((*s == 'E') || (*s == 'e'))
-		return(FORMAT_ENGINE);
+		return (FORMAT_ENGINE);
 	else if ((*s == 'P') || (*s == 'p'))
  		{
  		if (s[1] == 'V' || s[1] == 'v')
  			return FORMAT_PVK;
  		else
-  			return(FORMAT_PEM);
+  			return (FORMAT_PEM);
  		}
 	else
-		return(FORMAT_UNDEF);
+		return (FORMAT_UNDEF);
 	}
 
 #if defined(OPENSSL_SYS_MSDOS) || defined(OPENSSL_SYS_WIN32)
@@ -396,13 +396,13 @@ int chopup_args(ARGS *arg, char *buf, int *argc, char **argv[])
 		}
 	*argc=num;
 	*argv=arg->data;
-	return(1);
+	return (1);
 	}
 
 #ifndef APP_INIT
 int app_init(long mesgwin)
 	{
-	return(1);
+	return (1);
 	}
 #endif
 
@@ -807,7 +807,7 @@ end:
 		ERR_print_errors(err);
 		}
 	if (cert != NULL) BIO_free(cert);
-	return(x);
+	return (x);
 	}
 
 EVP_PKEY *load_key(BIO *err, const char *file, int format, int maybe_stdin,
@@ -905,7 +905,7 @@ EVP_PKEY *load_key(BIO *err, const char *file, int format, int maybe_stdin,
 		BIO_printf(err,"unable to load %s\n", key_descrip);
 		ERR_print_errors(err);
 		}	
-	return(pkey);
+	return (pkey);
 	}
 
 EVP_PKEY *load_pubkey(BIO *err, const char *file, int format, int maybe_stdin,
@@ -1012,7 +1012,7 @@ EVP_PKEY *load_pubkey(BIO *err, const char *file, int format, int maybe_stdin,
 	if (key != NULL) BIO_free(key);
 	if (pkey == NULL)
 		BIO_printf(err,"unable to load %s\n", key_descrip);
-	return(pkey);
+	return (pkey);
 	}
 
 #if !defined(OPENSSL_NO_RC4) && !defined(OPENSSL_NO_RSA)
@@ -1504,7 +1504,7 @@ static unsigned long index_serial_hash(const OPENSSL_CSTRING *a)
 
 	n=a[DB_serial];
 	while (*n == '0') n++;
-	return(lh_strhash(n));
+	return (lh_strhash(n));
 	}
 
 static int index_serial_cmp(const OPENSSL_CSTRING *a, const OPENSSL_CSTRING *b)
@@ -1513,17 +1513,17 @@ static int index_serial_cmp(const OPENSSL_CSTRING *a, const OPENSSL_CSTRING *b)
 
 	for (aa=a[DB_serial]; *aa == '0'; aa++);
 	for (bb=b[DB_serial]; *bb == '0'; bb++);
-	return(strcmp(aa,bb));
+	return (strcmp(aa,bb));
 	}
 
 static int index_name_qual(char **a)
-	{ return(a[0][0] == 'V'); }
+	{ return (a[0][0] == 'V'); }
 
 static unsigned long index_name_hash(const OPENSSL_CSTRING *a)
-	{ return(lh_strhash(a[DB_name])); }
+	{ return (lh_strhash(a[DB_name])); }
 
 int index_name_cmp(const OPENSSL_CSTRING *a, const OPENSSL_CSTRING *b)
-	{ return(strcmp(a[DB_name], b[DB_name])); }
+	{ return (strcmp(a[DB_name], b[DB_name])); }
 
 static IMPLEMENT_LHASH_HASH_FN(index_serial, OPENSSL_CSTRING)
 static IMPLEMENT_LHASH_COMP_FN(index_serial, OPENSSL_CSTRING)
@@ -1587,7 +1587,7 @@ BIGNUM *load_serial(char *serialfile, int create, ASN1_INTEGER **retai)
  err:
 	if (in != NULL) BIO_free(in);
 	if (ai != NULL) ASN1_INTEGER_free(ai);
-	return(ret);
+	return (ret);
 	}
 
 int save_serial(char *serialfile, char *suffix, BIGNUM *serial, ASN1_INTEGER **retai)
@@ -1645,7 +1645,7 @@ int save_serial(char *serialfile, char *suffix, BIGNUM *serial, ASN1_INTEGER **r
 err:
 	if (out != NULL) BIO_free_all(out);
 	if (ai != NULL) ASN1_INTEGER_free(ai);
-	return(ret);
+	return (ret);
 	}
 
 int rotate_serial(char *serialfile, char *new_suffix, char *old_suffix)

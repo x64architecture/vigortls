@@ -105,11 +105,11 @@ _STACK *sk_dup(_STACK *sk)
 	ret->sorted=sk->sorted;
 	ret->num_alloc=sk->num_alloc;
 	ret->comp=sk->comp;
-	return(ret);
+	return (ret);
 err:
 	if(ret)
 		sk_free(ret);
-	return(NULL);
+	return (NULL);
 	}
 
 _STACK *sk_new_null(void)
@@ -132,11 +132,11 @@ _STACK *sk_new(int (*c)(const void *, const void *))
 	ret->num_alloc=MIN_NODES;
 	ret->num=0;
 	ret->sorted=0;
-	return(ret);
+	return (ret);
 err:
 	if(ret)
 		free(ret);
-	return(NULL);
+	return (NULL);
 	}
 
 int sk_insert(_STACK *st, void *data, int loc)
@@ -149,7 +149,7 @@ int sk_insert(_STACK *st, void *data, int loc)
 		s=realloc((char *)st->data,
 			(unsigned int)sizeof(char *)*st->num_alloc*2);
 		if (s == NULL)
-			return(0);
+			return (0);
 		st->data=s;
 		st->num_alloc*=2;
 		}
@@ -174,7 +174,7 @@ int sk_insert(_STACK *st, void *data, int loc)
 		}
 	st->num++;
 	st->sorted=0;
-	return(st->num);
+	return (st->num);
 	}
 
 void *sk_delete_ptr(_STACK *st, void *p)
@@ -183,8 +183,8 @@ void *sk_delete_ptr(_STACK *st, void *p)
 
 	for (i=0; i<st->num; i++)
 		if (st->data[i] == p)
-			return(sk_delete(st,i));
-	return(NULL);
+			return (sk_delete(st,i));
+	return (NULL);
 	}
 
 void *sk_delete(_STACK *st, int loc)
@@ -207,7 +207,7 @@ void *sk_delete(_STACK *st, int loc)
 		 */
 		}
 	st->num--;
-	return(ret);
+	return (ret);
 	}
 
 static int internal_find(_STACK *st, void *data, int ret_val_options)
@@ -221,14 +221,14 @@ static int internal_find(_STACK *st, void *data, int ret_val_options)
 		{
 		for (i=0; i<st->num; i++)
 			if (st->data[i] == data)
-				return(i);
-		return(-1);
+				return (i);
+		return (-1);
 		}
 	sk_sort(st);
-	if (data == NULL) return(-1);
+	if (data == NULL) return (-1);
 	r=OBJ_bsearch_ex_(&data,st->data,st->num,sizeof(void *),st->comp,
 			  ret_val_options);
-	if (r == NULL) return(-1);
+	if (r == NULL) return (-1);
 	return (int)((char **)r-st->data);
 	}
 
@@ -243,26 +243,26 @@ int sk_find_ex(_STACK *st, void *data)
 
 int sk_push(_STACK *st, void *data)
 	{
-	return(sk_insert(st,data,st->num));
+	return (sk_insert(st,data,st->num));
 	}
 
 int sk_unshift(_STACK *st, void *data)
 	{
-	return(sk_insert(st,data,0));
+	return (sk_insert(st,data,0));
 	}
 
 void *sk_shift(_STACK *st)
 	{
-	if (st == NULL) return(NULL);
-	if (st->num <= 0) return(NULL);
-	return(sk_delete(st,0));
+	if (st == NULL) return (NULL);
+	if (st->num <= 0) return (NULL);
+	return (sk_delete(st,0));
 	}
 
 void *sk_pop(_STACK *st)
 	{
-	if (st == NULL) return(NULL);
-	if (st->num <= 0) return(NULL);
-	return(sk_delete(st,st->num-1));
+	if (st == NULL) return (NULL);
+	if (st->num <= 0) return (NULL);
+	return (sk_delete(st,st->num-1));
 	}
 
 void sk_zero(_STACK *st)

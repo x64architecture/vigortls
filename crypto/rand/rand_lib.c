@@ -157,7 +157,7 @@ int RAND_bytes(unsigned char *buf, int num)
 	const RAND_METHOD *meth = RAND_get_rand_method();
 	if (meth && meth->bytes)
 		return meth->bytes(buf,num);
-	return(-1);
+	return (-1);
 	}
 
 int RAND_pseudo_bytes(unsigned char *buf, int num)
@@ -165,7 +165,7 @@ int RAND_pseudo_bytes(unsigned char *buf, int num)
 	const RAND_METHOD *meth = RAND_get_rand_method();
 	if (meth && meth->pseudorand)
 		return meth->pseudorand(buf,num);
-	return(-1);
+	return (-1);
 	}
 
 int RAND_status(void)

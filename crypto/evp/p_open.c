@@ -105,7 +105,7 @@ int EVP_OpenInit(EVP_CIPHER_CTX *ctx, const EVP_CIPHER *type,
 err:
 	if (key != NULL) OPENSSL_cleanse(key,size);
 	free(key);
-	return(ret);
+	return (ret);
 	}
 
 int EVP_OpenFinal(EVP_CIPHER_CTX *ctx, unsigned char *out, int *outl)
@@ -115,5 +115,5 @@ int EVP_OpenFinal(EVP_CIPHER_CTX *ctx, unsigned char *out, int *outl)
 	i=EVP_DecryptFinal_ex(ctx,out,outl);
 	if (i)
 		i = EVP_DecryptInit_ex(ctx,NULL,NULL,NULL,NULL);
-	return(i);
+	return (i);
 	}

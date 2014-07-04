@@ -171,7 +171,7 @@ static BIO_METHOD methods_ok=
 
 BIO_METHOD *BIO_f_reliable(void)
 	{
-	return(&methods_ok);
+	return (&methods_ok);
 	}
 
 static int ok_new(BIO *bi)
@@ -179,7 +179,7 @@ static int ok_new(BIO *bi)
 	BIO_OK_CTX *ctx;
 
 	ctx=(BIO_OK_CTX *)malloc(sizeof(BIO_OK_CTX));
-	if (ctx == NULL) return(0);
+	if (ctx == NULL) return (0);
 
 	ctx->buf_len=0;
 	ctx->buf_off=0;
@@ -195,19 +195,19 @@ static int ok_new(BIO *bi)
 	bi->init=0;
 	bi->ptr=(char *)ctx;
 	bi->flags=0;
-	return(1);
+	return (1);
 	}
 
 static int ok_free(BIO *a)
 	{
-	if (a == NULL) return(0);
+	if (a == NULL) return (0);
 	EVP_MD_CTX_cleanup(&((BIO_OK_CTX *)a->ptr)->md);
 	OPENSSL_cleanse(a->ptr,sizeof(BIO_OK_CTX));
 	free(a->ptr);
 	a->ptr=NULL;
 	a->init=0;
 	a->flags=0;
-	return(1);
+	return (1);
 	}
 	
 static int ok_read(BIO *b, char *out, int outl)
@@ -215,10 +215,10 @@ static int ok_read(BIO *b, char *out, int outl)
 	int ret=0,i,n;
 	BIO_OK_CTX *ctx;
 
-	if (out == NULL) return(0);
+	if (out == NULL) return (0);
 	ctx=(BIO_OK_CTX *)b->ptr;
 
-	if ((ctx == NULL) || (b->next_bio == NULL) || (b->init == 0)) return(0);
+	if ((ctx == NULL) || (b->next_bio == NULL) || (b->init == 0)) return (0);
 
 	while(outl > 0)
 		{
@@ -292,7 +292,7 @@ static int ok_read(BIO *b, char *out, int outl)
 
 	BIO_clear_retry_flags(b);
 	BIO_copy_next_retry(b);
-	return(ret);
+	return (ret);
 	}
 
 static int ok_write(BIO *b, const char *in, int inl)
@@ -305,7 +305,7 @@ static int ok_write(BIO *b, const char *in, int inl)
 	ctx=(BIO_OK_CTX *)b->ptr;
 	ret=inl;
 
-	if ((ctx == NULL) || (b->next_bio == NULL) || (b->init == 0)) return(0);
+	if ((ctx == NULL) || (b->next_bio == NULL) || (b->init == 0)) return (0);
 
 	if(ctx->sigio && !sig_out(b))
 		return 0;
@@ -321,7 +321,7 @@ static int ok_write(BIO *b, const char *in, int inl)
 				BIO_copy_next_retry(b);
 				if(!BIO_should_retry(b))
 					ctx->cont= 0;
-				return(i);
+				return (i);
 				}
 			ctx->buf_off+=i;
 			n-=i;
@@ -335,7 +335,7 @@ static int ok_write(BIO *b, const char *in, int inl)
 			ctx->buf_off=0;
 			}
 	
-		if ((in == NULL) || (inl <= 0)) return(0);
+		if ((in == NULL) || (inl <= 0)) return (0);
 
 		n= (inl+ ctx->buf_len > OK_BLOCK_SIZE+ OK_BLOCK_BLOCK) ? 
 			(int)(OK_BLOCK_SIZE+OK_BLOCK_BLOCK-ctx->buf_len) : inl;
@@ -357,7 +357,7 @@ static int ok_write(BIO *b, const char *in, int inl)
 
 	BIO_clear_retry_flags(b);
 	BIO_copy_next_retry(b);
-	return(ret);
+	return (ret);
 	}
 
 static long ok_ctrl(BIO *b, int cmd, long num, void *ptr)
@@ -445,21 +445,21 @@ static long ok_ctrl(BIO *b, int cmd, long num, void *ptr)
 		ret=BIO_ctrl(b->next_bio,cmd,num,ptr);
 		break;
 		}
-	return(ret);
+	return (ret);
 	}
 
 static long ok_callback_ctrl(BIO *b, int cmd, bio_info_cb *fp)
 	{
 	long ret=1;
 
-	if (b->next_bio == NULL) return(0);
+	if (b->next_bio == NULL) return (0);
 	switch (cmd)
 		{
 	default:
 		ret=BIO_callback_ctrl(b->next_bio,cmd,fp);
 		break;
 		}
-	return(ret);
+	return (ret);
 	}
 
 static void longswap(void *_ptr, size_t len)

@@ -14,7 +14,7 @@ int add_signed_time(PKCS7_SIGNER_INFO *si)
 	sign_time=X509_gmtime_adj(NULL,0);
 	PKCS7_add_signed_attribute(si,NID_pkcs9_signingTime,
 		V_ASN1_UTCTIME,(char *)sign_time);
-	return(1);
+	return (1);
 	}
 
 ASN1_UTCTIME *get_signed_time(PKCS7_SIGNER_INFO *si)
@@ -64,10 +64,10 @@ int get_signed_string(PKCS7_SIGNER_INFO *si, char *buf, int len)
 			if ((i+1) > len)
 				i=len-1;
 			memcpy(buf,os->data,i);
-			return(i);
+			return (i);
 			}
 		}
-	return(0);
+	return (0);
 	}
 
 static int signed_seq2string_nid= -1;
@@ -108,7 +108,7 @@ int add_signed_seq2string(PKCS7_SIGNER_INFO *si, char *str1, char *str2)
 
 	PKCS7_add_signed_attribute(si,signed_seq2string_nid,
 		V_ASN1_SEQUENCE,(char *)seq);
-	return(1);
+	return (1);
 	}
 
 /* For this case, I will malloc the return strings */
@@ -153,10 +153,10 @@ int get_signed_seq2string(PKCS7_SIGNER_INFO *si, char **str1, char **str2)
 		(*str2)[os2->length]='\0';
 		ASN1_OCTET_STRING_free(os1);
 		ASN1_OCTET_STRING_free(os2);
-		return(1);
+		return (1);
 		}
 err:
-	return(0);
+	return (0);
 	}
 
 
@@ -174,7 +174,7 @@ X509_ATTRIBUTE *create_time(void)
 	sign_time=X509_gmtime_adj(NULL,0);
 	ret=X509_ATTRIBUTE_create(NID_pkcs9_signingTime,
 		V_ASN1_UTCTIME,(char *)sign_time);
-	return(ret);
+	return (ret);
 	}
 
 ASN1_UTCTIME *sk_get_time(STACK_OF(X509_ATTRIBUTE) *sk)
@@ -203,7 +203,7 @@ X509_ATTRIBUTE *create_string(char *str)
 	/* When we add, we do not free */
 	ret=X509_ATTRIBUTE_create(signed_string_nid,
 		V_ASN1_OCTET_STRING,(char *)os);
-	return(ret);
+	return (ret);
 	}
 
 int sk_get_string(STACK_OF(X509_ATTRIBUTE) *sk, char *buf, int len)
@@ -229,10 +229,10 @@ int sk_get_string(STACK_OF(X509_ATTRIBUTE) *sk, char *buf, int len)
 			if ((i+1) > len)
 				i=len-1;
 			memcpy(buf,os->data,i);
-			return(i);
+			return (i);
 			}
 		}
-	return(0);
+	return (0);
 	}
 
 X509_ATTRIBUTE *add_seq2string(PKCS7_SIGNER_INFO *si, char *str1, char *str2)
@@ -272,7 +272,7 @@ X509_ATTRIBUTE *add_seq2string(PKCS7_SIGNER_INFO *si, char *str1, char *str2)
 
 	ret=X509_ATTRIBUTE_create(signed_seq2string_nid,
 		V_ASN1_SEQUENCE,(char *)seq);
-	return(ret);
+	return (ret);
 	}
 
 /* For this case, I will malloc the return strings */
@@ -320,10 +320,10 @@ int sk_get_seq2string(STACK_OF(X509_ATTRIBUTE) *sk, char **str1, char **str2)
 		(*str2)[os2->length]='\0';
 		ASN1_OCTET_STRING_free(os1);
 		ASN1_OCTET_STRING_free(os2);
-		return(1);
+		return (1);
 		}
 err:
-	return(0);
+	return (0);
 	}
 
 

@@ -3893,7 +3893,7 @@ int ssl3_write(SSL *s, const void *buf, int len)
     if (s->shutdown & SSL_SEND_SHUTDOWN)
         {
         s->rwstate=SSL_NOTHING;
-        return(0);
+        return (0);
         }
 #endif
     clear_sys_error();

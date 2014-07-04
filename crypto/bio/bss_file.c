@@ -166,17 +166,17 @@ BIO *BIO_new_file(const char *filename, const char *mode)
 			BIOerr(BIO_F_BIO_NEW_FILE,BIO_R_NO_SUCH_FILE);
 		else
 			BIOerr(BIO_F_BIO_NEW_FILE,ERR_R_SYS_LIB);
-		return(NULL);
+		return (NULL);
 		}
 	if ((ret=BIO_new(BIO_s_file())) == NULL)
 		{
 		fclose(file);
-		return(NULL);
+		return (NULL);
 		}
 
 	BIO_clear_flags(ret,BIO_FLAGS_UPLINK); /* we did fopen -> we disengage UPLINK */
 	BIO_set_fp(ret,file,BIO_CLOSE);
-	return(ret);
+	return (ret);
 	}
 
 BIO *BIO_new_fp(FILE *stream, int close_flag)
@@ -184,16 +184,16 @@ BIO *BIO_new_fp(FILE *stream, int close_flag)
 	BIO *ret;
 
 	if ((ret=BIO_new(BIO_s_file())) == NULL)
-		return(NULL);
+		return (NULL);
 
 	BIO_set_flags(ret,BIO_FLAGS_UPLINK); /* redundant, left for documentation puposes */
 	BIO_set_fp(ret,stream,close_flag);
-	return(ret);
+	return (ret);
 	}
 
 BIO_METHOD *BIO_s_file(void)
 	{
-	return(&methods_filep);
+	return (&methods_filep);
 	}
 
 static int MS_CALLBACK file_new(BIO *bi)
@@ -202,12 +202,12 @@ static int MS_CALLBACK file_new(BIO *bi)
 	bi->num=0;
 	bi->ptr=NULL;
 	bi->flags=BIO_FLAGS_UPLINK; /* default to UPLINK */
-	return(1);
+	return (1);
 	}
 
 static int MS_CALLBACK file_free(BIO *a)
 	{
-	if (a == NULL) return(0);
+	if (a == NULL) return (0);
 	if (a->shutdown)
 		{
 		if ((a->init) && (a->ptr != NULL))
@@ -221,7 +221,7 @@ static int MS_CALLBACK file_free(BIO *a)
 			}
 		a->init=0;
 		}
-	return(1);
+	return (1);
 	}
 	
 static int MS_CALLBACK file_read(BIO *b, char *out, int outl)
@@ -241,7 +241,7 @@ static int MS_CALLBACK file_read(BIO *b, char *out, int outl)
 			ret=-1;
 			}
 		}
-	return(ret);
+	return (ret);
 	}
 
 static int MS_CALLBACK file_write(BIO *b, const char *in, int inl)
@@ -261,7 +261,7 @@ static int MS_CALLBACK file_write(BIO *b, const char *in, int inl)
 		 * out version above can cause 'inl' write calls under
 		 * some stupid stdio implementations (VMS) */
 		}
-	return(ret);
+	return (ret);
 	}
 
 static long MS_CALLBACK file_ctrl(BIO *b, int cmd, long num, void *ptr)
@@ -418,7 +418,7 @@ static long MS_CALLBACK file_ctrl(BIO *b, int cmd, long num, void *ptr)
 		ret=0;
 		break;
 		}
-	return(ret);
+	return (ret);
 	}
 
 static int MS_CALLBACK file_gets(BIO *bp, char *buf, int size)
@@ -439,7 +439,7 @@ static int MS_CALLBACK file_gets(BIO *bp, char *buf, int size)
 	if (buf[0] != '\0')
 		ret=strlen(buf);
 	err:
-	return(ret);
+	return (ret);
 	}
 
 static int MS_CALLBACK file_puts(BIO *bp, const char *str)
@@ -448,7 +448,7 @@ static int MS_CALLBACK file_puts(BIO *bp, const char *str)
 
 	n=strlen(str);
 	ret=file_write(bp,str,n);
-	return(ret);
+	return (ret);
 	}
 
 #endif /* HEADER_BSS_FILE_C */

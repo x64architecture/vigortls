@@ -70,7 +70,7 @@ static const UI_METHOD *default_UI_meth=NULL;
 
 UI *UI_new(void)
 	{
-	return(UI_new_method(NULL));
+	return (UI_new_method(NULL));
 	}
 
 UI *UI_new_method(const UI_METHOD *method)
@@ -582,12 +582,12 @@ int UI_get_ex_new_index(long argl, void *argp, CRYPTO_EX_new *new_func,
 
 int UI_set_ex_data(UI *r, int idx, void *arg)
 	{
-	return(CRYPTO_set_ex_data(&r->ex_data,idx,arg));
+	return (CRYPTO_set_ex_data(&r->ex_data,idx,arg));
 	}
 
 void *UI_get_ex_data(UI *r, int idx)
 	{
-	return(CRYPTO_get_ex_data(&r->ex_data,idx));
+	return (CRYPTO_get_ex_data(&r->ex_data,idx));
 	}
 
 void UI_set_default_method(const UI_METHOD *meth)

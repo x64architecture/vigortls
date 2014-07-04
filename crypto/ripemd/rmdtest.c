@@ -66,7 +66,7 @@
 int main(int argc, char *argv[])
 {
     printf("No ripemd support\n");
-    return(0);
+    return (0);
 }
 #else
 #include <openssl/ripemd.h>
@@ -130,7 +130,7 @@ int main(int argc, char *argv[])
 		P++;
 		}
 	EXIT(err);
-	return(0);
+	return (0);
 	}
 
 static char *pt(unsigned char *md)
@@ -140,6 +140,6 @@ static char *pt(unsigned char *md)
 
 	for (i=0; i<RIPEMD160_DIGEST_LENGTH; i++)
 		sprintf(&(buf[i*2]),"%02x",md[i]);
-	return(buf);
+	return (buf);
 	}
 #endif

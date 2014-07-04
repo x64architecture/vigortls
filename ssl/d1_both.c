@@ -959,7 +959,7 @@ int dtls1_send_change_cipher_spec(SSL *s, int a, int b)
     }
 
     /* SSL3_ST_CW_CHANGE_B */
-    return(dtls1_do_write(s, SSL3_RT_CHANGE_CIPHER_SPEC));
+    return (dtls1_do_write(s, SSL3_RT_CHANGE_CIPHER_SPEC));
 }
 
 static int dtls1_add_cert_to_buf(BUF_MEM *buf, unsigned long *l, X509 *x)

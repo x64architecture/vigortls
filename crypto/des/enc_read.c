@@ -88,7 +88,7 @@ int DES_enc_read(int fd, void *buf, int len, DES_key_schedule *sched,
 		 DES_cblock *iv)
 	{
 #if defined(OPENSSL_NO_POSIX_IO)
-	return(0);
+	return (0);
 #else
 	/* data to be unencrypted */
 	int net_num=0;
@@ -107,17 +107,17 @@ int DES_enc_read(int fd, void *buf, int len, DES_key_schedule *sched,
 	if (tmpbuf == NULL)
 		{
 		tmpbuf=malloc(BSIZE);
-		if (tmpbuf == NULL) return(-1);
+		if (tmpbuf == NULL) return (-1);
 		}
 	if (net == NULL)
 		{
 		net=malloc(BSIZE);
-		if (net == NULL) return(-1);
+		if (net == NULL) return (-1);
 		}
 	if (unnet == NULL)
 		{
 		unnet=malloc(BSIZE);
-		if (unnet == NULL) return(-1);
+		if (unnet == NULL) return (-1);
 		}
 	/* left over data from last decrypt */
 	if (unnet_left != 0)
@@ -141,7 +141,7 @@ int DES_enc_read(int fd, void *buf, int len, DES_key_schedule *sched,
 			unnet_left-=len;
 			i=len;
 			}
-		return(i);
+		return (i);
 		}
 
 	/* We need to get more data. */
@@ -158,7 +158,7 @@ int DES_enc_read(int fd, void *buf, int len, DES_key_schedule *sched,
 #ifdef EINTR
 		if ((i == -1) && (errno == EINTR)) continue;
 #endif
-		if (i <= 0) return(0);
+		if (i <= 0) return (0);
 		net_num+=i;
 		}
 
@@ -170,7 +170,7 @@ int DES_enc_read(int fd, void *buf, int len, DES_key_schedule *sched,
 	 * we make sure that we have read a multiple of 8 bytes from the net.
 	 */
 	if ((num > MAXWRITE) || (num < 0)) /* error */
-		return(-1);
+		return (-1);
 	rnum=(num < 8)?8:((num+7)/8*8);
 
 	net_num=0;
@@ -184,7 +184,7 @@ int DES_enc_read(int fd, void *buf, int len, DES_key_schedule *sched,
 #ifdef EINTR
 		if ((i == -1) && (errno == EINTR)) continue;
 #endif
-		if (i <= 0) return(0);
+		if (i <= 0) return (0);
 		net_num+=i;
 		}
 

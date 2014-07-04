@@ -66,7 +66,7 @@
 /* need to implement */
 int i2d_X509_PKEY(X509_PKEY *a, unsigned char **pp)
 	{
-	return(0);
+	return (0);
 	}
 
 X509_PKEY *d2i_X509_PKEY(X509_PKEY **a, const unsigned char **pp, long length)
@@ -130,7 +130,7 @@ X509_PKEY *X509_PKEY_new(void)
 	ret->cipher.cipher=NULL;
 	memset(ret->cipher.iv,0,EVP_MAX_IV_LENGTH);
 	ret->references=1;
-	return(ret);
+	return (ret);
 	}
 
 void X509_PKEY_free(X509_PKEY *x)

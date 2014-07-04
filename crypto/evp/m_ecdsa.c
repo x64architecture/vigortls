@@ -144,6 +144,6 @@ static const EVP_MD ecdsa_md=
 
 const EVP_MD *EVP_ecdsa(void)
 	{
-	return(&ecdsa_md);
+	return (&ecdsa_md);
 	}
 #endif

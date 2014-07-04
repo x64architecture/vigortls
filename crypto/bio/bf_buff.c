@@ -87,7 +87,7 @@ static BIO_METHOD methods_buffer=
 
 BIO_METHOD *BIO_f_buffer(void)
 	{
-	return(&methods_buffer);
+	return (&methods_buffer);
 	}
 
 static int buffer_new(BIO *bi)
@@ -95,11 +95,11 @@ static int buffer_new(BIO *bi)
 	BIO_F_BUFFER_CTX *ctx;
 
 	ctx=(BIO_F_BUFFER_CTX *)malloc(sizeof(BIO_F_BUFFER_CTX));
-	if (ctx == NULL) return(0);
+	if (ctx == NULL) return (0);
 	ctx->ibuf=(char *)malloc(DEFAULT_BUFFER_SIZE);
-	if (ctx->ibuf == NULL) { free(ctx); return(0); }
+	if (ctx->ibuf == NULL) { free(ctx); return (0); }
 	ctx->obuf=(char *)malloc(DEFAULT_BUFFER_SIZE);
-	if (ctx->obuf == NULL) { free(ctx->ibuf); free(ctx); return(0); }
+	if (ctx->obuf == NULL) { free(ctx->ibuf); free(ctx); return (0); }
 	ctx->ibuf_size=DEFAULT_BUFFER_SIZE;
 	ctx->obuf_size=DEFAULT_BUFFER_SIZE;
 	ctx->ibuf_len=0;
@@ -110,14 +110,14 @@ static int buffer_new(BIO *bi)
 	bi->init=1;
 	bi->ptr=(char *)ctx;
 	bi->flags=0;
-	return(1);
+	return (1);
 	}
 
 static int buffer_free(BIO *a)
 	{
 	BIO_F_BUFFER_CTX *b;
 
-	if (a == NULL) return(0);
+	if (a == NULL) return (0);
 	b=(BIO_F_BUFFER_CTX *)a->ptr;
 	if (b->ibuf != NULL) free(b->ibuf);
 	if (b->obuf != NULL) free(b->obuf);
@@ -125,7 +125,7 @@ static int buffer_free(BIO *a)
 	a->ptr=NULL;
 	a->init=0;
 	a->flags=0;
-	return(1);
+	return (1);
 	}
 	
 static int buffer_read(BIO *b, char *out, int outl)
@@ -133,10 +133,10 @@ static int buffer_read(BIO *b, char *out, int outl)
 	int i,num=0;
 	BIO_F_BUFFER_CTX *ctx;
 
-	if (out == NULL) return(0);
+	if (out == NULL) return (0);
 	ctx=(BIO_F_BUFFER_CTX *)b->ptr;
 
-	if ((ctx == NULL) || (b->next_bio == NULL)) return(0);
+	if ((ctx == NULL) || (b->next_bio == NULL)) return (0);
 	num=0;
 	BIO_clear_retry_flags(b);
 
@@ -150,7 +150,7 @@ start:
 		ctx->ibuf_off+=i;
 		ctx->ibuf_len-=i;
 		num+=i;
-		if (outl == i)  return(num);
+		if (outl == i)  return (num);
 		outl-=i;
 		out+=i;
 		}
@@ -168,11 +168,11 @@ start:
 			if (i <= 0)
 				{
 				BIO_copy_next_retry(b);
-				if (i < 0) return((num > 0)?num:i);
-				if (i == 0) return(num);
+				if (i < 0) return ((num > 0)?num:i);
+				if (i == 0) return (num);
 				}
 			num+=i;
-			if (outl == i) return(num);
+			if (outl == i) return (num);
 			out+=i;
 			outl-=i;
 			}
@@ -184,8 +184,8 @@ start:
 	if (i <= 0)
 		{
 		BIO_copy_next_retry(b);
-		if (i < 0) return((num > 0)?num:i);
-		if (i == 0) return(num);
+		if (i < 0) return ((num > 0)?num:i);
+		if (i == 0) return (num);
 		}
 	ctx->ibuf_off=0;
 	ctx->ibuf_len=i;
@@ -199,9 +199,9 @@ static int buffer_write(BIO *b, const char *in, int inl)
 	int i,num=0;
 	BIO_F_BUFFER_CTX *ctx;
 
-	if ((in == NULL) || (inl <= 0)) return(0);
+	if ((in == NULL) || (inl <= 0)) return (0);
 	ctx=(BIO_F_BUFFER_CTX *)b->ptr;
-	if ((ctx == NULL) || (b->next_bio == NULL)) return(0);
+	if ((ctx == NULL) || (b->next_bio == NULL)) return (0);
 
 	BIO_clear_retry_flags(b);
 start:
@@ -211,7 +211,7 @@ start:
 		{
 		memcpy(&(ctx->obuf[ctx->obuf_off+ctx->obuf_len]),in,inl);
 		ctx->obuf_len+=inl;
-		return(num+inl);
+		return (num+inl);
 		}
 	/* else */
 	/* stuff already in buffer, so add to it first, then flush */
@@ -234,8 +234,8 @@ start:
 				{
 				BIO_copy_next_retry(b);
 
-				if (i < 0) return((num > 0)?num:i);
-				if (i == 0) return(num);
+				if (i < 0) return ((num > 0)?num:i);
+				if (i == 0) return (num);
 				}
 			ctx->obuf_off+=i;
 			ctx->obuf_len-=i;
@@ -253,13 +253,13 @@ start:
 		if (i <= 0)
 			{
 			BIO_copy_next_retry(b);
-			if (i < 0) return((num > 0)?num:i);
-			if (i == 0) return(num);
+			if (i < 0) return ((num > 0)?num:i);
+			if (i == 0) return (num);
 			}
 		num+=i;
 		in+=i;
 		inl-=i;
-		if (inl == 0) return(num);
+		if (inl == 0) return (num);
 		}
 
 	/* copy the rest into the buffer since we have only a small 
@@ -285,7 +285,7 @@ static long buffer_ctrl(BIO *b, int cmd, long num, void *ptr)
 		ctx->ibuf_len=0;
 		ctx->obuf_off=0;
 		ctx->obuf_len=0;
-		if (b->next_bio == NULL) return(0);
+		if (b->next_bio == NULL) return (0);
 		ret=BIO_ctrl(b->next_bio,cmd,num,ptr);
 		break;
 	case BIO_CTRL_INFO:
@@ -303,7 +303,7 @@ static long buffer_ctrl(BIO *b, int cmd, long num, void *ptr)
 		ret=(long)ctx->obuf_len;
 		if (ret == 0)
 			{
-			if (b->next_bio == NULL) return(0);
+			if (b->next_bio == NULL) return (0);
 			ret=BIO_ctrl(b->next_bio,cmd,num,ptr);
 			}
 		break;
@@ -311,7 +311,7 @@ static long buffer_ctrl(BIO *b, int cmd, long num, void *ptr)
 		ret=(long)ctx->ibuf_len;
 		if (ret == 0)
 			{
-			if (b->next_bio == NULL) return(0);
+			if (b->next_bio == NULL) return (0);
 			ret=BIO_ctrl(b->next_bio,cmd,num,ptr);
 			}
 		break;
@@ -382,14 +382,14 @@ static long buffer_ctrl(BIO *b, int cmd, long num, void *ptr)
 			}
 		break;
 	case BIO_C_DO_STATE_MACHINE:
-		if (b->next_bio == NULL) return(0);
+		if (b->next_bio == NULL) return (0);
 		BIO_clear_retry_flags(b);
 		ret=BIO_ctrl(b->next_bio,cmd,num,ptr);
 		BIO_copy_next_retry(b);
 		break;
 
 	case BIO_CTRL_FLUSH:
-		if (b->next_bio == NULL) return(0);
+		if (b->next_bio == NULL) return (0);
 		if (ctx->obuf_len <= 0)
 			{
 			ret=BIO_ctrl(b->next_bio,cmd,num,ptr);
@@ -408,7 +408,7 @@ static long buffer_ctrl(BIO *b, int cmd, long num, void *ptr)
 fprintf(stderr,"FLUSH [%3d] %3d -> %3d\n",ctx->obuf_off,ctx->obuf_len,r);
 #endif
 				BIO_copy_next_retry(b);
-				if (r <= 0) return((long)r);
+				if (r <= 0) return ((long)r);
 				ctx->obuf_off+=r;
 				ctx->obuf_len-=r;
 				}
@@ -429,28 +429,28 @@ fprintf(stderr,"FLUSH [%3d] %3d -> %3d\n",ctx->obuf_off,ctx->obuf_len,r);
 			ret=0;
 		break;
 	default:
-		if (b->next_bio == NULL) return(0);
+		if (b->next_bio == NULL) return (0);
 		ret=BIO_ctrl(b->next_bio,cmd,num,ptr);
 		break;
 		}
-	return(ret);
+	return (ret);
 malloc_error:
 	BIOerr(BIO_F_BUFFER_CTRL,ERR_R_MALLOC_FAILURE);
-	return(0);
+	return (0);
 	}
 
 static long buffer_callback_ctrl(BIO *b, int cmd, bio_info_cb *fp)
 	{
 	long ret=1;
 
-	if (b->next_bio == NULL) return(0);
+	if (b->next_bio == NULL) return (0);
 	switch (cmd)
 		{
 	default:
 		ret=BIO_callback_ctrl(b->next_bio,cmd,fp);
 		break;
 		}
-	return(ret);
+	return (ret);
 	}
 
 static int buffer_gets(BIO *b, char *buf, int size)
@@ -486,7 +486,7 @@ static int buffer_gets(BIO *b, char *buf, int size)
 			if (flag || size == 0)
 				{
 				*buf='\0';
-				return(num);
+				return (num);
 				}
 			}
 		else	/* read another chunk */
@@ -496,8 +496,8 @@ static int buffer_gets(BIO *b, char *buf, int size)
 				{
 				BIO_copy_next_retry(b);
 				*buf='\0';
-				if (i < 0) return((num > 0)?num:i);
-				if (i == 0) return(num);
+				if (i < 0) return ((num > 0)?num:i);
+				if (i == 0) return (num);
 				}
 			ctx->ibuf_len=i;
 			ctx->ibuf_off=0;
@@ -507,6 +507,6 @@ static int buffer_gets(BIO *b, char *buf, int size)
 
 static int buffer_puts(BIO *b, const char *str)
 	{
-	return(buffer_write(b,str,strlen(str)));
+	return (buffer_write(b,str,strlen(str)));
 	}
 

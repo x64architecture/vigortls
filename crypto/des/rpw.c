@@ -94,6 +94,6 @@ int main(int argc, char *argv[])
 		exit(0);
 		}
 #ifdef LINT
-	return(0);
+	return (0);
 #endif
 	}

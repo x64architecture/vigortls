@@ -147,7 +147,7 @@ static RSA_METHOD rsa_pkcs1_eay_meth={
 
 const RSA_METHOD *RSA_PKCS1_SSLeay(void)
 	{
-	return(&rsa_pkcs1_eay_meth);
+	return (&rsa_pkcs1_eay_meth);
 	}
 
 static int RSA_eay_public_encrypt(int flen, const unsigned char *from,
@@ -249,7 +249,7 @@ err:
 		OPENSSL_cleanse(buf,num);
 		free(buf);
 		}
-	return(r);
+	return (r);
 	}
 
 static BN_BLINDING *rsa_get_blinding(RSA *rsa, int *local, BN_CTX *ctx)
@@ -486,7 +486,7 @@ err:
 		OPENSSL_cleanse(buf,num);
 		free(buf);
 		}
-	return(r);
+	return (r);
 	}
 
 static int RSA_eay_private_decrypt(int flen, const unsigned char *from,
@@ -626,7 +626,7 @@ err:
 		OPENSSL_cleanse(buf,num);
 		free(buf);
 		}
-	return(r);
+	return (r);
 	}
 
 /* signature verification */
@@ -731,7 +731,7 @@ err:
 		OPENSSL_cleanse(buf,num);
 		free(buf);
 		}
-	return(r);
+	return (r);
 	}
 
 static int RSA_eay_mod_exp(BIGNUM *r0, const BIGNUM *I, RSA *rsa, BN_CTX *ctx)
@@ -892,13 +892,13 @@ static int RSA_eay_mod_exp(BIGNUM *r0, const BIGNUM *I, RSA *rsa, BN_CTX *ctx)
 	ret=1;
 err:
 	BN_CTX_end(ctx);
-	return(ret);
+	return (ret);
 	}
 
 static int RSA_eay_init(RSA *rsa)
 	{
 	rsa->flags|=RSA_FLAG_CACHE_PUBLIC|RSA_FLAG_CACHE_PRIVATE;
-	return(1);
+	return (1);
 	}
 
 static int RSA_eay_finish(RSA *rsa)
@@ -909,7 +909,7 @@ static int RSA_eay_finish(RSA *rsa)
 		BN_MONT_CTX_free(rsa->_method_mod_p);
 	if (rsa->_method_mod_q != NULL)
 		BN_MONT_CTX_free(rsa->_method_mod_q);
-	return(1);
+	return (1);
 	}
 
 #endif

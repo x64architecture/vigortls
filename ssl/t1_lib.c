@@ -144,14 +144,14 @@ long tls1_default_timeout(void)
 	{
 	/* 2 hours, the 24 hours mentioned in the TLSv1 spec
 	 * is way too long for http, the cache would over fill */
-	return(60*60*2);
+	return (60*60*2);
 	}
 
 int tls1_new(SSL *s)
 	{
-	if (!ssl3_new(s)) return(0);
+	if (!ssl3_new(s)) return (0);
 	s->method->ssl_clear(s);
-	return(1);
+	return (1);
 	}
 
 void tls1_free(SSL *s)

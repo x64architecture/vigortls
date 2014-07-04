@@ -252,7 +252,7 @@ void BIO_clear_flags(BIO *b, int flags);
 /* The callback is called before and after the underling operation,
  * The BIO_CB_RETURN flag indicates if it is after the call */
 #define BIO_CB_RETURN	0x80
-#define BIO_CB_return(a) ((a)|BIO_CB_RETURN))
+#define BIO_CB_return (a) ((a)|BIO_CB_RETURN))
 #define BIO_cb_pre(a)	(!((a)&BIO_CB_RETURN))
 #define BIO_cb_post(a)	((a)&BIO_CB_RETURN)
 
@@ -443,12 +443,12 @@ typedef int asn1_ps_func(BIO *b, unsigned char **pbuf, int *plen, void *parg);
 /* BIO *BIO_get_filter_bio(BIO *bio); */
 #define BIO_set_proxy_cb(b,cb) BIO_callback_ctrl(b,BIO_C_SET_PROXY_PARAM,3,(void *(*cb)()))
 #define BIO_set_proxy_header(b,sk) BIO_ctrl(b,BIO_C_SET_PROXY_PARAM,4,(char *)sk)
-#define BIO_set_no_connect_return(b,bool) BIO_int_ctrl(b,BIO_C_SET_PROXY_PARAM,5,bool)
+#define BIO_set_no_connect_return (b,bool) BIO_int_ctrl(b,BIO_C_SET_PROXY_PARAM,5,bool)
 
 #define BIO_get_proxy_header(b,skp) BIO_ctrl(b,BIO_C_GET_PROXY_PARAM,0,(char *)skp)
 #define BIO_get_proxies(b,pxy_p) BIO_ctrl(b,BIO_C_GET_PROXY_PARAM,1,(char *)(pxy_p))
 #define BIO_get_url(b,url)	BIO_ctrl(b,BIO_C_GET_PROXY_PARAM,2,(char *)(url))
-#define BIO_get_no_connect_return(b)	BIO_ctrl(b,BIO_C_GET_PROXY_PARAM,5,NULL)
+#define BIO_get_no_connect_return (b)	BIO_ctrl(b,BIO_C_GET_PROXY_PARAM,5,NULL)
 
 #define BIO_set_fd(b,fd,c)	BIO_int_ctrl(b,BIO_C_SET_FD,c,fd)
 #define BIO_get_fd(b,c)		BIO_ctrl(b,BIO_C_GET_FD,0,(char *)c)
@@ -497,7 +497,7 @@ int BIO_read_filename(BIO *b,const char *name);
 #define BIO_get_mem_data(b,pp)	BIO_ctrl(b,BIO_CTRL_INFO,0,(char *)pp)
 #define BIO_set_mem_buf(b,bm,c)	BIO_ctrl(b,BIO_C_SET_BUF_MEM,c,(char *)bm)
 #define BIO_get_mem_ptr(b,pp)	BIO_ctrl(b,BIO_C_GET_BUF_MEM_PTR,0,(char *)pp)
-#define BIO_set_mem_eof_return(b,v) \
+#define BIO_set_mem_eof_return (b,v) \
 				BIO_ctrl(b,BIO_C_SET_BUF_MEM_EOF_RETURN,v,NULL)
 
 /* For the BIO_f_buffer() type */

@@ -67,7 +67,7 @@
 int main(int argc, char *argv[])
 {
     printf("No CAST support\n");
-    return(0);
+    return (0);
 }
 #else
 #include <openssl/cast.h>
@@ -228,6 +228,6 @@ int main(int argc, char *argv[])
 #endif
 
     EXIT(err);
-    return(err);
+    return (err);
     }
 #endif

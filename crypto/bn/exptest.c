@@ -196,6 +196,6 @@ err:
 	ERR_load_crypto_strings();
 	ERR_print_errors(out);
 	EXIT(1);
-	return(1);
+	return (1);
 	}
 

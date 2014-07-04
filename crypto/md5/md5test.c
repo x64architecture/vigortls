@@ -66,7 +66,7 @@
 int main(int argc, char *argv[])
 {
     printf("No MD5 support\n");
-    return(0);
+    return (0);
 }
 #else
 #include <openssl/evp.h>
@@ -122,7 +122,7 @@ int main(int argc, char *argv[])
 		}
 
 	EXIT(err);
-	return(0);
+	return (0);
 	}
 
 static char *pt(unsigned char *md)
@@ -132,6 +132,6 @@ static char *pt(unsigned char *md)
 
 	for (i=0; i<MD5_DIGEST_LENGTH; i++)
 		sprintf(&(buf[i*2]),"%02x",md[i]);
-	return(buf);
+	return (buf);
 	}
 #endif

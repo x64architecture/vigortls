@@ -96,7 +96,7 @@ static BIO_METHOD methods_sslp = {
 
 BIO_METHOD *BIO_f_ssl(void) 
 {
-    return(&methods_sslp);
+    return (&methods_sslp);
 }
 
 static int ssl_new(BIO *bi) 
@@ -111,7 +111,7 @@ static int ssl_new(BIO *bi)
     bi->init = 0;
     bi->ptr = (char *)bs;
     bi->flags = 0;
-    return(1);
+    return (1);
 }
 
 static int ssl_free(BIO *a)
@@ -119,7 +119,7 @@ static int ssl_free(BIO *a)
     BIO_SSL *bs;
 
     if (a == NULL) 
-        return(0);
+        return (0);
         
     bs = (BIO_SSL *)a->ptr;
     
@@ -148,7 +148,7 @@ static int ssl_read(BIO *b, char *out, int outl)
     int r = 0;
 
     if (out == NULL) 
-        return(0);
+        return (0);
         
     sb = (BIO_SSL *)b->ptr;
     ssl = sb->ssl;
@@ -232,7 +232,7 @@ static int ssl_write(BIO *b, const char *out, int outl)
     BIO_SSL *bs;
 
     if (out == NULL) 
-        return(0);
+        return (0);
 
     bs = (BIO_SSL *)b->ptr;
     ssl = bs->ssl;
@@ -288,7 +288,7 @@ static int ssl_write(BIO *b, const char *out, int outl)
     }
 
     b->retry_reason = retry_reason;
-    return(ret);
+    return (ret);
 }
 
 static long ssl_ctrl(BIO *b, int cmd, long num, void *ptr)
@@ -301,7 +301,7 @@ static long ssl_ctrl(BIO *b, int cmd, long num, void *ptr)
     bs = (BIO_SSL *)b->ptr;
     ssl = bs->ssl;
     if ((ssl == NULL) && (cmd != BIO_C_SET_SSL))
-        return(0);
+        return (0);
     switch (cmd) {
     case BIO_CTRL_RESET:
         SSL_shutdown(ssl);

@@ -365,5 +365,5 @@ err:
 	if (s_to_c != NULL) BIO_free(s_to_c);
 	if (c_bio != NULL) BIO_free(c_bio);
 	if (s_bio != NULL) BIO_free(s_bio);
-	return(0);
+	return (0);
 }

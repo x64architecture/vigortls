@@ -181,10 +181,10 @@ err:
 			if (ret->qual != NULL) free(ret->qual);
 			if (ret != NULL) free(ret);
 			}
-		return(NULL);
+		return (NULL);
 		}
 	else
-		return(ret);
+		return (ret);
 	}
 
 OPENSSL_STRING *TXT_DB_get_by_index(TXT_DB *db, int idx, OPENSSL_STRING *value)
@@ -195,17 +195,17 @@ OPENSSL_STRING *TXT_DB_get_by_index(TXT_DB *db, int idx, OPENSSL_STRING *value)
 	if (idx >= db->num_fields)
 		{
 		db->error=DB_ERROR_INDEX_OUT_OF_RANGE;
-		return(NULL);
+		return (NULL);
 		}
 	lh=db->index[idx];
 	if (lh == NULL)
 		{
 		db->error=DB_ERROR_NO_INDEX;
-		return(NULL);
+		return (NULL);
 		}
 	ret=lh_OPENSSL_STRING_retrieve(lh,value);
 	db->error=DB_ERROR_OK;
-	return(ret);
+	return (ret);
 	}
 
 int TXT_DB_create_index(TXT_DB *db, int field, int (*qual)(OPENSSL_STRING *),
@@ -218,13 +218,13 @@ int TXT_DB_create_index(TXT_DB *db, int field, int (*qual)(OPENSSL_STRING *),
 	if (field >= db->num_fields)
 		{
 		db->error=DB_ERROR_INDEX_OUT_OF_RANGE;
-		return(0);
+		return (0);
 		}
 	/* FIXME: we lose type checking at this point */
 	if ((idx=(LHASH_OF(OPENSSL_STRING) *)lh_new(hash,cmp)) == NULL)
 		{
 		db->error=DB_ERROR_MALLOC;
-		return(0);
+		return (0);
 		}
 	n=sk_OPENSSL_PSTRING_num(db->data);
 	for (i=0; i<n; i++)
@@ -237,13 +237,13 @@ int TXT_DB_create_index(TXT_DB *db, int field, int (*qual)(OPENSSL_STRING *),
 			db->arg1=sk_OPENSSL_PSTRING_find(db->data,r);
 			db->arg2=i;
 			lh_OPENSSL_STRING_free(idx);
-			return(0);
+			return (0);
 			}
 		}
 	if (db->index[field] != NULL) lh_OPENSSL_STRING_free(db->index[field]);
 	db->index[field]=idx;
 	db->qual[field]=qual;
-	return(1);
+	return (1);
 	}
 
 long TXT_DB_write(BIO *out, TXT_DB *db)
@@ -291,7 +291,7 @@ long TXT_DB_write(BIO *out, TXT_DB *db)
 	ret=tot;
 err:
 	if (buf != NULL) BUF_MEM_free(buf);
-	return(ret);
+	return (ret);
 	}
 
 int TXT_DB_insert(TXT_DB *db, OPENSSL_STRING *row)
@@ -331,9 +331,9 @@ int TXT_DB_insert(TXT_DB *db, OPENSSL_STRING *row)
 			(void)lh_OPENSSL_STRING_insert(db->index[i],row);
 			}
 		}
-	return(1);
+	return (1);
 err:
-	return(0);
+	return (0);
 	}
 
 void TXT_DB_free(TXT_DB *db)

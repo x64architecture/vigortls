@@ -254,7 +254,7 @@ EC_GROUP *EC_GROUP_dup(const EC_GROUP *a)
 
 	if (a == NULL) return NULL;
 
-	if ((t = EC_GROUP_new(a->meth)) == NULL) return(NULL);
+	if ((t = EC_GROUP_new(a->meth)) == NULL) return (NULL);
 	if (!EC_GROUP_copy(t, a)) goto err;
 
 	ok = 1;
@@ -773,7 +773,7 @@ EC_POINT *EC_POINT_dup(const EC_POINT *a, const EC_GROUP *group)
 	if (a == NULL) return NULL;
 
 	t = EC_POINT_new(group);
-	if (t == NULL) return(NULL);
+	if (t == NULL) return (NULL);
 	r = EC_POINT_copy(t, a);
 	if (!r)
 		{

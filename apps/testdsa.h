@@ -40,7 +40,7 @@ DSA *get_dsa512()
 	{
 	DSA *dsa;
 
-	if ((dsa=DSA_new()) == NULL) return(NULL);
+	if ((dsa=DSA_new()) == NULL) return (NULL);
 	dsa->priv_key=BN_bin2bn(dsa512_priv,sizeof(dsa512_priv),NULL);
 	dsa->pub_key=BN_bin2bn(dsa512_pub,sizeof(dsa512_pub),NULL);
 	dsa->p=BN_bin2bn(dsa512_p,sizeof(dsa512_p),NULL);
@@ -48,8 +48,8 @@ DSA *get_dsa512()
 	dsa->g=BN_bin2bn(dsa512_g,sizeof(dsa512_g),NULL);
 	if ((dsa->priv_key == NULL) || (dsa->pub_key == NULL) || (dsa->p == NULL) ||
 				(dsa->q == NULL) || (dsa->g == NULL))
-		return(NULL);
-	return(dsa);
+		return (NULL);
+	return (dsa);
 	}
 
 static unsigned char dsa1024_priv[]={
@@ -104,7 +104,7 @@ DSA *get_dsa1024()
 	{
 	DSA *dsa;
 
-	if ((dsa=DSA_new()) == NULL) return(NULL);
+	if ((dsa=DSA_new()) == NULL) return (NULL);
 	dsa->priv_key=BN_bin2bn(dsa1024_priv,sizeof(dsa1024_priv),NULL);
 	dsa->pub_key=BN_bin2bn(dsa1024_pub,sizeof(dsa1024_pub),NULL);
 	dsa->p=BN_bin2bn(dsa1024_p,sizeof(dsa1024_p),NULL);
@@ -112,8 +112,8 @@ DSA *get_dsa1024()
 	dsa->g=BN_bin2bn(dsa1024_g,sizeof(dsa1024_g),NULL);
 	if ((dsa->priv_key == NULL) || (dsa->pub_key == NULL) || (dsa->p == NULL) ||
 				(dsa->q == NULL) || (dsa->g == NULL))
-		return(NULL);
-	return(dsa);
+		return (NULL);
+	return (dsa);
 	}
 
 static unsigned char dsa2048_priv[]={
@@ -201,7 +201,7 @@ DSA *get_dsa2048()
 	{
 	DSA *dsa;
  
-	if ((dsa=DSA_new()) == NULL) return(NULL);
+	if ((dsa=DSA_new()) == NULL) return (NULL);
 	dsa->priv_key=BN_bin2bn(dsa2048_priv,sizeof(dsa2048_priv),NULL);
 	dsa->pub_key=BN_bin2bn(dsa2048_pub,sizeof(dsa2048_pub),NULL);
 	dsa->p=BN_bin2bn(dsa2048_p,sizeof(dsa2048_p),NULL);
@@ -209,8 +209,8 @@ DSA *get_dsa2048()
 	dsa->g=BN_bin2bn(dsa2048_g,sizeof(dsa2048_g),NULL);
 	if ((dsa->priv_key == NULL) || (dsa->pub_key == NULL) || (dsa->p == NULL) ||
 				(dsa->q == NULL) || (dsa->g == NULL))
-		return(NULL);
-	return(dsa);
+		return (NULL);
+	return (dsa);
 	}
 
 static const char rnd_seed[] = "string to make the random number generator think it has entropy";

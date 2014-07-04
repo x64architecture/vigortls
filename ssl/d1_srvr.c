@@ -130,9 +130,9 @@ static int dtls1_send_hello_verify_request(SSL *s);
 static const SSL_METHOD *dtls1_get_server_method(int ver)
 	{
 	if (ver == DTLS1_VERSION)
-		return(DTLSv1_server_method());
+		return (DTLSv1_server_method());
 	else
-		return(NULL);
+		return (NULL);
 	}
 
 IMPLEMENT_dtls1_meth_func(DTLSv1_server_method,
@@ -169,7 +169,7 @@ int dtls1_accept(SSL *s)
 	if (s->cert == NULL)
 		{
 		SSLerr(SSL_F_DTLS1_ACCEPT,SSL_R_NO_CERTIFICATE_SET);
-		return(-1);
+		return (-1);
 		}
 
 	for (;;)
@@ -701,7 +701,7 @@ end:
 
 	if (cb != NULL)
 		cb(s,SSL_CB_ACCEPT_EXIT,ret);
-	return(ret);
+	return (ret);
 	}
 
 int dtls1_send_hello_request(SSL *s)
@@ -723,7 +723,7 @@ int dtls1_send_hello_request(SSL *s)
 		}
 
 	/* SSL3_ST_SW_HELLO_REQ_B */
-	return(dtls1_do_write(s,SSL3_RT_HANDSHAKE));
+	return (dtls1_do_write(s,SSL3_RT_HANDSHAKE));
 	}
 
 int dtls1_send_hello_verify_request(SSL *s)
@@ -762,7 +762,7 @@ int dtls1_send_hello_verify_request(SSL *s)
 		}
 
 	/* s->state = DTLS1_ST_SW_HELLO_VERIFY_REQUEST_B */
-	return(dtls1_do_write(s,SSL3_RT_HANDSHAKE));
+	return (dtls1_do_write(s,SSL3_RT_HANDSHAKE));
 	}
 
 int dtls1_send_server_hello(SSL *s)
@@ -849,7 +849,7 @@ int dtls1_send_server_hello(SSL *s)
 		}
 
 	/* SSL3_ST_SW_SRVR_HELLO_B */
-	return(dtls1_do_write(s,SSL3_RT_HANDSHAKE));
+	return (dtls1_do_write(s,SSL3_RT_HANDSHAKE));
 	}
 
 int dtls1_send_server_done(SSL *s)
@@ -873,7 +873,7 @@ int dtls1_send_server_done(SSL *s)
 		}
 
 	/* SSL3_ST_SW_SRVR_DONE_B */
-	return(dtls1_do_write(s,SSL3_RT_HANDSHAKE));
+	return (dtls1_do_write(s,SSL3_RT_HANDSHAKE));
 	}
 
 int dtls1_send_server_key_exchange(SSL *s)
@@ -1301,7 +1301,7 @@ int dtls1_send_server_key_exchange(SSL *s)
 
 	s->state = SSL3_ST_SW_KEY_EXCH_B;
 	EVP_MD_CTX_cleanup(&md_ctx);
-	return(dtls1_do_write(s,SSL3_RT_HANDSHAKE));
+	return (dtls1_do_write(s,SSL3_RT_HANDSHAKE));
 f_err:
 	ssl3_send_alert(s,SSL3_AL_FATAL,al);
 err:
@@ -1310,7 +1310,7 @@ err:
 	BN_CTX_free(bn_ctx);
 #endif
 	EVP_MD_CTX_cleanup(&md_ctx);
-	return(-1);
+	return (-1);
 	}
 
 int dtls1_send_certificate_request(SSL *s)
@@ -1409,9 +1409,9 @@ int dtls1_send_certificate_request(SSL *s)
 		}
 
 	/* SSL3_ST_SW_CERT_REQ_B */
-	return(dtls1_do_write(s,SSL3_RT_HANDSHAKE));
+	return (dtls1_do_write(s,SSL3_RT_HANDSHAKE));
 err:
-	return(-1);
+	return (-1);
 	}
 
 int dtls1_send_server_certificate(SSL *s)
@@ -1429,7 +1429,7 @@ int dtls1_send_server_certificate(SSL *s)
 			    (s->s3->tmp.new_cipher->algorithm_auth != SSL_aKRB5))
 				{
 				SSLerr(SSL_F_DTLS1_SEND_SERVER_CERTIFICATE,ERR_R_INTERNAL_ERROR);
-				return(0);
+				return (0);
 				}
 			}
 
@@ -1443,7 +1443,7 @@ int dtls1_send_server_certificate(SSL *s)
 		}
 
 	/* SSL3_ST_SW_CERT_B */
-	return(dtls1_do_write(s,SSL3_RT_HANDSHAKE));
+	return (dtls1_do_write(s,SSL3_RT_HANDSHAKE));
 	}
 
 #ifndef OPENSSL_NO_TLSEXT
@@ -1554,6 +1554,6 @@ int dtls1_send_newsession_ticket(SSL *s)
 		}
 
 	/* SSL3_ST_SW_SESSION_TICKET_B */
-	return(dtls1_do_write(s,SSL3_RT_HANDSHAKE));
+	return (dtls1_do_write(s,SSL3_RT_HANDSHAKE));
 	}
 #endif

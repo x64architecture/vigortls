@@ -311,7 +311,7 @@ err:
 	ERR_load_crypto_strings();
 	ERR_print_errors_fp(stderr);
 	EXIT(1);
-	return(1);
+	return (1);
 	}
 
 int test_add(BIO *bp)
@@ -355,7 +355,7 @@ int test_add(BIO *bp)
 	BN_free(&a);
 	BN_free(&b);
 	BN_free(&c);
-	return(1);
+	return (1);
 	}
 
 int test_sub(BIO *bp)
@@ -373,7 +373,7 @@ int test_sub(BIO *bp)
 			{
 			BN_bntest_rand(&a,512,0,0);
 			BN_copy(&b,&a);
-			if (BN_set_bit(&a,i)==0) return(0);
+			if (BN_set_bit(&a,i)==0) return (0);
 			BN_add_word(&b,i);
 			}
 		else
@@ -406,7 +406,7 @@ int test_sub(BIO *bp)
 	BN_free(&a);
 	BN_free(&b);
 	BN_free(&c);
-	return(1);
+	return (1);
 	}
 
 int test_div(BIO *bp, BN_CTX *ctx)
@@ -470,7 +470,7 @@ int test_div(BIO *bp, BN_CTX *ctx)
 	BN_free(&c);
 	BN_free(&d);
 	BN_free(&e);
-	return(1);
+	return (1);
 	}
 
 static void print_word(BIO *bp,BN_ULONG w)
@@ -542,7 +542,7 @@ int test_div_word(BIO *bp)
 		}
 	BN_free(&a);
 	BN_free(&b);
-	return(1);
+	return (1);
 	}
 
 int test_div_recp(BIO *bp, BN_CTX *ctx)
@@ -615,7 +615,7 @@ int test_div_recp(BIO *bp, BN_CTX *ctx)
 	BN_free(&d);
 	BN_free(&e);
 	BN_RECP_CTX_free(&recp);
-	return(1);
+	return (1);
 	}
 
 int test_mul(BIO *bp)
@@ -671,7 +671,7 @@ int test_mul(BIO *bp)
 	BN_free(&d);
 	BN_free(&e);
 	BN_CTX_free(ctx);
-	return(1);
+	return (1);
 	}
 
 int test_sqr(BIO *bp, BN_CTX *ctx)
@@ -713,7 +713,7 @@ int test_sqr(BIO *bp, BN_CTX *ctx)
 	BN_free(&c);
 	BN_free(&d);
 	BN_free(&e);
-	return(1);
+	return (1);
 	}
 
 int test_mont(BIO *bp, BN_CTX *ctx)
@@ -790,7 +790,7 @@ BN_num_bits(mont->N));
 	BN_free(&A);
 	BN_free(&B);
 	BN_free(&n);
-	return(1);
+	return (1);
 	}
 
 int test_mod(BIO *bp, BN_CTX *ctx)
@@ -836,7 +836,7 @@ int test_mod(BIO *bp, BN_CTX *ctx)
 	BN_free(c);
 	BN_free(d);
 	BN_free(e);
-	return(1);
+	return (1);
 	}
 
 int test_mod_mul(BIO *bp, BN_CTX *ctx)
@@ -907,7 +907,7 @@ int test_mod_mul(BIO *bp, BN_CTX *ctx)
 	BN_free(c);
 	BN_free(d);
 	BN_free(e);
-	return(1);
+	return (1);
 	}
 
 int test_mod_exp(BIO *bp, BN_CTX *ctx)
@@ -928,7 +928,7 @@ int test_mod_exp(BIO *bp, BN_CTX *ctx)
 		BN_bntest_rand(b,2+i,0,0); /**/
 
 		if (!BN_mod_exp(d,a,b,c,ctx))
-			return(0);
+			return (0);
 
 		if (bp != NULL)
 			{
@@ -958,7 +958,7 @@ int test_mod_exp(BIO *bp, BN_CTX *ctx)
 	BN_free(c);
 	BN_free(d);
 	BN_free(e);
-	return(1);
+	return (1);
 	}
 
 int test_mod_exp_mont_consttime(BIO *bp, BN_CTX *ctx)
@@ -979,7 +979,7 @@ int test_mod_exp_mont_consttime(BIO *bp, BN_CTX *ctx)
 		BN_bntest_rand(b,2+i,0,0); /**/
 
 		if (!BN_mod_exp_mont_consttime(d,a,b,c,ctx,NULL))
-			return(00);
+			return (00);
 
 		if (bp != NULL)
 			{
@@ -1009,7 +1009,7 @@ int test_mod_exp_mont_consttime(BIO *bp, BN_CTX *ctx)
 	BN_free(c);
 	BN_free(d);
 	BN_free(e);
-	return(1);
+	return (1);
 	}
 
 int test_exp(BIO *bp, BN_CTX *ctx)
@@ -1030,7 +1030,7 @@ int test_exp(BIO *bp, BN_CTX *ctx)
 		BN_bntest_rand(b,2+i,0,0); /**/
 
 		if (BN_exp(d,a,b,ctx) <= 0)
-			return(0);
+			return (0);
 
 		if (bp != NULL)
 			{
@@ -1059,7 +1059,7 @@ int test_exp(BIO *bp, BN_CTX *ctx)
 	BN_free(d);
 	BN_free(e);
 	BN_free(one);
-	return(1);
+	return (1);
 	}
 #ifndef OPENSSL_NO_EC2M
 int test_gf2m_add(BIO *bp)
@@ -1874,7 +1874,7 @@ int test_lshift(BIO *bp,BN_CTX *ctx,BIGNUM *a_)
 	BN_free(b);
 	BN_free(c);
 	BN_free(d);
-	return(1);
+	return (1);
 	}
 
 int test_lshift1(BIO *bp)
@@ -1915,7 +1915,7 @@ int test_lshift1(BIO *bp)
 	BN_free(a);
 	BN_free(b);
 	BN_free(c);
-	return(1);
+	return (1);
 	}
 
 int test_rshift(BIO *bp,BN_CTX *ctx)
@@ -1961,7 +1961,7 @@ int test_rshift(BIO *bp,BN_CTX *ctx)
 	BN_free(c);
 	BN_free(d);
 	BN_free(e);
-	return(1);
+	return (1);
 	}
 
 int test_rshift1(BIO *bp)
@@ -2001,7 +2001,7 @@ int test_rshift1(BIO *bp)
 	BN_free(a);
 	BN_free(b);
 	BN_free(c);
-	return(1);
+	return (1);
 	}
 
 int rand_neg(void)
@@ -2009,5 +2009,5 @@ int rand_neg(void)
 	static unsigned int neg=0;
 	static int sign[8]={0,0,0,1,1,0,1,1};
 
-	return(sign[(neg++)%8]);
+	return (sign[(neg++)%8]);
 	}

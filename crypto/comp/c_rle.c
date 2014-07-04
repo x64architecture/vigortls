@@ -22,7 +22,7 @@ static COMP_METHOD rle_method={
 
 COMP_METHOD *COMP_rle(void)
 	{
-	return(&rle_method);
+	return (&rle_method);
 	}
 
 static int rle_compress_block(COMP_CTX *ctx, unsigned char *out,
@@ -33,12 +33,12 @@ static int rle_compress_block(COMP_CTX *ctx, unsigned char *out,
 	if (ilen == 0 || olen < (ilen-1))
 		{
 		/* ZZZZZZZZZZZZZZZZZZZZZZ */
-		return(-1);
+		return (-1);
 		}
 
 	*(out++)=0;
 	memcpy(out,in,ilen);
-	return(ilen+1);
+	return (ilen+1);
 	}
 
 static int rle_expand_block(COMP_CTX *ctx, unsigned char *out,
@@ -49,7 +49,7 @@ static int rle_expand_block(COMP_CTX *ctx, unsigned char *out,
 	if (olen < (ilen-1))
 		{
 		/* ZZZZZZZZZZZZZZZZZZZZZZ */
-		return(-1);
+		return (-1);
 		}
 
 	i= *(in++);
@@ -57,5 +57,5 @@ static int rle_expand_block(COMP_CTX *ctx, unsigned char *out,
 		{
 		memcpy(out,in,ilen-1);
 		}
-	return(ilen-1);
+	return (ilen-1);
 	}

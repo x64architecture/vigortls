@@ -188,7 +188,7 @@ long app_RAND_load_files(char *name)
 		}
 	if (tot > 512)
 		app_RAND_allow_write_file();
-	return(tot);
+	return (tot);
 	}
 
 int app_RAND_write_file(const char *file, BIO *bio_e)

@@ -167,9 +167,9 @@ static int ca_dn_cmp(const X509_NAME * const *a,const X509_NAME * const *b);
 static const SSL_METHOD *ssl3_get_client_method(int ver)
 	{
 	if (ver == SSL3_VERSION)
-		return(SSLv3_client_method());
+		return (SSLv3_client_method());
 	else
-		return(NULL);
+		return (NULL);
 	}
 
 IMPLEMENT_ssl3_meth_func(SSLv3_client_method,
@@ -629,7 +629,7 @@ end:
 		BUF_MEM_free(buf);
 	if (cb != NULL)
 		cb(s,SSL_CB_CONNECT_EXIT,ret);
-	return(ret);
+	return (ret);
 	}
 
 
@@ -793,9 +793,9 @@ int ssl3_client_hello(SSL *s)
 		}
 
 	/* SSL3_ST_CW_CLNT_HELLO_B */
-	return(ssl3_do_write(s,SSL3_RT_HANDSHAKE));
+	return (ssl3_do_write(s,SSL3_RT_HANDSHAKE));
 err:
-	return(-1);
+	return (-1);
 	}
 
 int ssl3_get_server_hello(SSL *s)
@@ -817,7 +817,7 @@ int ssl3_get_server_hello(SSL *s)
 		20000, /* ?? */
 		&ok);
 
-	if (!ok) return((int)n);
+	if (!ok) return ((int)n);
 
 	if ( SSL_version(s) == DTLS1_VERSION || SSL_version(s) == DTLS1_BAD_VER)
 		{
@@ -1048,11 +1048,11 @@ int ssl3_get_server_hello(SSL *s)
 		goto f_err;
 		}
 
-	return(1);
+	return (1);
 f_err:
 	ssl3_send_alert(s,SSL3_AL_FATAL,al);
 err:
-	return(-1);
+	return (-1);
 	}
 
 int ssl3_get_server_certificate(SSL *s)
@@ -1074,14 +1074,14 @@ int ssl3_get_server_certificate(SSL *s)
 		s->max_cert_list,
 		&ok);
 
-	if (!ok) return((int)n);
+	if (!ok) return ((int)n);
 
 	if ((s->s3->tmp.message_type == SSL3_MT_SERVER_KEY_EXCHANGE) ||
 		((s->s3->tmp.new_cipher->algorithm_auth & SSL_aKRB5) && 
 		(s->s3->tmp.message_type == SSL3_MT_SERVER_DONE)))
 		{
 		s->s3->tmp.reuse_message=1;
-		return(1);
+		return (1);
 		}
 
 	if (s->s3->tmp.message_type != SSL3_MT_CERTIFICATE)
@@ -1231,7 +1231,7 @@ err:
 	EVP_PKEY_free(pkey);
 	X509_free(x);
 	sk_X509_pop_free(sk,X509_free);
-	return(ret);
+	return (ret);
 	}
 
 int ssl3_get_key_exchange(SSL *s)
@@ -1261,7 +1261,7 @@ int ssl3_get_key_exchange(SSL *s)
 		-1,
 		s->max_cert_list,
 		&ok);
-	if (!ok) return((int)n);
+	if (!ok) return ((int)n);
 
 	if (s->s3->tmp.message_type != SSL3_MT_SERVER_KEY_EXCHANGE)
 		{
@@ -1279,7 +1279,7 @@ int ssl3_get_key_exchange(SSL *s)
 			}
 #endif
 		s->s3->tmp.reuse_message=1;
-		return(1);
+		return (1);
 		}
 
 	param=p=(unsigned char *)s->init_msg;
@@ -1773,7 +1773,7 @@ int ssl3_get_key_exchange(SSL *s)
 		}
 	EVP_PKEY_free(pkey);
 	EVP_MD_CTX_cleanup(&md_ctx);
-	return(1);
+	return (1);
 f_err:
 	ssl3_send_alert(s,SSL3_AL_FATAL,al);
 err:
@@ -1789,7 +1789,7 @@ err:
 		EC_KEY_free(ecdh);
 #endif
 	EVP_MD_CTX_cleanup(&md_ctx);
-	return(-1);
+	return (-1);
 	}
 
 int ssl3_get_certificate_request(SSL *s)
@@ -1809,7 +1809,7 @@ int ssl3_get_certificate_request(SSL *s)
 		s->max_cert_list,
 		&ok);
 
-	if (!ok) return((int)n);
+	if (!ok) return ((int)n);
 
 	s->s3->tmp.cert_req=0;
 
@@ -1824,7 +1824,7 @@ int ssl3_get_certificate_request(SSL *s)
 			if (!ssl3_digest_cached_records(s))
 				goto err;
 			}
-		return(1);
+		return (1);
 		}
 
 	if (s->s3->tmp.message_type != SSL3_MT_CERTIFICATE_REQUEST)
@@ -1959,12 +1959,12 @@ cont:
 	ret=1;
 err:
 	if (ca_sk != NULL) sk_X509_NAME_pop_free(ca_sk,X509_NAME_free);
-	return(ret);
+	return (ret);
 	}
 
 static int ca_dn_cmp(const X509_NAME * const *a, const X509_NAME * const *b)
 	{
-	return(X509_NAME_cmp(*a,*b));
+	return (X509_NAME_cmp(*a,*b));
 	}
 #ifndef OPENSSL_NO_TLSEXT
 int ssl3_get_new_session_ticket(SSL *s)
@@ -1982,12 +1982,12 @@ int ssl3_get_new_session_ticket(SSL *s)
 		&ok);
 
 	if (!ok)
-		return((int)n);
+		return ((int)n);
 
 	if (s->s3->tmp.message_type == SSL3_MT_FINISHED)
 		{
 		s->s3->tmp.reuse_message=1;
-		return(1);
+		return (1);
 		}
 	if (s->s3->tmp.message_type != SSL3_MT_NEWSESSION_TICKET)
 		{
@@ -2049,11 +2049,11 @@ int ssl3_get_new_session_ticket(SSL *s)
 							EVP_sha1(), NULL);
 #endif
 	ret=1;
-	return(ret);
+	return (ret);
 f_err:
 	ssl3_send_alert(s,SSL3_AL_FATAL,al);
 err:
-	return(-1);
+	return (-1);
 	}
 
 int ssl3_get_cert_status(SSL *s)
@@ -2069,7 +2069,7 @@ int ssl3_get_cert_status(SSL *s)
 		16384,
 		&ok);
 
-	if (!ok) return((int)n);
+	if (!ok) return ((int)n);
 	if (n < 4)
 		{
 		/* need at least status type + length */
@@ -2121,7 +2121,7 @@ int ssl3_get_cert_status(SSL *s)
 	return 1;
 f_err:
 	ssl3_send_alert(s,SSL3_AL_FATAL,al);
-	return(-1);
+	return (-1);
 	}
 #endif
 
@@ -2137,7 +2137,7 @@ int ssl3_get_server_done(SSL *s)
 		30, /* should be very small, like 0 :-) */
 		&ok);
 
-	if (!ok) return((int)n);
+	if (!ok) return ((int)n);
 	if (n > 0)
 		{
 		/* should contain no data */
@@ -2146,7 +2146,7 @@ int ssl3_get_server_done(SSL *s)
 		return -1;
 		}
 	ret=1;
-	return(ret);
+	return (ret);
 	}
 
 
@@ -2837,7 +2837,7 @@ int ssl3_send_client_key_exchange(SSL *s)
 		}
 
 	/* SSL3_ST_CW_KEY_EXCH_B */
-	return(ssl3_do_write(s,SSL3_RT_HANDSHAKE));
+	return (ssl3_do_write(s,SSL3_RT_HANDSHAKE));
 err:
 #ifndef OPENSSL_NO_ECDH
 	BN_CTX_free(bn_ctx);
@@ -2846,7 +2846,7 @@ err:
 		EC_KEY_free(clnt_ecdh);
 	EVP_PKEY_free(srvr_pub_pkey);
 #endif
-	return(-1);
+	return (-1);
 	}
 
 int ssl3_send_client_verify(SSL *s)
@@ -2995,11 +2995,11 @@ int ssl3_send_client_verify(SSL *s)
 		}
 	EVP_MD_CTX_cleanup(&mctx);
 	EVP_PKEY_CTX_free(pctx);
-	return(ssl3_do_write(s,SSL3_RT_HANDSHAKE));
+	return (ssl3_do_write(s,SSL3_RT_HANDSHAKE));
 err:
 	EVP_MD_CTX_cleanup(&mctx);
 	EVP_PKEY_CTX_free(pctx);
-	return(-1);
+	return (-1);
 	}
 
 int ssl3_send_client_certificate(SSL *s)
@@ -3023,14 +3023,14 @@ int ssl3_send_client_certificate(SSL *s)
 	if (s->state == SSL3_ST_CW_CERT_B)
 		{
 		/* If we get an error, we need to
-		 * ssl->rwstate=SSL_X509_LOOKUP; return(-1);
+		 * ssl->rwstate=SSL_X509_LOOKUP; return (-1);
 		 * We then get retied later */
 		i=0;
 		i = ssl_do_client_cert_cb(s, &x509, &pkey);
 		if (i < 0)
 			{
 			s->rwstate=SSL_X509_LOOKUP;
-			return(-1);
+			return (-1);
 			}
 		s->rwstate=SSL_NOTHING;
 		if ((i == 1) && (pkey != NULL) && (x509 != NULL))
@@ -3054,7 +3054,7 @@ int ssl3_send_client_certificate(SSL *s)
 				{
 				s->s3->tmp.cert_req=0;
 				ssl3_send_alert(s,SSL3_AL_WARNING,SSL_AD_NO_CERTIFICATE);
-				return(1);
+				return (1);
 				}
 			else
 				{
@@ -3075,7 +3075,7 @@ int ssl3_send_client_certificate(SSL *s)
 		s->init_off=0;
 		}
 	/* SSL3_ST_CW_CERT_D */
-	return(ssl3_do_write(s,SSL3_RT_HANDSHAKE));
+	return (ssl3_do_write(s,SSL3_RT_HANDSHAKE));
 	}
 
 #define has_bits(i,m)	(((i)&(m)) == (m))
@@ -3094,7 +3094,7 @@ int ssl3_check_cert_and_algorithm(SSL *s)
 
 	/* we don't have a certificate */
 	if ((alg_a & (SSL_aDH|SSL_aNULL|SSL_aKRB5)) || (alg_k & SSL_kPSK))
-		return(1);
+		return (1);
 
 	sc=s->session->sess_cert;
 	if (sc == NULL)
@@ -3194,11 +3194,11 @@ int ssl3_check_cert_and_algorithm(SSL *s)
 			goto f_err;
 			}
 		}
-	return(1);
+	return (1);
 f_err:
 	ssl3_send_alert(s,SSL3_AL_FATAL,SSL_AD_HANDSHAKE_FAILURE);
 err:
-	return(0);
+	return (0);
 	}
 
 #if !defined(OPENSSL_NO_TLSEXT) && !defined(OPENSSL_NO_NEXTPROTONEG)
@@ -3248,7 +3248,7 @@ int ssl3_check_finished(SSL *s)
 		-1,
 		s->max_cert_list,
 		&ok);
-	if (!ok) return((int)n);
+	if (!ok) return ((int)n);
 	s->s3->tmp.reuse_message = 1;
 	if ((s->s3->tmp.message_type == SSL3_MT_FINISHED)
 		|| (s->s3->tmp.message_type == SSL3_MT_NEWSESSION_TICKET))

@@ -199,19 +199,19 @@ int CRYPTO_get_new_lockid(char *name)
 	if ((app_locks == NULL) && ((app_locks=sk_OPENSSL_STRING_new_null()) == NULL))
 		{
 		CRYPTOerr(CRYPTO_F_CRYPTO_GET_NEW_LOCKID,ERR_R_MALLOC_FAILURE);
-		return(0);
+		return (0);
 		}
 	if ((str=BUF_strdup(name)) == NULL)
 		{
 		CRYPTOerr(CRYPTO_F_CRYPTO_GET_NEW_LOCKID,ERR_R_MALLOC_FAILURE);
-		return(0);
+		return (0);
 		}
 	i=sk_OPENSSL_STRING_push(app_locks,str);
 	if (!i)
 		free(str);
 	else
 		i+=CRYPTO_NUM_LOCKS; /* gap of one :-) */
-	return(i);
+	return (i);
 	}
 
 int CRYPTO_num_locks(void)
@@ -227,7 +227,7 @@ int CRYPTO_get_new_dynlockid(void)
 	if (dynlock_create_callback == NULL)
 		{
 		CRYPTOerr(CRYPTO_F_CRYPTO_GET_NEW_DYNLOCKID,CRYPTO_R_NO_DYNLOCK_CREATE_CALLBACK);
-		return(0);
+		return (0);
 		}
 	CRYPTO_w_lock(CRYPTO_LOCK_DYNLOCK);
 	if ((dyn_locks == NULL)
@@ -235,7 +235,7 @@ int CRYPTO_get_new_dynlockid(void)
 		{
 		CRYPTO_w_unlock(CRYPTO_LOCK_DYNLOCK);
 		CRYPTOerr(CRYPTO_F_CRYPTO_GET_NEW_DYNLOCKID,ERR_R_MALLOC_FAILURE);
-		return(0);
+		return (0);
 		}
 	CRYPTO_w_unlock(CRYPTO_LOCK_DYNLOCK);
 
@@ -243,7 +243,7 @@ int CRYPTO_get_new_dynlockid(void)
 	if (pointer == NULL)
 		{
 		CRYPTOerr(CRYPTO_F_CRYPTO_GET_NEW_DYNLOCKID,ERR_R_MALLOC_FAILURE);
-		return(0);
+		return (0);
 		}
 	pointer->references = 1;
 	pointer->data = dynlock_create_callback(__FILE__,__LINE__);
@@ -251,7 +251,7 @@ int CRYPTO_get_new_dynlockid(void)
 		{
 		free(pointer);
 		CRYPTOerr(CRYPTO_F_CRYPTO_GET_NEW_DYNLOCKID,ERR_R_MALLOC_FAILURE);
-		return(0);
+		return (0);
 		}
 
 	CRYPTO_w_lock(CRYPTO_LOCK_DYNLOCK);
@@ -346,19 +346,19 @@ struct CRYPTO_dynlock_value *CRYPTO_get_dynlock_value(int i)
 struct CRYPTO_dynlock_value *(*CRYPTO_get_dynlock_create_callback(void))
 	(const char *file,int line)
 	{
-	return(dynlock_create_callback);
+	return (dynlock_create_callback);
 	}
 
 void (*CRYPTO_get_dynlock_lock_callback(void))(int mode,
 	struct CRYPTO_dynlock_value *l, const char *file,int line)
 	{
-	return(dynlock_lock_callback);
+	return (dynlock_lock_callback);
 	}
 
 void (*CRYPTO_get_dynlock_destroy_callback(void))
 	(struct CRYPTO_dynlock_value *l, const char *file,int line)
 	{
-	return(dynlock_destroy_callback);
+	return (dynlock_destroy_callback);
 	}
 
 void CRYPTO_set_dynlock_create_callback(struct CRYPTO_dynlock_value *(*func)
@@ -383,13 +383,13 @@ void CRYPTO_set_dynlock_destroy_callback(void (*func)
 void (*CRYPTO_get_locking_callback(void))(int mode,int type,const char *file,
 		int line)
 	{
-	return(locking_callback);
+	return (locking_callback);
 	}
 
 int (*CRYPTO_get_add_lock_callback(void))(int *num,int mount,int type,
 					  const char *file,int line)
 	{
-	return(add_lock_callback);
+	return (add_lock_callback);
 	}
 
 void CRYPTO_set_locking_callback(void (*func)(int mode,int type,
@@ -508,7 +508,7 @@ unsigned long CRYPTO_THREADID_hash(const CRYPTO_THREADID *id)
 #ifndef OPENSSL_NO_DEPRECATED
 unsigned long (*CRYPTO_get_id_callback(void))(void)
 	{
-	return(id_callback);
+	return (id_callback);
 	}
 
 void CRYPTO_set_id_callback(unsigned long (*func)(void))
@@ -532,7 +532,7 @@ unsigned long CRYPTO_thread_id(void)
 		}
 	else
 		ret=id_callback();
-	return(ret);
+	return (ret);
 	}
 #endif
 
@@ -624,19 +624,19 @@ int CRYPTO_add_lock(int *pointer, int amount, int type, const char *file,
 		*pointer=ret;
 		CRYPTO_lock(CRYPTO_UNLOCK|CRYPTO_WRITE,type,file,line);
 		}
-	return(ret);
+	return (ret);
 	}
 
 const char *CRYPTO_get_lock_name(int type)
 	{
 	if (type < 0)
-		return("dynamic");
+		return ("dynamic");
 	else if (type < CRYPTO_NUM_LOCKS)
-		return(lock_names[type]);
+		return (lock_names[type]);
 	else if (type-CRYPTO_NUM_LOCKS > sk_OPENSSL_STRING_num(app_locks))
-		return("ERROR");
+		return ("ERROR");
 	else
-		return(sk_OPENSSL_STRING_value(app_locks,type-CRYPTO_NUM_LOCKS));
+		return (sk_OPENSSL_STRING_value(app_locks,type-CRYPTO_NUM_LOCKS));
 	}
 
 #if	defined(__i386)   || defined(__i386__)   || defined(_M_IX86) || \
@@ -742,7 +742,7 @@ BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason,
 	case DLL_PROCESS_DETACH:
 		break;
 		}
-	return(TRUE);
+	return (TRUE);
 	}
 #endif
 

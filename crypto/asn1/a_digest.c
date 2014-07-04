@@ -82,7 +82,7 @@ int ASN1_digest(i2d_of_void *i2d, const EVP_MD *type, char *data,
 	if ((str=(unsigned char *)malloc(i)) == NULL)
 		{
 		ASN1err(ASN1_F_ASN1_DIGEST,ERR_R_MALLOC_FAILURE);
-		return(0);
+		return (0);
 		}
 	p=str;
 	i2d(data,&p);
@@ -90,7 +90,7 @@ int ASN1_digest(i2d_of_void *i2d, const EVP_MD *type, char *data,
 	if (!EVP_Digest(str, i, md, len, type, NULL))
 		return 0;
 	free(str);
-	return(1);
+	return (1);
 	}
 
 #endif
@@ -103,11 +103,11 @@ int ASN1_item_digest(const ASN1_ITEM *it, const EVP_MD *type, void *asn,
 	unsigned char *str = NULL;
 
 	i=ASN1_item_i2d(asn,&str, it);
-	if (!str) return(0);
+	if (!str) return (0);
 
 	if (!EVP_Digest(str, i, md, len, type, NULL))
 		return 0;
 	free(str);
-	return(1);
+	return (1);
 	}
 

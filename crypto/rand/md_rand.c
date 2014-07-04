@@ -173,7 +173,7 @@ RAND_METHOD rand_ssleay_meth={
 
 RAND_METHOD *RAND_SSLeay(void)
 	{
-	return(&rand_ssleay_meth);
+	return (&rand_ssleay_meth);
 	}
 
 static void ssleay_rand_cleanup(void)
@@ -346,7 +346,7 @@ static int ssleay_rand_bytes(unsigned char *buf, int num, int pseudo)
 
 		for (i=0; i<num; i++)
 			buf[i]=val++;
-		return(1);
+		return (1);
 		}
 #endif
 
@@ -503,7 +503,7 @@ static int ssleay_rand_bytes(unsigned char *buf, int num, int pseudo)
 
 	EVP_MD_CTX_cleanup(&m);
 	if (ok)
-		return(1);
+		return (1);
 	else if (pseudo)
 		return 0;
 	else 
@@ -511,7 +511,7 @@ static int ssleay_rand_bytes(unsigned char *buf, int num, int pseudo)
 		RANDerr(RAND_F_SSLEAY_RAND_BYTES,RAND_R_PRNG_NOT_SEEDED);
 		ERR_add_error_data(1, "You need to read the OpenSSL FAQ, "
 			"http://www.openssl.org/support/faq.html");
-		return(0);
+		return (0);
 		}
 	}
 

@@ -93,7 +93,7 @@ extern "C" {
 		{ c.line=__LINE__; goto err; } \
 	*(const unsigned char **)pp=c.p; \
 	if (a != NULL) (*a)=ret; \
-	return(ret);
+	return (ret);
 
 #define M_ASN1_D2I_Finish(a,func,e) \
 	M_ASN1_D2I_Finish_2(a); \
@@ -101,7 +101,7 @@ err:\
 	ASN1_MAC_H_err((e),c.error,c.line); \
 	asn1_add_error(*(const unsigned char **)pp,(int)(c.q- *pp)); \
 	if ((ret != NULL) && ((a == NULL) || (*a != ret))) func(ret); \
-	return(NULL)
+	return (NULL)
 
 #define M_ASN1_D2I_start_sequence() \
 	if (!asn1_GetSequence(&c,&length)) \
@@ -114,12 +114,12 @@ err:\
 #define M_ASN1_D2I_Finish_nolen(a, func, e) \
 	*pp=c.p; \
 	if (a != NULL) (*a)=ret; \
-	return(ret); \
+	return (ret); \
 err:\
 	ASN1_MAC_H_err((e),c.error,c.line); \
 	asn1_add_error(*pp,(int)(c.q- *pp)); \
 	if ((ret != NULL) && ((a == NULL) || (*a != ret))) func(ret); \
-	return(NULL)
+	return (NULL)
 
 #define M_ASN1_D2I_end_sequence() \
 	(((c.inf&1) == 0)?(c.slen <= 0): \
@@ -363,7 +363,7 @@ err:\
 
 #define M_ASN1_I2D_vars(a)	int r=0,ret=0; \
 				unsigned char *p; \
-				if (a == NULL) return(0)
+				if (a == NULL) return (0)
 
 /* Length Macros */
 #define M_ASN1_I2D_len(a,f)	ret+=f(a,NULL)
@@ -541,7 +541,7 @@ err:\
 
 #define M_ASN1_I2D_seq_total() \
 		r=ASN1_object_size(1,ret,V_ASN1_SEQUENCE); \
-		if (pp == NULL) return(r); \
+		if (pp == NULL) return (r); \
 		p= *pp; \
 		ASN1_put_object(&p,1,ret,V_ASN1_SEQUENCE,V_ASN1_UNIVERSAL)
 
@@ -552,7 +552,7 @@ err:\
 #define M_ASN1_I2D_INF_seq_end() *(p++)=0x00; *(p++)=0x00
 
 #define M_ASN1_I2D_finish()	*pp=p; \
-				return(r);
+				return (r);
 
 int asn1_GetSequence(ASN1_const_CTX *c, long *length);
 void asn1_add_error(const unsigned char *address,int offset);

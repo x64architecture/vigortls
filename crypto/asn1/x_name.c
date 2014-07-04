@@ -501,7 +501,7 @@ int X509_NAME_set(X509_NAME **xn, X509_NAME *name)
 	{
 	X509_NAME *in;
 
-	if (!xn || !name) return(0);
+	if (!xn || !name) return (0);
 
 	if (*xn != name)
 		{
@@ -512,7 +512,7 @@ int X509_NAME_set(X509_NAME **xn, X509_NAME *name)
 			*xn=in;
 			}
 		}
-	return(*xn != NULL);
+	return (*xn != NULL);
 	}
 	
 IMPLEMENT_STACK_OF(X509_NAME_ENTRY)

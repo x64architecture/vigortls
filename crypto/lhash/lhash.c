@@ -147,11 +147,11 @@ _LHASH *lh_new(LHASH_HASH_FN_TYPE h, LHASH_COMP_FN_TYPE c)
 	ret->num_hash_comps=0;
 
 	ret->error=0;
-	return(ret);
+	return (ret);
 err1:
 	free(ret);
 err0:
-	return(NULL);
+	return (NULL);
 	}
 
 void lh_free(_LHASH *lh)
@@ -193,7 +193,7 @@ void *lh_insert(_LHASH *lh, void *data)
 		if ((nn=(LHASH_NODE *)malloc(sizeof(LHASH_NODE))) == NULL)
 			{
 			lh->error++;
-			return(NULL);
+			return (NULL);
 			}
 		nn->data=data;
 		nn->next=NULL;
@@ -211,7 +211,7 @@ void *lh_insert(_LHASH *lh, void *data)
 		(*rn)->data=data;
 		lh->num_replace++;
 		}
-	return(ret);
+	return (ret);
 	}
 
 void *lh_delete(_LHASH *lh, const void *data)
@@ -226,7 +226,7 @@ void *lh_delete(_LHASH *lh, const void *data)
 	if (*rn == NULL)
 		{
 		lh->num_no_delete++;
-		return(NULL);
+		return (NULL);
 		}
 	else
 		{
@@ -242,7 +242,7 @@ void *lh_delete(_LHASH *lh, const void *data)
 		(lh->down_load >= (lh->num_items*LH_LOAD_MULT/lh->num_nodes)))
 		contract(lh);
 
-	return(ret);
+	return (ret);
 	}
 
 void *lh_retrieve(_LHASH *lh, const void *data)
@@ -257,14 +257,14 @@ void *lh_retrieve(_LHASH *lh, const void *data)
 	if (*rn == NULL)
 		{
 		lh->num_retrieve_miss++;
-		return(NULL);
+		return (NULL);
 		}
 	else
 		{
 		ret= (*rn)->data;
 		lh->num_retrieve++;
 		}
-	return(ret);
+	return (ret);
 	}
 
 static void doall_util_fn(_LHASH *lh, int use_arg, LHASH_DOALL_FN_TYPE func,
@@ -433,7 +433,7 @@ static LHASH_NODE **getrn(_LHASH *lh, const void *data, unsigned long *rhash)
 			break;
 		ret= &(n1->next);
 		}
-	return(ret);
+	return (ret);
 	}
 
 /* The following hash seems to work very well on normal text strings
@@ -448,11 +448,11 @@ unsigned long lh_strhash(const char *c)
 	int r;
 
 	if ((c == NULL) || (*c == '\0'))
-		return(ret);
+		return (ret);
 /*
 	unsigned char b[16];
 	MD5(c,strlen(c),b);
-	return(b[0]|(b[1]<<8)|(b[2]<<16)|(b[3]<<24)); 
+	return (b[0]|(b[1]<<8)|(b[2]<<16)|(b[3]<<24)); 
 */
 
 	n=0x100;
@@ -466,7 +466,7 @@ unsigned long lh_strhash(const char *c)
 		ret^=v*v;
 		c++;
 		}
-	return((ret>>16)^ret);
+	return ((ret>>16)^ret);
 	}
 
 unsigned long lh_num_items(const _LHASH *lh)

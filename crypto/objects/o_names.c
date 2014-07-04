@@ -43,11 +43,11 @@ static IMPLEMENT_LHASH_COMP_FN(obj_name, OBJ_NAME)
 
 int OBJ_NAME_init(void)
 	{
-	if (names_lh != NULL) return(1);
+	if (names_lh != NULL) return (1);
 	MemCheck_off();
 	names_lh=lh_OBJ_NAME_new();
 	MemCheck_on();
-	return(names_lh != NULL);
+	return (names_lh != NULL);
 	}
 
 int OBJ_NAME_new_index(unsigned long (*hash_func)(const char *),
@@ -67,7 +67,7 @@ int OBJ_NAME_new_index(unsigned long (*hash_func)(const char *),
 	if (name_funcs_stack == NULL)
 		{
 		/* ERROR */
-		return(0);
+		return (0);
 		}
 	ret=names_type_num;
 	names_type_num++;
@@ -79,7 +79,7 @@ int OBJ_NAME_new_index(unsigned long (*hash_func)(const char *),
 		if (!name_funcs)
 			{
 			OBJerr(OBJ_F_OBJ_NAME_NEW_INDEX,ERR_R_MALLOC_FAILURE);
-			return(0);
+			return (0);
 			}
 		name_funcs->hash_func = lh_strhash;
 		name_funcs->cmp_func = OPENSSL_strcmp;
@@ -99,7 +99,7 @@ int OBJ_NAME_new_index(unsigned long (*hash_func)(const char *),
 		name_funcs->cmp_func = cmp_func;
 	if (free_func != NULL)
 		name_funcs->free_func = free_func;
-	return(ret);
+	return (ret);
 	}
 
 /* static int obj_name_cmp(OBJ_NAME *a, OBJ_NAME *b) */
@@ -121,7 +121,7 @@ static int obj_name_cmp(const void *a_void, const void *b_void)
 		else
 			ret=strcmp(a->name,b->name);
 		}
-	return(ret);
+	return (ret);
 	}
 
 /* static unsigned long obj_name_hash(OBJ_NAME *a) */
@@ -140,7 +140,7 @@ static unsigned long obj_name_hash(const void *a_void)
 		ret=lh_strhash(a->name);
 		}
 	ret^=a->type;
-	return(ret);
+	return (ret);
 	}
 
 const char *OBJ_NAME_get(const char *name, int type)
@@ -148,8 +148,8 @@ const char *OBJ_NAME_get(const char *name, int type)
 	OBJ_NAME on,*ret;
 	int num=0,alias;
 
-	if (name == NULL) return(NULL);
-	if ((names_lh == NULL) && !OBJ_NAME_init()) return(NULL);
+	if (name == NULL) return (NULL);
+	if ((names_lh == NULL) && !OBJ_NAME_init()) return (NULL);
 
 	alias=type&OBJ_NAME_ALIAS;
 	type&= ~OBJ_NAME_ALIAS;
@@ -160,15 +160,15 @@ const char *OBJ_NAME_get(const char *name, int type)
 	for (;;)
 	{
 		ret=lh_OBJ_NAME_retrieve(names_lh,&on);
-		if (ret == NULL) return(NULL);
+		if (ret == NULL) return (NULL);
 		if ((ret->alias) && !alias)
 			{
-			if (++num > 10) return(NULL);
+			if (++num > 10) return (NULL);
 			on.name=ret->data;
 			}
 		else
 			{
-			return(ret->data);
+			return (ret->data);
 			}
 		}
 	}
@@ -178,7 +178,7 @@ int OBJ_NAME_add(const char *name, int type, const char *data)
 	OBJ_NAME *onp,*ret;
 	int alias;
 
-	if ((names_lh == NULL) && !OBJ_NAME_init()) return(0);
+	if ((names_lh == NULL) && !OBJ_NAME_init()) return (0);
 
 	alias=type&OBJ_NAME_ALIAS;
 	type&= ~OBJ_NAME_ALIAS;
@@ -187,7 +187,7 @@ int OBJ_NAME_add(const char *name, int type, const char *data)
 	if (onp == NULL)
 		{
 		/* ERROR */
-		return(0);
+		return (0);
 		}
 
 	onp->name=name;
@@ -215,17 +215,17 @@ int OBJ_NAME_add(const char *name, int type, const char *data)
 		if (lh_OBJ_NAME_error(names_lh))
 			{
 			/* ERROR */
-			return(0);
+			return (0);
 			}
 		}
-	return(1);
+	return (1);
 	}
 
 int OBJ_NAME_remove(const char *name, int type)
 	{
 	OBJ_NAME on,*ret;
 
-	if (names_lh == NULL) return(0);
+	if (names_lh == NULL) return (0);
 
 	type&= ~OBJ_NAME_ALIAS;
 	on.name=name;
@@ -244,10 +244,10 @@ int OBJ_NAME_remove(const char *name, int type)
 				ret->type)->free_func(ret->name,ret->type,ret->data);
 			}
 		free(ret);
-		return(1);
+		return (1);
 		}
 	else
-		return(0);
+		return (0);
 	}
 
 struct doall

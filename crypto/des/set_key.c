@@ -101,9 +101,9 @@ int DES_check_key_parity(const_DES_cblock *key)
 	for (i=0; i<DES_KEY_SZ; i++)
 		{
 		if ((*key)[i] != odd_parity[(*key)[i]])
-			return(0);
+			return (0);
 		}
-	return(1);
+	return (1);
 	}
 
 /* Weak and semi week keys as take from
@@ -147,8 +147,8 @@ int DES_is_weak_key(const_DES_cblock *key)
 		 * eay 93/06/29
 		 * Another problem, I was comparing only the first 4
 		 * bytes, 97/03/18 */
-		if (memcmp(weak_keys[i],key,sizeof(DES_cblock)) == 0) return(1);
-	return(0);
+		if (memcmp(weak_keys[i],key,sizeof(DES_cblock)) == 0) return (1);
+	return (0);
 	}
 
 /* NOW DEFINED IN des_local.h
@@ -328,9 +328,9 @@ int DES_set_key(const_DES_cblock *key, DES_key_schedule *schedule)
 int DES_set_key_checked(const_DES_cblock *key, DES_key_schedule *schedule)
 	{
 	if (!DES_check_key_parity(key))
-		return(-1);
+		return (-1);
 	if (DES_is_weak_key(key))
-		return(-2);
+		return (-2);
 	DES_set_key_unchecked(key, schedule);
 	return 0;
 	}
@@ -397,7 +397,7 @@ void DES_set_key_unchecked(const_DES_cblock *key, DES_key_schedule *schedule)
 
 int DES_key_sched(const_DES_cblock *key, DES_key_schedule *schedule)
 	{
-	return(DES_set_key(key,schedule));
+	return (DES_set_key(key,schedule));
 	}
 /*
 #undef des_fixup_key_parity

@@ -67,7 +67,7 @@ int i2a_ASN1_INTEGER(BIO *bp, ASN1_INTEGER *a)
 	static const char *h="0123456789ABCDEF";
 	char buf[2];
 
-	if (a == NULL) return(0);
+	if (a == NULL) return (0);
 
 	if (a->type & V_ASN1_NEG)
 		{
@@ -95,9 +95,9 @@ int i2a_ASN1_INTEGER(BIO *bp, ASN1_INTEGER *a)
 			n+=2;
 			}
 		}
-	return(n);
+	return (n);
 err:
-	return(-1);
+	return (-1);
 	}
 
 int a2i_ASN1_INTEGER(BIO *bp, ASN1_INTEGER *bs, char *buf, int size)
@@ -215,6 +215,6 @@ err:
 err_sl:
 		ASN1err(ASN1_F_A2I_ASN1_INTEGER,ASN1_R_SHORT_LINE);
 		}
-	return(ret);
+	return (ret);
 	}
 

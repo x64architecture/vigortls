@@ -72,9 +72,9 @@ const char *SSLeay_version(int t)
 		static char buf[sizeof(DATE)+11];
 
 		BIO_snprintf(buf,sizeof buf,"built on: %s",DATE);
-		return(buf);
+		return (buf);
 #else
-		return("built on: date not available");
+		return ("built on: date not available");
 #endif
 		}
 	if (t == SSLEAY_CFLAGS)
@@ -83,9 +83,9 @@ const char *SSLeay_version(int t)
 		static char buf[sizeof(CFLAGS)+11];
 
 		BIO_snprintf(buf,sizeof buf,"compiler: %s",CFLAGS);
-		return(buf);
+		return (buf);
 #else
-		return("compiler: information not available");
+		return ("compiler: information not available");
 #endif
 		}
 	if (t == SSLEAY_PLATFORM)
@@ -94,9 +94,9 @@ const char *SSLeay_version(int t)
 		static char buf[sizeof(PLATFORM)+11];
 
 		BIO_snprintf(buf,sizeof buf,"platform: %s", PLATFORM);
-		return(buf);
+		return (buf);
 #else
-		return("platform: information not available");
+		return ("platform: information not available");
 #endif
 		}
 	if (t == SSLEAY_DIR)
@@ -107,11 +107,11 @@ const char *SSLeay_version(int t)
 		return "OPENSSLDIR: N/A";
 #endif
 		}
-	return("not available");
+	return ("not available");
 	}
 
 unsigned long SSLeay(void)
 	{
-	return(SSLEAY_VERSION_NUMBER);
+	return (SSLEAY_VERSION_NUMBER);
 	}
 

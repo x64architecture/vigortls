@@ -133,7 +133,7 @@ static ECDH_DATA *ECDH_DATA_new_method(ENGINE *engine)
 	if (ret == NULL)
 		{
 		ECDHerr(ECDH_F_ECDH_DATA_NEW_METHOD, ERR_R_MALLOC_FAILURE);
-		return(NULL);
+		return (NULL);
 		}
 
 	ret->init = NULL;
@@ -166,7 +166,7 @@ static ECDH_DATA *ECDH_DATA_new_method(ENGINE *engine)
 		ret=NULL;
 		}
 #endif	
-	return(ret);
+	return (ret);
 	}
 
 static void *ecdh_data_new(void)
@@ -242,7 +242,7 @@ int ECDH_set_ex_data(EC_KEY *d, int idx, void *arg)
 	ecdh = ecdh_check(d);
 	if (ecdh == NULL)
 		return 0;
-	return(CRYPTO_set_ex_data(&ecdh->ex_data,idx,arg));
+	return (CRYPTO_set_ex_data(&ecdh->ex_data,idx,arg));
 	}
 
 void *ECDH_get_ex_data(EC_KEY *d, int idx)
@@ -251,5 +251,5 @@ void *ECDH_get_ex_data(EC_KEY *d, int idx)
 	ecdh = ecdh_check(d);
 	if (ecdh == NULL)
 		return NULL;
-	return(CRYPTO_get_ex_data(&ecdh->ex_data,idx));
+	return (CRYPTO_get_ex_data(&ecdh->ex_data,idx));
 	}

@@ -184,7 +184,7 @@ RSA *RSA_new_method(ENGINE *engine)
 		ENGINE_finish(ret->engine);
 #endif
 		free(ret);
-		return(NULL);
+		return (NULL);
 		}
 
 	if ((ret->meth->init != NULL) && !ret->meth->init(ret))
@@ -197,7 +197,7 @@ RSA *RSA_new_method(ENGINE *engine)
 		free(ret);
 		ret=NULL;
 		}
-	return(ret);
+	return (ret);
 	}
 
 void RSA_free(RSA *r)
@@ -267,12 +267,12 @@ int RSA_get_ex_new_index(long argl, void *argp, CRYPTO_EX_new *new_func,
 
 int RSA_set_ex_data(RSA *r, int idx, void *arg)
 	{
-	return(CRYPTO_set_ex_data(&r->ex_data,idx,arg));
+	return (CRYPTO_set_ex_data(&r->ex_data,idx,arg));
 	}
 
 void *RSA_get_ex_data(const RSA *r, int idx)
 	{
-	return(CRYPTO_get_ex_data(&r->ex_data,idx));
+	return (CRYPTO_get_ex_data(&r->ex_data,idx));
 	}
 
 int RSA_memory_lock(RSA *r)
@@ -282,7 +282,7 @@ int RSA_memory_lock(RSA *r)
 	BIGNUM *bn,**t[6],*b;
 	BN_ULONG *ul;
 
-	if (r->d == NULL) return(1);
+	if (r->d == NULL) return (1);
 	t[0]= &r->d;
 	t[1]= &r->p;
 	t[2]= &r->q;
@@ -297,7 +297,7 @@ int RSA_memory_lock(RSA *r)
 	if ((p=OPENSSL_malloc_locked((off+j)*sizeof(BN_ULONG))) == NULL)
 		{
 		RSAerr(RSA_F_RSA_MEMORY_LOCK,ERR_R_MALLOC_FAILURE);
-		return(0);
+		return (0);
 		}
 	bn=(BIGNUM *)p;
 	ul=(BN_ULONG *)&(p[off]);
@@ -317,5 +317,5 @@ int RSA_memory_lock(RSA *r)
 	r->flags&= ~(RSA_FLAG_CACHE_PRIVATE|RSA_FLAG_CACHE_PUBLIC);
 
 	r->bignum_data=p;
-	return(1);
+	return (1);
 	}

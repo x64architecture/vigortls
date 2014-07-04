@@ -95,12 +95,12 @@ int SSL_SESSION_print_fp(FILE *fp, const SSL_SESSION *x)
 	if ((b=BIO_new(BIO_s_file_internal())) == NULL)
 		{
 		SSLerr(SSL_F_SSL_SESSION_PRINT_FP,ERR_R_BUF_LIB);
-		return(0);
+		return (0);
 		}
 	BIO_set_fp(b,fp,BIO_NOCLOSE);
 	ret=SSL_SESSION_print(b,x);
 	BIO_free(b);
-	return(ret);
+	return (ret);
 	}
 #endif
 
@@ -231,8 +231,8 @@ int SSL_SESSION_print(BIO *bp, const SSL_SESSION *x)
 	if (BIO_printf(bp, "%ld (%s)\n", x->verify_result,
 		X509_verify_cert_error_string(x->verify_result)) <= 0) goto err;
 		
-	return(1);
+	return (1);
 err:
-	return(0);
+	return (0);
 	}
 

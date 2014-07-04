@@ -66,13 +66,13 @@ int i2d_ASN1_BOOLEAN(int a, unsigned char **pp)
 	unsigned char *p;
 
 	r=ASN1_object_size(0,1,V_ASN1_BOOLEAN);
-	if (pp == NULL) return(r);
+	if (pp == NULL) return (r);
 	p= *pp;
 
 	ASN1_put_object(&p,0,1,V_ASN1_BOOLEAN,V_ASN1_UNIVERSAL);
 	*(p++)= (unsigned char)a;
 	*pp=p;
-	return(r);
+	return (r);
 	}
 
 int d2i_ASN1_BOOLEAN(int *a, const unsigned char **pp, long length)
@@ -105,10 +105,10 @@ int d2i_ASN1_BOOLEAN(int *a, const unsigned char **pp, long length)
 	ret= (int)*(p++);
 	if (a != NULL) (*a)=ret;
 	*pp=p;
-	return(ret);
+	return (ret);
 err:
 	ASN1err(ASN1_F_D2I_ASN1_BOOLEAN,i);
-	return(ret);
+	return (ret);
 	}
 
 

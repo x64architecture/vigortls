@@ -208,7 +208,7 @@ err:
 		{ OPENSSL_cleanse((char *)buf_in,(unsigned int)inl); free(buf_in); }
 	if (buf_out != NULL)
 		{ OPENSSL_cleanse((char *)buf_out,outll); free(buf_out); }
-	return(outl);
+	return (outl);
 	}
 
 #endif
@@ -329,5 +329,5 @@ err:
 		{ OPENSSL_cleanse((char *)buf_in,(unsigned int)inl); free(buf_in); }
 	if (buf_out != NULL)
 		{ OPENSSL_cleanse((char *)buf_out,outll); free(buf_out); }
-	return(outl);
+	return (outl);
 	}

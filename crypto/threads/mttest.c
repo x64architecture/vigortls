@@ -326,7 +326,7 @@ end:
 		fprintf(stderr,"done free\n");
 		}
 	exit(ret);
-	return(0);
+	return (0);
 	}
 
 #define W_READ	1
@@ -368,7 +368,7 @@ int ndoit(SSL_CTX *ssl_ctx[2])
 			{
 			fprintf(stdout,"error[%d] %lu - %d\n",
 				i,CRYPTO_thread_id(),ret);
-			return(ret);
+			return (ret);
 			}
 		}
 	fprintf(stdout,"DONE %lu\n",CRYPTO_thread_id());
@@ -377,7 +377,7 @@ int ndoit(SSL_CTX *ssl_ctx[2])
 		SSL_free((SSL *)ctx[2]);
 		SSL_free((SSL *)ctx[3]);
 		}
-	return(0);
+	return (0);
 	}
 
 int doit(char *ctx[4])
@@ -493,13 +493,13 @@ int doit(char *ctx[4])
 						{
 						fprintf(stderr,"ERROR in CLIENT\n");
 						ERR_print_errors_fp(stderr);
-						return(1);
+						return (1);
 						}
 					}
 				else if (i == 0)
 					{
 					fprintf(stderr,"SSL CLIENT STARTUP FAILED\n");
-					return(1);
+					return (1);
 					}
 				else
 					{
@@ -525,13 +525,13 @@ int doit(char *ctx[4])
 						{
 						fprintf(stderr,"ERROR in CLIENT\n");
 						ERR_print_errors_fp(stderr);
-						return(1);
+						return (1);
 						}
 					}
 				else if (i == 0)
 					{
 					fprintf(stderr,"SSL CLIENT STARTUP FAILED\n");
-					return(1);
+					return (1);
 					}
 				else
 					{
@@ -565,13 +565,13 @@ int doit(char *ctx[4])
 						{
 						fprintf(stderr,"ERROR in SERVER\n");
 						ERR_print_errors_fp(stderr);
-						return(1);
+						return (1);
 						}
 					}
 				else if (i == 0)
 					{
 					fprintf(stderr,"SSL SERVER STARTUP FAILED\n");
-					return(1);
+					return (1);
 					}
 				else
 					{
@@ -602,13 +602,13 @@ int doit(char *ctx[4])
 						{
 						fprintf(stderr,"ERROR in SERVER\n");
 						ERR_print_errors_fp(stderr);
-						return(1);
+						return (1);
 						}
 					}
 				else if (i == 0)
 					{
 					fprintf(stderr,"SSL SERVER STARTUP FAILED\n");
-					return(1);
+					return (1);
 					}
 				else
 					{
@@ -654,7 +654,7 @@ err:
 
 	if (c_bio != NULL) BIO_free(c_bio);
 	if (s_bio != NULL) BIO_free(s_bio);
-	return(0);
+	return (0);
 	}
 
 int MS_CALLBACK verify_callback(int ok, X509_STORE_CTX *ctx)
@@ -675,7 +675,7 @@ int MS_CALLBACK verify_callback(int ok, X509_STORE_CTX *ctx)
 					ctx->error_depth,ctx->error,buf);
 			}
 		}
-	return(ok);
+	return (ok);
 	}
 
 #define THREAD_STACK_SIZE (16*1024)
@@ -871,7 +871,7 @@ unsigned long pthreads_thread_id(void)
 	unsigned long ret;
 
 	ret=(unsigned long)pthread_self();
-	return(ret);
+	return (ret);
 	}
 
 #endif /* PTHREADS */

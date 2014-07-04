@@ -447,6 +447,6 @@ static X509_CRL *load_crl(char *infile, int format)
 	
 end:
 	BIO_free(in);
-	return(x);
+	return (x);
 	}
 

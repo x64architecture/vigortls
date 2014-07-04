@@ -104,13 +104,13 @@ int RAND_load_file(const char *file, long bytes)
 	int i,ret=0,n;
 	FILE *in;
 
-	if (file == NULL) return(0);
+	if (file == NULL) return (0);
 
 #ifndef OPENSSL_NO_POSIX_IO
-	if (stat(file,&sb) < 0) return(0);
+	if (stat(file,&sb) < 0) return (0);
 	RAND_add(&sb,sizeof(sb),0.0);
 #endif
-	if (bytes == 0) return(ret);
+	if (bytes == 0) return (ret);
 
 	in=fopen(file,"rb");
 
@@ -147,7 +147,7 @@ int RAND_load_file(const char *file, long bytes)
 	fclose(in);
 	OPENSSL_cleanse(buf,BUFSIZE);
 err:
-	return(ret);
+	return (ret);
 	}
 
 int RAND_write_file(const char *file)
@@ -168,7 +168,7 @@ int RAND_write_file(const char *file)
 	     * of random device. Otherwise attempting to write to 
 	     * and chmod the device causes problems.
 	     */
-	    return(1); 
+	    return (1); 
 	  }
 #endif
 	}
@@ -262,13 +262,13 @@ const char *RAND_file_name(char *buf, size_t size)
 
 	if (!buf[0])
 		if (BUF_strlcpy(buf,"/dev/arandom",size) >= size) {
-			return(NULL);
+			return (NULL);
 		}	
 	if (stat(buf,&sb) == -1)
 		if (BUF_strlcpy(buf,"/dev/arandom",size) >= size) {
-			return(NULL);
+			return (NULL);
 		}	
 
 #endif
-	return(buf);
+	return (buf);
 	}

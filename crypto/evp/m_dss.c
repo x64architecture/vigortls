@@ -94,6 +94,6 @@ static const EVP_MD dsa_md=
 
 const EVP_MD *EVP_dss(void)
 	{
-	return(&dsa_md);
+	return (&dsa_md);
 	}
 #endif

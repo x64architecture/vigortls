@@ -180,7 +180,7 @@ case DTLS1_ST_SW_HELLO_VERIFY_REQUEST_B: str="DTLS1 write hello verify request B
 
 default:	str="unknown state"; break;
 		}
-	return(str);
+	return (str);
 	}
 
 const char *SSL_rstate_string_long(const SSL *s)
@@ -194,7 +194,7 @@ const char *SSL_rstate_string_long(const SSL *s)
 	case SSL_ST_READ_DONE: str="read done"; break;
 	default: str="unknown"; break;
 		}
-	return(str);
+	return (str);
 	}
 
 const char *SSL_state_string(const SSL *s)
@@ -282,29 +282,29 @@ case DTLS1_ST_SW_HELLO_VERIFY_REQUEST_B: str="DWCHVB"; break;
 
 default:					str="UNKWN "; break;
 		}
-	return(str);
+	return (str);
 	}
 
 const char *SSL_alert_type_string_long(int value)
 	{
 	value>>=8;
 	if (value == SSL3_AL_WARNING)
-		return("warning");
+		return ("warning");
 	else if (value == SSL3_AL_FATAL)
-		return("fatal");
+		return ("fatal");
 	else
-		return("unknown");
+		return ("unknown");
 	}
 
 const char *SSL_alert_type_string(int value)
 	{
 	value>>=8;
 	if (value == SSL3_AL_WARNING)
-		return("W");
+		return ("W");
 	else if (value == SSL3_AL_FATAL)
-		return("F");
+		return ("F");
 	else
-		return("U");
+		return ("U");
 	}
 
 const char *SSL_alert_desc_string(int value)
@@ -345,7 +345,7 @@ const char *SSL_alert_desc_string(int value)
 	case TLS1_AD_UNKNOWN_PSK_IDENTITY:	str="UP"; break;
 	default:				str="UK"; break;
 		}
-	return(str);
+	return (str);
 	}
 
 const char *SSL_alert_desc_string_long(int value)
@@ -446,7 +446,7 @@ const char *SSL_alert_desc_string_long(int value)
 		break;
 	default: str="unknown"; break;
 		}
-	return(str);
+	return (str);
 	}
 
 const char *SSL_rstate_string(const SSL *s)
@@ -460,5 +460,5 @@ const char *SSL_rstate_string(const SSL *s)
 	case SSL_ST_READ_DONE:	str="RD"; break;
 	default: str="unknown"; break;
 		}
-	return(str);
+	return (str);
 	}

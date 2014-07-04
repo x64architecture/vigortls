@@ -122,15 +122,15 @@ static int ssl23_get_server_hello(SSL *s);
 static const SSL_METHOD *ssl23_get_client_method(int ver)
 	{
 	if (ver == SSL3_VERSION)
-		return(SSLv3_client_method());
+		return (SSLv3_client_method());
 	else if (ver == TLS1_VERSION)
-		return(TLSv1_client_method());
+		return (TLSv1_client_method());
 	else if (ver == TLS1_1_VERSION)
-		return(TLSv1_1_client_method());
+		return (TLSv1_1_client_method());
 	else if (ver == TLS1_2_VERSION)
-		return(TLSv1_2_client_method());
+		return (TLSv1_2_client_method());
 	else
-		return(NULL);
+		return (NULL);
 	}
 
 IMPLEMENT_ssl23_meth_func(SSLv23_client_method,
@@ -247,7 +247,7 @@ end:
 		BUF_MEM_free(buf);
 	if (cb != NULL)
 		cb(s,SSL_CB_CONNECT_EXIT,ret);
-	return(ret);
+	return (ret);
 	}
 
 static int ssl23_no_ssl2_ciphers(SSL *s)
@@ -362,7 +362,7 @@ static int ssl23_client_hello(SSL *s)
 		/* don't reuse session-id's */
 		if (!ssl_get_new_session(s,0))
 			{
-			return(-1);
+			return (-1);
 			}
 #endif
 
@@ -398,7 +398,7 @@ static int ssl23_client_hello(SSL *s)
 		else
 			{
 			SSLerr(SSL_F_SSL23_CLIENT_HELLO,SSL_R_NO_PROTOCOLS_AVAILABLE);
-			return(-1);
+			return (-1);
 			}
 
 		s->client_version = version;
@@ -596,7 +596,7 @@ static int ssl23_get_server_hello(SSL *s)
 
 	n=ssl23_read_bytes(s,7);
 
-	if (n != 7) return(n);
+	if (n != 7) return (n);
 	p=s->packet;
 
 	memcpy(buf,p,n);
@@ -702,7 +702,7 @@ static int ssl23_get_server_hello(SSL *s)
 	if (!ssl_get_new_session(s,0))
 		goto err;
 
-	return(SSL_connect(s));
+	return (SSL_connect(s));
 err:
-	return(-1);
+	return (-1);
 	}

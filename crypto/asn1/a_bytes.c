@@ -90,11 +90,11 @@ ASN1_STRING *d2i_ASN1_type_bytes(ASN1_STRING **a, const unsigned char **pp,
 
 	/* If a bit-string, exit early */
 	if (tag == V_ASN1_BIT_STRING)
-		return(d2i_ASN1_BIT_STRING(a,pp,length));
+		return (d2i_ASN1_BIT_STRING(a,pp,length));
 
 	if ((a == NULL) || ((*a) == NULL))
 		{
-		if ((ret=ASN1_STRING_new()) == NULL) return(NULL);
+		if ((ret=ASN1_STRING_new()) == NULL) return (NULL);
 		}
 	else
 		ret=(*a);
@@ -120,12 +120,12 @@ ASN1_STRING *d2i_ASN1_type_bytes(ASN1_STRING **a, const unsigned char **pp,
 	ret->type=tag;
 	if (a != NULL) (*a)=ret;
 	*pp=p;
-	return(ret);
+	return (ret);
 err:
 	ASN1err(ASN1_F_D2I_ASN1_TYPE_BYTES,i);
 	if ((ret != NULL) && ((a == NULL) || (*a != ret)))
 		ASN1_STRING_free(ret);
-	return(NULL);
+	return (NULL);
 	}
 
 int i2d_ASN1_bytes(ASN1_STRING *a, unsigned char **pp, int tag, int xclass)
@@ -133,14 +133,14 @@ int i2d_ASN1_bytes(ASN1_STRING *a, unsigned char **pp, int tag, int xclass)
 	int ret,r,constructed;
 	unsigned char *p;
 
-	if (a == NULL)  return(0);
+	if (a == NULL)  return (0);
 
 	if (tag == V_ASN1_BIT_STRING)
-		return(i2d_ASN1_BIT_STRING(a,pp));
+		return (i2d_ASN1_BIT_STRING(a,pp));
 		
 	ret=a->length;
 	r=ASN1_object_size(0,ret,tag);
-	if (pp == NULL) return(r);
+	if (pp == NULL) return (r);
 	p= *pp;
 
 	if ((tag == V_ASN1_SEQUENCE) || (tag == V_ASN1_SET))
@@ -151,7 +151,7 @@ int i2d_ASN1_bytes(ASN1_STRING *a, unsigned char **pp, int tag, int xclass)
 	memcpy(p,a->data,a->length);
 	p+=a->length;
 	*pp= p;
-	return(r);
+	return (r);
 	}
 
 ASN1_STRING *d2i_ASN1_bytes(ASN1_STRING **a, const unsigned char **pp,
@@ -166,7 +166,7 @@ ASN1_STRING *d2i_ASN1_bytes(ASN1_STRING **a, const unsigned char **pp,
 
 	if ((a == NULL) || ((*a) == NULL))
 		{
-		if ((ret=ASN1_STRING_new()) == NULL) return(NULL);
+		if ((ret=ASN1_STRING_new()) == NULL) return (NULL);
 		}
 	else
 		ret=(*a);
@@ -236,12 +236,12 @@ ASN1_STRING *d2i_ASN1_bytes(ASN1_STRING **a, const unsigned char **pp,
 
 	if (a != NULL) (*a)=ret;
 	*pp=p;
-	return(ret);
+	return (ret);
 err:
 	if ((ret != NULL) && ((a == NULL) || (*a != ret)))
 		ASN1_STRING_free(ret);
 	ASN1err(ASN1_F_D2I_ASN1_BYTES,i);
-	return(NULL);
+	return (NULL);
 	}
 
 
@@ -304,11 +304,11 @@ static int asn1_collate_primitive(ASN1_STRING *a, ASN1_const_CTX *c)
 	if (a->data != NULL) free(a->data);
 	a->data=(unsigned char *)b.data;
 	if (os != NULL) ASN1_STRING_free(os);
-	return(1);
+	return (1);
 err:
 	ASN1err(ASN1_F_ASN1_COLLATE_PRIMITIVE,c->error);
 	if (os != NULL) ASN1_STRING_free(os);
 	if (b.data != NULL) free(b.data);
-	return(0);
+	return (0);
 	}
 

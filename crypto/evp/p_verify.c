@@ -107,15 +107,15 @@ int EVP_VerifyFinal(EVP_MD_CTX *ctx, const unsigned char *sigbuf,
 	if (!ok)
 		{
 		EVPerr(EVP_F_EVP_VERIFYFINAL,EVP_R_WRONG_PUBLIC_KEY_TYPE);
-		return(-1);
+		return (-1);
 		}
         if (ctx->digest->verify == NULL)
                 {
 		EVPerr(EVP_F_EVP_VERIFYFINAL,EVP_R_NO_VERIFY_FUNCTION_CONFIGURED);
-		return(0);
+		return (0);
 		}
 
-	return(ctx->digest->verify(ctx->digest->type,m,m_len,
+	return (ctx->digest->verify(ctx->digest->type,m,m_len,
 		sigbuf,siglen,pkey->pkey.ptr));
 	}
 

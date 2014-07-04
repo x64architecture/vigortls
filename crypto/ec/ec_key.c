@@ -73,7 +73,7 @@ EC_KEY *EC_KEY_new(void)
 	if (ret == NULL)
 		{
 		ECerr(EC_F_EC_KEY_NEW, ERR_R_MALLOC_FAILURE);
-		return(NULL);
+		return (NULL);
 		}
 
 	ret->version = 1;	
@@ -85,7 +85,7 @@ EC_KEY *EC_KEY_new(void)
 	ret->conv_form = POINT_CONVERSION_UNCOMPRESSED;
 	ret->references= 1;
 	ret->method_data = NULL;
-	return(ret);
+	return (ret);
 	}
 
 EC_KEY *EC_KEY_new_by_curve_name(int nid)
@@ -290,7 +290,7 @@ err:
 		BN_free(priv_key);
 	if (ctx != NULL)
 		BN_CTX_free(ctx);
-	return(ok);
+	return (ok);
 	}
 
 int EC_KEY_check_key(const EC_KEY *eckey)
@@ -369,7 +369,7 @@ err:
 		BN_CTX_free(ctx);
 	if (point != NULL)
 		EC_POINT_free(point);
-	return(ok);
+	return (ok);
 	}
 
 int EC_KEY_set_public_key_affine_coordinates(EC_KEY *key, BIGNUM *x, BIGNUM *y)

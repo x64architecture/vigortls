@@ -140,7 +140,7 @@ int i2d_SSL_SESSION(SSL_SESSION *in, unsigned char **pp)
 	M_ASN1_I2D_vars(in);
 
 	if ((in == NULL) || ((in->cipher == NULL) && (in->cipher_id == 0)))
-		return(0);
+		return (0);
 
 	/* Note that I cheat in the following 2 assignments.  I know
 	 * that if the ASN1_INTEGER passed to ASN1_INTEGER_set

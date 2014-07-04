@@ -326,6 +326,6 @@ end:
  	/* never need to free x */
 	if (in != NULL) BIO_free(in);
 	if (sk != NULL) sk_X509_INFO_free(sk);
-	return(ret);
+	return (ret);
 	}
 
