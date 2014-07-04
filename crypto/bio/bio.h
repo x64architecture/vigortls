@@ -497,7 +497,7 @@ int BIO_read_filename(BIO *b,const char *name);
 #define BIO_get_mem_data(b,pp)    BIO_ctrl(b,BIO_CTRL_INFO,0,(char *)pp)
 #define BIO_set_mem_buf(b,bm,c)    BIO_ctrl(b,BIO_C_SET_BUF_MEM,c,(char *)bm)
 #define BIO_get_mem_ptr(b,pp)    BIO_ctrl(b,BIO_C_GET_BUF_MEM_PTR,0,(char *)pp)
-#define BIO_set_mem_eof_return (b,v) \
+#define BIO_set_mem_eof_return(b,v) \
                 BIO_ctrl(b,BIO_C_SET_BUF_MEM_EOF_RETURN,v,NULL)
 
 /* For the BIO_f_buffer() type */
