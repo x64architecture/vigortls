@@ -167,7 +167,7 @@ int ssl3_read_n(SSL *s, int n, int max, int extend)
                  * Header values has no effect on memmove
                  * arguments and therefore no buffer
                  * overrun can be triggered. */
-                memmove (rb->buf+align,pkt,left);
+                memmove (rb->buf + align, pkt, left);
                 rb->offset = align;
             }
         }
@@ -230,7 +230,7 @@ int ssl3_read_n(SSL *s, int n, int max, int extend)
         clear_sys_error();
         if (s->rbio != NULL) {
             s->rwstate = SSL_READING;
-            i = BIO_read(s->rbio,pkt + len + left, max-left);
+            i = BIO_read(s->rbio, pkt + len + left, max-left);
         } else {
             SSLerr(SSL_F_SSL3_READ_N, SSL_R_READ_BIO_NOT_SET);
             i = -1;
@@ -273,8 +273,8 @@ int ssl3_read_n(SSL *s, int n, int max, int extend)
 /* used only by ssl3_read_bytes */
 static int ssl3_get_record(SSL *s)
 {
-    int ssl_major, ssl_minor,al;
-    int enc_err, n, i, ret= -1;
+    int ssl_major, ssl_minor, al;
+    int enc_err, n, i, ret = -1;
     SSL3_RECORD *rr;
     SSL_SESSION *sess;
     unsigned char *p;
@@ -303,16 +303,16 @@ again:
         (s->packet_length < SSL3_RT_HEADER_LENGTH)) {
         n = ssl3_read_n(s, SSL3_RT_HEADER_LENGTH, s->s3->rbuf.len, 0);
         if (n <= 0) 
-            return(n); /* error or non-blocking */
+            return (n); /* error or non-blocking */
         s->rstate = SSL_ST_READ_BODY;
 
-        p= s->packet;
+        p = s->packet;
 
         /* Pull apart the header into the SSL3_RECORD */
-        rr->type= *(p++);
-        ssl_major= *(p++);
-        ssl_minor= *(p++);
-        version=(ssl_major << 8)|ssl_minor;
+        rr->type  = *(p++);
+        ssl_major = *(p++);
+        ssl_minor = *(p++);
+        version = (ssl_major << 8) | ssl_minor;
         n2s(p, rr->length);
 #if 0
 fprintf(stderr, "Record type=%d, Length=%d\n", rr->type, rr->length);
@@ -332,7 +332,7 @@ fprintf(stderr, "Record type=%d, Length=%d\n", rr->type, rr->length);
         }
 
         if ((version >> 8) != SSL3_VERSION_MAJOR) {
-            SSLerr(SSL_F_SSL3_GET_RECORD,SSL_R_WRONG_VERSION_NUMBER);
+            SSLerr(SSL_F_SSL3_GET_RECORD, SSL_R_WRONG_VERSION_NUMBER);
             goto err;
         }
 
@@ -352,7 +352,7 @@ fprintf(stderr, "Record type=%d, Length=%d\n", rr->type, rr->length);
         i = rr->length;
         n = ssl3_read_n(s, i, i, 1);
         if (n <= 0) 
-            return(n); /* error or non-blocking io */
+            return (n); /* error or non-blocking io */
         /* now n == rr->length,
          * and s->packet_length == SSL3_RT_HEADER_LENGTH + rr->length */
     }
@@ -377,7 +377,7 @@ fprintf(stderr, "Record type=%d, Length=%d\n", rr->type, rr->length);
     /* check is not needed I believe */
     if (rr->length > SSL3_RT_MAX_ENCRYPTED_LENGTH + extra) {
         al = SSL_AD_RECORD_OVERFLOW;
-        SSLerr(SSL_F_SSL3_GET_RECORD,SSL_R_ENCRYPTED_LENGTH_TOO_LONG);
+        SSLerr(SSL_F_SSL3_GET_RECORD, SSL_R_ENCRYPTED_LENGTH_TOO_LONG);
         goto f_err;
     }
 
@@ -418,7 +418,7 @@ fprintf(stderr, "Record type=%d, Length=%d\n", rr->type, rr->length);
             (EVP_CIPHER_CTX_mode(s->enc_read_ctx) == EVP_CIPH_CBC_MODE &&
              orig_len < mac_size + 1)) {
             al = SSL_AD_DECODE_ERROR;
-            SSLerr(SSL_F_SSL3_GET_RECORD,SSL_R_LENGTH_TOO_SHORT);
+            SSLerr(SSL_F_SSL3_GET_RECORD, SSL_R_LENGTH_TOO_SHORT);
             goto f_err;
         }
 
@@ -512,7 +512,7 @@ int ssl3_do_uncompress(SSL *ssl)
     SSL3_RECORD *rr;
 
     rr = &(ssl->s3->rrec);
-    i = COMP_expand_block(ssl->expand,rr->comp,
+    i = COMP_expand_block(ssl->expand, rr->comp,
         SSL3_RT_MAX_PLAIN_LENGTH, rr->data, (int)rr->length);
     if (i < 0)
         return (0);
@@ -529,12 +529,12 @@ int ssl3_do_compress(SSL *ssl)
     int i;
     SSL3_RECORD *wr;
 
-    wr= &(ssl->s3->wrec);
-    i = COMP_compress_block(ssl->compress,wr->data,
+    wr = &(ssl->s3->wrec);
+    i = COMP_compress_block(ssl->compress, wr->data,
         SSL3_RT_MAX_COMPRESSED_LENGTH,
         wr->input, (int)wr->length);
     if (i < 0)
-        return(0);
+        return (0);
     else
         wr->length = i;
 
@@ -614,7 +614,7 @@ static int do_ssl3_write(SSL *s, int type, const unsigned char *buf,
              unsigned int len, int create_empty_fragment)
 {
     unsigned char *p, *plen;
-    int i, mac_size, clear=0;
+    int i, mac_size, clear = 0;
     int prefix_len = 0;
     int eivlen;
     long align = 0;
@@ -626,13 +626,13 @@ static int do_ssl3_write(SSL *s, int type, const unsigned char *buf,
     /* first check if there is a SSL3_BUFFER still being written
      * out.  This will happen with non blocking IO */
     if (wb->left != 0)
-        return(ssl3_write_pending(s,type,buf,len));
+        return (ssl3_write_pending(s, type, buf, len));
 
     /* If we have an alert to send, lets send it */
     if (s->s3->alert_dispatch) {
         i = s->method->ssl_dispatch_alert(s);
         if (i <= 0)
-            return(i);
+            return (i);
         /* if it went, fall through and send more stuff */
     }
 
@@ -656,7 +656,7 @@ static int do_ssl3_write(SSL *s, int type, const unsigned char *buf,
 #endif
         mac_size = 0;
     } else {
-        mac_size=EVP_MD_CTX_size(s->write_hash);
+        mac_size = EVP_MD_CTX_size(s->write_hash);
         if (mac_size < 0)
             goto err;
     }
@@ -773,8 +773,8 @@ static int do_ssl3_write(SSL *s, int type, const unsigned char *buf,
         wr->length += mac_size;
     }
 
-    wr->input=p;
-    wr->data=p;
+    wr->input = p;
+    wr->data  = p;
 
     if (eivlen) {
         /* if (RAND_pseudo_bytes(p, eivlen) <= 0)
@@ -850,7 +850,7 @@ int ssl3_write_pending(SSL *s, int type, const unsigned char *buf,
                 SSL_version(s) != DTLS1_VERSION && SSL_version(s) != DTLS1_BAD_VER)
                 ssl3_release_write_buffer(s);
             s->rwstate = SSL_NOTHING;
-            return(s->s3->wpend_ret);
+            return (s->s3->wpend_ret);
         } else if (i <= 0) {
             if (s->version == DTLS1_VERSION ||
                 s->version == DTLS1_BAD_VER) {
@@ -897,7 +897,7 @@ int ssl3_read_bytes(SSL *s, int type, unsigned char *buf, int len, int peek)
     int al, i, j, ret;
     unsigned int n;
     SSL3_RECORD *rr;
-    void (*cb)(const SSL *ssl,int type2,int val) = NULL;
+    void (*cb)(const SSL *ssl, int type2, int val) = NULL;
 
     if (s->s3->rbuf.buf == NULL) /* Not initialized yet */
         if (!ssl3_setup_read_buffer(s))
@@ -935,10 +935,10 @@ int ssl3_read_bytes(SSL *s, int type, unsigned char *buf, int len, int peek)
         /* type == SSL3_RT_APPLICATION_DATA */
         i = s->handshake_func(s);
         if (i < 0) 
-            return(i);
+            return (i);
         if (i == 0) {
             SSLerr(SSL_F_SSL3_READ_BYTES, SSL_R_SSL_HANDSHAKE_FAILURE);
-            return(-1);
+            return (-1);
         }
     }
 start:
@@ -954,7 +954,7 @@ start:
     if ((rr->length == 0) || (s->rstate == SSL_ST_READ_BODY)) {
         ret = ssl3_get_record(s);
         if (ret <= 0) 
-            return(ret);
+            return (ret);
     }
 
     /* we now have a packet which can be read and processed */
@@ -987,7 +987,7 @@ start:
         }
 
         if (len <= 0) 
-            return(len);
+            return (len);
 
         if ((unsigned int)len > rr->length)
             n = rr->length;
@@ -1061,7 +1061,7 @@ start:
             (s->s3->handshake_fragment[2] != 0) ||
             (s->s3->handshake_fragment[3] != 0)) {
             al = SSL_AD_DECODE_ERROR;
-            SSLerr(SSL_F_SSL3_READ_BYTES,SSL_R_BAD_HELLO_REQUEST);
+            SSLerr(SSL_F_SSL3_READ_BYTES, SSL_R_BAD_HELLO_REQUEST);
             goto f_err;
         }
 
@@ -1076,7 +1076,7 @@ start:
             if (ssl3_renegotiate_check(s)) {
                 i = s->handshake_func(s);
                 if (i < 0) 
-                    return(i);
+                    return (i);
                 if (i == 0) {
                     SSLerr(SSL_F_SSL3_READ_BYTES, SSL_R_SSL_HANDSHAKE_FAILURE);
                     return (-1);
@@ -1116,7 +1116,7 @@ start:
         !(s->ctx->options & SSL_OP_ALLOW_UNSAFE_LEGACY_RENEGOTIATION)) {
         /*s->s3->handshake_fragment_len = 0;*/
         rr->length = 0;
-        ssl3_send_alert(s,SSL3_AL_WARNING, SSL_AD_NO_RENEGOTIATION);
+        ssl3_send_alert(s, SSL3_AL_WARNING, SSL_AD_NO_RENEGOTIATION);
         goto start;
     }
     if (s->s3->alert_fragment_len >= 2) {
@@ -1174,7 +1174,7 @@ start:
             BIO_snprintf(tmp, sizeof tmp, "%d", alert_descr);
             ERR_add_error_data(2, "SSL alert number ", tmp);
             s->shutdown |= SSL_RECEIVED_SHUTDOWN;
-            SSL_CTX_remove_session(s->ctx,s->session);
+            SSL_CTX_remove_session(s->ctx, s->session);
             return (0);
         } else {
             al = SSL_AD_ILLEGAL_PARAMETER;
@@ -1210,7 +1210,7 @@ start:
         }
 
         if (!(s->s3->flags & SSL3_FLAGS_CCS_OK)) {
-            al=SSL_AD_UNEXPECTED_MESSAGE;
+            al = SSL_AD_UNEXPECTED_MESSAGE;
             SSLerr(SSL_F_SSL3_READ_BYTES, SSL_R_CCS_RECEIVED_EARLY);
             goto f_err;
         }
@@ -1240,7 +1240,7 @@ start:
         }
         i = s->handshake_func(s);
         if (i < 0) 
-            return(i);
+            return (i);
         if (i == 0) {
             SSLerr(SSL_F_SSL3_READ_BYTES, SSL_R_SSL_HANDSHAKE_FAILURE);
             return (-1);
@@ -1253,8 +1253,8 @@ start:
                  * but we trigger an SSL handshake, we return -1 with
                  * the retry option set.  Otherwise renegotiation may
                  * cause nasty problems in the blocking world */
-                s->rwstate=SSL_READING;
-                bio=SSL_get_rbio(s);
+                s->rwstate = SSL_READING;
+                bio = SSL_get_rbio(s);
                 BIO_clear_retry_flags(bio);
                 BIO_set_retry_read(bio);
                 return (-1);
@@ -1304,8 +1304,8 @@ start:
                     (s->state >= SSL3_ST_SR_CLNT_HELLO_A)
                     )
                 )) {
-            s->s3->in_read_app_data=2;
-            return(-1);
+            s->s3->in_read_app_data = 2;
+            return (-1);
         } else {
             al = SSL_AD_UNEXPECTED_MESSAGE;
             SSLerr(SSL_F_SSL3_READ_BYTES, SSL_R_UNEXPECTED_RECORD);
@@ -1315,7 +1315,7 @@ start:
     /* not reached */
 
 f_err:
-    ssl3_send_alert(s, SSL3_AL_FATAL,al);
+    ssl3_send_alert(s, SSL3_AL_FATAL, al);
 err:
     return (-1);
 }
@@ -1338,9 +1338,9 @@ int ssl3_do_change_cipher_spec(SSL *s)
             return (0);
         }
 
-        s->session->cipher=s->s3->tmp.new_cipher;
+        s->session->cipher = s->s3->tmp.new_cipher;
         if (!s->method->ssl3_enc->setup_key_block(s)) 
-            return(0);
+            return (0);
     }
 
     if (!s->method->ssl3_enc->change_cipher_state(s, i))
@@ -1350,7 +1350,7 @@ int ssl3_do_change_cipher_spec(SSL *s)
      * this point so we can get it before we read
      * the finished message */
     if (s->state & SSL_ST_CONNECT) {
-        sender=s->method->ssl3_enc->server_finished_label;
+        sender = s->method->ssl3_enc->server_finished_label;
         slen = s->method->ssl3_enc->server_finished_label_len;
     } else {
         sender = s->method->ssl3_enc->client_finished_label;
@@ -1378,11 +1378,11 @@ int ssl3_send_alert(SSL *s, int level, int desc)
         return -1;
     /* If a fatal one, remove from cache */
     if ((level == 2) && (s->session != NULL))
-        SSL_CTX_remove_session(s->ctx,s->session);
+        SSL_CTX_remove_session(s->ctx, s->session);
 
-    s->s3->alert_dispatch=1;
-    s->s3->send_alert[0]=level;
-    s->s3->send_alert[1]=desc;
+    s->s3->alert_dispatch = 1;
+    s->s3->send_alert[0] = level;
+    s->s3->send_alert[1] = desc;
     if (s->s3->wbuf.left == 0) /* data still being written out? */
         return s->method->ssl_dispatch_alert(s);
     /* else data is still being written out, we will get written
@@ -1393,12 +1393,12 @@ int ssl3_send_alert(SSL *s, int level, int desc)
 int ssl3_dispatch_alert(SSL *s)
 {
     int i, j;
-    void (*cb)(const SSL *ssl,int type,int val) = NULL;
+    void (*cb)(const SSL *ssl, int type, int val) = NULL;
 
     s->s3->alert_dispatch = 0;
     i = do_ssl3_write(s, SSL3_RT_ALERT, &s->s3->send_alert[0], 2, 0);
     if (i <= 0) {
-        s->s3->alert_dispatch=1;
+        s->s3->alert_dispatch = 1;
     } else {
         /* Alert sent to BIO.  If it is important, flush it now.
          * If the message does not get sent due to non-blocking IO,
@@ -1415,7 +1415,7 @@ int ssl3_dispatch_alert(SSL *s)
             cb = s->ctx->info_callback;
 
         if (cb != NULL) {
-            j=(s->s3->send_alert[0]<<8)|s->s3->send_alert[1];
+            j = (s->s3->send_alert[0] << 8) | s->s3->send_alert[1];
             cb(s, SSL_CB_WRITE_ALERT, j);
         }
     }
