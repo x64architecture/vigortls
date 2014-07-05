@@ -138,7 +138,6 @@ void lh_node_usage_stats(LHASH *lh, FILE *out)
 
 #else
 
-#ifndef OPENSSL_NO_FP_API
 void lh_stats(const _LHASH *lh, FILE *fp)
     {
     BIO *bp;
@@ -174,8 +173,6 @@ void lh_node_usage_stats(const _LHASH *lh, FILE *fp)
     BIO_free(bp);
 end:;
     }
-
-#endif
 
 void lh_stats_bio(const _LHASH *lh, BIO *out)
     {

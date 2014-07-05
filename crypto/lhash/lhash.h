@@ -64,9 +64,7 @@
 #define HEADER_LHASH_H
 
 #include <openssl/e_os2.h>
-#ifndef OPENSSL_NO_FP_API
 #include <stdio.h>
-#endif
 
 #ifndef OPENSSL_NO_BIO
 #include <openssl/bio.h>
@@ -182,11 +180,9 @@ void lh_doall_arg(_LHASH *lh, LHASH_DOALL_ARG_FN_TYPE func, void *arg);
 unsigned long lh_strhash(const char *c);
 unsigned long lh_num_items(const _LHASH *lh);
 
-#ifndef OPENSSL_NO_FP_API
 void lh_stats(const _LHASH *lh, FILE *out);
 void lh_node_stats(const _LHASH *lh, FILE *out);
 void lh_node_usage_stats(const _LHASH *lh, FILE *out);
-#endif
 
 #ifndef OPENSSL_NO_BIO
 void lh_stats_bio(const _LHASH *lh, BIO *out);

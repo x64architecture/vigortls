@@ -120,10 +120,7 @@
 #include <stdlib.h>
 
 #include <openssl/e_os2.h>
-
-#ifndef OPENSSL_NO_FP_API
 #include <stdio.h>
-#endif
 
 #include <openssl/stack.h>
 #include <openssl/safestack.h>
@@ -528,9 +525,7 @@ void CRYPTO_dbg_set_options(long bits);
 long CRYPTO_dbg_get_options(void);
 
 
-#ifndef OPENSSL_NO_FP_API
 void CRYPTO_mem_leaks_fp(FILE *);
-#endif
 void CRYPTO_mem_leaks(struct bio_st *bio);
 /* unsigned long order, char *file, int line, int num_bytes, char *addr */
 typedef void *CRYPTO_MEM_LEAK_CB(unsigned long, const char *, int, int, void *);

@@ -63,7 +63,6 @@
 
 #ifndef NO_OLD_ASN1
 
-#ifndef OPENSSL_NO_FP_API
 int ASN1_i2d_fp(i2d_of_void *i2d, FILE *out, void *x)
         {
         BIO *b;
@@ -79,7 +78,6 @@ int ASN1_i2d_fp(i2d_of_void *i2d, FILE *out, void *x)
         BIO_free(b);
         return (ret);
         }
-#endif
 
 int ASN1_i2d_bio(i2d_of_void *i2d, BIO *out, unsigned char *x)
     {
@@ -116,7 +114,6 @@ int ASN1_i2d_bio(i2d_of_void *i2d, BIO *out, unsigned char *x)
 
 #endif
 
-#ifndef OPENSSL_NO_FP_API
 int ASN1_item_i2d_fp(const ASN1_ITEM *it, FILE *out, void *x)
         {
         BIO *b;
@@ -132,7 +129,6 @@ int ASN1_item_i2d_fp(const ASN1_ITEM *it, FILE *out, void *x)
         BIO_free(b);
         return (ret);
         }
-#endif
 
 int ASN1_item_i2d_bio(const ASN1_ITEM *it, BIO *out, void *x)
     {

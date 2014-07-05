@@ -176,12 +176,10 @@ void CRYPTO_mem_leaks(BIO *b)
     return;
 }
 
-#ifndef OPENSSL_NO_FP_API
 void CRYPTO_mem_leaks_fp(FILE *fp)
 {
     return;
 }
-#endif
 
 
 typedef CRYPTO_MEM_LEAK_CB *PCRYPTO_MEM_LEAK_CB;

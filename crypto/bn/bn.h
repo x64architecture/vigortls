@@ -126,9 +126,7 @@
 #define HEADER_BN_H
 
 #include <openssl/e_os2.h>
-#ifndef OPENSSL_NO_FP_API
-#include <stdio.h> /* FILE */
-#endif
+#include <stdio.h>
 #include <openssl/ossl_typ.h>
 #include <openssl/crypto.h>
 
@@ -490,9 +488,7 @@ int    BN_mod_exp_simple(BIGNUM *r, const BIGNUM *a, const BIGNUM *p,
     const BIGNUM *m,BN_CTX *ctx);
 
 int    BN_mask_bits(BIGNUM *a,int n);
-#ifndef OPENSSL_NO_FP_API
 int    BN_print_fp(FILE *fp, const BIGNUM *a);
-#endif
 #ifdef HEADER_BIO_H
 int    BN_print(BIO *fp, const BIGNUM *a);
 #else

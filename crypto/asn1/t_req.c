@@ -68,7 +68,6 @@
 #include <openssl/dsa.h>
 #endif
 
-#ifndef OPENSSL_NO_FP_API
 int X509_REQ_print_fp(FILE *fp, X509_REQ *x)
         {
         BIO *b;
@@ -84,7 +83,6 @@ int X509_REQ_print_fp(FILE *fp, X509_REQ *x)
         BIO_free(b);
         return (ret);
         }
-#endif
 
 int X509_REQ_print_ex(BIO *bp, X509_REQ *x, unsigned long nmflags, unsigned long cflag)
     {
