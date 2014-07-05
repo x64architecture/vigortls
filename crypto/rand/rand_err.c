@@ -78,7 +78,7 @@ static ERR_STRING_DATA RAND_str_functs[]=
 static ERR_STRING_DATA RAND_str_reasons[]=
     {
 {ERR_REASON(RAND_R_DUAL_EC_DRBG_DISABLED),"dual ec drbg disabled"},
-{ERR_REASON(RAND_R_ERROR_INITIALISING_DRBG),"error initialising drbg"},
+{ERR_REASON(RAND_R_ERROR_INITIALISING_DRBG),"error initializing drbg"},
 {ERR_REASON(RAND_R_ERROR_INSTANTIATING_DRBG),"error instantiating drbg"},
 {ERR_REASON(RAND_R_PRNG_NOT_SEEDED)      ,"PRNG not seeded"},
 {0,NULL}

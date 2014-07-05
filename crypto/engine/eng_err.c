@@ -139,7 +139,7 @@ static ERR_STRING_DATA ENGINE_str_reasons[] = {
     {ERR_REASON(ENGINE_R_INVALID_CMD_NUMBER) , "invalid cmd number"},
     {ERR_REASON(ENGINE_R_INVALID_INIT_VALUE) , "invalid init value"},
     {ERR_REASON(ENGINE_R_INVALID_STRING)     , "invalid string"},
-    {ERR_REASON(ENGINE_R_NOT_INITIALISED)    , "not initialised"},
+    {ERR_REASON(ENGINE_R_NOT_INITIALISED)    , "not initialized"},
     {ERR_REASON(ENGINE_R_NOT_LOADED)         , "not loaded"},
     {ERR_REASON(ENGINE_R_NO_CONTROL_FUNCTION), "no control function"},
     {ERR_REASON(ENGINE_R_NO_INDEX)           , "no index"},

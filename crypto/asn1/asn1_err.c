@@ -209,7 +209,7 @@ static ERR_STRING_DATA ASN1_str_reasons[]=
 {ERR_REASON(ASN1_R_BOOLEAN_IS_WRONG_LENGTH),"boolean is wrong length"},
 {ERR_REASON(ASN1_R_BUFFER_TOO_SMALL)     ,"buffer too small"},
 {ERR_REASON(ASN1_R_CIPHER_HAS_NO_OBJECT_IDENTIFIER),"cipher has no object identifier"},
-{ERR_REASON(ASN1_R_CONTEXT_NOT_INITIALISED),"context not initialised"},
+{ERR_REASON(ASN1_R_CONTEXT_NOT_INITIALISED),"context not initialized"},
 {ERR_REASON(ASN1_R_DATA_IS_WRONG)        ,"data is wrong"},
 {ERR_REASON(ASN1_R_DECODE_ERROR)         ,"decode error"},
 {ERR_REASON(ASN1_R_DECODING_ERROR)       ,"decoding error"},
