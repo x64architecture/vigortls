@@ -20,14 +20,14 @@ LIB=$(TOP)/libcrypto.a
 LIBSRC= bio_lib.c bio_cb.c bio_err.c \
 	bss_mem.c bss_null.c bss_fd.c \
 	bss_file.c bss_sock.c bss_conn.c \
-	bf_null.c bf_buff.c b_print.c b_dump.c \
+	bf_buff.c b_print.c b_dump.c \
 	b_sock.c bss_acpt.c bf_nbio.c bss_log.c bss_bio.c \
 	bss_dgram.c
 #	bf_lbuf.c
 LIBOBJ= bio_lib.o bio_cb.o bio_err.o \
 	bss_mem.o bss_null.o bss_fd.o \
 	bss_file.o bss_sock.o bss_conn.o \
-	bf_null.o bf_buff.o b_print.o b_dump.o \
+	bf_buff.o b_print.o b_dump.o \
 	b_sock.o bss_acpt.o bf_nbio.o bss_log.o bss_bio.o \
 	bss_dgram.o
 #	bf_lbuf.o
@@ -123,13 +123,6 @@ bf_nbio.o: ../../include/openssl/opensslv.h ../../include/openssl/ossl_typ.h
 bf_nbio.o: ../../include/openssl/rand.h ../../include/openssl/safestack.h
 bf_nbio.o: ../../include/openssl/stack.h ../../include/openssl/symhacks.h
 bf_nbio.o: ../cryptlib.h bf_nbio.c
-bf_null.o: ../../e_os.h ../../include/openssl/bio.h
-bf_null.o: ../../include/openssl/buffer.h ../../include/openssl/crypto.h
-bf_null.o: ../../include/openssl/e_os2.h ../../include/openssl/err.h
-bf_null.o: ../../include/openssl/lhash.h ../../include/openssl/opensslconf.h
-bf_null.o: ../../include/openssl/opensslv.h ../../include/openssl/ossl_typ.h
-bf_null.o: ../../include/openssl/safestack.h ../../include/openssl/stack.h
-bf_null.o: ../../include/openssl/symhacks.h ../cryptlib.h bf_null.c
 bio_cb.o: ../../e_os.h ../../include/openssl/bio.h
 bio_cb.o: ../../include/openssl/buffer.h ../../include/openssl/crypto.h
 bio_cb.o: ../../include/openssl/e_os2.h ../../include/openssl/err.h
