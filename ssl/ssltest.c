@@ -294,7 +294,7 @@ static void sv_usage(void)
     fprintf(stderr," -client_auth  - do client authentication\n");
     fprintf(stderr," -proxy        - allow proxy certificates\n");
     fprintf(stderr," -proxy_auth <val> - set proxy policy rights\n");
-    fprintf(stderr," -proxy_cond <val> - experssion to test proxy policy rights\n");
+    fprintf(stderr," -proxy_cond <val> - expression to test proxy policy rights\n");
     fprintf(stderr," -v            - more output\n");
     fprintf(stderr," -d            - debug output\n");
     fprintf(stderr," -reuse        - use session-id reuse\n");
