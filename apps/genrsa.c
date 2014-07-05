@@ -77,7 +77,7 @@
 #include <openssl/pem.h>
 #include <openssl/rand.h>
 
-#define DEFBITS    1024
+#define DEFBITS    2048
 #undef PROG
 #define PROG genrsa_main
 
@@ -92,7 +92,7 @@ int MAIN(int argc, char **argv)
     ENGINE *e = NULL;
 #endif
     int ret=1;
-    int i,num=DEFBITS;
+    int i, num = DEFBITS;
     long l;
     const EVP_CIPHER *enc=NULL;
     unsigned long f4=RSA_F4;
