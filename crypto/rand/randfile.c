@@ -221,9 +221,6 @@ err:
 const char *RAND_file_name(char *buf, size_t size)
     {
     char *s=NULL;
-#ifdef __OpenBSD__
-    struct stat sb;
-#endif
 
     if (OPENSSL_issetugid() == 0)
         s=getenv("RANDFILE");
@@ -251,24 +248,5 @@ const char *RAND_file_name(char *buf, size_t size)
         else
               buf[0] = '\0'; /* no file name */
         }
-
-#ifdef __OpenBSD__
-    /* given that all random loads just fail if the file can't be 
-     * seen on a stat, we stat the file we're returning, if it
-     * fails, use /dev/arandom instead. this allows the user to 
-     * use their own source for good random data, but defaults
-     * to something hopefully decent if that isn't available. 
-     */
-
-    if (!buf[0])
-        if (BUF_strlcpy(buf,"/dev/arandom",size) >= size) {
-            return (NULL);
-        }    
-    if (stat(buf,&sb) == -1)
-        if (BUF_strlcpy(buf,"/dev/arandom",size) >= size) {
-            return (NULL);
-        }    
-
-#endif
     return (buf);
     }

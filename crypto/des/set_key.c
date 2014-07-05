@@ -343,10 +343,6 @@ void DES_set_key_unchecked(const_DES_cblock *key, DES_key_schedule *schedule)
     register DES_LONG *k;
     register int i;
 
-#ifdef OPENBSD_DEV_CRYPTO
-    memcpy(schedule->key,key,sizeof schedule->key);
-    schedule->session=NULL;
-#endif
     k = &schedule->ks->deslong[0];
     in = &(*key)[0];
 
