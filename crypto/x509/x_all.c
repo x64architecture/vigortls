@@ -412,7 +412,6 @@ int i2d_PKCS8_fp(FILE *fp, X509_SIG *p8)
     {
     return ASN1_i2d_fp_of(X509_SIG,i2d_X509_SIG,fp,p8);
     }
-#endif
 
 X509_SIG *d2i_PKCS8_bio(BIO *bp, X509_SIG **p8)
     {
@@ -467,8 +466,6 @@ EVP_PKEY *d2i_PUBKEY_fp(FILE *fp, EVP_PKEY **a)
 {
     return ASN1_d2i_fp_of(EVP_PKEY,EVP_PKEY_new,d2i_PUBKEY,fp,a);
 }
-
-#endif
 
 PKCS8_PRIV_KEY_INFO *d2i_PKCS8_PRIV_KEY_INFO_bio(BIO *bp,
                          PKCS8_PRIV_KEY_INFO **p8inf)

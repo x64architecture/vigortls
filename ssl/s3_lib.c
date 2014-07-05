@@ -3403,7 +3403,7 @@ long ssl3_ctx_ctrl(SSL_CTX *ctx, int cmd, long larg, void *parg)
 
 #ifndef OPENSSL_NO_SRP
     case SSL_CTRL_SET_TLS_EXT_SRP_USERNAME:
-        ctx->srp_ctx.srp_Mask | = SSL_kSRP;
+        ctx->srp_ctx.srp_Mask |= SSL_kSRP;
         if (ctx->srp_ctx.login != NULL)
             free(ctx->srp_ctx.login);
         ctx->srp_ctx.login = NULL;

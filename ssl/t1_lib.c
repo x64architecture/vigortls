@@ -1083,7 +1083,7 @@ int ssl_parse_clienthello_tlsext(SSL *s, unsigned char **p, unsigned char *d, in
                     free(s->session->tlsext_ecpointformatlist);
                     s->session->tlsext_ecpointformatlist = NULL;
                 }
-                s->session->tlset_ecpointformatlist_length = 0;
+                s->session->tlsext_ecpointformatlist_length = 0;
                 if ((s->session->tlsext_ecpointformatlist = malloc(ecpointformatlist_length)) == NULL) {
                     *al = TLS1_AD_INTERNAL_ERROR;
                     return 0;
@@ -1404,7 +1404,7 @@ int ssl_parse_serverhello_tlsext(SSL *s, unsigned char **p, unsigned char *d, in
             s->session->tlsext_ecpointformatlist_length = 0;
             if (s->session->tlsext_ecpointformatlist != NULL)
                 free(s->session->tlsext_ecpointformatlist);
-            s->session->tlsext_ecpointformatlist = malloc(ecpointformatlist);
+            s->session->tlsext_ecpointformatlist = malloc(ecpointformatlist_length);
             if (s->session->tlsext_ecpointformatlist == NULL) {
                 *al = TLS1_AD_INTERNAL_ERROR;
                 return 0;
