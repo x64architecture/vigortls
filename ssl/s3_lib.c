@@ -2839,7 +2839,7 @@ int ssl3_new(SSL *s)
     memset(s3->rrec.seq_num, 0, sizeof(s3->rrec.seq_num));
     memset(s3->wrec.seq_num, 0, sizeof(s3->wrec.seq_num));
 
-    s->s3=s3;
+    s->s3 = s3;
 
 #ifndef OPENSSL_NO_SRP
     SSL_SRP_CTX_init(s);
@@ -2877,7 +2877,7 @@ void ssl3_free(SSL *s)
 #endif
 
     if (s->s3->tmp.ca_names != NULL)
-        sk_X509_NAME_pop_free(s->s3->tmp.ca_names,X509_NAME_free);
+        sk_X509_NAME_pop_free(s->s3->tmp.ca_names, X509_NAME_free);
     if (s->s3->handshake_buffer) {
         BIO_free(s->s3->handshake_buffer);
     }
@@ -3131,7 +3131,7 @@ long ssl3_ctrl(SSL *s, int cmd, long larg, void *parg)
          }
          break;
     case SSL_CTRL_SET_TLSEXT_DEBUG_ARG:
-        s->tlsext_debug_arg=parg;
+        s->tlsext_debug_arg = parg;
         ret = 1;
         break;
 
@@ -3243,7 +3243,7 @@ long ssl3_callback_ctrl(SSL *s, int cmd, void (*fp)(void))
 #endif
 #ifndef OPENSSL_NO_TLSEXT
     case SSL_CTRL_SET_TLSEXT_DEBUG_CB:
-        s->tlsext_debug_cb = (void (*)(SSL *,int ,int,
+        s->tlsext_debug_cb = (void (*)(SSL *, int , int,
                     unsigned char *, int, void *))fp;
         break;
 #endif
@@ -3289,7 +3289,7 @@ long ssl3_ctx_ctrl(SSL_CTX *ctx, int cmd, long larg, void *parg)
             } else {
                 if (cert->rsa_tmp != NULL)
                     RSA_free(cert->rsa_tmp);
-                cert->rsa_tmp=rsa;
+                cert->rsa_tmp = rsa;
                 return (1);
             }
         }
@@ -3305,7 +3305,7 @@ long ssl3_ctx_ctrl(SSL_CTX *ctx, int cmd, long larg, void *parg)
             DH *new = NULL,*dh;
 
             dh = (DH *)parg;
-            if ((new=DHparams_dup(dh)) == NULL) {
+            if ((new = DHparams_dup(dh)) == NULL) {
                 SSLerr(SSL_F_SSL3_CTX_CTRL, ERR_R_DH_LIB);
                 return 0;
             }
@@ -3403,7 +3403,7 @@ long ssl3_ctx_ctrl(SSL_CTX *ctx, int cmd, long larg, void *parg)
 
 #ifndef OPENSSL_NO_SRP
     case SSL_CTRL_SET_TLS_EXT_SRP_USERNAME:
-        ctx->srp_ctx.srp_Mask|=SSL_kSRP;
+        ctx->srp_ctx.srp_Mask | = SSL_kSRP;
         if (ctx->srp_ctx.login != NULL)
             free(ctx->srp_ctx.login);
         ctx->srp_ctx.login = NULL;
@@ -3436,7 +3436,7 @@ long ssl3_ctx_ctrl(SSL_CTX *ctx, int cmd, long larg, void *parg)
     /* A Thawte special :-) */
     case SSL_CTRL_EXTRA_CHAIN_CERT:
         if (ctx->extra_certs == NULL) {
-            if ((ctx->extra_certs=sk_X509_new_null()) == NULL)
+            if ((ctx->extra_certs = sk_X509_new_null()) == NULL)
                 return (0);
         }
         sk_X509_push(ctx->extra_certs, (X509 *)parg);
@@ -3486,17 +3486,17 @@ long ssl3_ctx_callback_ctrl(SSL_CTX *ctx, int cmd, void (*fp)(void))
 #endif
 #ifndef OPENSSL_NO_TLSEXT
     case SSL_CTRL_SET_TLSEXT_SERVERNAME_CB:
-        ctx->tlsext_servername_callback = (int (*)(SSL *,int *,void *))fp;
+        ctx->tlsext_servername_callback = (int (*)(SSL *, int *, void *))fp;
         break;
 
 #ifdef TLSEXT_TYPE_opaque_prf_input
     case SSL_CTRL_SET_TLSEXT_OPAQUE_PRF_INPUT_CB:
-        ctx->tlsext_opaque_prf_input_callback = (int (*)(SSL *,void *, size_t, void *))fp;
+        ctx->tlsext_opaque_prf_input_callback = (int (*)(SSL *, void *, size_t, void *))fp;
         break;
 #endif
 
     case SSL_CTRL_SET_TLSEXT_STATUS_REQ_CB:
-        ctx->tlsext_status_cb = (int (*)(SSL *,void *))fp;
+        ctx->tlsext_status_cb = (int (*)(SSL *, void *))fp;
         break;
 
     case SSL_CTRL_SET_TLSEXT_TICKET_KEY_CB:
@@ -3509,15 +3509,15 @@ long ssl3_ctx_callback_ctrl(SSL_CTX *ctx, int cmd, void (*fp)(void))
 #ifndef OPENSSL_NO_SRP
     case SSL_CTRL_SET_SRP_VERIFY_PARAM_CB:
         ctx->srp_ctx.srp_Mask |= SSL_kSRP;
-        ctx->srp_ctx.SRP_verify_param_callback = (int (*)(SSL *,void *))fp;
+        ctx->srp_ctx.SRP_verify_param_callback = (int (*)(SSL *, void *))fp;
         break;
     case SSL_CTRL_SET_TLS_EXT_SRP_USERNAME_CB:
         ctx->srp_ctx.srp_Mask |= SSL_kSRP;
-        ctx->srp_ctx.TLS_ext_srp_username_callback = (int (*)(SSL *,int *,void *))fp;
+        ctx->srp_ctx.TLS_ext_srp_username_callback = (int (*)(SSL *, int *, void *))fp;
         break;
     case SSL_CTRL_SET_SRP_GIVE_CLIENT_PWD_CB:
         ctx->srp_ctx.srp_Mask |= SSL_kSRP;
-        ctx->srp_ctx.SRP_give_srp_client_pwd_callback = (char *(*)(SSL *,void *))fp;
+        ctx->srp_ctx.SRP_give_srp_client_pwd_callback = (char *(*)(SSL *, void *))fp;
         break;
 #endif
 #endif
@@ -3573,7 +3573,7 @@ SSL_CIPHER *ssl3_choose_cipher(SSL *s, STACK_OF(SSL_CIPHER) *clnt,
     unsigned char ec_search1 = 0, ec_search2 = 0;
 #endif
     CERT *cert;
-    unsigned long alg_k, alg_a, mask_k,mask_a, emask_k, emask_a;
+    unsigned long alg_k, alg_a, mask_k, mask_a, emask_k, emask_a;
 
     /* Let's see which ciphers we can support */
     cert = s->cert;
@@ -3611,14 +3611,14 @@ SSL_CIPHER *ssl3_choose_cipher(SSL *s, STACK_OF(SSL_CIPHER) *clnt,
             continue;
 #endif
 
-        ssl_set_cert_masks(cert,c);
+        ssl_set_cert_masks(cert, c);
         mask_k = cert->mask_k;
         mask_a = cert->mask_a;
         emask_k = cert->export_mask_k;
         emask_a = cert->export_mask_a;
 #ifndef OPENSSL_NO_SRP
-        mask_k=cert->mask_k | s->srp_ctx.srp_Mask;
-        emask_k=cert->export_mask_k | s->srp_ctx.srp_Mask;
+        mask_k = cert->mask_k | s->srp_ctx.srp_Mask;
+        emask_k = cert->export_mask_k | s->srp_ctx.srp_Mask;
 #endif
 
         alg_k = c->algorithm_mkey;
@@ -3852,7 +3852,7 @@ int ssl3_shutdown(SSL *s)
     if (!(s->shutdown & SSL_SENT_SHUTDOWN)) {
         s->shutdown |= SSL_SENT_SHUTDOWN;
 #if 1
-        ssl3_send_alert(s,SSL3_AL_WARNING,SSL_AD_CLOSE_NOTIFY);
+        ssl3_send_alert(s, SSL3_AL_WARNING, SSL_AD_CLOSE_NOTIFY);
 #endif
         /* our shutdown alert has been sent now, and if it still needs
           * to be written, s->s3->alert_dispatch will be true */
@@ -3861,7 +3861,7 @@ int ssl3_shutdown(SSL *s)
     } else if (s->s3->alert_dispatch) {
         /* resend it if not sent */
 #if 1
-        ret=s->method->ssl_dispatch_alert(s);
+        ret = s->method->ssl_dispatch_alert(s);
         if (ret == -1) {
             /* we only get to return -1 here the 2nd/Nth
              * invocation, we must  have already signalled
@@ -3897,7 +3897,8 @@ int ssl3_write(SSL *s, const void *buf, int len)
         }
 #endif
     clear_sys_error();
-    if (s->s3->renegotiate) ssl3_renegotiate_check(s);
+    if (s->s3->renegotiate)
+        ssl3_renegotiate_check(s);
 
     /* This is an experimental flag that sends the
      * last handshake message in the same packet as the first
@@ -3907,12 +3908,12 @@ int ssl3_write(SSL *s, const void *buf, int len)
     if ((s->s3->flags & SSL3_FLAGS_POP_BUFFER) && (s->wbio == s->bbio)) {
         /* First time through, we write into the buffer */
         if (s->s3->delay_buf_pop_ret == 0) {
-            ret = ssl3_write_bytes(s,SSL3_RT_APPLICATION_DATA,
-                         buf,len);
+            ret = ssl3_write_bytes(s, SSL3_RT_APPLICATION_DATA,
+                         buf, len);
             if (ret <= 0) 
                 return (ret);
 
-            s->s3->delay_buf_pop_ret=ret;
+            s->s3->delay_buf_pop_ret = ret;
         }
 
         s->rwstate = SSL_WRITING;
@@ -3928,8 +3929,8 @@ int ssl3_write(SSL *s, const void *buf, int len)
         ret = s->s3->delay_buf_pop_ret;
         s->s3->delay_buf_pop_ret = 0;
     } else {
-        ret = s->method->ssl_write_bytes(s,SSL3_RT_APPLICATION_DATA,
-            buf,len);
+        ret = s->method->ssl_write_bytes(s, SSL3_RT_APPLICATION_DATA,
+            buf, len);
         if (ret <= 0) 
             return (ret);
     }
@@ -4015,4 +4016,4 @@ long ssl_get_algorithm2(SSL *s)
         alg2 == (SSL_HANDSHAKE_MAC_DEFAULT|TLS1_PRF))
         return SSL_HANDSHAKE_MAC_SHA256 | TLS1_PRF_SHA256;
     return alg2;
-    }    
+}    
