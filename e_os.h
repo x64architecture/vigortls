@@ -91,10 +91,6 @@ extern "C" {
 /********************************************************************
  The Microsoft section
  ********************************************************************/
-/* The following is used because of the small stack in some
- * Microsoft operating systems */
-#define MS_STATIC
-
 #if defined(OPENSSL_SYS_WIN32) && !defined(WIN32)
 #  define WIN32
 #endif

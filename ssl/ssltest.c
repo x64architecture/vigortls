@@ -1122,7 +1122,7 @@ int doit_biopair(SSL *s_ssl, SSL *c_ssl, long count,
             {
             /* CLIENT */
         
-            MS_STATIC char cbuf[1024*8];
+            char cbuf[1024*8];
             int i, r;
             clock_t c_clock = clock();
 
@@ -1208,7 +1208,7 @@ int doit_biopair(SSL *s_ssl, SSL *c_ssl, long count,
             {
             /* SERVER */
         
-            MS_STATIC char sbuf[1024*8];
+            char sbuf[1024*8];
             int i, r;
             clock_t s_clock = clock();
 
@@ -1442,7 +1442,7 @@ end:
 
 int doit(SSL *s_ssl, SSL *c_ssl, long count)
     {
-    MS_STATIC char cbuf[1024*8],sbuf[1024*8];
+    char cbuf[1024*8],sbuf[1024*8];
     long cw_num=count,cr_num=count;
     long sw_num=count,sr_num=count;
     int ret=1;
