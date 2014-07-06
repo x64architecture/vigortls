@@ -410,7 +410,7 @@ links:
 
 gentests:
 	@(cd test && echo "generating dummy tests (if needed)..." && \
-	$(CLEARENV) && $(MAKE) -e $(BUILDENV) TESTS='$(TESTS)' OPENSSL_DEBUG_MEMORY=on generate );
+	$(CLEARENV) && $(MAKE) -e $(BUILDENV) TESTS='$(TESTS)' generate );
 
 dclean:
 	rm -rf *.bak include/openssl certs/.0
