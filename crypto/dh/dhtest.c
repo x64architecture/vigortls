@@ -75,9 +75,7 @@
 #include <openssl/err.h>
 #include <openssl/dh.h>
 
-#define MS_CALLBACK
-
-static int MS_CALLBACK cb(int p, int n, BN_GENCB *arg);
+static int cb(int p, int n, BN_GENCB *arg);
 
 static const char rnd_seed[] = "string to make the random number generator think it has entropy";
 
@@ -193,7 +191,7 @@ err:
     return (ret);
     }
 
-static int MS_CALLBACK cb(int p, int n, BN_GENCB *arg)
+static int cb(int p, int n, BN_GENCB *arg)
     {
     char c='*';
 

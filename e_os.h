@@ -127,9 +127,6 @@ extern "C" {
 #define writesocket(s,b,n)    write((s),(b),(n))
 #endif
 
-#define MS_CALLBACK
-#define MS_FAR
-
 #if (defined(WINDOWS) || defined(MSDOS))
 
 #  ifndef S_IFDIR

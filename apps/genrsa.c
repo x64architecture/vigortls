@@ -81,7 +81,7 @@
 #undef PROG
 #define PROG genrsa_main
 
-static int MS_CALLBACK genrsa_cb(int p, int n, BN_GENCB *cb);
+static int genrsa_cb(int p, int n, BN_GENCB *cb);
 
 int MAIN(int, char **);
 
@@ -296,7 +296,7 @@ err:
     OPENSSL_EXIT(ret);
     }
 
-static int MS_CALLBACK genrsa_cb(int p, int n, BN_GENCB *cb)
+static int genrsa_cb(int p, int n, BN_GENCB *cb)
     {
     char c='*';
 

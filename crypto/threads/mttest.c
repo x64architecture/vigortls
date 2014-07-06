@@ -83,7 +83,7 @@
 
 #define MAX_THREAD_NUMBER    100
 
-int MS_CALLBACK verify_callback(int ok, X509_STORE_CTX *xs);
+int verify_callback(int ok, X509_STORE_CTX *xs);
 void thread_setup(void);
 void thread_cleanup(void);
 void do_threads(SSL_CTX *s_ctx,SSL_CTX *c_ctx);
@@ -652,7 +652,7 @@ err:
     return (0);
     }
 
-int MS_CALLBACK verify_callback(int ok, X509_STORE_CTX *ctx)
+int verify_callback(int ok, X509_STORE_CTX *ctx)
     {
     char *s, buf[256];
 

@@ -85,9 +85,7 @@ int main(int argc, char *argv[])
 #else
 #include <openssl/dsa.h>
 
-#define MS_CALLBACK
-
-static int MS_CALLBACK dsa_cb(int p, int n, BN_GENCB *arg);
+static int dsa_cb(int p, int n, BN_GENCB *arg);
 
 /* seed, out_p, out_q, out_g are taken from the updated Appendix 5 to
  * FIPS PUB 186 and also appear in Appendix 5 to FIPS PIB 186-1 */
@@ -230,7 +228,7 @@ end:
     return (0);
     }
 
-static int MS_CALLBACK dsa_cb(int p, int n, BN_GENCB *arg)
+static int dsa_cb(int p, int n, BN_GENCB *arg)
     {
     char c='*';
     static int ok=0,num=0;

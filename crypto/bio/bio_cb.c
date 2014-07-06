@@ -63,7 +63,7 @@
 #include <openssl/bio.h>
 #include <openssl/err.h>
 
-long MS_CALLBACK BIO_debug_callback(BIO *bio, int cmd, const char *argp,
+long BIO_debug_callback(BIO *bio, int cmd, const char *argp,
          int argi, long argl, long ret)
     {
     BIO *b;
