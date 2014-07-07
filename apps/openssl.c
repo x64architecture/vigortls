@@ -263,16 +263,14 @@ int main(int argc, char *argv[])
     BIO_printf(bio_err, "bad exit\n");
     ret = 1;
 end:
-    if (to_free)
-        free(to_free);
+    free(to_free);
     if (config != NULL) {
         NCONF_free(config);
         config = NULL;
     }
     if (prog != NULL)
         lh_FUNCTION_free(prog);
-    if (arg.data != NULL) 
-        free(arg.data);
+    free(arg.data);
 
     apps_shutdown();
 
