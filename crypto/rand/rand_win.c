@@ -116,7 +116,7 @@
 #if defined(OPENSSL_SYS_WINDOWS) || defined(OPENSSL_SYS_WIN32)
 #include <windows.h>
 #ifndef _WIN32_WINNT
-# define _WIN32_WINNT 0x0400
+# define _WIN32_WINNT 0x0600
 #endif
 #include <wincrypt.h>
 #include <tlhelp32.h>
@@ -477,7 +477,7 @@ int RAND_poll(void)
                          */
             ZeroMemory(&hlist, sizeof(HEAPLIST32));
             hlist.dwSize = sizeof(HEAPLIST32);        
-            if (good) starttime = GetTickCount();
+            if (good) starttime = GetTickCount64();
 #ifdef _MSC_VER
             if (heaplist_first(handle, &hlist))
                 {
@@ -508,7 +508,7 @@ int RAND_poll(void)
                             RAND_add(&hentry,
                                 hentry.dwSize, 5);
                         while (heap_next(&hentry)
-                        && (!good || (GetTickCount()-starttime)<MAXDELAY)
+                        && (!good || (GetTickCount64()-starttime)<MAXDELAY)
                             && --entrycnt > 0);
                         }
                         }
@@ -518,7 +518,7 @@ int RAND_poll(void)
                             ex_cnt_limit--;
                         }
                     } while (heaplist_next(handle, &hlist) 
-                        && (!good || (GetTickCount()-starttime)<MAXDELAY)
+                        && (!good || (GetTickCount64()-starttime)<MAXDELAY)
                         && ex_cnt_limit > 0);
                 }
 
@@ -541,7 +541,7 @@ int RAND_poll(void)
                             && --entrycnt > 0);
                         }
                     } while (heaplist_next(handle, &hlist) 
-                        && (!good || (GetTickCount()-starttime)<MAXDELAY));
+                        && (!good || (GetTickCount64()-starttime)<MAXDELAY));
                 }
 #endif
 
@@ -552,11 +552,11 @@ int RAND_poll(void)
                          */
             p.dwSize = sizeof(PROCESSENTRY32);
         
-            if (good) starttime = GetTickCount();
+            if (good) starttime = GetTickCount64();
             if (process_first(handle, &p))
                 do
                     RAND_add(&p, p.dwSize, 9);
-                while (process_next(handle, &p) && (!good || (GetTickCount()-starttime)<MAXDELAY));
+                while (process_next(handle, &p) && (!good || (GetTickCount64()-starttime)<MAXDELAY));
 
             /* thread walking */
                         /* THREADENTRY32 contains 6 fields that will change
@@ -564,11 +564,11 @@ int RAND_poll(void)
                          * 1 byte of entropy.
                          */
             t.dwSize = sizeof(THREADENTRY32);
-            if (good) starttime = GetTickCount();
+            if (good) starttime = GetTickCount64();
             if (thread_first(handle, &t))
                 do
                     RAND_add(&t, t.dwSize, 6);
-                while (thread_next(handle, &t) && (!good || (GetTickCount()-starttime)<MAXDELAY));
+                while (thread_next(handle, &t) && (!good || (GetTickCount64()-starttime)<MAXDELAY));
 
             /* module walking */
                         /* MODULEENTRY32 contains 9 fields that will change
@@ -576,12 +576,12 @@ int RAND_poll(void)
                          * 1 byte of entropy.
                          */
             m.dwSize = sizeof(MODULEENTRY32);
-            if (good) starttime = GetTickCount();
+            if (good) starttime = GetTickCount64();
             if (module_first(handle, &m))
                 do
                     RAND_add(&m, m.dwSize, 9);
                 while (module_next(handle, &m)
-                               && (!good || (GetTickCount()-starttime)<MAXDELAY));
+                               && (!good || (GetTickCount64()-starttime)<MAXDELAY));
             if (close_snap)
                 close_snap(handle);
             else
@@ -692,7 +692,7 @@ static void readtimer(void)
     }
 
     if (!have_tsc && !have_perfc) {
-      w = GetTickCount();
+      w = GetTickCount64();
       RAND_add(&w, sizeof(w), 0);
     }
 }
