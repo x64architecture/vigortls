@@ -101,9 +101,7 @@ static void genprime_cb(int p, int n, void *arg);
 #define TIMES
 #endif
 
-#ifndef _IRIX
 #include <time.h>
-#endif
 #ifdef TIMES
 #include <sys/types.h>
 #include <sys/times.h>

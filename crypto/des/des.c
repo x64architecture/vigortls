@@ -65,9 +65,7 @@
 #include <time.h>
 #include "des_ver.h"
 
-#ifndef _IRIX
 #include <sys/types.h>
-#endif
 #include <sys/stat.h>
 
 #include <openssl/des.h>

@@ -72,9 +72,7 @@ OPENSSL_DECLARE_EXIT
 #include <signal.h>
 #define crypt(c,s) (des_crypt((c),(s)))
 
-#ifndef _IRIX
 #include <time.h>
-#endif
 #ifdef TIMES
 #include <sys/types.h>
 #include <sys/times.h>

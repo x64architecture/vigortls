@@ -71,9 +71,7 @@ OPENSSL_DECLARE_EXIT
 
 #include <signal.h>
 
-#ifndef _IRIX
 #include <time.h>
-#endif
 #ifdef TIMES
 #include <sys/types.h>
 #include <sys/times.h>

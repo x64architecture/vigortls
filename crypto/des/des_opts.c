@@ -74,9 +74,7 @@ extern void exit();
 
 #include <signal.h>
 
-#ifndef _IRIX
 #include <time.h>
-#endif
 #ifdef TIMES
 #include <sys/types.h>
 #include <sys/times.h>
