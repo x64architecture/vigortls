@@ -144,6 +144,7 @@ SetBlob
         if (!(pTempMem = malloc(totSize)))
             {
             ASN1err(ASN1_F_I2D_ASN1_SET,ERR_R_MALLOC_FAILURE);
+            free(rgSetBlob);
             return (0);
             }
 

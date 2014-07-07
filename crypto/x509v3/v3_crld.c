@@ -212,8 +212,10 @@ static int set_reasons(ASN1_BIT_STRING **preas, char *value)
     rsk = X509V3_parse_list(value);
     if (!rsk)
         return 0;
-    if (*preas)
+    if (*preas) {
+        sk_CONF_VALUE_pop_free(rsk, X509V3_conf_free);
         return 0;
+    }
     for (i = 0; i < sk_CONF_VALUE_num(rsk); i++)
         {
         bnam = sk_CONF_VALUE_value(rsk, i)->name;
