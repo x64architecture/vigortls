@@ -123,7 +123,6 @@ YOU SHOULD NOT HAVE BOTH DES_RISC1 AND DES_RISC2 DEFINED!!!!!
 #  define DES_RISC1
 #  define DES_UNROLL
 #endif /* Systems-specific speed defines */
-#endif
 
 #endif /* DES_DEFAULT_OPTIONS */
 #endif /* HEADER_DES_LOCL_H */

@@ -100,7 +100,7 @@ bio_pk7.o: ../../include/openssl/crypto.h ../../include/openssl/e_os2.h
 bio_pk7.o: ../../include/openssl/opensslconf.h ../../include/openssl/opensslv.h
 bio_pk7.o: ../../include/openssl/ossl_typ.h ../../include/openssl/pkcs7.h
 bio_pk7.o: ../../include/openssl/safestack.h ../../include/openssl/stack.h
-bio_pk7.o: ../../include/openssl/symhacks.h bio_pk7.c
+bio_pk7.o: bio_pk7.c
 pk7_asn1.o: ../../e_os.h ../../include/openssl/asn1.h
 pk7_asn1.o: ../../include/openssl/asn1t.h ../../include/openssl/bio.h
 pk7_asn1.o: ../../include/openssl/buffer.h ../../include/openssl/crypto.h
@@ -112,7 +112,7 @@ pk7_asn1.o: ../../include/openssl/objects.h ../../include/openssl/opensslconf.h
 pk7_asn1.o: ../../include/openssl/opensslv.h ../../include/openssl/ossl_typ.h
 pk7_asn1.o: ../../include/openssl/pkcs7.h ../../include/openssl/safestack.h
 pk7_asn1.o: ../../include/openssl/sha.h ../../include/openssl/stack.h
-pk7_asn1.o: ../../include/openssl/symhacks.h ../../include/openssl/x509.h
+pk7_asn1.o: ../../include/openssl/x509.h
 pk7_asn1.o: ../../include/openssl/x509_vfy.h ../cryptlib.h pk7_asn1.c
 pk7_attr.o: ../../include/openssl/asn1.h ../../include/openssl/asn1t.h
 pk7_attr.o: ../../include/openssl/bio.h ../../include/openssl/buffer.h
@@ -126,7 +126,7 @@ pk7_attr.o: ../../include/openssl/opensslv.h ../../include/openssl/ossl_typ.h
 pk7_attr.o: ../../include/openssl/pem.h ../../include/openssl/pem2.h
 pk7_attr.o: ../../include/openssl/pkcs7.h ../../include/openssl/safestack.h
 pk7_attr.o: ../../include/openssl/sha.h ../../include/openssl/stack.h
-pk7_attr.o: ../../include/openssl/symhacks.h ../../include/openssl/x509.h
+pk7_attr.o: ../../include/openssl/x509.h
 pk7_attr.o: ../../include/openssl/x509_vfy.h pk7_attr.c
 pk7_doit.o: ../../e_os.h ../../include/openssl/asn1.h
 pk7_doit.o: ../../include/openssl/bio.h ../../include/openssl/buffer.h
@@ -139,7 +139,7 @@ pk7_doit.o: ../../include/openssl/objects.h ../../include/openssl/opensslconf.h
 pk7_doit.o: ../../include/openssl/opensslv.h ../../include/openssl/ossl_typ.h
 pk7_doit.o: ../../include/openssl/pkcs7.h ../../include/openssl/rand.h
 pk7_doit.o: ../../include/openssl/safestack.h ../../include/openssl/sha.h
-pk7_doit.o: ../../include/openssl/stack.h ../../include/openssl/symhacks.h
+pk7_doit.o: ../../include/openssl/stack.h
 pk7_doit.o: ../../include/openssl/x509.h ../../include/openssl/x509_vfy.h
 pk7_doit.o: ../../include/openssl/x509v3.h ../cryptlib.h pk7_doit.c
 pk7_lib.o: ../../e_os.h ../../include/openssl/asn1.h
@@ -152,7 +152,7 @@ pk7_lib.o: ../../include/openssl/obj_mac.h ../../include/openssl/objects.h
 pk7_lib.o: ../../include/openssl/opensslconf.h ../../include/openssl/opensslv.h
 pk7_lib.o: ../../include/openssl/ossl_typ.h ../../include/openssl/pkcs7.h
 pk7_lib.o: ../../include/openssl/safestack.h ../../include/openssl/sha.h
-pk7_lib.o: ../../include/openssl/stack.h ../../include/openssl/symhacks.h
+pk7_lib.o: ../../include/openssl/stack.h
 pk7_lib.o: ../../include/openssl/x509.h ../../include/openssl/x509_vfy.h
 pk7_lib.o: ../asn1/asn1_locl.h ../cryptlib.h pk7_lib.c
 pk7_mime.o: ../../e_os.h ../../include/openssl/asn1.h
@@ -166,7 +166,7 @@ pk7_mime.o: ../../include/openssl/opensslconf.h
 pk7_mime.o: ../../include/openssl/opensslv.h ../../include/openssl/ossl_typ.h
 pk7_mime.o: ../../include/openssl/pkcs7.h ../../include/openssl/rand.h
 pk7_mime.o: ../../include/openssl/safestack.h ../../include/openssl/sha.h
-pk7_mime.o: ../../include/openssl/stack.h ../../include/openssl/symhacks.h
+pk7_mime.o: ../../include/openssl/stack.h
 pk7_mime.o: ../../include/openssl/x509.h ../../include/openssl/x509_vfy.h
 pk7_mime.o: ../cryptlib.h pk7_mime.c
 pk7_smime.o: ../../e_os.h ../../include/openssl/asn1.h
@@ -181,7 +181,7 @@ pk7_smime.o: ../../include/openssl/opensslconf.h
 pk7_smime.o: ../../include/openssl/opensslv.h ../../include/openssl/ossl_typ.h
 pk7_smime.o: ../../include/openssl/pkcs7.h ../../include/openssl/safestack.h
 pk7_smime.o: ../../include/openssl/sha.h ../../include/openssl/stack.h
-pk7_smime.o: ../../include/openssl/symhacks.h ../../include/openssl/x509.h
+pk7_smime.o: ../../include/openssl/x509.h
 pk7_smime.o: ../../include/openssl/x509_vfy.h ../../include/openssl/x509v3.h
 pk7_smime.o: ../cryptlib.h pk7_smime.c
 pkcs7err.o: ../../include/openssl/asn1.h ../../include/openssl/bio.h
@@ -190,5 +190,5 @@ pkcs7err.o: ../../include/openssl/err.h ../../include/openssl/lhash.h
 pkcs7err.o: ../../include/openssl/opensslconf.h
 pkcs7err.o: ../../include/openssl/opensslv.h ../../include/openssl/ossl_typ.h
 pkcs7err.o: ../../include/openssl/pkcs7.h ../../include/openssl/safestack.h
-pkcs7err.o: ../../include/openssl/stack.h ../../include/openssl/symhacks.h
+pkcs7err.o: ../../include/openssl/stack.h
 pkcs7err.o: pkcs7err.c

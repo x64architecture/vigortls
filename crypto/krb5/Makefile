@@ -81,4 +81,4 @@ krb5_asn.o: ../../include/openssl/e_os2.h ../../include/openssl/krb5_asn.h
 krb5_asn.o: ../../include/openssl/opensslconf.h
 krb5_asn.o: ../../include/openssl/opensslv.h ../../include/openssl/ossl_typ.h
 krb5_asn.o: ../../include/openssl/safestack.h ../../include/openssl/stack.h
-krb5_asn.o: ../../include/openssl/symhacks.h krb5_asn.c
+krb5_asn.o: krb5_asn.c

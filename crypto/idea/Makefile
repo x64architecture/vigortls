@@ -86,4 +86,4 @@ i_skey.o: ../../include/openssl/crypto.h ../../include/openssl/e_os2.h
 i_skey.o: ../../include/openssl/idea.h ../../include/openssl/opensslconf.h
 i_skey.o: ../../include/openssl/opensslv.h ../../include/openssl/ossl_typ.h
 i_skey.o: ../../include/openssl/safestack.h ../../include/openssl/stack.h
-i_skey.o: ../../include/openssl/symhacks.h i_skey.c idea_lcl.h
+i_skey.o: i_skey.c idea_lcl.h

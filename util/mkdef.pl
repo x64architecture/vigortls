@@ -309,8 +309,6 @@ $crypto.=" crypto/cms/cms.h";
 $crypto.=" crypto/modes/modes.h";
 $crypto.=" crypto/srp/srp.h";
 
-my $symhacks="crypto/symhacks.h";
-
 my @ssl_symbols = &do_defs("SSLEAY", $ssl, $symhacks);
 my @crypto_symbols = &do_defs("LIBEAY", $crypto, $symhacks);
 

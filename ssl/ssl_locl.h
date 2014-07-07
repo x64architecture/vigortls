@@ -161,7 +161,6 @@
 #endif
 #include <openssl/err.h>
 #include <openssl/ssl.h>
-#include <openssl/symhacks.h>
 
 #ifdef OPENSSL_BUILD_SHLIBSSL
 # undef OPENSSL_EXTERN

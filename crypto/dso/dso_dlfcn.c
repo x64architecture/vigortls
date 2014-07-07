@@ -378,17 +378,6 @@ static char *dlfcn_name_converter(DSO *dso, const char *filename)
     return (translated);
     }
 
-typedef struct Dl_info Dl_info;
-#endif
-#define _RLD_DLADDR             14
-
-static int dladdr(void *address, Dl_info *dl)
-{
-    void *v;
-    v = _rld_new_interface(_RLD_DLADDR,address,dl);
-    return (int)v;
-}
-
 static int dlfcn_pathbyaddr(void *addr,char *path,int sz)
     {
 #ifdef HAVE_DLINFO

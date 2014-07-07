@@ -163,7 +163,6 @@
 #include <openssl/hmac.h>
 
 #include <openssl/safestack.h>
-#include <openssl/symhacks.h>
 
 #ifdef  __cplusplus
 extern "C" {

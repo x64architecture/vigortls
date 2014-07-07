@@ -81,14 +81,14 @@ ech_err.o: ../../include/openssl/ec.h ../../include/openssl/ecdh.h
 ech_err.o: ../../include/openssl/err.h ../../include/openssl/lhash.h
 ech_err.o: ../../include/openssl/opensslconf.h ../../include/openssl/opensslv.h
 ech_err.o: ../../include/openssl/ossl_typ.h ../../include/openssl/safestack.h
-ech_err.o: ../../include/openssl/stack.h ../../include/openssl/symhacks.h
+ech_err.o: ../../include/openssl/stack.h
 ech_err.o: ech_err.c
 ech_key.o: ../../include/openssl/asn1.h ../../include/openssl/bio.h
 ech_key.o: ../../include/openssl/crypto.h ../../include/openssl/e_os2.h
 ech_key.o: ../../include/openssl/ec.h ../../include/openssl/ecdh.h
 ech_key.o: ../../include/openssl/opensslconf.h ../../include/openssl/opensslv.h
 ech_key.o: ../../include/openssl/ossl_typ.h ../../include/openssl/safestack.h
-ech_key.o: ../../include/openssl/stack.h ../../include/openssl/symhacks.h
+ech_key.o: ../../include/openssl/stack.h
 ech_key.o: ech_key.c ech_locl.h
 ech_lib.o: ../../include/openssl/asn1.h ../../include/openssl/bio.h
 ech_lib.o: ../../include/openssl/buffer.h ../../include/openssl/crypto.h
@@ -100,7 +100,7 @@ ech_lib.o: ../../include/openssl/obj_mac.h ../../include/openssl/objects.h
 ech_lib.o: ../../include/openssl/opensslconf.h ../../include/openssl/opensslv.h
 ech_lib.o: ../../include/openssl/ossl_typ.h ../../include/openssl/pkcs7.h
 ech_lib.o: ../../include/openssl/safestack.h ../../include/openssl/sha.h
-ech_lib.o: ../../include/openssl/stack.h ../../include/openssl/symhacks.h
+ech_lib.o: ../../include/openssl/stack.h
 ech_lib.o: ../../include/openssl/x509.h ../../include/openssl/x509_vfy.h
 ech_lib.o: ech_lib.c ech_locl.h
 ech_ossl.o: ../../e_os.h ../../include/openssl/asn1.h
@@ -112,5 +112,5 @@ ech_ossl.o: ../../include/openssl/lhash.h ../../include/openssl/obj_mac.h
 ech_ossl.o: ../../include/openssl/opensslconf.h
 ech_ossl.o: ../../include/openssl/opensslv.h ../../include/openssl/ossl_typ.h
 ech_ossl.o: ../../include/openssl/safestack.h ../../include/openssl/sha.h
-ech_ossl.o: ../../include/openssl/stack.h ../../include/openssl/symhacks.h
+ech_ossl.o: ../../include/openssl/stack.h
 ech_ossl.o: ../cryptlib.h ech_locl.h ech_ossl.c
