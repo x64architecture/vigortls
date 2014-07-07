@@ -316,11 +316,7 @@ static char *dl_merger(DSO *dso, const char *filespec1, const char *filespec2)
  * same time, there's no great duplicating the code. Figuring out an elegant 
  * way to share one copy of the code would be more difficult and would not
  * leave the implementations independant. */
-#if defined(__hpux)
-static const char extension[] = ".sl";
-#else
 static const char extension[] = ".so";
-#endif
 static char *dl_name_converter(DSO *dso, const char *filename)
     {
     char *translated;

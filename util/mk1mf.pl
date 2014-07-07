@@ -68,14 +68,7 @@ $infile="MINFO";
 	"VC-WIN32",   "Microsoft Visual C++ [4-6] - Windows NT or 9X",
 	"VC-WIN64I",  "Microsoft C/C++ - Win64/IA-64",
 	"VC-WIN64A",  "Microsoft C/C++ - Win64/x64",
-	"VC-CE",   "Microsoft eMbedded Visual C++ 3.0 - Windows CE ONLY",
-	"VC-NT",   "Microsoft Visual C++ [4-6] - Windows NT ONLY",
-	"Mingw32", "GNU C++ - Windows NT or 9x",
-	"Mingw32-files", "Create files with DOS copy ...",
-	"BC-NT",   "Borland C++ 4.5 - Windows NT",
 	"linux-elf","Linux elf",
-	"ultrix-mips","DEC mips ultrix",
-	"FreeBSD","FreeBSD distribution",
 	"default","cc under unix",
 	"auto", "auto detect from top level Makefile"
 	);
@@ -173,34 +166,10 @@ if (($platform =~ /VC-(.+)/))
 	$NT = 1 if $1 eq "NT";
 	require 'VC-32.pl';
 	}
-elsif ($platform eq "Mingw32")
-	{
-	require 'Mingw32.pl';
-	}
-elsif ($platform eq "Mingw32-files")
-	{
-	require 'Mingw32f.pl';
-	}
-elsif ($platform eq "BC-NT")
-	{
-	$bc=1;
-	require 'BC-32.pl';
-	}
-elsif ($platform eq "FreeBSD")
-	{
-	require 'unix.pl';
-	$cflags='-DTERMIO -D_ANSI_SOURCE -O2 -fomit-frame-pointer';
-	}
 elsif ($platform eq "linux-elf")
 	{
 	require "unix.pl";
 	require "linux.pl";
-	$unix=1;
-	}
-elsif ($platform eq "ultrix-mips")
-	{
-	require "unix.pl";
-	require "ultrix.pl";
 	$unix=1;
 	}
 else

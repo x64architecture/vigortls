@@ -193,11 +193,6 @@ void RC4(RC4_KEY *key, size_t len, const unsigned char *indata,
                     case 3:    otp |= RC4_STEP<<i, i-=8;
                     case 2:    otp |= RC4_STEP<<i, i-=8;
                     case 1:    otp |= RC4_STEP<<i, i-=8;
-                    case 0: ; /*
-                           * it's never the case,
-                           * but it has to be here
-                           * for ultrix?
-                           */
                     }
                 ochunk &= ~mask;
                 ochunk |= (otp^ichunk) & mask;
@@ -246,11 +241,6 @@ void RC4(RC4_KEY *key, size_t len, const unsigned char *indata,
                     case 3:    otp |= RC4_STEP<<i, i+=8;
                     case 2:    otp |= RC4_STEP<<i, i+=8;
                     case 1:    otp |= RC4_STEP<<i, i+=8;
-                    case 0: ; /*
-                           * it's never the case,
-                           * but it has to be here
-                           * for ultrix?
-                           */
                     }
                 ochunk &= ~mask;
                 ochunk |= (otp^ichunk) & mask;

@@ -90,10 +90,6 @@
 
 #ifdef  __cplusplus
 extern "C" {
-#elif defined(__SUNPRO_C)
-# if __SUNPRO_C >= 0x520
-# pragma error_messages (off,E_ARRAY_OF_INCOMPLETE_NONAME,E_ARRAY_OF_INCOMPLETE)
-# endif
 #endif
 
   
@@ -941,14 +937,6 @@ int    ECParameters_print_fp(FILE *fp, const EC_KEY *key);
 int    EC_KEY_print_fp(FILE *fp, const EC_KEY *key, int off);
 
 #define ECParameters_dup(x) ASN1_dup_of(EC_KEY,i2d_ECParameters,d2i_ECParameters,x)
-
-#ifndef __cplusplus
-#if defined(__SUNPRO_C)
-#  if __SUNPRO_C >= 0x520
-# pragma error_messages (default,E_ARRAY_OF_INCOMPLETE_NONAME,E_ARRAY_OF_INCOMPLETE)
-#  endif
-# endif
-#endif
 
 #define EVP_PKEY_CTX_set_ec_paramgen_curve_nid(ctx, nid) \
     EVP_PKEY_CTX_ctrl(ctx, EVP_PKEY_EC, EVP_PKEY_OP_PARAMGEN, \

@@ -84,15 +84,6 @@ void OPENSSL_cpuid_setup(void)
 
     OPENSSL_ppccap_P = 0;
 
-#if defined(_AIX)
-    if (sizeof(size_t)==4
-# if defined(_SC_AIX_KERNEL_BITMODE)
-        && sysconf(_SC_AIX_KERNEL_BITMODE)!=64
-# endif
-       )
-        return;
-#endif
-
     memset(&ill_act,0,sizeof(ill_act));
     ill_act.sa_handler = ill_handler;
     ill_act.sa_mask    = all_masked;

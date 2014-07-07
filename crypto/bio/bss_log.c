@@ -69,8 +69,6 @@
 #include "cryptlib.h"
 
 #if defined(OPENSSL_SYS_WIN32)
-#elif defined(__ultrix)
-#  include <sys/syslog.h>
 #elif !defined(MSDOS) || !defined(NO_SYSLOG)
 #  include <syslog.h>
 #endif

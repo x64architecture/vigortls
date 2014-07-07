@@ -81,12 +81,6 @@ OPENSSL_DECLARE_EXIT
 #include <sys/timeb.h>
 #endif
 
-#if defined(sun) || defined(__ultrix)
-#define _POSIX_SOURCE
-#include <limits.h>
-#include <sys/param.h>
-#endif
-
 #include <openssl/blowfish.h>
 
 #define BF_DEFAULT_OPTIONS

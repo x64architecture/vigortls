@@ -102,11 +102,6 @@ fi
 # Now we simply scan though... In most cases, the SYSTEM info is enough
 #
 case "${SYSTEM}:${RELEASE}:${VERSION}:${MACHINE}" in
-    MPE/iX:*)
-	MACHINE=`echo "$MACHINE" | sed -e 's/-/_/g'`
-	echo "parisc-hp-MPE/iX"; exit 0
-	;;
-
     Linux:[2-9].*)
 	echo "${MACHINE}-whatever-linux2"; exit 0
 	;;
@@ -117,62 +112,6 @@ case "${SYSTEM}:${RELEASE}:${VERSION}:${MACHINE}" in
 
     GNU*)
 	echo "hurd-x86"; exit 0;
-	;;
-
-    LynxOS:*)
-	echo "${MACHINE}-lynx-lynxos"; exit 0
-	;;
-
-    BSD/OS:4.*)  # BSD/OS always says 386
-	echo "i486-whatever-bsdi4"; exit 0
-	;;
-
-    BSD/386:*:*:*486*|BSD/OS:*:*:*:*486*)
-        case `/sbin/sysctl -n hw.model` in
-	    Pentium*)
-                echo "i586-whatever-bsdi"; exit 0
-                ;;
-            *)
-                echo "i386-whatever-bsdi"; exit 0
-                ;;
-            esac;
-	;;
-
-    BSD/386:*|BSD/OS:*)
-	echo "${MACHINE}-whatever-bsdi"; exit 0
-	;;
-
-    FreeBSD:*:*:*386*)
-        VERS=`echo ${RELEASE} | sed -e 's/[-(].*//'`
-        MACH=`sysctl -n hw.model`
-        ARCH='whatever'
-        case ${MACH} in
-           *386*       ) MACH="i386"     ;;
-           *486*       ) MACH="i486"     ;;
-           Pentium\ II*) MACH="i686"     ;;
-           Pentium*    ) MACH="i586"     ;;
-           *           ) MACH="$MACHINE" ;;
-        esac
-        case ${MACH} in
-           i[0-9]86 ) ARCH="pc" ;;
-        esac
-        echo "${MACH}-${ARCH}-freebsd${VERS}"; exit 0
-        ;;
-
-    FreeBSD:*)
-	echo "${MACHINE}-whatever-freebsd"; exit 0
-	;;
-
-    NetBSD:*:*:*386*)
-        echo "`(/usr/sbin/sysctl -n hw.model || /sbin/sysctl -n hw.model) | sed 's,.*\(.\)86-class.*,i\186,'`-whatever-netbsd"; exit 0
-	;;
-
-    NetBSD:*)
-	echo "${MACHINE}-whatever-netbsd"; exit 0
-	;;
-
-    OpenBSD:*)
-	echo "${MACHINE}-whatever-openbsd"; exit 0
 	;;
 
     OpenUNIX:*)
@@ -229,10 +168,6 @@ case "${SYSTEM}:${RELEASE}:${VERSION}:${MACHINE}" in
 	exit 0
 	;;
 
-    SunOS:5.*)
-	echo "${MACHINE}-whatever-solaris2"; exit 0
-	;;
-
     SunOS:*)
 	echo "${MACHINE}-sun-sunos4"; exit 0
 	;;
@@ -240,14 +175,6 @@ case "${SYSTEM}:${RELEASE}:${VERSION}:${MACHINE}" in
     UNIX_System_V:4.*:*)
 	echo "${MACHINE}-whatever-sysv4"; exit 0
 	;;
-
-    VOS:*:*:i786)
-     echo "i386-stratus-vos"; exit 0
-     ;;
-
-    VOS:*:*:*)
-     echo "hppa1.1-stratus-vos"; exit 0
-     ;;
 
     *:4*:R4*:m88k)
 	echo "${MACHINE}-whatever-sysv4"; exit 0
@@ -259,10 +186,6 @@ case "${SYSTEM}:${RELEASE}:${VERSION}:${MACHINE}" in
 
     *:4.0:3.0:3[34]?? | *:4.0:3.0:3[34]??,*)
 	echo "i486-ncr-sysv4"; exit 0
-	;;
-
-    ULTRIX:*)
-	echo "${MACHINE}-unknown-ultrix"; exit 0
 	;;
 
     SINIX*|ReliantUNIX*)
@@ -280,45 +203,6 @@ case "${SYSTEM}:${RELEASE}:${VERSION}:${MACHINE}" in
     library:*)
 	echo "${MACHINE}-ncr-sysv4"; exit 0
 	;;
-
-    ConvexOS:*:11.0:*)
-	echo "${MACHINE}-v11-${SYSTEM}"; exit 0;
-	;;
-
-    NEWS-OS:4.*)
-	echo "mips-sony-newsos4"; exit 0;
-	;;
-
-    MINGW*)
-	echo "${MACHINE}-whatever-mingw"; exit 0;
-	;;
-    CYGWIN*)
-	case "$RELEASE" in
-	    [bB]*|1.0|1.[12].*)
-		echo "${MACHINE}-whatever-cygwin_pre1.3"
-		;;
-	    *)
-		echo "${MACHINE}-whatever-cygwin"
-		;;
-	esac
-	exit 0
-	;;
-
-    *"CRAY T3E")
-       echo "t3e-cray-unicosmk"; exit 0;
-       ;;
-
-    *CRAY*)
-       echo "j90-cray-unicos"; exit 0;
-       ;;
-
-    NONSTOP_KERNEL*)
-       echo "nsr-tandem-nsk"; exit 0;
-       ;;
-
-    vxworks*)
-       echo "${MACHINE}-whatever-vxworks"; exit 0;
-       ;;
 esac
 
 #

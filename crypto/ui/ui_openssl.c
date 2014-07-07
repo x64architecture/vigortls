@@ -155,12 +155,6 @@
  * TERMIO, TERMIOS, VMS, MSDOS and SGTTY
  */
 
-#if defined(__sgi) && !defined(TERMIOS)
-# define TERMIOS
-# undef  TERMIO
-# undef  SGTTY
-#endif
-
 #if defined(linux) && !defined(TERMIO)
 # undef  TERMIOS
 # define TERMIO

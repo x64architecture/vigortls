@@ -81,12 +81,6 @@ OPENSSL_DECLARE_EXIT
 #include <sys/timeb.h>
 #endif
 
-#if defined(sun) || defined(__ultrix)
-#define _POSIX_SOURCE
-#include <limits.h>
-#include <sys/param.h>
-#endif
-
 #include <openssl/rc4.h>
 
 /* The following if from times(3) man page.  It may need to be changed */
