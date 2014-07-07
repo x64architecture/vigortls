@@ -71,14 +71,12 @@
 #include <stdlib.h>
 
 #ifndef OPENSSL_SYS_MSDOS
-#if !defined(OPENSSL_SYS_VMS) || defined(__DECC)
 #ifdef OPENSSL_UNISTD
 # include OPENSSL_UNISTD
 #else
 # include <unistd.h>
 #endif
 #include <math.h>
-#endif
 #endif
 #include <openssl/des.h>
 
@@ -89,7 +87,7 @@
 #include <io.h>
 #endif
 
-#if defined(__STDC__) || defined(OPENSSL_SYS_VMS) || defined(M_XENIX) || defined(OPENSSL_SYS_MSDOS)
+#if defined(__STDC__) || defined(OPENSSL_SYS_MSDOS)
 #include <string.h>
 #endif
 

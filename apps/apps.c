@@ -2465,13 +2465,9 @@ static int WIN32_rename(const char *from, const char *to)
         tfrom = (TCHAR *)malloc(sizeof(TCHAR)*(flen+tlen));
         if (tfrom==NULL) goto err;
         tto=tfrom+flen;
-#if !defined(_WIN32_WCE) || _WIN32_WCE>=101
         if (!MultiByteToWideChar(CP_ACP,0,from,flen,(WCHAR *)tfrom,flen))
-#endif
             for (i=0;i<flen;i++)    tfrom[i]=(TCHAR)from[i];
-#if !defined(_WIN32_WCE) || _WIN32_WCE>=101
         if (!MultiByteToWideChar(CP_ACP,0,to,  tlen,(WCHAR *)tto,  tlen))
-#endif
             for (i=0;i<tlen;i++)    tto[i]  =(TCHAR)to[i];
         }
 
@@ -2553,73 +2549,6 @@ double app_tminterval(int stop,int usertime)
     return (ret);
     }
 
-#elif defined(OPENSSL_SYSTEM_VXWORKS)
-#include <time.h>
-
-double app_tminterval(int stop,int usertime)
-    {
-    double ret=0;
-#ifdef CLOCK_REALTIME
-    static struct timespec    tmstart;
-    struct timespec        now;
-#else
-    static unsigned long    tmstart;
-    unsigned long        now;
-#endif
-    static int warning=1;
-
-    if (usertime && warning)
-        {
-        BIO_printf(bio_err,"To get meaningful results, run "
-                   "this program on idle system.\n");
-        warning=0;
-        }
-
-#ifdef CLOCK_REALTIME
-    clock_gettime(CLOCK_REALTIME,&now);
-    if (stop==TM_START)    tmstart = now;
-    else    ret = ( (now.tv_sec+now.tv_nsec*1e-9)
-            - (tmstart.tv_sec+tmstart.tv_nsec*1e-9) );
-#else
-    now = tickGet();
-    if (stop==TM_START)    tmstart = now;
-    else            ret = (now - tmstart)/(double)sysClkRateGet();
-#endif
-    return (ret);
-    }
-
-#elif defined(OPENSSL_SYSTEM_VMS)
-#include <time.h>
-#include <times.h>
-
-double app_tminterval(int stop,int usertime)
-    {
-    static clock_t    tmstart;
-    double        ret = 0;
-    clock_t        now;
-#ifdef __TMS
-    struct tms    rus;
-
-    now = times(&rus);
-    if (usertime)    now = rus.tms_utime;
-#else
-    if (usertime)
-        now = clock(); /* sum of user and kernel times */
-    else    {
-        struct timeval tv;
-        gettimeofday(&tv,NULL);
-        now = (clock_t)(
-            (unsigned long long)tv.tv_sec*CLK_TCK +
-            (unsigned long long)tv.tv_usec*(1000000/CLK_TCK)
-            );
-        }
-#endif
-    if (stop==TM_START)    tmstart = now;
-    else            ret = (now - tmstart)/(double)(CLK_TCK);
-
-    return (ret);
-    }
-
 #elif defined(_SC_CLK_TCK)    /* by means of unistd.h */
 #include <sys/times.h>
 
@@ -2676,9 +2605,7 @@ int app_isdir(const char *name)
     if (len_0 > sizeof(FileData.cFileName)/sizeof(FileData.cFileName[0]))
         return -1;
 
-#if !defined(_WIN32_WCE) || _WIN32_WCE>=101
     if (!MultiByteToWideChar(CP_ACP,0,name,len_0,FileData.cFileName,len_0))
-#endif
         for (i=0;i<len_0;i++)
             FileData.cFileName[i] = (WCHAR)name[i];
 
