@@ -760,56 +760,6 @@ BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason,
 #define alloca _alloca
 #endif
 
-#if defined(_WIN32_WINNT) && _WIN32_WINNT>=0x0333
-int OPENSSL_isservice(void)
-{ HWINSTA h;
-  DWORD len;
-  WCHAR *name;
-  static union { void *p; int (*f)(void); } _OPENSSL_isservice = { NULL };
-
-    if (_OPENSSL_isservice.p == NULL) {
-    HANDLE h = GetModuleHandle(NULL);
-    if (h != NULL)
-        _OPENSSL_isservice.p = GetProcAddress(h,"_OPENSSL_isservice");
-    if (_OPENSSL_isservice.p == NULL)
-        _OPENSSL_isservice.p = (void *)-1;
-    }
-
-    if (_OPENSSL_isservice.p != (void *)-1)
-    return (*_OPENSSL_isservice.f)();
-
-    (void)GetDesktopWindow(); /* return value is ignored */
-
-    h = GetProcessWindowStation();
-    if (h==NULL) return -1;
-
-    if (GetUserObjectInformationW (h,UOI_NAME,NULL,0,&len) ||
-    GetLastError() != ERROR_INSUFFICIENT_BUFFER)
-    return -1;
-
-    if (len>512) return -1;        /* paranoia */
-    len++,len&=~1;            /* paranoia */
-    name=(WCHAR *)alloca(len+sizeof(WCHAR));
-    if (!GetUserObjectInformationW (h,UOI_NAME,name,len,&len))
-    return -1;
-
-    len++,len&=~1;            /* paranoia */
-    name[len/sizeof(WCHAR)]=L'\0';    /* paranoia */
-#if 1
-    /* This doesn't cover "interactive" services [working with real
-     * WinSta0's] nor programs started non-interactively by Task
-     * Scheduler [those are working with SAWinSta]. */
-    if (wcsstr(name,L"Service-0x"))    return 1;
-#else
-    /* This covers all non-interactive programs such as services. */
-    if (!wcsstr(name,L"WinSta0"))    return 1;
-#endif
-    else                return 0;
-}
-#else
-int OPENSSL_isservice(void) { return 0; }
-#endif
-
 void OPENSSL_showfatal (const char *fmta,...)
 { va_list ap;
   TCHAR buf[256];

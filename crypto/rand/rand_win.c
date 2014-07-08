@@ -365,8 +365,7 @@ int RAND_poll(void)
         FreeLibrary(advapi);
 
     if ((osverinfo.dwPlatformId != VER_PLATFORM_WIN32_NT ||
-         !OPENSSL_isservice()) &&
-        (user = LoadLibrary(TEXT("USER32.DLL"))))
+         && (user = LoadLibrary(TEXT("USER32.DLL"))))
         {
         GETCURSORINFO cursor;
         GETFOREGROUNDWINDOW win;
@@ -728,9 +727,6 @@ static void readscreen(void)
   int        h;        /* screen height */
   int        y;        /* y-coordinate of screen lines to grab */
   int        n = 16;        /* number of screen lines to grab at a time */
-
-  if (check_winnt() && OPENSSL_isservice()>0)
-    return;
 
   /* Create a screen DC and a memory DC compatible to screen DC */
   hScrDC = CreateDC(TEXT("DISPLAY"), NULL, NULL, NULL);

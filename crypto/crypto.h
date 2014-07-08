@@ -533,7 +533,6 @@ void OpenSSLDie(const char *file,int line,const char *assertion);
 
 unsigned long *OPENSSL_ia32cap_loc(void);
 #define OPENSSL_ia32cap (*(OPENSSL_ia32cap_loc()))
-int OPENSSL_isservice(void);
 
 void OPENSSL_init(void);
 
