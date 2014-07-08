@@ -1369,6 +1369,7 @@ EC_KEY *d2i_ECParameters(EC_KEY **a, const unsigned char **in, long len)
     if (!d2i_ECPKParameters(&ret->group, in, len))
         {
         ECerr(EC_F_D2I_ECPARAMETERS, ERR_R_EC_LIB);
+        EC_KEY_free(ret);
         return NULL;
         }
 
