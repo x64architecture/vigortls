@@ -1308,9 +1308,11 @@ void ERR_load_EVP_strings(void);
 /* Error codes for the EVP functions. */
 
 /* Function codes. */
-#define EVP_F_AEAD_AES_128_GCM_INIT			 183
-#define EVP_F_AEAD_AES_128_GCM_OPEN			 181
-#define EVP_F_AEAD_AES_128_GCM_SEAL			 182
+#define EVP_F_AEAD_AES_GCM_INIT 187
+#define EVP_F_AEAD_AES_GCM_OPEN 188
+#define EVP_F_AEAD_AES_GCM_SEAL 189
+#define EVP_F_AEAD_CTX_OPEN 185
+#define EVP_F_AEAD_CTX_SEAL 186
 #define EVP_F_AEAD_CHACHA20_POLY1305_INIT		 187
 #define EVP_F_AEAD_CHACHA20_POLY1305_OPEN		 184
 #define EVP_F_AEAD_CHACHA20_POLY1305_SEAL		 183
@@ -1331,6 +1333,8 @@ void ERR_load_EVP_strings(void);
 #define EVP_F_ECDSA_PKEY2PKCS8                 129
 #define EVP_F_ECKEY_PKEY2PKCS8                 132
 #define EVP_F_EVP_AEAD_CTX_INIT				 180
+#define EVP_F_EVP_AEAD_CTX_OPEN				 190
+#define EVP_F_EVP_AEAD_CTX_SEAL				 191
 #define EVP_F_EVP_CIPHERINIT_EX                 123
 #define EVP_F_EVP_CIPHER_CTX_COPY             163
 #define EVP_F_EVP_CIPHER_CTX_CTRL             124
