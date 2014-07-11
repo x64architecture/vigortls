@@ -303,6 +303,7 @@ int MAIN(int argc, char **argv)
             if (!args[1])
                 goto argerr;
             args++;
+            free(secret_key);
             secret_key = string_to_hex(*args, &ltmp);
             if (!secret_key)
                 {
