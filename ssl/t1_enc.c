@@ -779,7 +779,7 @@ int tls1_enc(SSL *s, int send)
                 memcpy(out, ad, aead->variable_nonce_len);
                 len -= aead->variable_nonce_len;
                 eivlen = aead->variable_nonce_len;
-            
+            }            
 
             ad[11] = len >> 8;
             ad[12] = len & 0xff;

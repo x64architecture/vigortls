@@ -478,7 +478,8 @@ static const SSL_CIPHER cipher_aliases[] =
     {
         .name = SSL_TXT_CHACHA20,
         .algorithm_enc = SSL_CHACHA20POLY1305,
-    
+    },
+
     /* MAC aliases */
     {
         .name = SSL_TXT_MD5,
