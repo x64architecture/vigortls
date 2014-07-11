@@ -234,23 +234,10 @@ int int_rsa_verify(int dtype, const unsigned char *m,
         fprintf(stderr,"in(%s) expect(%s)\n",OBJ_nid2ln(sigtype),
             OBJ_nid2ln(dtype));
     #endif
-        if (sigtype != dtype)
-            {
-            if (((dtype == NID_md5) &&
-                (sigtype == NID_md5WithRSAEncryption)) ||
-                ((dtype == NID_md2) &&
-                (sigtype == NID_md2WithRSAEncryption)))
-                {
-                /* ok, we will let it through */
-                fprintf(stderr,"signature has problems, re-make with post SSLeay045\n");
-                }
-            else
-                {
-                RSAerr(RSA_F_INT_RSA_VERIFY,
-                        RSA_R_ALGORITHM_MISMATCH);
-                goto err;
-                }
-            }
+        if (sigtype != dtype) {
+            RSAerr(RSA_F_INT_RSA_VERIFY, RSA_R_ALGORITHM_MISMATCH);
+            goto err;        
+        }
         if (rm)
             {
             const EVP_MD *md;
