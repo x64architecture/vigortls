@@ -2740,7 +2740,7 @@ OPENSSL_GLOBAL SSL_CIPHER ssl3_ciphers[] = {
 {
     .valid = 1,
     .name = "GOST-MD5",
-    .alg_bits = 0,x0300ff00,
+    .id = 0x0300ff00,
     .algorithm_mkey = SSL_kRSA,
     .algorithm_auth = SSL_aRSA,
     .algorithm_enc = SSL_eGOST2814789CNT,
@@ -2754,7 +2754,7 @@ OPENSSL_GLOBAL SSL_CIPHER ssl3_ciphers[] = {
 {
     .valid = 1,
     .name = "GOST-GOST94",
-    .alg_bits = 0,x0300ff01,
+    .id = 0x0300ff01,
     .algorithm_mkey = SSL_kRSA,
     .algorithm_auth = SSL_aRSA,
     .algorithm_enc = SSL_eGOST2814789CNT,
@@ -2768,7 +2768,7 @@ OPENSSL_GLOBAL SSL_CIPHER ssl3_ciphers[] = {
 {
     .valid = 1,
     .name = "GOST-GOST89MAC",
-    .alg_bits = 0,x0300ff02,
+    .id = 0x0300ff02,
     .algorithm_mkey = SSL_kRSA,
     .algorithm_auth = SSL_aRSA,
     .algorithm_enc = SSL_eGOST2814789CNT,
@@ -2782,7 +2782,7 @@ OPENSSL_GLOBAL SSL_CIPHER ssl3_ciphers[] = {
 {
     .valid = 1,
     .name = "GOST-GOST89STREAM",
-    .alg_bits = 0,x0300ff03,
+    .id = 0x0300ff03,
     .algorithm_mkey = SSL_kRSA,
     .algorithm_auth = SSL_aRSA,
     .algorithm_enc = SSL_eGOST2814789CNT,
