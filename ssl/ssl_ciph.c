@@ -475,6 +475,9 @@ static const SSL_CIPHER cipher_aliases[] =
         .name = SSL_TXT_CAMELLIA,
         .algorithm_enc = SSL_CAMELLIA128 | SSL_CAMELLIA256,
     },
+    {
+        .name = SSL_TXT_CHACHA20,
+        .algorithm_enc = SSL_CHACHA20POLY1305,
     
     /* MAC aliases */
     {
