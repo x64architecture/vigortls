@@ -115,8 +115,6 @@ extern "C" {
 #define EXIT(n)        exit(n)
 #endif
 
-#define SSLeay_getpid()    getpid()
-
 #    ifndef NO_SYS_PARAM_H
 #      include <sys/param.h>
 #    endif
