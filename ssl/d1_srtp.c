@@ -332,6 +332,7 @@ int ssl_parse_clienthello_use_srtp_ext(SSL *s, unsigned char *d, int len,int *al
         {
         SSLerr(SSL_F_SSL_PARSE_CLIENTHELLO_USE_SRTP_EXT,SSL_R_BAD_SRTP_PROTECTION_PROFILE_LIST);
         *al=SSL_AD_DECODE_ERROR;
+        sk_SRTP_PROTECTION_PROFILE_free(clnt);
         return 1;
         }
         
@@ -340,6 +341,7 @@ int ssl_parse_clienthello_use_srtp_ext(SSL *s, unsigned char *d, int len,int *al
         {
         SSLerr(SSL_F_SSL_PARSE_CLIENTHELLO_USE_SRTP_EXT,SSL_R_BAD_SRTP_PROTECTION_PROFILE_LIST);
         *al=SSL_AD_DECODE_ERROR;
+        sk_SRTP_PROTECTION_PROFILE_free(clnt);
         return 1;
         }
 
