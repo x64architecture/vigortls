@@ -637,10 +637,6 @@ int ssl3_setup_read_buffer(SSL *s)
             s->s3->init_extra = 1;
             len += SSL3_RT_MAX_EXTRA;
         }
-#ifndef OPENSSL_NO_COMP
-        if (!(s->options & SSL_OP_NO_COMPRESSION))
-            len += SSL3_RT_MAX_COMPRESSED_OVERHEAD;
-#endif
         if ((p = malloc(len)) == NULL)
             goto err;
         s->s3->rbuf.buf = p;
@@ -673,10 +669,6 @@ int ssl3_setup_write_buffer(SSL *s)
         len = s->max_send_fragment
             + SSL3_RT_SEND_MAX_ENCRYPTED_OVERHEAD
             + headerlen + align;
-#ifndef OPENSSL_NO_COMP
-        if (!(s->options & SSL_OP_NO_COMPRESSION))
-            len += SSL3_RT_MAX_COMPRESSED_OVERHEAD;
-#endif
         if (!(s->options & SSL_OP_DONT_INSERT_EMPTY_FRAGMENTS))
             len += headerlen + align
                 + SSL3_RT_SEND_MAX_ENCRYPTED_OVERHEAD;

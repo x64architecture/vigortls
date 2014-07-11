@@ -1812,9 +1812,6 @@ static void print_stuff(BIO *bio, SSL *s, int full)
     const SSL_CIPHER *c;
     X509_NAME *xn;
     int j,i;
-#ifndef OPENSSL_NO_COMP
-    const COMP_METHOD *comp, *expansion;
-#endif
     unsigned char *exportedkeymat;
 
     if (full)
@@ -1920,14 +1917,6 @@ static void print_stuff(BIO *bio, SSL *s, int full)
     }
     BIO_printf(bio, "Secure Renegotiation IS%s supported\n",
             SSL_get_secure_renegotiation_support(s) ? "" : " NOT");
-#ifndef OPENSSL_NO_COMP
-    comp=SSL_get_current_compression(s);
-    expansion=SSL_get_current_expansion(s);
-    BIO_printf(bio,"Compression: %s\n",
-        comp ? SSL_COMP_get_name(comp) : "NONE");
-    BIO_printf(bio,"Expansion: %s\n",
-        expansion ? SSL_COMP_get_name(expansion) : "NONE");
-#endif
 
 #if !defined(OPENSSL_NO_TLSEXT) && !defined(OPENSSL_NO_NEXTPROTONEG)
     if (next_proto.status != -1) {

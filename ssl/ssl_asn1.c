@@ -128,10 +128,6 @@ int i2d_SSL_SESSION(SSL_SESSION *in, unsigned char **pp)
     int v6=0,v9=0,v10=0;
     unsigned char ibuf6[LSIZE2];
 #endif
-#ifndef OPENSSL_NO_COMP
-    unsigned char cbuf;
-    int v11=0;
-#endif
 #ifndef OPENSSL_NO_SRP
     int v12=0;
 #endif
@@ -177,16 +173,6 @@ int i2d_SSL_SESSION(SSL_SESSION *in, unsigned char **pp)
         buf[0]=((unsigned char)(l>>8L))&0xff;
         buf[1]=((unsigned char)(l    ))&0xff;
         }
-
-#ifndef OPENSSL_NO_COMP
-    if (in->compress_meth)
-        {
-        cbuf = (unsigned char)in->compress_meth;
-        a.comp_id.length = 1;
-        a.comp_id.type = V_ASN1_OCTET_STRING;
-        a.comp_id.data = &cbuf;
-        }
-#endif
 
     a.master_key.length=in->master_key_length;
     a.master_key.type=V_ASN1_OCTET_STRING;
@@ -303,10 +289,6 @@ int i2d_SSL_SESSION(SSL_SESSION *in, unsigned char **pp)
             M_ASN1_I2D_len_EXP_opt(&(a.tlsext_tick), i2d_ASN1_OCTET_STRING,10,v10);
     if (in->tlsext_hostname)
             M_ASN1_I2D_len_EXP_opt(&(a.tlsext_hostname), i2d_ASN1_OCTET_STRING,6,v6);
-#ifndef OPENSSL_NO_COMP
-    if (in->compress_meth)
-            M_ASN1_I2D_len_EXP_opt(&(a.comp_id), i2d_ASN1_OCTET_STRING,11,v11);
-#endif
 #endif /* OPENSSL_NO_TLSEXT */
 #ifndef OPENSSL_NO_PSK
     if (in->psk_identity_hint)
@@ -356,10 +338,6 @@ int i2d_SSL_SESSION(SSL_SESSION *in, unsigned char **pp)
     if (in->tlsext_tick)
             M_ASN1_I2D_put_EXP_opt(&(a.tlsext_tick), i2d_ASN1_OCTET_STRING,10,v10);
 #endif /* OPENSSL_NO_TLSEXT */
-#ifndef OPENSSL_NO_COMP
-    if (in->compress_meth)
-            M_ASN1_I2D_put_EXP_opt(&(a.comp_id), i2d_ASN1_OCTET_STRING,11,v11);
-#endif
 #ifndef OPENSSL_NO_SRP
     if (in->srp_username)
         M_ASN1_I2D_put_EXP_opt(&(a.srp_username), i2d_ASN1_OCTET_STRING,12,v12);
@@ -598,17 +576,6 @@ SSL_SESSION *d2i_SSL_SESSION(SSL_SESSION **a, const unsigned char **pp,
     else
         ret->tlsext_tick=NULL;
 #endif /* OPENSSL_NO_TLSEXT */
-#ifndef OPENSSL_NO_COMP
-    os.length=0;
-    os.data=NULL;
-    M_ASN1_D2I_get_EXP_opt(osp,d2i_ASN1_OCTET_STRING,11);
-    if (os.data)
-        {
-        ret->compress_meth = os.data[0];
-        free(os.data);
-        os.data = NULL;
-        }
-#endif
 
 #ifndef OPENSSL_NO_SRP
     os.length=0;

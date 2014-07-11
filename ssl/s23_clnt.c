@@ -296,10 +296,6 @@ static int ssl23_client_hello(SSL *s)
     unsigned long l;
     int ssl2_compat;
     int version = 0, version_major, version_minor;
-#ifndef OPENSSL_NO_COMP
-    int j;
-    SSL_COMP *comp;
-#endif
     int ret;
     unsigned long mask, options = s->options;
 
@@ -501,21 +497,7 @@ static int ssl23_client_hello(SSL *s)
             p+=i;
 
             /* COMPRESSION */
-#ifdef OPENSSL_NO_COMP
             *(p++)=1;
-#else
-            if ((s->options & SSL_OP_NO_COMPRESSION)
-                        || !s->ctx->comp_methods)
-                j=0;
-            else
-                j=sk_SSL_COMP_num(s->ctx->comp_methods);
-            *(p++)=1+j;
-            for (i=0; i<j; i++)
-                {
-                comp=sk_SSL_COMP_value(s->ctx->comp_methods,i);
-                *(p++)=comp->id;
-                }
-#endif
             *(p++)=0; /* Add the NULL method */
 
 #ifndef OPENSSL_NO_TLSEXT

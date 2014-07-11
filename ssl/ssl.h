@@ -145,9 +145,6 @@
 
 #include <openssl/e_os2.h>
 
-#ifndef OPENSSL_NO_COMP
-#include <openssl/comp.h>
-#endif
 #ifndef OPENSSL_NO_BIO
 #include <openssl/bio.h>
 #endif
@@ -757,11 +754,7 @@ struct ssl_comp_st
     {
     int id;
     const char *name;
-#ifndef OPENSSL_NO_COMP
-    COMP_METHOD *method;
-#else
     char *method;
-#endif
     };
 
 DECLARE_STACK_OF(SSL_COMP)
@@ -1190,11 +1183,7 @@ struct ssl_st
                         ignored. */
     EVP_CIPHER_CTX *enc_read_ctx;        /* cryptographic state */
     EVP_MD_CTX *read_hash;        /* used for mac generation */
-#ifndef OPENSSL_NO_COMP
-    COMP_CTX *expand;            /* uncompress */
-#else
     char *expand;
-#endif
 
     SSL_AEAD_CTX *aead_write_ctx;	/* AEAD context. If non-NULL, then
                         |enc_write_ctx| and |write_hash| are
@@ -1202,11 +1191,7 @@ struct ssl_st
 
     EVP_CIPHER_CTX *enc_write_ctx;        /* cryptographic state */
     EVP_MD_CTX *write_hash;        /* used for mac generation */
-#ifndef OPENSSL_NO_COMP
-    COMP_CTX *compress;            /* compression */
-#else
     char *compress;    
-#endif
 
     /* session info */
 
@@ -1988,19 +1973,11 @@ void SSL_set_tmp_ecdh_callback(SSL *ssl,
                        int keylength));
 #endif
 
-#ifndef OPENSSL_NO_COMP
-const COMP_METHOD *SSL_get_current_compression(SSL *s);
-const COMP_METHOD *SSL_get_current_expansion(SSL *s);
-const char *SSL_COMP_get_name(const COMP_METHOD *comp);
-STACK_OF(SSL_COMP) *SSL_COMP_get_compression_methods(void);
-int SSL_COMP_add_compression_method(int id,COMP_METHOD *cm);
-#else
 const void *SSL_get_current_compression(SSL *s);
 const void *SSL_get_current_expansion(SSL *s);
 const char *SSL_COMP_get_name(const void *comp);
 void *SSL_COMP_get_compression_methods(void);
 int SSL_COMP_add_compression_method(int id,void *cm);
-#endif
 
 /* TLS extensions functions */
 int SSL_set_session_ticket_ext(SSL *s, void *ext_data, int ext_len);

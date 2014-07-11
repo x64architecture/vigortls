@@ -505,10 +505,6 @@ int main(int argc, char *argv[])
     int print_time = 0;
     clock_t s_time = 0, c_time = 0;
     int comp = 0;
-#ifndef OPENSSL_NO_COMP
-    COMP_METHOD *cm = NULL;
-    STACK_OF(SSL_COMP) *ssl_comp_methods = NULL;
-#endif
     int test_cipherlist = 0;
 
     verbose = 0;
@@ -745,45 +741,6 @@ bad:
 
     SSL_library_init();
     SSL_load_error_strings();
-
-#ifndef OPENSSL_NO_COMP
-    if (comp == COMP_ZLIB) cm = COMP_zlib();
-    if (comp == COMP_RLE) cm = COMP_rle();
-    if (cm != NULL)
-        {
-        if (cm->type != NID_undef)
-            {
-            if (SSL_COMP_add_compression_method(comp, cm) != 0)
-                {
-                fprintf(stderr,
-                    "Failed to add compression method\n");
-                ERR_print_errors_fp(stderr);
-                }
-            }
-        else
-            {
-            fprintf(stderr,
-                "Warning: %s compression not supported\n",
-                (comp == COMP_RLE ? "rle" :
-                    (comp == COMP_ZLIB ? "zlib" :
-                        "unknown")));
-            ERR_print_errors_fp(stderr);
-            }
-        }
-    ssl_comp_methods = SSL_COMP_get_compression_methods();
-    fprintf(stderr, "Available compression methods:\n");
-    {
-    int j, n = sk_SSL_COMP_num(ssl_comp_methods);
-    if (n == 0)
-        fprintf(stderr, "  NONE\n");
-    else
-        for (j = 0; j < n; j++)
-            {
-            SSL_COMP *c = sk_SSL_COMP_value(ssl_comp_methods, j);
-            fprintf(stderr, "  %d: %s\n", c->id, c->name);
-            }
-    }
-#endif
 
     if (tls1)
         meth=TLSv1_method();

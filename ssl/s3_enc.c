@@ -220,9 +220,6 @@ int ssl3_change_cipher_state(SSL *s, int which)
     unsigned char *ms,*key,*iv,*er1,*er2;
     EVP_CIPHER_CTX *dd;
     const EVP_CIPHER *c;
-#ifndef OPENSSL_NO_COMP
-    COMP_METHOD *comp;
-#endif
     const EVP_MD *m;
     EVP_MD_CTX md;
     int is_exp,n,i,j,k,cl;
@@ -233,12 +230,6 @@ int ssl3_change_cipher_state(SSL *s, int which)
     m=s->s3->tmp.new_hash;
     /* m == NULL will lead to a crash later */
     OPENSSL_assert(m);
-#ifndef OPENSSL_NO_COMP
-    if (s->s3->tmp.new_compression == NULL)
-        comp=NULL;
-    else
-        comp=s->s3->tmp.new_compression->method;
-#endif
 
     if (which & SSL3_CC_READ)
         {
@@ -252,28 +243,6 @@ int ssl3_change_cipher_state(SSL *s, int which)
         dd= s->enc_read_ctx;
 
         ssl_replace_hash(&s->read_hash,m);
-#ifndef OPENSSL_NO_COMP
-        /* COMPRESS */
-        if (s->expand != NULL)
-            {
-            COMP_CTX_free(s->expand);
-            s->expand=NULL;
-            }
-        if (comp != NULL)
-            {
-            s->expand=COMP_CTX_new(comp);
-            if (s->expand == NULL)
-                {
-                SSLerr(SSL_F_SSL3_CHANGE_CIPHER_STATE,SSL_R_COMPRESSION_LIBRARY_ERROR);
-                goto err2;
-                }
-            if (s->s3->rrec.comp == NULL)
-                s->s3->rrec.comp=(unsigned char *)
-                    malloc(SSL3_RT_MAX_PLAIN_LENGTH);
-            if (s->s3->rrec.comp == NULL)
-                goto err;
-            }
-#endif
         memset(&(s->s3->read_sequence[0]),0,8);
         mac_secret= &(s->s3->read_mac_secret[0]);
         }
@@ -288,23 +257,6 @@ int ssl3_change_cipher_state(SSL *s, int which)
             EVP_CIPHER_CTX_init(s->enc_write_ctx);
         dd= s->enc_write_ctx;
         ssl_replace_hash(&s->write_hash,m);
-#ifndef OPENSSL_NO_COMP
-        /* COMPRESS */
-        if (s->compress != NULL)
-            {
-            COMP_CTX_free(s->compress);
-            s->compress=NULL;
-            }
-        if (comp != NULL)
-            {
-            s->compress=COMP_CTX_new(comp);
-            if (s->compress == NULL)
-                {
-                SSLerr(SSL_F_SSL3_CHANGE_CIPHER_STATE,SSL_R_COMPRESSION_LIBRARY_ERROR);
-                goto err2;
-                }
-            }
-#endif
         memset(&(s->s3->write_sequence[0]),0,8);
         mac_secret= &(s->s3->write_mac_secret[0]);
         }
@@ -407,11 +359,7 @@ int ssl3_setup_key_block(SSL *s)
 
     s->s3->tmp.new_sym_enc=c;
     s->s3->tmp.new_hash=hash;
-#ifdef OPENSSL_NO_COMP
     s->s3->tmp.new_compression=NULL;
-#else
-    s->s3->tmp.new_compression=comp;
-#endif
 
     num=EVP_MD_size(hash);
     if (num < 0)

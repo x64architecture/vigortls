@@ -452,15 +452,7 @@ int ssl3_connect(SSL *s)
             s->init_num=0;
 
             s->session->cipher=s->s3->tmp.new_cipher;
-#ifdef OPENSSL_NO_COMP
             s->session->compress_meth=0;
-#else
-            if (s->s3->tmp.new_compression == NULL)
-                s->session->compress_meth=0;
-            else
-                s->session->compress_meth=
-                    s->s3->tmp.new_compression->id;
-#endif
             if (!s->method->ssl3_enc->setup_key_block(s))
                 {
                 ret= -1;
@@ -639,10 +631,6 @@ int ssl3_client_hello(SSL *s)
     unsigned char *p,*d;
     int i;
     unsigned long l;
-#ifndef OPENSSL_NO_COMP
-    int j;
-    SSL_COMP *comp;
-#endif
 
     buf=(unsigned char *)s->init_buf->data;
     if (s->state == SSL3_ST_CW_CLNT_HELLO_A)
@@ -749,22 +737,7 @@ int ssl3_client_hello(SSL *s)
         p+=i;
 
         /* COMPRESSION */
-#ifdef OPENSSL_NO_COMP
         *(p++)=1;
-#else
-
-        if ((s->options & SSL_OP_NO_COMPRESSION)
-                    || !s->ctx->comp_methods)
-            j=0;
-        else
-            j=sk_SSL_COMP_num(s->ctx->comp_methods);
-        *(p++)=1+j;
-        for (i=0; i<j; i++)
-            {
-            comp=sk_SSL_COMP_value(s->ctx->comp_methods,i);
-            *(p++)=comp->id;
-            }
-#endif
         *(p++)=0; /* Add the NULL method */
 
 #ifndef OPENSSL_NO_TLSEXT
@@ -806,9 +779,6 @@ int ssl3_get_server_hello(SSL *s)
     int i,al,ok;
     unsigned int j;
     long n;
-#ifndef OPENSSL_NO_COMP
-    SSL_COMP *comp;
-#endif
 
     n=s->method->ssl_get_message(s,
         SSL3_ST_CR_SRVR_HELLO_A,
@@ -975,7 +945,6 @@ int ssl3_get_server_hello(SSL *s)
         }
     /* lets get the compression algorithm */
     /* COMPRESSION */
-#ifdef OPENSSL_NO_COMP
     if (*(p++) != 0)
         {
         al=SSL_AD_ILLEGAL_PARAMETER;
@@ -991,36 +960,6 @@ int ssl3_get_server_hello(SSL *s)
         SSLerr(SSL_F_SSL3_GET_SERVER_HELLO,SSL_R_INCONSISTENT_COMPRESSION);
         goto f_err;
         }
-#else
-    j= *(p++);
-    if (s->hit && j != s->session->compress_meth)
-        {
-        al=SSL_AD_ILLEGAL_PARAMETER;
-        SSLerr(SSL_F_SSL3_GET_SERVER_HELLO,SSL_R_OLD_SESSION_COMPRESSION_ALGORITHM_NOT_RETURNED);
-        goto f_err;
-        }
-    if (j == 0)
-        comp=NULL;
-    else if (s->options & SSL_OP_NO_COMPRESSION)
-        {
-        al=SSL_AD_ILLEGAL_PARAMETER;
-        SSLerr(SSL_F_SSL3_GET_SERVER_HELLO,SSL_R_COMPRESSION_DISABLED);
-        goto f_err;
-        }
-    else
-        comp=ssl3_comp_find(s->ctx->comp_methods,j);
-    
-    if ((j != 0) && (comp == NULL))
-        {
-        al=SSL_AD_ILLEGAL_PARAMETER;
-        SSLerr(SSL_F_SSL3_GET_SERVER_HELLO,SSL_R_UNSUPPORTED_COMPRESSION_ALGORITHM);
-        goto f_err;
-        }
-    else
-        {
-        s->s3->tmp.new_compression=comp;
-        }
-#endif
 
 #ifndef OPENSSL_NO_TLSEXT
     /* TLS extensions*/

@@ -137,9 +137,6 @@
 
 #include <stdio.h>
 #include "ssl_locl.h"
-#ifndef OPENSSL_NO_COMP
-#include <openssl/comp.h>
-#endif
 #include <openssl/evp.h>
 #include <openssl/hmac.h>
 #include <openssl/md5.h>
@@ -503,46 +500,6 @@ int tls1_change_cipher_state(SSL *s, int which)
     unsigned key_len, iv_len, mac_secret_len;
     const unsigned char *key_data;
     const char is_export = SSL_C_IS_EXPORT(s->s3->tmp.new_cipher) != 0;
-
-    /* Update compression contexts. */
-#ifndef OPENSSL_NO_COMP
-    const SSL_COMP *comp = s->s3->tmp.new_compression;
-
-    if (is_read) {
-        if (s->expand != NULL) {
-            COMP_CTX_free(s->expand);
-            s->expand = NULL;
-        }
-        if (comp != NULL) {
-            s->expand = COMP_CTX_new(comp->method);
-            if (s->expand == NULL) {
-                SSLerr(SSL_F_TLS1_CHANGE_CIPHER_STATE, SSL_R_COMPRESSION_LIBRARY_ERROR);
-                return 0;
-            }
-            if (s->s3->rrec.comp == NULL)
-                s->s3->rrec.comp =
-                    (unsigned char *)malloc(SSL3_RT_MAX_ENCRYPTED_LENGTH);
-            if (s->s3->rrec.comp == NULL)
-                goto err;
-        }
-    } else
-        {
-        if (s->compress != NULL)
-            {
-            COMP_CTX_free(s->compress);
-            s->compress = NULL;
-            }
-        if (comp != NULL)
-            {
-            s->compress = COMP_CTX_new(comp->method);
-            if (s->compress == NULL)
-                {
-                SSLerr(SSL_F_TLS1_CHANGE_CIPHER_STATE,SSL_R_COMPRESSION_LIBRARY_ERROR);
-                return 0;
-                }
-            }
-        }
-#endif  /* OPENSSL_NO_COMP */
 
     /* Reset sequence number to zero. */
     memset(is_read ? s->s3->read_sequence : s->s3->write_sequence, 0, 8);

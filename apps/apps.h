@@ -166,11 +166,7 @@ extern BIO *bio_err;
 #define do_pipe_sig()
 #endif
 
-#ifdef OPENSSL_NO_COMP
 #define zlib_cleanup() 
-#else
-#define zlib_cleanup() COMP_zlib_cleanup()
-#endif
 
 #if defined(MONOLITH) && !defined(OPENSSL_C)
 #  define apps_startup() \

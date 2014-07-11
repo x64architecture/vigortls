@@ -150,9 +150,6 @@
 #include "e_os.h"
 
 #include <openssl/buffer.h>
-#ifndef OPENSSL_NO_COMP
-#include <openssl/comp.h>
-#endif
 #include <openssl/bio.h>
 #include <openssl/stack.h>
 #include <openssl/rsa.h>
@@ -600,16 +597,6 @@ struct ssl_aead_ctx_st
      * for a record is included as a prefix before the ciphertext. */
     char variable_nonce_included_in_record;
 };
-
-#ifndef OPENSSL_NO_COMP
-/* Used for holding the relevant compression methods loaded into SSL_CTX */
-typedef struct ssl3_comp_st
-    {
-    int comp_id;    /* The identifier byte for this compression type */
-    char *name;    /* Text name used for the compression type */
-    COMP_METHOD *method; /* The method :-) */
-    } SSL3_COMP;
-#endif
 
 extern SSL3_ENC_METHOD ssl3_undef_enc_method;
 OPENSSL_EXTERN const SSL_CIPHER ssl2_ciphers[];

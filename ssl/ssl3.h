@@ -117,9 +117,6 @@
 #ifndef HEADER_SSL3_H 
 #define HEADER_SSL3_H 
 
-#ifndef OPENSSL_NO_COMP
-#include <openssl/comp.h>
-#endif
 #include <openssl/buffer.h>
 #include <openssl/evp.h>
 #include <openssl/ssl.h>
@@ -300,12 +297,7 @@ extern "C" {
 
 /* If compression isn't used don't include the compression overhead */
 
-#ifdef OPENSSL_NO_COMP
 #define SSL3_RT_MAX_COMPRESSED_LENGTH        SSL3_RT_MAX_PLAIN_LENGTH
-#else
-#define SSL3_RT_MAX_COMPRESSED_LENGTH    \
-        (SSL3_RT_MAX_PLAIN_LENGTH+SSL3_RT_MAX_COMPRESSED_OVERHEAD)
-#endif
 #define SSL3_RT_MAX_ENCRYPTED_LENGTH    \
         (SSL3_RT_MAX_ENCRYPTED_OVERHEAD+SSL3_RT_MAX_COMPRESSED_LENGTH)
 #define SSL3_RT_MAX_PACKET_SIZE        \
@@ -520,11 +512,7 @@ typedef struct ssl3_state_st
         const EVP_MD *new_hash;
         int new_mac_pkey_type;
         int new_mac_secret_size;
-#ifndef OPENSSL_NO_COMP
-        const SSL_COMP *new_compression;
-#else
         char *new_compression;
-#endif
         int cert_request;
         } tmp;
 

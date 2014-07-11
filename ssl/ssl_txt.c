@@ -202,20 +202,6 @@ int SSL_SESSION_print(BIO *bp, const SSL_SESSION *x)
     }
 #endif
 
-#ifndef OPENSSL_NO_COMP
-    if (x->compress_meth != 0) {
-        SSL_COMP *comp = NULL;
-
-        ssl_cipher_get_comp(x, &comp);
-        if (comp == NULL) {
-            if (BIO_printf(bp, "\n    Compression: %d", x->compress_meth) <= 0) 
-                goto err;
-        } else {
-            if (BIO_printf(bp, "\n    Compression: %d (%s)", comp->id, comp->method->name) <= 0) 
-                goto err;
-        }
-    }    
-#endif
     if (x->time != 0) {
         if (BIO_printf(bp, "\n    Start Time: %ld", x->time) <= 0)
             goto err;

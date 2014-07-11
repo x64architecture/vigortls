@@ -64,9 +64,6 @@
 #endif
 #include <openssl/buffer.h>
 #include <openssl/bio.h>
-#ifndef OPENSSL_NO_COMP
-#include <openssl/comp.h>
-#endif
 #include <openssl/rsa.h>
 #include <openssl/dh.h>
 #ifndef OPENSSL_NO_DSA
@@ -116,9 +113,6 @@ void ERR_load_crypto_strings(void)
     ERR_load_ASN1_strings();
     ERR_load_CONF_strings();
     ERR_load_CRYPTO_strings();
-#ifndef OPENSSL_NO_COMP
-    ERR_load_COMP_strings();
-#endif
 #ifndef OPENSSL_NO_EC
     ERR_load_EC_strings();
 #endif
