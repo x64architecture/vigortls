@@ -734,6 +734,7 @@ err:
     VERBOSE BIO_printf(bio_err,"SRP terminating with code %d.\n",ret);
 
     free(tofree);
+    free(passin);
 
     if (ret) ERR_print_errors(bio_err);
     if (randfile) app_RAND_write_file(randfile, bio_err);
