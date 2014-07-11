@@ -239,7 +239,7 @@ static const SSL_CIPHER cipher_aliases[] =
     /* "COMPLEMENTOFDEFAULT" */
     /* (does *not* include ciphersuites not found in ALL!) */
     {
-        .name = SSL_TXT_CMPDEF
+        .name = SSL_TXT_CMPDEF,
         .algorithm_mkey = SSL_kEDH | SSL_kEECDH,
         .algorithm_auth = SSL_aNULL,
         .algorithm_enc = ~SSL_eNULL,
