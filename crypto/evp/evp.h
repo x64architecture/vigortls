@@ -1204,6 +1204,7 @@ typedef struct evp_aead_st EVP_AEAD;
 #ifndef OPENSSL_NO_AES
 /* EVP_aes_128_gcm is AES-128 in Galois Counter Mode. */
 const EVP_AEAD *EVP_aead_aes_128_gcm(void);
+const EVP_AEAD *EVP_aead_aes_256_gcm(void);
 #endif
 
 #if !defined(OPENSSL_NO_CHACHA) && !defined(OPENSSL_NO_POLY1305)

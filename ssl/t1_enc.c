@@ -545,9 +545,6 @@ int tls1_change_cipher_state(SSL *s, int which)
     /* Reset sequence number to zero. */
     memset(is_read ? s->s3->read_sequence : s->s3->write_sequence, 0, 8);
 
-    /* key_arg is used for SSLv2. We don't need it for TLS. */
-    s->session->key_arg_length = 0;
-
     mac_secret_len = s->s3->tmp.new_mac_secret_size;
 
     if (aead != NULL) {
