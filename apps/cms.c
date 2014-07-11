@@ -1378,8 +1378,10 @@ static CMS_ReceiptRequest *make_receipt_request(STACK_OF(OPENSSL_STRING) *rr_to,
     rr = CMS_ReceiptRequest_create0(NULL, -1, rr_allorfirst, rct_from,
                         rct_to);
     return rr;
-    err:
+err:
+    if (rct_to != NULL)
+        sk_GENERAL_NAMES_pop_free(rct_to, GENERAL_NAMES_free);
     return NULL;
-    }
+}
 
 #endif
