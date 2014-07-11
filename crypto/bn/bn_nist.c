@@ -338,9 +338,7 @@ static void nist_cp_bn(BN_ULONG *dst, const BN_ULONG *src, int top)
     }
 #define bn_cp_32(to, n, from, m)    (to)[n] = (m>=0)?((from)[m]):0;
 #define bn_32_set_0(to, n)        (to)[n] = (BN_ULONG)0;
-# if defined(_WIN32) && !defined(__GNUC__)
-#  define NIST_INT64 __int64
-# elif defined(BN_LLONG)
+#if defined(BN_LLONG)
 #  define NIST_INT64 long long
 # endif
 #endif /* BN_BITS2 != 64 */

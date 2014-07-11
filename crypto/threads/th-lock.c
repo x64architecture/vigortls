@@ -63,9 +63,6 @@
 #ifdef LINUX
 #include <typedefs.h>
 #endif
-#ifdef OPENSSL_SYS_WIN32
-#include <windows.h>
-#endif
 #ifdef PTHREADS
 #include <pthread.h>
 #endif
@@ -80,7 +77,6 @@
 void CRYPTO_thread_setup(void);
 void CRYPTO_thread_cleanup(void);
 
-static void win32_locking_callback(int mode,int type,char *file,int line);
 static void pthreads_locking_callback(int mode,int type,char *file,int line);
 
 static unsigned long pthreads_thread_id(void );
@@ -92,49 +88,6 @@ static unsigned long pthreads_thread_id(void );
  */
 
 #define THREAD_STACK_SIZE (16*1024)
-
-#ifdef OPENSSL_SYS_WIN32
-
-static HANDLE *lock_cs;
-
-void CRYPTO_thread_setup(void)
-    {
-    int i;
-
-    lock_cs=malloc(CRYPTO_num_locks() * sizeof(HANDLE));
-    for (i=0; i<CRYPTO_num_locks(); i++)
-        {
-        lock_cs[i]=CreateMutex(NULL,FALSE,NULL);
-        }
-
-    CRYPTO_set_locking_callback((void (*)(int,int,char *,int))win32_locking_callback);
-    /* id callback defined */
-    return (1);
-    }
-
-static void CRYPTO_thread_cleanup(void)
-    {
-    int i;
-
-    CRYPTO_set_locking_callback(NULL);
-    for (i=0; i<CRYPTO_num_locks(); i++)
-        CloseHandle(lock_cs[i]);
-    free(lock_cs);
-    }
-
-void win32_locking_callback(int mode, int type, char *file, int line)
-    {
-    if (mode & CRYPTO_LOCK)
-        {
-        WaitForSingleObject(lock_cs[type],INFINITE);
-        }
-    else
-        {
-        ReleaseMutex(lock_cs[type]);
-        }
-    }
-
-#endif /* OPENSSL_SYS_WIN32 */
 
 /* Linux and a few others */
 #ifdef PTHREADS

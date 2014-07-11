@@ -1881,11 +1881,7 @@ static int sv_body(char *hostname, int s, unsigned char *context)
     KSSL_CTX *kctx;
 #endif
     struct timeval timeout;
-#if defined(OPENSSL_SYS_WINDOWS) || defined(OPENSSL_SYS_MSDOS)
-    struct timeval tv;
-#else
     struct timeval *timeoutp;
-#endif
 
     if ((buf=malloc(bufsize)) == NULL)
         {
@@ -2012,9 +2008,7 @@ static int sv_body(char *hostname, int s, unsigned char *context)
         if (!read_from_sslcon)
             {
             FD_ZERO(&readfds);
-#if !defined(OPENSSL_SYS_WINDOWS) && !defined(OPENSSL_SYS_MSDOS)
             openssl_fdset(fileno(stdin),&readfds);
-#endif
             openssl_fdset(s,&readfds);
             /* Note: under VMS with SOCKETSHR the second parameter is
              * currently of type (int *) whereas under other systems
@@ -2022,19 +2016,6 @@ static int sv_body(char *hostname, int s, unsigned char *context)
              * the compiler: if you do have a cast then you can either
              * go for (int *) or (void *).
              */
-#if defined(OPENSSL_SYS_WINDOWS) || defined(OPENSSL_SYS_MSDOS)
-                        /* Under DOS (non-djgpp) and Windows we can't select on stdin: only
-             * on sockets. As a workaround we timeout the select every
-             * second and check for any keypress. In a proper Windows
-             * application we wouldn't do this because it is inefficient.
-             */
-            tv.tv_sec = 1;
-            tv.tv_usec = 0;
-            i=select(width,(void *)&readfds,NULL,NULL,&tv);
-            if ((i < 0) || (!i && !_kbhit() ) )continue;
-            if (_kbhit())
-                read_from_terminal = 1;
-#else
             if ((SSL_version(con) == DTLS1_VERSION) &&
                 DTLSv1_get_timeout(con, &timeout))
                 timeoutp = &timeout;
@@ -2051,7 +2032,6 @@ static int sv_body(char *hostname, int s, unsigned char *context)
             if (i <= 0) continue;
             if (FD_ISSET(fileno(stdin),&readfds))
                 read_from_terminal = 1;
-#endif
             if (FD_ISSET(s,&readfds))
                 read_from_sslcon = 1;
             }
@@ -2575,9 +2555,7 @@ static int www_body(char *hostname, int s, unsigned char *context)
             else
                 {
                 BIO_printf(bio_s_out,"read R BLOCK\n");
-#if !defined(OPENSSL_SYS_MSDOS) && !defined(__DJGPP__)
                 sleep(1);
-#endif
                 continue;
                 }
             }

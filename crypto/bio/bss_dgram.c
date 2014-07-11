@@ -66,10 +66,6 @@
 #include <openssl/bio.h>
 #ifndef OPENSSL_NO_DGRAM
 
-#if defined(OPENSSL_SYS_WIN32)
-#include <sys/timeb.h>
-#endif
-
 #if defined(OPENSSL_SYS_LINUX) && !defined(IP_MTU)
 #define IP_MTU      14 /* linux is lame */
 #endif
@@ -198,26 +194,12 @@ static void dgram_adjust_rcv_timeout(BIO *b)
         struct timeval timenow, timeleft;
 
         /* Read current socket timeout */
-#ifdef OPENSSL_SYS_WINDOWS
-        int timeout;
-
-        sz.i = sizeof(timeout);
-        if (getsockopt(b->num, SOL_SOCKET, SO_RCVTIMEO,
-                       (void*)&timeout, &sz.i) < 0)
-            { perror("getsockopt"); }
-        else
-            {
-            data->socket_timeout.tv_sec = timeout / 1000;
-            data->socket_timeout.tv_usec = (timeout % 1000) * 1000;
-            }
-#else
         sz.i = sizeof(data->socket_timeout);
         if ( getsockopt(b->num, SOL_SOCKET, SO_RCVTIMEO, 
                         &(data->socket_timeout), (void *)&sz) < 0)
             { perror("getsockopt"); }
         else if (sizeof(sz.s)!=sizeof(sz.i) && sz.i==0)
             OPENSSL_assert(sz.s<=sizeof(data->socket_timeout));
-#endif
 
         /* Get current time */
         get_current_time(&timenow);
@@ -246,16 +228,9 @@ static void dgram_adjust_rcv_timeout(BIO *b)
             (data->socket_timeout.tv_sec == timeleft.tv_sec &&
              data->socket_timeout.tv_usec >= timeleft.tv_usec))
             {
-#ifdef OPENSSL_SYS_WINDOWS
-            timeout = timeleft.tv_sec * 1000 + timeleft.tv_usec / 1000;
-            if (setsockopt(b->num, SOL_SOCKET, SO_RCVTIMEO,
-                           (void*)&timeout, sizeof(timeout)) < 0)
-                { perror("setsockopt"); }
-#else
             if ( setsockopt(b->num, SOL_SOCKET, SO_RCVTIMEO, &timeleft,
                             sizeof(struct timeval)) < 0)
                 { perror("setsockopt"); }
-#endif
             }
         }
 #endif
@@ -269,17 +244,9 @@ static void dgram_reset_rcv_timeout(BIO *b)
     /* Is a timer active? */
     if (data->next_timeout.tv_sec > 0 || data->next_timeout.tv_usec > 0)
         {
-#ifdef OPENSSL_SYS_WINDOWS
-        int timeout = data->socket_timeout.tv_sec * 1000 +
-                      data->socket_timeout.tv_usec / 1000;
-        if (setsockopt(b->num, SOL_SOCKET, SO_RCVTIMEO,
-                       (void*)&timeout, sizeof(timeout)) < 0)
-            { perror("setsockopt"); }
-#else
         if ( setsockopt(b->num, SOL_SOCKET, SO_RCVTIMEO, &(data->socket_timeout),
                         sizeof(struct timeval)) < 0)
             { perror("setsockopt"); }
-#endif
         }
 #endif
     }
@@ -646,38 +613,13 @@ static long dgram_ctrl(BIO *b, int cmd, long num, void *ptr)
         break;
 #if defined(SO_RCVTIMEO)
     case BIO_CTRL_DGRAM_SET_RECV_TIMEOUT:
-#ifdef OPENSSL_SYS_WINDOWS
-        {
-        struct timeval *tv = (struct timeval *)ptr;
-        int timeout = tv->tv_sec * 1000 + tv->tv_usec/1000;
-        if (setsockopt(b->num, SOL_SOCKET, SO_RCVTIMEO,
-            (void*)&timeout, sizeof(timeout)) < 0)
-            { perror("setsockopt"); ret = -1; }
-        }
-#else
         if ( setsockopt(b->num, SOL_SOCKET, SO_RCVTIMEO, ptr,
             sizeof(struct timeval)) < 0)
             { perror("setsockopt");    ret = -1; }
-#endif
         break;
     case BIO_CTRL_DGRAM_GET_RECV_TIMEOUT:
         {
         union { size_t s; int i; } sz = {0};
-#ifdef OPENSSL_SYS_WINDOWS
-        int timeout;
-        struct timeval *tv = (struct timeval *)ptr;
-
-        sz.i = sizeof(timeout);
-        if (getsockopt(b->num, SOL_SOCKET, SO_RCVTIMEO,
-            (void*)&timeout, &sz.i) < 0)
-            { perror("getsockopt"); ret = -1; }
-        else
-            {
-            tv->tv_sec = timeout / 1000;
-            tv->tv_usec = (timeout % 1000) * 1000;
-            ret = sizeof(*tv);
-            }
-#else
         sz.i = sizeof(struct timeval);
         if ( getsockopt(b->num, SOL_SOCKET, SO_RCVTIMEO, 
             ptr, (void *)&sz) < 0)
@@ -689,44 +631,18 @@ static long dgram_ctrl(BIO *b, int cmd, long num, void *ptr)
             }
         else
             ret = sz.i;
-#endif
         }
         break;
 #endif
 #if defined(SO_SNDTIMEO)
     case BIO_CTRL_DGRAM_SET_SEND_TIMEOUT:
-#ifdef OPENSSL_SYS_WINDOWS
-        {
-        struct timeval *tv = (struct timeval *)ptr;
-        int timeout = tv->tv_sec * 1000 + tv->tv_usec/1000;
-        if (setsockopt(b->num, SOL_SOCKET, SO_SNDTIMEO,
-            (void*)&timeout, sizeof(timeout)) < 0)
-            { perror("setsockopt"); ret = -1; }
-        }
-#else
         if ( setsockopt(b->num, SOL_SOCKET, SO_SNDTIMEO, ptr,
             sizeof(struct timeval)) < 0)
             { perror("setsockopt");    ret = -1; }
-#endif
         break;
     case BIO_CTRL_DGRAM_GET_SEND_TIMEOUT:
         {
         union { size_t s; int i; } sz = {0};
-#ifdef OPENSSL_SYS_WINDOWS
-        int timeout;
-        struct timeval *tv = (struct timeval *)ptr;
-
-        sz.i = sizeof(timeout);
-        if (getsockopt(b->num, SOL_SOCKET, SO_SNDTIMEO,
-            (void*)&timeout, &sz.i) < 0)
-            { perror("getsockopt"); ret = -1; }
-        else
-            {
-            tv->tv_sec = timeout / 1000;
-            tv->tv_usec = (timeout % 1000) * 1000;
-            ret = sizeof(*tv);
-            }
-#else
         sz.i = sizeof(struct timeval);
         if ( getsockopt(b->num, SOL_SOCKET, SO_SNDTIMEO, 
             ptr, (void *)&sz) < 0)
@@ -738,18 +654,13 @@ static long dgram_ctrl(BIO *b, int cmd, long num, void *ptr)
             }
         else
             ret = sz.i;
-#endif
         }
         break;
 #endif
     case BIO_CTRL_DGRAM_GET_SEND_TIMER_EXP:
         /* fall-through */
     case BIO_CTRL_DGRAM_GET_RECV_TIMER_EXP:
-#ifdef OPENSSL_SYS_WINDOWS
-        if ( data->_errno == WSAETIMEDOUT)
-#else
         if ( data->_errno == EAGAIN)
-#endif
             {
             ret = 1;
             data->_errno = 0;
@@ -792,15 +703,6 @@ static int BIO_dgram_should_retry(int i)
         {
         err=get_last_socket_error();
 
-#if defined(OPENSSL_SYS_WINDOWS)
-    /* If the socket return value (i) is -1
-     * and err is unexpectedly 0 at this point,
-     * the error code was overwritten by
-     * another system call before this error
-     * handling is called.
-     */
-#endif
-
         return (BIO_dgram_non_fatal_error(err));
         }
     return (0);
@@ -810,17 +712,6 @@ int BIO_dgram_non_fatal_error(int err)
     {
     switch (err)
         {
-#if defined(OPENSSL_SYS_WINDOWS)
-# if defined(WSAEWOULDBLOCK)
-    case WSAEWOULDBLOCK:
-# endif
-
-# if 0 /* This appears to always be an error */
-#  if defined(WSAENOTCONN)
-    case WSAENOTCONN:
-#  endif
-# endif
-#endif
 
 #ifdef EWOULDBLOCK
 # ifdef WSAEWOULDBLOCK
@@ -864,14 +755,7 @@ int BIO_dgram_non_fatal_error(int err)
 
 static void get_current_time(struct timeval *t)
     {
-#ifdef OPENSSL_SYS_WIN32
-    struct _timeb tb;
-    _ftime(&tb);
-    t->tv_sec = (long)tb.time;
-    t->tv_usec = (long)tb.millitm * 1000;
-#else
     gettimeofday(t, NULL);
-#endif
     }
 
 #endif

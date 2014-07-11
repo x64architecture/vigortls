@@ -93,10 +93,6 @@ int main(int argc, char *argv[])
     CRYPTO_dbg_set_options(V_CRYPTO_MDEBUG_ALL);
     CRYPTO_mem_ctrl(CRYPTO_MEM_CHECK_ON);
 
-#ifdef OPENSSL_SYS_WIN32
-    CRYPTO_malloc_init();
-#endif
-
     RAND_seed(rnd_seed, sizeof rnd_seed);
 
     out=BIO_new(BIO_s_file());

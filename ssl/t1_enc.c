@@ -556,9 +556,6 @@ int tls1_change_cipher_state(SSL *s, int which)
     }
 
     return 1;
-err:
-    SSLerr(SSL_F_TLS1_CHANGE_CIPHER_STATE, ERR_R_MALLOC_FAILURE);
-    return 0;
 }
 
 int tls1_setup_key_block(SSL *s)

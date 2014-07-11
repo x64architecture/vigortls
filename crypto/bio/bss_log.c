@@ -68,8 +68,7 @@
 
 #include "cryptlib.h"
 
-#if defined(OPENSSL_SYS_WIN32)
-#elif !defined(MSDOS) || !defined(NO_SYSLOG)
+#if !defined(NO_SYSLOG)
 #  include <syslog.h>
 #endif
 
@@ -77,19 +76,6 @@
 #include <openssl/err.h>
 
 #ifndef NO_SYSLOG
-
-#ifdef OPENSSL_SYS_WIN32
-#define LOG_EMERG    0
-#define LOG_ALERT    1
-#define LOG_CRIT    2
-#define LOG_ERR        3
-#define LOG_WARNING    4
-#define LOG_NOTICE    5
-#define LOG_INFO    6
-#define LOG_DEBUG    7
-
-#define LOG_DAEMON    (3<<3)
-#endif
 
 static int slg_write(BIO *h, const char *buf, int num);
 static int slg_puts(BIO *h, const char *str);
@@ -210,64 +196,6 @@ static int slg_puts(BIO *bp, const char *str)
     return (ret);
     }
 
-#if defined(OPENSSL_SYS_WIN32)
-
-static void xopenlog(BIO* bp, char* name, int level)
-{
-    if (check_winnt())
-        bp->ptr = RegisterEventSourceA(NULL,name);
-    else
-        bp->ptr = NULL;
-}
-
-static void xsyslog(BIO *bp, int priority, const char *string)
-{
-    LPCSTR lpszStrings[2];
-    WORD evtype= EVENTLOG_ERROR_TYPE;
-    char pidbuf[DECIMAL_SIZE(DWORD)+4];
-
-    if (bp->ptr == NULL)
-        return;
-
-    switch (priority)
-        {
-    case LOG_EMERG:
-    case LOG_ALERT:
-    case LOG_CRIT:
-    case LOG_ERR:
-        evtype = EVENTLOG_ERROR_TYPE;
-        break;
-    case LOG_WARNING:
-        evtype = EVENTLOG_WARNING_TYPE;
-        break;
-    case LOG_NOTICE:
-    case LOG_INFO:
-    case LOG_DEBUG:
-        evtype = EVENTLOG_INFORMATION_TYPE;
-        break;
-    default:        /* Should never happen, but set it
-                   as error anyway. */
-        evtype = EVENTLOG_ERROR_TYPE;
-        break;
-        }
-
-    sprintf(pidbuf, "[%u] ", GetCurrentProcessId());
-    lpszStrings[0] = pidbuf;
-    lpszStrings[1] = string;
-
-    ReportEventA(bp->ptr, evtype, 0, 1024, NULL, 2, 0,
-                lpszStrings, NULL);
-}
-    
-static void xcloselog(BIO* bp)
-{
-    if (bp->ptr)
-        DeregisterEventSource((HANDLE)(bp->ptr));
-    bp->ptr= NULL;
-}
-
-#else /* Unix/Watt32 */
-
 static void xopenlog(BIO* bp, char* name, int level)
 {
     openlog(name, LOG_PID|LOG_CONS, level);
@@ -282,7 +210,5 @@ static void xcloselog(BIO* bp)
 {
     closelog();
 }
-
-#endif /* Unix */
 
 #endif /* NO_SYSLOG */

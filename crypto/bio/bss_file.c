@@ -115,49 +115,8 @@ BIO *BIO_new_file(const char *filename, const char *mode)
     BIO  *ret;
     FILE *file=NULL;
 
-#if defined(_WIN32) && defined(CP_UTF8)
-    int sz, len_0 = (int)strlen(filename)+1;
-    DWORD flags;
-
-    /*
-     * Basically there are three cases to cover: a) filename is
-     * pure ASCII string; b) actual UTF-8 encoded string and
-     * c) locale-ized string, i.e. one containing 8-bit
-     * characters that are meaningful in current system locale.
-     * If filename is pure ASCII or real UTF-8 encoded string,
-     * MultiByteToWideChar succeeds and _wfopen works. If
-     * filename is locale-ized string, chances are that
-     * MultiByteToWideChar fails reporting
-     * ERROR_NO_UNICODE_TRANSLATION, in which case we fall
-     * back to fopen...
-     */
-    if ((sz=MultiByteToWideChar(CP_UTF8,(flags=MB_ERR_INVALID_CHARS),
-                    filename,len_0,NULL,0))>0 ||
-        (GetLastError()==ERROR_INVALID_FLAGS &&
-         (sz=MultiByteToWideChar(CP_UTF8,(flags=0),
-                    filename,len_0,NULL,0))>0)
-       )
-        {
-        WCHAR  wmode[8];
-        WCHAR *wfilename = _alloca(sz*sizeof(WCHAR));
-
-        if (MultiByteToWideChar(CP_UTF8,flags,
-                    filename,len_0,wfilename,sz) &&
-            MultiByteToWideChar(CP_UTF8,0,mode,strlen(mode)+1,
-                        wmode,sizeof(wmode)/sizeof(wmode[0])) &&
-            (file=_wfopen(wfilename,wmode))==NULL &&
-            (errno==ENOENT || errno==EBADF)
-           )    /* UTF-8 decode succeeded, but no file, filename
-             * could still have been locale-ized... */
-            file = fopen(filename,mode);
-        }
-    else if (GetLastError()==ERROR_NO_UNICODE_TRANSLATION)
-        {
-        file = fopen(filename,mode);
-        }
-#else
     file=fopen(filename,mode);    
-#endif
+
     if (file == NULL)
         {
         SYSerr(SYS_F_FOPEN,get_last_sys_error());
@@ -315,35 +274,6 @@ static long file_ctrl(BIO *b, int cmd, long num, void *ptr)
         else
 #endif
         {
-#if defined(OPENSSL_SYS_WINDOWS)
-        int fd = _fileno((FILE*)ptr);
-        if (num & BIO_FP_TEXT)
-            _setmode(fd,_O_TEXT);
-        else
-            _setmode(fd,_O_BINARY);
-#elif defined(OPENSSL_SYS_MSDOS)
-        int fd = fileno((FILE*)ptr);
-        /* Set correct text/binary mode */
-        if (num & BIO_FP_TEXT)
-            _setmode(fd,_O_TEXT);
-        /* Dangerous to set stdin/stdout to raw (unless redirected) */
-        else
-            {
-            if (fd == STDIN_FILENO || fd == STDOUT_FILENO)
-                {
-                if (isatty(fd) <= 0)
-                    _setmode(fd,_O_BINARY);
-                }
-            else
-                _setmode(fd,_O_BINARY);
-            }
-#elif defined(OPENSSL_SYS_WIN32_CYGWIN)
-        int fd = fileno((FILE*)ptr);
-        if (num & BIO_FP_TEXT)
-            setmode(fd, O_TEXT);
-        else
-            setmode(fd, O_BINARY);
-#endif
         }
         break;
     case BIO_C_SET_FILENAME:
@@ -367,12 +297,6 @@ static long file_ctrl(BIO *b, int cmd, long num, void *ptr)
             ret=0;
             break;
             }
-#if defined(OPENSSL_SYS_MSDOS) || defined(OPENSSL_SYS_WINDOWS) || defined(OPENSSL_SYS_WIN32_CYGWIN)
-        if (!(num & BIO_FP_TEXT))
-            strcat(p,"b");
-        else
-            strcat(p,"t");
-#endif
         fp=fopen(ptr,p);
         if (fp == NULL)
             {

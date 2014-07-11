@@ -81,16 +81,6 @@ static COMP_METHOD zlib_stateful_method={
     NULL,
     };
 
-/* 
- * When OpenSSL is built on Windows, we do not want to require that
- * the ZLIB.DLL be available in order for the OpenSSL DLLs to
- * work.  Therefore, all ZLIB routines are loaded at run time
- * and we do not link to a .LIB file when ZLIB_SHARED is set.
- */
-#if defined(OPENSSL_SYS_WINDOWS) || defined(OPENSSL_SYS_WIN32)
-# include <windows.h>
-#endif /* !(OPENSSL_SYS_WINDOWS || OPENSSL_SYS_WIN32) */
-
 #ifdef ZLIB_SHARED
 #include <openssl/dso.h>
 
@@ -345,11 +335,7 @@ COMP_METHOD *COMP_zlib(void)
 #ifdef ZLIB_SHARED
     if (!zlib_loaded)
         {
-#if defined(OPENSSL_SYS_WINDOWS) || defined(OPENSSL_SYS_WIN32)
-        zlib_dso = DSO_load(NULL, "ZLIB1", NULL, 0);
-#else
         zlib_dso = DSO_load(NULL, "z", NULL, 0);
-#endif
         if (zlib_dso != NULL)
             {
             p_compress

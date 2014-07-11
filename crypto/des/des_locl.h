@@ -61,33 +61,18 @@
 
 #include <openssl/e_os2.h>
 
-#if defined(OPENSSL_SYS_WIN32)
-#ifndef OPENSSL_SYS_MSDOS
-#define OPENSSL_SYS_MSDOS
-#endif
-#endif
-
 #include <stdio.h>
 #include <stdlib.h>
 
-#ifndef OPENSSL_SYS_MSDOS
 #ifdef OPENSSL_UNISTD
 # include OPENSSL_UNISTD
 #else
 # include <unistd.h>
 #endif
 #include <math.h>
-#endif
 #include <openssl/des.h>
 
-#ifdef OPENSSL_SYS_MSDOS        /* Visual C++ 2.1 (Windows NT/95) */
-#include <stdlib.h>
-#include <errno.h>
-#include <time.h>
-#include <io.h>
-#endif
-
-#if defined(__STDC__) || defined(OPENSSL_SYS_MSDOS)
+#if defined(__STDC__)
 #include <string.h>
 #endif
 
@@ -158,9 +143,7 @@
                 } \
             }
 
-#if (defined(OPENSSL_SYS_WIN32) && defined(_MSC_VER)) || defined(__ICC)
-#define    ROTATE(a,n)    (_lrotr(a,n))
-#elif defined(__GNUC__) && __GNUC__>=2 && !defined(__STRICT_ANSI__) && !defined(OPENSSL_NO_ASM) && !defined(OPENSSL_NO_INLINE_ASM) && !defined(PEDANTIC)
+#if defined(__GNUC__) && __GNUC__>=2 && !defined(__STRICT_ANSI__) && !defined(OPENSSL_NO_ASM) && !defined(OPENSSL_NO_INLINE_ASM) && !defined(PEDANTIC)
 # if defined(__i386) || defined(__i386__) || defined(__x86_64) || defined(__x86_64__)
 #  define ROTATE(a,n)    ({ register unsigned int ret;    \
                 asm ("rorl %1,%0"    \

@@ -116,8 +116,6 @@
 #include <openssl/rand.h>
 #include "rand_lcl.h"
 
-#if !(defined(OPENSSL_SYS_WINDOWS) || defined(OPENSSL_SYS_WIN32))
-
 #include <sys/types.h>
 #include <sys/time.h>
 #include <sys/times.h>
@@ -300,6 +298,4 @@ int RAND_poll(void)
     return 0;
 #endif
 }
-
-#endif /* !(defined(OPENSSL_SYS_WINDOWS) || defined(OPENSSL_SYS_WIN32)) */
 

@@ -225,11 +225,6 @@ int BIO_sock_non_fatal_error(int err)
     {
     switch (err)
         {
-#if defined(OPENSSL_SYS_WINDOWS)
-# if defined(WSAEWOULDBLOCK)
-    case WSAEWOULDBLOCK:
-# endif
-#endif
 
 #ifdef EWOULDBLOCK
 # ifdef WSAEWOULDBLOCK

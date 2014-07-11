@@ -88,226 +88,34 @@ extern "C" {
 #define DEVRANDOM_EGD "/var/run/egd-pool","/dev/egd-pool","/etc/egd-pool","/etc/entropy"
 #endif
 
-/********************************************************************
- The Microsoft section
- ********************************************************************/
-#if defined(OPENSSL_SYS_WIN32) && !defined(WIN32)
-#  define WIN32
-#endif
-#if defined(OPENSSL_SYS_WINDOWS) && !defined(WINDOWS)
-#  define WINDOWS
-#endif
-#if defined(OPENSSL_SYS_MSDOS) && !defined(MSDOS)
-#  define MSDOS
-#endif
-
-#if defined(MSDOS) && !defined(GETPID_IS_MEANINGLESS)
-#  define GETPID_IS_MEANINGLESS
-#endif
-
-#ifdef WIN32
-#define get_last_sys_error()    GetLastError()
-#define clear_sys_error()    SetLastError(0)
-#else
 #define get_last_sys_error()    errno
 #define clear_sys_error()    errno=0
-#endif
 
-#if defined(WINDOWS)
-#define get_last_socket_error()    WSAGetLastError()
-#define clear_socket_error()    WSASetLastError(0)
-#define readsocket(s,b,n)    recv((s),(b),(n),0)
-#define writesocket(s,b,n)    send((s),(b),(n),0)
-#else
 #define get_last_socket_error()    errno
 #define clear_socket_error()    errno=0
 #define ioctlsocket(a,b,c)    ioctl(a,b,c)
 #define closesocket(s)        close(s)
 #define readsocket(s,b,n)    read((s),(b),(n))
 #define writesocket(s,b,n)    write((s),(b),(n))
-#endif
 
-#if (defined(WINDOWS) || defined(MSDOS))
-
-#  ifndef S_IFDIR
-#    define S_IFDIR    _S_IFDIR
-#  endif
-
-#  ifndef S_IFMT
-#    define S_IFMT    _S_IFMT
-#  endif
-
-#  if !defined(WINNT)
-#    define NO_SYSLOG
-#  endif
-#  define NO_DIRENT
-
-#  ifdef WINDOWS
-#    if !defined(_WIN32_WCE) && !defined(_WIN32_WINNT)
-       /*
-    * Defining _WIN32_WINNT here in e_os.h implies certain "discipline."
-    * Most notably we ought to check for availability of each specific
-    * routine with GetProcAddress() and/or guard NT-specific calls with
-    * GetVersion() < 0x80000000. One can argue that in latter "or" case
-    * we ought to /DELAYLOAD some .DLLs in order to protect ourselves
-    * against run-time link errors. This doesn't seem to be necessary,
-    * because it turned out that already Windows 95, first non-NT Win32
-    * implementation, is equipped with at least NT 3.51 stubs, dummy
-    * routines with same name, but which do nothing. Meaning that it's
-    * apparently sufficient to guard "vanilla" NT calls with GetVersion
-    * alone, while NT 4.0 and above interfaces ought to be linked with
-    * GetProcAddress at run-time.
-    */
-#      define _WIN32_WINNT 0x0600
-#    endif
-#    if !defined(OPENSSL_NO_SOCK) && defined(_WIN32_WINNT)
-       /*
-        * Just like defining _WIN32_WINNT including winsock2.h implies
-        * certain "discipline" for maintaining [broad] binary compatibility.
-        * As long as structures are invariant among Winsock versions,
-        * it's sufficient to check for specific Winsock2 API availability
-        * at run-time [DSO_global_lookup is recommended]...
-        */
-#      include <winsock2.h>
-#      include <ws2tcpip.h>
-       /* yes, they have to be #included prior to <windows.h> */
-#    endif
-#    include <windows.h>
-#    include <stdio.h>
-#    include <stddef.h>
-#    include <errno.h>
-#    include <string.h>
-#    ifdef _WIN64
-#      define strlen(s) _strlen31(s)
-/* cut strings to 2GB */
-static unsigned int _strlen31(const char *str)
-    {
-    unsigned int len=0;
-    while (*str && len<0x80000000U) str++, len++;
-    return len&0x7FFFFFFF;
-    }
-#    endif
-#    include <malloc.h>
-#    if defined(_MSC_VER) && !defined(_DLL) && defined(stdin)
-#      if _MSC_VER>=1300
-#        undef stdin
-#        undef stdout
-#        undef stderr
-         FILE *__iob_func();
-#        define stdin  (&__iob_func()[0])
-#        define stdout (&__iob_func()[1])
-#        define stderr (&__iob_func()[2])
-#      elif defined(I_CAN_LIVE_WITH_LNK4049)
-#        undef stdin
-#        undef stdout
-#        undef stderr
-         /* pre-1300 has __p__iob(), but it's available only in msvcrt.lib,
-          * or in other words with /MD. Declaring implicit import, i.e.
-          * with _imp_ prefix, works correctly with all compiler options,
-      * but without /MD results in LINK warning LNK4049:
-      * 'locally defined symbol "__iob" imported'.
-          */
-         extern FILE *_imp___iob;
-#        define stdin  (&_imp___iob[0])
-#        define stdout (&_imp___iob[1])
-#        define stderr (&_imp___iob[2])
-#      endif
-#    endif
-#  endif
-#  include <io.h>
-#  include <fcntl.h>
-
-#  define EXIT(n) exit(n)
-#  define LIST_SEPARATOR_CHAR ';'
-#  ifndef X_OK
-#    define X_OK    0
-#  endif
-#  ifndef W_OK
-#    define W_OK    2
-#  endif
-#  ifndef R_OK
-#    define R_OK    4
-#  endif
-#  define OPENSSL_CONF    "openssl.cnf"
-#  define SSLEAY_CONF    OPENSSL_CONF
-#  define NUL_DEV    "nul"
-#  define RFILE        ".rnd"
-#  define DEFAULT_HOME  "C:"
-
-/* Avoid Windows 8 SDK GetVersion deprecated problems */
-#if defined(_MSC_VER) && _MSC_VER>=1800
-#  define check_winnt() (1)
+#ifdef OPENSSL_UNISTD
+# include OPENSSL_UNISTD
 #else
-#  define check_winnt() (GetVersion() < 0x80000000)
-#endif 
-
-#else /* The non-microsoft world */
-
-#    ifdef OPENSSL_UNISTD
-#      include OPENSSL_UNISTD
-#    else
-#      include <unistd.h>
-#    endif
-#    ifndef NO_SYS_TYPES_H
-#      include <sys/types.h>
-#    endif
-
-#    define OPENSSL_CONF    "openssl.cnf"
-#    define SSLEAY_CONF        OPENSSL_CONF
-#    define RFILE        ".rnd"
-#    define LIST_SEPARATOR_CHAR ':'
-#    define NUL_DEV        "/dev/null"
-#    define EXIT(n)        exit(n)
-#  endif
-
-#  define SSLeay_getpid()    getpid()
-
+# include <unistd.h>
+#endif
+#ifndef NO_SYS_TYPES_H
+# include <sys/types.h>
 #endif
 
+#define OPENSSL_CONF    "openssl.cnf"
+#define SSLEAY_CONF        OPENSSL_CONF
+#define RFILE        ".rnd"
+#define LIST_SEPARATOR_CHAR ':'
+#define NUL_DEV        "/dev/null"
+#define EXIT(n)        exit(n)
+#endif
 
-/*************/
-
-#ifdef USE_SOCKETS
-#  if defined(WINDOWS) || defined(MSDOS)
-      /* windows world */
-
-#    ifdef OPENSSL_NO_SOCK
-#      define SSLeay_Write(a,b,c)    (-1)
-#      define SSLeay_Read(a,b,c)    (-1)
-#      define SHUTDOWN(fd)        close(fd)
-#      define SHUTDOWN2(fd)        close(fd)
-#    elif !defined(__DJGPP__)
-#      if !defined(IPPROTO_IP)
-         /* winsock[2].h was included already? */
-#        include <winsock.h>
-#      endif
-#      ifdef getservbyname
-#        undef getservbyname
-         /* this is used to be wcecompat/include/winsock_extras.h */
-         struct servent* PASCAL getservbyname(const char*,const char*);
-#      endif
-
-#      ifdef _WIN64
-/*
- * Even though sizeof(SOCKET) is 8, it's safe to cast it to int, because
- * the value constitutes an index in per-process table of limited size
- * and not a real pointer.
- */
-#        define socket(d,t,p)    ((int)socket(d,t,p))
-#        define accept(s,f,l)    ((int)accept(s,f,l))
-#      endif
-#      define SSLeay_Write(a,b,c)    send((a),(b),(c),0)
-#      define SSLeay_Read(a,b,c)    recv((a),(b),(c),0)
-#      define SHUTDOWN(fd)        { shutdown((fd),0); closesocket(fd); }
-#      define SHUTDOWN2(fd)        { shutdown((fd),2); closesocket(fd); }
-#    else
-#      define SSLeay_Write(a,b,c)    write_s(a,b,c,0)
-#      define SSLeay_Read(a,b,c)    read_s(a,b,c)
-#      define SHUTDOWN(fd)        close_s(fd)
-#      define SHUTDOWN2(fd)        close_s(fd)
-#    endif
-
-#  else
+#define SSLeay_getpid()    getpid()
 
 #    ifndef NO_SYS_PARAM_H
 #      include <sys/param.h>
@@ -331,7 +139,6 @@ static unsigned int _strlen31(const char *str)
 #    ifndef INVALID_SOCKET
 #    define INVALID_SOCKET    (-1)
 #    endif /* INVALID_SOCKET */
-#  endif
 
 /* Some IPv6 implementations are broken, disable them in known bad
  * versions.
@@ -344,8 +151,6 @@ static unsigned int _strlen31(const char *str)
 #    endif
 #  endif
 
-#endif
-
 #ifndef OPENSSL_EXIT
 # if defined(MONOLITH) && !defined(OPENSSL_C)
 #  define OPENSSL_EXIT(n) return (n)
@@ -355,11 +160,6 @@ static unsigned int _strlen31(const char *str)
 #endif
 
 /***********************************************/
-
-#if defined(OPENSSL_SYS_WINDOWS)
-#  define strcasecmp _stricmp
-#  define strncasecmp _strnicmp
-#endif
 
 
 #ifdef  __cplusplus

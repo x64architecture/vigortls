@@ -62,9 +62,7 @@
 #define USE_SOCKETS
 #include "cryptlib.h"
 #include <openssl/bio.h>
-#if !defined(OPENSSL_SYS_WINDOWS)
 #include <arpa/inet.h>
-#endif
 
 #ifndef OPENSSL_NO_SOCK
 
@@ -78,21 +76,6 @@
 #define MAX_LISTEN  SOMAXCONN
 #else
 #define MAX_LISTEN  32
-#endif
-
-#ifdef OPENSSL_SYS_WINDOWS
-static int wsa_init_done=0;
-#endif
-
-/*
- * WSAAPI specifier is required to make indirect calls to run-time
- * linked WinSock 2 functions used in this module, to be specific
- * [get|free]addrinfo and getnameinfo. This is because WinSock uses
- * uses non-C calling convention, __stdcall vs. __cdecl, on x86
- * Windows. On non-WinSock platforms WSAAPI needs to be void.
- */
-#ifndef WSAAPI
-#define WSAAPI
 #endif
 
 #if 0
@@ -450,42 +433,11 @@ end:
 
 int BIO_sock_init(void)
     {
-#ifdef OPENSSL_SYS_WINDOWS
-    static struct WSAData wsa_state;
-
-    if (!wsa_init_done)
-        {
-        int err;
-      
-        wsa_init_done=1;
-        memset(&wsa_state,0,sizeof(wsa_state));
-        /* Not making wsa_state available to the rest of the
-         * code is formally wrong. But the structures we use
-         * are [beleived to be] invariable among Winsock DLLs,
-         * while API availability is [expected to be] probed
-         * at run-time with DSO_global_lookup. */
-        if (WSAStartup(0x0202,&wsa_state)!=0)
-            {
-            err=WSAGetLastError();
-            SYSerr(SYS_F_WSASTARTUP,err);
-            BIOerr(BIO_F_BIO_SOCK_INIT,BIO_R_WSASTARTUP);
-            return (-1);
-            }
-        }
-#endif /* OPENSSL_SYS_WINDOWS */
-
     return (1);
     }
 
 void BIO_sock_cleanup(void)
     {
-#ifdef OPENSSL_SYS_WINDOWS
-    if (wsa_init_done)
-        {
-        wsa_init_done=0;
-        WSACleanup();
-        }
-#endif
     }
 
 int BIO_socket_ioctl(int fd, long type, void *arg)
@@ -541,12 +493,12 @@ int BIO_get_accept_socket(char *host, int bind_mode)
 #ifdef EAI_FAMILY
     do {
     static union {    void *p;
-            int (WSAAPI *f)(const char *,const char *,
+            int (*f)(const char *,const char *,
                  const struct addrinfo *,
                  struct addrinfo **);
             } p_getaddrinfo = {NULL};
     static union {    void *p;
-            void (WSAAPI *f)(struct addrinfo *);
+            void (*f)(struct addrinfo *);
             } p_freeaddrinfo = {NULL};
     struct addrinfo *res,hint;
 
@@ -638,14 +590,7 @@ again:
 #ifdef SO_REUSEADDR
         err_num=get_last_socket_error();
         if ((bind_mode == BIO_BIND_REUSEADDR_IF_UNUSED) &&
-#ifdef OPENSSL_SYS_WINDOWS
-            /* Some versions of Windows define EADDRINUSE to
-             * a dummy value.
-             */
-            (err_num == WSAEADDRINUSE))
-#else
             (err_num == EADDRINUSE))
-#endif
             {
             client = server;
             if (h == NULL || strcmp(h,"*") == 0)
@@ -768,7 +713,7 @@ int BIO_accept(int sock, char **addr)
     char   h[NI_MAXHOST],s[NI_MAXSERV];
     size_t nl;
     static union {    void *p;
-            int (WSAAPI *f)(const struct sockaddr *,size_t/*socklen_t*/,
+            int (*f)(const struct sockaddr *,size_t/*socklen_t*/,
                  char *,size_t,char *,size_t,int);
             } p_getnameinfo = {NULL};
             /* 2nd argument to getnameinfo is specified to

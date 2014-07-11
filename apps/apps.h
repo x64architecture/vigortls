@@ -198,11 +198,7 @@ extern BIO *bio_err;
 #  endif
 #endif
 
-#ifdef OPENSSL_SYSNAME_WIN32
-#  define openssl_fdset(a,b) FD_SET((unsigned int)a, b)
-#else
-#  define openssl_fdset(a,b) FD_SET(a, b)
-#endif
+#define openssl_fdset(a,b) FD_SET(a, b)
 
 
 typedef struct args_st

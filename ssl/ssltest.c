@@ -183,11 +183,7 @@
                      get screwed...
                   */
 
-#ifdef OPENSSL_SYS_WINDOWS
-#include <winsock.h>
-#else
 #include OPENSSL_UNISTD
-#endif
 
 #define TEST_SERVER_CERT "../apps/server.pem"
 #define TEST_CLIENT_CERT "../apps/client.pem"
@@ -504,7 +500,6 @@ int main(int argc, char *argv[])
     int no_psk = 0;
     int print_time = 0;
     clock_t s_time = 0, c_time = 0;
-    int comp = 0;
     int test_cipherlist = 0;
 
     verbose = 0;
@@ -661,14 +656,6 @@ int main(int argc, char *argv[])
         else if    (strcmp(*argv,"-time") == 0)
             {
             print_time = 1;
-            }
-        else if    (strcmp(*argv,"-zlib") == 0)
-            {
-            comp = COMP_ZLIB;
-            }
-        else if    (strcmp(*argv,"-rle") == 0)
-            {
-            comp = COMP_RLE;
             }
         else if    (strcmp(*argv,"-named_curve") == 0)
             {

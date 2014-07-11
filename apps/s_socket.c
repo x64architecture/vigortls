@@ -85,9 +85,6 @@
 #ifndef OPENSSL_NO_SOCK
 
 static struct hostent *GetHostByName(char *name);
-#ifdef OPENSSL_SYS_WINDOWS
-static void ssl_sock_cleanup(void);
-#endif
 static int ssl_sock_init(void);
 static int init_client_ip(int *sock,unsigned char ip[4], int port, int type);
 static int init_server(int *sock, int port, int type);
@@ -97,76 +94,10 @@ static int host_ip(char *str, unsigned char ip[4]);
 
 #define SOCKET_PROTOCOL    IPPROTO_TCP
 
-#ifdef OPENSSL_SYS_WINDOWS
-static struct WSAData wsa_state;
-static int wsa_init_done=0;
-
-#ifdef OPENSSL_SYS_WIN16
-static HWND topWnd=0;
-static FARPROC lpTopWndProc=NULL;
-static FARPROC lpTopHookProc=NULL;
-extern HINSTANCE _hInstance;  /* nice global CRT provides */
-
-static LONG FAR PASCAL topHookProc(HWND hwnd, UINT message, WPARAM wParam,
-         LPARAM lParam)
-    {
-    if (hwnd == topWnd)
-        {
-        switch(message)
-            {
-        case WM_DESTROY:
-        case WM_CLOSE:
-            SetWindowLong(topWnd,GWL_WNDPROC,(LONG)lpTopWndProc);
-            ssl_sock_cleanup();
-            break;
-            }
-        }
-    return CallWindowProc(lpTopWndProc,hwnd,message,wParam,lParam);
-    }
-
-static BOOL CALLBACK enumproc(HWND hwnd,LPARAM lParam)
-    {
-    topWnd=hwnd;
-    return (FALSE);
-    }
-
-#endif /* OPENSSL_SYS_WIN32 */
-#endif /* OPENSSL_SYS_WINDOWS */
-
-#ifdef OPENSSL_SYS_WINDOWS
-static void ssl_sock_cleanup(void)
-    {
-    if (wsa_init_done)
-        {
-        wsa_init_done=0;
-        WSACancelBlockingCall();
-        WSACleanup();
-        }
-    }
-#endif
-
 static int ssl_sock_init(void)
-    {
-#if defined(OPENSSL_SYS_WINDOWS)
-    if (!wsa_init_done)
-        {
-        int err;
-      
-#ifdef SIGINT
-        signal(SIGINT,(void (*)(int))ssl_sock_cleanup);
-#endif
-        wsa_init_done=1;
-        memset(&wsa_state,0,sizeof(wsa_state));
-        if (WSAStartup(0x0101,&wsa_state)!=0)
-            {
-            err=WSAGetLastError();
-            BIO_printf(bio_err,"unable to start WINSOCK, error code=%d\n",err);
-            return (0);
-            }
-        }
-#endif /* OPENSSL_SYS_WINDOWS */
+{
     return (1);
-    }
+}
 
 int init_client(int *sock, char *host, int port, int type)
     {
@@ -292,9 +223,7 @@ static int init_server_long(int *sock, int port, char *ip, int type)
 #endif
     if (bind(s,(struct sockaddr *)&server,sizeof(server)) == -1)
         {
-#ifndef OPENSSL_SYS_WINDOWS
         perror("bind");
-#endif
         goto err;
         }
     /* Make it 128 for linux */
@@ -324,10 +253,7 @@ static int do_accept(int acc_sock, int *sock, char **host)
 
     if (!ssl_sock_init()) return (0);
 
-#ifndef OPENSSL_SYS_WINDOWS
 redoit:
-#endif
-
     memset((char *)&from,0,sizeof(from));
     len=sizeof(from);
     /* Note: under VMS with SOCKETSHR the fourth parameter is currently
@@ -338,11 +264,6 @@ redoit:
     ret=accept(acc_sock,(struct sockaddr *)&from,(void *)&len);
     if (ret == INVALID_SOCKET)
         {
-#ifdef OPENSSL_SYS_WINDOWS
-        int i;
-        i=WSAGetLastError();
-        BIO_printf(bio_err,"accept error %d\n",i);
-#else
         if (errno == EINTR)
             {
             /*check_timeout(); */
@@ -350,7 +271,6 @@ redoit:
             }
         fprintf(stderr,"errno=%d ",errno);
         perror("accept");
-#endif
         return (0);
         }
 
@@ -366,7 +286,6 @@ redoit:
 
     if (host == NULL) goto end;
 #ifndef BIT_FIELD_LIMITS
-    /* I should use WSAAsyncGetHostByName() under windows */
     h1=gethostbyaddr((char *)&from.sin_addr.s_addr,
         sizeof(from.sin_addr.s_addr),AF_INET);
 #else

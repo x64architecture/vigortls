@@ -97,21 +97,9 @@
 #include <openssl/err.h>
 #include <openssl/evp.h>
 #include <openssl/objects.h>
-#if !defined(OPENSSL_SYS_MSDOS)
 #include OPENSSL_UNISTD
-#endif
 
 #include <signal.h>
-
-#if defined(_WIN32) || defined(__CYGWIN__)
-#include <windows.h>
-# if defined(__CYGWIN__) && !defined(_WIN32)
-  /* <windows.h> should define _WIN32, which normally is mutually
-   * exclusive with __CYGWIN__, but if it didn't... */
-#  define _WIN32
-  /* this is done because Cygwin alarm() fails sometimes. */
-# endif
-#endif
 
 #include <openssl/bn.h>
 #ifndef OPENSSL_NO_DES
@@ -179,11 +167,7 @@
 #include <openssl/modes.h>
 
 #ifndef HAVE_FORK
-# ifdef OPENSSL_SYS_WINDOWS
-#  define HAVE_FORK 0
-# else
 #  define HAVE_FORK 1
-# endif
 #endif
 
 #if HAVE_FORK
@@ -263,49 +247,10 @@ static SIGRETTYPE sig_done(int sig)
 #define START    0
 #define STOP    1
 
-#if defined(_WIN32)
-
-#if !defined(SIGALRM)
-# define SIGALRM
-#endif
-static unsigned int lapse,schlock;
-static void alarm_win32(unsigned int secs) { lapse = secs*1000; }
-#define alarm alarm_win32
-
-static DWORD WINAPI sleepy(VOID *arg)
-    {
-    schlock = 1;
-    Sleep(lapse);
-    run = 0;
-    return 0;
-    }
-
-static double Time_F(int s)
-    {
-    if (s == START)
-        {
-        HANDLE    thr;
-        schlock = 0;
-        thr = CreateThread(NULL,4096,sleepy,NULL,0,NULL);
-        if (thr==NULL)
-            {
-            DWORD ret=GetLastError();
-            BIO_printf(bio_err,"unable to CreateThread (%d)",ret);
-            ExitProcess(ret);
-            }
-        CloseHandle(thr);        /* detach the thread    */
-        while (!schlock) Sleep(0);    /* scheduler spinlock    */
-        }
-
-    return app_tminterval(s,usertime);
-    }
-#else
-
 static double Time_F(int s)
     {
     return app_tminterval(s,usertime);
     }
-#endif
 
 
 #ifndef OPENSSL_NO_ECDH
@@ -1396,9 +1341,7 @@ int MAIN(int argc, char **argv)
 #else
 #define COND(c)    (run && count<0x7fffffff)
 #define COUNT(d) (count)
-#ifndef _WIN32
-    signal(SIGALRM,sig_done);
-#endif
+	signal(SIGALRM,sig_done);
 #endif /* SIGALRM */
 
 #ifndef OPENSSL_NO_MDC2

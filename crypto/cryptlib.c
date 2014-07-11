@@ -482,12 +482,8 @@ void CRYPTO_THREADID_current(CRYPTO_THREADID *id)
         }
 #endif
     /* Else pick a backup */
-#ifdef OPENSSL_SYS_WIN32
-    CRYPTO_THREADID_set_numeric(id, (unsigned long)GetCurrentThreadId());
-#else
     /* For everything else, default to using the address of 'errno' */
     CRYPTO_THREADID_set_pointer(id, (void*)&errno);
-#endif
     }
 
 int CRYPTO_THREADID_cmp(const CRYPTO_THREADID *a, const CRYPTO_THREADID *b)
@@ -522,9 +518,7 @@ unsigned long CRYPTO_thread_id(void)
 
     if (id_callback == NULL)
         {
-#ifdef OPENSSL_SYS_WIN32
-        ret=(unsigned long)GetCurrentThreadId();
-#elif defined(GETPID_IS_MEANINGLESS)
+#if defined(GETPID_IS_MEANINGLESS)
         ret=1L;
 #else
         ret=(unsigned long)getpid();
@@ -657,11 +651,7 @@ unsigned long *OPENSSL_ia32cap_loc(void)
 
 #if defined(OPENSSL_CPUID_OBJ) && !defined(OPENSSL_NO_ASM) && !defined(I386_ONLY)
 #define OPENSSL_CPUID_SETUP
-#if defined(_WIN32)
-typedef unsigned __int64 IA32CAP;
-#else
 typedef unsigned long long IA32CAP;
-#endif
 void OPENSSL_cpuid_setup(void)
 { static int trigger=0;
   IA32CAP OPENSSL_ia32_cpuid(void);
@@ -673,11 +663,7 @@ void OPENSSL_cpuid_setup(void)
     trigger=1;
     if ((env=getenv("OPENSSL_ia32cap"))) {
     int off = (env[0]=='~')?1:0;
-#if defined(_WIN32)
-    if (!sscanf(env+off,"%I64i",&vec)) vec = strtoul(env+off,NULL,0);
-#else
     if (!sscanf(env+off,"%lli",(long long *)&vec)) vec = strtoul(env+off,NULL,0);
-#endif
     if (off) vec = OPENSSL_ia32_cpuid()&~vec;
     }
     else
@@ -701,133 +687,6 @@ int OPENSSL_NONPIC_relocated = 0;
 void OPENSSL_cpuid_setup(void) {}
 #endif
 
-#if (defined(_WIN32) || defined(__CYGWIN__)) && defined(_WINDLL)
-#ifdef __CYGWIN__
-/* pick DLL_[PROCESS|THREAD]_[ATTACH|DETACH] definitions */
-#include <windows.h>
-/* this has side-effect of _WIN32 getting defined, which otherwise
- * is mutually exclusive with __CYGWIN__... */
-#endif
-
-/* All we really need to do is remove the 'error' state when a thread
- * detaches */
-
-BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason,
-         LPVOID lpvReserved)
-    {
-    switch(fdwReason)
-        {
-    case DLL_PROCESS_ATTACH:
-        OPENSSL_cpuid_setup();
-#if defined(_WIN32_WINNT)
-        {
-        IMAGE_DOS_HEADER *dos_header = (IMAGE_DOS_HEADER *)hinstDLL;
-        IMAGE_NT_HEADERS *nt_headers;
-
-        if (dos_header->e_magic==IMAGE_DOS_SIGNATURE)
-            {
-            nt_headers = (IMAGE_NT_HEADERS *)((char *)dos_header
-                        + dos_header->e_lfanew);
-            if (nt_headers->Signature==IMAGE_NT_SIGNATURE &&
-                hinstDLL!=(HINSTANCE)(nt_headers->OptionalHeader.ImageBase))
-                OPENSSL_NONPIC_relocated=1;
-            }
-        }
-#endif
-        break;
-    case DLL_THREAD_ATTACH:
-        break;
-    case DLL_THREAD_DETACH:
-        break;
-    case DLL_PROCESS_DETACH:
-        break;
-        }
-    return (TRUE);
-    }
-#endif
-
-#if defined(_WIN32) && !defined(__CYGWIN__)
-#include <tchar.h>
-#include <signal.h>
-#ifdef __WATCOMC__
-#if defined(_UNICODE) || defined(__UNICODE__)
-#define _vsntprintf _vsnwprintf
-#else
-#define _vsntprintf _vsnprintf
-#endif
-#endif
-#ifdef _MSC_VER
-#define alloca _alloca
-#endif
-
-void OPENSSL_showfatal (const char *fmta,...)
-{ va_list ap;
-  TCHAR buf[256];
-  const TCHAR *fmt;
-#ifdef STD_ERROR_HANDLE    /* what a dirty trick! */
-  HANDLE h;
-
-    if ((h=GetStdHandle(STD_ERROR_HANDLE)) != NULL &&
-    GetFileType(h)!=FILE_TYPE_UNKNOWN)
-    {    /* must be console application */
-    va_start (ap,fmta);
-    vfprintf (stderr,fmta,ap);
-    va_end (ap);
-    return;
-    }
-#endif
-
-    if (sizeof(TCHAR)==sizeof(char))
-    fmt=(const TCHAR *)fmta;
-    else do
-    { int    keepgoing;
-      size_t len_0=strlen(fmta)+1,i;
-      WCHAR *fmtw;
-
-    fmtw = (WCHAR *)alloca(len_0*sizeof(WCHAR));
-    if (fmtw == NULL) { fmt=(const TCHAR *)L"no stack?"; break; }
-
-#ifndef OPENSSL_NO_MULTIBYTE
-    if (!MultiByteToWideChar(CP_ACP,0,fmta,len_0,fmtw,len_0))
-#endif
-        for (i=0;i<len_0;i++) fmtw[i]=(WCHAR)fmta[i];
-
-    for (i=0;i<len_0;i++)
-    {   if (fmtw[i]==L'%') do
-        {    keepgoing=0;
-        switch (fmtw[i+1])
-        {   case L'0': case L'1': case L'2': case L'3': case L'4':
-            case L'5': case L'6': case L'7': case L'8': case L'9':
-            case L'.': case L'*':
-            case L'-':    i++; keepgoing=1; break;
-            case L's':    fmtw[i+1]=L'S';   break;
-            case L'S':    fmtw[i+1]=L's';   break;
-            case L'c':    fmtw[i+1]=L'C';   break;
-            case L'C':    fmtw[i+1]=L'c';   break;
-        }
-        } while (keepgoing);
-    }
-    fmt = (const TCHAR *)fmtw;
-    } while (0);
-
-    va_start (ap,fmta);
-    _vsntprintf (buf,sizeof(buf)/sizeof(TCHAR)-1,fmt,ap);
-    buf [sizeof(buf)/sizeof(TCHAR)-1] = _T('\0');
-    va_end (ap);
-
-#if defined(_WIN32_WINNT) && _WIN32_WINNT>=0x0333
-    /* this -------------v--- guards NT-specific calls */
-    if (check_winnt() && OPENSSL_isservice() > 0)
-    {    HANDLE h = RegisterEventSource(0,_T("OPENSSL"));
-    const TCHAR *pmsg=buf;
-    ReportEvent(h,EVENTLOG_ERROR_TYPE,0,0,0,1,0,&pmsg,0);
-    DeregisterEventSource(h);
-    }
-    else
-#endif
-    MessageBox (NULL,buf,_T("OpenSSL: FATAL"),MB_OK|MB_ICONSTOP);
-}
-#else
 void OPENSSL_showfatal (const char *fmta,...)
 { va_list ap;
 
@@ -835,21 +694,13 @@ void OPENSSL_showfatal (const char *fmta,...)
     vfprintf (stderr,fmta,ap);
     va_end (ap);
 }
-int OPENSSL_isservice (void) { return 0; }
-#endif
 
 void OpenSSLDie(const char *file,int line,const char *assertion)
     {
     OPENSSL_showfatal(
         "%s(%d): OpenSSL internal error, assertion failed: %s\n",
         file,line,assertion);
-#if !defined(_WIN32) || defined(__CYGWIN__)
     abort();
-#else
-    /* Win32 abort() customarily shows a dialog, but we just did that... */
-    raise(SIGABRT);
-    _exit(3);
-#endif
     }
 
 void *OPENSSL_stderr(void)    { return stderr; }

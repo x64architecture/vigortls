@@ -54,14 +54,3 @@ int BIO_vsnprintf(char *buf, size_t n, const char *format, va_list args)
         return (-1);
     return (ret);
 }
-
-#ifdef OPENSSL_SYS_WIN32
-int vasprintf(char **buf, const char *format, va_list args)
-{
-    int wanted = vsnprintf(*buf = NULL, 0, format, args);
-    if ((wanted < 0) || ((*buf = malloc(wanted + 1)) == NULL))
-        return -1;
-
-    return vsprintf(*buf, format, args);
-}
-#endif

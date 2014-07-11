@@ -63,9 +63,6 @@
 #ifdef LINUX
 #include <typedefs.h>
 #endif
-#ifdef OPENSSL_SYS_WIN32
-#include <windows.h>
-#endif
 #ifdef PTHREADS
 #include <pthread.h>
 #endif
@@ -88,7 +85,6 @@ void thread_setup(void);
 void thread_cleanup(void);
 void do_threads(SSL_CTX *s_ctx,SSL_CTX *c_ctx);
 
-void win32_locking_callback(int mode,int type,char *file,int line);
 void pthreads_locking_callback(int mode,int type,char *file,int line);
 
 unsigned long pthreads_thread_id(void );
@@ -674,99 +670,6 @@ int verify_callback(int ok, X509_STORE_CTX *ctx)
     }
 
 #define THREAD_STACK_SIZE (16*1024)
-
-#ifdef OPENSSL_SYS_WIN32
-
-static HANDLE *lock_cs;
-
-void thread_setup(void)
-    {
-    int i;
-
-    lock_cs=malloc(CRYPTO_num_locks() * sizeof(HANDLE));
-    for (i=0; i<CRYPTO_num_locks(); i++)
-        {
-        lock_cs[i]=CreateMutex(NULL,FALSE,NULL);
-        }
-
-    CRYPTO_set_locking_callback((void (*)(int,int,char *,int))win32_locking_callback);
-    /* id callback defined */
-    }
-
-void thread_cleanup(void)
-    {
-    int i;
-
-    CRYPTO_set_locking_callback(NULL);
-    for (i=0; i<CRYPTO_num_locks(); i++)
-        CloseHandle(lock_cs[i]);
-    free(lock_cs);
-    }
-
-void win32_locking_callback(int mode, int type, char *file, int line)
-    {
-    if (mode & CRYPTO_LOCK)
-        {
-        WaitForSingleObject(lock_cs[type],INFINITE);
-        }
-    else
-        {
-        ReleaseMutex(lock_cs[type]);
-        }
-    }
-
-void do_threads(SSL_CTX *s_ctx, SSL_CTX *c_ctx)
-    {
-    double ret;
-    SSL_CTX *ssl_ctx[2];
-    DWORD thread_id[MAX_THREAD_NUMBER];
-    HANDLE thread_handle[MAX_THREAD_NUMBER];
-    int i;
-    SYSTEMTIME start,end;
-
-    ssl_ctx[0]=s_ctx;
-    ssl_ctx[1]=c_ctx;
-
-    GetSystemTime(&start);
-    for (i=0; i<thread_number; i++)
-        {
-        thread_handle[i]=CreateThread(NULL,
-            THREAD_STACK_SIZE,
-            (LPTHREAD_START_ROUTINE)ndoit,
-            (void *)ssl_ctx,
-            0L,
-            &(thread_id[i]));
-        }
-
-    printf("reaping\n");
-    for (i=0; i<thread_number; i+=50)
-        {
-        int j;
-
-        j=(thread_number < (i+50))?(thread_number-i):50;
-
-        if (WaitForMultipleObjects(j,
-            (CONST HANDLE *)&(thread_handle[i]),TRUE,INFINITE)
-            == WAIT_FAILED)
-            {
-            fprintf(stderr,"WaitForMultipleObjects failed:%d\n",GetLastError());
-            exit(1);
-            }
-        }
-    GetSystemTime(&end);
-
-    if (start.wDayOfWeek > end.wDayOfWeek) end.wDayOfWeek+=7;
-    ret=(end.wDayOfWeek-start.wDayOfWeek)*24;
-
-    ret=(ret+end.wHour-start.wHour)*60;
-    ret=(ret+end.wMinute-start.wMinute)*60;
-    ret=(ret+end.wSecond-start.wSecond);
-    ret+=(end.wMilliseconds-start.wMilliseconds)/1000.0;
-
-    printf("win32 threads done - %.3f seconds\n",ret);
-    }
-
-#endif /* OPENSSL_SYS_WIN32 */
 
 #ifdef PTHREADS
 

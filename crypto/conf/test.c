@@ -67,9 +67,6 @@ main()
     long eline;
     char *s,*s2;
 
-#ifdef USE_WIN32
-    CONF_set_default_method(CONF_WIN32);
-#endif
     conf=CONF_load(NULL,"ssleay.cnf",&eline);
     if (conf == NULL)
         {

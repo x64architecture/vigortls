@@ -148,9 +148,9 @@ struct conf_st
     LHASH_OF(CONF_VALUE) *data;
     };
 
+CONF_METHOD *NCONF_WIN32(void);
 CONF *NCONF_new(CONF_METHOD *meth);
 CONF_METHOD *NCONF_default(void);
-CONF_METHOD *NCONF_WIN32(void);
 #if 0 /* Just to give you an idea of what I have in mind */
 CONF_METHOD *NCONF_XML(void);
 #endif

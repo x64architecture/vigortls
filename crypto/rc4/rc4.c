@@ -141,15 +141,6 @@ bad:
             exit(1);
             }
         }
-        
-#ifdef OPENSSL_SYS_MSDOS
-    /* This should set the file to binary mode. */
-    {
-#include <fcntl.h>
-    setmode(fileno(in),O_BINARY);
-    setmode(fileno(out),O_BINARY);
-    }
-#endif
 
     if (keystr == NULL)
         { /* get key */

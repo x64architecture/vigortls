@@ -70,43 +70,6 @@ extern "C" {
 
 #define OPENSSL_SYS_UNIX
 
-/* ---------------------- Microsoft operating systems ---------------------- */
-
-/* Note that MSDOS actually denotes 32-bit environments running on top of
-   MS-DOS, such as DJGPP one. */
-#if defined(OPENSSL_SYSNAME_MSDOS)
-# undef OPENSSL_SYS_UNIX
-# define OPENSSL_SYS_MSDOS
-#endif
-
-/* For 32 bit environment, there seems to be the CygWin environment and then
-   all the others that try to do the same thing Microsoft does... */
-#  if defined(_WIN32) || defined(OPENSSL_SYSNAME_WIN32)
-#   undef OPENSSL_SYS_UNIX
-#   define OPENSSL_SYS_WIN32
-#  endif
-
-/* Anything that tries to look like Microsoft is "Windows" */
-#if defined(OPENSSL_SYS_WIN32) || defined(OPENSSL_SYS_WINNT)
-# undef OPENSSL_SYS_UNIX
-# define OPENSSL_SYS_WINDOWS
-# ifndef OPENSSL_SYS_MSDOS
-#  define OPENSSL_SYS_MSDOS
-# endif
-#endif
-
-/* DLL settings.  This part is a bit tough, because it's up to the application
-   implementor how he or she will link the application, so it requires some
-   macro to be used. */
-#ifdef OPENSSL_SYS_WINDOWS
-# ifndef OPENSSL_OPT_WINDLL
-#  if defined(_WINDLL) /* This is used when building OpenSSL to indicate that
-                          DLL linkage should be used */
-#   define OPENSSL_OPT_WINDLL
-#  endif
-# endif
-#endif
-
 /* --------------------------------- Unix ---------------------------------- */
 #ifdef OPENSSL_SYS_UNIX
 # if defined(linux) || defined(__linux__) || defined(OPENSSL_SYSNAME_LINUX)
@@ -124,13 +87,8 @@ extern "C" {
 
 
 /* Specials for I/O an exit */
-#ifdef OPENSSL_SYS_MSDOS
-# define OPENSSL_UNISTD_IO <io.h>
-# define OPENSSL_DECLARE_EXIT extern void exit(int);
-#else
-# define OPENSSL_UNISTD_IO OPENSSL_UNISTD
-# define OPENSSL_DECLARE_EXIT /* declared in unistd.h */
-#endif
+#define OPENSSL_UNISTD_IO OPENSSL_UNISTD
+#define OPENSSL_DECLARE_EXIT /* declared in unistd.h */
 
 /* Definitions of OPENSSL_GLOBAL and OPENSSL_EXTERN, to define and declare
    certain global symbols that, with some compilers under VMS, have to be
@@ -151,15 +109,9 @@ extern "C" {
    value OPENSSL_IMPORT.
 */
 
-#if defined(OPENSSL_SYS_WINDOWS) && defined(OPENSSL_OPT_WINDLL)
-# define OPENSSL_EXPORT extern __declspec(dllexport)
-# define OPENSSL_IMPORT extern __declspec(dllimport)
-# define OPENSSL_GLOBAL
-#else
-# define OPENSSL_EXPORT extern
-# define OPENSSL_IMPORT extern
-# define OPENSSL_GLOBAL
-#endif
+#define OPENSSL_EXPORT extern
+#define OPENSSL_IMPORT extern
+#define OPENSSL_GLOBAL
 #define OPENSSL_EXTERN OPENSSL_IMPORT
 
 /* Macros to allow global variables to be reached through function calls when
@@ -182,12 +134,6 @@ extern "C" {
 # define OPENSSL_IMPLEMENT_GLOBAL(type,name,value) OPENSSL_GLOBAL type _shadow_##name=value;
 # define OPENSSL_DECLARE_GLOBAL(type,name) OPENSSL_EXPORT type _shadow_##name
 # define OPENSSL_GLOBAL_REF(name) _shadow_##name
-#endif
-
-#if defined(OPENSSL_SYS_WINDOWS)
-# ifdef _MSC_VER
-   typedef long ssize_t;
-# endif
 #endif
 
 #ifdef  __cplusplus

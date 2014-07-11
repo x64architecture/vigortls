@@ -57,7 +57,6 @@
  */
 
 #include <openssl/e_os2.h>
-#if !defined(OPENSSL_SYS_MSDOS) && !defined(OPENSSL_SYS_VMS) && !defined(OPENSSL_SYS_WIN32)
 #ifdef OPENSSL_UNISTD
 # include OPENSSL_UNISTD
 #else
@@ -73,7 +72,6 @@
 # endif
 
 #endif
-#endif
 
 /* #define SIGACTION */ /* Define this if you have sigaction() */
 
@@ -87,8 +85,8 @@
 #include <errno.h>
 
 
-/* There are 5 types of terminal interface supported,
- * TERMIO, TERMIOS, VMS, MSDOS and SGTTY
+/* There are 3 types of terminal interface supported,
+ * TERMIO, TERMIOS, and SGTTY
  */
 
 #if defined(linux) && !defined(TERMIO)
@@ -103,7 +101,7 @@
 #undef  SGTTY
 #endif
 
-#if !defined(TERMIO) && !defined(TERMIOS) && !defined(OPENSSL_SYS_VMS) && !defined(OPENSSL_SYS_MSDOS)
+#if !defined(TERMIO) && !defined(TERMIOS)
 #undef  TERMIOS
 #undef  TERMIO
 #define SGTTY
@@ -133,13 +131,8 @@
 #define TTY_set(tty,data)    ioctl(tty,TIOCSETP,data)
 #endif
 
-#if !defined(_LIBC) && !defined(OPENSSL_SYS_MSDOS)
+#if !defined(_LIBC)
 #include <sys/ioctl.h>
-#endif
-
-#if defined(OPENSSL_SYS_MSDOS)
-#include <conio.h>
-#define fgets(a,b,c) noecho_fgets(a,b,c)
 #endif
 
 #ifndef NX509_SIG
@@ -150,9 +143,6 @@ static void read_till_nl(FILE *);
 static void recsig(int);
 static void pushsig(void);
 static void popsig(void);
-#if defined(OPENSSL_SYS_MSDOS)
-static int noecho_fgets(char *buf, int size, FILE *tty);
-#endif
 #ifdef SIGACTION
  static struct sigaction savsig[NX509_SIG];
 #else
@@ -186,9 +176,7 @@ static void read_till_nl(FILE *in)
 int des_read_pw(char *buf, char *buff, int size, const char *prompt,
          int verify)
     {
-#if !defined(OPENSSL_SYS_MSDOS)
     TTY_STRUCT tty_orig,tty_new;
-#endif
     int number;
     int ok;
     /* statics are simply to avoid warnings about longjmp clobbering
@@ -210,13 +198,8 @@ int des_read_pw(char *buf, char *buff, int size, const char *prompt,
     is_a_tty=1;
     tty=NULL;
 
-#ifdef OPENSSL_SYS_MSDOS
-    if ((tty=fopen("con","r")) == NULL)
-        tty=stdin;
-#else
     if ((tty=fopen("/dev/tty","r")) == NULL)
         tty=stdin;
-#endif
 
 #if defined(TTY_get) && !defined(OPENSSL_SYS_VMS)
     if (TTY_get(fileno(tty),&tty_orig) == -1)
@@ -357,35 +340,4 @@ static void popsig(void)
 static void recsig(int i)
     {
     longjmp(save,1);
-#ifdef LINT
-    i=i;
-#endif
     }
-
-#ifdef OPENSSL_SYS_MSDOS
-static int noecho_fgets(char *buf, int size, FILE *tty)
-    {
-    int i;
-    char *p;
-
-    p=buf;
-    for (;;)
-        {
-        if (size == 0)
-            {
-            *p='\0';
-            break;
-            }
-        size--;
-        i=getch();
-        if (i == '\r') i='\n';
-        *(p++)=i;
-        if (i == '\n')
-            {
-            *p='\0';
-            break;
-            }
-        }
-    return (strlen(buf));
-    }
-#endif

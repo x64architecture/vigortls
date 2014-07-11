@@ -114,16 +114,9 @@
 #include "bn_lcl.h"
 
 #include <stdlib.h>
-#ifdef _WIN32
-# include <malloc.h>
-# ifndef alloca
-#  define alloca _alloca
-# endif
-#elif defined(__GNUC__)
 # ifndef alloca
 #  define alloca(s) __builtin_alloca((s))
 # endif
-#endif
 
 /* maximum precomputation table size for *variable* sliding windows */
 #define TABLE_SIZE    32

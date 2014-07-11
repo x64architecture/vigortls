@@ -59,18 +59,13 @@
 /* define PART1, PART2, PART3 or PART4 to build only with a few of the options.
  * This is for machines with 64k code segment size restrictions. */
 
-#if !defined(OPENSSL_SYS_MSDOS) && (!defined(OPENSSL_SYS_VMS) || defined(__DECC)) && !defined(OPENSSL_SYS_MACOSX)
+#if !defined(OPENSSL_SYS_MACOSX)
 #define TIMES
 #endif
 
 #include <stdio.h>
-#ifndef OPENSSL_SYS_MSDOS
 #include <openssl/e_os2.h>
 #include OPENSSL_UNISTD
-#else
-#include <io.h>
-extern void exit();
-#endif
 
 #include <signal.h>
 

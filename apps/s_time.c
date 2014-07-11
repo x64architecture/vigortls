@@ -74,13 +74,7 @@
 #include <openssl/pem.h>
 #include "s_apps.h"
 #include <openssl/err.h>
-#ifdef WIN32_STUFF
-#include "winmain.h"
-#include "wintext.h"
-#endif
-#if !defined(OPENSSL_SYS_MSDOS)
 #include OPENSSL_UNISTD
-#endif
 
 #undef PROG
 #define PROG s_time_main
@@ -134,9 +128,6 @@ static int perform=0;
 #ifdef FIONBIO
 static int t_nbio=0;
 #endif
-#ifdef OPENSSL_SYS_WIN32
-static int exitNow = 0;        /* Set when it's time to exit main */
-#endif
 
 static void s_time_init(void)
     {
@@ -157,9 +148,6 @@ static void s_time_init(void)
 
 #ifdef FIONBIO
     t_nbio=0;
-#endif
-#ifdef OPENSSL_SYS_WIN32
-    exitNow = 0;        /* Set when it's time to exit main */
 #endif
     }
 
@@ -388,14 +376,6 @@ int MAIN(int argc, char **argv)
     for (;;)
         {
         if (finishtime < (long)time(NULL)) break;
-#ifdef WIN32_STUFF
-
-        if ( flushWinMsgs(0) == -1 )
-            goto end;
-
-        if ( waitingToDie || exitNow )        /* we're dead */
-            goto end;
-#endif
 
         if ( (scon = doConnection( NULL )) == NULL )
             goto end;
@@ -481,14 +461,6 @@ next:
     for (;;)
         {
         if (finishtime < (long)time(NULL)) break;
-
-#ifdef WIN32_STUFF
-        if ( flushWinMsgs(0) == -1 )
-            goto end;
-
-        if ( waitingToDie || exitNow )    /* we're dead */
-            goto end;
-#endif
 
          if ( (doConnection( scon )) == NULL )
             goto end;

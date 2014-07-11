@@ -18,9 +18,9 @@ APPS=
 
 LIB=$(TOP)/libcrypto.a
 LIBSRC=md_rand.c randfile.c rand_lib.c rand_err.c rand_egd.c \
-	rand_win.c rand_unix.c
+	rand_unix.c
 LIBOBJ=md_rand.o randfile.o rand_lib.o rand_err.o rand_egd.o \
-	rand_win.o rand_unix.o
+	rand_unix.o
 
 SRC= $(LIBSRC)
 
@@ -123,17 +123,6 @@ rand_unix.o: ../../include/openssl/rand.h ../../include/openssl/safestack.h
 rand_unix.o: ../../include/openssl/sha.h ../../include/openssl/stack.h
 rand_unix.o: ../cryptlib.h rand_lcl.h
 rand_unix.o: rand_unix.c
-rand_win.o: ../../e_os.h ../../include/openssl/asn1.h
-rand_win.o: ../../include/openssl/bio.h ../../include/openssl/buffer.h
-rand_win.o: ../../include/openssl/crypto.h ../../include/openssl/e_os2.h
-rand_win.o: ../../include/openssl/err.h ../../include/openssl/evp.h
-rand_win.o: ../../include/openssl/lhash.h ../../include/openssl/obj_mac.h
-rand_win.o: ../../include/openssl/objects.h ../../include/openssl/opensslconf.h
-rand_win.o: ../../include/openssl/opensslv.h ../../include/openssl/ossl_typ.h
-rand_win.o: ../../include/openssl/rand.h ../../include/openssl/safestack.h
-rand_win.o: ../../include/openssl/sha.h ../../include/openssl/stack.h
-rand_win.o: ../cryptlib.h rand_lcl.h
-rand_win.o: rand_win.c
 randfile.o: ../../e_os.h ../../include/openssl/buffer.h
 randfile.o: ../../include/openssl/crypto.h ../../include/openssl/e_os2.h
 randfile.o: ../../include/openssl/opensslconf.h

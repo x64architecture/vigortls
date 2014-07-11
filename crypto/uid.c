@@ -56,15 +56,6 @@
 #include <openssl/crypto.h>
 #include <openssl/opensslconf.h>
 
-#if defined(OPENSSL_SYS_WIN32)
-
-int OPENSSL_issetugid(void)
-    {
-    return 0;
-    }
-
-#else
-
 #include OPENSSL_UNISTD
 #include <sys/types.h>
 
@@ -74,7 +65,6 @@ int OPENSSL_issetugid(void)
     if (getgid() != getegid()) return 1;
     return 0;
     }
-#endif
 
 
 

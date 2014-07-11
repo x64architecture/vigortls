@@ -112,9 +112,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#if !defined(OPENSSL_SYSNAME_WIN32)
 #include <strings.h>
-#endif
 #include <sys/types.h>
 #include <ctype.h>
 #include <errno.h>
@@ -135,11 +133,6 @@
 #define NON_MAIN
 #include "apps.h"
 #undef NON_MAIN
-
-#ifdef _WIN32
-static int WIN32_rename(const char *from, const char *to);
-#define rename(from,to) WIN32_rename((from),(to))
-#endif
 
 typedef struct {
     const char *name;
@@ -275,46 +268,6 @@ int str2fmt(char *s)
         return (FORMAT_UNDEF);
     }
 
-#if defined(OPENSSL_SYS_MSDOS) || defined(OPENSSL_SYS_WIN32)
-void program_name(char *in, char *out, int size)
-    {
-    int i,n;
-    char *p=NULL;
-
-    n=strlen(in);
-    /* find the last '/', '\' or ':' */
-    for (i=n-1; i>0; i--)
-        {
-        if ((in[i] == '/') || (in[i] == '\\') || (in[i] == ':'))
-            {
-            p= &(in[i+1]);
-            break;
-            }
-        }
-    if (p == NULL)
-        p=in;
-    n=strlen(p);
-
-    /* strip off trailing .exe if present. */
-    if ((n > 4) && (p[n-4] == '.') &&
-        ((p[n-3] == 'e') || (p[n-3] == 'E')) &&
-        ((p[n-2] == 'x') || (p[n-2] == 'X')) &&
-        ((p[n-1] == 'e') || (p[n-1] == 'E')))
-        n-=4;
-
-    if (n > size-1)
-        n=size-1;
-
-    for (i=0; i<n; i++)
-        {
-        if ((p[i] >= 'A') && (p[i] <= 'Z'))
-            out[i]=p[i]-'A'+'a';
-        else
-            out[i]=p[i];
-        }
-    out[n]='\0';
-    }
-#else
 void program_name(char *in, char *out, int size)
     {
     char *p;
@@ -326,7 +279,6 @@ void program_name(char *in, char *out, int size)
         p=in;
     BUF_strlcpy(out,p,size);
     }
-#endif
 
 int chopup_args(ARGS *arg, char *buf, int *argc, char **argv[])
     {
@@ -617,7 +569,6 @@ static char *app_get_pass(BIO *err, char *arg, int keepbio)
                 BIO_printf(err, "Can't open file %s\n", arg + 5);
                 return NULL;
             }
-#if !defined(_WIN32)
         /*
          * Under _WIN32, which covers even Win64 and CE, file
          * descriptors referenced by BIO_s_fd are not inherited
@@ -637,7 +588,6 @@ static char *app_get_pass(BIO *err, char *arg, int keepbio)
             /* Can't do BIO_gets on an fd BIO so add a buffering BIO */
             btmp = BIO_new(BIO_f_buffer());
             pwdbio = BIO_push(btmp, pwdbio);
-#endif
         } else if (!strcmp(arg, "stdin")) {
             pwdbio = BIO_new_fp(stdin, BIO_NOCLOSE);
             if (!pwdbio) {
@@ -2439,117 +2389,9 @@ unsigned char *next_protos_parse(unsigned short *outlen, const char *in)
 /*
  * Platform-specific sections
  */
-#if defined(_WIN32)
-# ifdef fileno
-#  undef fileno
-#  define fileno(a) (int)_fileno(a)
-# endif
-
-# include <windows.h>
-# include <tchar.h>
-
-static int WIN32_rename(const char *from, const char *to)
-    {
-    TCHAR  *tfrom=NULL,*tto;
-    DWORD    err;
-    int    ret=0;
-
-    if (sizeof(TCHAR) == 1)
-        {
-        tfrom = (TCHAR *)from;
-        tto   = (TCHAR *)to;
-        }
-    else    /* UNICODE path */
-        {
-        size_t i,flen=strlen(from)+1,tlen=strlen(to)+1;
-        tfrom = (TCHAR *)malloc(sizeof(TCHAR)*(flen+tlen));
-        if (tfrom==NULL) goto err;
-        tto=tfrom+flen;
-        if (!MultiByteToWideChar(CP_ACP,0,from,flen,(WCHAR *)tfrom,flen))
-            for (i=0;i<flen;i++)    tfrom[i]=(TCHAR)from[i];
-        if (!MultiByteToWideChar(CP_ACP,0,to,  tlen,(WCHAR *)tto,  tlen))
-            for (i=0;i<tlen;i++)    tto[i]  =(TCHAR)to[i];
-        }
-
-    if (MoveFile(tfrom,tto))    goto ok;
-    err=GetLastError();
-    if (err==ERROR_ALREADY_EXISTS || err==ERROR_FILE_EXISTS)
-        {
-        if (DeleteFile(tto) && MoveFile(tfrom,tto))
-            goto ok;
-        err=GetLastError();
-        }
-    if (err==ERROR_FILE_NOT_FOUND || err==ERROR_PATH_NOT_FOUND)
-        errno = ENOENT;
-    else if (err==ERROR_ACCESS_DENIED)
-        errno = EACCES;
-    else
-        errno = EINVAL;    /* we could map more codes... */
-err:
-    ret=-1;
-ok:
-    if (tfrom!=NULL && tfrom!=(TCHAR *)from)    free(tfrom);
-    return ret;
-    }
-#endif
 
 /* app_tminterval section */
-#if defined(_WIN32)
-double app_tminterval(int stop,int usertime)
-    {
-    FILETIME        now;
-    double            ret=0;
-    static ULARGE_INTEGER    tmstart;
-    static int        warning=1;
-#ifdef _WIN32_WINNT
-    static HANDLE        proc=NULL;
-
-    if (proc==NULL)
-        {
-        if (check_winnt())
-            proc = OpenProcess(PROCESS_QUERY_INFORMATION,FALSE,
-                        GetCurrentProcessId());
-        if (proc==NULL) proc = (HANDLE)-1;
-        }
-
-    if (usertime && proc!=(HANDLE)-1)
-        {
-        FILETIME junk;
-        GetProcessTimes(proc,&junk,&junk,&junk,&now);
-        }
-    else
-#endif
-        {
-        SYSTEMTIME systime;
-
-        if (usertime && warning)
-            {
-            BIO_printf(bio_err,"To get meaningful results, run "
-                       "this program on idle system.\n");
-            warning=0;
-            }
-        GetSystemTime(&systime);
-        SystemTimeToFileTime(&systime,&now);
-        }
-
-    if (stop==TM_START)
-        {
-        tmstart.u.LowPart  = now.dwLowDateTime;
-        tmstart.u.HighPart = now.dwHighDateTime;
-        }
-    else    {
-        ULARGE_INTEGER tmstop;
-
-        tmstop.u.LowPart   = now.dwLowDateTime;
-        tmstop.u.HighPart  = now.dwHighDateTime;
-
-        ret = (__int64)(tmstop.QuadPart - tmstart.QuadPart)*1e-7;
-        }
-
-    return (ret);
-    }
-
-#elif defined(_SC_CLK_TCK)    /* by means of unistd.h */
+#if defined(_SC_CLK_TCK)    /* by means of unistd.h */
 #include <sys/times.h>
 
 double app_tminterval(int stop,int usertime)
@@ -2594,30 +2436,6 @@ double app_tminterval(int stop,int usertime)
 #endif
 
 /* app_isdir section */
-#ifdef _WIN32
-int app_isdir(const char *name)
-    {
-    HANDLE        hList;
-    WIN32_FIND_DATA    FileData;
-#if defined(UNICODE) || defined(_UNICODE)
-    size_t i, len_0 = strlen(name)+1;
-
-    if (len_0 > sizeof(FileData.cFileName)/sizeof(FileData.cFileName[0]))
-        return -1;
-
-    if (!MultiByteToWideChar(CP_ACP,0,name,len_0,FileData.cFileName,len_0))
-        for (i=0;i<len_0;i++)
-            FileData.cFileName[i] = (WCHAR)name[i];
-
-    hList = FindFirstFile(FileData.cFileName,&FileData);
-#else
-    hList = FindFirstFile(name,&FileData);
-#endif
-    if (hList == INVALID_HANDLE_VALUE)    return -1;
-    FindClose(hList);
-    return ((FileData.dwFileAttributes&FILE_ATTRIBUTE_DIRECTORY)!=0);
-    }
-#else
 #include <sys/stat.h>
 #ifndef S_ISDIR
 # if defined(_S_IFMT) && defined(_S_IFDIR)
@@ -2638,31 +2456,14 @@ int app_isdir(const char *name)
     return -1;
 #endif
     }
-#endif
 
 /* raw_read|write section */
-#if defined(_WIN32) && defined(STD_INPUT_HANDLE)
-int raw_read_stdin(void *buf,int siz)
-    {
-    DWORD n;
-    if (ReadFile(GetStdHandle(STD_INPUT_HANDLE),buf,siz,&n,NULL))
-        return (n);
-    else    return (-1);
-    }
-#else
-int raw_read_stdin(void *buf,int siz)
-    {    return read(fileno(stdin),buf,siz);    }
-#endif
+int raw_read_stdin(void *buf, int siz)
+{
+	return read(fileno(stdin), buf, siz);
+}
 
-#if defined(_WIN32) && defined(STD_OUTPUT_HANDLE)
-int raw_write_stdout(const void *buf,int siz)
-    {
-    DWORD n;
-    if (WriteFile(GetStdHandle(STD_OUTPUT_HANDLE),buf,siz,&n,NULL))
-        return (n);
-    else    return (-1);
-    }
-#else
-int raw_write_stdout(const void *buf,int siz)
-    {    return write(fileno(stdout),buf,siz);    }
-#endif
+int raw_write_stdout(const void *buf, int siz)
+{    
+	return write(fileno(stdout), buf, siz);    
+}

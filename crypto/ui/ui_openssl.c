@@ -128,7 +128,6 @@
 #include <string.h>
 #include <errno.h>
 
-#if !defined(OPENSSL_SYS_MSDOS) && !defined(OPENSSL_SYS_VMS)
 # ifdef OPENSSL_UNISTD
 #  include OPENSSL_UNISTD
 # else
@@ -144,15 +143,13 @@
 #  endif
 
 # endif
-#endif
 
-/* 06-Apr-92 Luke Brennan    Support for VMS */
 #include "ui_locl.h"
 #include "cryptlib.h"
 
 
-/* There are 5 types of terminal interface supported,
- * TERMIO, TERMIOS, VMS, MSDOS and SGTTY
+/* There are 3 types of terminal interface supported,
+ * TERMIO, TERMIOS and SGTTY
  */
 
 #if defined(linux) && !defined(TERMIO)
@@ -167,7 +164,7 @@
 # undef  SGTTY
 #endif
 
-#if !defined(TERMIO) && !defined(TERMIOS) && !defined(OPENSSL_SYS_MSDOS)
+#if !defined(TERMIO) && !defined(TERMIOS)
 # undef  TERMIOS
 # undef  TERMIO
 # define SGTTY
@@ -197,12 +194,8 @@
 # define TTY_set(tty,data)    ioctl(tty,TIOCSETP,data)
 #endif
 
-#if !defined(_LIBC) && !defined(OPENSSL_SYS_MSDOS)
+#if !defined(_LIBC)
 # include <sys/ioctl.h>
-#endif
-
-#ifdef OPENSSL_SYS_MSDOS
-# include <conio.h>
 #endif
 
 #ifndef NX509_SIG
@@ -217,9 +210,7 @@ static struct sigaction savsig[NX509_SIG];
 static void (*savsig[NX509_SIG])(int );
 #endif
 
-#if !defined(OPENSSL_SYS_MSDOS)
 static TTY_STRUCT tty_orig,tty_new;
-#endif
 static FILE *tty_in, *tty_out;
 static int is_a_tty;
 
@@ -228,9 +219,6 @@ static int read_till_nl(FILE *);
 static void recsig(int);
 static void pushsig(void);
 static void popsig(void);
-#if defined(OPENSSL_SYS_MSDOS)
-static int noecho_fgets(char *buf, int size, FILE *tty);
-#endif
 static int read_string_inner(UI *ui, UI_STRING *uis, int echo, int strip_nl);
 
 static int read_string(UI *ui, UI_STRING *uis);
@@ -349,17 +337,7 @@ static int read_string_inner(UI *ui, UI_STRING *uis, int echo, int strip_nl)
     ps=2;
 
     result[0]='\0';
-#ifdef OPENSSL_SYS_MSDOS
-    if (!echo)
-        {
-        noecho_fgets(result,maxsize,tty_in);
-        p=result; /* FIXME: noecho_fgets doesn't return errors */
-        }
-    else
-        p=fgets(result,maxsize,tty_in);
-#else
-    p=fgets(result,maxsize,tty_in);
-#endif
+    p = fgets(result,maxsize,tty_in);
     if (!p)
         goto error;
     if (feof(tty_in)) goto error;
@@ -396,17 +374,12 @@ static int open_console(UI *ui)
     CRYPTO_w_lock(CRYPTO_LOCK_UI);
     is_a_tty = 1;
 
-#  ifdef OPENSSL_SYS_MSDOS
-#    define DEV_TTY "con"
-#  else
-#    define DEV_TTY "/dev/tty"
-#  endif
-    if ((tty_in=fopen(DEV_TTY,"r")) == NULL)
+    if ((tty_in=fopen("/dev/tty","r")) == NULL)
         tty_in=stdin;
-    if ((tty_out=fopen(DEV_TTY,"w")) == NULL)
+    if ((tty_out=fopen("/dev/tty","w")) == NULL)
         tty_out=stderr;
 
-#if defined(TTY_get) && !defined(OPENSSL_SYS_VMS)
+#if defined(TTY_get)
      if (TTY_get(fileno(tty_in),&tty_orig) == -1)
         {
 #ifdef ENOTTY
@@ -434,7 +407,7 @@ static int noecho_console(UI *ui)
     tty_new.TTY_FLAGS &= ~ECHO;
 #endif
 
-#if defined(TTY_set) && !defined(OPENSSL_SYS_VMS)
+#if defined(TTY_set)
     if (is_a_tty && (TTY_set(fileno(tty_in),&tty_new) == -1))
         return 0;
 #endif
@@ -443,12 +416,12 @@ static int noecho_console(UI *ui)
 
 static int echo_console(UI *ui)
     {
-#if defined(TTY_set) && !defined(OPENSSL_SYS_VMS)
+#if defined(TTY_set)
     memcpy(&(tty_new),&(tty_orig),sizeof(tty_orig));
     tty_new.TTY_FLAGS |= ECHO;
 #endif
 
-#if defined(TTY_set) && !defined(OPENSSL_SYS_VMS)
+#if defined(TTY_set)
     if (is_a_tty && (TTY_set(fileno(tty_in),&tty_new) == -1))
         return 0;
 #endif
@@ -468,9 +441,7 @@ static int close_console(UI *ui)
 /* Internal functions to handle signals and act on them */
 static void pushsig(void)
     {
-#ifndef OPENSSL_SYS_WIN32
     int i;
-#endif
 #ifdef SIGACTION
     struct sigaction sa;
 
@@ -478,14 +449,6 @@ static void pushsig(void)
     sa.sa_handler=recsig;
 #endif
 
-#ifdef OPENSSL_SYS_WIN32
-    savsig[SIGABRT]=signal(SIGABRT,recsig);
-    savsig[SIGFPE]=signal(SIGFPE,recsig);
-    savsig[SIGILL]=signal(SIGILL,recsig);
-    savsig[SIGINT]=signal(SIGINT,recsig);
-    savsig[SIGSEGV]=signal(SIGSEGV,recsig);
-    savsig[SIGTERM]=signal(SIGTERM,recsig);
-#else
     for (i=1; i<NX509_SIG; i++)
         {
 #ifdef SIGUSR1
@@ -506,7 +469,6 @@ static void pushsig(void)
         savsig[i]=signal(i,recsig);
 #endif
         }
-#endif
 
 #ifdef SIGWINCH
     signal(SIGWINCH,SIG_DFL);
@@ -515,14 +477,6 @@ static void pushsig(void)
 
 static void popsig(void)
     {
-#ifdef OPENSSL_SYS_WIN32
-    signal(SIGABRT,savsig[SIGABRT]);
-    signal(SIGFPE,savsig[SIGFPE]);
-    signal(SIGILL,savsig[SIGILL]);
-    signal(SIGINT,savsig[SIGINT]);
-    signal(SIGSEGV,savsig[SIGSEGV]);
-    signal(SIGTERM,savsig[SIGTERM]);
-#else
     int i;
     for (i=1; i<NX509_SIG; i++)
         {
@@ -540,43 +494,9 @@ static void popsig(void)
         signal(i,savsig[i]);
 #endif
         }
-#endif
     }
 
 static void recsig(int i)
     {
     intr_signal=i;
     }
-
-/* Internal functions specific for Windows */
-#if defined(OPENSSL_SYS_MSDOS)
-static int noecho_fgets(char *buf, int size, FILE *tty)
-    {
-    int i;
-    char *p;
-
-    p=buf;
-    for (;;)
-        {
-        if (size == 0)
-            {
-            *p='\0';
-            break;
-            }
-        size--;
-#ifdef _WIN32
-        i=_getch();
-#else
-        i=getch();
-#endif
-        if (i == '\r') i='\n';
-        *(p++)=i;
-        if (i == '\n')
-            {
-            *p='\0';
-            break;
-            }
-        }
-    return (strlen(buf));
-    }
-#endif
