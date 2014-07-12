@@ -18,9 +18,9 @@ APPS=
 
 LIB=$(TOP)/libcrypto.a
 LIBSRC= dso_dl.c dso_dlfcn.c dso_err.c dso_lib.c dso_null.c \
-	dso_openssl.c dso_win32.c
+	dso_openssl.c
 LIBOBJ= dso_dl.o dso_dlfcn.o dso_err.o dso_lib.o dso_null.o \
-	dso_openssl.o dso_win32.o
+	dso_openssl.o
 
 SRC= $(LIBSRC)
 
@@ -124,11 +124,3 @@ dso_openssl.o: ../../include/openssl/opensslv.h
 dso_openssl.o: ../../include/openssl/ossl_typ.h
 dso_openssl.o: ../../include/openssl/safestack.h ../../include/openssl/stack.h
 dso_openssl.o: ../cryptlib.h dso_openssl.c
-dso_win32.o: ../../e_os.h ../../include/openssl/bio.h
-dso_win32.o: ../../include/openssl/buffer.h ../../include/openssl/crypto.h
-dso_win32.o: ../../include/openssl/dso.h ../../include/openssl/e_os2.h
-dso_win32.o: ../../include/openssl/err.h ../../include/openssl/lhash.h
-dso_win32.o: ../../include/openssl/opensslconf.h
-dso_win32.o: ../../include/openssl/opensslv.h ../../include/openssl/ossl_typ.h
-dso_win32.o: ../../include/openssl/safestack.h ../../include/openssl/stack.h
-dso_win32.o: ../cryptlib.h dso_win32.c
