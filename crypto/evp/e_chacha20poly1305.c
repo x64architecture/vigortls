@@ -198,7 +198,7 @@ static const EVP_AEAD aead_chacha20_poly1305 =
     .key_len    =  32,
     .nonce_len  = CHACHA20_NONCE_LEN,
     .overhead   = POLY1305_TAG_LEN,
-    .max_tag_length = POLY1305_TAG_LEN,
+    .max_tag_len = POLY1305_TAG_LEN,
 
     .init     = aead_chacha20_poly1305_init,
     .cleanup  = aead_chacha20_poly1305_cleanup,
