@@ -294,21 +294,19 @@ static int tls1_generate_key_block(SSL *s, unsigned char *km,
 /* tls1_aead_ctx_init allocates |*aead_ctx|, if needed and returns 1. It
  * returns 0 on malloc error. */
 static int tls1_aead_ctx_init(SSL_AEAD_CTX **aead_ctx)
-    {
+{
     if (*aead_ctx != NULL)
         EVP_AEAD_CTX_cleanup(&(*aead_ctx)->ctx);
-    else
-        {
-        *aead_ctx = (SSL_AEAD_CTX*) OPENSSL_malloc(sizeof(SSL_AEAD_CTX));
-        if (*aead_ctx == NULL)
-            {
+    else {
+        *aead_ctx = (SSL_AEAD_CTX*)malloc(sizeof(SSL_AEAD_CTX));
+        if (*aead_ctx == NULL) {
             SSLerr(SSL_F_TLS1_AEAD_CTX_INIT, ERR_R_MALLOC_FAILURE);
             return 0;
-            }
         }
+    }
 
     return 1;
-    }
+}
 
 static int tls1_change_cipher_state_aead(SSL *s, char is_read,
     const unsigned char *key, unsigned key_len,
