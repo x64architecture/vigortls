@@ -70,15 +70,15 @@ static int mem_new(BIO *h);
 static int mem_free(BIO *data);
 
 static BIO_METHOD mem_method = {
-    .type	 =	BIO_TYPE_MEM,
-    .name	 =	"memory buffer",
-    .bwrite  =	mem_write,
-    .bread   =	mem_read,
-    .bputs   =	mem_puts,
-    .bgets   =	mem_gets,
-    .ctrl    =	mem_ctrl,
-    .create  =	mem_new,
-    .destroy =	mem_free
+    .type    =    BIO_TYPE_MEM,
+    .name    =    "memory buffer",
+    .bwrite  =    mem_write,
+    .bread   =    mem_read,
+    .bputs   =    mem_puts,
+    .bgets   =    mem_gets,
+    .ctrl    =    mem_ctrl,
+    .create  =    mem_new,
+    .destroy =    mem_free
 };
 
 /* bio->num is used to hold the value to return on 'empty', if it is
@@ -101,7 +101,7 @@ BIO *BIO_new_mem_buf(void *buf, int len)
     }
     sz = (len < 0) ? strlen(buf) : (size_t)len;
     if (!(ret = BIO_new(BIO_s_mem()))) 
-		return NULL;
+        return NULL;
     b = (BUF_MEM *)ret->ptr;
     b->data = buf;
     b->length = sz;
@@ -128,13 +128,13 @@ static int mem_new(BIO *bi)
 static int mem_free(BIO *a)
 {
     if (a == NULL)
-		return (0);
+        return (0);
     if (a->shutdown) {
         if ((a->init) && (a->ptr != NULL)) {
             BUF_MEM *b;
             b = (BUF_MEM *)a->ptr;
             if (a->flags & BIO_FLAGS_MEM_RDONLY)
-				b->data = NULL;
+                b->data = NULL;
             BUF_MEM_free(b);
             a->ptr = NULL;
         }
@@ -147,14 +147,14 @@ static int mem_read(BIO *b, char *out, int outl)
     int ret = -1;
     BUF_MEM *bm;
 
-    bm=(BUF_MEM *)b->ptr;
+    bm = (BUF_MEM *)b->ptr;
     BIO_clear_retry_flags(b);
     ret = (outl >=0 && (size_t)outl > bm->length) ? (int)bm->length : outl;
     if ((out != NULL) && (ret > 0)) {
         memcpy(out, bm->data, ret);
         bm->length -= ret;
         if (b->flags & BIO_FLAGS_MEM_RDONLY)
-			bm->data += ret;
+            bm->data += ret;
         else {
             memmove(&(bm->data[0]), &(bm->data[ret]), bm->length);
         }
@@ -273,7 +273,7 @@ static int mem_gets(BIO *bp, char *buf, int size)
     BIO_clear_retry_flags(bp);
     j = bm->length;
     if ((size - 1) < j)
-		j = size - 1;
+        j = size - 1;
     if (j <= 0) {
         *buf = '\0';
         return 0;
@@ -293,7 +293,7 @@ static int mem_gets(BIO *bp, char *buf, int size)
 
     i = mem_read(bp, buf, i);
     if (i > 0)
-		buf[i] = '\0';
+        buf[i] = '\0';
     ret = i;
     return (ret);
 }
