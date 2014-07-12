@@ -1775,6 +1775,9 @@ char *SSL_CIPHER_description(const SSL_CIPHER *cipher, char *buf, int len)
     case SSL_SEED:
         enc = "SEED(128)";
         break;
+    case SSL_CHACHA20POLY1305:
+        enc = "ChaCha20-Poly1305";
+        break;
     default:
         enc = "unknown";
         break;
