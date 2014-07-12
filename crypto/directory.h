@@ -1,9 +1,7 @@
-/* crypto/o_dir.h -*- mode:C; c-file-style: "eay" -*- */
+/* crypto/directory.h */
 /* Copied from Richard Levitte's (richard@levitte.org) LP library.  All
  * symbol names have been changed, with permission from the author.
  */
-
-/* $LP: LPlib/source/LPdir.h,v 1.1 2004/06/14 08:56:04 _cvs_levitte Exp $ */
 /*
  * Copyright (c) 2004, Richard Levitte <richard@levitte.org>
  * All rights reserved.

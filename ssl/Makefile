@@ -592,7 +592,7 @@ ssl_asn1.o: ../include/openssl/ssl23.h ../include/openssl/ssl3.h
 ssl_asn1.o: ../include/openssl/stack.h
 ssl_asn1.o: ../include/openssl/tls1.h ../include/openssl/x509.h
 ssl_asn1.o: ../include/openssl/x509_vfy.h ssl_asn1.c ssl_locl.h
-ssl_cert.o: ../crypto/o_dir.h ../e_os.h ../include/openssl/asn1.h
+ssl_cert.o: ../crypto/directory.h ../e_os.h ../include/openssl/asn1.h
 ssl_cert.o: ../include/openssl/bio.h ../include/openssl/bn.h
 ssl_cert.o: ../include/openssl/buffer.h ../include/openssl/comp.h
 ssl_cert.o: ../include/openssl/conf.h ../include/openssl/crypto.h

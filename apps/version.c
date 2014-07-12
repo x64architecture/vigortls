@@ -172,19 +172,12 @@ int MAIN(int argc, char **argv)
 
     if (version)
         {
-        if (SSLeay() == SSLEAY_VERSION_NUMBER)
-            {
-            printf("%s\n",SSLeay_version(SSLEAY_VERSION));
-            }
-        else
-            {
-            printf("%s (Library: %s)\n",
-                OPENSSL_VERSION_TEXT,
-                SSLeay_version(SSLEAY_VERSION));
-            }
+            printf("%s\n", OPENSSL_VERSION_TEXT);
         }
-    if (date)    printf("%s\n",SSLeay_version(SSLEAY_BUILT_ON));
-    if (platform) printf("%s\n",SSLeay_version(SSLEAY_PLATFORM));
+    if (date)
+		printf("Not supported... Yet\n");
+    if (platform)
+		printf("Not supported... Yet\n");
     if (options) 
         {
         printf("options:  ");
@@ -203,8 +196,10 @@ int MAIN(int argc, char **argv)
 #endif
         printf("\n");
         }
-    if (cflags)  printf("%s\n",SSLeay_version(SSLEAY_CFLAGS));
-    if (dir)  printf("%s\n",SSLeay_version(SSLEAY_DIR));
+    if (cflags)
+		printf("Not supported... Yet\n");
+    if (dir)
+		printf("Not supported... Yet\n");
 end:
     apps_shutdown();
     OPENSSL_EXIT(ret);

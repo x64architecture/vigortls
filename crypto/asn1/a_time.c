@@ -109,7 +109,7 @@ ASN1_TIME *ASN1_TIME_adj(ASN1_TIME *s, time_t t,
     struct tm *ts;
     struct tm data;
 
-    ts=OPENSSL_gmtime(&t,&data);
+    ts=gmtime_r(&t,&data);
     if (ts == NULL)
         {
         ASN1err(ASN1_F_ASN1_TIME_ADJ, ASN1_R_ERROR_GETTING_TIME);
@@ -117,7 +117,7 @@ ASN1_TIME *ASN1_TIME_adj(ASN1_TIME *s, time_t t,
         }
     if (offset_day || offset_sec)
         { 
-        if (!OPENSSL_gmtime_adj(ts, offset_day, offset_sec))
+        if (!gmtime_r_adj(ts, offset_day, offset_sec))
             return NULL;
         }
     if ((ts->tm_year >= 50) && (ts->tm_year < 150))

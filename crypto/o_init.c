@@ -56,17 +56,14 @@
 #include <openssl/err.h>
 
 /* Perform any essential OpenSSL initialization operations.
- * Currently only sets FIPS callbacks
+ * Currently does nothing and probably never will.
  */
 
 void OPENSSL_init(void)
-    {
+{
     static int done = 0;
     if (done)
         return;
     done = 1;
-#if 0
-    fprintf(stderr, "Called OPENSSL_init\n");
-#endif
-    }
+}
 

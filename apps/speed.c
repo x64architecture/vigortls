@@ -2208,8 +2208,8 @@ show_res:
 #endif
     if (!mr)
         {
-        fprintf(stdout,"%s\n",SSLeay_version(SSLEAY_VERSION));
-        fprintf(stdout,"%s\n",SSLeay_version(SSLEAY_BUILT_ON));
+        fprintf(stdout,"Not supported... Yet\n");
+        fprintf(stdout,"Not supported... Yet\n");
         printf("options:");
         printf("%s ",BN_options());
 #ifndef OPENSSL_NO_RC4
@@ -2227,7 +2227,7 @@ show_res:
 #ifndef OPENSSL_NO_BF
         printf("%s ",BF_options());
 #endif
-        fprintf(stdout,"\n%s\n",SSLeay_version(SSLEAY_CFLAGS));
+        fprintf(stdout,"Not supported... Yet\n");
         }
 
     if (pr_header)
