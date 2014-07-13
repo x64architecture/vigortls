@@ -1352,14 +1352,6 @@ print OUT "\n#endif /* OPENSSL_DOING_MAKEDEPEND */\n\n";
 print OUT $openssl_thread_defines;
 print OUT $openssl_other_defines,"\n";
 
-print OUT "/* The OPENSSL_NO_* macros are also defined as NO_* if the application\n";
-print OUT "   asks for it.  This is a transient feature that is provided for those\n";
-print OUT "   who haven't had the time to do the appropriate changes in their\n";
-print OUT "   applications.  */\n";
-print OUT "#ifdef OPENSSL_ALGORITHM_DEFINES\n";
-print OUT $openssl_algorithm_defines_trans;
-print OUT "#endif\n\n";
-
 print OUT "#define OPENSSL_CPUID_OBJ\n\n" if ($cpuid_obj ne "mem_clr.o");
 
 while (<IN>)
