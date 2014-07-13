@@ -1299,7 +1299,7 @@ static int aead_aes_gcm_init(EVP_AEAD_CTX *ctx, const unsigned char *key, size_t
         return 0;
     }
 
-    gcm_ctx = OPENSSL_malloc(sizeof(struct aead_aes_gcm_ctx));
+    gcm_ctx = malloc(sizeof(struct aead_aes_gcm_ctx));
     if (gcm_ctx == NULL) {
         EVPerr(EVP_F_AEAD_AES_GCM_INIT, ERR_R_MALLOC_FAILURE);
         return 0;

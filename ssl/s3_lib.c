@@ -629,7 +629,7 @@ OPENSSL_GLOBAL SSL_CIPHER ssl3_ciphers[] = {
     .id = SSL3_CK_FZA_DMS_FZA_SHA,
     .algorithm_mkey = SSL_kFZA,
     .algorithm_auth = SSL_aFZA,
-    SSL_eFZA,
+    .algorithm_enc = SSL_eFZA,
     .algorithm_mac = SSL_SHA1,
     .algorithm_ssl = SSL_SSLV3,
     .algo_strength = SSL_NOT_EXP|SSL_STRONG_NONE,
@@ -1176,7 +1176,7 @@ OPENSSL_GLOBAL SSL_CIPHER ssl3_ciphers[] = {
     .id = TLS1_CK_RSA_WITH_CAMELLIA_128_CBC_SHA,
     .algorithm_mkey = SSL_kRSA,
     .algorithm_auth = SSL_aRSA,
-    SSL_CAMELLIA128,
+    .algorithm_enc = SSL_CAMELLIA128,
     .algorithm_mac = SSL_SHA1,
     .algorithm_ssl = SSL_TLSV1,
     .algo_strength = SSL_NOT_EXP|SSL_HIGH,
@@ -1192,7 +1192,7 @@ OPENSSL_GLOBAL SSL_CIPHER ssl3_ciphers[] = {
     .id = TLS1_CK_DH_DSS_WITH_CAMELLIA_128_CBC_SHA,
     .algorithm_mkey = SSL_kDHd,
     .algorithm_auth = SSL_aDH,
-    SSL_CAMELLIA128,
+    .algorithm_enc = SSL_CAMELLIA128,
     .algorithm_mac = SSL_SHA1,
     .algorithm_ssl = SSL_TLSV1,
     .algo_strength = SSL_NOT_EXP|SSL_HIGH,
@@ -1208,7 +1208,7 @@ OPENSSL_GLOBAL SSL_CIPHER ssl3_ciphers[] = {
     .id = TLS1_CK_DH_RSA_WITH_CAMELLIA_128_CBC_SHA,
     .algorithm_mkey = SSL_kDHr,
     .algorithm_auth = SSL_aDH,
-    SSL_CAMELLIA128,
+    .algorithm_enc = SSL_CAMELLIA128,
     .algorithm_mac = SSL_SHA1,
     .algorithm_ssl = SSL_TLSV1,
     .algo_strength = SSL_NOT_EXP|SSL_HIGH,
@@ -1224,7 +1224,7 @@ OPENSSL_GLOBAL SSL_CIPHER ssl3_ciphers[] = {
     .id = TLS1_CK_DHE_DSS_WITH_CAMELLIA_128_CBC_SHA,
     .algorithm_mkey = SSL_kEDH,
     .algorithm_auth = SSL_aDSS,
-    SSL_CAMELLIA128,
+    .algorithm_enc = SSL_CAMELLIA128,
     .algorithm_mac = SSL_SHA1,
     .algorithm_ssl = SSL_TLSV1,
     .algo_strength = SSL_NOT_EXP|SSL_HIGH,
@@ -1240,7 +1240,7 @@ OPENSSL_GLOBAL SSL_CIPHER ssl3_ciphers[] = {
     .id = TLS1_CK_DHE_RSA_WITH_CAMELLIA_128_CBC_SHA,
     .algorithm_mkey = SSL_kEDH,
     .algorithm_auth = SSL_aRSA,
-    SSL_CAMELLIA128,
+    .algorithm_enc = SSL_CAMELLIA128,
     .algorithm_mac = SSL_SHA1,
     .algorithm_ssl = SSL_TLSV1,
     .algo_strength = SSL_NOT_EXP|SSL_HIGH,
@@ -1256,7 +1256,7 @@ OPENSSL_GLOBAL SSL_CIPHER ssl3_ciphers[] = {
     .id = TLS1_CK_ADH_WITH_CAMELLIA_128_CBC_SHA,
     .algorithm_mkey = SSL_kEDH,
     .algorithm_auth = SSL_aNULL,
-    SSL_CAMELLIA128,
+    .algorithm_enc = SSL_CAMELLIA128,
     .algorithm_mac = SSL_SHA1,
     .algorithm_ssl = SSL_TLSV1,
     .algo_strength = SSL_NOT_EXP|SSL_HIGH,
@@ -1565,7 +1565,7 @@ OPENSSL_GLOBAL SSL_CIPHER ssl3_ciphers[] = {
     .id = TLS1_CK_RSA_WITH_CAMELLIA_256_CBC_SHA,
     .algorithm_mkey = SSL_kRSA,
     .algorithm_auth = SSL_aRSA,
-    SSL_CAMELLIA256,
+    .algorithm_enc = SSL_CAMELLIA256,
     .algorithm_mac = SSL_SHA1,
     .algorithm_ssl = SSL_TLSV1,
     .algo_strength = SSL_NOT_EXP|SSL_HIGH,
@@ -1580,7 +1580,7 @@ OPENSSL_GLOBAL SSL_CIPHER ssl3_ciphers[] = {
     .id = TLS1_CK_DH_DSS_WITH_CAMELLIA_256_CBC_SHA,
     .algorithm_mkey = SSL_kDHd,
     .algorithm_auth = SSL_aDH,
-    SSL_CAMELLIA256,
+    .algorithm_enc = SSL_CAMELLIA256,
     .algorithm_mac = SSL_SHA1,
     .algorithm_ssl = SSL_TLSV1,
     .algo_strength = SSL_NOT_EXP|SSL_HIGH,
@@ -1596,7 +1596,7 @@ OPENSSL_GLOBAL SSL_CIPHER ssl3_ciphers[] = {
     .id = TLS1_CK_DH_RSA_WITH_CAMELLIA_256_CBC_SHA,
     .algorithm_mkey = SSL_kDHr,
     .algorithm_auth = SSL_aDH,
-    SSL_CAMELLIA256,
+    .algorithm_enc = SSL_CAMELLIA256,
     .algorithm_mac = SSL_SHA1,
     .algorithm_ssl = SSL_TLSV1,
     .algo_strength = SSL_NOT_EXP|SSL_HIGH,
@@ -1612,7 +1612,7 @@ OPENSSL_GLOBAL SSL_CIPHER ssl3_ciphers[] = {
     .id = TLS1_CK_DHE_DSS_WITH_CAMELLIA_256_CBC_SHA,
     .algorithm_mkey = SSL_kEDH,
     .algorithm_auth = SSL_aDSS,
-    SSL_CAMELLIA256,
+    .algorithm_enc = SSL_CAMELLIA256,
     .algorithm_mac = SSL_SHA1,
     .algorithm_ssl = SSL_TLSV1,
     .algo_strength = SSL_NOT_EXP|SSL_HIGH,
@@ -1628,7 +1628,7 @@ OPENSSL_GLOBAL SSL_CIPHER ssl3_ciphers[] = {
     .id = TLS1_CK_DHE_RSA_WITH_CAMELLIA_256_CBC_SHA,
     .algorithm_mkey = SSL_kEDH,
     .algorithm_auth = SSL_aRSA,
-    SSL_CAMELLIA256,
+    .algorithm_enc = SSL_CAMELLIA256,
     .algorithm_mac = SSL_SHA1,
     .algorithm_ssl = SSL_TLSV1,
     .algo_strength = SSL_NOT_EXP|SSL_HIGH,
@@ -1644,7 +1644,7 @@ OPENSSL_GLOBAL SSL_CIPHER ssl3_ciphers[] = {
     .id = TLS1_CK_ADH_WITH_CAMELLIA_256_CBC_SHA,
     .algorithm_mkey = SSL_kEDH,
     .algorithm_auth = SSL_aNULL,
-    SSL_CAMELLIA256,
+    .algorithm_enc = SSL_CAMELLIA256,
     .algorithm_mac = SSL_SHA1,
     .algorithm_ssl = SSL_TLSV1,
     .algo_strength = SSL_NOT_EXP|SSL_HIGH,
@@ -1733,8 +1733,9 @@ OPENSSL_GLOBAL SSL_CIPHER ssl3_ciphers[] = {
     .algorithm_mac = SSL_AEAD,
     .algorithm_ssl = SSL_TLSV1_2,
     .algo_strength = SSL_NOT_EXP|SSL_HIGH,
-    .algorithm2 = SSL_HANDSHAKE_MAC_SHA256|TLS1_PRF_SHA256|SSL_CIPHER_ALGORITHM2_AEAD|FIXED_NONCE_LEN(4)|
-                      SSL_CIPHER_ALGORITHM2_VARIABLE_NONCE_INCLUDED_IN_RECORD,
+    .algorithm2 = SSL_HANDSHAKE_MAC_SHA256|TLS1_PRF_SHA256|SSL_CIPHER_ALGORITHM2_AEAD|
+        FIXED_NONCE_LEN(4)|
+        SSL_CIPHER_ALGORITHM2_VARIABLE_NONCE_INCLUDED_IN_RECORD,
     .strength_bits = 128,
     .alg_bits = 128,
 },
@@ -1750,7 +1751,9 @@ OPENSSL_GLOBAL SSL_CIPHER ssl3_ciphers[] = {
     .algorithm_mac = SSL_AEAD,
     .algorithm_ssl = SSL_TLSV1_2,
     .algo_strength = SSL_NOT_EXP|SSL_HIGH,
-    .algorithm2 = SSL_HANDSHAKE_MAC_SHA384|TLS1_PRF_SHA384,
+    .algorithm2 = SSL_HANDSHAKE_MAC_SHA384|TLS1_PRF_SHA384|SSL_CIPHER_ALGORITHM2_AEAD|
+        FIXED_NONCE_LEN(4)|
+        SSL_CIPHER_ALGORITHM2_VARIABLE_NONCE_INCLUDED_IN_RECORD,
     .strength_bits = 256,
     .alg_bits = 256,
 },
@@ -1766,8 +1769,9 @@ OPENSSL_GLOBAL SSL_CIPHER ssl3_ciphers[] = {
     .algorithm_mac = SSL_AEAD,
     .algorithm_ssl = SSL_TLSV1_2,
     .algo_strength = SSL_NOT_EXP|SSL_HIGH,
-    .algorithm2 = SSL_HANDSHAKE_MAC_SHA256|TLS1_PRF_SHA256|SSL_CIPHER_ALGORITHM2_AEAD|FIXED_NONCE_LEN(4)|
-                      SSL_CIPHER_ALGORITHM2_VARIABLE_NONCE_INCLUDED_IN_RECORD,
+    .algorithm2 = SSL_HANDSHAKE_MAC_SHA256|TLS1_PRF_SHA256|SSL_CIPHER_ALGORITHM2_AEAD|
+        FIXED_NONCE_LEN(4)|
+        SSL_CIPHER_ALGORITHM2_VARIABLE_NONCE_INCLUDED_IN_RECORD,
     .strength_bits = 128,
     .alg_bits = 128,
 },
@@ -1783,7 +1787,9 @@ OPENSSL_GLOBAL SSL_CIPHER ssl3_ciphers[] = {
     .algorithm_mac = SSL_AEAD,
     .algorithm_ssl = SSL_TLSV1_2,
     .algo_strength = SSL_NOT_EXP|SSL_HIGH,
-    .algorithm2 = SSL_HANDSHAKE_MAC_SHA384|TLS1_PRF_SHA384,
+    .algorithm2 = SSL_HANDSHAKE_MAC_SHA384|TLS1_PRF_SHA384|SSL_CIPHER_ALGORITHM2_AEAD|
+        FIXED_NONCE_LEN(4)|
+        SSL_CIPHER_ALGORITHM2_VARIABLE_NONCE_INCLUDED_IN_RECORD,
     .strength_bits = 256,
     .alg_bits = 256,
 },
@@ -1799,8 +1805,9 @@ OPENSSL_GLOBAL SSL_CIPHER ssl3_ciphers[] = {
     .algorithm_mac = SSL_AEAD,
     .algorithm_ssl = SSL_TLSV1_2,
     .algo_strength = SSL_NOT_EXP|SSL_HIGH,
-    .algorithm2 = SSL_HANDSHAKE_MAC_SHA256|TLS1_PRF_SHA256|SSL_CIPHER_ALGORITHM2_AEAD|FIXED_NONCE_LEN(4)|
-                      SSL_CIPHER_ALGORITHM2_VARIABLE_NONCE_INCLUDED_IN_RECORD,
+    .algorithm2 = SSL_HANDSHAKE_MAC_SHA256|TLS1_PRF_SHA256|SSL_CIPHER_ALGORITHM2_AEAD|
+        FIXED_NONCE_LEN(4)|
+        SSL_CIPHER_ALGORITHM2_VARIABLE_NONCE_INCLUDED_IN_RECORD,
     .strength_bits = 128,
     .alg_bits = 128,
 },
@@ -1816,7 +1823,9 @@ OPENSSL_GLOBAL SSL_CIPHER ssl3_ciphers[] = {
     .algorithm_mac = SSL_AEAD,
     .algorithm_ssl = SSL_TLSV1_2,
     .algo_strength = SSL_NOT_EXP|SSL_HIGH,
-    .algorithm2 = SSL_HANDSHAKE_MAC_SHA384|TLS1_PRF_SHA384,
+    .algorithm2 = SSL_HANDSHAKE_MAC_SHA384|TLS1_PRF_SHA384|SSL_CIPHER_ALGORITHM2_AEAD|
+        FIXED_NONCE_LEN(4)|
+        SSL_CIPHER_ALGORITHM2_VARIABLE_NONCE_INCLUDED_IN_RECORD,
     .strength_bits = 256,
     .alg_bits = 256,
 },
@@ -1832,8 +1841,9 @@ OPENSSL_GLOBAL SSL_CIPHER ssl3_ciphers[] = {
     .algorithm_mac = SSL_AEAD,
     .algorithm_ssl = SSL_TLSV1_2,
     .algo_strength = SSL_NOT_EXP|SSL_HIGH,
-    .algorithm2 = SSL_HANDSHAKE_MAC_SHA256|TLS1_PRF_SHA256|SSL_CIPHER_ALGORITHM2_AEAD|FIXED_NONCE_LEN(4)|
-                      SSL_CIPHER_ALGORITHM2_VARIABLE_NONCE_INCLUDED_IN_RECORD,
+    .algorithm2 = SSL_HANDSHAKE_MAC_SHA256|TLS1_PRF_SHA256|SSL_CIPHER_ALGORITHM2_AEAD|
+        FIXED_NONCE_LEN(4)|
+        SSL_CIPHER_ALGORITHM2_VARIABLE_NONCE_INCLUDED_IN_RECORD,
     .strength_bits = 128,
     .alg_bits = 128,
 },
@@ -1849,7 +1859,9 @@ OPENSSL_GLOBAL SSL_CIPHER ssl3_ciphers[] = {
     .algorithm_mac = SSL_AEAD,
     .algorithm_ssl = SSL_TLSV1_2,
     .algo_strength = SSL_NOT_EXP|SSL_HIGH,
-    .algorithm2 = SSL_HANDSHAKE_MAC_SHA384|TLS1_PRF_SHA384,
+    .algorithm2 = SSL_HANDSHAKE_MAC_SHA384|TLS1_PRF_SHA384|SSL_CIPHER_ALGORITHM2_AEAD|
+        FIXED_NONCE_LEN(4)|
+        SSL_CIPHER_ALGORITHM2_VARIABLE_NONCE_INCLUDED_IN_RECORD,
     .strength_bits = 256,
     .alg_bits = 256,
 },
@@ -1865,8 +1877,9 @@ OPENSSL_GLOBAL SSL_CIPHER ssl3_ciphers[] = {
     .algorithm_mac = SSL_AEAD,
     .algorithm_ssl = SSL_TLSV1_2,
     .algo_strength = SSL_NOT_EXP|SSL_HIGH,
-    .algorithm2 = SSL_HANDSHAKE_MAC_SHA256|TLS1_PRF_SHA256|SSL_CIPHER_ALGORITHM2_AEAD|FIXED_NONCE_LEN(4)|
-                      SSL_CIPHER_ALGORITHM2_VARIABLE_NONCE_INCLUDED_IN_RECORD,
+    .algorithm2 = SSL_HANDSHAKE_MAC_SHA256|TLS1_PRF_SHA256|SSL_CIPHER_ALGORITHM2_AEAD|
+        FIXED_NONCE_LEN(4)|
+        SSL_CIPHER_ALGORITHM2_VARIABLE_NONCE_INCLUDED_IN_RECORD,
     .strength_bits = 128,
     .alg_bits = 128,
 },
@@ -1882,7 +1895,9 @@ OPENSSL_GLOBAL SSL_CIPHER ssl3_ciphers[] = {
     .algorithm_mac = SSL_AEAD,
     .algorithm_ssl = SSL_TLSV1_2,
     .algo_strength = SSL_NOT_EXP|SSL_HIGH,
-    .algorithm2 = SSL_HANDSHAKE_MAC_SHA384|TLS1_PRF_SHA384,
+    .algorithm2 = SSL_HANDSHAKE_MAC_SHA384|TLS1_PRF_SHA384|SSL_CIPHER_ALGORITHM2_AEAD|
+        FIXED_NONCE_LEN(4)|
+        SSL_CIPHER_ALGORITHM2_VARIABLE_NONCE_INCLUDED_IN_RECORD,
     .strength_bits = 256,
     .alg_bits = 256,
 },
@@ -1898,8 +1913,9 @@ OPENSSL_GLOBAL SSL_CIPHER ssl3_ciphers[] = {
     .algorithm_mac = SSL_AEAD,
     .algorithm_ssl = SSL_TLSV1_2,
     .algo_strength = SSL_NOT_EXP|SSL_HIGH,
-    .algorithm2 = SSL_HANDSHAKE_MAC_SHA256|TLS1_PRF_SHA256|SSL_CIPHER_ALGORITHM2_AEAD|FIXED_NONCE_LEN(4)|
-                      SSL_CIPHER_ALGORITHM2_VARIABLE_NONCE_INCLUDED_IN_RECORD,
+    .algorithm2 = SSL_HANDSHAKE_MAC_SHA256|TLS1_PRF_SHA256|SSL_CIPHER_ALGORITHM2_AEAD|
+        FIXED_NONCE_LEN(4)|
+        SSL_CIPHER_ALGORITHM2_VARIABLE_NONCE_INCLUDED_IN_RECORD,
     .strength_bits = 128,
     .alg_bits = 128,
 },
@@ -1915,7 +1931,9 @@ OPENSSL_GLOBAL SSL_CIPHER ssl3_ciphers[] = {
     .algorithm_mac = SSL_AEAD,
     .algorithm_ssl = SSL_TLSV1_2,
     .algo_strength = SSL_NOT_EXP|SSL_HIGH,
-    .algorithm2 = SSL_HANDSHAKE_MAC_SHA384|TLS1_PRF_SHA384,
+    .algorithm2 = SSL_HANDSHAKE_MAC_SHA384|TLS1_PRF_SHA384|SSL_CIPHER_ALGORITHM2_AEAD|
+        FIXED_NONCE_LEN(4)|
+        SSL_CIPHER_ALGORITHM2_VARIABLE_NONCE_INCLUDED_IN_RECORD,
     .strength_bits = 256,
     .alg_bits = 256,
 },
@@ -2482,8 +2500,7 @@ OPENSSL_GLOBAL SSL_CIPHER ssl3_ciphers[] = {
     .algorithm_mac = SSL_SHA256,
     .algorithm_ssl = SSL_TLSV1_2,
     .algo_strength = SSL_NOT_EXP|SSL_HIGH,
-    .algorithm2 = SSL_HANDSHAKE_MAC_SHA256|TLS1_PRF_SHA256|SSL_CIPHER_ALGORITHM2_AEAD|FIXED_NONCE_LEN(4)|
-                      SSL_CIPHER_ALGORITHM2_VARIABLE_NONCE_INCLUDED_IN_RECORD,
+    .algorithm2 = SSL_HANDSHAKE_MAC_SHA256|TLS1_PRF_SHA256,
     .strength_bits = 128,
     .alg_bits = 128,
 },
@@ -2515,8 +2532,7 @@ OPENSSL_GLOBAL SSL_CIPHER ssl3_ciphers[] = {
     .algorithm_mac = SSL_SHA256,
     .algorithm_ssl = SSL_TLSV1_2,
     .algo_strength = SSL_NOT_EXP|SSL_HIGH,
-    .algorithm2 = SSL_HANDSHAKE_MAC_SHA256|TLS1_PRF_SHA256|SSL_CIPHER_ALGORITHM2_AEAD|FIXED_NONCE_LEN(4)|
-                      SSL_CIPHER_ALGORITHM2_VARIABLE_NONCE_INCLUDED_IN_RECORD,
+    .algorithm2 = SSL_HANDSHAKE_MAC_SHA256|TLS1_PRF_SHA256,
     .strength_bits = 128,
     .alg_bits = 128,
 },
@@ -2548,8 +2564,7 @@ OPENSSL_GLOBAL SSL_CIPHER ssl3_ciphers[] = {
     .algorithm_mac = SSL_SHA256,
     .algorithm_ssl = SSL_TLSV1_2,
     .algo_strength = SSL_NOT_EXP|SSL_HIGH,
-    .algorithm2 = SSL_HANDSHAKE_MAC_SHA256|TLS1_PRF_SHA256|SSL_CIPHER_ALGORITHM2_AEAD|FIXED_NONCE_LEN(4)|
-                      SSL_CIPHER_ALGORITHM2_VARIABLE_NONCE_INCLUDED_IN_RECORD,
+    .algorithm2 = SSL_HANDSHAKE_MAC_SHA256|TLS1_PRF_SHA256,
     .strength_bits = 128,
     .alg_bits = 128,
 },
@@ -2581,8 +2596,7 @@ OPENSSL_GLOBAL SSL_CIPHER ssl3_ciphers[] = {
     .algorithm_mac = SSL_SHA256,
     .algorithm_ssl = SSL_TLSV1_2,
     .algo_strength = SSL_NOT_EXP|SSL_HIGH,
-    .algorithm2 = SSL_HANDSHAKE_MAC_SHA256|TLS1_PRF_SHA256|SSL_CIPHER_ALGORITHM2_AEAD|FIXED_NONCE_LEN(4)|
-                      SSL_CIPHER_ALGORITHM2_VARIABLE_NONCE_INCLUDED_IN_RECORD,
+    .algorithm2 = SSL_HANDSHAKE_MAC_SHA256|TLS1_PRF_SHA256,
     .strength_bits = 128,
     .alg_bits = 128,
 },
@@ -2616,8 +2630,9 @@ OPENSSL_GLOBAL SSL_CIPHER ssl3_ciphers[] = {
     .algorithm_mac = SSL_AEAD,
     .algorithm_ssl = SSL_TLSV1_2,
     .algo_strength = SSL_NOT_EXP|SSL_HIGH,
-    .algorithm2 = SSL_HANDSHAKE_MAC_SHA256|TLS1_PRF_SHA256|SSL_CIPHER_ALGORITHM2_AEAD|FIXED_NONCE_LEN(4)|
-                      SSL_CIPHER_ALGORITHM2_VARIABLE_NONCE_INCLUDED_IN_RECORD,
+    .algorithm2 = SSL_HANDSHAKE_MAC_SHA256|TLS1_PRF_SHA256|SSL_CIPHER_ALGORITHM2_AEAD|
+        FIXED_NONCE_LEN(4)|
+        SSL_CIPHER_ALGORITHM2_VARIABLE_NONCE_INCLUDED_IN_RECORD,
     .strength_bits = 128,
     .alg_bits = 128,
 },
@@ -2633,7 +2648,9 @@ OPENSSL_GLOBAL SSL_CIPHER ssl3_ciphers[] = {
     .algorithm_mac = SSL_AEAD,
     .algorithm_ssl = SSL_TLSV1_2,
     .algo_strength = SSL_NOT_EXP|SSL_HIGH,
-    .algorithm2 = SSL_HANDSHAKE_MAC_SHA384|TLS1_PRF_SHA384,
+    .algorithm2 = SSL_HANDSHAKE_MAC_SHA384|TLS1_PRF_SHA384|SSL_CIPHER_ALGORITHM2_AEAD|
+        FIXED_NONCE_LEN(4)|
+        SSL_CIPHER_ALGORITHM2_VARIABLE_NONCE_INCLUDED_IN_RECORD,
     .strength_bits = 256,
     .alg_bits = 256,
 },
@@ -2649,8 +2666,9 @@ OPENSSL_GLOBAL SSL_CIPHER ssl3_ciphers[] = {
     .algorithm_mac = SSL_AEAD,
     .algorithm_ssl = SSL_TLSV1_2,
     .algo_strength = SSL_NOT_EXP|SSL_HIGH,
-    .algorithm2 = SSL_HANDSHAKE_MAC_SHA256|TLS1_PRF_SHA256|SSL_CIPHER_ALGORITHM2_AEAD|FIXED_NONCE_LEN(4)|
-                    SSL_CIPHER_ALGORITHM2_VARIABLE_NONCE_INCLUDED_IN_RECORD,
+    .algorithm2 =     SSL_HANDSHAKE_MAC_SHA256|TLS1_PRF_SHA256|SSL_CIPHER_ALGORITHM2_AEAD|
+        FIXED_NONCE_LEN(4)|
+        SSL_CIPHER_ALGORITHM2_VARIABLE_NONCE_INCLUDED_IN_RECORD,
     .strength_bits = 128,
     .alg_bits = 128,
 },
@@ -2666,7 +2684,9 @@ OPENSSL_GLOBAL SSL_CIPHER ssl3_ciphers[] = {
     .algorithm_mac = SSL_AEAD,
     .algorithm_ssl = SSL_TLSV1_2,
     .algo_strength = SSL_NOT_EXP|SSL_HIGH,
-    .algorithm2 = SSL_HANDSHAKE_MAC_SHA384|TLS1_PRF_SHA384,
+    .algorithm2 = SSL_HANDSHAKE_MAC_SHA384|TLS1_PRF_SHA384|SSL_CIPHER_ALGORITHM2_AEAD|
+        FIXED_NONCE_LEN(4)|
+        SSL_CIPHER_ALGORITHM2_VARIABLE_NONCE_INCLUDED_IN_RECORD,
     .strength_bits = 256,
     .alg_bits = 256,
 },
@@ -2682,8 +2702,9 @@ OPENSSL_GLOBAL SSL_CIPHER ssl3_ciphers[] = {
     .algorithm_mac = SSL_AEAD,
     .algorithm_ssl = SSL_TLSV1_2,
     .algo_strength = SSL_NOT_EXP|SSL_HIGH,
-    .algorithm2 = SSL_HANDSHAKE_MAC_SHA256|TLS1_PRF_SHA256|SSL_CIPHER_ALGORITHM2_AEAD|FIXED_NONCE_LEN(4)|
-                        SSL_CIPHER_ALGORITHM2_VARIABLE_NONCE_INCLUDED_IN_RECORD,
+    .algorithm2 = SSL_HANDSHAKE_MAC_SHA256|TLS1_PRF_SHA256|SSL_CIPHER_ALGORITHM2_AEAD|
+        FIXED_NONCE_LEN(4)|
+        SSL_CIPHER_ALGORITHM2_VARIABLE_NONCE_INCLUDED_IN_RECORD,
     .strength_bits = 128,
     .alg_bits = 128,
 },
@@ -2699,7 +2720,9 @@ OPENSSL_GLOBAL SSL_CIPHER ssl3_ciphers[] = {
     .algorithm_mac = SSL_AEAD,
     .algorithm_ssl = SSL_TLSV1_2,
     .algo_strength = SSL_NOT_EXP|SSL_HIGH,
-    .algorithm2 = SSL_HANDSHAKE_MAC_SHA384|TLS1_PRF_SHA384,
+    .algorithm2 = SSL_HANDSHAKE_MAC_SHA384|TLS1_PRF_SHA384|SSL_CIPHER_ALGORITHM2_AEAD|
+		FIXED_NONCE_LEN(4)|
+		SSL_CIPHER_ALGORITHM2_VARIABLE_NONCE_INCLUDED_IN_RECORD,
     .strength_bits = 256,
     .alg_bits = 256,
 },
@@ -2715,8 +2738,9 @@ OPENSSL_GLOBAL SSL_CIPHER ssl3_ciphers[] = {
     .algorithm_mac = SSL_AEAD,
     .algorithm_ssl = SSL_TLSV1_2,
     .algo_strength = SSL_NOT_EXP|SSL_HIGH,
-    .algorithm2 = SSL_HANDSHAKE_MAC_SHA256|TLS1_PRF_SHA256|SSL_CIPHER_ALGORITHM2_AEAD|FIXED_NONCE_LEN(4)|
-                        SSL_CIPHER_ALGORITHM2_VARIABLE_NONCE_INCLUDED_IN_RECORD,
+    .algorithm2 = SSL_HANDSHAKE_MAC_SHA256|TLS1_PRF_SHA256|SSL_CIPHER_ALGORITHM2_AEAD|
+		FIXED_NONCE_LEN(4)|
+		SSL_CIPHER_ALGORITHM2_VARIABLE_NONCE_INCLUDED_IN_RECORD,
     .strength_bits = 128,
     .alg_bits = 128,
 },
@@ -2732,7 +2756,9 @@ OPENSSL_GLOBAL SSL_CIPHER ssl3_ciphers[] = {
     .algorithm_mac = SSL_AEAD,
     .algorithm_ssl = SSL_TLSV1_2,
     .algo_strength = SSL_NOT_EXP|SSL_HIGH,
-    .algorithm2 = SSL_HANDSHAKE_MAC_SHA384|TLS1_PRF_SHA384,
+    .algorithm2 = SSL_HANDSHAKE_MAC_SHA384|TLS1_PRF_SHA384|SSL_CIPHER_ALGORITHM2_AEAD|
+		FIXED_NONCE_LEN(4)|
+		SSL_CIPHER_ALGORITHM2_VARIABLE_NONCE_INCLUDED_IN_RECORD,
     .strength_bits = 256,
     .alg_bits = 256,
 },
