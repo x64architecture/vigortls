@@ -505,7 +505,7 @@ int UI_process(UI *ui)
 int UI_ctrl(UI *ui, int cmd, long i, void *p, void (*f)(void))
 {
     if (ui == NULL) {
-        UIerr(UI_F_UI_+CTRL, ERR_R_PASSED_NULL_PARAMETER);
+        UIerr(UI_F_UI_CTRL, ERR_R_PASSED_NULL_PARAMETER);
         return -1;
     }
     switch(cmd) {
@@ -843,5 +843,6 @@ int UI_set_result(UI *ui, UI_STRING *uis, const char *result) {
     }
     default:
         break;
+    }
     return 0;
 }
