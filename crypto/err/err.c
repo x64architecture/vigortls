@@ -109,6 +109,7 @@
  *
  */
 
+#include <openssl/e_os2.h>
 #include <stdio.h>
 #include <stdarg.h>
 #include <string.h>
@@ -1034,6 +1035,21 @@ void ERR_set_error_data(char *data, int flags)
     err_clear_data(es, i);
     es->err_data[i] = data;
     es->err_data_flags[i] = flags;
+}
+
+void ERR_asprintf_error_data(const char *format, ...)
+{
+    char *errbuf;
+    int ret;
+    va_list ap;
+
+    va_start(ap, format);
+    ret = vasprintf(&errbuf, format, ap);
+    va_end(ap);
+    if (ret == -1)
+        ERR_set_error_data("malloc failure", ERR_TXT_STRING);
+    else
+        ERR_set_error_data(errbuf, ERR_TXT_MALLOCED | ERR_TXT_STRING);
 }
 
 void ERR_add_error_data(int num, ...)
