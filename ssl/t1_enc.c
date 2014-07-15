@@ -336,7 +336,7 @@ static int tls1_change_cipher_state_aead(SSL *s, char is_read,
     aead_ctx->fixed_nonce_len = iv_len;
     aead_ctx->variable_nonce_len = 8; /* always the case, currently. */
     aead_ctx->variable_nonce_included_in_record =
-        (s->s3->tmp.new_cipher->algorithm2 & SSL_CIPHER_ALGORITHM2_VARIABLE_NONCE_INCLUDED_IN_RECORD) != 0;
+        (s->s3->tmp.new_cipher->algorithm2 & SSL_CIPHER_ALGORITHM2_VARIABLE_NONCE_IN_RECORD) != 0;
     if (aead_ctx->variable_nonce_len + aead_ctx->fixed_nonce_len != EVP_AEAD_nonce_length(aead)) {
         SSLerr(SSL_F_TLS1_CHANGE_CIPHER_STATE_AEAD, ERR_R_INTERNAL_ERROR);
         return 0;

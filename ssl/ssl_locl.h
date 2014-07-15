@@ -382,11 +382,11 @@
 #define SSL_CIPHER_AEAD_FIXED_NONCE_LEN(ssl_cipher) \
     (((ssl_cipher->algorithm2 >> 24) & 0xf)*2)
 
-/* SSL_CIPHER_ALGORITHM2_VARIABLE_NONCE_INCLUDED_IN_RECORD is a flag in
+/* SSL_CIPHER_ALGORITHM2_VARIABLE_NONCE_IN_RECORD is a flag in
  * SSL_CIPHER.algorithm2 which indicates that the variable part of the nonce is
  * included as a prefix of the record. (AES-GCM, for example, does with with an
  * 8-byte variable nonce.) */
-#define SSL_CIPHER_ALGORITHM2_VARIABLE_NONCE_INCLUDED_IN_RECORD (1<<22)
+#define SSL_CIPHER_ALGORITHM2_VARIABLE_NONCE_IN_RECORD (1 << 22)
 
 /*
  * Export and cipher strength information. For each cipher we have to decide
