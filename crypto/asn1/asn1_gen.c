@@ -301,7 +301,7 @@ static int asn1_cb(const char *elem, int len, void *bitstr)
     if (utype == -1)
         {
         ASN1err(ASN1_F_ASN1_CB, ASN1_R_UNKNOWN_TAG);
-        ERR_add_error_data(2, "tag=", elem);
+        ERR_asprintf_error_data("tag=%s", elem);
         return -1;
         }
 
@@ -430,7 +430,7 @@ static int parse_tagging(const char *vstart, int vlen, int *ptag, int *pclass)
             erch[0] = *eptr;
             erch[1] = 0;
             ASN1err(ASN1_F_PARSE_TAGGING, ASN1_R_INVALID_MODIFIER);
-            ERR_add_error_data(2, "Char=", erch);
+            ERR_asprintf_error_data("Char=%s", erch);
             return 0;
             break;
 
@@ -822,7 +822,7 @@ static ASN1_TYPE *asn1_str2type(const char *str, int format, int utype)
 
 
     bad_str:
-    ERR_add_error_data(2, "string=", str);
+    ERR_asprintf_error_data("string=%s", str);
     bad_form:
 
     ASN1_TYPE_free(atmp);

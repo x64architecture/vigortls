@@ -460,7 +460,7 @@ GENERAL_NAME *a2i_GENERAL_NAME(GENERAL_NAME *out,
         if (!(obj = OBJ_txt2obj(value,0)))
             {
             X509V3err(X509V3_F_A2I_GENERAL_NAME,X509V3_R_BAD_OBJECT);
-            ERR_add_error_data(2, "value=", value);
+            ERR_asprintf_error_data("value=%s", value);
             goto err;
             }
         gen->d.rid = obj;
@@ -475,7 +475,7 @@ GENERAL_NAME *a2i_GENERAL_NAME(GENERAL_NAME *out,
         if (gen->d.ip == NULL)
             {
             X509V3err(X509V3_F_A2I_GENERAL_NAME,X509V3_R_BAD_IP_ADDRESS);
-            ERR_add_error_data(2, "value=", value);
+            ERR_asprintf_error_data("value=%s", value);
             goto err;
             }
         break;
@@ -555,7 +555,7 @@ GENERAL_NAME *v2i_GENERAL_NAME_ex(GENERAL_NAME *out,
     else
         {
         X509V3err(X509V3_F_V2I_GENERAL_NAME_EX,X509V3_R_UNSUPPORTED_OPTION);
-        ERR_add_error_data(2, "name=", name);
+        ERR_asprintf_error_data("name=%s", name);
         return NULL;
         }
 
@@ -599,7 +599,7 @@ static int do_dirname(GENERAL_NAME *gen, char *value, X509V3_CTX *ctx)
     if (!sk)
         {
         X509V3err(X509V3_F_DO_DIRNAME,X509V3_R_SECTION_NOT_FOUND);
-        ERR_add_error_data(2, "section=", value);
+        ERR_asprintf_error_data("section=%s", value);
         X509_NAME_free(nm);
         return 0;
         }

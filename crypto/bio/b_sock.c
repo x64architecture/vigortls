@@ -136,7 +136,7 @@ int BIO_get_host_ip(const char *str, unsigned char *ip)
         CRYPTO_w_unlock(CRYPTO_LOCK_GETHOSTBYNAME);
     if (err)
         {
-        ERR_add_error_data(2,"host=",str);
+        ERR_asprintf_error_data("host=%s", str);
         return 0;
         }
     else
@@ -193,7 +193,7 @@ int BIO_get_port(const char *str, unsigned short *port_ptr)
             else
                 {
                 SYSerr(SYS_F_GETSERVBYNAME,get_last_socket_error());
-                ERR_add_error_data(3,"service='",str,"'");
+                ERR_asprintf_error_data("service='%s'", str);
                 return (0);
                 }
             }
@@ -571,7 +571,7 @@ again:
     if (s == INVALID_SOCKET)
         {
         SYSerr(SYS_F_SOCKET,get_last_socket_error());
-        ERR_add_error_data(3,"port='",host,"'");
+        ERR_asprintf_error_data("port='%s'", host);
         BIOerr(BIO_F_BIO_GET_ACCEPT_SOCKET,BIO_R_UNABLE_TO_CREATE_SOCKET);
         goto err;
         }
@@ -627,14 +627,14 @@ again:
             }
 #endif
         SYSerr(SYS_F_BIND,err_num);
-        ERR_add_error_data(3,"port='",host,"'");
+        ERR_asprintf_error_data("port='%s'", host);
         BIOerr(BIO_F_BIO_GET_ACCEPT_SOCKET,BIO_R_UNABLE_TO_BIND_SOCKET);
         goto err;
         }
     if (listen(s,MAX_LISTEN) == -1)
         {
         SYSerr(SYS_F_BIND,get_last_socket_error());
-        ERR_add_error_data(3,"port='",host,"'");
+        ERR_asprintf_error_data("port='%s'", host);
         BIOerr(BIO_F_BIO_GET_ACCEPT_SOCKET,BIO_R_UNABLE_TO_LISTEN_SOCKET);
         goto err;
         }

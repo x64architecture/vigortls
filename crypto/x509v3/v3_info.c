@@ -170,7 +170,7 @@ static AUTHORITY_INFO_ACCESS *v2i_AUTHORITY_INFO_ACCESS(X509V3_EXT_METHOD *metho
         acc->method = OBJ_txt2obj(objtmp, 0);
         if (!acc->method) {
             X509V3err(X509V3_F_V2I_AUTHORITY_INFO_ACCESS,X509V3_R_BAD_OBJECT);
-            ERR_add_error_data(2, "value=", objtmp);
+            ERR_asprintf_error_data("value=%s", objtmp);
             free(objtmp);
             goto err;
         }

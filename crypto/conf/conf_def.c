@@ -436,7 +436,7 @@ err:
     if (section != NULL) free(section);
     if (line != NULL) *line=eline;
     BIO_snprintf(btmp,sizeof btmp,"%ld",eline);
-    ERR_add_error_data(2,"line ",btmp);
+    ERR_asprintf_error_data("line %s", btmp);
     if ((h != conf->data) && (conf->data != NULL))
         {
         CONF_free(conf->data);

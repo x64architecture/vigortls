@@ -797,15 +797,15 @@ int UI_set_result(UI *ui, UI_STRING *uis, const char *result) {
         if (l < uis->_.string_data.result_minsize) {
             ui->flags |= UI_FLAG_REDOABLE;
             UIerr(UI_F_UI_SET_RESULT, UI_R_RESULT_TOO_SMALL);
-            ERR_add_error_data(5, "You must type in ",
-                number1," to ", number2, " characters");
+            ERR_asprintf_error_data("You must type in %s to %s characters", 
+                number1, number2);
             return -1;
         }
         if (l > uis->_.string_data.result_maxsize) {
             ui->flags |= UI_FLAG_REDOABLE;
             UIerr(UI_F_UI_SET_RESULT, UI_R_RESULT_TOO_LARGE);
-            ERR_add_error_data(5, "You must type in ",
-                number1, " to ", number2, " characters");
+            ERR_asprintf_error_data("You must type in %s to %s characters", 
+                number1, number2);
             return -1;
         }
     }

@@ -38,7 +38,7 @@ err - error codes
 
  void ERR_put_error(int lib, int func, int reason, const char *file,
          int line);
- void ERR_add_error_data(int num, ...);
+ void ERR_asprintf_error_data(const char *format, ...);
 
  void ERR_load_strings(int lib,ERR_STRING_DATA str[]);
  unsigned long ERR_PACK(int lib, int func, int reason);

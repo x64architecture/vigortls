@@ -518,10 +518,10 @@ int ASN1_item_ex_d2i(ASN1_VALUE **pval, const unsigned char **in, long len,
     err:
     ASN1_item_ex_free(pval, it);
     if (errtt)
-        ERR_add_error_data(4, "Field=", errtt->field_name,
-                    ", Type=", it->sname);
+        ERR_asprintf_error_data("Field=%s, Type=%s", 
+            errtt->field_name, it->sname);
     else
-        ERR_add_error_data(2, "Type=", it->sname);
+        ERR_asprintf_error_data("Type=%s", it->sname);
     return 0;
     }
 

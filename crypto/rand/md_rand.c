@@ -509,7 +509,7 @@ static int ssleay_rand_bytes(unsigned char *buf, int num, int pseudo)
     else 
         {
         RANDerr(RAND_F_SSLEAY_RAND_BYTES,RAND_R_PRNG_NOT_SEEDED);
-        ERR_add_error_data(1, "You need to read the OpenSSL FAQ, "
+        ERR_asprintf_error_data("You need to read the OpenSSL FAQ, %s",
             "http://www.openssl.org/support/faq.html");
         return (0);
         }

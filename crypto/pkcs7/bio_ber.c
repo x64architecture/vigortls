@@ -214,7 +214,7 @@ int bio_ber_get_header(BIO *bio, BIO_BER_CTX *ctx)
         {
         BIOerr(BIO_F_BIO_BER_GET_HEADER,BIO_R_TAG_MISMATCH);
         sprintf(buf,"tag=%d, got %d",ctx->tag,tag);
-        ERR_add_error_data(1,buf);
+        ERR_asprintf_error_data("%s", buf);
         return (-1);
         }
     if (ret & 0x01)

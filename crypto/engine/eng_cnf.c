@@ -194,9 +194,8 @@ err:
         ENGINEerr(ENGINE_F_INT_ENGINE_CONFIGURE,
             ENGINE_R_ENGINE_CONFIGURATION_ERROR);
         if (ecmd)
-            ERR_add_error_data(6, "section=", ecmd->section,
-                                  ", name=", ecmd->name,
-                                  ", value=", ecmd->value);
+            ERR_asprintf_error_data("section=%s, name=%s, value=%s", 
+                ecmd->section, ecmd->name, ecmd->value);
     }
     if (e)
         ENGINE_free(e);

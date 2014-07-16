@@ -141,7 +141,7 @@ static AUTHORITY_KEYID *v2i_AUTHORITY_KEYID(X509V3_EXT_METHOD *method,
         else
             {
             X509V3err(X509V3_F_V2I_AUTHORITY_KEYID,X509V3_R_UNKNOWN_OPTION);
-            ERR_add_error_data(2, "name=", cnf->name);
+            ERR_asprintf_error_data("name=%s", cnf->name);
             return NULL;
             }
         }

@@ -220,7 +220,7 @@ static int module_run(const CONF *cnf, char *name, char *value,
         if (!(flags & CONF_MFLAGS_SILENT))
             {
             CONFerr(CONF_F_MODULE_RUN, CONF_R_UNKNOWN_MODULE_NAME);
-            ERR_add_error_data(2, "module=", name);
+            ERR_asprintf_error_data("module=%s", name);
             }
         return -1;
         }
@@ -234,7 +234,7 @@ static int module_run(const CONF *cnf, char *name, char *value,
             char rcode[DECIMAL_SIZE(ret)+1];
             CONFerr(CONF_F_MODULE_RUN, CONF_R_MODULE_INITIALIZATION_ERROR);
             BIO_snprintf(rcode, sizeof rcode, "%-8d", ret);
-            ERR_add_error_data(6, "module=", name, ", value=", value, ", retcode=", rcode);
+            ERR_asprintf_error_data("module=%s, value=%s, retcode=%s", name, value, rcode);
             }
         }
 
@@ -283,7 +283,7 @@ static CONF_MODULE *module_load_dso(const CONF *cnf, char *name, char *value,
     if (dso)
         DSO_free(dso);
     CONFerr(CONF_F_MODULE_LOAD_DSO, errcode);
-    ERR_add_error_data(4, "module=", name, ", path=", path);
+    ERR_asprintf_error_data("module=%s, path=%s", name, path);
     return NULL;
     }
 
