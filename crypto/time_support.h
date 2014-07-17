@@ -1,4 +1,3 @@
-/* crypto/o_time.h */
 /* Written by Richard Levitte (richard@levitte.org) for the OpenSSL
  * project 2001.
  */
@@ -56,8 +55,8 @@
  *
  */
 
-#ifndef HEADER_O_TIME_H
-#define HEADER_O_TIME_H
+#ifndef HEADER_TIME_SUPPORT_H
+#define HEADER_TIME_SUPPORT_H
 
 #include <time.h>
 

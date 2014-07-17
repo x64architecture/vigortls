@@ -59,7 +59,7 @@
 #include <stdio.h>
 #include <time.h>
 #include "cryptlib.h"
-#include "o_time.h"
+#include "time_support.h"
 #include <openssl/asn1.h>
 
 #if 0

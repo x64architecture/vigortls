@@ -174,7 +174,7 @@ a_gentm.o: ../../include/openssl/err.h ../../include/openssl/lhash.h
 a_gentm.o: ../../include/openssl/opensslconf.h ../../include/openssl/opensslv.h
 a_gentm.o: ../../include/openssl/ossl_typ.h ../../include/openssl/safestack.h
 a_gentm.o: ../../include/openssl/stack.h
-a_gentm.o: ../cryptlib.h ../o_time.h a_gentm.c
+a_gentm.o: ../cryptlib.h ../time_support.h a_gentm.c
 a_i2d_fp.o: ../../include/openssl/asn1.h
 a_i2d_fp.o: ../../include/openssl/bio.h ../../include/openssl/buffer.h
 a_i2d_fp.o: ../../include/openssl/crypto.h ../../include/openssl/e_os2.h
@@ -274,7 +274,7 @@ a_time.o: ../../include/openssl/e_os2.h ../../include/openssl/err.h
 a_time.o: ../../include/openssl/lhash.h ../../include/openssl/opensslconf.h
 a_time.o: ../../include/openssl/opensslv.h ../../include/openssl/ossl_typ.h
 a_time.o: ../../include/openssl/safestack.h ../../include/openssl/stack.h
-a_time.o: ../cryptlib.h ../o_time.h a_time.c
+a_time.o: ../cryptlib.h ../time_support.h a_time.c
 a_type.o: ../../include/openssl/asn1.h
 a_type.o: ../../include/openssl/asn1t.h ../../include/openssl/bio.h
 a_type.o: ../../include/openssl/buffer.h ../../include/openssl/crypto.h
@@ -291,7 +291,7 @@ a_utctm.o: ../../include/openssl/err.h ../../include/openssl/lhash.h
 a_utctm.o: ../../include/openssl/opensslconf.h ../../include/openssl/opensslv.h
 a_utctm.o: ../../include/openssl/ossl_typ.h ../../include/openssl/safestack.h
 a_utctm.o: ../../include/openssl/stack.h
-a_utctm.o: ../cryptlib.h ../o_time.h a_utctm.c
+a_utctm.o: ../cryptlib.h ../time_support.h a_utctm.c
 a_utf8.o: ../../include/openssl/asn1.h ../../include/openssl/bio.h
 a_utf8.o: ../../include/openssl/buffer.h ../../include/openssl/crypto.h
 a_utf8.o: ../../include/openssl/e_os2.h ../../include/openssl/err.h

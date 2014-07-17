@@ -1,4 +1,3 @@
-/* crypto/o_time.c */
 /* Written by Richard Levitte (richard@levitte.org) for the OpenSSL
  * project 2001.
  */
@@ -61,7 +60,7 @@
 
 #include <string.h>
 
-#include "o_time.h"
+#include "time_support.h"
 
 /* Take a tm structure and add an offset to it. This avoids any OS issues
  * with restricted date types and overflows which cause the year 2038
