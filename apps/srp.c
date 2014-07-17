@@ -412,7 +412,7 @@ bad:
         for (pp=srp_usage; (*pp != NULL); pp++)
             BIO_printf(bio_err,"%s",*pp);
 
-        BIO_printf(bio_err," -rand file%cfile%c...\n", LIST_SEPARATOR_CHAR, LIST_SEPARATOR_CHAR);
+        BIO_printf(bio_err," -rand file%cfile%c...\n", ':', ':');
         BIO_printf(bio_err,"                 load the file (or the files in the directory) into\n");
         BIO_printf(bio_err,"                 the random number generator\n");
         goto err;
@@ -437,7 +437,7 @@ bad:
     /*****************************************************************/
         tofree=NULL;
         if (configfile == NULL) configfile = getenv("OPENSSL_CONF");
-        if (configfile == NULL) configfile = getenv("SSLEAY_CONF");
+        if (configfile == NULL) configfile = getenv("OPENSSL_CONF");
         if (configfile == NULL)
             {
             const char *s=X509_get_default_cert_area();
@@ -743,7 +743,7 @@ err:
 
     OBJ_cleanup();
     apps_shutdown();
-    OPENSSL_EXIT(ret);
+    return (ret);
     }
 
 

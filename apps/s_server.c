@@ -151,6 +151,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 
 #include <openssl/e_os2.h>
 
@@ -504,7 +505,7 @@ static void sv_usage(void)
     BIO_printf(bio_err," -engine id    - Initialise and use the specified engine\n");
 #endif
     BIO_printf(bio_err," -id_prefix arg - Generate SSL/TLS session IDs prefixed by 'arg'\n");
-    BIO_printf(bio_err," -rand file%cfile%c...\n", LIST_SEPARATOR_CHAR, LIST_SEPARATOR_CHAR);
+    BIO_printf(bio_err," -rand file%cfile%c...\n", ':', ':');
 #ifndef OPENSSL_NO_TLSEXT
     BIO_printf(bio_err," -servername host - servername for HostName TLS extension\n");
     BIO_printf(bio_err," -servername_fatal - on mismatch send fatal alert (default warning alert)\n");
@@ -1840,7 +1841,7 @@ end:
         bio_s_out=NULL;
         }
     apps_shutdown();
-    OPENSSL_EXIT(ret);
+    return (ret);
     }
 
 static void print_stats(BIO *bio, SSL_CTX *ssl_ctx)
@@ -2066,7 +2067,8 @@ static int sv_body(char *hostname, int s, unsigned char *context)
                 if ((i <= 0) || (buf[0] == 'Q'))
                     {
                     BIO_printf(bio_s_out,"DONE\n");
-                    SHUTDOWN(s);
+                    shutdown((s), 0); 
+                    close((s));
                     close_accept_socket();
                     ret= -11;
                     goto err;
@@ -2074,8 +2076,10 @@ static int sv_body(char *hostname, int s, unsigned char *context)
                 if ((i <= 0) || (buf[0] == 'q'))
                     {
                     BIO_printf(bio_s_out,"DONE\n");
-                    if (SSL_version(con) != DTLS1_VERSION)
-                        SHUTDOWN(s);
+                    if (SSL_version(con) != DTLS1_VERSION) {
+                        shutdown((s), 0); 
+                        close((s));
+                    }
     /*                close_accept_socket();
                     ret= -11;*/
                     goto err;
@@ -2245,13 +2249,13 @@ err:
     }
 
 static void close_accept_socket(void)
-    {
+{
     BIO_printf(bio_err,"shutdown accept socket\n");
-    if (accept_socket >= 0)
-        {
-        SHUTDOWN2(accept_socket);
-        }
+    if (accept_socket >= 0) {
+        shutdown((accept_socket), 2); 
+        close((accept_socket));
     }
+}
 
 static int init_ssl_connection(SSL *con)
     {

@@ -115,11 +115,7 @@
  */
 
 #include <stdio.h>
-
-#include "e_os.h"
-#ifndef NO_SYS_TYPES_H
-# include <sys/types.h>
-#endif
+#include <sys/types.h>
 
 #include "directory.h"
 #include <openssl/objects.h>
@@ -773,7 +769,7 @@ int SSL_add_dir_cert_subjects_to_stack(STACK_OF(X509_NAME) *stack,
         }
 
     if (errno) {
-        SYSerr(SYS_F_OPENDIR, get_last_sys_error());
+        SYSerr(SYS_F_OPENDIR, errno);
         ERR_asprintf_error_data("OPENSSL_DIR_read(&ctx, '%s')", dir);
         SSLerr(SSL_F_SSL_ADD_DIR_CERT_SUBJECTS_TO_STACK, ERR_R_SYS_LIB);
         goto err;

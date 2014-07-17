@@ -202,5 +202,5 @@ int MAIN(int argc, char **argv)
 		printf("Not supported... Yet\n");
 end:
     apps_shutdown();
-    OPENSSL_EXIT(ret);
+    return (ret);
     }

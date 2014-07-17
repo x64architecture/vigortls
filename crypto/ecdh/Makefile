@@ -103,7 +103,7 @@ ech_lib.o: ../../include/openssl/safestack.h ../../include/openssl/sha.h
 ech_lib.o: ../../include/openssl/stack.h
 ech_lib.o: ../../include/openssl/x509.h ../../include/openssl/x509_vfy.h
 ech_lib.o: ech_lib.c ech_locl.h
-ech_ossl.o: ../../e_os.h ../../include/openssl/asn1.h
+ech_ossl.o: ../../include/openssl/asn1.h
 ech_ossl.o: ../../include/openssl/bio.h ../../include/openssl/bn.h
 ech_ossl.o: ../../include/openssl/buffer.h ../../include/openssl/crypto.h
 ech_ossl.o: ../../include/openssl/e_os2.h ../../include/openssl/ec.h

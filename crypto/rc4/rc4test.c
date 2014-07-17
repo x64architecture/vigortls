@@ -60,8 +60,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "../e_os.h"
-
 #ifdef OPENSSL_NO_RC4
 int main(int argc, char *argv[])
 {
@@ -233,7 +231,7 @@ int main(int argc, char *argv[])
         }
         else    printf("ok\n");
     }
-    EXIT(err);
+    exit(err);
     return (0);
     }
 #endif

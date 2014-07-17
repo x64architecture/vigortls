@@ -71,8 +71,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "../e_os.h"
-
 #include <openssl/opensslconf.h>    /* for OPENSSL_NO_ECDH */
 #include <openssl/crypto.h>
 #include <openssl/bio.h>
@@ -307,7 +305,7 @@ int main(int argc, char *argv[])
     RAND_seed(rnd_seed, sizeof rnd_seed);
 
     out=BIO_new(BIO_s_file());
-    if (out == NULL) EXIT(1);
+    if (out == NULL) exit(1);
     BIO_set_fp(out,stdout,BIO_NOCLOSE);
 
     if ((ctx=BN_CTX_new()) == NULL) goto err;
@@ -341,7 +339,7 @@ err:
     CRYPTO_cleanup_all_ex_data();
     ERR_remove_thread_state(NULL);
     CRYPTO_mem_leaks_fp(stderr);
-    EXIT(ret);
+    exit(ret);
     return (ret);
     }
 

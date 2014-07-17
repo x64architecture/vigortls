@@ -273,7 +273,7 @@ end:
     if (crl != NULL) X509_CRL_free(crl);
 
     apps_shutdown();
-    OPENSSL_EXIT(ret);
+    return (ret);
     }
 
 /*

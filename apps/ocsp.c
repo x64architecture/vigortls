@@ -917,7 +917,7 @@ end:
     if (tpath)
         free(tpath);
 
-    OPENSSL_EXIT(ret);
+    return (ret);
 }
 
 static int add_ocsp_cert(OCSP_REQUEST **req, X509 *cert, const EVP_MD *cert_id_md,X509 *issuer,

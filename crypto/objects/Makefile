@@ -95,7 +95,7 @@ o_names.o: ../../include/openssl/opensslconf.h ../../include/openssl/opensslv.h
 o_names.o: ../../include/openssl/ossl_typ.h ../../include/openssl/safestack.h
 o_names.o: ../../include/openssl/stack.h
 o_names.o: o_names.c
-obj_dat.o: ../../e_os.h ../../include/openssl/asn1.h
+obj_dat.o: ../../include/openssl/asn1.h
 obj_dat.o: ../../include/openssl/bio.h ../../include/openssl/bn.h
 obj_dat.o: ../../include/openssl/buffer.h ../../include/openssl/crypto.h
 obj_dat.o: ../../include/openssl/e_os2.h ../../include/openssl/err.h
@@ -112,7 +112,7 @@ obj_err.o: ../../include/openssl/opensslconf.h ../../include/openssl/opensslv.h
 obj_err.o: ../../include/openssl/ossl_typ.h ../../include/openssl/safestack.h
 obj_err.o: ../../include/openssl/stack.h
 obj_err.o: obj_err.c
-obj_lib.o: ../../e_os.h ../../include/openssl/asn1.h
+obj_lib.o: ../../include/openssl/asn1.h
 obj_lib.o: ../../include/openssl/bio.h ../../include/openssl/buffer.h
 obj_lib.o: ../../include/openssl/crypto.h ../../include/openssl/e_os2.h
 obj_lib.o: ../../include/openssl/err.h ../../include/openssl/lhash.h

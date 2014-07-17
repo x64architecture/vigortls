@@ -76,7 +76,7 @@ clean:
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 
-md_rand.o: ../../e_os.h ../../include/openssl/asn1.h
+md_rand.o: ../../include/openssl/asn1.h
 md_rand.o: ../../include/openssl/bio.h ../../include/openssl/crypto.h
 md_rand.o: ../../include/openssl/e_os2.h ../../include/openssl/err.h
 md_rand.o: ../../include/openssl/evp.h ../../include/openssl/lhash.h
@@ -97,7 +97,7 @@ rand_err.o: ../../include/openssl/opensslv.h ../../include/openssl/ossl_typ.h
 rand_err.o: ../../include/openssl/rand.h ../../include/openssl/safestack.h
 rand_err.o: ../../include/openssl/stack.h
 rand_err.o: rand_err.c
-rand_lib.o: ../../e_os.h ../../include/openssl/asn1.h
+rand_lib.o: ../../include/openssl/asn1.h
 rand_lib.o: ../../include/openssl/bio.h ../../include/openssl/buffer.h
 rand_lib.o: ../../include/openssl/crypto.h ../../include/openssl/e_os2.h
 rand_lib.o: ../../include/openssl/ec.h ../../include/openssl/ecdh.h
@@ -111,7 +111,7 @@ rand_lib.o: ../../include/openssl/safestack.h ../../include/openssl/sha.h
 rand_lib.o: ../../include/openssl/stack.h
 rand_lib.o: ../../include/openssl/x509.h ../../include/openssl/x509_vfy.h
 rand_lib.o: ../cryptlib.h rand_lib.c
-rand_unix.o: ../../e_os.h ../../include/openssl/asn1.h
+rand_unix.o: ../../include/openssl/asn1.h
 rand_unix.o: ../../include/openssl/bio.h ../../include/openssl/buffer.h
 rand_unix.o: ../../include/openssl/crypto.h ../../include/openssl/e_os2.h
 rand_unix.o: ../../include/openssl/err.h ../../include/openssl/evp.h
@@ -123,7 +123,7 @@ rand_unix.o: ../../include/openssl/rand.h ../../include/openssl/safestack.h
 rand_unix.o: ../../include/openssl/sha.h ../../include/openssl/stack.h
 rand_unix.o: ../cryptlib.h rand_lcl.h
 rand_unix.o: rand_unix.c
-randfile.o: ../../e_os.h ../../include/openssl/buffer.h
+randfile.o: ../../include/openssl/buffer.h
 randfile.o: ../../include/openssl/crypto.h ../../include/openssl/e_os2.h
 randfile.o: ../../include/openssl/opensslconf.h
 randfile.o: ../../include/openssl/opensslv.h ../../include/openssl/ossl_typ.h

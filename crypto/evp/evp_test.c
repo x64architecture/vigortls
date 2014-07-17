@@ -50,8 +50,6 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "../e_os.h"
-
 #include <openssl/opensslconf.h>
 #include <openssl/evp.h>
 #ifndef OPENSSL_NO_ENGINE
@@ -85,7 +83,7 @@ static int convert(unsigned char *s)
     if (!s[1])
         {
         fprintf(stderr,"Odd number of hex digits!");
-        EXIT(4);
+        exit(4);
         }
     sscanf((char *)s,"%2x",&n);
     *d=(unsigned char)n;
@@ -129,7 +127,7 @@ static unsigned char *ustrsep(char **p,const char *sep)
 
 static int test1_exit(int ec)
     {
-    EXIT(ec);
+    exit(ec);
     return (0);        /* To keep some compilers quiet */
     }
 
@@ -280,26 +278,26 @@ static int test_digest(const char *digest,
     {
     fprintf(stderr,"DigestInit failed\n");
     ERR_print_errors_fp(stderr);
-    EXIT(100);
+    exit(100);
     }
     if (!EVP_DigestUpdate(&ctx,plaintext,pn))
     {
     fprintf(stderr,"DigestUpdate failed\n");
     ERR_print_errors_fp(stderr);
-    EXIT(101);
+    exit(101);
     }
     if (!EVP_DigestFinal_ex(&ctx,md,&mdn))
     {
     fprintf(stderr,"DigestFinal failed\n");
     ERR_print_errors_fp(stderr);
-    EXIT(101);
+    exit(101);
     }
     EVP_MD_CTX_cleanup(&ctx);
 
     if (mdn != cn)
     {
     fprintf(stderr,"Digest length mismatch, got %d expected %d\n",mdn,cn);
-    EXIT(102);
+    exit(102);
     }
 
     if (memcmp(md,ciphertext,cn))
@@ -307,7 +305,7 @@ static int test_digest(const char *digest,
     fprintf(stderr,"Digest mismatch\n");
     hexdump(stderr,"Got",md,cn);
     hexdump(stderr,"Expected",ciphertext,cn);
-    EXIT(103);
+    exit(103);
     }
 
     printf("\n");
@@ -325,7 +323,7 @@ int main(int argc,char **argv)
     if (argc != 2)
     {
     fprintf(stderr,"%s <test file>\n",argv[0]);
-    EXIT(1);
+    exit(1);
     }
     CRYPTO_malloc_debug_init();
     CRYPTO_set_mem_debug_options(V_CRYPTO_MDEBUG_ALL);
@@ -337,7 +335,7 @@ int main(int argc,char **argv)
     if (!f)
     {
     perror(szTestFile);
-    EXIT(2);
+    exit(2);
     }
 
     /* Load up the software EVP_CIPHER and EVP_MD definitions */
@@ -425,7 +423,7 @@ int main(int argc,char **argv)
         }
 #endif
         fprintf(stderr,"Can't find %s\n",cipher);
-        EXIT(3);
+        exit(3);
         }
     }
     fclose(f);

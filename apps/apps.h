@@ -112,8 +112,6 @@
 #ifndef HEADER_APPS_H
 #define HEADER_APPS_H
 
-#include "e_os.h"
-
 #include <openssl/bio.h>
 #include <openssl/x509.h>
 #include <openssl/lhash.h>
@@ -133,7 +131,7 @@ int app_RAND_write_file(const char *file, BIO *bio_e);
  * `bio_e' is for error messages. */
 void app_RAND_allow_write_file(void);
 long app_RAND_load_files(char *file); /* `file' is a list of files to read,
-                                       * separated by LIST_SEPARATOR_CHAR
+                                       * separated by ':'
                                        * (see e_os.h).  The string is
                                        * destroyed! */
 

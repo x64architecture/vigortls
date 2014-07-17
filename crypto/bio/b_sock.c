@@ -192,7 +192,7 @@ int BIO_get_port(const char *str, unsigned short *port_ptr)
 #endif
             else
                 {
-                SYSerr(SYS_F_GETSERVBYNAME,get_last_socket_error());
+                SYSerr(SYS_F_GETSERVBYNAME, errno);
                 ERR_asprintf_error_data("service='%s'", str);
                 return (0);
                 }
@@ -444,10 +444,10 @@ int BIO_socket_ioctl(int fd, long type, void *arg)
     {
     int i;
 
-    i = ioctlsocket(fd, type, arg);
+    i = ioctl(fd, type, arg);
 
     if (i < 0)
-        SYSerr(SYS_F_IOCTLSOCKET,get_last_socket_error());
+        SYSerr(SYS_F_IOCTLSOCKET, errno);
     return (i);
     }
 
@@ -570,7 +570,7 @@ again:
     s=socket(server.sa.sa_family,SOCK_STREAM,SOCKET_PROTOCOL);
     if (s == INVALID_SOCKET)
         {
-        SYSerr(SYS_F_SOCKET,get_last_socket_error());
+        SYSerr(SYS_F_SOCKET, errno);
         ERR_asprintf_error_data("port='%s'", host);
         BIOerr(BIO_F_BIO_GET_ACCEPT_SOCKET,BIO_R_UNABLE_TO_CREATE_SOCKET);
         goto err;
@@ -588,7 +588,7 @@ again:
     if (bind(s,&server.sa,addrlen) == -1)
         {
 #ifdef SO_REUSEADDR
-        err_num=get_last_socket_error();
+        err_num = errno;
         if ((bind_mode == BIO_BIND_REUSEADDR_IF_UNUSED) &&
             (err_num == EADDRINUSE))
             {
@@ -614,11 +614,11 @@ again:
                 {
                 int ii;
                 ii=connect(cs,&client.sa,addrlen);
-                closesocket(cs);
+                close(cs);
                 if (ii == INVALID_SOCKET)
                     {
                     bind_mode=BIO_BIND_REUSEADDR;
-                    closesocket(s);
+                    close(s);
                     goto again;
                     }
                 /* else error */
@@ -633,7 +633,7 @@ again:
         }
     if (listen(s,MAX_LISTEN) == -1)
         {
-        SYSerr(SYS_F_BIND,get_last_socket_error());
+        SYSerr(SYS_F_BIND, errno);
         ERR_asprintf_error_data("port='%s'", host);
         BIOerr(BIO_F_BIO_GET_ACCEPT_SOCKET,BIO_R_UNABLE_TO_LISTEN_SOCKET);
         goto err;
@@ -643,7 +643,7 @@ err:
     if (str != NULL) free(str);
     if ((ret == 0) && (s != INVALID_SOCKET))
         {
-        closesocket(s);
+        close(s);
         s= INVALID_SOCKET;
         }
     return (s);
@@ -701,7 +701,7 @@ int BIO_accept(int sock, char **addr)
     if (ret == INVALID_SOCKET)
         {
         if (BIO_sock_should_retry(ret)) return -2;
-        SYSerr(SYS_F_ACCEPT,get_last_socket_error());
+        SYSerr(SYS_F_ACCEPT, errno);
         BIOerr(BIO_F_BIO_ACCEPT,BIO_R_ACCEPT_ERROR);
         goto end;
         }

@@ -64,7 +64,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "e_os.h"
 #include <openssl/crypto.h>
 #include <openssl/rand.h>
 #include <openssl/buffer.h>
@@ -79,8 +78,6 @@
 #undef BUFSIZE
 #define BUFSIZE    1024
 #define RAND_DATA 1024
-
-/* #define RFILE ".rnd" - defined in ../../e_os.h */
 
 /* Note that these functions are intended for seed files only.
  * Entropy devices and EGD sockets are handled in rand_unix.c */
@@ -232,11 +229,11 @@ const char *RAND_file_name(char *buf, size_t size)
             s = DEFAULT_HOME;
             }
 #endif
-        if (s && *s && strlen(s)+strlen(RFILE)+2 < size)
+        if (s && *s && strlen(s)+strlen(".rnd")+2 < size)
             {
             BUF_strlcpy(buf,s,size);
             BUF_strlcat(buf,"/",size);
-            BUF_strlcat(buf,RFILE,size);
+            BUF_strlcat(buf,".rnd",size);
             }
         else
               buf[0] = '\0'; /* no file name */

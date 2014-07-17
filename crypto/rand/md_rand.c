@@ -118,8 +118,7 @@
 #include <assert.h>
 #include <stdio.h>
 #include <string.h>
-
-#include "e_os.h"
+#include <unistd.h>
 
 #include <openssl/crypto.h>
 #include <openssl/rand.h>

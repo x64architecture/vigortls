@@ -66,8 +66,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "../e_os.h"
-
 #include <openssl/crypto.h>
 #include <openssl/bio.h>
 #include <openssl/bn.h>
@@ -96,7 +94,7 @@ int main(int argc, char *argv[])
     RAND_seed(rnd_seed, sizeof rnd_seed);
 
     out=BIO_new(BIO_s_file());
-    if (out == NULL) EXIT(1);
+    if (out == NULL) exit(1);
     BIO_set_fp(out,stdout,BIO_NOCLOSE);
 
     BN_GENCB_set(&_cb, &cb, out);
@@ -183,7 +181,7 @@ err:
     if (b != NULL) DH_free(b);
     if (a != NULL) DH_free(a);
     BIO_free(out);
-    EXIT(ret);
+    exit(ret);
     return (ret);
     }
 

@@ -71,11 +71,6 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#ifdef FLAT_INC
-#include "e_os.h"
-#else
-#include "../e_os.h"
-#endif
 #include <string.h>
 #include <time.h>
 
@@ -105,7 +100,7 @@ int main(int argc, char * argv[]) { puts("Elliptic curves are disabled."); retur
     fflush(stdout); \
     fprintf(stderr, "%s:%d: ABORT\n", __FILE__, __LINE__); \
     ERR_print_errors_fp(stderr); \
-    EXIT(1); \
+    exit(1); \
 } while (0)
 
 #define TIMING_BASE_PT 0

@@ -4,8 +4,8 @@ SH="/bin/sh"
 PATH="../apps:$PATH"
 export SH PATH
 
-SSLEAY_CONFIG="-config CAss.cnf"
-export SSLEAY_CONFIG
+"openssl.cnf"IG="-config CAss.cnf"
+export "openssl.cnf"IG
 
 OPENSSL="`pwd`/../util/opensslwrap.sh"
 export OPENSSL
@@ -18,16 +18,16 @@ if [ $? != 0 ]; then
 	exit 1;
 fi
 
-SSLEAY_CONFIG="-config Uss.cnf"
-export SSLEAY_CONFIG
+"openssl.cnf"IG="-config Uss.cnf"
+export "openssl.cnf"IG
 $SH ../apps/CA.sh -newreq
 if [ $? != 0 ]; then
 	exit 1;
 fi
 
 
-SSLEAY_CONFIG="-config ../apps/openssl.cnf"
-export SSLEAY_CONFIG
+"openssl.cnf"IG="-config ../apps/openssl.cnf"
+export "openssl.cnf"IG
 $SH ../apps/CA.sh -sign  <<EOF
 y
 y

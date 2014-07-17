@@ -393,7 +393,8 @@ int MAIN(int argc, char **argv)
 #else
         SSL_shutdown(scon);
 #endif
-        SHUTDOWN2(SSL_get_fd(scon));
+        shutdown((SSL_get_fd(scon)), 2); 
+        close((SSL_get_fd(scon)));
 
         nConn += 1;
         if (SSL_session_reused(scon))
@@ -447,7 +448,8 @@ next:
 #else
     SSL_shutdown(scon);
 #endif
-    SHUTDOWN2(SSL_get_fd(scon));
+    shutdown((SSL_get_fd(scon)), 2); 
+    close((SSL_get_fd(scon)));
 
     nConn = 0;
     totalTime = 0.0;
@@ -478,7 +480,8 @@ next:
 #else
         SSL_shutdown(scon);
 #endif
-        SHUTDOWN2(SSL_get_fd(scon));
+        shutdown((SSL_get_fd(scon)), 2); 
+        close((SSL_get_fd(scon)));
     
         nConn += 1;
         if (SSL_session_reused(scon))
@@ -514,7 +517,7 @@ end:
         tm_ctx=NULL;
         }
     apps_shutdown();
-    OPENSSL_EXIT(ret);
+    return (ret);
     }
 
 /***********************************************************************

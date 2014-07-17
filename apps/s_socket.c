@@ -61,12 +61,7 @@
 #include <string.h>
 #include <errno.h>
 #include <signal.h>
-
-#ifdef FLAT_INC
-#include "e_os2.h"
-#else
-#include "../e_os2.h"
-#endif
+#include <unistd.h>
 
 #define USE_SOCKETS
 #define NON_MAIN
@@ -75,12 +70,6 @@
 #undef NON_MAIN
 #include "s_apps.h"
 #include <openssl/ssl.h>
-
-#ifdef FLAT_INC
-#include "e_os.h"
-#else
-#include "../e_os.h"
-#endif
 
 #ifndef OPENSSL_NO_SOCK
 
@@ -139,12 +128,12 @@ static int init_client_ip(int *sock, unsigned char ip[4], int port, int type)
         {
         i=0;
         i=setsockopt(s,SOL_SOCKET,SO_KEEPALIVE,(char *)&i,sizeof(i));
-        if (i < 0) { closesocket(s); perror("keepalive"); return (0); }
+        if (i < 0) { close(s); perror("keepalive"); return (0); }
         }
 #endif
 
     if (connect(s,(struct sockaddr *)&them,sizeof(them)) == -1)
-        { closesocket(s); perror("connect"); return (0); }
+        { close(s); perror("connect"); return (0); }
     *sock=s;
     return (1);
     }
@@ -169,21 +158,23 @@ int do_server(int port, int type, int *ret, int (*cb)(char *hostname, int s, uns
             {
             if (do_accept(accept_socket,&sock,&name) == 0)
                 {
-                SHUTDOWN(accept_socket);
-                return (0);
+                shutdown((accept_socket), 2); 
+                close((accept_socket));
                 }
             }
         else
             sock = accept_socket;
         i=(*cb)(name,sock, context);
         if (name != NULL) free(name);
-        if (type==SOCK_STREAM)
-            SHUTDOWN2(sock);
-        if (i < 0)
-            {
-            SHUTDOWN2(accept_socket);
+        if (type == SOCK_STREAM) {
+            shutdown((sock), 2); 
+            close((sock));
+        }
+        if (i < 0) {
+            shutdown((accept_socket), 2); 
+            close((accept_socket));
             return (i);
-            }
+        }
         }
     }
 
@@ -231,10 +222,10 @@ static int init_server_long(int *sock, int port, char *ip, int type)
     *sock=s;
     ret=1;
 err:
-    if ((ret == 0) && (s != -1))
-        {
-        SHUTDOWN(s);
-        }
+    if ((ret == 0) && (s != -1)) {
+        shutdown((s), 0); 
+        close((s));
+    }
     return (ret);
     }
 
@@ -303,7 +294,7 @@ redoit:
         if ((*host=(char *)malloc(strlen(h1->h_name)+1)) == NULL)
             {
             perror("malloc");
-            closesocket(ret);
+            close(ret);
             return (0);
             }
         BUF_strlcpy(*host,h1->h_name,strlen(h1->h_name)+1);
@@ -312,13 +303,13 @@ redoit:
         if (h2 == NULL)
             {
             BIO_printf(bio_err,"gethostbyname failure\n");
-            closesocket(ret);
+            close(ret);
             return (0);
             }
         if (h2->h_addrtype != AF_INET)
             {
             BIO_printf(bio_err,"gethostbyname addr is not AF_INET\n");
-            closesocket(ret);
+            close(ret);
             return (0);
             }
         }

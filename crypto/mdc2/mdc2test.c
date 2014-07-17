@@ -60,8 +60,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "../e_os.h"
-
 #if defined(OPENSSL_NO_DES) && !defined(OPENSSL_NO_MDC2)
 #define OPENSSL_NO_MDC2
 #endif
@@ -140,7 +138,7 @@ int main(int argc, char *argv[])
         printf("pad2 - ok\n");
 
     EVP_MD_CTX_cleanup(&c);
-    EXIT(ret);
+    exit(ret);
     return (ret);
     }
 #endif

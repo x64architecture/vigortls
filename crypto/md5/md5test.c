@@ -60,8 +60,6 @@
 #include <string.h>
 #include <stdlib.h>
 
-#include "../e_os.h"
-
 #ifdef OPENSSL_NO_MD5
 int main(int argc, char *argv[])
 {
@@ -121,7 +119,7 @@ int main(int argc, char *argv[])
         P++;
         }
 
-    EXIT(err);
+    exit(err);
     return (0);
     }
 

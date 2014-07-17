@@ -77,7 +77,7 @@ clean:
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 
-pem_all.o: ../../e_os.h ../../include/openssl/asn1.h
+pem_all.o: ../../include/openssl/asn1.h
 pem_all.o: ../../include/openssl/bio.h ../../include/openssl/buffer.h
 pem_all.o: ../../include/openssl/crypto.h ../../include/openssl/dh.h
 pem_all.o: ../../include/openssl/dsa.h ../../include/openssl/e_os2.h
@@ -105,7 +105,7 @@ pem_err.o: ../../include/openssl/pkcs7.h ../../include/openssl/safestack.h
 pem_err.o: ../../include/openssl/sha.h ../../include/openssl/stack.h
 pem_err.o: ../../include/openssl/x509.h
 pem_err.o: ../../include/openssl/x509_vfy.h pem_err.c
-pem_info.o: ../../e_os.h ../../include/openssl/asn1.h
+pem_info.o: ../../include/openssl/asn1.h
 pem_info.o: ../../include/openssl/bio.h ../../include/openssl/buffer.h
 pem_info.o: ../../include/openssl/crypto.h ../../include/openssl/dsa.h
 pem_info.o: ../../include/openssl/e_os2.h ../../include/openssl/ec.h
@@ -120,7 +120,7 @@ pem_info.o: ../../include/openssl/safestack.h ../../include/openssl/sha.h
 pem_info.o: ../../include/openssl/stack.h
 pem_info.o: ../../include/openssl/x509.h ../../include/openssl/x509_vfy.h
 pem_info.o: ../cryptlib.h pem_info.c
-pem_lib.o: ../../e_os.h ../../include/openssl/asn1.h
+pem_lib.o: ../../include/openssl/asn1.h
 pem_lib.o: ../../include/openssl/bio.h ../../include/openssl/buffer.h
 pem_lib.o: ../../include/openssl/crypto.h ../../include/openssl/des.h
 pem_lib.o: ../../include/openssl/des_old.h ../../include/openssl/e_os2.h
@@ -138,7 +138,7 @@ pem_lib.o: ../../include/openssl/ui.h
 pem_lib.o: ../../include/openssl/ui_compat.h ../../include/openssl/x509.h
 pem_lib.o: ../../include/openssl/x509_vfy.h ../asn1/asn1_locl.h ../cryptlib.h
 pem_lib.o: pem_lib.c
-pem_oth.o: ../../e_os.h ../../include/openssl/asn1.h
+pem_oth.o: ../../include/openssl/asn1.h
 pem_oth.o: ../../include/openssl/bio.h ../../include/openssl/buffer.h
 pem_oth.o: ../../include/openssl/crypto.h ../../include/openssl/e_os2.h
 pem_oth.o: ../../include/openssl/ec.h ../../include/openssl/ecdh.h
@@ -152,7 +152,7 @@ pem_oth.o: ../../include/openssl/rand.h ../../include/openssl/safestack.h
 pem_oth.o: ../../include/openssl/sha.h ../../include/openssl/stack.h
 pem_oth.o: ../../include/openssl/x509.h
 pem_oth.o: ../../include/openssl/x509_vfy.h ../cryptlib.h pem_oth.c
-pem_pk8.o: ../../e_os.h ../../include/openssl/asn1.h
+pem_pk8.o: ../../include/openssl/asn1.h
 pem_pk8.o: ../../include/openssl/bio.h ../../include/openssl/buffer.h
 pem_pk8.o: ../../include/openssl/crypto.h ../../include/openssl/e_os2.h
 pem_pk8.o: ../../include/openssl/ec.h ../../include/openssl/ecdh.h
@@ -167,7 +167,7 @@ pem_pk8.o: ../../include/openssl/safestack.h ../../include/openssl/sha.h
 pem_pk8.o: ../../include/openssl/stack.h
 pem_pk8.o: ../../include/openssl/x509.h ../../include/openssl/x509_vfy.h
 pem_pk8.o: ../cryptlib.h pem_pk8.c
-pem_pkey.o: ../../e_os.h ../../include/openssl/asn1.h
+pem_pkey.o: ../../include/openssl/asn1.h
 pem_pkey.o: ../../include/openssl/bio.h ../../include/openssl/buffer.h
 pem_pkey.o: ../../include/openssl/crypto.h ../../include/openssl/e_os2.h
 pem_pkey.o: ../../include/openssl/ec.h ../../include/openssl/ecdh.h
@@ -183,7 +183,7 @@ pem_pkey.o: ../../include/openssl/sha.h ../../include/openssl/stack.h
 pem_pkey.o: ../../include/openssl/x509.h
 pem_pkey.o: ../../include/openssl/x509_vfy.h ../asn1/asn1_locl.h ../cryptlib.h
 pem_pkey.o: pem_pkey.c
-pem_seal.o: ../../e_os.h ../../include/openssl/asn1.h
+pem_seal.o: ../../include/openssl/asn1.h
 pem_seal.o: ../../include/openssl/bio.h ../../include/openssl/buffer.h
 pem_seal.o: ../../include/openssl/crypto.h ../../include/openssl/e_os2.h
 pem_seal.o: ../../include/openssl/ec.h ../../include/openssl/ecdh.h
@@ -198,7 +198,7 @@ pem_seal.o: ../../include/openssl/rsa.h ../../include/openssl/safestack.h
 pem_seal.o: ../../include/openssl/sha.h ../../include/openssl/stack.h
 pem_seal.o: ../../include/openssl/x509.h
 pem_seal.o: ../../include/openssl/x509_vfy.h ../cryptlib.h pem_seal.c
-pem_sign.o: ../../e_os.h ../../include/openssl/asn1.h
+pem_sign.o: ../../include/openssl/asn1.h
 pem_sign.o: ../../include/openssl/bio.h ../../include/openssl/buffer.h
 pem_sign.o: ../../include/openssl/crypto.h ../../include/openssl/e_os2.h
 pem_sign.o: ../../include/openssl/ec.h ../../include/openssl/ecdh.h
@@ -213,7 +213,7 @@ pem_sign.o: ../../include/openssl/safestack.h ../../include/openssl/sha.h
 pem_sign.o: ../../include/openssl/stack.h
 pem_sign.o: ../../include/openssl/x509.h ../../include/openssl/x509_vfy.h
 pem_sign.o: ../cryptlib.h pem_sign.c
-pem_x509.o: ../../e_os.h ../../include/openssl/asn1.h
+pem_x509.o: ../../include/openssl/asn1.h
 pem_x509.o: ../../include/openssl/bio.h ../../include/openssl/buffer.h
 pem_x509.o: ../../include/openssl/crypto.h ../../include/openssl/e_os2.h
 pem_x509.o: ../../include/openssl/ec.h ../../include/openssl/ecdh.h
@@ -227,7 +227,7 @@ pem_x509.o: ../../include/openssl/pkcs7.h ../../include/openssl/safestack.h
 pem_x509.o: ../../include/openssl/sha.h ../../include/openssl/stack.h
 pem_x509.o: ../../include/openssl/x509.h
 pem_x509.o: ../../include/openssl/x509_vfy.h ../cryptlib.h pem_x509.c
-pem_xaux.o: ../../e_os.h ../../include/openssl/asn1.h
+pem_xaux.o: ../../include/openssl/asn1.h
 pem_xaux.o: ../../include/openssl/bio.h ../../include/openssl/buffer.h
 pem_xaux.o: ../../include/openssl/crypto.h ../../include/openssl/e_os2.h
 pem_xaux.o: ../../include/openssl/ec.h ../../include/openssl/ecdh.h
@@ -241,7 +241,7 @@ pem_xaux.o: ../../include/openssl/pkcs7.h ../../include/openssl/safestack.h
 pem_xaux.o: ../../include/openssl/sha.h ../../include/openssl/stack.h
 pem_xaux.o: ../../include/openssl/x509.h
 pem_xaux.o: ../../include/openssl/x509_vfy.h ../cryptlib.h pem_xaux.c
-pvkfmt.o: ../../e_os.h ../../include/openssl/asn1.h ../../include/openssl/bio.h
+pvkfmt.o: ../../include/openssl/asn1.h ../../include/openssl/bio.h
 pvkfmt.o: ../../include/openssl/bn.h ../../include/openssl/buffer.h
 pvkfmt.o: ../../include/openssl/crypto.h ../../include/openssl/dsa.h
 pvkfmt.o: ../../include/openssl/e_os2.h ../../include/openssl/ec.h

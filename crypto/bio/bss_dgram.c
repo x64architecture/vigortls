@@ -59,6 +59,7 @@
 
 
 #include <stdio.h>
+#include <sys/time.h>
 #include <errno.h>
 #define USE_SOCKETS
 #include "cryptlib.h"
@@ -172,10 +173,10 @@ static int dgram_clear(BIO *a)
     if (a == NULL) return (0);
     if (a->shutdown)
         {
-        if (a->init)
-            {
-            SHUTDOWN2(a->num);
-            }
+        if (a->init) {
+            shutdown((a->num), 2); 
+            close((a->num));
+        }
         a->init=0;
         a->flags=0;
         }
@@ -275,7 +276,7 @@ static int dgram_read(BIO *b, char *out, int outl)
 
     if (out != NULL)
         {
-        clear_socket_error();
+        errno = 0;
         memset(&sa.peer, 0x00, sizeof(sa.peer));
         dgram_adjust_rcv_timeout(b);
         ret=recvfrom(b->num,out,outl,0,&sa.peer.sa,(void *)&sa.len);
@@ -294,7 +295,7 @@ static int dgram_read(BIO *b, char *out, int outl)
             if (BIO_dgram_should_retry(ret))
                 {
                 BIO_set_retry_read(b);
-                data->_errno = get_last_socket_error();
+                data->_errno = errno;
                 }
             }
 
@@ -307,10 +308,10 @@ static int dgram_write(BIO *b, const char *in, int inl)
     {
     int ret;
     bio_dgram_data *data = (bio_dgram_data *)b->ptr;
-    clear_socket_error();
+    errno = 0;
 
     if ( data->connected )
-        ret=writesocket(b->num,in,inl);
+        ret=write(b->num,in,inl);
     else
         {
         int peerlen = sizeof(data->peer);
@@ -330,7 +331,7 @@ static int dgram_write(BIO *b, const char *in, int inl)
         if (BIO_dgram_should_retry(ret))
             {
             BIO_set_retry_write(b);  
-            data->_errno = get_last_socket_error();
+            data->_errno = errno;
 
 #if 0 /* higher layers are responsible for querying MTU, if necessary */
             if ( data->_errno == EMSGSIZE)
@@ -701,7 +702,7 @@ static int BIO_dgram_should_retry(int i)
 
     if ((i == 0) || (i == -1))
         {
-        err=get_last_socket_error();
+        err = errno;
 
         return (BIO_dgram_non_fatal_error(err));
         }

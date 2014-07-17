@@ -175,7 +175,7 @@ int main(int argc, char *argv[])
     /* Lets load up our environment a little */
     p = getenv("OPENSSL_CONF");
     if (p == NULL)
-        p = getenv("SSLEAY_CONF");
+        p = getenv("OPENSSL_CONF");
     if (p == NULL)
         p = to_free = make_config_name();
 
@@ -279,7 +279,7 @@ end:
         BIO_free(bio_err);
         bio_err = NULL;
     }
-    OPENSSL_EXIT(ret);
+    return (ret);
 }
 
 #define LIST_STANDARD_COMMANDS "list-standard-commands"

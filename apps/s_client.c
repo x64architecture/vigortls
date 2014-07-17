@@ -140,6 +140,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 #include <openssl/e_os2.h>
 
 #define USE_SOCKETS
@@ -322,7 +323,7 @@ static void sc_usage(void)
 #ifndef OPENSSL_NO_ENGINE
     BIO_printf(bio_err," -engine id    - Initialise and use the specified engine\n");
 #endif
-    BIO_printf(bio_err," -rand file%cfile%c...\n", LIST_SEPARATOR_CHAR, LIST_SEPARATOR_CHAR);
+    BIO_printf(bio_err," -rand file%cfile%c...\n", ':', ':');
     BIO_printf(bio_err," -sess_out arg - file to write SSL session to\n");
     BIO_printf(bio_err," -sess_in arg  - file to read SSL session from\n");
 #ifndef OPENSSL_NO_TLSEXT
@@ -1188,8 +1189,9 @@ re_start:
 
     if (init_client(&s,host,port,socket_type) == 0)
         {
-        BIO_printf(bio_err,"connect:errno=%d\n",get_last_socket_error());
-        SHUTDOWN(s);
+        BIO_printf(bio_err,"connect:errno=%d\n", errno);
+        shutdown((s), 0); 
+        close((s));
         goto end;
         }
     BIO_printf(bio_c_out,"CONNECTED(%08X)\n",s);
@@ -1214,9 +1216,9 @@ re_start:
         sbio=BIO_new_dgram(s,BIO_NOCLOSE);
         if (getsockname(s, &peer, (void *)&peerlen) < 0)
             {
-            BIO_printf(bio_err, "getsockname:errno=%d\n",
-                get_last_socket_error());
-            SHUTDOWN(s);
+            BIO_printf(bio_err, "getsockname:errno=%d\n", errno);
+            shutdown((s), 0); 
+            close((s));
             goto end;
             }
 
@@ -1474,7 +1476,8 @@ SSL_set_tlsext_status_ids(con, ids);
                     BIO_printf(bio_c_out,"drop connection and then reconnect\n");
                     SSL_shutdown(con);
                     SSL_set_connect_state(con);
-                    SHUTDOWN(SSL_get_fd(con));
+                    shutdown((SSL_get_fd(con)), 0); 
+                    close((SSL_get_fd(con)));
                     goto re_start;
                     }
                 }
@@ -1507,8 +1510,7 @@ SSL_set_tlsext_status_ids(con, ids);
                  NULL,timeoutp);
             if ( i < 0)
                 {
-                BIO_printf(bio_err,"bad select %d\n",
-                get_last_socket_error());
+                BIO_printf(bio_err,"bad select %d\n", errno);
                 goto shut;
                 /* goto end; */
                 }
@@ -1572,8 +1574,7 @@ SSL_set_tlsext_status_ids(con, ids);
             case SSL_ERROR_SYSCALL:
                 if ((k != 0) || (cbuf_len != 0))
                     {
-                    BIO_printf(bio_err,"write:errno=%d\n",
-                        get_last_socket_error());
+                    BIO_printf(bio_err,"write:errno=%d\n", errno);
                     goto shut;
                     }
                 else
@@ -1652,7 +1653,7 @@ printf("read=%d pending=%d peek=%d\n",k,SSL_pending(con),SSL_peek(con,zbuf,10240
                 BIO_printf(bio_c_out,"read X BLOCK\n");
                 break;
             case SSL_ERROR_SYSCALL:
-                ret=get_last_socket_error();
+                ret = errno;
                 BIO_printf(bio_err,"read:errno=%d\n",ret);
                 goto shut;
             case SSL_ERROR_ZERO_RETURN:
@@ -1725,7 +1726,8 @@ shut:
     if (in_init)
         print_stuff(bio_c_out,con,full_log);
     SSL_shutdown(con);
-    SHUTDOWN(SSL_get_fd(con));
+    shutdown((SSL_get_fd(con)), 0); 
+    close((SSL_get_fd(con)));
 end:
     if (con != NULL)
         {
@@ -1755,7 +1757,7 @@ end:
         bio_c_out=NULL;
         }
     apps_shutdown();
-    OPENSSL_EXIT(ret);
+    return (ret);
     }
 
 

@@ -107,7 +107,7 @@ ec2_smpl.o: ../../include/openssl/obj_mac.h ../../include/openssl/opensslconf.h
 ec2_smpl.o: ../../include/openssl/opensslv.h ../../include/openssl/ossl_typ.h
 ec2_smpl.o: ../../include/openssl/safestack.h ../../include/openssl/stack.h
 ec2_smpl.o: ec2_smpl.c ec_lcl.h
-ec_ameth.o: ../../e_os.h ../../include/openssl/asn1.h
+ec_ameth.o: ../../include/openssl/asn1.h
 ec_ameth.o: ../../include/openssl/bio.h ../../include/openssl/bn.h
 ec_ameth.o: ../../include/openssl/buffer.h ../../include/openssl/cms.h
 ec_ameth.o: ../../include/openssl/crypto.h ../../include/openssl/e_os2.h
@@ -194,7 +194,7 @@ ec_oct.o: ../../include/openssl/obj_mac.h ../../include/openssl/opensslconf.h
 ec_oct.o: ../../include/openssl/opensslv.h ../../include/openssl/ossl_typ.h
 ec_oct.o: ../../include/openssl/safestack.h ../../include/openssl/stack.h
 ec_oct.o: ec_lcl.h ec_oct.c
-ec_pmeth.o: ../../e_os.h ../../include/openssl/asn1.h
+ec_pmeth.o: ../../include/openssl/asn1.h
 ec_pmeth.o: ../../include/openssl/asn1t.h ../../include/openssl/bio.h
 ec_pmeth.o: ../../include/openssl/buffer.h ../../include/openssl/crypto.h
 ec_pmeth.o: ../../include/openssl/e_os2.h ../../include/openssl/ec.h
@@ -215,7 +215,7 @@ ec_print.o: ../../include/openssl/obj_mac.h ../../include/openssl/opensslconf.h
 ec_print.o: ../../include/openssl/opensslv.h ../../include/openssl/ossl_typ.h
 ec_print.o: ../../include/openssl/safestack.h ../../include/openssl/stack.h
 ec_print.o: ec_lcl.h ec_print.c
-eck_prn.o: ../../e_os.h ../../include/openssl/asn1.h
+eck_prn.o: ../../include/openssl/asn1.h
 eck_prn.o: ../../include/openssl/bio.h ../../include/openssl/bn.h
 eck_prn.o: ../../include/openssl/buffer.h ../../include/openssl/crypto.h
 eck_prn.o: ../../include/openssl/e_os2.h ../../include/openssl/ec.h

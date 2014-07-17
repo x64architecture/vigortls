@@ -152,7 +152,6 @@
 #include <time.h>
 
 #define USE_SOCKETS
-#include "e_os.h"
 
 #include <ctype.h>
 
@@ -699,7 +698,7 @@ bad:
         {
         /* ensure that the cipher list are correctly sorted and exit */
         if (do_test_cipherlist() == 0)
-            EXIT(1);
+            exit(1);
         ret = 0;
         goto end;
         }
@@ -710,7 +709,7 @@ bad:
             "the test anyway (and\n-d to see what happens), "
             "or add one of -ssl2, -ssl3, -tls1, -reuse\n"
             "to avoid protocol mismatch.\n");
-        EXIT(1);
+        exit(1);
         }
 
     if (print_time)
@@ -986,7 +985,7 @@ end:
     EVP_cleanup();
     CRYPTO_mem_leaks(bio_err);
     if (bio_err != NULL) BIO_free(bio_err);
-    EXIT(ret);
+    exit(ret);
     return ret;
     }
 
@@ -1980,7 +1979,7 @@ static int process_proxy_cond_multipliers(unsigned int letters[26],
             default:
                 fprintf(stderr, "SOMETHING IS SERIOUSLY WRONG!"
                     " STOPPING\n");
-                EXIT(1);
+                exit(1);
                 }
             }
             break;
@@ -2043,7 +2042,7 @@ static int process_proxy_cond_adders(unsigned int letters[26],
             default:
                 fprintf(stderr, "SOMETHING IS SERIOUSLY WRONG!"
                     " STOPPING\n");
-                EXIT(1);
+                exit(1);
                 }
             }
             break;
@@ -2142,7 +2141,7 @@ static int app_verify_callback(X509_STORE_CTX *ctx, void *arg)
                 cb_arg->proxy_cond, &cond_end);
 
             if (ok < 0)
-                EXIT(3);
+                exit(3);
             if (*cond_end)
                 {
                 fprintf(stderr, "Stopped processing condition before it's end.\n");

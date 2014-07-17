@@ -61,8 +61,6 @@
 #include <stdlib.h>
 #include <openssl/opensslconf.h> /* To see if OPENSSL_NO_CAST is defined */
 
-#include "../e_os.h"
-
 #ifdef OPENSSL_NO_CAST
 int main(int argc, char *argv[])
 {
@@ -227,7 +225,7 @@ int main(int argc, char *argv[])
       }
 #endif
 
-    EXIT(err);
+    exit(err);
     return (err);
     }
 #endif

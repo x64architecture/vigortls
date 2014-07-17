@@ -52,7 +52,6 @@
  *
  */
 
-#include <e_os.h>
 #include <openssl/err.h>
 
 /* Perform any essential OpenSSL initialization operations.

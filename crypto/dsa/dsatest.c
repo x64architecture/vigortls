@@ -68,8 +68,6 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 
-#include "../e_os.h"
-
 #include <openssl/crypto.h>
 #include <openssl/rand.h>
 #include <openssl/bio.h>
@@ -224,7 +222,7 @@ end:
         BIO_free(bio_err);
         bio_err = NULL;
         }
-    EXIT(!ret);
+    exit(!ret);
     return (0);
     }
 

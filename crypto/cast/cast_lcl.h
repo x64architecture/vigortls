@@ -56,9 +56,6 @@
  * [including the GNU Public Licence.]
  */
 
-
-#include "e_os.h"
-
 #undef c2l
 #define c2l(c,l)    (l =((unsigned long)(*((c)++)))    , \
              l|=((unsigned long)(*((c)++)))<< 8L, \

@@ -64,8 +64,6 @@
 #include <stdlib.h>
 #include <openssl/opensslconf.h> /* To see if OPENSSL_NO_BF is defined */
 
-#include "../e_os.h"
-
 #ifdef OPENSSL_NO_BF
 int main(int argc, char *argv[])
 {
@@ -278,7 +276,7 @@ int main(int argc, char *argv[])
     else
         ret=test();
 
-    EXIT(ret);
+    exit(ret);
     return (0);
     }
 

@@ -147,7 +147,7 @@ sha256.o: ../../include/openssl/opensslconf.h ../../include/openssl/opensslv.h
 sha256.o: ../../include/openssl/ossl_typ.h ../../include/openssl/safestack.h
 sha256.o: ../../include/openssl/sha.h ../../include/openssl/stack.h
 sha256.o: ../md32_common.h sha256.c
-sha512.o: ../../e_os.h ../../include/openssl/bio.h
+sha512.o: ../../include/openssl/bio.h
 sha512.o: ../../include/openssl/buffer.h ../../include/openssl/crypto.h
 sha512.o: ../../include/openssl/e_os2.h ../../include/openssl/err.h
 sha512.o: ../../include/openssl/lhash.h ../../include/openssl/opensslconf.h

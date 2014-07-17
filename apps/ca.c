@@ -63,6 +63,7 @@
 #include <string.h>
 #include <ctype.h>
 #include <sys/types.h>
+#include <unistd.h>
 #include <openssl/conf.h>
 #include <openssl/bio.h>
 #include <openssl/err.h>
@@ -573,7 +574,7 @@ bad:
     /*****************************************************************/
     tofree=NULL;
     if (configfile == NULL) configfile = getenv("OPENSSL_CONF");
-    if (configfile == NULL) configfile = getenv("SSLEAY_CONF");
+    if (configfile == NULL) configfile = getenv("OPENSSL_CONF");
     if (configfile == NULL)
         {
         const char *s=X509_get_default_cert_area();
@@ -1518,7 +1519,7 @@ err:
     NCONF_free(extconf);
     OBJ_cleanup();
     apps_shutdown();
-    OPENSSL_EXIT(ret);
+    return (ret);
     }
 
 static void lookup_fail(const char *name, const char *tag)

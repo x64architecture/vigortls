@@ -147,8 +147,6 @@
 #include <string.h>
 #include <errno.h>
 
-#include "e_os.h"
-
 #include <openssl/buffer.h>
 #include <openssl/bio.h>
 #include <openssl/stack.h>

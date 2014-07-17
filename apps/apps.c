@@ -114,6 +114,7 @@
 #include <string.h>
 #include <strings.h>
 #include <sys/types.h>
+#include <unistd.h>
 #include <ctype.h>
 #include <errno.h>
 #include <assert.h>
@@ -1439,11 +1440,11 @@ char *make_config_name()
     size_t len;
     char *p;
 
-    len=strlen(t)+strlen(OPENSSL_CONF)+2;
+    len=strlen(t)+strlen("openssl.cnf")+2;
     p=malloc(len);
     BUF_strlcpy(p,t,len);
     BUF_strlcat(p,"/",len);
-    BUF_strlcat(p,OPENSSL_CONF,len);
+    BUF_strlcat(p,"openssl.cnf",len);
 
     return p;
     }

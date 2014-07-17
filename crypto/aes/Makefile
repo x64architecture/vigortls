@@ -129,7 +129,7 @@ aes_ctr.o: ../../include/openssl/aes.h ../../include/openssl/modes.h
 aes_ctr.o: ../../include/openssl/opensslconf.h aes_ctr.c
 aes_ecb.o: ../../include/openssl/aes.h ../../include/openssl/e_os2.h
 aes_ecb.o: ../../include/openssl/opensslconf.h aes_ecb.c aes_locl.h
-aes_ige.o: ../../e_os.h ../../include/openssl/aes.h ../../include/openssl/bio.h
+aes_ige.o: ../../include/openssl/aes.h ../../include/openssl/bio.h
 aes_ige.o: ../../include/openssl/buffer.h ../../include/openssl/crypto.h
 aes_ige.o: ../../include/openssl/e_os2.h ../../include/openssl/err.h
 aes_ige.o: ../../include/openssl/lhash.h ../../include/openssl/opensslconf.h
@@ -143,7 +143,7 @@ aes_misc.o: ../../include/openssl/safestack.h ../../include/openssl/stack.h
 aes_misc.o: aes_locl.h aes_misc.c
 aes_ofb.o: ../../include/openssl/aes.h ../../include/openssl/modes.h
 aes_ofb.o: ../../include/openssl/opensslconf.h aes_ofb.c
-aes_wrap.o: ../../e_os.h ../../include/openssl/aes.h
+aes_wrap.o: ../../include/openssl/aes.h
 aes_wrap.o: ../../include/openssl/bio.h ../../include/openssl/buffer.h
 aes_wrap.o: ../../include/openssl/crypto.h ../../include/openssl/e_os2.h
 aes_wrap.o: ../../include/openssl/err.h ../../include/openssl/lhash.h

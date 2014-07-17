@@ -163,7 +163,7 @@ static void acpt_close_socket(BIO *bio)
     if (c->accept_sock != INVALID_SOCKET)
         {
         shutdown(c->accept_sock,2);
-        closesocket(c->accept_sock);
+        close(c->accept_sock);
         c->accept_sock=INVALID_SOCKET;
         bio->num=INVALID_SOCKET;
         }
@@ -210,7 +210,7 @@ again:
             {
             if (!BIO_socket_nbio(s,1))
                 {
-                closesocket(s);
+                close(s);
                 BIOerr(BIO_F_ACPT_STATE,BIO_R_ERROR_SETTING_NBIO_ON_ACCEPT_SOCKET);
                 return (-1);
                 }
@@ -272,7 +272,7 @@ err:
         if (bio != NULL)
             BIO_free(bio);
         else if (s >= 0)
-            closesocket(s);
+            close(s);
         return (0);
         /* break; */
     case ACPT_S_OK:

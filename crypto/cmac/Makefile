@@ -74,7 +74,7 @@ clean:
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 
-cm_ameth.o: ../../e_os.h ../../include/openssl/asn1.h
+cm_ameth.o: ../../include/openssl/asn1.h
 cm_ameth.o: ../../include/openssl/bio.h ../../include/openssl/buffer.h
 cm_ameth.o: ../../include/openssl/cmac.h ../../include/openssl/crypto.h
 cm_ameth.o: ../../include/openssl/e_os2.h ../../include/openssl/err.h
@@ -85,7 +85,7 @@ cm_ameth.o: ../../include/openssl/opensslv.h ../../include/openssl/ossl_typ.h
 cm_ameth.o: ../../include/openssl/safestack.h ../../include/openssl/stack.h
 cm_ameth.o: ../asn1/asn1_locl.h ../cryptlib.h
 cm_ameth.o: cm_ameth.c
-cm_pmeth.o: ../../e_os.h ../../include/openssl/asn1.h
+cm_pmeth.o: ../../include/openssl/asn1.h
 cm_pmeth.o: ../../include/openssl/bio.h ../../include/openssl/buffer.h
 cm_pmeth.o: ../../include/openssl/cmac.h ../../include/openssl/conf.h
 cm_pmeth.o: ../../include/openssl/crypto.h ../../include/openssl/e_os2.h
@@ -100,7 +100,7 @@ cm_pmeth.o: ../../include/openssl/sha.h ../../include/openssl/stack.h
 cm_pmeth.o: ../../include/openssl/x509.h
 cm_pmeth.o: ../../include/openssl/x509_vfy.h ../../include/openssl/x509v3.h
 cm_pmeth.o: ../cryptlib.h ../evp/evp_locl.h cm_pmeth.c
-cmac.o: ../../e_os.h ../../include/openssl/asn1.h ../../include/openssl/bio.h
+cmac.o: ../../include/openssl/asn1.h ../../include/openssl/bio.h
 cmac.o: ../../include/openssl/buffer.h ../../include/openssl/cmac.h
 cmac.o: ../../include/openssl/crypto.h ../../include/openssl/e_os2.h
 cmac.o: ../../include/openssl/err.h ../../include/openssl/evp.h

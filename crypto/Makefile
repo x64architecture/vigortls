@@ -129,21 +129,21 @@ cpt_err.o: ../include/openssl/lhash.h ../include/openssl/opensslconf.h
 cpt_err.o: ../include/openssl/opensslv.h ../include/openssl/ossl_typ.h
 cpt_err.o: ../include/openssl/safestack.h ../include/openssl/stack.h
 cpt_err.o: cpt_err.c
-cryptlib.o: ../e_os.h ../include/openssl/bio.h ../include/openssl/buffer.h
+cryptlib.o: ../include/openssl/bio.h ../include/openssl/buffer.h
 cryptlib.o: ../include/openssl/crypto.h ../include/openssl/e_os2.h
 cryptlib.o: ../include/openssl/err.h ../include/openssl/lhash.h
 cryptlib.o: ../include/openssl/opensslconf.h ../include/openssl/opensslv.h
 cryptlib.o: ../include/openssl/ossl_typ.h ../include/openssl/safestack.h
 cryptlib.o: ../include/openssl/stack.h cryptlib.c
 cryptlib.o: cryptlib.h
-ex_data.o: ../e_os.h ../include/openssl/bio.h ../include/openssl/buffer.h
+ex_data.o: ../include/openssl/bio.h ../include/openssl/buffer.h
 ex_data.o: ../include/openssl/crypto.h ../include/openssl/e_os2.h
 ex_data.o: ../include/openssl/err.h ../include/openssl/lhash.h
 ex_data.o: ../include/openssl/opensslconf.h ../include/openssl/opensslv.h
 ex_data.o: ../include/openssl/ossl_typ.h ../include/openssl/safestack.h
 ex_data.o: ../include/openssl/stack.h cryptlib.h
 ex_data.o: ex_data.c
-malloc_wrapper.o: ../e_os.h ../include/openssl/bio.h ../include/openssl/buffer.h
+malloc_wrapper.o: ../include/openssl/bio.h ../include/openssl/buffer.h
 malloc_wrapper.o: ../include/openssl/crypto.h ../include/openssl/e_os2.h
 malloc_wrapper.o: ../include/openssl/err.h ../include/openssl/lhash.h
 malloc_wrapper.o: ../include/openssl/opensslconf.h ../include/openssl/opensslv.h
@@ -154,22 +154,22 @@ mem_clr.o: ../include/openssl/crypto.h ../include/openssl/e_os2.h
 mem_clr.o: ../include/openssl/opensslconf.h ../include/openssl/opensslv.h
 mem_clr.o: ../include/openssl/ossl_typ.h ../include/openssl/safestack.h
 mem_clr.o: ../include/openssl/stack.h mem_clr.c
-mem_dbg.o: ../e_os.h ../include/openssl/bio.h ../include/openssl/buffer.h
+mem_dbg.o: ../include/openssl/bio.h ../include/openssl/buffer.h
 mem_dbg.o: ../include/openssl/crypto.h ../include/openssl/e_os2.h
 mem_dbg.o: ../include/openssl/err.h ../include/openssl/lhash.h
 mem_dbg.o: ../include/openssl/opensslconf.h ../include/openssl/opensslv.h
 mem_dbg.o: ../include/openssl/ossl_typ.h ../include/openssl/safestack.h
 mem_dbg.o: ../include/openssl/stack.h cryptlib.h
 mem_dbg.o: mem_dbg.c
-directory.o: ../e_os.h ../include/openssl/e_os2.h ../include/openssl/opensslconf.h
+directory.o: ../include/openssl/e_os2.h ../include/openssl/opensslconf.h
 directory.o: directory.c directory.h
-o_init.o: ../e_os.h ../include/openssl/bio.h ../include/openssl/crypto.h
+o_init.o: ../include/openssl/bio.h ../include/openssl/crypto.h
 o_init.o: ../include/openssl/e_os2.h ../include/openssl/err.h
 o_init.o: ../include/openssl/lhash.h ../include/openssl/opensslconf.h
 o_init.o: ../include/openssl/opensslv.h ../include/openssl/ossl_typ.h
 o_init.o: ../include/openssl/safestack.h ../include/openssl/stack.h
 o_init.o: o_init.c
-o_str.o: ../e_os.h ../include/openssl/e_os2.h ../include/openssl/opensslconf.h
+o_str.o: ../include/openssl/e_os2.h ../include/openssl/opensslconf.h
 o_str.o: o_str.c o_str.h
 o_time.o: ../include/openssl/e_os2.h ../include/openssl/opensslconf.h o_time.c
 o_time.o: o_time.h

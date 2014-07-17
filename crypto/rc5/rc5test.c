@@ -320,7 +320,7 @@ int main(int argc, char *argv[])
         }
     if (err == 0) printf("cbc RC5 ok\n");
 
-    EXIT(err);
+    exit(err);
     return (err);
     }
 

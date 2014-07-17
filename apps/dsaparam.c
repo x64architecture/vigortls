@@ -449,7 +449,7 @@ end:
     if (out != NULL) BIO_free_all(out);
     if (dsa != NULL) DSA_free(dsa);
     apps_shutdown();
-    OPENSSL_EXIT(ret);
+    return (ret);
     }
 
 static int dsa_cb(int p, int n, BN_GENCB *cb)

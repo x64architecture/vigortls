@@ -73,7 +73,7 @@ clean:
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 
-srp_lib.o: ../../e_os.h ../../include/openssl/asn1.h
+srp_lib.o: ../../include/openssl/asn1.h
 srp_lib.o: ../../include/openssl/bio.h ../../include/openssl/bn.h
 srp_lib.o: ../../include/openssl/buffer.h ../../include/openssl/crypto.h
 srp_lib.o: ../../include/openssl/e_os2.h ../../include/openssl/err.h
@@ -84,7 +84,7 @@ srp_lib.o: ../../include/openssl/ossl_typ.h ../../include/openssl/safestack.h
 srp_lib.o: ../../include/openssl/sha.h ../../include/openssl/srp.h
 srp_lib.o: ../../include/openssl/stack.h
 srp_lib.o: ../cryptlib.h srp_grps.h srp_lcl.h srp_lib.c
-srp_vfy.o: ../../e_os.h ../../include/openssl/asn1.h
+srp_vfy.o: ../../include/openssl/asn1.h
 srp_vfy.o: ../../include/openssl/bio.h ../../include/openssl/bn.h
 srp_vfy.o: ../../include/openssl/buffer.h ../../include/openssl/crypto.h
 srp_vfy.o: ../../include/openssl/e_os2.h ../../include/openssl/err.h

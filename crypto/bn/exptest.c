@@ -60,8 +60,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "../e_os.h"
-
 #include <openssl/bio.h>
 #include <openssl/bn.h>
 #include <openssl/rand.h>
@@ -86,7 +84,7 @@ int main(int argc, char *argv[])
     ERR_load_BN_strings();
 
     ctx=BN_CTX_new();
-    if (ctx == NULL) EXIT(1);
+    if (ctx == NULL) exit(1);
     r_mont=BN_new();
     r_mont_const=BN_new();
     r_recp=BN_new();
@@ -100,7 +98,7 @@ int main(int argc, char *argv[])
 
     out=BIO_new(BIO_s_file());
 
-    if (out == NULL) EXIT(1);
+    if (out == NULL) exit(1);
     BIO_set_fp(out,stdout,BIO_NOCLOSE);
 
     for (i=0; i<200; i++)
@@ -125,7 +123,7 @@ int main(int argc, char *argv[])
             {
             printf("BN_mod_exp_mont() problems\n");
             ERR_print_errors(out);
-            EXIT(1);
+            exit(1);
             }
 
         ret=BN_mod_exp_recp(r_recp,a,b,m,ctx);
@@ -133,7 +131,7 @@ int main(int argc, char *argv[])
             {
             printf("BN_mod_exp_recp() problems\n");
             ERR_print_errors(out);
-            EXIT(1);
+            exit(1);
             }
 
         ret=BN_mod_exp_simple(r_simple,a,b,m,ctx);
@@ -141,7 +139,7 @@ int main(int argc, char *argv[])
             {
             printf("BN_mod_exp_simple() problems\n");
             ERR_print_errors(out);
-            EXIT(1);
+            exit(1);
             }
 
         ret=BN_mod_exp_mont_consttime(r_mont_const,a,b,m,ctx,NULL);
@@ -149,7 +147,7 @@ int main(int argc, char *argv[])
             {
             printf("BN_mod_exp_mont_consttime() problems\n");
             ERR_print_errors(out);
-            EXIT(1);
+            exit(1);
             }
 
         if (BN_cmp(r_simple, r_mont) == 0
@@ -176,7 +174,7 @@ int main(int argc, char *argv[])
             printf("\nmont     ="); BN_print(out,r_mont);
             printf("\nmont_ct  ="); BN_print(out,r_mont_const);
             printf("\n");
-            EXIT(1);
+            exit(1);
             }
         }
     BN_free(r_mont);
@@ -191,11 +189,11 @@ int main(int argc, char *argv[])
     CRYPTO_mem_leaks(out);
     BIO_free(out);
     printf(" done\n");
-    EXIT(0);
+    exit(0);
 err:
     ERR_load_crypto_strings();
     ERR_print_errors(out);
-    EXIT(1);
+    exit(1);
     return (1);
     }
 

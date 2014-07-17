@@ -227,7 +227,7 @@ int ssl3_read_n(SSL *s, int n, int max, int extend)
          * and need to read in more until we have len+n (up to
          * len+max if possible) */
 
-        clear_sys_error();
+        errno = 0;
         if (s->rbio != NULL) {
             s->rwstate = SSL_READING;
             i = BIO_read(s->rbio, pkt + len + left, max-left);
@@ -808,7 +808,7 @@ int ssl3_write_pending(SSL *s, int type, const unsigned char *buf,
     }
 
     for (;;) {
-        clear_sys_error();
+        errno = 0;
         if (s->wbio != NULL) {
             s->rwstate = SSL_WRITING;
             i = BIO_write(s->wbio,

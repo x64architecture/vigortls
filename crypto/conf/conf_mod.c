@@ -554,7 +554,7 @@ char *CONF_get1_default_config_file(void)
 
     len = strlen(X509_get_default_cert_area());
     len++;
-    len += strlen(OPENSSL_CONF);
+    len += strlen("openssl.cnf");
 
     file = malloc(len + 1);
 
@@ -562,7 +562,7 @@ char *CONF_get1_default_config_file(void)
         return NULL;
     BUF_strlcpy(file,X509_get_default_cert_area(),len + 1);
     BUF_strlcat(file,"/",len + 1);
-    BUF_strlcat(file,OPENSSL_CONF,len + 1);
+    BUF_strlcat(file,"openssl.cnf",len + 1);
 
     return file;
     }

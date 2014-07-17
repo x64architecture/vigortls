@@ -375,7 +375,7 @@ end:
     if (osk != NULL) sk_OPENSSL_STRING_free(osk);
     OBJ_cleanup();
     apps_shutdown();
-    OPENSSL_EXIT(ret);
+    return (ret);
     }
 
 static int do_generate(BIO *bio, char *genstr, char *genconf, BUF_MEM *buf)

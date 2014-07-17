@@ -79,8 +79,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "e_os.h"
-
 #include <openssl/bio.h>
 #include <openssl/bn.h>
 #include <openssl/rand.h>
@@ -162,10 +160,10 @@ int main(int argc, char *argv[])
 
 
     ctx=BN_CTX_new();
-    if (ctx == NULL) EXIT(1);
+    if (ctx == NULL) exit(1);
 
     out=BIO_new(BIO_s_file());
-    if (out == NULL) EXIT(1);
+    if (out == NULL) exit(1);
     if (outfile == NULL)
         {
         BIO_set_fp(out,stdout,BIO_NOCLOSE);
@@ -175,7 +173,7 @@ int main(int argc, char *argv[])
         if (!BIO_write_filename(out,outfile))
             {
             perror(outfile);
-            EXIT(1);
+            exit(1);
             }
         }
 
@@ -303,14 +301,14 @@ int main(int argc, char *argv[])
     BIO_free(out);
 
 /**/
-    EXIT(0);
+    exit(0);
 err:
     BIO_puts(out,"1\n"); /* make sure the Perl script fed by bc notices
                           * the failure, see test_bn in test/Makefile.ssl*/
     (void)BIO_flush(out);
     ERR_load_crypto_strings();
     ERR_print_errors_fp(stderr);
-    EXIT(1);
+    exit(1);
     return (1);
     }
 
@@ -625,7 +623,7 @@ int test_mul(BIO *bp)
     BN_CTX *ctx;
 
     ctx = BN_CTX_new();
-    if (ctx == NULL) EXIT(1);
+    if (ctx == NULL) exit(1);
     
     BN_init(&a);
     BN_init(&b);
@@ -865,7 +863,7 @@ int test_mod_mul(BIO *bp, BN_CTX *ctx)
             while ((l=ERR_get_error()))
                 fprintf(stderr,"ERROR:%s\n",
                     ERR_error_string(l,NULL));
-            EXIT(1);
+            exit(1);
             }
         if (bp != NULL)
             {

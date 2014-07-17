@@ -77,14 +77,14 @@ clean:
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 
-conf_api.o: ../../e_os.h ../../include/openssl/bio.h
+conf_api.o: ../../include/openssl/bio.h
 conf_api.o: ../../include/openssl/conf.h ../../include/openssl/conf_api.h
 conf_api.o: ../../include/openssl/crypto.h ../../include/openssl/e_os2.h
 conf_api.o: ../../include/openssl/lhash.h ../../include/openssl/opensslconf.h
 conf_api.o: ../../include/openssl/opensslv.h ../../include/openssl/ossl_typ.h
 conf_api.o: ../../include/openssl/safestack.h ../../include/openssl/stack.h
 conf_api.o: conf_api.c
-conf_def.o: ../../e_os.h ../../include/openssl/bio.h
+conf_def.o: ../../include/openssl/bio.h
 conf_def.o: ../../include/openssl/buffer.h ../../include/openssl/conf.h
 conf_def.o: ../../include/openssl/conf_api.h ../../include/openssl/crypto.h
 conf_def.o: ../../include/openssl/e_os2.h ../../include/openssl/err.h
@@ -107,7 +107,7 @@ conf_lib.o: ../../include/openssl/lhash.h ../../include/openssl/opensslconf.h
 conf_lib.o: ../../include/openssl/opensslv.h ../../include/openssl/ossl_typ.h
 conf_lib.o: ../../include/openssl/safestack.h ../../include/openssl/stack.h
 conf_lib.o: conf_lib.c
-conf_mall.o: ../../e_os.h ../../include/openssl/asn1.h
+conf_mall.o: ../../include/openssl/asn1.h
 conf_mall.o: ../../include/openssl/bio.h ../../include/openssl/buffer.h
 conf_mall.o: ../../include/openssl/conf.h ../../include/openssl/crypto.h
 conf_mall.o: ../../include/openssl/dso.h ../../include/openssl/e_os2.h
@@ -122,7 +122,7 @@ conf_mall.o: ../../include/openssl/pkcs7.h ../../include/openssl/safestack.h
 conf_mall.o: ../../include/openssl/sha.h ../../include/openssl/stack.h
 conf_mall.o: ../../include/openssl/x509.h
 conf_mall.o: ../../include/openssl/x509_vfy.h ../cryptlib.h conf_mall.c
-conf_mod.o: ../../e_os.h ../../include/openssl/asn1.h
+conf_mod.o: ../../include/openssl/asn1.h
 conf_mod.o: ../../include/openssl/bio.h ../../include/openssl/buffer.h
 conf_mod.o: ../../include/openssl/conf.h ../../include/openssl/crypto.h
 conf_mod.o: ../../include/openssl/dso.h ../../include/openssl/e_os2.h
@@ -136,7 +136,7 @@ conf_mod.o: ../../include/openssl/pkcs7.h ../../include/openssl/safestack.h
 conf_mod.o: ../../include/openssl/sha.h ../../include/openssl/stack.h
 conf_mod.o: ../../include/openssl/x509.h
 conf_mod.o: ../../include/openssl/x509_vfy.h ../cryptlib.h conf_mod.c
-conf_sap.o: ../../e_os.h ../../include/openssl/asn1.h
+conf_sap.o: ../../include/openssl/asn1.h
 conf_sap.o: ../../include/openssl/bio.h ../../include/openssl/buffer.h
 conf_sap.o: ../../include/openssl/conf.h ../../include/openssl/crypto.h
 conf_sap.o: ../../include/openssl/dso.h ../../include/openssl/e_os2.h

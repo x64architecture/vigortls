@@ -116,10 +116,10 @@ static int sock_free(BIO *a)
     if (a == NULL) return (0);
     if (a->shutdown)
         {
-        if (a->init)
-            {
-            SHUTDOWN2(a->num);
-            }
+        if (a->init) {
+            shutdown((a->num), 2); 
+            close((a->num));
+        }
         a->init=0;
         a->flags=0;
         }
@@ -132,8 +132,8 @@ static int sock_read(BIO *b, char *out, int outl)
 
     if (out != NULL)
         {
-        clear_socket_error();
-        ret=readsocket(b->num,out,outl);
+        errno = 0;
+        ret=read(b->num,out,outl);
         BIO_clear_retry_flags(b);
         if (ret <= 0)
             {
@@ -148,8 +148,8 @@ static int sock_write(BIO *b, const char *in, int inl)
     {
     int ret;
     
-    clear_socket_error();
-    ret=writesocket(b->num,in,inl);
+    errno = 0;
+    ret=write(b->num,in,inl);
     BIO_clear_retry_flags(b);
     if (ret <= 0)
         {
@@ -214,7 +214,7 @@ int BIO_sock_should_retry(int i)
 
     if ((i == 0) || (i == -1))
         {
-        err=get_last_socket_error();
+        err = errno;
 
         return (BIO_sock_non_fatal_error(err));
         }

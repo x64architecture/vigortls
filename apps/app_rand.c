@@ -165,7 +165,7 @@ long app_RAND_load_files(char *name)
     for (;;)
         {
         last=0;
-        for (p=name; ((*p != '\0') && (*p != LIST_SEPARATOR_CHAR)); p++);
+        for (p=name; ((*p != '\0') && (*p != ':')); p++);
         if (*p == '\0') last=1;
         *p='\0';
         n=name;

@@ -63,12 +63,18 @@
 
 #include <stdio.h>
 #include <stdarg.h>
+#include <sys/ioctl.h>
+#include <sys/socket.h>
+#include <netdb.h>
+#include <netinet/in.h>
 
 #include <openssl/crypto.h>
 
 #ifdef  __cplusplus
 extern "C" {
 #endif
+
+#define INVALID_SOCKET    (-1)
 
 /* These are the 'types' of BIOs */
 #define BIO_TYPE_NONE        0

@@ -183,14 +183,14 @@ static void ctxdbg(BN_CTX *ctx)
                 fprintf(stderr,"Starting %s\n", ctxdbg_cur); \
                 ctxdbg(ctx); \
                 } while(0)
-#define CTXDBG_EXIT(ctx)    do { \
+#define CTXDBG_exit(ctx)    do { \
                 fprintf(stderr,"Ending %s\n", ctxdbg_cur); \
                 ctxdbg(ctx); \
                 } while(0)
 #define CTXDBG_RET(ctx,ret)
 #else
 #define CTXDBG_ENTRY(str, ctx)
-#define CTXDBG_EXIT(ctx)
+#define CTXDBG_exit(ctx)
 #define CTXDBG_RET(ctx,ret)
 #endif
 
@@ -264,7 +264,7 @@ void BN_CTX_start(BN_CTX *ctx)
         BNerr(BN_F_BN_CTX_START,BN_R_TOO_MANY_TEMPORARY_VARIABLES);
         ctx->err_stack++;
         }
-    CTXDBG_EXIT(ctx);
+    CTXDBG_exit(ctx);
     }
 
 void BN_CTX_end(BN_CTX *ctx)
@@ -282,7 +282,7 @@ void BN_CTX_end(BN_CTX *ctx)
         /* Unjam "too_many" in case "get" had failed */
         ctx->too_many = 0;
         }
-    CTXDBG_EXIT(ctx);
+    CTXDBG_exit(ctx);
     }
 
 BIGNUM *BN_CTX_get(BN_CTX *ctx)

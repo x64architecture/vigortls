@@ -74,7 +74,7 @@ clean:
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 
-mdc2_one.o: ../../e_os.h ../../include/openssl/bio.h
+mdc2_one.o: ../../include/openssl/bio.h
 mdc2_one.o: ../../include/openssl/buffer.h ../../include/openssl/crypto.h
 mdc2_one.o: ../../include/openssl/des.h ../../include/openssl/des_old.h
 mdc2_one.o: ../../include/openssl/e_os2.h ../../include/openssl/err.h
