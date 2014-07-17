@@ -86,7 +86,6 @@
 #include <stdio.h>
 #include <errno.h>
 #include "cryptlib.h"
-#include "bio_lcl.h"
 #include <openssl/err.h>
 
 static int file_write(BIO *h, const char *buf, int num);
@@ -96,242 +95,186 @@ static int file_gets(BIO *h, char *str, int size);
 static long file_ctrl(BIO *h, int cmd, long arg1, void *arg2);
 static int file_new(BIO *h);
 static int file_free(BIO *data);
-static BIO_METHOD methods_filep=
-    {
-    BIO_TYPE_FILE,
-    "FILE pointer",
-    file_write,
-    file_read,
-    file_puts,
-    file_gets,
-    file_ctrl,
-    file_new,
-    file_free,
-    NULL,
-    };
+static BIO_METHOD methods_filep = {
+    .type    = BIO_TYPE_FILE,
+    .name    = "FILE pointer",
+    .bwrite  = file_write,
+    .bread   = file_read,
+    .bputs   = file_puts,
+    .bgets   = file_gets,
+    .ctrl    = file_ctrl,
+    .create  = file_new,
+    .destroy = file_free
+};
 
 BIO *BIO_new_file(const char *filename, const char *mode)
-    {
+{
     BIO  *ret;
-    FILE *file=NULL;
+    FILE *file = NULL;
 
-    file=fopen(filename,mode);    
+    file = fopen(filename, mode);    
 
-    if (file == NULL)
-        {
-        SYSerr(SYS_F_FOPEN,get_last_sys_error());
+    if (file == NULL) {
+        SYSerr(SYS_F_FOPEN, get_last_sys_error());
         ERR_asprintf_error_data("fopen('%s','%s')", filename, mode);
         if (errno == ENOENT)
-            BIOerr(BIO_F_BIO_NEW_FILE,BIO_R_NO_SUCH_FILE);
+            BIOerr(BIO_F_BIO_NEW_FILE, BIO_R_NO_SUCH_FILE);
         else
-            BIOerr(BIO_F_BIO_NEW_FILE,ERR_R_SYS_LIB);
+            BIOerr(BIO_F_BIO_NEW_FILE, ERR_R_SYS_LIB);
         return (NULL);
-        }
-    if ((ret=BIO_new(BIO_s_file())) == NULL)
-        {
+    }
+    if ((ret = BIO_new(BIO_s_file())) == NULL) {
         fclose(file);
         return (NULL);
-        }
-
-    BIO_clear_flags(ret,BIO_FLAGS_UPLINK); /* we did fopen -> we disengage UPLINK */
-    BIO_set_fp(ret,file,BIO_CLOSE);
-    return (ret);
     }
+
+    BIO_set_fp(ret, file, BIO_CLOSE);
+    return (ret);
+}
 
 BIO *BIO_new_fp(FILE *stream, int close_flag)
-    {
+{
     BIO *ret;
 
-    if ((ret=BIO_new(BIO_s_file())) == NULL)
+    if ((ret = BIO_new(BIO_s_file())) == NULL)
         return (NULL);
 
-    BIO_set_flags(ret,BIO_FLAGS_UPLINK); /* redundant, left for documentation puposes */
-    BIO_set_fp(ret,stream,close_flag);
+    BIO_set_fp(ret, stream, close_flag);
     return (ret);
-    }
+}
 
 BIO_METHOD *BIO_s_file(void)
-    {
+{
     return (&methods_filep);
-    }
+}
 
 static int file_new(BIO *bi)
-    {
-    bi->init=0;
-    bi->num=0;
-    bi->ptr=NULL;
-    bi->flags=BIO_FLAGS_UPLINK; /* default to UPLINK */
+{
+    bi->init = 0;
+    bi->num = 0;
+    bi->ptr = NULL;
     return (1);
-    }
+}
 
 static int file_free(BIO *a)
-    {
-    if (a == NULL) return (0);
-    if (a->shutdown)
-        {
-        if ((a->init) && (a->ptr != NULL))
-            {
-            if (a->flags&BIO_FLAGS_UPLINK)
-                UP_fclose (a->ptr);
-            else
-                fclose (a->ptr);
-            a->ptr=NULL;
-            a->flags=BIO_FLAGS_UPLINK;
-            }
-        a->init=0;
+{
+    if (a == NULL)
+        return (0);
+    if (a->shutdown) {
+        if ((a->init) && (a->ptr != NULL)) {
+            fclose(a->ptr);
+            a->ptr = NULL;
         }
-    return (1);
+        a->init = 0;
     }
+    return (1);
+}
     
 static int file_read(BIO *b, char *out, int outl)
-    {
-    int ret=0;
+{
+    int ret = 0;
 
-    if (b->init && (out != NULL))
-        {
-        if (b->flags&BIO_FLAGS_UPLINK)
-            ret=UP_fread(out,1,(int)outl,b->ptr);
-        else
-            ret=fread(out,1,(int)outl,(FILE *)b->ptr);
-        if (ret == 0 && (b->flags&BIO_FLAGS_UPLINK)?UP_ferror((FILE *)b->ptr):ferror((FILE *)b->ptr))
-            {
-            SYSerr(SYS_F_FREAD,get_last_sys_error());
-            BIOerr(BIO_F_FILE_READ,ERR_R_SYS_LIB);
-            ret=-1;
-            }
+    if (b->init && (out != NULL)) {
+        ret = fread(out, 1, (int)outl, (FILE *)b->ptr);
+        if (ret == 0 && ferror((FILE *)b->ptr)) {
+            SYSerr(SYS_F_FREAD, get_last_sys_error());
+            BIOerr(BIO_F_FILE_READ, ERR_R_SYS_LIB);
+            ret = -1;
         }
-    return (ret);
     }
+    return (ret);
+}
 
 static int file_write(BIO *b, const char *in, int inl)
-    {
-    int ret=0;
+{
+    int ret = 0;
 
-    if (b->init && (in != NULL))
-        {
-        if (b->flags&BIO_FLAGS_UPLINK)
-            ret=UP_fwrite(in,(int)inl,1,b->ptr);
-        else
-            ret=fwrite(in,(int)inl,1,(FILE *)b->ptr);
+    if (b->init && (in != NULL)) {
+        ret = fwrite(in, (int)inl, 1, (FILE *)b->ptr);
         if (ret)
-            ret=inl;
-        /* ret=fwrite(in,1,(int)inl,(FILE *)b->ptr); */
+            ret = inl;
+        /* ret = fwrite(in,1,(int)inl,(FILE *)b->ptr); */
         /* according to Tim Hudson <tjh@cryptsoft.com>, the commented
          * out version above can cause 'inl' write calls under
          * some stupid stdio implementations (VMS) */
-        }
-    return (ret);
     }
+    return (ret);
+}
 
 static long file_ctrl(BIO *b, int cmd, long num, void *ptr)
-    {
-    long ret=1;
-    FILE *fp=(FILE *)b->ptr;
+{
+    long ret = 1;
+    FILE *fp = (FILE *)b->ptr;
     FILE **fpp;
     char p[4];
 
-    switch (cmd)
-        {
+    switch (cmd) {
     case BIO_C_FILE_SEEK:
     case BIO_CTRL_RESET:
-        if (b->flags&BIO_FLAGS_UPLINK)
-            ret=(long)UP_fseek(b->ptr,num,0);
-        else
-            ret=(long)fseek(fp,num,0);
+        ret = (long)fseek(fp, num, 0);
         break;
     case BIO_CTRL_EOF:
-        if (b->flags&BIO_FLAGS_UPLINK)
-            ret=(long)UP_feof(fp);
-        else
-            ret=(long)feof(fp);
+        ret = (long)feof(fp);
         break;
     case BIO_C_FILE_TELL:
     case BIO_CTRL_INFO:
-        if (b->flags&BIO_FLAGS_UPLINK)
-            ret=UP_ftell(b->ptr);
-        else
-            ret=ftell(fp);
+        ret = ftell(fp);
         break;
     case BIO_C_SET_FILE_PTR:
         file_free(b);
-        b->shutdown=(int)num&BIO_CLOSE;
-        b->ptr=ptr;
-        b->init=1;
-#if BIO_FLAGS_UPLINK!=0
-#if defined(__MINGW32__) && defined(__MSVCRT__) && !defined(_IOB_ENTRIES)
-#define _IOB_ENTRIES 20
-#endif
-#if defined(_IOB_ENTRIES)
-        /* Safety net to catch purely internal BIO_set_fp calls */
-        if ((size_t)ptr >= (size_t)stdin &&
-            (size_t)ptr <  (size_t)(stdin+_IOB_ENTRIES))
-            BIO_clear_flags(b,BIO_FLAGS_UPLINK);
-#endif
-#endif
-#ifdef UP_fsetmod
-        if (b->flags&BIO_FLAGS_UPLINK)
-            UP_fsetmod(b->ptr,(char)((num&BIO_FP_TEXT)?'t':'b'));
-        else
-#endif
-        {
-        }
+        b->shutdown = (int)num & BIO_CLOSE;
+        b->ptr = ptr;
+        b->init = 1;
         break;
     case BIO_C_SET_FILENAME:
         file_free(b);
-        b->shutdown=(int)num&BIO_CLOSE;
-        if (num & BIO_FP_APPEND)
-            {
+        b->shutdown = (int)num & BIO_CLOSE;
+        if (num & BIO_FP_APPEND) {
             if (num & BIO_FP_READ)
-                BUF_strlcpy(p,"a+",sizeof p);
-            else    BUF_strlcpy(p,"a",sizeof p);
-            }
+                BUF_strlcpy(p, "a+", sizeof p);
+            else
+                BUF_strlcpy(p, "a", sizeof p);
+        }
         else if ((num & BIO_FP_READ) && (num & BIO_FP_WRITE))
             BUF_strlcpy(p,"r+",sizeof p);
         else if (num & BIO_FP_WRITE)
             BUF_strlcpy(p,"w",sizeof p);
         else if (num & BIO_FP_READ)
             BUF_strlcpy(p,"r",sizeof p);
-        else
-            {
-            BIOerr(BIO_F_FILE_CTRL,BIO_R_BAD_FOPEN_MODE);
-            ret=0;
+        else {
+            BIOerr(BIO_F_FILE_CTRL, BIO_R_BAD_FOPEN_MODE);
+            ret = 0;
             break;
-            }
-        fp=fopen(ptr,p);
-        if (fp == NULL)
-            {
-            SYSerr(SYS_F_FOPEN,get_last_sys_error());
+        }
+        fp = fopen(ptr, p);
+        if (fp == NULL) {
+            SYSerr(SYS_F_FOPEN, get_last_sys_error());
             ERR_asprintf_error_data("fopen('%s','%s')", ptr, p);
-            BIOerr(BIO_F_FILE_CTRL,ERR_R_SYS_LIB);
-            ret=0;
+            BIOerr(BIO_F_FILE_CTRL, ERR_R_SYS_LIB);
+            ret = 0;
             break;
-            }
-        b->ptr=fp;
-        b->init=1;
-        BIO_clear_flags(b,BIO_FLAGS_UPLINK); /* we did fopen -> we disengage UPLINK */
+        }
+        b->ptr = fp;
+        b->init = 1;
         break;
     case BIO_C_GET_FILE_PTR:
         /* the ptr parameter is actually a FILE ** in this case. */
-        if (ptr != NULL)
-            {
-            fpp=(FILE **)ptr;
-            *fpp=(FILE *)b->ptr;
-            }
+        if (ptr != NULL) {
+            fpp = (FILE **)ptr;
+            *fpp = (FILE *)b->ptr;
+        }
         break;
     case BIO_CTRL_GET_CLOSE:
-        ret=(long)b->shutdown;
+        ret = (long)b->shutdown;
         break;
     case BIO_CTRL_SET_CLOSE:
-        b->shutdown=(int)num;
+        b->shutdown = (int)num;
         break;
     case BIO_CTRL_FLUSH:
-        if (b->flags&BIO_FLAGS_UPLINK)
-            UP_fflush(b->ptr);
-        else
-            fflush((FILE *)b->ptr);
+        fflush((FILE *)b->ptr);
         break;
     case BIO_CTRL_DUP:
-        ret=1;
+        ret = 1;
         break;
 
     case BIO_CTRL_WPENDING:
@@ -339,41 +282,33 @@ static long file_ctrl(BIO *b, int cmd, long num, void *ptr)
     case BIO_CTRL_PUSH:
     case BIO_CTRL_POP:
     default:
-        ret=0;
+        ret = 0;
         break;
-        }
-    return (ret);
     }
+    return (ret);
+}
 
 static int file_gets(BIO *bp, char *buf, int size)
-    {
-    int ret=0;
+{
+    int ret = 0;
 
-    buf[0]='\0';
-    if (bp->flags&BIO_FLAGS_UPLINK)
-        {
-        if (!UP_fgets(buf,size,bp->ptr))
-            goto err;
-        }
-    else
-        {
-        if (!fgets(buf,size,(FILE *)bp->ptr))
-            goto err;
-        }
+    buf[0] = '\0';
+    if (!fgets(buf, size, (FILE *)bp->ptr))
+        goto err;
     if (buf[0] != '\0')
-        ret=strlen(buf);
-    err:
+        ret = strlen(buf);
+err:
     return (ret);
-    }
+}
 
 static int file_puts(BIO *bp, const char *str)
-    {
-    int n,ret;
+{
+    int n, ret;
 
-    n=strlen(str);
-    ret=file_write(bp,str,n);
+    n = strlen(str);
+    ret = file_write(bp, str, n);
     return (ret);
-    }
+}
 
 #endif /* HEADER_BSS_FILE_C */
 
