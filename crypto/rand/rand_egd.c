@@ -96,7 +96,7 @@
  */
 
 #include <openssl/opensslconf.h>
-#include OPENSSL_UNISTD
+#include <unistd.h>
 #include <sys/types.h>
 #include <sys/socket.h>
 #ifndef NO_SYS_UN_H

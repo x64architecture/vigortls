@@ -182,7 +182,7 @@
                      get screwed...
                   */
 
-#include OPENSSL_UNISTD
+#include <unistd.h>
 
 #define TEST_SERVER_CERT "../apps/server.pem"
 #define TEST_CLIENT_CERT "../apps/client.pem"

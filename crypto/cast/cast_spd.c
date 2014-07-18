@@ -62,8 +62,8 @@
 #include <stdio.h>
 
 #include <openssl/e_os2.h>
-#include OPENSSL_UNISTD_IO
-OPENSSL_DECLARE_EXIT
+#include <unistd.h>
+
 
 #include <signal.h>
 

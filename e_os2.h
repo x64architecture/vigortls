@@ -85,11 +85,6 @@ extern "C" {
  * That's it for OS-specific stuff
  *****************************************************************************/
 
-
-/* Specials for I/O an exit */
-#define OPENSSL_UNISTD_IO OPENSSL_UNISTD
-#define OPENSSL_DECLARE_EXIT /* declared in unistd.h */
-
 /* Definitions of OPENSSL_GLOBAL and OPENSSL_EXTERN, to define and declare
    certain global symbols that, with some compilers under VMS, have to be
    defined and declared explicitely with globaldef and globalref.

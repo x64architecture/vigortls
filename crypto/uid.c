@@ -56,7 +56,7 @@
 #include <openssl/crypto.h>
 #include <openssl/opensslconf.h>
 
-#include OPENSSL_UNISTD
+#include <unistd.h>
 #include <sys/types.h>
 
 int OPENSSL_issetugid(void)

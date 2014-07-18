@@ -63,13 +63,9 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-
-#ifdef OPENSSL_UNISTD
-# include OPENSSL_UNISTD
-#else
-# include <unistd.h>
-#endif
+#include <unistd.h>
 #include <math.h>
+
 #include <openssl/des.h>
 
 #if defined(__STDC__)

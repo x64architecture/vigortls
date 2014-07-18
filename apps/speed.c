@@ -97,7 +97,7 @@
 #include <openssl/err.h>
 #include <openssl/evp.h>
 #include <openssl/objects.h>
-#include OPENSSL_UNISTD
+#include <unistd.h>
 
 #include <signal.h>
 

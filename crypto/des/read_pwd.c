@@ -57,11 +57,7 @@
  */
 
 #include <openssl/e_os2.h>
-#ifdef OPENSSL_UNISTD
-# include OPENSSL_UNISTD
-#else
-# include <unistd.h>
-#endif
+#include <unistd.h>
 /* If unistd.h defines _POSIX_VERSION, we conclude that we
  * are on a POSIX system and have sigaction and termios. */
 #if defined(_POSIX_VERSION)

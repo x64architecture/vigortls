@@ -1371,11 +1371,6 @@ while (<IN>)
 			if $export_var_as_fn;
 		  printf OUT "#%s OPENSSL_EXPORT_VAR_AS_FUNCTION\n",
 			($export_var_as_fn)?"define":"undef"; }
-	elsif	(/^#define\s+OPENSSL_UNISTD/)
-		{
-		$unistd = "<unistd.h>" if $unistd eq "";
-		print OUT "#define OPENSSL_UNISTD $unistd\n";
-		}
 	elsif	(/^#((define)|(undef))\s+SIXTY_FOUR_BIT_LONG/)
 		{ printf OUT "#%s SIXTY_FOUR_BIT_LONG\n",($b64l)?"define":"undef"; }
 	elsif	(/^#((define)|(undef))\s+SIXTY_FOUR_BIT/)

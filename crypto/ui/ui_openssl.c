@@ -127,12 +127,8 @@
 #include <stdio.h>
 #include <string.h>
 #include <errno.h>
+#include <unistd.h>
 
-# ifdef OPENSSL_UNISTD
-#  include OPENSSL_UNISTD
-# else
-#  include <unistd.h>
-# endif
 /* If unistd.h defines _POSIX_VERSION, we conclude that we
  * are on a POSIX system and have sigaction and termios. */
 # if defined(_POSIX_VERSION)

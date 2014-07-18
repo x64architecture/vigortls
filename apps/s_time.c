@@ -74,7 +74,7 @@
 #include <openssl/pem.h>
 #include "s_apps.h"
 #include <openssl/err.h>
-#include OPENSSL_UNISTD
+#include <unistd.h>
 
 #undef PROG
 #define PROG s_time_main
