@@ -4,7 +4,7 @@ VigorTLS
 VigorTLS is a fork of OpenSSL developed by Kurt Cancemi.
 
 Goal
-=====
+====
 
 The goal of the VigorTLS Project is to improve the original OpenSSL codebase
 by using modern C features, removing support for ancient operating systems
