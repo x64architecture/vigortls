@@ -18,7 +18,6 @@ ASFLAGS= $(INCLUDES) $(ASFLAG)
 AFLAGS= $(ASFLAGS)
 
 GENERAL=Makefile
-TEST=destest.c
 APPS=
 
 LIB=$(TOP)/libcrypto.a
@@ -72,7 +71,6 @@ files:
 
 links:
 	@$(PERL) $(TOP)/util/mklink.pl ../../include/openssl $(EXHEADER)
-	@$(PERL) $(TOP)/util/mklink.pl ../../test $(TEST)
 	@$(PERL) $(TOP)/util/mklink.pl ../../apps $(APPS)
 
 # We need to use force because 'install' matches 'INSTALL' on case

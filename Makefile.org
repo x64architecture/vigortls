@@ -412,15 +412,15 @@ links:
 	@$(PERL) $(TOP)/util/mklink.pl include/openssl $(EXHEADER)
 	@set -e; target=links; $(RECURSIVE_BUILD_CMD)
 
-gentests:
-	@(cd test && echo "generating dummy tests (if needed)..." && \
-	$(CLEARENV) && $(MAKE) -e $(BUILDENV) TESTS='$(TESTS)' generate );
-
 dclean:
 	rm -rf *.bak include/openssl certs/.0
 	@set -e; target=dclean; $(RECURSIVE_BUILD_CMD)
 
 test:   tests
+
+tests:
+	@echo "Running tests"
+	@cd test
 
 report:
 	@$(PERL) util/selftest.pl

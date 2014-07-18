@@ -13,7 +13,6 @@ AR=		ar r
 CFLAGS= $(INCLUDES) $(CFLAG)
 
 GENERAL=Makefile README
-TEST=
 APPS=
 
 LIB=$(TOP)/libcrypto.a
@@ -54,10 +53,6 @@ ALL=    $(GENERAL) $(SRC) $(HEADER)
 top:
 	(cd ../..; $(MAKE) DIRS=crypto SDIRS=$(DIR) sub_all)
 
-test:	test.c
-	cc -g -I../../include -c test.c
-	cc -g -I../../include -o test test.o -L../.. -lcrypto
-
 pk:	pk.c
 	cc -g -I../../include -c pk.c
 	cc -g -I../../include -o pk pk.o -L../.. -lcrypto
@@ -74,7 +69,6 @@ files:
 
 links:
 	@$(PERL) $(TOP)/util/mklink.pl ../../include/openssl $(EXHEADER)
-	@$(PERL) $(TOP)/util/mklink.pl ../../test $(TEST)
 	@$(PERL) $(TOP)/util/mklink.pl ../../apps $(APPS)
 
 install:

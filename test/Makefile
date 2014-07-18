@@ -18,10 +18,7 @@ EX_LIBS= #-lnsl -lsocket
 
 CFLAGS= $(INCLUDES) $(CFLAG)
 
-GENERAL=Makefile maketests.com \
-	tests.com testenc.com tx509.com trsa.com tcrl.com tsid.com treq.com \
-	tpkcs7.com tpkcs7d.com tverify.com testgen.com testss.com testssl.com \
-	testca.com
+GENERAL=Makefile
 
 DLIBCRYPTO= ../libcrypto.a
 DLIBSSL= ../libssl.a
@@ -36,17 +33,16 @@ EXPTEST=	exptest
 IDEATEST=	ideatest
 SHATEST=	shatest
 SHA1TEST=	sha1test
-SHA256TEST=	sha256t
-SHA512TEST=	sha512t
+SHA256TEST=	sha256test
+SHA512TEST=	sha512test
 MDC2TEST=	mdc2test
 RMDTEST=	rmdtest
 MD4TEST=	md4test
 MD5TEST=	md5test
 HMACTEST=	hmactest
-WPTEST=		wp_test
+WPTEST=		wptest
 RC2TEST=	rc2test
 RC4TEST=	rc4test
-RC5TEST=	rc5test
 BFTEST=		bftest
 CASTTEST=	casttest
 DESTEST=	destest
@@ -55,8 +51,8 @@ DHTEST=		dhtest
 DSATEST=	dsatest
 METHTEST=	methtest
 SSLTEST=	ssltest
-RSATEST=	rsa_test
-EVPTEST=	evp_test
+RSATEST=	rsatest
+EVPTEST=	evptest
 IGETEST=	igetest
 SRPTEST=	srptest
 ASN1TEST=	asn1test
@@ -65,7 +61,7 @@ TESTS=		alltests
 
 EXE=	$(BNTEST)$(EXE_EXT) $(ECTEST)$(EXE_EXT)  $(ECDSATEST)$(EXE_EXT) $(ECDHTEST)$(EXE_EXT) $(IDEATEST)$(EXE_EXT) \
 	$(MD4TEST)$(EXE_EXT) $(MD5TEST)$(EXE_EXT) $(HMACTEST)$(EXE_EXT) $(WPTEST)$(EXE_EXT) \
-	$(RC2TEST)$(EXE_EXT) $(RC4TEST)$(EXE_EXT) $(RC5TEST)$(EXE_EXT) \
+	$(RC2TEST)$(EXE_EXT) $(RC4TEST)$(EXE_EXT) \
 	$(DESTEST)$(EXE_EXT) $(SHATEST)$(EXE_EXT) $(SHA1TEST)$(EXE_EXT) $(SHA256TEST)$(EXE_EXT) $(SHA512TEST)$(EXE_EXT) \
 	$(MDC2TEST)$(EXE_EXT) $(RMDTEST)$(EXE_EXT) \
 	$(RANDTEST)$(EXE_EXT) $(DHTEST)$(EXE_EXT) \
@@ -78,7 +74,7 @@ EXE=	$(BNTEST)$(EXE_EXT) $(ECTEST)$(EXE_EXT)  $(ECDSATEST)$(EXE_EXT) $(ECDHTEST)
 OBJ=	$(BNTEST).o $(ECTEST).o  $(ECDSATEST).o $(ECDHTEST).o $(IDEATEST).o \
 	$(MD4TEST).o $(MD5TEST).o \
 	$(HMACTEST).o $(WPTEST).o \
-	$(RC2TEST).o $(RC4TEST).o $(RC5TEST).o \
+	$(RC2TEST).o $(RC4TEST).o \
 	$(DESTEST).o $(SHATEST).o $(SHA1TEST).o $(SHA256TEST).o $(SHA512TEST).o \
 	$(MDC2TEST).o $(RMDTEST).o \
 	$(RANDTEST).o $(DHTEST).o $(CASTTEST).o \
@@ -88,7 +84,7 @@ OBJ=	$(BNTEST).o $(ECTEST).o  $(ECDSATEST).o $(ECDHTEST).o $(IDEATEST).o \
 SRC=	$(BNTEST).c $(ECTEST).c  $(ECDSATEST).c $(ECDHTEST).c $(IDEATEST).c \
 	$(MD4TEST).c $(MD5TEST).c \
 	$(HMACTEST).c $(WPTEST).c \
-	$(RC2TEST).c $(RC4TEST).c $(RC5TEST).c \
+	$(RC2TEST).c $(RC4TEST).c \
 	$(DESTEST).c $(SHATEST).c $(SHA1TEST).c $(MDC2TEST).c $(RMDTEST).c \
 	$(RANDTEST).c $(DHTEST).c $(CASTTEST).c \
 	$(BFTEST).c  $(SSLTEST).c $(DSATEST).c   $(EXPTEST).c $(RSATEST).c \
@@ -104,7 +100,7 @@ top:
 
 all:	exe
 
-exe:	$(EXE) dummytest$(EXE_EXT)
+exe:	$(EXE)
 
 files:
 	$(PERL) $(TOP)/util/files.pl Makefile >> $(TOP)/MINFO
@@ -130,7 +126,7 @@ apps:
 alltests: \
 	test_des test_idea test_sha test_md4 test_md5 test_hmac \
 	test_mdc2 test_wp \
-	test_rmd test_rc2 test_rc4 test_rc5 test_bf test_cast test_aes \
+	test_rmd test_rc2 test_rc4 test_bf test_cast test_aes \
 	test_rand test_bn test_ec test_ecdsa test_ecdh \
 	test_enc test_x509 test_rsa test_crl test_sid \
 	test_gen test_req test_pkcs7 test_verify test_dh test_dsa \
@@ -138,55 +134,52 @@ alltests: \
 	test_srp test_cms
 
 test_evp:
-	../util/shlib_wrap.sh ./$(EVPTEST) evptests.txt
+	./$(EVPTEST) evptests.txt
 
 test_des:
-	../util/shlib_wrap.sh ./$(DESTEST)
+	./$(DESTEST)
 
 test_idea:
-	../util/shlib_wrap.sh ./$(IDEATEST)
+	./$(IDEATEST)
 
 test_sha:
-	../util/shlib_wrap.sh ./$(SHATEST)
-	../util/shlib_wrap.sh ./$(SHA1TEST)
-	../util/shlib_wrap.sh ./$(SHA256TEST)
-	../util/shlib_wrap.sh ./$(SHA512TEST)
+	./$(SHATEST)
+	./$(SHA1TEST)
+	./$(SHA256TEST)
+	./$(SHA512TEST)
 
 test_mdc2:
-	../util/shlib_wrap.sh ./$(MDC2TEST)
+	./$(MDC2TEST)
 
 test_md5:
-	../util/shlib_wrap.sh ./$(MD5TEST)
+	./$(MD5TEST)
 
 test_md4:
-	../util/shlib_wrap.sh ./$(MD4TEST)
+	./$(MD4TEST)
 
 test_hmac:
-	../util/shlib_wrap.sh ./$(HMACTEST)
+	./$(HMACTEST)
 
 test_wp:
-	../util/shlib_wrap.sh ./$(WPTEST)
+	./$(WPTEST)
 
 test_rmd:
-	../util/shlib_wrap.sh ./$(RMDTEST)
+	./$(RMDTEST)
 
 test_bf:
-	../util/shlib_wrap.sh ./$(BFTEST)
+	./$(BFTEST)
 
 test_cast:
-	../util/shlib_wrap.sh ./$(CASTTEST)
+	./$(CASTTEST)
 
 test_rc2:
-	../util/shlib_wrap.sh ./$(RC2TEST)
+	./$(RC2TEST)
 
 test_rc4:
-	../util/shlib_wrap.sh ./$(RC4TEST)
-
-test_rc5:
-	../util/shlib_wrap.sh ./$(RC5TEST)
+	./$(RC4TEST)
 
 test_rand:
-	../util/shlib_wrap.sh ./$(RANDTEST)
+	./$(RANDTEST)
 
 test_enc:
 	@sh ./testenc
@@ -201,7 +194,7 @@ test_x509:
 
 test_rsa: $(RSATEST)$(EXE_EXT)
 	@sh ./trsa 2>/dev/null
-	../util/shlib_wrap.sh ./$(RSATEST)
+	./$(RSATEST)
 
 test_crl:
 	@sh ./tcrl 2>/dev/null
@@ -219,38 +212,38 @@ test_pkcs7:
 
 test_bn:
 	@echo starting big number library test, could take a while...
-	@../util/shlib_wrap.sh ./$(BNTEST) >tmp.bntest
+	@./$(BNTEST) >tmp.bntest
 	@echo quit >>tmp.bntest
 	@echo "running bc"
 	@<tmp.bntest sh -c "`sh ./bctest ignore`" | $(PERL) -e '$$i=0; while (<STDIN>) {if (/^test (.*)/) {print STDERR "\nverify $$1";} elsif (!/^0\r?$$/) {die "\nFailed! bc: $$_";} else {print STDERR "."; $$i++;}} print STDERR "\n$$i tests passed\n"'
 	@echo 'test a^b%c implementations'
-	../util/shlib_wrap.sh ./$(EXPTEST)
+	./$(EXPTEST)
 
 test_ec:
 	@echo 'test elliptic curves'
-	../util/shlib_wrap.sh ./$(ECTEST)
+	./$(ECTEST)
 
 test_ecdsa:
 	@echo 'test ecdsa'
-	../util/shlib_wrap.sh ./$(ECDSATEST)
+	./$(ECDSATEST)
 
 test_ecdh:
 	@echo 'test ecdh'
-	../util/shlib_wrap.sh ./$(ECDHTEST)
+	./$(ECDHTEST)
 
 test_verify:
 	@echo "The following command should have some OK's and some failures"
 	@echo "There are definitly a few expired certificates"
-	../util/shlib_wrap.sh ../apps/openssl verify -CApath ../certs/demo ../certs/demo/*.pem
+	../apps/openssl verify -CApath ../certs/demo ../certs/demo/*.pem
 
 test_dh:
 	@echo "Generate a set of DH parameters"
-	../util/shlib_wrap.sh ./$(DHTEST)
+	./$(DHTEST)
 
 test_dsa:
 	@echo "Generate a set of DSA parameters"
-	../util/shlib_wrap.sh ./$(DSATEST)
-	../util/shlib_wrap.sh ./$(DSATEST) -app2_1
+	./$(DSATEST)
+	./$(DSATEST) -app2_1
 
 test_gen:
 	@echo "Generate and verify a certificate request"
@@ -266,13 +259,13 @@ test_ss keyU.ss certU.ss certCA.ss certP1.ss keyP1.ss certP2.ss keyP2.ss \
 test_ssl: keyU.ss certU.ss certCA.ss certP1.ss keyP1.ss certP2.ss keyP2.ss \
 		intP1.ss intP2.ss
 	@echo "test SSL protocol"
-	../util/shlib_wrap.sh ./$(SSLTEST) -test_cipherlist
+	./$(SSLTEST) -test_cipherlist
 	@sh ./testssl keyU.ss certU.ss certCA.ss
 	@sh ./testsslproxy keyP1.ss certP1.ss intP1.ss
 	@sh ./testsslproxy keyP2.ss certP2.ss intP2.ss
 
 test_ca:
-	@if ../util/shlib_wrap.sh ../apps/openssl no-rsa; then \
+	@if ../apps/openssl no-rsa; then \
 	  echo "skipping CA.sh test -- requires RSA"; \
 	else \
 	  echo "Generate and certify a test certificate via the 'ca' program"; \
@@ -281,10 +274,10 @@ test_ca:
 
 test_aes: #$(AESTEST)
 #	@echo "test Rijndael"
-#	../util/shlib_wrap.sh ./$(AESTEST)
+#	./$(AESTEST)
 
 test_tsa:
-	@if ../util/shlib_wrap.sh ../apps/openssl no-rsa; then \
+	@if ../apps/openssl no-rsa; then \
 	  echo "skipping testtsa test -- requires RSA"; \
 	else \
 	  sh ./testtsa; \
@@ -292,7 +285,7 @@ test_tsa:
 
 test_ige: $(IGETEST)$(EXE_EXT)
 	@echo "Test IGE mode"
-	../util/shlib_wrap.sh ./$(IGETEST)
+	./$(IGETEST)
 
 test_cms:
 	@echo "CMS consistency test"
@@ -300,7 +293,7 @@ test_cms:
 
 test_srp: $(SRPTEST)$(EXE_EXT)
 	@echo "Test SRP"
-	../util/shlib_wrap.sh ./srptest
+	./srptest
 
 lint:
 	lint -DLINT $(INCLUDES) $(SRC)>fluff
@@ -393,9 +386,6 @@ $(CASTTEST)$(EXE_EXT): $(CASTTEST).o $(DLIBCRYPTO)
 $(RC4TEST)$(EXE_EXT): $(RC4TEST).o $(DLIBCRYPTO)
 	@target=$(RC4TEST); $(BUILD_CMD)
 
-$(RC5TEST)$(EXE_EXT): $(RC5TEST).o $(DLIBCRYPTO)
-	@target=$(RC5TEST); $(BUILD_CMD)
-
 $(DESTEST)$(EXE_EXT): $(DESTEST).o $(DLIBCRYPTO)
 	@target=$(DESTEST); $(BUILD_CMD)
 
@@ -431,19 +421,6 @@ $(ASN1TEST)$(EXE_EXT): $(ASN1TEST).o $(DLIBCRYPTO)
 
 $(SRPTEST)$(EXE_EXT): $(SRPTEST).o $(DLIBCRYPTO)
 	@target=$(SRPTEST); $(BUILD_CMD)
-
-#$(AESTEST).o: $(AESTEST).c
-#	$(CC) -c $(CFLAGS) -DINTERMEDIATE_VALUE_KAT -DTRACE_KAT_MCT $(AESTEST).c
-
-#$(AESTEST)$(EXE_EXT): $(AESTEST).o $(DLIBCRYPTO)
-#	if [ "$(SHLIB_TARGET)" = "hpux-shared" -o "$(SHLIB_TARGET)" = "darwin-shared" ] ; then \
-#	  $(CC) -o $(AESTEST)$(EXE_EXT) $(CFLAGS) $(AESTEST).o $(PEX_LIBS) $(DLIBCRYPTO) $(EX_LIBS) ; \
-#	else \
-#	  $(CC) -o $(AESTEST)$(EXE_EXT) $(CFLAGS) $(AESTEST).o $(PEX_LIBS) $(LIBCRYPTO) $(EX_LIBS) ; \
-#	fi
-
-dummytest$(EXE_EXT): dummytest.o $(DLIBCRYPTO)
-	@target=dummytest; $(BUILD_CMD)
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 
@@ -598,11 +575,6 @@ rc2test.o: ../include/openssl/opensslconf.h ../include/openssl/rc2.h rc2test.c
 rc4test.o: ../include/openssl/e_os2.h
 rc4test.o: ../include/openssl/opensslconf.h ../include/openssl/rc4.h
 rc4test.o: ../include/openssl/sha.h rc4test.c
-rc5test.o: ../include/openssl/buffer.h ../include/openssl/crypto.h
-rc5test.o: ../include/openssl/e_os2.h ../include/openssl/opensslconf.h
-rc5test.o: ../include/openssl/opensslv.h ../include/openssl/ossl_typ.h
-rc5test.o: ../include/openssl/safestack.h ../include/openssl/stack.h
-rc5test.o: rc5test.c
 rmdtest.o: ../include/openssl/asn1.h ../include/openssl/bio.h
 rmdtest.o: ../include/openssl/crypto.h ../include/openssl/e_os2.h
 rmdtest.o: ../include/openssl/evp.h ../include/openssl/obj_mac.h

@@ -14,8 +14,7 @@ KRB5_INCLUDES=
 
 CFLAGS= $(INCLUDES) $(CFLAG)
 
-GENERAL=Makefile README ssl-lib.com install.com
-TEST=ssltest.c
+GENERAL=Makefile README
 APPS=
 
 LIB=$(TOP)/libssl.a
@@ -68,7 +67,6 @@ files:
 
 links:
 	@$(PERL) $(TOP)/util/mklink.pl ../include/openssl $(EXHEADER)
-	@$(PERL) $(TOP)/util/mklink.pl ../test $(TEST)
 	@$(PERL) $(TOP)/util/mklink.pl ../apps $(APPS)
 
 install:

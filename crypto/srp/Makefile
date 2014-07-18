@@ -15,7 +15,6 @@ AR=		ar r
 CFLAGS= $(INCLUDES) $(CFLAG)
 
 GENERAL=Makefile
-TEST=srptest.c
 APPS=
 
 LIB=$(TOP)/libcrypto.a
@@ -39,7 +38,6 @@ lib:	$(LIBOBJ)
 
 links:
 	@$(PERL) $(TOP)/util/mklink.pl ../../include/openssl $(EXHEADER)
-	@$(PERL) $(TOP)/util/mklink.pl ../../test $(TEST)
 	@$(PERL) $(TOP)/util/mklink.pl ../../apps $(APPS)
 
 install:
@@ -54,9 +52,6 @@ tags:
 	ctags $(SRC)
 
 tests:
-
-srptest: top srptest.c $(LIB)
-	$(CC) $(CFLAGS) -Wall -Werror -g -o srptest srptest.c $(LIB)
 
 lint:
 	lint -DLINT $(INCLUDES) $(SRC)>fluff

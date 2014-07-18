@@ -18,7 +18,6 @@ ASFLAGS= $(INCLUDES) $(ASFLAG)
 AFLAGS= $(ASFLAGS)
 
 GENERAL=Makefile
-TEST=bntest.c exptest.c
 APPS=
 
 LIB=$(TOP)/libcrypto.a
@@ -48,9 +47,6 @@ all:	lib
 
 bn_prime.h: bn_prime.pl
 	$(PERL) bn_prime.pl >bn_prime.h
-
-divtest: divtest.c ../../libcrypto.a
-	cc -I../../include divtest.c -o divtest ../../libcrypto.a
 
 bnbug: bnbug.c ../../libcrypto.a top
 	cc -g -I../../include bnbug.c -o bnbug ../../libcrypto.a
@@ -140,7 +136,6 @@ files:
 
 links:
 	@$(PERL) $(TOP)/util/mklink.pl ../../include/openssl $(EXHEADER)
-	@$(PERL) $(TOP)/util/mklink.pl ../../test $(TEST)
 	@$(PERL) $(TOP)/util/mklink.pl ../../apps $(APPS)
 
 install:
@@ -150,10 +145,6 @@ install:
 	(cp $$i $(INSTALL_PREFIX)$(INSTALLTOP)/include/openssl/$$i; \
 	chmod 644 $(INSTALL_PREFIX)$(INSTALLTOP)/include/openssl/$$i ); \
 	done;
-
-exptest:
-	rm -f exptest
-	gcc -I../../include -g2 -ggdb -o exptest exptest.c ../../libcrypto.a
 
 div:
 	rm -f a.out
