@@ -398,7 +398,6 @@ void CRYPTO_set_locking_callback(void (*func)(int mode,int type,
     /* Calling this here ensures initialisation before any threads
      * are started.
      */
-    OPENSSL_init();
     locking_callback=func;
     }
 

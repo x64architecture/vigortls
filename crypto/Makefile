@@ -35,9 +35,9 @@ GENERAL=Makefile README crypto-lib.com install.com
 LIB= $(TOP)/libcrypto.a
 SHARED_LIB= libcrypto$(SHLIB_EXT)
 LIBSRC=	cryptlib.c malloc_wrapper.c mem_clr.c mem_dbg.c ex_data.c cpt_err.c \
-	uid.c time_support.c o_str.c directory.c o_init.c
+	uid.c time_support.c o_str.c directory.c
 LIBOBJ= cryptlib.o malloc_wrapper.o mem_dbg.o ex_data.o cpt_err.o \
-	uid.o time_support.o o_str.o directory.o o_init.o $(CPUID_OBJ)
+	uid.o time_support.o o_str.o directory.o $(CPUID_OBJ)
 
 SRC= $(LIBSRC)
 
@@ -163,12 +163,6 @@ mem_dbg.o: ../include/openssl/stack.h cryptlib.h
 mem_dbg.o: mem_dbg.c
 directory.o: ../include/openssl/e_os2.h ../include/openssl/opensslconf.h
 directory.o: directory.c directory.h
-o_init.o: ../include/openssl/bio.h ../include/openssl/crypto.h
-o_init.o: ../include/openssl/e_os2.h ../include/openssl/err.h
-o_init.o: ../include/openssl/lhash.h ../include/openssl/opensslconf.h
-o_init.o: ../include/openssl/opensslv.h ../include/openssl/ossl_typ.h
-o_init.o: ../include/openssl/safestack.h ../include/openssl/stack.h
-o_init.o: o_init.c
 o_str.o: ../include/openssl/e_os2.h ../include/openssl/opensslconf.h
 o_str.o: o_str.c o_str.h
 time_support.o: ../include/openssl/e_os2.h ../include/openssl/opensslconf.h time_support.c

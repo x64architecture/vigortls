@@ -47,11 +47,7 @@ with the supplied name. This might mean that "module3" attempts to load a DSO
 called libmodule3.so or module3.dll for example. An explicit DSO name can be
 given by including a separate section as in the module4 example above.
 
-The DSO is expected to at least contain an initialization function:
-
-int OPENSSL_init(CONF_IMODULE *md, CONF *cnf);
-
-and may also include a finish function:
+may also include a finish function:
 
 void OPENSSL_finish(CONF_IMODULE *md);
 
