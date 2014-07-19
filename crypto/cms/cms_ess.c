@@ -10,7 +10,7 @@
  * are met:
  *
  * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer. 
+ *    notice, this list of conditions and the following disclaimer.
  *
  * 2. Redistributions in binary form must reproduce the above copyright
  *    notice, this list of conditions and the following disclaimer in
@@ -50,6 +50,8 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  * ====================================================================
  */
+
+#ifndef OPENSSL_NO_CMS
 
 #include "cryptlib.h"
 #include <openssl/asn1t.h>
@@ -105,7 +107,7 @@ CMS_ReceiptRequest *CMS_ReceiptRequest_create0(unsigned char *id, int idlen,
         {
         if (!ASN1_STRING_set(rr->signedContentIdentifier, NULL, 32))
             goto merr;
-        if (RAND_pseudo_bytes(rr->signedContentIdentifier->data, 32) 
+        if (RAND_pseudo_bytes(rr->signedContentIdentifier->data, 32)
                     <= 0)
             goto err;
         }
@@ -134,7 +136,7 @@ CMS_ReceiptRequest *CMS_ReceiptRequest_create0(unsigned char *id, int idlen,
         CMS_ReceiptRequest_free(rr);
 
     return NULL;
-    
+
     }
 
 int CMS_add1_ReceiptRequest(CMS_SignerInfo *si, CMS_ReceiptRequest *rr)
@@ -160,7 +162,7 @@ int CMS_add1_ReceiptRequest(CMS_SignerInfo *si, CMS_ReceiptRequest *rr)
         free(rrder);
 
     return r;
-    
+
     }
 
 void CMS_ReceiptRequest_get0_values(CMS_ReceiptRequest *rr,
@@ -267,7 +269,7 @@ int cms_Receipt_verify(CMS_ContentInfo *cms, CMS_ContentInfo *req_cms)
 
     rct = ASN1_item_unpack(*pcont, ASN1_ITEM_rptr(CMS_Receipt));
 
-    if (!rct)    
+    if (!rct)
         {
         CMSerr(CMS_F_CMS_RECEIPT_VERIFY, CMS_R_RECEIPT_DECODE_ERROR);
         goto err;
@@ -416,5 +418,4 @@ ASN1_OCTET_STRING *cms_encode_Receipt(CMS_SignerInfo *si)
     return os;
 
     }
-
-
+#endif

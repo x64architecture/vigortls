@@ -7,7 +7,7 @@
  * are met:
  *
  * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer. 
+ *    notice, this list of conditions and the following disclaimer.
  *
  * 2. Redistributions in binary form must reproduce the above copyright
  *    notice, this list of conditions and the following disclaimer in
@@ -48,7 +48,8 @@
  * ====================================================================
  *
  */
- 
+
+#ifndef OPENSSL_NO_CAMELLIA
 #include <openssl/opensslv.h>
 #include <openssl/crypto.h>
 #include <openssl/camellia.h>
@@ -78,3 +79,4 @@ void Camellia_decrypt(const unsigned char *in, unsigned char *out,
     {
     Camellia_DecryptBlock_Rounds(key->grand_rounds, in , key->u.rd_key , out);
     }
+#endif

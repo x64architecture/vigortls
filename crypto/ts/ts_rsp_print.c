@@ -10,7 +10,7 @@
  * are met:
  *
  * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer. 
+ *    notice, this list of conditions and the following disclaimer.
  *
  * 2. Redistributions in binary form must reproduce the above copyright
  *    notice, this list of conditions and the following disclaimer in
@@ -61,7 +61,7 @@
 #include <openssl/objects.h>
 #include <openssl/bn.h>
 #include <openssl/x509v3.h>
-#include "ts.h"
+#include <openssl/ts.h>
 
 struct status_map_st
     {
@@ -90,7 +90,7 @@ int TS_RESP_print_bio(BIO *bio, TS_RESP *a)
         TS_TST_INFO_print_bio(bio, TS_RESP_get_tst_info(a));
     else
         BIO_printf(bio, "Not included.\n");
-        
+
     return 1;
     }
 
@@ -136,7 +136,7 @@ int TS_STATUS_INFO_print_bio(BIO *bio, TS_STATUS_INFO *a)
         BIO_printf(bio, "%s\n", status_map[status]);
     else
         BIO_printf(bio, "out of bounds\n");
-    
+
     /* Printing status description. */
     BIO_printf(bio, "Status description: ");
     for (i = 0; i < sk_ASN1_UTF8STRING_num(a->text); ++i)
@@ -229,7 +229,7 @@ int TS_TST_INFO_print_bio(BIO *bio, TS_TST_INFO *a)
     BIO_write(bio, "\n", 1);
 
     /* Print ordering. */
-    BIO_printf(bio, "Ordering: %s\n", 
+    BIO_printf(bio, "Ordering: %s\n",
            TS_TST_INFO_get_ordering(a) ? "yes" : "no");
 
     /* Print nonce. */

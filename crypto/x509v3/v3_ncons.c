@@ -10,7 +10,7 @@
  * are met:
  *
  * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer. 
+ *    notice, this list of conditions and the following disclaimer.
  *
  * 2. Redistributions in binary form must reproduce the above copyright
  *    notice, this list of conditions and the following disclaimer in
@@ -58,6 +58,7 @@
 
 
 #include <stdio.h>
+#include <strings.h>
 #include "cryptlib.h"
 #include <openssl/asn1t.h>
 #include <openssl/conf.h>
@@ -65,7 +66,7 @@
 
 static void *v2i_NAME_CONSTRAINTS(const X509V3_EXT_METHOD *method,
                   X509V3_CTX *ctx, STACK_OF(CONF_VALUE) *nval);
-static int i2r_NAME_CONSTRAINTS(const X509V3_EXT_METHOD *method, 
+static int i2r_NAME_CONSTRAINTS(const X509V3_EXT_METHOD *method,
                 void *a, BIO *bp, int ind);
 static int do_i2r_name_constraints(const X509V3_EXT_METHOD *method,
                    STACK_OF(GENERAL_SUBTREE) *trees,
@@ -101,7 +102,7 @@ ASN1_SEQUENCE(NAME_CONSTRAINTS) = {
     ASN1_IMP_SEQUENCE_OF_OPT(NAME_CONSTRAINTS, excludedSubtrees,
                             GENERAL_SUBTREE, 1),
 } ASN1_SEQUENCE_END(NAME_CONSTRAINTS)
-    
+
 
 IMPLEMENT_ASN1_ALLOC_FUNCTIONS(GENERAL_SUBTREE)
 IMPLEMENT_ASN1_ALLOC_FUNCTIONS(NAME_CONSTRAINTS)
@@ -158,9 +159,9 @@ static void *v2i_NAME_CONSTRAINTS(const X509V3_EXT_METHOD *method,
 
     return NULL;
     }
-            
 
-    
+
+
 
 static int i2r_NAME_CONSTRAINTS(const X509V3_EXT_METHOD *method, void *a,
                 BIO *bp, int ind)
@@ -277,7 +278,7 @@ int NAME_CONSTRAINTS_check(X509 *x, NAME_CONSTRAINTS *nc)
             if (r != X509_V_OK)
                 return r;
             }
-        
+
         }
 
     for (i = 0; i < sk_GENERAL_NAME_num(x->altname); i++)

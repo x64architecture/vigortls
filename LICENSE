@@ -1,5 +1,5 @@
-  Files in VigorTLS are retained under the copyright of their authors. New changes are
-  placed under the VigorTLS License.
+  Files in VigorTLS are retained under the copyright of their authors. New changes and/or 
+  additions are placed under the VigorTLS License. This includes the build system files too.
 
   The OpenSSL code is distributed under the terms of the original OpenSSL
   License (see the LICENSE.OpenSSL file).

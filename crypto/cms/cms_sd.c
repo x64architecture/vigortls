@@ -10,7 +10,7 @@
  * are met:
  *
  * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer. 
+ *    notice, this list of conditions and the following disclaimer.
  *
  * 2. Redistributions in binary form must reproduce the above copyright
  *    notice, this list of conditions and the following disclaimer in
@@ -50,6 +50,8 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  * ====================================================================
  */
+
+#ifndef OPENSSL_NO_CMS
 
 #include "cryptlib.h"
 #include <openssl/asn1t.h>
@@ -166,7 +168,7 @@ static void cms_sd_set_version(CMS_SignedData *sd)
         sd->version = 1;
 
     }
-    
+
 /* Copy an existing messageDigest value */
 
 static int cms_copy_messageDigest(CMS_ContentInfo *cms, CMS_SignerInfo *si)
@@ -638,7 +640,7 @@ static int cms_SignerInfo_content_sign(CMS_ContentInfo *cms,
     if (CMS_signed_get_attr_count(si) >= 0)
         {
         ASN1_OBJECT *ctype =
-            cms->d.signedData->encapContentInfo->eContentType; 
+            cms->d.signedData->encapContentInfo->eContentType;
         unsigned char md[EVP_MAX_MD_SIZE];
         unsigned int mdlen;
         if (!EVP_DigestFinal_ex(&mctx, md, &mdlen))
@@ -826,7 +828,7 @@ BIO *cms_SignedData_init_bio(CMS_ContentInfo *cms)
         digestAlgorithm = sk_X509_ALGOR_value(sd->digestAlgorithms, i);
         mdbio = cms_DigestAlgorithm_init_bio(digestAlgorithm);
         if (!mdbio)
-            goto err;    
+            goto err;
         if (chain)
              BIO_push(chain, mdbio);
         else
@@ -939,7 +941,7 @@ int CMS_add_simple_smimecap(STACK_OF(X509_ALGOR) **algs,
             ASN1_INTEGER_free(key);
         return 0;
         }
-        
+
     X509_ALGOR_set0(alg, OBJ_nid2obj(algnid),
                 key ? V_ASN1_INTEGER : V_ASN1_UNDEF, key);
     if (!*algs)
@@ -983,3 +985,4 @@ int CMS_add_standard_smimecap(STACK_OF(X509_ALGOR) **smcap)
         return 0;
     return 1;
     }
+#endif

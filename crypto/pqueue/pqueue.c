@@ -1,7 +1,7 @@
 /* crypto/pqueue/pqueue.c */
-/* 
+/*
  * DTLS implementation written by Nagendra Modadugu
- * (nagendra@cs.stanford.edu) for the OpenSSL project 2005.  
+ * (nagendra@cs.stanford.edu) for the OpenSSL project 2005.
  */
 /* ====================================================================
  * Copyright (c) 1999-2005 The OpenSSL Project.  All rights reserved.
@@ -11,7 +11,7 @@
  * are met:
  *
  * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer. 
+ *    notice, this list of conditions and the following disclaimer.
  *
  * 2. Redistributions in binary form must reproduce the above copyright
  *    notice, this list of conditions and the following disclaimer in
@@ -59,7 +59,7 @@
 
 #include "cryptlib.h"
 #include <openssl/bn.h>
-#include "pqueue.h"
+#include <pqueue.h>
 
 typedef struct _pqueue
     {
@@ -118,7 +118,7 @@ pqueue_insert(pqueue_s *pq, pitem *item)
         return item;
         }
 
-    for(curr = NULL, next = pq->items; 
+    for(curr = NULL, next = pq->items;
         next != NULL;
         curr = next, next = next->next)
         {
@@ -129,14 +129,14 @@ pqueue_insert(pqueue_s *pq, pitem *item)
             {
             item->next = next;
 
-            if (curr == NULL) 
+            if (curr == NULL)
                 pq->items = item;
-            else  
+            else
                 curr->next = item;
 
             return item;
             }
-        
+
         else if (cmp == 0)    /* duplicates not allowed */
             return NULL;
         }
@@ -181,7 +181,7 @@ pqueue_find(pqueue_s *pq, unsigned char *prio64be)
             break;
             }
         }
-    
+
     /* check the one last node */
     if ( memcmp(next->priority, prio64be,8) ==0)
         found = next;
@@ -242,7 +242,7 @@ pqueue_size(pqueue_s *pq)
 {
     pitem *item = pq->items;
     int count = 0;
-    
+
     while(item != NULL)
     {
         count++;

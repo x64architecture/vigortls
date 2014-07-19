@@ -10,7 +10,7 @@
  * are met:
  *
  * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer. 
+ *    notice, this list of conditions and the following disclaimer.
  *
  * 2. Redistributions in binary form must reproduce the above copyright
  *    notice, this list of conditions and the following disclaimer in
@@ -51,13 +51,15 @@
  * ====================================================================
  */
 
+#ifndef OPENSSL_NO_CMS
+
 #include <openssl/asn1t.h>
 #include <openssl/x509.h>
 #include <openssl/err.h>
 #include <openssl/pem.h>
 #include <openssl/bio.h>
 #include <openssl/asn1.h>
-#include "cms.h"
+#include <openssl/cms.h>
 #include "cms_lcl.h"
 
 IMPLEMENT_ASN1_FUNCTIONS(CMS_ContentInfo)
@@ -369,14 +371,14 @@ BIO *cms_DigestAlgorithm_init_bio(X509_ALGOR *digestAlgorithm)
         {
         CMSerr(CMS_F_CMS_DIGESTALGORITHM_INIT_BIO,
                 CMS_R_UNKNOWN_DIGEST_ALGORIHM);
-        goto err;    
+        goto err;
         }
     mdbio = BIO_new(BIO_f_md());
     if (!mdbio || !BIO_set_md(mdbio, digest))
         {
         CMSerr(CMS_F_CMS_DIGESTALGORITHM_INIT_BIO,
                 CMS_R_MD_BIO_INIT_ERROR);
-        goto err;    
+        goto err;
         }
     return mdbio;
     err:
@@ -472,7 +474,7 @@ int CMS_add0_cert(CMS_ContentInfo *cms, X509 *cert)
             {
             if (!X509_cmp(cch->d.certificate, cert))
                 {
-                CMSerr(CMS_F_CMS_ADD0_CERT, 
+                CMSerr(CMS_F_CMS_ADD0_CERT,
                     CMS_R_CERTIFICATE_ALREADY_PRESENT);
                 return 0;
                 }
@@ -620,3 +622,4 @@ STACK_OF(X509_CRL) *CMS_get1_crls(CMS_ContentInfo *cms)
         }
     return crls;
     }
+#endif

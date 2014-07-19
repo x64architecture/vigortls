@@ -10,7 +10,7 @@
  * are met:
  *
  * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer. 
+ *    notice, this list of conditions and the following disclaimer.
  *
  * 2. Redistributions in binary form must reproduce the above copyright
  *    notice, this list of conditions and the following disclaimer in
@@ -61,7 +61,7 @@
 #include <openssl/objects.h>
 #include <openssl/bn.h>
 #include <openssl/x509v3.h>
-#include "ts.h"
+#include <openssl/ts.h>
 
 /* Local function declarations. */
 
@@ -137,7 +137,7 @@ int TS_MSG_IMPRINT_print_bio(BIO *bio, TS_MSG_IMPRINT *a)
 
     BIO_printf(bio, "Message data:\n");
     msg = TS_MSG_IMPRINT_get_msg(a);
-    BIO_dump_indent(bio, (const char *)M_ASN1_STRING_data(msg), 
+    BIO_dump_indent(bio, (const char *)M_ASN1_STRING_data(msg),
             M_ASN1_STRING_length(msg), 4);
 
     return 1;

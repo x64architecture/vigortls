@@ -10,7 +10,7 @@
  * are met:
  *
  * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer. 
+ *    notice, this list of conditions and the following disclaimer.
  *
  * 2. Redistributions in binary form must reproduce the above copyright
  *    notice, this list of conditions and the following disclaimer in
@@ -50,6 +50,8 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  * ====================================================================
  */
+
+#ifndef OPENSSL_NO_CMS
 
 #include "cryptlib.h"
 #include <openssl/asn1t.h>
@@ -146,3 +148,4 @@ int cms_DigestedData_do_final(CMS_ContentInfo *cms, BIO *chain, int verify)
     return r;
 
     }
+#endif

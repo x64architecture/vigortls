@@ -10,7 +10,7 @@
  * are met:
  *
  * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer. 
+ *    notice, this list of conditions and the following disclaimer.
  *
  * 2. Redistributions in binary form must reproduce the above copyright
  *    notice, this list of conditions and the following disclaimer in
@@ -51,11 +51,13 @@
  * ====================================================================
  */
 
+#ifndef OPENSSL_NO_CMS
+
 #include <openssl/asn1t.h>
 #include <openssl/pem.h>
 #include <openssl/x509v3.h>
 #include <openssl/err.h>
-#include "cms.h"
+#include <openssl/cms.h>
 #include "cms_lcl.h"
 
 /* CMS SignedData Attribute utilities */
@@ -193,3 +195,4 @@ void *CMS_unsigned_get0_data_by_OBJ(CMS_SignerInfo *si, ASN1_OBJECT *oid,
 }
 
 /* Specific attribute cases */
+#endif

@@ -10,7 +10,7 @@
  * are met:
  *
  * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer. 
+ *    notice, this list of conditions and the following disclaimer.
  *
  * 2. Redistributions in binary form must reproduce the above copyright
  *    notice, this list of conditions and the following disclaimer in
@@ -51,10 +51,12 @@
  * ====================================================================
  */
 
+#ifndef OPENSSL_NO_CMS
+
 #include <openssl/asn1t.h>
 #include <openssl/pem.h>
 #include <openssl/x509v3.h>
-#include "cms.h"
+#include <openssl/cms.h>
 #include "cms_lcl.h"
 
 
@@ -354,15 +356,15 @@ ASN1_NDEF_SEQUENCE_cb(CMS_ContentInfo, cms_cb) = {
  * encoding.
  */
 
-ASN1_ITEM_TEMPLATE(CMS_Attributes_Sign) = 
+ASN1_ITEM_TEMPLATE(CMS_Attributes_Sign) =
     ASN1_EX_TEMPLATE_TYPE(ASN1_TFLG_SET_ORDER, 0, CMS_ATTRIBUTES, X509_ATTRIBUTE)
 ASN1_ITEM_TEMPLATE_END(CMS_Attributes_Sign)
 
-/* When verifying attributes we need to use the received order. So 
+/* When verifying attributes we need to use the received order. So
  * we use SEQUENCE OF and tag it to SET OF
  */
 
-ASN1_ITEM_TEMPLATE(CMS_Attributes_Verify) = 
+ASN1_ITEM_TEMPLATE(CMS_Attributes_Verify) =
     ASN1_EX_TEMPLATE_TYPE(ASN1_TFLG_SEQUENCE_OF | ASN1_TFLG_IMPTAG | ASN1_TFLG_UNIVERSAL,
                 V_ASN1_SET, CMS_ATTRIBUTES, X509_ATTRIBUTE)
 ASN1_ITEM_TEMPLATE_END(CMS_Attributes_Verify)
@@ -386,4 +388,4 @@ ASN1_SEQUENCE(CMS_Receipt) = {
   ASN1_SIMPLE(CMS_Receipt, signedContentIdentifier, ASN1_OCTET_STRING),
   ASN1_SIMPLE(CMS_Receipt, originatorSignatureValue, ASN1_OCTET_STRING)
 } ASN1_SEQUENCE_END(CMS_Receipt)
-
+#endif

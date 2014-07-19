@@ -10,7 +10,7 @@
  * are met:
  *
  * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer. 
+ *    notice, this list of conditions and the following disclaimer.
  *
  * 2. Redistributions in binary form must reproduce the above copyright
  *    notice, this list of conditions and the following disclaimer in
@@ -51,6 +51,8 @@
  * ====================================================================
  */
 
+#ifndef OPENSSL_NO_CMS
+
 #include "cryptlib.h"
 #include <openssl/asn1t.h>
 #include <openssl/pem.h>
@@ -62,7 +64,7 @@
 #include "cms_lcl.h"
 #include "asn1_locl.h"
 
-int CMS_RecipientInfo_set0_password(CMS_RecipientInfo *ri, 
+int CMS_RecipientInfo_set0_password(CMS_RecipientInfo *ri,
                 unsigned char *pass, ssize_t passlen)
     {
     CMS_PasswordRecipientInfo *pwri;
@@ -366,7 +368,7 @@ int cms_RecipientInfo_pwri_crypt(CMS_ContentInfo *cms, CMS_RecipientInfo *ri,
         }
 
     kekcipher = EVP_get_cipherbyobj(kekalg->algorithm);
-        
+
     if (!kekcipher)
         {
         CMSerr(CMS_F_CMS_RECIPIENTINFO_PWRI_CRYPT,
@@ -452,3 +454,5 @@ int cms_RecipientInfo_pwri_crypt(CMS_ContentInfo *cms, CMS_RecipientInfo *ri,
     return r;
 
     }
+
+#endif

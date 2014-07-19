@@ -1,7 +1,7 @@
 /* crypto/bn/knownprimes.c */
 /* Insert boilerplate */
 
-#include "bn.h"
+#include <openssl/bn.h>
 
 /* "First Oakley Default Group" from RFC2409, section 6.1.
  *
@@ -399,4 +399,3 @@ BIGNUM *get_rfc3526_prime_8192(BIGNUM *bn)
         };
     return BN_bin2bn(RFC3526_PRIME_8192,sizeof(RFC3526_PRIME_8192),bn);
     }
-
