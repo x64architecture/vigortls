@@ -15,6 +15,7 @@
  */
 
 #include <string.h>
+#include <openssl/crypto.h>
 
 void vigortls_zeroize(void *ptr, size_t len)
 {
