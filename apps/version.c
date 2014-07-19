@@ -175,7 +175,7 @@ int MAIN(int argc, char **argv)
             printf("%s\n", OPENSSL_VERSION_TEXT);
         }
     if (date)
-		printf("Not supported... Yet\n");
+		printf("Built on: %s at %s\n", __DATE__, __TIME__);
     if (platform)
 		printf("Not supported... Yet\n");
     if (options) 
