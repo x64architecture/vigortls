@@ -2373,7 +2373,7 @@ void ssl3_free(SSL *s)
         sk_X509_NAME_pop_free(s->s3->tmp.ca_names, X509_NAME_free);
     BIO_free(s->s3->handshake_buffer);
     ssl3_free_digest_list(s);
-    OPENSSL_cleanse(s->s3, sizeof *s->s3);
+    vigortls_zeroize(s->s3, sizeof *s->s3);
     free(s->s3);
     s->s3 = NULL;
 }

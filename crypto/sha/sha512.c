@@ -250,7 +250,7 @@ unsigned char *SHA384(const unsigned char *d, size_t n, unsigned char *md)
     SHA384_Init(&c);
     SHA512_Update(&c,d,n);
     SHA512_Final(md,&c);
-    OPENSSL_cleanse(&c,sizeof(c));
+    vigortls_zeroize(&c,sizeof(c));
     return (md);
     }
 
@@ -263,7 +263,7 @@ unsigned char *SHA512(const unsigned char *d, size_t n, unsigned char *md)
     SHA512_Init(&c);
     SHA512_Update(&c,d,n);
     SHA512_Final(md,&c);
-    OPENSSL_cleanse(&c,sizeof(c));
+    vigortls_zeroize(&c,sizeof(c));
     return (md);
     }
 

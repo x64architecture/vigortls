@@ -132,7 +132,7 @@ int AES_unwrap_key(AES_KEY *key, const unsigned char *iv,
         iv = default_iv;
     if (memcmp(A, iv, 8))
         {
-        OPENSSL_cleanse(out, inlen);
+        vigortls_zeroize(out, inlen);
         return 0;
         }
     return inlen;

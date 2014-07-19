@@ -156,11 +156,11 @@ void EC_GROUP_clear_free(EC_GROUP *group)
 
     if (group->seed)
         {
-        OPENSSL_cleanse(group->seed, group->seed_len);
+        vigortls_zeroize(group->seed, group->seed_len);
         free(group->seed);
         }
 
-    OPENSSL_cleanse(group, sizeof *group);
+    vigortls_zeroize(group, sizeof *group);
     free(group);
     }
 
@@ -739,7 +739,7 @@ void EC_POINT_clear_free(EC_POINT *point)
         point->meth->point_clear_finish(point);
     else if (point->meth->point_finish != 0)
         point->meth->point_finish(point);
-    OPENSSL_cleanse(point, sizeof *point);
+    vigortls_zeroize(point, sizeof *point);
     free(point);
     }
 

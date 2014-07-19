@@ -171,11 +171,11 @@ static void ec_pre_comp_clear_free(void *pre_)
         for (p = pre->points; *p != NULL; p++)
             {
             EC_POINT_clear_free(*p);
-            OPENSSL_cleanse(p, sizeof *p);
+            vigortls_zeroize(p, sizeof *p);
             }
         free(pre->points);
         }
-    OPENSSL_cleanse(pre, sizeof *pre);
+    vigortls_zeroize(pre, sizeof *pre);
     free(pre);
     }
 

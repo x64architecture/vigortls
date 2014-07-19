@@ -103,7 +103,7 @@ int EVP_OpenInit(EVP_CIPHER_CTX *ctx, const EVP_CIPHER *type,
 
     ret=1;
 err:
-    if (key != NULL) OPENSSL_cleanse(key,size);
+    if (key != NULL) vigortls_zeroize(key,size);
     free(key);
     return (ret);
     }

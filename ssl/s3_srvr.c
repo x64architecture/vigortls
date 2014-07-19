@@ -1964,7 +1964,7 @@ int ssl3_get_client_key_exchange(SSL *s)
             s->method->ssl3_enc->generate_master_secret(s,
                 s->session->master_key,
                 p, i);
-        OPENSSL_cleanse(p, i);
+        vigortls_zeroize(p, i);
     } else
         if (alg_k & (SSL_kEDH | SSL_kDHr | SSL_kDHd)) {
         n2s(p, i);
@@ -2012,7 +2012,7 @@ int ssl3_get_client_key_exchange(SSL *s)
         pub = NULL;
         s->session->master_key_length = s->method->ssl3_enc->generate_master_secret(s,
                 s->session->master_key, p, i);
-        OPENSSL_cleanse(p, i);
+        vigortls_zeroize(p, i);
     } else
 #ifndef OPENSSL_NO_KRB5
     if (alg_k & SSL_kKRB5) {
@@ -2307,7 +2307,7 @@ int ssl3_get_client_key_exchange(SSL *s)
         s->session->master_key_length = s->method->ssl3_enc-> \
             generate_master_secret(s, s->session->master_key, p, i);
         
-        OPENSSL_cleanse(p, i);
+        vigortls_zeroize(p, i);
         return (ret);
     } else
 #endif
@@ -2344,7 +2344,7 @@ int ssl3_get_client_key_exchange(SSL *s)
             memset(tmp_id + i, 0, PSK_MAX_IDENTITY_LEN + 1 - i);
             psk_len = s->psk_server_callback(s, tmp_id,
                 psk_or_pre_ms, sizeof(psk_or_pre_ms));
-            OPENSSL_cleanse(tmp_id, PSK_MAX_IDENTITY_LEN + 1);
+            vigortls_zeroize(tmp_id, PSK_MAX_IDENTITY_LEN + 1);
 
             if (psk_len > PSK_MAX_PSK_LEN) {
                 SSLerr(SSL_F_SSL3_GET_CLIENT_KEY_EXCHANGE,
@@ -2391,7 +2391,7 @@ int ssl3_get_client_key_exchange(SSL *s)
                     s->session->master_key, psk_or_pre_ms, pre_ms_len);
             psk_err = 0;
 psk_err:
-            OPENSSL_cleanse(psk_or_pre_ms, sizeof(psk_or_pre_ms));
+            vigortls_zeroize(psk_or_pre_ms, sizeof(psk_or_pre_ms));
             if (psk_err != 0)
                 goto f_err;
         } else

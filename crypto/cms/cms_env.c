@@ -424,7 +424,7 @@ static int cms_RecipientInfo_ktri_decrypt(CMS_ContentInfo *cms,
 
     if (ec->key)
         {
-        OPENSSL_cleanse(ec->key, ec->keylen);
+        vigortls_zeroize(ec->key, ec->keylen);
         free(ec->key);
         }
 
@@ -700,7 +700,7 @@ static int cms_RecipientInfo_kekri_encrypt(CMS_ContentInfo *cms,
 
     if (!r && wkey)
         free(wkey);
-    OPENSSL_cleanse(&actx, sizeof(actx));
+    vigortls_zeroize(&actx, sizeof(actx));
 
     return r;
 
@@ -781,7 +781,7 @@ static int cms_RecipientInfo_kekri_decrypt(CMS_ContentInfo *cms,
 
     if (!r && ukey)
         free(ukey);
-    OPENSSL_cleanse(&actx, sizeof(actx));
+    vigortls_zeroize(&actx, sizeof(actx));
 
     return r;
 
@@ -867,7 +867,7 @@ BIO *cms_EnvelopedData_init_bio(CMS_ContentInfo *cms)
     ec->cipher = NULL;
     if (ec->key)
         {
-        OPENSSL_cleanse(ec->key, ec->keylen);
+        vigortls_zeroize(ec->key, ec->keylen);
         free(ec->key);
         ec->key = NULL;
         ec->keylen = 0;

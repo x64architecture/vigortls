@@ -143,7 +143,7 @@ static int ber_free(BIO *a)
 
     if (a == NULL) return (0);
     b=(BIO_BER_CTX *)a->ptr;
-    OPENSSL_cleanse(a->ptr,sizeof(BIO_BER_CTX));
+    vigortls_zeroize(a->ptr,sizeof(BIO_BER_CTX));
     free(a->ptr);
     a->ptr=NULL;
     a->init=0;

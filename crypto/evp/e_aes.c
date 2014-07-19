@@ -645,10 +645,10 @@ BLOCK_CIPHER_generic_pack(NID_aes, 256, 0)
 static int aes_gcm_cleanup(EVP_CIPHER_CTX *c)
 {
     EVP_AES_GCM_CTX *gctx = c->cipher_data;
-    OPENSSL_cleanse(&gctx->gcm, sizeof(gctx->gcm));
+    vigortls_zeroize(&gctx->gcm, sizeof(gctx->gcm));
     if (gctx->iv != c->iv)
         free(gctx->iv);
-    OPENSSL_cleanse(gctx, sizeof(*gctx));
+    vigortls_zeroize(gctx, sizeof(*gctx));
     return 1;
 }
 
@@ -914,7 +914,7 @@ static int aes_gcm_tls_cipher(EVP_CIPHER_CTX *ctx, unsigned char *out,
                     EVP_GCM_TLS_TAG_LEN);
         /* If tag mismatch wipe buffer */
         if (memcmp(ctx->buf, in + len, EVP_GCM_TLS_TAG_LEN)) {
-            OPENSSL_cleanse(out, len);
+            vigortls_zeroize(out, len);
             goto err;
         }
         rv = len;
@@ -1253,7 +1253,7 @@ static int aes_ccm_cipher(EVP_CIPHER_CTX *ctx, unsigned char *out,
             }
         }
         if (rv == -1)
-            OPENSSL_cleanse(out, len);
+            vigortls_zeroize(out, len);
         cctx->iv_set = 0;
         cctx->tag_set = 0;
         cctx->len_set = 0;
@@ -1327,7 +1327,7 @@ static void aead_aes_gcm_cleanup(EVP_AEAD_CTX *ctx)
 {
     struct aead_aes_gcm_ctx *gcm_ctx = ctx->aead_state;
 
-    OPENSSL_cleanse(gcm_ctx, sizeof(*gcm_ctx));
+    vigortls_zeroize(gcm_ctx, sizeof(*gcm_ctx));
     free(gcm_ctx);
 }
 

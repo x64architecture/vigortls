@@ -118,7 +118,7 @@ static void pkey_hmac_cleanup(EVP_PKEY_CTX *ctx)
     if (hctx->ktmp.data)
         {
         if (hctx->ktmp.length)
-            OPENSSL_cleanse(hctx->ktmp.data, hctx->ktmp.length);
+            vigortls_zeroize(hctx->ktmp.data, hctx->ktmp.length);
         free(hctx->ktmp.data);
         hctx->ktmp.data = NULL;
         }

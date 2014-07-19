@@ -62,7 +62,7 @@ static int aead_chacha20_poly1305_init(EVP_AEAD_CTX *ctx, const unsigned char *k
 static void aead_chacha20_poly1305_cleanup(EVP_AEAD_CTX *ctx)
 {
     struct aead_chacha20_poly1305_ctx *c20_ctx = ctx->aead_state;
-    OPENSSL_cleanse(c20_ctx->key, sizeof(c20_ctx->key));
+    vigortls_zeroize(c20_ctx->key, sizeof(c20_ctx->key));
     free(c20_ctx);
 }
 

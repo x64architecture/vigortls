@@ -201,7 +201,7 @@ static int bnrand(int pseudorand, BIGNUM *rnd, int bits, int top, int bottom)
 err:
     if (buf != NULL)
         {
-        OPENSSL_cleanse(buf,bytes);
+        vigortls_zeroize(buf,bytes);
         free(buf);
         }
     bn_check_top(rnd);

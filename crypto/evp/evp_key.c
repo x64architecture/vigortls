@@ -108,7 +108,7 @@ int EVP_read_pw_string_min(char *buf, int min, int len, const char *prompt, int 
             buff,min,(len>=BUFSIZ)?BUFSIZ-1:len,buf);
     ret = UI_process(ui);
     UI_free(ui);
-    OPENSSL_cleanse(buff,BUFSIZ);
+    vigortls_zeroize(buff,BUFSIZ);
     return ret;
     }
 
@@ -183,7 +183,7 @@ int EVP_BytesToKey(const EVP_CIPHER *type, const EVP_MD *md,
     rv = type->key_len;
     err:
     EVP_MD_CTX_cleanup(&c);
-    OPENSSL_cleanse(&(md_buf[0]),EVP_MAX_MD_SIZE);
+    vigortls_zeroize(&(md_buf[0]),EVP_MAX_MD_SIZE);
     return rv;
     }
 

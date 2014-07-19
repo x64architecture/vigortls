@@ -115,7 +115,7 @@ void *CRYPTO_realloc_clean(void *str, int old_len, int num, const char *file,
     ret = malloc(num);
     if (ret) {
         memcpy(ret, str, old_len);
-        OPENSSL_cleanse(str, old_len);
+        vigortls_zeroize(str, old_len);
         free(str);
     }
 

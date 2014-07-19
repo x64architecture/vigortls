@@ -363,7 +363,7 @@ int EVP_MD_CTX_cleanup(EVP_MD_CTX *ctx)
     if (ctx->digest && ctx->digest->ctx_size && ctx->md_data
         && !EVP_MD_CTX_test_flags(ctx, EVP_MD_CTX_FLAG_REUSE))
         {
-        OPENSSL_cleanse(ctx->md_data,ctx->digest->ctx_size);
+        vigortls_zeroize(ctx->md_data,ctx->digest->ctx_size);
         free(ctx->md_data);
         }
     if (ctx->pctx)

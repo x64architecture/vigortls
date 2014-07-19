@@ -246,7 +246,7 @@ err:
         }
     if (buf != NULL) 
         {
-        OPENSSL_cleanse(buf,num);
+        vigortls_zeroize(buf,num);
         free(buf);
         }
     return (r);
@@ -483,7 +483,7 @@ err:
         }
     if (buf != NULL)
         {
-        OPENSSL_cleanse(buf,num);
+        vigortls_zeroize(buf,num);
         free(buf);
         }
     return (r);
@@ -623,7 +623,7 @@ err:
         }
     if (buf != NULL)
         {
-        OPENSSL_cleanse(buf,num);
+        vigortls_zeroize(buf,num);
         free(buf);
         }
     return (r);
@@ -728,7 +728,7 @@ err:
         }
     if (buf != NULL)
         {
-        OPENSSL_cleanse(buf,num);
+        vigortls_zeroize(buf,num);
         free(buf);
         }
     return (r);

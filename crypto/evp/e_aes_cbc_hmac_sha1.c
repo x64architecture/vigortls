@@ -482,7 +482,7 @@ static int aesni_cbc_hmac_sha1_ctrl(EVP_CIPHER_CTX *ctx, int type, int arg, void
         SHA1_Init(&key->tail);
         SHA1_Update(&key->tail,hmac_key,sizeof(hmac_key));
 
-        OPENSSL_cleanse(hmac_key,sizeof(hmac_key));
+        vigortls_zeroize(hmac_key,sizeof(hmac_key));
 
         return 1;
         }

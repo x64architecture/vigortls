@@ -177,10 +177,10 @@ RAND_METHOD *RAND_SSLeay(void)
 
 static void ssleay_rand_cleanup(void)
     {
-    OPENSSL_cleanse(state,sizeof(state));
+    vigortls_zeroize(state,sizeof(state));
     state_num=0;
     state_index=0;
-    OPENSSL_cleanse(md,MD_DIGEST_LENGTH);
+    vigortls_zeroize(md,MD_DIGEST_LENGTH);
     md_count[0]=0;
     md_count[1]=0;
     entropy=0;

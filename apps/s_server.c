@@ -2240,7 +2240,7 @@ err:
     BIO_printf(bio_s_out,"CONNECTION CLOSED\n");
     if (buf != NULL)
         {
-        OPENSSL_cleanse(buf,bufsize);
+        vigortls_zeroize(buf,bufsize);
         free(buf);
         }
     if (ret >= 0)

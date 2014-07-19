@@ -132,7 +132,7 @@ static int enc_free(BIO *a)
     if (a == NULL) return (0);
     b=(BIO_ENC_CTX *)a->ptr;
     EVP_CIPHER_CTX_cleanup(&(b->cipher));
-    OPENSSL_cleanse(a->ptr,sizeof(BIO_ENC_CTX));
+    vigortls_zeroize(a->ptr,sizeof(BIO_ENC_CTX));
     free(a->ptr);
     a->ptr=NULL;
     a->init=0;

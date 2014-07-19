@@ -106,7 +106,7 @@ int PKCS12_PBE_keyivgen(EVP_CIPHER_CTX *ctx, const char *pass, int passlen,
     }
     PBEPARAM_free(pbe);
     ret = EVP_CipherInit_ex(ctx, cipher, NULL, key, iv, en_de);
-    OPENSSL_cleanse(key, EVP_MAX_KEY_LENGTH);
-    OPENSSL_cleanse(iv, EVP_MAX_IV_LENGTH);
+    vigortls_zeroize(key, EVP_MAX_KEY_LENGTH);
+    vigortls_zeroize(iv, EVP_MAX_IV_LENGTH);
     return ret;
 }

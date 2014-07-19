@@ -96,7 +96,7 @@ int RSA_sign_ASN1_OCTET_STRING(int type,
     else
         *siglen=i;
 
-    OPENSSL_cleanse(s,(unsigned int)j+1);
+    vigortls_zeroize(s,(unsigned int)j+1);
     free(s);
     return (ret);
     }
@@ -142,7 +142,7 @@ err:
     if (sig != NULL) M_ASN1_OCTET_STRING_free(sig);
     if (s != NULL)
         {
-        OPENSSL_cleanse(s,(unsigned int)siglen);
+        vigortls_zeroize(s,(unsigned int)siglen);
         free(s);
         }
     return (ret);

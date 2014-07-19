@@ -519,7 +519,7 @@ int MAIN(int argc, char **argv)
 end:
     if (buf != NULL)
         {
-        OPENSSL_cleanse(buf,BUFSIZE);
+        vigortls_zeroize(buf,BUFSIZE);
         free(buf);
         }
     if (in != NULL) BIO_free(in);

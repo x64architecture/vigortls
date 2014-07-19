@@ -181,12 +181,12 @@ void BN_clear_free(BIGNUM *a)
     bn_check_top(a);
     if (a->d != NULL)
         {
-        OPENSSL_cleanse(a->d,a->dmax*sizeof(a->d[0]));
+        vigortls_zeroize(a->d,a->dmax*sizeof(a->d[0]));
         if (!(BN_get_flags(a,BN_FLG_STATIC_DATA)))
             free(a->d);
         }
     i=BN_get_flags(a,BN_FLG_MALLOCED);
-    OPENSSL_cleanse(a,sizeof(BIGNUM));
+    vigortls_zeroize(a,sizeof(BIGNUM));
     if (i)
         free(a);
     }

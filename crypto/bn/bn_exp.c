@@ -815,7 +815,7 @@ err:
     if ((in_mont == NULL) && (mont != NULL)) BN_MONT_CTX_free(mont);
     if (powerbuf!=NULL)
         {
-        OPENSSL_cleanse(powerbuf,powerbufLen);
+        vigortls_zeroize(powerbuf,powerbufLen);
         if (powerbufFree) free(powerbufFree);
         }
     BN_CTX_end(ctx);

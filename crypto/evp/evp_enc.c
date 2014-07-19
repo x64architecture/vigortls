@@ -559,7 +559,7 @@ int EVP_CIPHER_CTX_cleanup(EVP_CIPHER_CTX *c)
             return 0;
         /* Cleanse cipher context data */
         if (c->cipher_data)
-            OPENSSL_cleanse(c->cipher_data, c->cipher->ctx_size);
+            vigortls_zeroize(c->cipher_data, c->cipher->ctx_size);
         }
     if (c->cipher_data)
         free(c->cipher_data);

@@ -278,7 +278,7 @@ int RAND_poll(void)
     if (n > 0)
         {
         RAND_add(tmpbuf,sizeof tmpbuf,(double)n);
-        OPENSSL_cleanse(tmpbuf,n);
+        vigortls_zeroize(tmpbuf,n);
         }
 #endif
 

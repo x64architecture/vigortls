@@ -109,7 +109,7 @@ int ASN1_verify(i2d_of_void *i2d, X509_ALGOR *a, ASN1_BIT_STRING *signature,
         goto err;
         }
 
-    OPENSSL_cleanse(buf_in,(unsigned int)inl);
+    vigortls_zeroize(buf_in,(unsigned int)inl);
     free(buf_in);
 
     if (EVP_VerifyFinal(&ctx,(unsigned char *)signature->data,
@@ -212,7 +212,7 @@ int ASN1_item_verify(const ASN1_ITEM *it, X509_ALGOR *a,
         goto err;
         }
 
-    OPENSSL_cleanse(buf_in,(unsigned int)inl);
+    vigortls_zeroize(buf_in,(unsigned int)inl);
     free(buf_in);
 
     if (EVP_DigestVerifyFinal(&ctx,signature->data,

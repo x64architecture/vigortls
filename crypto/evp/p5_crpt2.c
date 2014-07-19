@@ -329,7 +329,7 @@ int PKCS5_v2_PBKDF2_keyivgen(EVP_CIPHER_CTX *ctx, const char *pass, int passlen,
         goto err;
     rv = EVP_CipherInit_ex(ctx, NULL, NULL, key, NULL, en_de);
     err:
-    OPENSSL_cleanse(key, keylen);
+    vigortls_zeroize(key, keylen);
     PBKDF2PARAM_free(kdf);
     return rv;
 }

@@ -137,7 +137,7 @@ int RSA_sign(int type, const unsigned char *m, unsigned int m_len,
         *siglen=i;
 
     if (type != NID_md5_sha1) {
-        OPENSSL_cleanse(tmps,(unsigned int)j+1);
+        vigortls_zeroize(tmps,(unsigned int)j+1);
         free(tmps);
     }
     return (ret);
@@ -265,7 +265,7 @@ err:
     if (sig != NULL) X509_SIG_free(sig);
     if (s != NULL)
         {
-        OPENSSL_cleanse(s,(unsigned int)siglen);
+        vigortls_zeroize(s,(unsigned int)siglen);
         free(s);
         }
     return (ret);

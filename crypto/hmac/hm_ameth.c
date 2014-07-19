@@ -78,7 +78,7 @@ static void hmac_key_free(EVP_PKEY *pkey)
     if (os)
         {
         if (os->data)
-            OPENSSL_cleanse(os->data, os->length);
+            vigortls_zeroize(os->data, os->length);
         ASN1_OCTET_STRING_free(os);
         }
     }

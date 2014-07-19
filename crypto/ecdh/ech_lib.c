@@ -196,7 +196,7 @@ void ecdh_data_free(void *data)
 
     CRYPTO_free_ex_data(CRYPTO_EX_INDEX_ECDH, r, &r->ex_data);
 
-    OPENSSL_cleanse((void *)r, sizeof(ECDH_DATA));
+    vigortls_zeroize((void *)r, sizeof(ECDH_DATA));
 
     free(r);
     }

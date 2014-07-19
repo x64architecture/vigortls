@@ -206,7 +206,7 @@ static int ssl3_generate_key_block(SSL *s, unsigned char *km, int num)
 
         km+=MD5_DIGEST_LENGTH;
         }
-    OPENSSL_cleanse(smd,SHA_DIGEST_LENGTH);
+    vigortls_zeroize(smd,SHA_DIGEST_LENGTH);
     EVP_MD_CTX_cleanup(&m5);
     EVP_MD_CTX_cleanup(&s1);
     return 1;
@@ -324,8 +324,8 @@ int ssl3_change_cipher_state(SSL *s, int which)
 
     EVP_CipherInit_ex(dd,c,NULL,key,iv,(which & SSL3_CC_WRITE));
 
-    OPENSSL_cleanse(&(exp_key[0]),sizeof(exp_key));
-    OPENSSL_cleanse(&(exp_iv[0]),sizeof(exp_iv));
+    vigortls_zeroize(&(exp_key[0]),sizeof(exp_key));
+    vigortls_zeroize(&(exp_iv[0]),sizeof(exp_iv));
     EVP_MD_CTX_cleanup(&md);
     return (1);
 err:
@@ -408,7 +408,7 @@ void ssl3_cleanup_key_block(SSL *s)
     {
     if (s->s3->tmp.key_block != NULL)
         {
-        OPENSSL_cleanse(s->s3->tmp.key_block,
+        vigortls_zeroize(s->s3->tmp.key_block,
             s->s3->tmp.key_block_length);
         free(s->s3->tmp.key_block);
         s->s3->tmp.key_block=NULL;

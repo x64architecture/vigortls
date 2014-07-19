@@ -167,5 +167,7 @@ add_library(
 	$<TARGET_OBJECTS:x509v3>
 )
 
+SET_SOURCE_FILES_PROPERTIES(mem_clr.c PROPERTIES COMPILE_FLAGS -O0)
+
 perlasm(x86_64cpuid.${ASM_EXT} x86_64cpuid.pl)
 perlasm(x86cpuid.${ASM_EXT} x86cpuid.pl)

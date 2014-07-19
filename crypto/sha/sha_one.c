@@ -72,7 +72,7 @@ unsigned char *SHA(const unsigned char *d, size_t n, unsigned char *md)
         return NULL;
     SHA_Update(&c,d,n);
     SHA_Final(md,&c);
-    OPENSSL_cleanse(&c,sizeof(c));
+    vigortls_zeroize(&c,sizeof(c));
     return (md);
     }
 #endif

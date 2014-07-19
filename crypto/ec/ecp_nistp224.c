@@ -1192,7 +1192,7 @@ static void nistp224_pre_comp_clear_free(void *pre_)
     if (i > 0)
         return;
 
-    OPENSSL_cleanse(pre, sizeof *pre);
+    vigortls_zeroize(pre, sizeof *pre);
     free(pre);
     }
 

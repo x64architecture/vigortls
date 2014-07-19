@@ -750,8 +750,8 @@ void SSL_SESSION_free(SSL_SESSION *ss)
 
     CRYPTO_free_ex_data(CRYPTO_EX_INDEX_SSL_SESSION, ss, &ss->ex_data);
 
-    OPENSSL_cleanse(ss->master_key,sizeof ss->master_key);
-    OPENSSL_cleanse(ss->session_id,sizeof ss->session_id);
+    vigortls_zeroize(ss->master_key,sizeof ss->master_key);
+    vigortls_zeroize(ss->session_id,sizeof ss->session_id);
     if (ss->sess_cert != NULL) ssl_sess_cert_free(ss->sess_cert);
     if (ss->peer != NULL) X509_free(ss->peer);
     if (ss->ciphers != NULL) sk_SSL_CIPHER_free(ss->ciphers);
@@ -775,7 +775,7 @@ void SSL_SESSION_free(SSL_SESSION *ss)
     if (ss->srp_username != NULL)
         free(ss->srp_username);
 #endif
-    OPENSSL_cleanse(ss,sizeof(*ss));
+    vigortls_zeroize(ss,sizeof(*ss));
     free(ss);
     }
 

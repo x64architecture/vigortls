@@ -506,7 +506,7 @@ int password_callback(char *buf, int bufsiz, int verify,
 
         if (buff)
             {
-            OPENSSL_cleanse(buff,(unsigned int)bufsiz);
+            vigortls_zeroize(buff,(unsigned int)bufsiz);
             free(buff);
             }
 
@@ -516,13 +516,13 @@ int password_callback(char *buf, int bufsiz, int verify,
             {
             BIO_printf(bio_err, "User interface error\n");
             ERR_print_errors(bio_err);
-            OPENSSL_cleanse(buf,(unsigned int)bufsiz);
+            vigortls_zeroize(buf,(unsigned int)bufsiz);
             res = 0;
             }
         if (ok == -2)
             {
             BIO_printf(bio_err,"aborted!\n");
-            OPENSSL_cleanse(buf,(unsigned int)bufsiz);
+            vigortls_zeroize(buf,(unsigned int)bufsiz);
             res = 0;
             }
         UI_free(ui);

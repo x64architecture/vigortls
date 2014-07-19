@@ -245,7 +245,7 @@ int SSL_srp_server_param_with_username(SSL *s, int *ad)
     if (RAND_bytes(b, sizeof(b)) <= 0)
         return SSL3_AL_FATAL;
     s->srp_ctx.b = BN_bin2bn(b,sizeof(b),NULL);
-    OPENSSL_cleanse(b,sizeof(b));
+    vigortls_zeroize(b,sizeof(b));
 
     /* Calculate:  B = (kv + g^b) % N  */
 
@@ -362,7 +362,7 @@ int SRP_generate_server_master_secret(SSL *s,unsigned char *master_key)
 err:
     if (tmp)
         {
-        OPENSSL_cleanse(tmp,tmp_len) ;
+        vigortls_zeroize(tmp,tmp_len) ;
         free(tmp);
         }
     BN_clear_free(K);
@@ -394,14 +394,14 @@ int SRP_generate_client_master_secret(SSL *s,unsigned char *master_key)
 err:
     if (tmp)
         {
-        OPENSSL_cleanse(tmp,tmp_len) ;
+        vigortls_zeroize(tmp,tmp_len) ;
         free(tmp);
         }
     BN_clear_free(K);
     BN_clear_free(x);
     if (passwd)
         {
-        OPENSSL_cleanse(passwd,strlen(passwd)) ;
+        vigortls_zeroize(passwd,strlen(passwd)) ;
         free(passwd);
         }
     BN_clear_free(u);
@@ -421,7 +421,7 @@ int SRP_Calc_A_param(SSL *s)
 
     RAND_bytes(rnd, sizeof(rnd));
     s->srp_ctx.a = BN_bin2bn(rnd, sizeof(rnd), s->srp_ctx.a);
-    OPENSSL_cleanse(rnd, sizeof(rnd));
+    vigortls_zeroize(rnd, sizeof(rnd));
 
     if (!(s->srp_ctx.A = SRP_Calc_A(s->srp_ctx.a,s->srp_ctx.N,s->srp_ctx.g)))
         return -1;

@@ -271,7 +271,7 @@ static int kek_unwrap_key(unsigned char *out, size_t *outlen,
     memcpy(out, tmp + 4, *outlen);
     rv = 1;
     err:
-    OPENSSL_cleanse(tmp, inlen);
+    vigortls_zeroize(tmp, inlen);
     free(tmp);
     return rv;
 

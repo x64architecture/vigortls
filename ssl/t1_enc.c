@@ -226,7 +226,7 @@ err:
     EVP_PKEY_free(mac_key);
     EVP_MD_CTX_cleanup(&ctx);
     EVP_MD_CTX_cleanup(&ctx_tmp);
-    OPENSSL_cleanse(A1, sizeof(A1));
+    vigortls_zeroize(A1, sizeof(A1));
     return ret;
 }
 
@@ -466,10 +466,10 @@ static int tls1_change_cipher_state_cipher(
                     mac_secret_len, (void*) mac_secret);
 
     if (is_export) {
-        OPENSSL_cleanse(export_tmp1, sizeof(export_tmp1));
-        OPENSSL_cleanse(export_tmp2, sizeof(export_tmp1));
-        OPENSSL_cleanse(export_iv1, sizeof(export_iv1));
-        OPENSSL_cleanse(export_iv2, sizeof(export_iv2));
+        vigortls_zeroize(export_tmp1, sizeof(export_tmp1));
+        vigortls_zeroize(export_tmp2, sizeof(export_tmp1));
+        vigortls_zeroize(export_iv1, sizeof(export_iv1));
+        vigortls_zeroize(export_iv2, sizeof(export_iv2));
     }
 
     return 1;
@@ -638,7 +638,7 @@ int tls1_setup_key_block(SSL *s)
     ret = 1;
 err:
     if (p2) {
-        OPENSSL_cleanse(p2, num);
+        vigortls_zeroize(p2, num);
         free(p2);
     }
     return (ret);

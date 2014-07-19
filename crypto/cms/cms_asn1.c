@@ -235,7 +235,7 @@ static int cms_ri_cb(int operation, ASN1_VALUE **pval, const ASN1_ITEM *it,
             CMS_KEKRecipientInfo *kekri = ri->d.kekri;
             if (kekri->key)
                 {
-                OPENSSL_cleanse(kekri->key, kekri->keylen);
+                vigortls_zeroize(kekri->key, kekri->keylen);
                 free(kekri->key);
                 }
             }
@@ -244,7 +244,7 @@ static int cms_ri_cb(int operation, ASN1_VALUE **pval, const ASN1_ITEM *it,
             CMS_PasswordRecipientInfo *pwri = ri->d.pwri;
             if (pwri->pass)
                 {
-                OPENSSL_cleanse(pwri->pass, pwri->passlen);
+                vigortls_zeroize(pwri->pass, pwri->passlen);
                 free(pwri->pass);
                 }
             }

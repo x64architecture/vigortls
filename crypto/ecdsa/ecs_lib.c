@@ -174,7 +174,7 @@ static void ecdsa_data_free(void *data)
 #endif
     CRYPTO_free_ex_data(CRYPTO_EX_INDEX_ECDSA, r, &r->ex_data);
 
-    OPENSSL_cleanse((void *)r, sizeof(ECDSA_DATA));
+    vigortls_zeroize((void *)r, sizeof(ECDSA_DATA));
 
     free(r);
 }

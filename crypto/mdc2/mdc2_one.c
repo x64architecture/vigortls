@@ -70,7 +70,7 @@ unsigned char *MDC2(const unsigned char *d, size_t n, unsigned char *md)
         return NULL;
     MDC2_Update(&c,d,n);
         MDC2_Final(md,&c);
-    OPENSSL_cleanse(&c,sizeof(c)); /* security consideration */
+    vigortls_zeroize(&c,sizeof(c)); /* security consideration */
     return (md);
     }
 

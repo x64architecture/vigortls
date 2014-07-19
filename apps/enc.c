@@ -557,9 +557,9 @@ bad:
              * bug picked up by
              * Larry J. Hughes Jr. <hughes@indiana.edu> */
             if (str == strbuf)
-                OPENSSL_cleanse(str,SIZE);
+                vigortls_zeroize(str,SIZE);
             else
-                OPENSSL_cleanse(str,strlen(str));
+                vigortls_zeroize(str,strlen(str));
             }
         if ((hiv != NULL) && !set_hex(hiv,iv,sizeof iv))
             {

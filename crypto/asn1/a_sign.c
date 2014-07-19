@@ -205,9 +205,9 @@ int ASN1_sign(i2d_of_void *i2d, X509_ALGOR *algor1, X509_ALGOR *algor2,
 err:
     EVP_MD_CTX_cleanup(&ctx);
     if (buf_in != NULL)
-        { OPENSSL_cleanse((char *)buf_in,(unsigned int)inl); free(buf_in); }
+        { vigortls_zeroize((char *)buf_in,(unsigned int)inl); free(buf_in); }
     if (buf_out != NULL)
-        { OPENSSL_cleanse((char *)buf_out,outll); free(buf_out); }
+        { vigortls_zeroize((char *)buf_out,outll); free(buf_out); }
     return (outl);
     }
 
@@ -326,8 +326,8 @@ int ASN1_item_sign_ctx(const ASN1_ITEM *it,
 err:
     EVP_MD_CTX_cleanup(ctx);
     if (buf_in != NULL)
-        { OPENSSL_cleanse((char *)buf_in,(unsigned int)inl); free(buf_in); }
+        { vigortls_zeroize((char *)buf_in,(unsigned int)inl); free(buf_in); }
     if (buf_out != NULL)
-        { OPENSSL_cleanse((char *)buf_out,outll); free(buf_out); }
+        { vigortls_zeroize((char *)buf_out,outll); free(buf_out); }
     return (outl);
     }

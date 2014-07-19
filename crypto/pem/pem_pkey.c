@@ -132,7 +132,7 @@ p8err:
         PEMerr(PEM_F_PEM_READ_BIO_PRIVATEKEY,ERR_R_ASN1_LIB);
 err:
     free(nm);
-    OPENSSL_cleanse(data, len);
+    vigortls_zeroize(data, len);
     free(data);
     return (ret);
     }

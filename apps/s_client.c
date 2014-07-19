@@ -1748,9 +1748,9 @@ end:
         free(pass);
     if (vpm)
         X509_VERIFY_PARAM_free(vpm);
-    if (cbuf != NULL) { OPENSSL_cleanse(cbuf,BUFSIZZ); free(cbuf); }
-    if (sbuf != NULL) { OPENSSL_cleanse(sbuf,BUFSIZZ); free(sbuf); }
-    if (mbuf != NULL) { OPENSSL_cleanse(mbuf,BUFSIZZ); free(mbuf); }
+    if (cbuf != NULL) { vigortls_zeroize(cbuf,BUFSIZZ); free(cbuf); }
+    if (sbuf != NULL) { vigortls_zeroize(sbuf,BUFSIZZ); free(sbuf); }
+    if (mbuf != NULL) { vigortls_zeroize(mbuf,BUFSIZZ); free(mbuf); }
     if (bio_c_out != NULL)
         {
         BIO_free(bio_c_out);

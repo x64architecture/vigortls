@@ -747,7 +747,7 @@ bad:
         }
     pkey = load_key(bio_err, keyfile, keyform, 0, key, e, 
         "CA private key");
-    if (key) OPENSSL_cleanse(key,strlen(key));
+    if (key) vigortls_zeroize(key,strlen(key));
     if (pkey == NULL)
         {
         /* load_key() has already printed an appropriate message */

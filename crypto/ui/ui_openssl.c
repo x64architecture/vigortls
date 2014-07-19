@@ -359,7 +359,7 @@ error:
     if (ps >= 1)
         popsig();
 
-    OPENSSL_cleanse(result,BUFSIZ);
+    vigortls_zeroize(result,BUFSIZ);
     return ok;
     }
 

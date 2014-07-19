@@ -130,7 +130,7 @@ void EC_KEY_free(EC_KEY *r)
 
     EC_EX_DATA_free_all_data(&r->method_data);
 
-    OPENSSL_cleanse((void *)r, sizeof(EC_KEY));
+    vigortls_zeroize((void *)r, sizeof(EC_KEY));
 
     free(r);
     }

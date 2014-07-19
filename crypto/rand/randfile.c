@@ -135,7 +135,7 @@ int RAND_load_file(const char *file, long bytes)
             }
         }
     fclose(in);
-    OPENSSL_cleanse(buf,BUFSIZE);
+    vigortls_zeroize(buf,BUFSIZE);
 err:
     return (ret);
     }
@@ -203,7 +203,7 @@ int RAND_write_file(const char *file)
                 }
 
     fclose(out);
-    OPENSSL_cleanse(buf,BUFSIZE);
+    vigortls_zeroize(buf,BUFSIZE);
 err:
     return (rand_err ? -1 : ret);
     }

@@ -147,7 +147,7 @@ bad:
         i=EVP_read_pw_string(buf,BUFSIZ,"Enter RC4 password:",0);
         if (i != 0)
             {
-            OPENSSL_cleanse(buf,BUFSIZ);
+            vigortls_zeroize(buf,BUFSIZ);
             fprintf(stderr,"bad password read\n");
             exit(1);
             }
@@ -155,7 +155,7 @@ bad:
         }
 
     EVP_Digest((unsigned char *)keystr,strlen(keystr),md,NULL,EVP_md5(),NULL);
-    OPENSSL_cleanse(keystr,strlen(keystr));
+    vigortls_zeroize(keystr,strlen(keystr));
     RC4_set_key(&key,MD5_DIGEST_LENGTH,md);
     
     for(;;)

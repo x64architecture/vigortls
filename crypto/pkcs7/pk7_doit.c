@@ -244,7 +244,7 @@ static int pkcs7_decrypt_rinfo(unsigned char **pek, int *peklen,
 
     if (*pek)
         {
-        OPENSSL_cleanse(*pek, *peklen);
+        vigortls_zeroize(*pek, *peklen);
         free(*pek);
         }
 
@@ -365,7 +365,7 @@ BIO *PKCS7_dataInit(PKCS7 *p7, BIO *bio)
             if (pkcs7_encode_rinfo(ri, key, keylen) <= 0)
                 goto err;
             }
-        OPENSSL_cleanse(key, keylen);
+        vigortls_zeroize(key, keylen);
 
         if (out == NULL)
             out=btmp;
@@ -598,7 +598,7 @@ BIO *PKCS7_dataDecode(PKCS7 *p7, EVP_PKEY *pkey, BIO *in_bio, X509 *pcert)
             if (!EVP_CIPHER_CTX_set_key_length(evp_ctx, eklen))
                 {
                 /* Use random key as MMA defence */
-                OPENSSL_cleanse(ek, eklen);
+                vigortls_zeroize(ek, eklen);
                 free(ek);
                 ek = tkey;
                 eklen = tkeylen;
@@ -612,13 +612,13 @@ BIO *PKCS7_dataDecode(PKCS7 *p7, EVP_PKEY *pkey, BIO *in_bio, X509 *pcert)
 
         if (ek)
             {
-            OPENSSL_cleanse(ek,eklen);
+            vigortls_zeroize(ek,eklen);
             free(ek);
                        ek = NULL;
             }
         if (tkey)
             {
-            OPENSSL_cleanse(tkey,tkeylen);
+            vigortls_zeroize(tkey,tkeylen);
             free(tkey);
                        tkey = NULL;
             }
@@ -665,12 +665,12 @@ BIO *PKCS7_dataDecode(PKCS7 *p7, EVP_PKEY *pkey, BIO *in_bio, X509 *pcert)
 err:
                if (ek)
                        {
-                       OPENSSL_cleanse(ek,eklen);
+                       vigortls_zeroize(ek,eklen);
                        free(ek);
                        }
                if (tkey)
                        {
-                       OPENSSL_cleanse(tkey,tkeylen);
+                       vigortls_zeroize(tkey,tkeylen);
                        free(tkey);
                        }
         if (out != NULL) BIO_free_all(out);

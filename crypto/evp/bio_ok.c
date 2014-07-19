@@ -202,7 +202,7 @@ static int ok_free(BIO *a)
     {
     if (a == NULL) return (0);
     EVP_MD_CTX_cleanup(&((BIO_OK_CTX *)a->ptr)->md);
-    OPENSSL_cleanse(a->ptr,sizeof(BIO_OK_CTX));
+    vigortls_zeroize(a->ptr,sizeof(BIO_OK_CTX));
     free(a->ptr);
     a->ptr=NULL;
     a->init=0;

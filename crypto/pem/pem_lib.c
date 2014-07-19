@@ -385,7 +385,7 @@ int PEM_ASN1_write_bio(i2d_of_void *i2d, const char *name, BIO *bp,
         if (!EVP_BytesToKey(enc,EVP_md5(),iv,kstr,klen,1,key,NULL))
             goto err;
 
-        if (kstr == (unsigned char *)buf) OPENSSL_cleanse(buf,PEM_BUFSIZE);
+        if (kstr == (unsigned char *)buf) vigortls_zeroize(buf,PEM_BUFSIZE);
 
         OPENSSL_assert(strlen(objstr)+23+2*enc->iv_len+13 <= sizeof buf);
 
@@ -413,13 +413,13 @@ int PEM_ASN1_write_bio(i2d_of_void *i2d, const char *name, BIO *bp,
     i=PEM_write_bio(bp,name,buf,data,i);
     if (i <= 0) ret=0;
 err:
-    OPENSSL_cleanse(key,sizeof(key));
-    OPENSSL_cleanse(iv,sizeof(iv));
-    OPENSSL_cleanse((char *)&ctx,sizeof(ctx));
-    OPENSSL_cleanse(buf,PEM_BUFSIZE);
+    vigortls_zeroize(key,sizeof(key));
+    vigortls_zeroize(iv,sizeof(iv));
+    vigortls_zeroize((char *)&ctx,sizeof(ctx));
+    vigortls_zeroize(buf,PEM_BUFSIZE);
     if (data != NULL)
         {
-        OPENSSL_cleanse(data,(unsigned int)dsize);
+        vigortls_zeroize(data,(unsigned int)dsize);
         free(data);
         }
     return (ret);
@@ -463,8 +463,8 @@ int PEM_do_header(EVP_CIPHER_INFO *cipher, unsigned char *data, long *plen,
     if (o)
         o = EVP_DecryptFinal_ex(&ctx,&(data[i]),&j);
     EVP_CIPHER_CTX_cleanup(&ctx);
-    OPENSSL_cleanse((char *)buf,sizeof(buf));
-    OPENSSL_cleanse((char *)key,sizeof(key));
+    vigortls_zeroize((char *)buf,sizeof(buf));
+    vigortls_zeroize((char *)key,sizeof(key));
     j+=i;
     if (!o)
         {
@@ -621,7 +621,7 @@ int PEM_write_bio(BIO *bp, const char *name, char *header, unsigned char *data,
         }
     EVP_EncodeFinal(&ctx,buf,&outl);
     if ((outl > 0) && (BIO_write(bp,(char *)buf,outl) != outl)) goto err;
-    OPENSSL_cleanse(buf, PEM_BUFSIZE*8);
+    vigortls_zeroize(buf, PEM_BUFSIZE*8);
     free(buf);
     buf = NULL;
     if (    (BIO_write(bp,"-----END ",9) != 9) ||
@@ -631,7 +631,7 @@ int PEM_write_bio(BIO *bp, const char *name, char *header, unsigned char *data,
     return (i+outl);
 err:
     if (buf) {
-        OPENSSL_cleanse(buf, PEM_BUFSIZE*8);
+        vigortls_zeroize(buf, PEM_BUFSIZE*8);
         free(buf);
     }
     PEMerr(PEM_F_PEM_WRITE_BIO,reason);

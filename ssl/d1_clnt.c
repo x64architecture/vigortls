@@ -853,7 +853,7 @@ int dtls1_send_client_key_exchange(SSL *s)
                 s->method->ssl3_enc->generate_master_secret(s,
                     s->session->master_key,
                     tmp_buf,sizeof tmp_buf);
-            OPENSSL_cleanse(tmp_buf,sizeof tmp_buf);
+            vigortls_zeroize(tmp_buf,sizeof tmp_buf);
             }
 #ifndef OPENSSL_NO_KRB5
         else if (alg_k & SSL_kKRB5)
@@ -971,8 +971,8 @@ int dtls1_send_client_key_exchange(SSL *s)
                     s->session->master_key,
                     tmp_buf, sizeof tmp_buf);
 
-            OPENSSL_cleanse(tmp_buf, sizeof tmp_buf);
-            OPENSSL_cleanse(epms, outl);
+            vigortls_zeroize(tmp_buf, sizeof tmp_buf);
+            vigortls_zeroize(epms, outl);
                         }
 #endif
         else if (alg_k & (SSL_kEDH|SSL_kDHr|SSL_kDHd))
@@ -1288,8 +1288,8 @@ int dtls1_send_client_key_exchange(SSL *s)
             n+=2;
             psk_err = 0;
         psk_err:
-            OPENSSL_cleanse(identity, PSK_MAX_IDENTITY_LEN);
-            OPENSSL_cleanse(psk_or_pre_ms, sizeof(psk_or_pre_ms));
+            vigortls_zeroize(identity, PSK_MAX_IDENTITY_LEN);
+            vigortls_zeroize(psk_or_pre_ms, sizeof(psk_or_pre_ms));
             if (psk_err != 0)
                 {
                 ssl3_send_alert(s, SSL3_AL_FATAL, SSL_AD_HANDSHAKE_FAILURE);
