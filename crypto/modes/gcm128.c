@@ -145,10 +145,7 @@ static void gcm_gmult_8bit(u64 Xi[2], const u128 Htable[256])
     u128 Z = {0, 0};
     const u8 *xi = (const u8 *)Xi + 15;
     size_t rem, n = *xi;
-    const union { 
-        long one; 
-        char little; 
-    } is_endian = {1};
+
     static const size_t rem_8bit[256] = {
         PACK(0x0000), PACK(0x01C2), PACK(0x0384), PACK(0x0246),
         PACK(0x0708), PACK(0x06CA), PACK(0x048C), PACK(0x054E),
@@ -233,7 +230,7 @@ static void gcm_gmult_8bit(u64 Xi[2], const u128 Htable[256])
             Z.hi ^= (u64)rem_8bit[rem] << 32;
     }
 
-    if (is_endian.little) {
+    if (BYTE_ORDER == LITTLE_ENDIAN) {
 #ifdef BSWAP8
         Xi[0] = BSWAP8(Z.hi);
         Xi[1] = BSWAP8(Z.lo);
@@ -308,12 +305,8 @@ static void gcm_init_4bit(u128 Htable[16], u64 H[2])
      */
     {
     int j;
-    const union {
-        long one;
-        char little; 
-    } is_endian = {1};
 
-    if (is_endian.little)
+    if (BYTE_ORDER == LITTLE_ENDIAN)
         for (j = 0; j < 16; ++j) {
             V = Htable[j];
             Htable[j].hi = V.lo;
@@ -341,10 +334,6 @@ static void gcm_gmult_4bit(u64 Xi[2], const u128 Htable[16])
     u128 Z;
     int cnt = 15;
     size_t rem, nlo, nhi;
-    const union { 
-        long one; 
-        char little; 
-    } is_endian = {1};
 
     nlo  = ((const u8 *)Xi)[15];
     nhi  = nlo >> 4;
@@ -384,7 +373,7 @@ static void gcm_gmult_4bit(u64 Xi[2], const u128 Htable[16])
         Z.lo ^= Htable[nlo].lo;
     }
 
-    if (is_endian.little) {
+    if (BYTE_ORDER == LITTLE_ENDIAN) {
 #ifdef BSWAP8
         Xi[0] = BSWAP8(Z.hi);
         Xi[1] = BSWAP8(Z.lo);
@@ -416,10 +405,6 @@ static void gcm_ghash_4bit(u64 Xi[2], const u128 Htable[16],
     u128 Z;
     int cnt;
     size_t rem, nlo, nhi;
-    const union { 
-        long one;
-        char little; 
-    } is_endian = {1};
 
 #if 1
     do {
@@ -557,7 +542,7 @@ static void gcm_ghash_4bit(u64 Xi[2], const u128 Htable[16],
     Z.hi ^= ((u64)rem_8bit[rem << 4]) << 48;
 #endif
 
-    if (is_endian.little) {
+    if (BYTE_ORDER == LITTLE_ENDIAN) {
 #ifdef BSWAP8
         Xi[0] = BSWAP8(Z.hi);
         Xi[1] = BSWAP8(Z.lo);
@@ -598,16 +583,12 @@ static void gcm_gmult_1bit(u64 Xi[2], const u64 H[2])
     long X;
     int  i, j;
     const long *xi = (const long *)Xi;
-    const union {
-        long one; 
-        char little; 
-    } is_endian = {1};
 
     V.hi = H[0];    /* H is in host byte order, no byte swapping */
     V.lo = H[1];
 
     for (j = 0; j < 16 / sizeof(long); ++j) {
-        if (is_endian.little) {
+        if (BYTE_ORDER == LITTLE_ENDIAN) {
             if (sizeof(long) == 8) {
 #ifdef BSWAP8
                 X = (long)(BSWAP8(xi[j]));
@@ -631,7 +612,7 @@ static void gcm_gmult_1bit(u64 Xi[2], const u64 H[2])
         }
     }
 
-    if (is_endian.little) {
+    if (BYTE_ORDER == LITTLE_ENDIAN) {
 #ifdef BSWAP8
         Xi[0] = BSWAP8(Z.hi);
         Xi[1] = BSWAP8(Z.lo);
@@ -695,17 +676,13 @@ void gcm_ghash_neon(u64 Xi[2], const u128 Htable[16], const u8 *inp, size_t len)
 
 void CRYPTO_gcm128_init(GCM128_CONTEXT *ctx, void *key, block128_f block)
 {
-    const union { 
-        long one; char little; 
-    } is_endian = {1};
-
     memset(ctx, 0, sizeof(*ctx));
     ctx->block = block;
     ctx->key   = key;
 
     (*block)(ctx->H.c, ctx->H.c, key);
 
-    if (is_endian.little) {
+    if (BYTE_ORDER == LITTLE_ENDIAN) {
         /* H is stored in host byte order */
 #ifdef BSWAP8
         ctx->H.u[0] = BSWAP8(ctx->H.u[0]);
@@ -767,10 +744,6 @@ void CRYPTO_gcm128_init(GCM128_CONTEXT *ctx, void *key, block128_f block)
 
 void CRYPTO_gcm128_setiv(GCM128_CONTEXT *ctx, const unsigned char *iv, size_t len)
 {
-    const union { 
-        long one;
-        char little; 
-    } is_endian = {1};
     unsigned int ctr;
 #ifdef GCM_FUNCREF_4BIT
     void (*gcm_gmult_p)(u64 Xi[2], const u128 Htable[16]) = ctx->gmult;
@@ -805,7 +778,7 @@ void CRYPTO_gcm128_setiv(GCM128_CONTEXT *ctx, const unsigned char *iv, size_t le
             GCM_MUL(ctx, Yi);
         }
         len0 <<= 3;
-        if (is_endian.little) {
+        if (BYTE_ORDER == LITTLE_ENDIAN) {
 #ifdef BSWAP8
             ctx->Yi.u[1]  ^= BSWAP8(len0);
 #else
@@ -823,7 +796,7 @@ void CRYPTO_gcm128_setiv(GCM128_CONTEXT *ctx, const unsigned char *iv, size_t le
 
         GCM_MUL(ctx, Yi);
 
-        if (is_endian.little)
+        if (BYTE_ORDER == LITTLE_ENDIAN)
 #ifdef BSWAP4
             ctr = BSWAP4(ctx->Yi.d[3]);
 #else
@@ -835,7 +808,7 @@ void CRYPTO_gcm128_setiv(GCM128_CONTEXT *ctx, const unsigned char *iv, size_t le
 
     (*ctx->block)(ctx->Yi.c, ctx->EK0.c, ctx->key);
     ++ctr;
-    if (is_endian.little)
+    if (BYTE_ORDER == LITTLE_ENDIAN)
 #ifdef BSWAP4
         ctx->Yi.d[3] = BSWAP4(ctr);
 #else
@@ -910,10 +883,6 @@ int CRYPTO_gcm128_encrypt(GCM128_CONTEXT *ctx,
         const unsigned char *in, unsigned char *out,
         size_t len)
 {
-    const union { 
-        long one; 
-        char little;
-    } is_endian = {1};
     unsigned int n, ctr;
     size_t i;
     u64 mlen = ctx->len.u[1];
@@ -941,7 +910,7 @@ int CRYPTO_gcm128_encrypt(GCM128_CONTEXT *ctx,
         ctx->ares = 0;
     }
 
-    if (is_endian.little)
+    if (BYTE_ORDER == LITTLE_ENDIAN)
 #ifdef BSWAP4
         ctr = BSWAP4(ctx->Yi.d[3]);
 #else
@@ -981,7 +950,7 @@ int CRYPTO_gcm128_encrypt(GCM128_CONTEXT *ctx,
 
             (*block)(ctx->Yi.c, ctx->EKi.c, key);
             ++ctr;
-            if (is_endian.little)
+            if (BYTE_ORDER == LITTLE_ENDIAN)
 #ifdef BSWAP4
                 ctx->Yi.d[3] = BSWAP4(ctr);
 #else
@@ -1007,7 +976,7 @@ int CRYPTO_gcm128_encrypt(GCM128_CONTEXT *ctx,
 
             (*block)(ctx->Yi.c, ctx->EKi.c, key);
             ++ctr;
-            if (is_endian.little)
+            if (BYTE_ORDER == LITTLE_ENDIAN)
 #ifdef BSWAP4
                 ctx->Yi.d[3] = BSWAP4(ctr);
 #else
@@ -1030,7 +999,7 @@ int CRYPTO_gcm128_encrypt(GCM128_CONTEXT *ctx,
 
             (*block)(ctx->Yi.c, ctx->EKi.c, key);
             ++ctr;
-            if (is_endian.little)
+            if (BYTE_ORDER == LITTLE_ENDIAN)
 #ifdef BSWAP4
                 ctx->Yi.d[3] = BSWAP4(ctr);
 #else
@@ -1050,7 +1019,7 @@ int CRYPTO_gcm128_encrypt(GCM128_CONTEXT *ctx,
         if (len) {
             (*block)(ctx->Yi.c, ctx->EKi.c, key);
             ++ctr;
-            if (is_endian.little)
+            if (BYTE_ORDER == LITTLE_ENDIAN)
 #ifdef BSWAP4
                 ctx->Yi.d[3] = BSWAP4(ctr);
 #else
@@ -1072,7 +1041,7 @@ int CRYPTO_gcm128_encrypt(GCM128_CONTEXT *ctx,
         if (n == 0) {
             (*block)(ctx->Yi.c, ctx->EKi.c, key);
             ++ctr;
-            if (is_endian.little)
+            if (BYTE_ORDER == LITTLE_ENDIAN)
 #ifdef BSWAP4
                 ctx->Yi.d[3] = BSWAP4(ctr);
 #else
@@ -1095,10 +1064,6 @@ int CRYPTO_gcm128_decrypt(GCM128_CONTEXT *ctx,
         const unsigned char *in, unsigned char *out,
         size_t len)
 {
-    const union { 
-        long one; 
-        char little; 
-    } is_endian = {1};
     unsigned int n, ctr;
     size_t i;
     u64        mlen  = ctx->len.u[1];
@@ -1123,7 +1088,7 @@ int CRYPTO_gcm128_decrypt(GCM128_CONTEXT *ctx,
         ctx->ares = 0;
     }
 
-    if (is_endian.little)
+    if (BYTE_ORDER == LITTLE_ENDIAN)
 #ifdef BSWAP4
         ctr = BSWAP4(ctx->Yi.d[3]);
 #else
@@ -1166,7 +1131,7 @@ int CRYPTO_gcm128_decrypt(GCM128_CONTEXT *ctx,
 
             (*block)(ctx->Yi.c, ctx->EKi.c, key);
             ++ctr;
-            if (is_endian.little)
+            if (BYTE_ORDER == LITTLE_ENDIAN)
 #ifdef BSWAP4
                 ctx->Yi.d[3] = BSWAP4(ctr);
 #else
@@ -1190,7 +1155,7 @@ int CRYPTO_gcm128_decrypt(GCM128_CONTEXT *ctx,
 
             (*block)(ctx->Yi.c, ctx->EKi.c, key);
             ++ctr;
-            if (is_endian.little)
+            if (BYTE_ORDER == LITTLE_ENDIAN)
 #ifdef BSWAP4
                 ctx->Yi.d[3] = BSWAP4(ctr);
 #else
@@ -1212,7 +1177,7 @@ int CRYPTO_gcm128_decrypt(GCM128_CONTEXT *ctx,
 
             (*block)(ctx->Yi.c, ctx->EKi.c, key);
             ++ctr;
-            if (is_endian.little)
+            if (BYTE_ORDER == LITTLE_ENDIAN)
 #ifdef BSWAP4
                 ctx->Yi.d[3] = BSWAP4(ctr);
 #else
@@ -1234,7 +1199,7 @@ int CRYPTO_gcm128_decrypt(GCM128_CONTEXT *ctx,
         if (len) {
             (*block)(ctx->Yi.c, ctx->EKi.c, key);
             ++ctr;
-            if (is_endian.little)
+            if (BYTE_ORDER == LITTLE_ENDIAN)
 #ifdef BSWAP4
                 ctx->Yi.d[3] = BSWAP4(ctr);
 #else
@@ -1259,7 +1224,7 @@ int CRYPTO_gcm128_decrypt(GCM128_CONTEXT *ctx,
         if (n == 0) {
             (*block)(ctx->Yi.c, ctx->EKi.c, key);
             ++ctr;
-            if (is_endian.little)
+            if (BYTE_ORDER == LITTLE_ENDIAN)
 #ifdef BSWAP4
                 ctx->Yi.d[3] = BSWAP4(ctr);
 #else
@@ -1284,10 +1249,6 @@ int CRYPTO_gcm128_encrypt_ctr32(GCM128_CONTEXT *ctx,
         const unsigned char *in, unsigned char *out,
         size_t len, ctr128_f stream)
 {
-    const union {
-        long one; 
-        char little;
-    } is_endian = {1};
     unsigned int n, ctr;
     size_t i;
     u64   mlen = ctx->len.u[1];
@@ -1311,7 +1272,7 @@ int CRYPTO_gcm128_encrypt_ctr32(GCM128_CONTEXT *ctx,
         ctx->ares = 0;
     }
 
-    if (is_endian.little)
+    if (BYTE_ORDER == LITTLE_ENDIAN)
 #ifdef BSWAP4
         ctr = BSWAP4(ctx->Yi.d[3]);
 #else
@@ -1338,7 +1299,7 @@ int CRYPTO_gcm128_encrypt_ctr32(GCM128_CONTEXT *ctx,
     while (len >= GHASH_CHUNK) {
         (*stream)(in, out, GHASH_CHUNK / 16, key, ctx->Yi.c);
         ctr += GHASH_CHUNK / 16;
-        if (is_endian.little)
+        if (BYTE_ORDER == LITTLE_ENDIAN)
 #ifdef BSWAP4
             ctx->Yi.d[3] = BSWAP4(ctr);
 #else
@@ -1357,7 +1318,7 @@ int CRYPTO_gcm128_encrypt_ctr32(GCM128_CONTEXT *ctx,
 
         (*stream)(in, out, j, key, ctx->Yi.c);
         ctr += (unsigned int)j;
-        if (is_endian.little)
+        if (BYTE_ORDER == LITTLE_ENDIAN)
 #ifdef BSWAP4
             ctx->Yi.d[3] = BSWAP4(ctr);
 #else
@@ -1382,7 +1343,7 @@ int CRYPTO_gcm128_encrypt_ctr32(GCM128_CONTEXT *ctx,
     if (len) {
         (*ctx->block)(ctx->Yi.c, ctx->EKi.c, key);
         ++ctr;
-        if (is_endian.little)
+        if (BYTE_ORDER == LITTLE_ENDIAN)
 #ifdef BSWAP4
             ctx->Yi.d[3] = BSWAP4(ctr);
 #else
@@ -1404,10 +1365,6 @@ int CRYPTO_gcm128_decrypt_ctr32(GCM128_CONTEXT *ctx,
         const unsigned char *in, unsigned char *out,
         size_t len, ctr128_f stream)
 {
-    const union {
-        long one;
-        char little;
-    } is_endian = {1};
     unsigned int n, ctr;
     size_t i;
     u64   mlen = ctx->len.u[1];
@@ -1431,7 +1388,7 @@ int CRYPTO_gcm128_decrypt_ctr32(GCM128_CONTEXT *ctx,
         ctx->ares = 0;
     }
 
-    if (is_endian.little)
+    if (BYTE_ORDER == LITTLE_ENDIAN)
 #ifdef BSWAP4
         ctr = BSWAP4(ctx->Yi.d[3]);
 #else
@@ -1461,7 +1418,7 @@ int CRYPTO_gcm128_decrypt_ctr32(GCM128_CONTEXT *ctx,
         GHASH(ctx, in, GHASH_CHUNK);
         (*stream)(in, out, GHASH_CHUNK /16 , key, ctx->Yi.c);
         ctr += GHASH_CHUNK / 16;
-        if (is_endian.little)
+        if (BYTE_ORDER == LITTLE_ENDIAN)
 #ifdef BSWAP4
             ctx->Yi.d[3] = BSWAP4(ctr);
 #else
@@ -1492,7 +1449,7 @@ int CRYPTO_gcm128_decrypt_ctr32(GCM128_CONTEXT *ctx,
 #endif
         (*stream)(in, out, j, key, ctx->Yi.c);
         ctr += (unsigned int)j;
-        if (is_endian.little)
+        if (BYTE_ORDER == LITTLE_ENDIAN)
 #ifdef BSWAP4
             ctx->Yi.d[3] = BSWAP4(ctr);
 #else
@@ -1507,7 +1464,7 @@ int CRYPTO_gcm128_decrypt_ctr32(GCM128_CONTEXT *ctx,
     if (len) {
         (*ctx->block)(ctx->Yi.c, ctx->EKi.c, key);
         ++ctr;
-        if (is_endian.little)
+        if (BYTE_ORDER == LITTLE_ENDIAN)
 #ifdef BSWAP4
             ctx->Yi.d[3] = BSWAP4(ctr);
 #else
@@ -1530,10 +1487,6 @@ int CRYPTO_gcm128_decrypt_ctr32(GCM128_CONTEXT *ctx,
 int CRYPTO_gcm128_finish(GCM128_CONTEXT *ctx, const unsigned char *tag,
             size_t len)
 {
-    const union { 
-        long one; 
-        char little; 
-    } is_endian = {1};
     u64 alen = ctx->len.u[0] << 3;
     u64 clen = ctx->len.u[1] << 3;
 #ifdef GCM_FUNCREF_4BIT
@@ -1543,7 +1496,7 @@ int CRYPTO_gcm128_finish(GCM128_CONTEXT *ctx, const unsigned char *tag,
     if (ctx->mres || ctx->ares)
         GCM_MUL(ctx, Xi);
 
-    if (is_endian.little) {
+    if (BYTE_ORDER == LITTLE_ENDIAN) {
 #ifdef BSWAP8
         alen = BSWAP8(alen);
         clen = BSWAP8(clen);

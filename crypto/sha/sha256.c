@@ -13,6 +13,7 @@
 #include <openssl/crypto.h>
 #include <openssl/sha.h>
 #include <openssl/opensslv.h>
+#include <machine/endian.h>
 
 const char SHA256_version[]="SHA-256" OPENSSL_VERSION_PTEXT;
 
@@ -206,14 +207,13 @@ static void sha256_block_data_order (SHA256_CTX *ctx, const void *in, size_t num
     SHA_LONG    X[16];
     int i;
     const unsigned char *data=in;
-    const union { long one; char little; } is_endian = {1};
 
             while (num--) {
 
     a = ctx->h[0];    b = ctx->h[1];    c = ctx->h[2];    d = ctx->h[3];
     e = ctx->h[4];    f = ctx->h[5];    g = ctx->h[6];    h = ctx->h[7];
 
-    if (!is_endian.little && sizeof(SHA_LONG)==4 && ((size_t)in%4)==0)
+    if (BYTE_ORDER == BIG_ENDIAN && sizeof(SHA_LONG)==4 && ((size_t)in%4)==0)
         {
         const SHA_LONG *W=(const SHA_LONG *)data;
 

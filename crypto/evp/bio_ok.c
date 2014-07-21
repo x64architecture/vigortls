@@ -125,6 +125,7 @@
 #include <openssl/bio.h>
 #include <openssl/evp.h>
 #include <openssl/rand.h>
+#include <machine/endian.h>
 
 static int ok_write(BIO *h, const char *buf, int num);
 static int ok_read(BIO *h, char *buf, int size);
@@ -463,9 +464,9 @@ static long ok_callback_ctrl(BIO *b, int cmd, bio_info_cb *fp)
     }
 
 static void longswap(void *_ptr, size_t len)
-{    const union { long one; char little; } is_endian = {1};
+{
 
-    if (is_endian.little) {
+    if (BYTE_ORDER == LITTLE_ENDIAN) {
         size_t i;
         unsigned char *p=_ptr,c;
 

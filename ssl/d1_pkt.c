@@ -121,6 +121,7 @@
 #include <openssl/buffer.h>
 #include <pqueue.h>
 #include <openssl/rand.h>
+#include <machine/endian.h>
 
 /* mod 128 saturating subtract of two 64-bit values in big-endian order */
 static int
@@ -130,13 +131,9 @@ satsub64be(const unsigned char *v1,const unsigned char *v2)
 
     if (sizeof(long) == 8)
         do {
-        const union {
-            long one;
-            char little;
-        } is_endian = {1};
         long l;
 
-        if (is_endian.little)
+        if (BYTE_ORDER == LITTLE_ENDIAN)
             break;
         /* not reached on little-endians */
         /* following test is redundant, because input is
