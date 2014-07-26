@@ -199,22 +199,6 @@ pqueue_find(pqueue_s *pq, unsigned char *prio64be)
     return found;
     }
 
-void
-pqueue_print(pqueue_s *pq)
-    {
-    pitem *item = pq->items;
-
-    while(item != NULL)
-        {
-        printf("item\t%02x%02x%02x%02x%02x%02x%02x%02x\n",
-            item->priority[0],item->priority[1],
-            item->priority[2],item->priority[3],
-            item->priority[4],item->priority[5],
-            item->priority[6],item->priority[7]);
-        item = item->next;
-        }
-    }
-
 pitem *
 pqueue_iterator(pqueue_s *pq)
     {

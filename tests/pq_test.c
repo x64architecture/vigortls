@@ -57,39 +57,90 @@
  *
  */
 
-#include "pqueue.h"
+#include <pqueue.h>
+#include <string.h>
 
-int
-main(void)
-    {
+/* remember to change the expected results if you change these values */
+unsigned char prio1[8] = "trutheca";
+unsigned char prio2[8] = "kapuvuxu";
+unsigned char prio3[8] = "chusuwru";
+
+const char prio1_expected[16] = "6368757375777275";
+const char prio2_expected[16] = "6b61707576757875";
+const char prio3_expected[16] = "7472757468656361";
+
+static void pqueue_print(pqueue pq)
+{
+    pitem *iter, *item;
+
+    iter = pqueue_iterator(pq);
+    for (item = pqueue_next(&iter); item != NULL; item = pqueue_next(&iter)) {
+        printf("item\t%02x%02x%02x%02x%02x%02x%02x%02x\n",
+            item->priority[0], item->priority[1],
+            item->priority[2], item->priority[3],
+            item->priority[4], item->priority[5],
+            item->priority[6], item->priority[7]);
+    }
+}
+
+static void pqueue_test(pqueue pq)
+{
+    pitem *iter, *item;
+    char buf[17];
+    char buf2[16 * 3 + 1];
+    char expected[16 * 3 + 1];
+
+    snprintf(expected, sizeof(expected), "%s%s%s",
+        prio1_expected, prio2_expected, prio3_expected);
+
+    iter = pqueue_iterator(pq);
+    for (item = pqueue_next(&iter); item != NULL; item = pqueue_next(&iter)) {
+        snprintf(buf, sizeof(buf), "%02x%02x%02x%02x%02x%02x%02x%02x",
+            item->priority[0], item->priority[1],
+            item->priority[2], item->priority[3],
+            item->priority[4], item->priority[5],
+            item->priority[6], item->priority[7]);
+        strncat(buf2, buf, sizeof(buf2) - strlen(buf2) - 1);
+    }
+
+    if (strcmp(expected, buf2) != 0) {
+        printf("expected: %s\nresult:   %s\n", expected, buf2);
+        exit(-1);
+    }
+}
+
+int main(void)
+{
     pitem *item;
     pqueue pq;
 
     pq = pqueue_new();
 
-    item = pitem_new(3, NULL);
+    item = pitem_new(prio3, NULL);
     pqueue_insert(pq, item);
 
-    item = pitem_new(1, NULL);
+    item = pitem_new(prio1, NULL);
     pqueue_insert(pq, item);
 
-    item = pitem_new(2, NULL);
+    item = pitem_new(prio2, NULL);
     pqueue_insert(pq, item);
 
-    item = pqueue_find(pq, 1);
-    fprintf(stderr, "found %ld\n", item->priority);
+    item = pqueue_find(pq, prio1);
+    fprintf(stderr, "found %p\n", item->priority);
 
-    item = pqueue_find(pq, 2);
-    fprintf(stderr, "found %ld\n", item->priority);
+    item = pqueue_find(pq, prio2);
+    fprintf(stderr, "found %p\n", item->priority);
 
-    item = pqueue_find(pq, 3);
-    fprintf(stderr, "found %ld\n", item ? item->priority: 0);
+    item = pqueue_find(pq, prio3);
+    fprintf(stderr, "found %p\n", item ? item->priority: 0);
 
     pqueue_print(pq);
 
-    for(item = pqueue_pop(pq); item != NULL; item = pqueue_pop(pq))
+    pqueue_test(pq);
+
+    for (item = pqueue_pop(pq); item != NULL; item = pqueue_pop(pq))
         pitem_free(item);
 
     pqueue_free(pq);
     return 0;
-    }
+}

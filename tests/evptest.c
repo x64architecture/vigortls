@@ -317,22 +317,19 @@ static int test_digest(const char *digest,
 
 int main(int argc,char **argv)
     {
-    const char *szTestFile;
-    FILE *f;
+    const char *szTestFile = "../../tests/data/evptests.txt";
+    FILE *fp;
 
-    if (argc != 2)
-    {
-    fprintf(stderr,"%s <test file>\n",argv[0]);
-    exit(1);
+    if (argc >= 2) {
+        szTestFile = "../tests/data/evptests.txt";
     }
+
     CRYPTO_malloc_debug_init();
     CRYPTO_set_mem_debug_options(V_CRYPTO_MDEBUG_ALL);
     CRYPTO_mem_ctrl(CRYPTO_MEM_CHECK_ON);
 
-    szTestFile=argv[1];
-
-    f=fopen(szTestFile,"r");
-    if (!f)
+    fp=fopen(szTestFile,"r");
+    if (!fp)
     {
     perror(szTestFile);
     exit(2);
@@ -368,7 +365,7 @@ int main(int argc,char **argv)
     int encdec;
     int kn,in,pn,cn;
 
-    if (!fgets((char *)line,sizeof line,f))
+    if (!fgets((char *)line,sizeof line,fp))
         break;
     if (line[0] == '#' || line[0] == '\n')
         continue;
@@ -426,7 +423,7 @@ int main(int argc,char **argv)
         exit(3);
         }
     }
-    fclose(f);
+    fclose(fp);
 
 #ifndef OPENSSL_NO_ENGINE
     ENGINE_cleanup();

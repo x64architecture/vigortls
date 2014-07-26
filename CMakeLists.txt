@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 2.8)
 project(VigorTLS)
 
+include(CTest)
+
 if(CMAKE_COMPILER_IS_GNUCXX OR "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
 	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Werror -ggdb -std=gnu99")
 else()
@@ -43,3 +45,4 @@ add_definitions(
 add_subdirectory(crypto)
 add_subdirectory(ssl)
 add_subdirectory(apps)
+add_subdirectory(tests)

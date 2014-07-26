@@ -138,8 +138,6 @@ int AES_unwrap_key(AES_KEY *key, const unsigned char *iv,
     return inlen;
     }
 
-#ifdef AES_WRAP_TEST
-
 int AES_wrap_unwrap_test(const unsigned char *kek, int keybits,
              const unsigned char *iv,
              const unsigned char *eout,
@@ -239,7 +237,6 @@ static const unsigned char e6[] = {
   0xfb, 0x98, 0x8b, 0x9b, 0x7a, 0x02, 0xdd, 0x21
 };
 
-    AES_KEY wctx, xctx;
     int ret;
     ret = AES_wrap_unwrap_test(kek, 128, NULL, e1, key, 16);
     fprintf(stderr, "Key test result %d\n", ret);
@@ -254,6 +251,3 @@ static const unsigned char e6[] = {
     ret = AES_wrap_unwrap_test(kek, 256, NULL, e6, key, 32);
     fprintf(stderr, "Key test result %d\n", ret);
 }
-    
-    
-#endif

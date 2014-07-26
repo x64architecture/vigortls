@@ -184,8 +184,8 @@
 
 #include <unistd.h>
 
-#define TEST_SERVER_CERT "../apps/server.pem"
-#define TEST_CLIENT_CERT "../apps/client.pem"
+#define TEST_SERVER_CERT "server.pem"
+#define TEST_CLIENT_CERT "client.pem"
 
 /* There is really no standard for this, so let's assign some tentative
    numbers.  In any case, these numbers are only for this test */

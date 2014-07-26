@@ -7,14 +7,19 @@ if (${ARCH} STREQUAL "x86_64")
 		rc4-x86_64.${ASM_EXT}
 		rc4-md5-x86_64.${ASM_EXT}
 	)
-endif()
-
-if (${ARCH} STREQUAL "x86")
+elseif (${ARCH} STREQUAL "x86")
 	set(
 		RC4_ARCH_SOURCES
 
 		rc4-586.${ASM_EXT}
 	)
+else()
+set(
+    RC4_ARCH_SOURCES
+
+    rc4_enc.c
+    rc4_skey.c
+) 
 endif()
 
 add_library(
@@ -22,8 +27,6 @@ add_library(
 
 	OBJECT
 
-	rc4_skey.c
-	rc4_enc.c
 	rc4_utl.c
 
 	${RC4_ARCH_SOURCES}

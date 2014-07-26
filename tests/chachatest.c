@@ -19,6 +19,14 @@
 #include <string.h>
 #include <stdint.h>
 
+#ifdef OPENSSL_NO_CHACHA
+int main()
+{
+    printf("No ChaCha support\n");
+    return (0);
+}
+#else
+
 #include <openssl/chacha.h>
 
 struct chacha_test {
@@ -168,3 +176,4 @@ int main()
 	printf("PASS\n");
 	return 0;
 	}
+#endif

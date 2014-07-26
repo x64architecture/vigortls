@@ -73,10 +73,6 @@ int main(int argc, char *argv[])
 #else
 #include <openssl/blowfish.h>
 
-#ifdef CHARSET_EBCDIC
-#include <openssl/ebcdic.h>
-#endif
-
 static char *bf_key[2]={
     "abcdefghijklmnopqrstuvwxyz",
     "Who is John Galt?"
