@@ -37,6 +37,7 @@
 
 #include "wp_locl.h"
 #include <string.h>
+#include <machine/endian.h>
 
 typedef unsigned char        u8;
 #if (defined(_WIN32) || defined(_WIN64)) && !defined(__MINGW32)
@@ -84,10 +85,10 @@ typedef unsigned long long    u64;
 #  endif
 #elif defined(__GNUC__) && __GNUC__>=2
 #  if defined(__x86_64) || defined(__x86_64__)
-#    if defined(L_ENDIAN)
+#  if BYTE_ORDER == LITTLE_ENDIAN
 #      define ROTATE(a,n)    ({ u64 ret; asm ("rolq %1,%0"    \
                    : "=r"(ret) : "J"(n),"0"(a) : "cc"); ret; })
-#    elif defined(B_ENDIAN)
+#    elif BYTE_ORDER == BIG_ENDIAN
        /* Most will argue that x86_64 is always little-endian. Well,
         * yes, but then we have stratus.com who has modified gcc to
     * "emulate" big-endian on x86. Is there evidence that they
@@ -97,10 +98,10 @@ typedef unsigned long long    u64;
                    : "=r"(ret) : "J"(n),"0"(a) : "cc"); ret; })
 #    endif
 #  elif defined(__ia64) || defined(__ia64__)
-#    if defined(L_ENDIAN)
+#    if BYTE_ORDER == LITTLE_ENDIAN
 #      define ROTATE(a,n)    ({ u64 ret; asm ("shrp %0=%1,%1,%2"    \
                    : "=r"(ret) : "r"(a),"M"(64-(n))); ret; })
-#    elif defined(B_ENDIAN)
+#    elif BYTE_ORDER == BIG_ENDIAN
 #      define ROTATE(a,n)    ({ u64 ret; asm ("shrp %0=%1,%1,%2"    \
                    : "=r"(ret) : "r"(a),"M"(n)); ret; })
 #    endif
@@ -109,9 +110,9 @@ typedef unsigned long long    u64;
 
 #if defined(OPENSSL_SMALL_FOOTPRINT)
 #  if !defined(ROTATE)
-#    if defined(L_ENDIAN)    /* little-endians have to rotate left */
+#    if BYTE_ORDER == LITTLE_ENDIAN    /* little-endians have to rotate left */
 #      define ROTATE(i,n)    ((i)<<(n) ^ (i)>>(64-n))
-#    elif defined(B_ENDIAN)    /* big-endians have to rotate right */
+#    elif BYTE_ORDER == BIG_ENDIAN    /* big-endians have to rotate right */
 #      define ROTATE(i,n)    ((i)>>(n) ^ (i)<<(64-n))
 #    endif
 #  endif
