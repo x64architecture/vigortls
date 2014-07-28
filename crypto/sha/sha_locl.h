@@ -63,6 +63,10 @@
 #include <openssl/sha.h>
 #include <machine/endian.h>
 
+#ifndef OPENSSL_NO_ASM
+# define SHA1_ASM
+#endif
+
 #define DATA_ORDER_IS_BIG_ENDIAN
 
 #define HASH_LONG               SHA_LONG

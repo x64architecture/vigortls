@@ -15,6 +15,10 @@
 #include <openssl/opensslv.h>
 #include <machine/endian.h>
 
+#ifndef OPENSSL_NO_ASM
+# define SHA256_ASM
+#endif
+
 const char SHA256_version[]="SHA-256" OPENSSL_VERSION_PTEXT;
 
 int SHA224_Init(SHA256_CTX *c)
