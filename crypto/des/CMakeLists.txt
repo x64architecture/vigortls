@@ -11,8 +11,6 @@ add_library(
 	cfb64enc.c
 	cfb_enc.c
 	des_enc.c
-	des_old.c
-	des_old2.c
 	ecb3_enc.c
 	ecb_enc.c
 	ede_cbcm_enc.c
@@ -26,8 +24,6 @@ add_library(
 	pcbc_enc.c
 	qud_cksm.c
 	rand_key.c
-	read2pwd.c
-	rpc_enc.c
 	set_key.c
 	str2key.c
 	xcbc_enc.c
