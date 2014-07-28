@@ -27,8 +27,6 @@ add_library(
 
 	OBJECT
 
-	rc4_utl.c
-
 	${RC4_ARCH_SOURCES}
 )
 

@@ -28,7 +28,6 @@ add_library(
 	cmll_ofb.c
 	cmll_cfb.c
 	cmll_ctr.c
-	cmll_utl.c
 
 	${CMLL_ARCH_SOURCES}
 )
