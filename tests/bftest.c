@@ -352,16 +352,9 @@ static int test(void)
     unsigned char out[8]; 
     BF_LONG len;
 
-#ifdef CHARSET_EBCDIC
-    ebcdic2ascii(cbc_data, cbc_data, strlen(cbc_data));
-#endif
-
     printf("testing blowfish in raw ecb mode\n");
     for (n=0; n<2; n++)
         {
-#ifdef CHARSET_EBCDIC
-        ebcdic2ascii(bf_key[n], bf_key[n], strlen(bf_key[n]));
-#endif
         BF_set_key(&key,strlen(bf_key[n]),(unsigned char *)bf_key[n]);
 
         data[0]=bf_plain[n][0];

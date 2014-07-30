@@ -70,10 +70,6 @@ int main(int argc, char *argv[])
 #include <openssl/evp.h>
 #include <openssl/sha.h>
 
-#ifdef CHARSET_EBCDIC
-#include <openssl/ebcdic.h>
-#endif
-
 #undef SHA_0 /* FIPS 180 */
 #define  SHA_1 /* FIPS 180-1 */
 

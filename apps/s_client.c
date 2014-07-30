@@ -1590,9 +1590,6 @@ SSL_set_tlsext_status_ids(con, ids);
             }
         else if (!ssl_pending && FD_ISSET(fileno(stdout),&writefds))
             {
-#ifdef CHARSET_EBCDIC
-            ascii2ebcdic(&(sbuf[sbuf_off]),&(sbuf[sbuf_off]),sbuf_len);
-#endif
             i=raw_write_stdout(&(sbuf[sbuf_off]),sbuf_len);
 
             if (i <= 0)
@@ -1711,9 +1708,6 @@ printf("read=%d pending=%d peek=%d\n",k,SSL_pending(con),SSL_peek(con,zbuf,10240
                 {
                 cbuf_len=i;
                 cbuf_off=0;
-#ifdef CHARSET_EBCDIC
-                ebcdic2ascii(cbuf, cbuf, i);
-#endif
                 }
 
             write_ssl=1;
