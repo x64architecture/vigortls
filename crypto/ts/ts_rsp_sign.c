@@ -963,14 +963,14 @@ TS_RESP_set_genTime_with_precision(ASN1_GENERALIZEDTIME *asn1_time,
      * meet the rfc3161 requirement: "GeneralizedTime syntax can include 
      * fraction-of-second details". 
      */                   
-    p += BIO_snprintf(p, p_end - p,
+    p += snprintf(p, p_end - p,
               "%04d%02d%02d%02d%02d%02d",
               tm->tm_year + 1900, tm->tm_mon + 1, tm->tm_mday, 
               tm->tm_hour, tm->tm_min, tm->tm_sec);
     if (precision > 0)
     {
         /* Add fraction of seconds (leave space for dot and null). */
-        BIO_snprintf(p, 2 + precision, ".%ld", usec);
+        snprintf(p, 2 + precision, ".%ld", usec);
         /* We cannot use the snprintf return value, 
            because it might have been truncated. */
         p += strlen(p);

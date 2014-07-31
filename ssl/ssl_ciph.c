@@ -1808,7 +1808,7 @@ char *SSL_CIPHER_description(const SSL_CIPHER *cipher, char *buf, int len)
     } else if (len < 128)
         return ("Buffer too small");
 
-    BIO_snprintf(buf, len, format, cipher->name, ver, kx, au, enc, mac, exp_str);
+    snprintf(buf, len, format, cipher->name, ver, kx, au, enc, mac, exp_str);
     return (buf);
 }
 

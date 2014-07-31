@@ -1563,7 +1563,7 @@ int save_serial(char *serialfile, char *suffix, BIGNUM *serial, ASN1_INTEGER **r
         BUF_strlcpy(buf[0], serialfile, BSIZE);
     else
         {
-        j = BIO_snprintf(buf[0], sizeof buf[0], "%s.%s", serialfile, suffix);
+        j = snprintf(buf[0], sizeof buf[0], "%s.%s", serialfile, suffix);
         }
 #ifdef RL_DEBUG
     BIO_printf(bio_err, "DEBUG: writing \"%s\"\n", buf[0]);
@@ -1613,9 +1613,9 @@ int rotate_serial(char *serialfile, char *new_suffix, char *old_suffix)
         goto err;
         }
 
-    j = BIO_snprintf(buf[0], sizeof buf[0], "%s.%s",
+    j = snprintf(buf[0], sizeof buf[0], "%s.%s",
         serialfile, new_suffix);
-    j = BIO_snprintf(buf[1], sizeof buf[1], "%s.%s",
+    j = snprintf(buf[1], sizeof buf[1], "%s.%s",
         serialfile, old_suffix);
 #ifdef RL_DEBUG
     BIO_printf(bio_err, "DEBUG: renaming \"%s\" to \"%s\"\n",
@@ -1700,7 +1700,7 @@ CA_DB *load_index(char *dbfile, DB_ATTR *db_attr)
     if ((tmpdb = TXT_DB_read(in,DB_NUMBER)) == NULL)
         goto err;
 
-    BIO_snprintf(buf[0], sizeof buf[0], "%s.attr", dbfile);
+    snprintf(buf[0], sizeof buf[0], "%s.attr", dbfile);
     dbattr_conf = NCONF_new(NULL);
     if (NCONF_load(dbattr_conf,buf[0],&errorline) <= 0)
         {
@@ -1795,9 +1795,9 @@ int save_index(const char *dbfile, const char *suffix, CA_DB *db)
         goto err;
         }
 
-    j = BIO_snprintf(buf[2], sizeof buf[2], "%s.attr", dbfile);
-    j = BIO_snprintf(buf[1], sizeof buf[1], "%s.attr.%s", dbfile, suffix);
-    j = BIO_snprintf(buf[0], sizeof buf[0], "%s.%s", dbfile, suffix);
+    j = snprintf(buf[2], sizeof buf[2], "%s.attr", dbfile);
+    j = snprintf(buf[1], sizeof buf[1], "%s.attr.%s", dbfile, suffix);
+    j = snprintf(buf[0], sizeof buf[0], "%s.%s", dbfile, suffix);
 #ifdef RL_DEBUG
     BIO_printf(bio_err, "DEBUG: writing \"%s\"\n", buf[0]);
 #endif
@@ -1845,14 +1845,14 @@ int rotate_index(const char *dbfile, const char *new_suffix, const char *old_suf
         goto err;
         }
 
-    j = BIO_snprintf(buf[4], sizeof buf[4], "%s.attr", dbfile);
-    j = BIO_snprintf(buf[2], sizeof buf[2], "%s.attr.%s",
+    j = snprintf(buf[4], sizeof buf[4], "%s.attr", dbfile);
+    j = snprintf(buf[2], sizeof buf[2], "%s.attr.%s",
         dbfile, new_suffix);
-    j = BIO_snprintf(buf[0], sizeof buf[0], "%s.%s",
+    j = snprintf(buf[0], sizeof buf[0], "%s.%s",
         dbfile, new_suffix);
-    j = BIO_snprintf(buf[1], sizeof buf[1], "%s.%s",
+    j = snprintf(buf[1], sizeof buf[1], "%s.%s",
         dbfile, old_suffix);
-    j = BIO_snprintf(buf[3], sizeof buf[3], "%s.attr.%s",
+    j = snprintf(buf[3], sizeof buf[3], "%s.attr.%s",
         dbfile, old_suffix);
 #ifdef RL_DEBUG
     BIO_printf(bio_err, "DEBUG: renaming \"%s\" to \"%s\"\n",

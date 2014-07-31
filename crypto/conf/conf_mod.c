@@ -233,7 +233,7 @@ static int module_run(const CONF *cnf, char *name, char *value,
             {
             char rcode[DECIMAL_SIZE(ret)+1];
             CONFerr(CONF_F_MODULE_RUN, CONF_R_MODULE_INITIALIZATION_ERROR);
-            BIO_snprintf(rcode, sizeof rcode, "%-8d", ret);
+            snprintf(rcode, sizeof rcode, "%-8d", ret);
             ERR_asprintf_error_data("module=%s, value=%s, retcode=%s", name, value, rcode);
             }
         }

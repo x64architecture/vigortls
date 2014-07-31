@@ -1239,7 +1239,7 @@ start:        for (;;)
                 mval = 0;
             /* If OBJ not recognised ignore it */
             if ((nid=OBJ_txt2nid(type)) == NID_undef) goto start;
-            if (BIO_snprintf(buf,sizeof buf,"%s_default",v->name)
+            if (snprintf(buf,sizeof buf,"%s_default",v->name)
                 >= (int)sizeof(buf))
                {
                BIO_printf(bio_err,"Name '%s' too long\n",v->name);
@@ -1252,21 +1252,21 @@ start:        for (;;)
                 def="";
                 }
                 
-            BIO_snprintf(buf,sizeof buf,"%s_value",v->name);
+            snprintf(buf,sizeof buf,"%s_value",v->name);
             if ((value=NCONF_get_string(req_conf,dn_sect,buf)) == NULL)
                 {
                 ERR_clear_error();
                 value=NULL;
                 }
 
-            BIO_snprintf(buf,sizeof buf,"%s_min",v->name);
+            snprintf(buf,sizeof buf,"%s_min",v->name);
             if (!NCONF_get_number(req_conf,dn_sect,buf, &n_min))
                 {
                 ERR_clear_error();
                 n_min = -1;
                 }
 
-            BIO_snprintf(buf,sizeof buf,"%s_max",v->name);
+            snprintf(buf,sizeof buf,"%s_max",v->name);
             if (!NCONF_get_number(req_conf,dn_sect,buf, &n_max))
                 {
                 ERR_clear_error();
@@ -1304,7 +1304,7 @@ start2:            for (;;)
                 if ((nid=OBJ_txt2nid(type)) == NID_undef)
                     goto start2;
 
-                if (BIO_snprintf(buf,sizeof buf,"%s_default",type)
+                if (snprintf(buf,sizeof buf,"%s_default",type)
                     >= (int)sizeof(buf))
                    {
                    BIO_printf(bio_err,"Name '%s' too long\n",v->name);
@@ -1319,7 +1319,7 @@ start2:            for (;;)
                     }
                 
                 
-                BIO_snprintf(buf,sizeof buf,"%s_value",type);
+                snprintf(buf,sizeof buf,"%s_value",type);
                 if ((value=NCONF_get_string(req_conf,attr_sect,buf))
                     == NULL)
                     {
@@ -1327,14 +1327,14 @@ start2:            for (;;)
                     value=NULL;
                     }
 
-                BIO_snprintf(buf,sizeof buf,"%s_min",type);
+                snprintf(buf,sizeof buf,"%s_min",type);
                 if (!NCONF_get_number(req_conf,attr_sect,buf, &n_min))
                     {
                     ERR_clear_error();
                     n_min = -1;
                     }
 
-                BIO_snprintf(buf,sizeof buf,"%s_max",type);
+                snprintf(buf,sizeof buf,"%s_max",type);
                 if (!NCONF_get_number(req_conf,attr_sect,buf, &n_max))
                     {
                     ERR_clear_error();

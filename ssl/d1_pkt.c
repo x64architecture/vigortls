@@ -1030,7 +1030,7 @@ start:
             s->rwstate = SSL_NOTHING;
             s->s3->fatal_alert = alert_descr;
             SSLerr(SSL_F_DTLS1_READ_BYTES, SSL_AD_REASON_OFFSET + alert_descr);
-            BIO_snprintf(tmp, sizeof tmp, "%d", alert_descr);
+            snprintf(tmp, sizeof tmp, "%d", alert_descr);
             ERR_asprintf_error_data("SSL alert number %s", tmp);
             s->shutdown |= SSL_RECEIVED_SHUTDOWN;
             SSL_CTX_remove_session(s->ctx, s->session);

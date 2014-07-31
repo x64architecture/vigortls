@@ -1837,7 +1837,7 @@ static void process_proxy_debug(int indent, const char *format, ...)
     char my_format[256];
     va_list args;
 
-    BIO_snprintf(my_format, sizeof(my_format), "%*.*s %s",
+    snprintf(my_format, sizeof(my_format), "%*.*s %s",
         indent, indent, indentation, format);
 
     va_start(args, format);
@@ -2328,7 +2328,7 @@ static unsigned int psk_client_callback(SSL *ssl, const char *hint, char *identi
     int ret;
     unsigned int psk_len = 0;
 
-    ret = BIO_snprintf(identity, max_identity_len, "Client_identity");
+    ret = snprintf(identity, max_identity_len, "Client_identity");
     if (ret < 0)
         goto out_err;
     if (debug)

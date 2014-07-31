@@ -447,8 +447,8 @@ void asn1_add_error(const unsigned char *address, int offset)
 {
     char buf1[DECIMAL_SIZE(address) +1], buf2[DECIMAL_SIZE(offset) + 1];
 
-    BIO_snprintf(buf1, sizeof buf1, "%lu", (unsigned long)address);
-    BIO_snprintf(buf2, sizeof buf2, "%d", offset);
+    snprintf(buf1, sizeof buf1, "%lu", (unsigned long)address);
+    snprintf(buf2, sizeof buf2, "%d", offset);
     ERR_asprintf_error_data("address=%s offset=%s", buf1, buf2);
 }
 

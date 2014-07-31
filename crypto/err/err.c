@@ -845,19 +845,19 @@ void ERR_error_string_n(unsigned long e, char *buf, size_t len)
     rs = ERR_reason_error_string(e);
 
     if (ls == NULL)  {
-        BIO_snprintf(lsbuf, sizeof(lsbuf), "lib(%d)", l);
+        snprintf(lsbuf, sizeof(lsbuf), "lib(%d)", l);
         ls = lsbuf;
     }
     if (fs == NULL) {
-        BIO_snprintf(fsbuf, sizeof(fsbuf), "func(%d)", f);
+        snprintf(fsbuf, sizeof(fsbuf), "func(%d)", f);
         fs = fsbuf;
     }
     if (rs == NULL) {
-        BIO_snprintf(rsbuf, sizeof(rsbuf), "reason(%d)", r);
+        snprintf(rsbuf, sizeof(rsbuf), "reason(%d)", r);
         rs = rsbuf;
     }
 
-    ret = BIO_snprintf(buf, len, "error:%08lX:%s:%s:%s", e, ls, fs, rs);
+    ret = snprintf(buf, len, "error:%08lX:%s:%s:%s", e, ls, fs, rs);
     if (ret == -1)
         return; /* can't happen, and can't do better if it does */
     if (ret >= len) {

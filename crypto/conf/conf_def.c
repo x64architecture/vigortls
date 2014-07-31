@@ -435,7 +435,7 @@ err:
     if (buff != NULL) BUF_MEM_free(buff);
     if (section != NULL) free(section);
     if (line != NULL) *line=eline;
-    BIO_snprintf(btmp,sizeof btmp,"%ld",eline);
+    snprintf(btmp,sizeof btmp,"%ld",eline);
     ERR_asprintf_error_data("line %s", btmp);
     if ((h != conf->data) && (conf->data != NULL))
         {

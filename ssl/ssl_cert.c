@@ -761,7 +761,7 @@ int SSL_add_dir_cert_subjects_to_stack(STACK_OF(X509_NAME) *stack,
             goto err;
         }
 
-        r = BIO_snprintf(buf, sizeof buf, "%s/%s", dir, filename);
+        r = snprintf(buf, sizeof buf, "%s/%s", dir, filename);
         if (r <= 0 || r >= (int)sizeof(buf))
             goto err;
         if (!SSL_add_file_cert_subjects_to_stack(stack, buf))
