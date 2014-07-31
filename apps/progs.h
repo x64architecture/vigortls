@@ -224,6 +224,9 @@ FUNCTION functions[] = {
 #ifndef OPENSSL_NO_CAST
     {FUNC_TYPE_CIPHER,"cast",enc_main},
 #endif
+#ifndef OPENSSL_NO_CHACHA
+    { FUNC_TYPE_CIPHER, "chacha", enc_main },
+#endif
 #ifndef OPENSSL_NO_RC5
     {FUNC_TYPE_CIPHER,"rc5",enc_main},
 #endif
