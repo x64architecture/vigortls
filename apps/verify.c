@@ -334,7 +334,7 @@ static int cb(int ok, X509_STORE_CTX *ctx)
             case X509_V_ERR_CERT_HAS_EXPIRED:
 
             /* since we are just checking the certificates, it is
-             * ok if they are self signed. But we should still warn
+             * OK if they are self signed. But we should still warn
              * the user.
              */
 

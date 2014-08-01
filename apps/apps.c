@@ -664,7 +664,7 @@ static int load_pkcs12(BIO *err, BIO *in, const char *desc,
         len = pem_cb(tpass, PEM_BUFSIZE, 0, cb_data);
         if (len < 0) 
             {
-            BIO_printf(err, "Passpharse callback error for %s\n",
+            BIO_printf(err, "Passphrase callback error for %s\n",
                     desc);
             goto die;
             }

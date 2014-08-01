@@ -297,11 +297,11 @@ static void sc_usage(void)
     BIO_printf(bio_err," -psk arg      - PSK in hex (without 0x)\n");
 #endif
 #ifndef OPENSSL_NO_SRP
-    BIO_printf(bio_err," -srpuser user     - SRP authentification for 'user'\n");
+    BIO_printf(bio_err," -srpuser user     - SRP authentication for 'user'\n");
     BIO_printf(bio_err," -srppass arg      - password for 'user'\n");
     BIO_printf(bio_err," -srp_lateuser     - SRP username into second ClientHello message\n");
     BIO_printf(bio_err," -srp_moregroups   - Tolerate other than the known g N values.\n");
-    BIO_printf(bio_err," -srp_strength int - minimal mength in bits for N (default %d).\n",SRP_MINIMAL_N);
+    BIO_printf(bio_err," -srp_strength int - minimal length in bits for N (default %d).\n",SRP_MINIMAL_N);
 #endif
     BIO_printf(bio_err," -ssl2         - just use SSLv2\n");
     BIO_printf(bio_err," -ssl3         - just use SSLv3\n");
@@ -321,7 +321,7 @@ static void sc_usage(void)
     BIO_printf(bio_err,"                 only \"smtp\", \"pop3\", \"imap\", \"ftp\" and \"xmpp\"\n");
     BIO_printf(bio_err,"                 are supported.\n");
 #ifndef OPENSSL_NO_ENGINE
-    BIO_printf(bio_err," -engine id    - Initialise and use the specified engine\n");
+    BIO_printf(bio_err," -engine id    - Initialize and use the specified engine\n");
 #endif
     BIO_printf(bio_err," -rand file%cfile%c...\n", ':', ':');
     BIO_printf(bio_err," -sess_out arg - file to write SSL session to\n");
@@ -413,7 +413,7 @@ static int srp_Verify_N_and_g(BIGNUM *N, BIGNUM *g)
    The callback is only called for a non default group.
 
    An application does not need the call back at all if
-   only the stanard groups are used.  In real life situations, 
+   only the standard groups are used.  In real life situations, 
    client and server already share well known groups, 
    thus there is no need to verify them. 
    Furthermore, in case that a server actually proposes a group that
@@ -1518,7 +1518,7 @@ SSL_set_tlsext_status_ids(con, ids);
 
         if ((SSL_version(con) == DTLS1_VERSION) && DTLSv1_handle_timeout(con) > 0)
             {
-            BIO_printf(bio_err,"TIMEOUT occured\n");
+            BIO_printf(bio_err,"TIMEOUT occurred\n");
             }
 
         if (!ssl_pending && FD_ISSET(SSL_get_fd(con),&writefds))

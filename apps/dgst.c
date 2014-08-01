@@ -276,7 +276,7 @@ int MAIN(int argc, char **argv)
         BIO_printf(bio_err,"-signature file signature to verify\n");
         BIO_printf(bio_err,"-sigopt nm:v    signature parameter\n");
         BIO_printf(bio_err,"-hmac key       create hashed MAC with key\n");
-        BIO_printf(bio_err,"-mac algorithm  create MAC (not neccessarily HMAC)\n"); 
+        BIO_printf(bio_err,"-mac algorithm  create MAC (not necessarily HMAC)\n"); 
         BIO_printf(bio_err,"-macopt nm:v    MAC algorithm parameters or key\n");
 #ifndef OPENSSL_NO_ENGINE
         BIO_printf(bio_err,"-engine e       use engine e, possibly a hardware device.\n");

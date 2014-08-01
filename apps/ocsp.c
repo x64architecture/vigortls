@@ -605,7 +605,7 @@ int MAIN(int argc, char **argv)
         BIO_printf (bio_err, "-resp_no_certs     don't include any certificates in response\n");
         BIO_printf (bio_err, "-nmin n          number of minutes before next update\n");
         BIO_printf (bio_err, "-ndays n          number of days before next update\n");
-        BIO_printf (bio_err, "-resp_key_id       identify reponse by signing certificate key ID\n");
+        BIO_printf (bio_err, "-resp_key_id       identify response by signing certificate key ID\n");
         BIO_printf (bio_err, "-nrequest n        number of requests to accept (default unlimited)\n");
         BIO_printf (bio_err, "-<dgst alg>     use specified digest in the request\n");
         goto end;
@@ -1219,7 +1219,7 @@ static int do_responder(OCSP_REQUEST **preq, BIO **pcbio, BIO *acbio, char *port
         len = BIO_gets(cbio, inbuf, sizeof inbuf);
         if (len <= 0)
             return 1;
-        /* Look for "POST" signalling start of query */
+        /* Look for "POST" signaling start of query */
         if (!have_post)
             {
             if (strncmp(inbuf, "POST", 4))
@@ -1395,7 +1395,7 @@ OCSP_RESPONSE *process_responder(BIO *err, OCSP_REQUEST *req,
         }
     resp = query_responder(err, cbio, path, headers, req, req_timeout);
     if (!resp)
-        BIO_printf(bio_err, "Error querying OCSP responsder\n");
+        BIO_printf(bio_err, "Error querying OCSP responder\n");
     end:
     if (cbio)
         BIO_free_all(cbio);

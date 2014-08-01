@@ -266,7 +266,7 @@ bad:
         if (i & DH_NOT_SUITABLE_GENERATOR)
             printf("the g value is not a generator\n");
         if (i == 0)
-            printf("DH parameters appear to be ok.\n");
+            printf("DH parameters appear to be OK.\n");
         }
     if (C)
         {

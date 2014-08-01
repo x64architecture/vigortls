@@ -523,7 +523,7 @@ bad:
             }
         }
     
-    VERBOSE BIO_printf(bio_err, "Database initialised\n");
+    VERBOSE BIO_printf(bio_err, "Database initialized\n");
 
     if (gNindex >= 0)
         {

@@ -132,7 +132,7 @@
 
 /* Additional revocation information types */
 
-#define REV_NONE        0    /* No addditional information */
+#define REV_NONE        0    /* No additional information */
 #define REV_CRL_REASON        1    /* Value is CRL reason code */
 #define REV_HOLD        2    /* Value is hold instruction */
 #define REV_KEY_COMPROMISE    3    /* Value is cert key compromise time */
@@ -141,7 +141,7 @@
 static const char *ca_usage[]={
 "usage: ca args\n",
 "\n",
-" -verbose        - Talk alot while doing things\n",
+" -verbose        - Talk a lot while doing things\n",
 " -config file    - A config file\n",
 " -name arg       - The particular CA definition to use\n",
 " -gencrl         - Generate a new CRL\n",
@@ -172,7 +172,7 @@ static const char *ca_usage[]={
 " -utf8           - input characters are UTF8 (default ASCII)\n",
 " -multivalue-rdn - enable support for multivalued RDNs\n",
 " -extensions ..  - Extension section (override value in config file)\n",
-" -extfile file   - Configuration file with X509v3 extentions to add\n",
+" -extfile file   - Configuration file with X509v3 extensions to add\n",
 " -crlexts ..     - CRL extension section (override value in config file)\n",
 #ifndef OPENSSL_NO_ENGINE
 " -engine e       - use engine e, possibly a hardware device.\n",
@@ -1971,7 +1971,7 @@ again2:
 
     /* We are now totally happy, lets make and sign the certificate */
     if (verbose)
-        BIO_printf(bio_err,"Everything appears to be ok, creating and signing the certificate\n");
+        BIO_printf(bio_err,"Everything appears to be OK, creating and signing the certificate\n");
 
     if ((ret=X509_new()) == NULL) goto err;
     ci=ret->cert_info;

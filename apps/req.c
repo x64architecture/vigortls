@@ -892,7 +892,7 @@ loop:
 
     if (subj && x509)
         {
-        BIO_printf(bio_err, "Cannot modifiy certificate subject\n");
+        BIO_printf(bio_err, "Cannot modify certificate subject\n");
         goto end;
         }
 
@@ -1237,7 +1237,7 @@ start:        for (;;)
                 }
             else
                 mval = 0;
-            /* If OBJ not recognised ignore it */
+            /* If OBJ not recognized ignore it */
             if ((nid=OBJ_txt2nid(type)) == NID_undef) goto start;
             if (snprintf(buf,sizeof buf,"%s_default",v->name)
                 >= (int)sizeof(buf))

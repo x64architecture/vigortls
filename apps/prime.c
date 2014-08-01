@@ -120,7 +120,7 @@ int MAIN(int argc, char **argv)
 
     if (!bits)
         {
-        BIO_printf(bio_err,"Specifiy the number of bits.\n");
+        BIO_printf(bio_err,"Specify the number of bits.\n");
         return 1;
         }
     bn=BN_new();

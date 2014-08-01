@@ -315,7 +315,7 @@ bad:
             if (stop_keygen_flag)
                 {
                 BIO_printf(bio_err,"DSA key generation time-stopped\n");
-                /* This is an asked-for behaviour! */
+                /* This is an asked-for behavior! */
                 ret = 0;
                 goto end;
                 }

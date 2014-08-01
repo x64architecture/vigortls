@@ -1205,7 +1205,7 @@ static int callb(int ok, X509_STORE_CTX *ctx)
     int err;
     X509 *err_cert;
 
-    /* it is ok to use a self signed certificate
+    /* it is OK to use a self signed certificate
      * This case will catch both the initial ok == 0 and the
      * final ok == 1 calls to this function */
     err=X509_STORE_CTX_get_error(ctx);

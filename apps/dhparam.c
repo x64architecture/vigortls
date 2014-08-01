@@ -135,7 +135,7 @@
  * -in arg    - input file - default stdin
  * -out arg    - output file - default stdout
  * -dsaparam  - read or generate DSA parameters, convert to DH
- * -check    - check the parameters are ok
+ * -check    - check if the parameters are OK
  * -noout
  * -text
  * -C

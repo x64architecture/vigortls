@@ -255,7 +255,7 @@ bad:
 
         if (!X509_STORE_CTX_init(&ctx, store, NULL, NULL)) {
             BIO_printf(bio_err,
-                "Error initialising X509 store\n");
+                "Error initializing X509 store\n");
             goto end;
         }
 
