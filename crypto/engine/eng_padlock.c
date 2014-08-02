@@ -693,7 +693,7 @@ padlock_aes_init_key (EVP_CIPHER_CTX *ctx, const unsigned char *key,
             AES_set_encrypt_key(key, key_len, &cdata->ks);
         else
             AES_set_decrypt_key(key, key_len, &cdata->ks);
-#ifndef AES_ASM
+#ifdef OPENSSL_NO_ASM
         /* OpenSSL C functions use byte-swapped extended key. */
         padlock_bswapl(&cdata->ks);
 #endif

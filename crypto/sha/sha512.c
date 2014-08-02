@@ -53,14 +53,10 @@
 
 const char SHA512_version[]="SHA-512" OPENSSL_VERSION_PTEXT;
 
-#ifndef OPENSSL_NO_ASM
-# define SHA512_ASM
-#endif
-
 #if defined(__i386) || defined(__i386__) || defined(_M_IX86) || \
     defined(__x86_64) || defined(_M_AMD64) || defined(_M_X64) || \
     defined(__s390__) || defined(__s390x__) || \
-    defined(SHA512_ASM)
+    !defined(OPENSSL_NO_ASM)
 #define SHA512_BLOCK_CAN_MANAGE_UNALIGNED_DATA
 #endif
 
@@ -96,7 +92,7 @@ int SHA512_Init(SHA512_CTX *c)
         return 1;
     }
 
-#ifndef SHA512_ASM
+#ifdef OPENSSL_NO_ASM
 static
 #endif
 void sha512_block_data_order (SHA512_CTX *ctx, const void *in, size_t num);
@@ -272,7 +268,7 @@ unsigned char *SHA512(const unsigned char *d, size_t n, unsigned char *md)
     return (md);
     }
 
-#ifndef SHA512_ASM
+#ifdef OPENSSL_NO_ASM
 static const SHA_LONG64 K512[80] = {
         U64(0x428a2f98d728ae22),U64(0x7137449123ef65cd),
         U64(0xb5c0fbcfec4d3b2f),U64(0xe9b5dba58189dbbc),
@@ -593,7 +589,7 @@ static void sha512_block_data_order (SHA512_CTX *ctx, const void *in, size_t num
 
 #endif
 
-#endif /* SHA512_ASM */
+#endif /* OPENSSL_NO_ASM */
 
 #else /* !OPENSSL_NO_SHA512 */
 

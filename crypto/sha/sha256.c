@@ -15,10 +15,6 @@
 #include <openssl/opensslv.h>
 #include <machine/endian.h>
 
-#ifndef OPENSSL_NO_ASM
-# define SHA256_ASM
-#endif
-
 const char SHA256_version[]="SHA-256" OPENSSL_VERSION_PTEXT;
 
 int SHA224_Init(SHA256_CTX *c)
@@ -112,14 +108,14 @@ int SHA224_Final (unsigned char *md, SHA256_CTX *c)
 #define    HASH_TRANSFORM        SHA256_Transform
 #define    HASH_FINAL        SHA256_Final
 #define    HASH_BLOCK_DATA_ORDER    sha256_block_data_order
-#ifndef SHA256_ASM
+#ifdef OPENSSL_NO_ASM
 static
 #endif
 void sha256_block_data_order (SHA256_CTX *ctx, const void *in, size_t num);
 
 #include "md32_common.h"
 
-#ifndef SHA256_ASM
+#ifdef OPENSSL_NO_ASM
 static const SHA_LONG K256[64] = {
     0x428a2f98UL,0x71374491UL,0xb5c0fbcfUL,0xe9b5dba5UL,
     0x3956c25bUL,0x59f111f1UL,0x923f82a4UL,0xab1c5ed5UL,
@@ -281,6 +277,6 @@ static void sha256_block_data_order (SHA256_CTX *ctx, const void *in, size_t num
     }
 
 #endif
-#endif /* SHA256_ASM */
+#endif /* OPENSSL_NO_ASM */
 
 #endif /* OPENSSL_NO_SHA256 */

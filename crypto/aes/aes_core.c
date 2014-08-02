@@ -39,7 +39,7 @@
 #include <openssl/aes.h>
 #include "aes_locl.h"
 
-#ifndef AES_ASM
+#ifdef OPENSSL_NO_ASM
 /*
 Te0[x] = S [x].[02, 01, 01, 03];
 Te1[x] = S [x].[03, 02, 01, 01];
@@ -1156,7 +1156,7 @@ void AES_decrypt(const unsigned char *in, unsigned char *out,
     PUTU32(out + 12, s3);
 }
 
-#else /* AES_ASM */
+#else /* OPENSSL_NO_ASM */
 
 static const u8 Te4[256] = {
     0x63U, 0x7cU, 0x77U, 0x7bU, 0xf2U, 0x6bU, 0x6fU, 0xc5U,
@@ -1346,7 +1346,7 @@ int private_AES_set_decrypt_key(const unsigned char *userKey, const int bits,
             rk[j] = tpe ^ ROTATE(tpd,16) ^
                 ROTATE(tp9,24) ^ ROTATE(tpb,8);
 #else
-            rk[j] = tpe ^ (tpd >> 16) ^ (tpd << 16) ^ 
+            rk[j] = tpe ^ (tpd >> 16) ^ (tpd << 16) ^
                 (tp9 >> 8) ^ (tp9 << 24) ^
                 (tpb >> 24) ^ (tpb << 8);
 #endif
@@ -1355,4 +1355,4 @@ int private_AES_set_decrypt_key(const unsigned char *userKey, const int bits,
     return 0;
 }
 
-#endif /* AES_ASM */
+#endif /* OPENSSL_NO_ASM */

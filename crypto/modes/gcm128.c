@@ -6,7 +6,7 @@
  * are met:
  *
  * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer. 
+ *    notice, this list of conditions and the following disclaimer.
  *
  * 2. Redistributions in binary form must reproduce the above copyright
  *    notice, this list of conditions and the following disclaimer in
@@ -299,7 +299,7 @@ static void gcm_init_4bit(u128 Htable[16], u64 H[2])
     Htable[14].hi = V.hi^Htable[6].hi, Htable[14].lo = V.lo^Htable[6].lo;
     Htable[15].hi = V.hi^Htable[7].hi, Htable[15].lo = V.lo^Htable[7].lo;
 #endif
-#if defined(GHASH_ASM) && (defined(__arm__) || defined(__arm))
+#if !defined(OPENSSL_NO_ASM) && (defined(__arm__) || defined(__arm))
     /*
      * ARM assembler expects specific dword order in Htable.
      */
@@ -321,12 +321,12 @@ static void gcm_init_4bit(u128 Htable[16], u64 H[2])
 #endif
 }
 
-#ifndef GHASH_ASM
+#ifdef OPENSSL_NO_ASM
 static const size_t rem_4bit[16] = {
     PACK(0x0000), PACK(0x1C20), PACK(0x3840), PACK(0x2460),
     PACK(0x7080), PACK(0x6CA0), PACK(0x48C0), PACK(0x54E0),
     PACK(0xE100), PACK(0xFD20), PACK(0xD940), PACK(0xC560),
-    PACK(0x9180), PACK(0x8DA0), PACK(0xA9C0), PACK(0xB5E0) 
+    PACK(0x9180), PACK(0x8DA0), PACK(0xA9C0), PACK(0xB5E0)
 };
 
 static void gcm_gmult_4bit(u64 Xi[2], const u128 Htable[16])
@@ -454,7 +454,7 @@ static void gcm_ghash_4bit(u64 Xi[2], const u128 Htable[16],
      * [should] give ~50% improvement... One could have PACK()-ed
      * the rem_8bit even here, but the priority is to minimize
      * cache footprint...
-     */ 
+     */
     u128 Hshr4[16];    /* Htable shifted right by 4 bits */
     u8   Hshl4[16];    /* Htable shifted left  by 4 bits */
     static const unsigned short rem_8bit[256] = {
@@ -567,7 +567,7 @@ void gcm_ghash_4bit(u64 Xi[2], const u128 Htable[16], const u8 *inp, size_t len)
 #endif
 
 #define GCM_MUL(ctx, Xi)   gcm_gmult_4bit(ctx->Xi.u,ctx->Htable)
-#if defined(GHASH_ASM) || !defined(OPENSSL_SMALL_FOOTPRINT)
+#if !defined(OPENSSL_NO_ASM) || !defined(OPENSSL_SMALL_FOOTPRINT)
 #define GHASH(ctx,in,len) gcm_ghash_4bit((ctx)->Xi.u, (ctx)->Htable,in,len)
 /* GHASH_CHUNK is "stride parameter" missioned to mitigate cache
  * trashing effect. In other words idea is to hash data while it's
@@ -633,7 +633,7 @@ static void gcm_gmult_1bit(u64 Xi[2], const u64 H[2])
 
 #endif
 
-#if    TABLE_BITS==4 && defined(GHASH_ASM)
+#if    TABLE_BITS==4 && !defined(OPENSSL_NO_ASM)
 # if    !defined(I386_ONLY) && \
     (defined(__i386)    || defined(__i386__)    || \
      defined(__x86_64)    || defined(__x86_64__)    || \
@@ -862,7 +862,7 @@ int CRYPTO_gcm128_aad(GCM128_CONTEXT *ctx, const unsigned char *aad, size_t len)
     }
 #else
     while (len >= 16) {
-        for (i = 0; i < 16; ++i) 
+        for (i = 0; i < 16; ++i)
             ctx->Xi.c[i] ^= aad[i];
         GCM_MUL(ctx, Xi);
         aad += 16;
@@ -1099,7 +1099,7 @@ int CRYPTO_gcm128_decrypt(GCM128_CONTEXT *ctx,
 
     n = ctx->mres;
 #if !defined(OPENSSL_SMALL_FOOTPRINT)
-    if (16 % sizeof(size_t) == 0) 
+    if (16 % sizeof(size_t) == 0)
         do {    /* always true actually */
         if (n) {
             while (n && len) {
@@ -1406,7 +1406,7 @@ int CRYPTO_gcm128_decrypt_ctr32(GCM128_CONTEXT *ctx,
             --len;
             n = (n + 1) % 16;
         }
-        if (n == 0) 
+        if (n == 0)
             GCM_MUL(ctx, Xi);
         else {
             ctx->mres = n;
@@ -1439,7 +1439,7 @@ int CRYPTO_gcm128_decrypt_ctr32(GCM128_CONTEXT *ctx,
 #else
         while (j--) {
             size_t k;
-            for (k = 0; k < 16; ++k) 
+            for (k = 0; k < 16; ++k)
                 ctx->Xi.c[k] ^= in[k];
             GCM_MUL(ctx, Xi);
             in += 16;
@@ -1854,9 +1854,9 @@ int main()
 #ifdef OPENSSL_CPUID_OBJ
     {
     size_t start, stop, gcm_t, ctr_t, OPENSSL_rdtsc();
-    union { 
-        u64 u; 
-        u8 c[1024]; 
+    union {
+        u64 u;
+        u8 c[1024];
     } buf;
     int i;
 
@@ -1889,7 +1889,7 @@ int main()
 
     GHASH((&ctx), buf.c, sizeof(buf));
     start = OPENSSL_rdtsc();
-    for (i = 0; i < 100;++i) 
+    for (i = 0; i < 100;++i)
         GHASH((&ctx), buf.c, sizeof(buf));
     gcm_t = OPENSSL_rdtsc() - start;
     printf("%.2f\n", gcm_t / (double)sizeof(buf) / (double)i);

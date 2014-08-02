@@ -63,7 +63,7 @@ typedef unsigned long long    u64;
 #undef SMALL_REGISTER_BANK
 #if defined(__i386) || defined(__i386__) || defined(_M_IX86)
 #  define SMALL_REGISTER_BANK
-#  if defined(WHIRLPOOL_ASM)
+#  if !defined(OPENSSL_NO_ASM)
 #    ifndef OPENSSL_SMALL_FOOTPRINT
 #      define OPENSSL_SMALL_FOOTPRINT    /* it appears that for elder non-MMX
                        CPUs this is actually faster! */

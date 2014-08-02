@@ -6,7 +6,7 @@
  * are met:
  *
  * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer. 
+ *    notice, this list of conditions and the following disclaimer.
  *
  * 2. Redistributions in binary form must reproduce the above copyright
  *    notice, this list of conditions and the following disclaimer in
@@ -103,7 +103,7 @@ typedef struct {
 
 #define MAXBITCHUNK    ((size_t)1 << (sizeof(size_t) * 8 - 4))
 
-#ifdef VPAES_ASM
+#ifndef OPENSSL_NO_ASM
 int vpaes_set_encrypt_key(const unsigned char *userKey, int bits,
             AES_KEY *key);
 int vpaes_set_decrypt_key(const unsigned char *userKey, int bits,
@@ -120,7 +120,7 @@ void vpaes_cbc_encrypt(const unsigned char *in,
             const AES_KEY *key,
             unsigned char *ivec, int enc);
 #endif
-#ifdef BSAES_ASM
+#ifndef OPENSSL_NO_ASM
 void bsaes_cbc_encrypt(const unsigned char *in, unsigned char *out,
             size_t length, const AES_KEY *key,
             unsigned char ivec[16], int enc);
@@ -148,7 +148,7 @@ void AES_xts_decrypt(const char *inp, char *out, size_t len,
             const unsigned char iv[16]);
 #endif
 
-#if defined(AES_ASM) && !defined(I386_ONLY) &&    (  \
+#if !defined(OPENSSL_NO_ASM) && !defined(I386_ONLY) &&    (  \
     ((defined(__i386)    || defined(__i386__)    || \
       defined(_M_IX86)) && defined(OPENSSL_IA32_SSE2))|| \
     defined(__x86_64)    || defined(__x86_64__)    || \
@@ -157,10 +157,10 @@ void AES_xts_decrypt(const char *inp, char *out, size_t len,
 
 extern unsigned int OPENSSL_ia32cap_P[2];
 
-#ifdef VPAES_ASM
+#ifndef OPENSSL_NO_ASM
 #define VPAES_CAPABLE    (OPENSSL_ia32cap_P[1]&(1<<(41-32)))
 #endif
-#ifdef BSAES_ASM
+#ifndef OPENSSL_NO_ASM
 #define BSAES_CAPABLE    VPAES_CAPABLE
 #endif
 /*
@@ -229,7 +229,7 @@ static int aesni_init_key(EVP_CIPHER_CTX *ctx, const unsigned char *key,
 
     mode = ctx->cipher->flags & EVP_CIPH_MODE;
     if ((mode == EVP_CIPH_ECB_MODE || mode == EVP_CIPH_CBC_MODE)
-        && !enc) { 
+        && !enc) {
         ret = aesni_set_decrypt_key(key, ctx->key_len * 8, ctx->cipher_data);
         dat->block = (block128_f)aesni_decrypt;
         dat->stream.cbc = mode == EVP_CIPH_CBC_MODE ?
@@ -618,7 +618,7 @@ static int aes_cfb1_cipher(EVP_CIPHER_CTX *ctx, unsigned char *out,
     if (len)
         CRYPTO_cfb128_1_encrypt(in, out, len * 8, &dat->ks,
             ctx->iv, &ctx->num, ctx->encrypt, dat->block);
-    
+
     return 1;
 }
 
@@ -662,7 +662,7 @@ static void ctr64_inc(unsigned char *counter) {
         c = counter[n];
         ++c;
         counter[n] = c;
-        if (c) 
+        if (c)
             return;
     } while (n);
 }
@@ -1028,7 +1028,7 @@ static int aes_xts_init_key(EVP_CIPHER_CTX *ctx, const unsigned char *key,
     if (!iv && !key)
         return 1;
 
-    if (key) 
+    if (key)
         do {
 #ifdef AES_XTS_ASM
         xctx->stream = enc ? AES_xts_encrypt : AES_xts_decrypt;
@@ -1177,7 +1177,7 @@ static int aes_ccm_init_key(EVP_CIPHER_CTX *ctx, const unsigned char *key,
     EVP_AES_CCM_CTX *cctx = ctx->cipher_data;
     if (!iv && !key)
         return 1;
-    if (key) 
+    if (key)
         do {
 #ifdef VPAES_CAPABLE
         if (VPAES_CAPABLE) {
@@ -1271,9 +1271,9 @@ BLOCK_CIPHER_custom(NID_aes, 256, 1, 12, ccm, CCM, CUSTOM_FLAGS)
 #define EVP_AEAD_AES_GCM_TAG_LEN 16
 
 struct aead_aes_gcm_ctx {
-    union { 
+    union {
         double align;
-        AES_KEY ks; 
+        AES_KEY ks;
     } ks;
     GCM128_CONTEXT gcm;
     ctr128_f ctr;
