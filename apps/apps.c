@@ -2343,7 +2343,7 @@ void policies_print(BIO *out, X509_STORE_CTX *ctx)
         BIO_free(out);
     }
 
-#if !defined(OPENSSL_NO_TLSEXT) && !defined(OPENSSL_NO_NEXTPROTONEG)
+#ifndef OPENSSL_NO_NEXTPROTONEG
 /* next_protos_parse parses a comma separated list of strings into a string
  * in a format suitable for passing to SSL_CTX_set_next_protos_advertised.
  *   outlen: (output) set to the length of the resulting buffer on success.
@@ -2385,7 +2385,7 @@ unsigned char *next_protos_parse(unsigned short *outlen, const char *in)
     *outlen = len + 1;
     return out;
     }
-#endif  /* !OPENSSL_NO_TLSEXT && !OPENSSL_NO_NEXTPROTONEG */
+#endif  /* !OPENSSL_NO_NEXTPROTONEG */
 
 /*
  * Platform-specific sections

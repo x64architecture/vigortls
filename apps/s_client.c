@@ -1442,12 +1442,10 @@ SSL_set_tlsext_status_ids(con, ids);
                 {
                 in_init=0;
 #if 0 /* This test doesn't really work as intended (needs to be fixed) */
-#ifndef OPENSSL_NO_TLSEXT
                 if (servername != NULL && !SSL_session_reused(con))
                     {
                     BIO_printf(bio_c_out,"Server did %sacknowledge servername extension.\n",tlsextcbp.ack?"":"not ");
                     }
-#endif
 #endif
                 if (sess_out)
                     {
@@ -1729,7 +1727,7 @@ end:
             print_stuff(bio_c_out,con,1);
         SSL_free(con);
         }
-#if !defined(OPENSSL_NO_TLSEXT) && !defined(OPENSSL_NO_NEXTPROTONEG)
+#ifndef OPENSSL_NO_NEXTPROTONEG
     if (next_proto.data)
         free(next_proto.data);
 #endif
@@ -1872,7 +1870,7 @@ static void print_stuff(BIO *bio, SSL *s, int full)
     BIO_printf(bio, "Secure Renegotiation IS%s supported\n",
             SSL_get_secure_renegotiation_support(s) ? "" : " NOT");
 
-#if !defined(OPENSSL_NO_TLSEXT) && !defined(OPENSSL_NO_NEXTPROTONEG)
+#ifndef OPENSSL_NO_NEXTPROTONEG
     if (next_proto.status != -1) {
         const unsigned char *proto;
         unsigned int proto_len;
@@ -1928,8 +1926,6 @@ static void print_stuff(BIO *bio, SSL *s, int full)
     (void)BIO_flush(bio);
     }
 
-#ifndef OPENSSL_NO_TLSEXT
-
 static int ocsp_resp_cb(SSL *s, void *arg)
     {
     const unsigned char *p;
@@ -1955,5 +1951,3 @@ static int ocsp_resp_cb(SSL *s, void *arg)
     OCSP_RESPONSE_free(rsp);
     return 1;
     }
-
-#endif

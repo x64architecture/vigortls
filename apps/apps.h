@@ -317,9 +317,9 @@ int do_X509_CRL_sign(BIO *err, X509_CRL *x, EVP_PKEY *pkey, const EVP_MD *md,
 extern char *psk_key;
 #endif
 
-#if !defined(OPENSSL_NO_TLSEXT) && !defined(OPENSSL_NO_NEXTPROTONEG)
+#ifndef OPENSSL_NO_NEXTPROTONEG
 unsigned char *next_protos_parse(unsigned short *outlen, const char *in);
-#endif  /* !OPENSSL_NO_TLSEXT && !OPENSSL_NO_NEXTPROTONEG */
+#endif
 
 #define FORMAT_UNDEF    0
 #define FORMAT_ASN1     1

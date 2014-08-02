@@ -279,13 +279,11 @@ int ssl3_connect(SSL *s)
             if (s->hit)
                 {
                 s->state=SSL3_ST_CR_FINISHED_A;
-#ifndef OPENSSL_NO_TLSEXT
                 if (s->tlsext_ticket_expected)
                     {
                     /* receive renewed session ticket */
                     s->state=SSL3_ST_CR_SESSION_TICKET_A;
                     }
-#endif
                 }
             else
                 s->state=SSL3_ST_CR_CERT_A;
@@ -294,7 +292,6 @@ int ssl3_connect(SSL *s)
 
         case SSL3_ST_CR_CERT_A:
         case SSL3_ST_CR_CERT_B:
-#ifndef OPENSSL_NO_TLSEXT
             ret=ssl3_check_finished(s);
             if (ret <= 0) goto end;
             if (ret == 2)
@@ -307,7 +304,6 @@ int ssl3_connect(SSL *s)
                 s->init_num=0;
                 break;
                 }
-#endif
             /* Check if it is anon DH/ECDH */
             /* or PSK */
             if (!(s->s3->tmp.new_cipher->algorithm_auth & SSL_aNULL) &&
@@ -315,7 +311,6 @@ int ssl3_connect(SSL *s)
                 {
                 ret=ssl3_get_server_certificate(s);
                 if (ret <= 0) goto end;
-#ifndef OPENSSL_NO_TLSEXT
                 if (s->tlsext_status_expected)
                     s->state=SSL3_ST_CR_CERT_STATUS_A;
                 else
@@ -326,13 +321,6 @@ int ssl3_connect(SSL *s)
                 skip = 1;
                 s->state=SSL3_ST_CR_KEY_EXCH_A;
                 }
-#else
-                }
-            else
-                skip=1;
-
-            s->state=SSL3_ST_CR_KEY_EXCH_A;
-#endif
             s->init_num=0;
             break;
 
@@ -441,7 +429,7 @@ int ssl3_connect(SSL *s)
                 SSL3_ST_CW_CHANGE_A,SSL3_ST_CW_CHANGE_B);
             if (ret <= 0) goto end;
 
-#if defined(OPENSSL_NO_TLSEXT) || defined(OPENSSL_NO_NEXTPROTONEG)
+#ifdef OPENSSL_NO_NEXTPROTONEG
             s->state=SSL3_ST_CW_FINISHED_A;
 #else
             if (s->s3->next_proto_neg_seen)
@@ -468,7 +456,7 @@ int ssl3_connect(SSL *s)
 
             break;
 
-#if !defined(OPENSSL_NO_TLSEXT) && !defined(OPENSSL_NO_NEXTPROTONEG)
+#ifndef OPENSSL_NO_NEXTPROTONEG
         case SSL3_ST_CW_NEXT_PROTO_A:
         case SSL3_ST_CW_NEXT_PROTO_B:
             ret=ssl3_send_next_proto(s);
@@ -500,19 +488,15 @@ int ssl3_connect(SSL *s)
                 }
             else
                 {
-#ifndef OPENSSL_NO_TLSEXT
                 /* Allow NewSessionTicket if ticket expected */
                 if (s->tlsext_ticket_expected)
                     s->s3->tmp.next_state=SSL3_ST_CR_SESSION_TICKET_A;
                 else
-#endif
-                
-                s->s3->tmp.next_state=SSL3_ST_CR_FINISHED_A;
+                    s->s3->tmp.next_state=SSL3_ST_CR_FINISHED_A;
                 }
             s->init_num=0;
             break;
 
-#ifndef OPENSSL_NO_TLSEXT
         case SSL3_ST_CR_SESSION_TICKET_A:
         case SSL3_ST_CR_SESSION_TICKET_B:
             ret=ssl3_get_new_session_ticket(s);
@@ -528,7 +512,6 @@ int ssl3_connect(SSL *s)
             s->state=SSL3_ST_CR_KEY_EXCH_A;
             s->init_num=0;
         break;
-#endif
 
         case SSL3_ST_CR_FINISHED_A:
         case SSL3_ST_CR_FINISHED_B:
@@ -638,11 +621,7 @@ int ssl3_client_hello(SSL *s)
         SSL_SESSION *sess = s->session;
         if ((sess == NULL) ||
             (sess->ssl_version != s->version) ||
-#ifdef OPENSSL_NO_TLSEXT
-            !sess->session_id_length ||
-#else
             (!sess->session_id_length && !sess->tlsext_tick) ||
-#endif
             (sess->not_resumable))
             {
             if (!ssl_get_new_session(s,0))
@@ -740,7 +719,6 @@ int ssl3_client_hello(SSL *s)
         *(p++)=1;
         *(p++)=0; /* Add the NULL method */
 
-#ifndef OPENSSL_NO_TLSEXT
         /* TLS extensions*/
         if (ssl_prepare_clienthello_tlsext(s) <= 0)
             {
@@ -752,7 +730,6 @@ int ssl3_client_hello(SSL *s)
             SSLerr(SSL_F_SSL3_CLIENT_HELLO,ERR_R_INTERNAL_ERROR);
             goto err;
             }
-#endif
         
         l=(p-d);
         d=buf;
@@ -840,7 +817,6 @@ int ssl3_get_server_hello(SSL *s)
         goto f_err;
         }
 
-#ifndef OPENSSL_NO_TLSEXT
     /* check if we want to resume the session based on external pre-shared secret */
     if (s->version >= TLS1_VERSION && s->tls_session_secret_cb)
         {
@@ -855,7 +831,6 @@ int ssl3_get_server_hello(SSL *s)
                 pref_cipher : ssl_get_cipher_by_char(s, p+j);
             }
         }
-#endif /* OPENSSL_NO_TLSEXT */
 
     if (j != 0 && j == s->session->session_id_length
         && memcmp(p,s->session->session_id,j) == 0)
@@ -961,7 +936,6 @@ int ssl3_get_server_hello(SSL *s)
         goto f_err;
         }
 
-#ifndef OPENSSL_NO_TLSEXT
     /* TLS extensions*/
     if (s->version >= SSL3_VERSION)
         {
@@ -977,7 +951,6 @@ int ssl3_get_server_hello(SSL *s)
                 goto err;
             }
         }
-#endif
 
     if (p != (d+n))
         {
@@ -1905,7 +1878,7 @@ static int ca_dn_cmp(const X509_NAME * const *a, const X509_NAME * const *b)
     {
     return (X509_NAME_cmp(*a,*b));
     }
-#ifndef OPENSSL_NO_TLSEXT
+
 int ssl3_get_new_session_ticket(SSL *s)
     {
     int ok,al,ret=0, ticklen;
@@ -2062,7 +2035,6 @@ f_err:
     ssl3_send_alert(s,SSL3_AL_FATAL,al);
     return (-1);
     }
-#endif
 
 int ssl3_get_server_done(SSL *s)
     {
@@ -3141,7 +3113,7 @@ err:
     return (0);
     }
 
-#if !defined(OPENSSL_NO_TLSEXT) && !defined(OPENSSL_NO_NEXTPROTONEG)
+#ifndef OPENSSL_NO_NEXTPROTONEG
 int ssl3_send_next_proto(SSL *s)
     {
     unsigned int len, padding_len;
@@ -3165,14 +3137,12 @@ int ssl3_send_next_proto(SSL *s)
 
     return ssl3_do_write(s, SSL3_RT_HANDSHAKE);
 }
-#endif  /* !OPENSSL_NO_TLSEXT && !OPENSSL_NO_NEXTPROTONEG */
+#endif  /* OPENSSL_NO_NEXTPROTONEG */
 
 /* Check to see if handshake is full or resumed. Usually this is just a
  * case of checking to see if a cache hit has occurred. In the case of
  * session tickets we have to check the next message to be sure.
  */
-
-#ifndef OPENSSL_NO_TLSEXT
 int ssl3_check_finished(SSL *s)
     {
     int ok;
@@ -3196,7 +3166,6 @@ int ssl3_check_finished(SSL *s)
 
     return 1;
     }
-#endif
 
 int ssl_do_client_cert_cb(SSL *s, X509 **px509, EVP_PKEY **ppkey)
     {

@@ -187,7 +187,6 @@ int SSL_SESSION_print(BIO *bp, const SSL_SESSION *x)
     if (BIO_printf(bp, "%s", x->srp_username ? x->srp_username : "None") <= 0)
         goto err;
 #endif
-#ifndef OPENSSL_NO_TLSEXT
     if (x->tlsext_tick_lifetime_hint) {
         if (BIO_printf(bp,
             "\n    TLS session ticket lifetime hint: %ld (seconds)",
@@ -200,7 +199,6 @@ int SSL_SESSION_print(BIO *bp, const SSL_SESSION *x)
         if (BIO_dump_indent(bp, (char *)x->tlsext_tick, x->tlsext_ticklen, 4) <= 0)
             goto err;
     }
-#endif
 
     if (x->time != 0) {
         if (BIO_printf(bp, "\n    Start Time: %ld", x->time) <= 0)

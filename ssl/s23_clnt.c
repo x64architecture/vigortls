@@ -335,7 +335,6 @@ static int ssl23_client_hello(SSL *s)
     mask &= ~SSL_OP_NO_SSLv3;
 #endif
 
-#ifndef OPENSSL_NO_TLSEXT
     if (version != SSL2_VERSION)
         {
         /* have to disable SSL 2.0 compatibility if we need TLS extensions */
@@ -349,7 +348,6 @@ static int ssl23_client_hello(SSL *s)
             ssl2_compat = 0;
 #endif
         }
-#endif
 
     buf=(unsigned char *)s->init_buf->data;
     if (s->state == SSL23_ST_CW_CLNT_HELLO_A)
@@ -500,7 +498,6 @@ static int ssl23_client_hello(SSL *s)
             *(p++)=1;
             *(p++)=0; /* Add the NULL method */
 
-#ifndef OPENSSL_NO_TLSEXT
             /* TLS extensions*/
             if (ssl_prepare_clienthello_tlsext(s) <= 0)
                 {
@@ -512,7 +509,6 @@ static int ssl23_client_hello(SSL *s)
                 SSLerr(SSL_F_SSL23_CLIENT_HELLO,ERR_R_INTERNAL_ERROR);
                 return -1;
                 }
-#endif
             
             l = p-d;
 
