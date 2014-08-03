@@ -563,7 +563,7 @@ int ssl3_accept(SSL *s)
                  * the client uses its key from the certificate
                  * for key exchange.
                  */
-#ifndef OPENSSL_NO_NEXTPROTONEG
+#ifdef OPENSSL_NO_NEXTPROTONEG
                 s->state = SSL3_ST_SR_FINISHED_A;
 #else
                 if (s->s3->next_proto_neg_seen)
@@ -629,7 +629,7 @@ int ssl3_accept(SSL *s)
             if (ret <= 0)
                 goto end;
 
-#ifndef OPENSSL_NO_NEXTPROTONEG
+#ifdef OPENSSL_NO_NEXTPROTONEG
             s->state = SSL3_ST_SR_FINISHED_A;
 #else
             if (s->s3->next_proto_neg_seen)
@@ -720,7 +720,7 @@ int ssl3_accept(SSL *s)
                 goto end;
             s->state = SSL3_ST_SW_FLUSH;
             if (s->hit) {
-#ifndef OPENSSL_NO_NEXTPROTONEG
+#ifdef OPENSSL_NO_NEXTPROTONEG
                 s->s3->tmp.next_state = SSL3_ST_SR_FINISHED_A;
 #else
                 if (s->s3->next_proto_neg_seen) {
@@ -1232,9 +1232,6 @@ int ssl3_send_server_hello(SSL *s)
 
     if (s->state == SSL3_ST_SW_SRVR_HELLO_A) {
         buf = (unsigned char *)s->init_buf->data;
-        p = s->s3->server_random;
-        if (ssl_fill_hello_random(s, 1, p, SSL3_RANDOM_SIZE) <= 0)
-            return -1;
         /* Do the message type and length last */
         d = p = &(buf[4]);
 

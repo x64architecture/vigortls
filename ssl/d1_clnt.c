@@ -593,7 +593,7 @@ int dtls1_client_hello(SSL *s)
         {
         SSL_SESSION *sess = s->session;
         if ((s->session == NULL) ||
-            (s->session->ssl_version != s->version) ||
+            (!sess->session_id_length && !sess->tlsext_tick) ||
             !sess->session_id_length ||
             (s->session->not_resumable))
             {
