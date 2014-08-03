@@ -11,6 +11,13 @@ endif()
 
 if (${CMAKE_SYSTEM_PROCESSOR} STREQUAL "x86_64")
 	set(ARCH "x86_64")
+
+	add_definitions(
+		-DOPENSSL_IA32_SSE2
+		-DOPENSSL_BN_ASM_MONT
+		-DOPENSSL_BN_ASM_MONT5
+		-DOPENSSL_BN_ASM_GF2m
+	)
 elseif (${CMAKE_SYSTEM_PROCESSOR} STREQUAL "x86")
 	set(ARCH "x86")
 else()
