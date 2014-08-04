@@ -61,8 +61,6 @@
 #define USE_SOCKETS
 #include "cryptlib.h"
 
-#ifndef OPENSSL_NO_SOCK
-
 #include <openssl/bio.h>
 
 static int sock_write(BIO *h, const char *buf, int num);
@@ -268,5 +266,3 @@ int BIO_sock_non_fatal_error(int err)
         }
     return (0);
     }
-
-#endif  /* #ifndef OPENSSL_NO_SOCK */

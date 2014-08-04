@@ -757,15 +757,10 @@ int MAIN(int argc, char **argv)
         }
     else if (host)
         {
-#ifndef OPENSSL_NO_SOCK
         resp = process_responder(bio_err, req, host, path,
                     port, use_ssl, headers, req_timeout);
         if (!resp)
             goto end;
-#else
-        BIO_printf(bio_err, "Error creating connect BIO - sockets not supported.\n");
-        goto end;
-#endif
         }
     else if (respin)
         {
@@ -1172,11 +1167,7 @@ static BIO *init_responder(char *port)
     bufbio = BIO_new(BIO_f_buffer());
     if (!bufbio) 
         goto err;
-#ifndef OPENSSL_NO_SOCK
     acbio = BIO_new_accept(port);
-#else
-    BIO_printf(bio_err, "Error setting up accept BIO - sockets not supported.\n");
-#endif
     if (!acbio)
         goto err;
     BIO_set_accept_bios(acbio, bufbio);

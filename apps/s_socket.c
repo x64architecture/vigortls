@@ -71,8 +71,6 @@
 #include "s_apps.h"
 #include <openssl/ssl.h>
 
-#ifndef OPENSSL_NO_SOCK
-
 static struct hostent *GetHostByName(char *name);
 static int ssl_sock_init(void);
 static int init_client_ip(int *sock,unsigned char ip[4], int port, int type);
@@ -461,5 +459,3 @@ static struct hostent *GetHostByName(char *name)
         return (ret);
         }
     }
-
-#endif

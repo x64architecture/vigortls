@@ -62,8 +62,6 @@
 #include "cryptlib.h"
 #include <openssl/bio.h>
 
-#ifndef OPENSSL_NO_SOCK
-
 #define SOCKET_PROTOCOL IPPROTO_TCP
 
 
@@ -630,6 +628,3 @@ BIO *BIO_new_connect(char *str)
         return (NULL);
         }
     }
-
-#endif
-

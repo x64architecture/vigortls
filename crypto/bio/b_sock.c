@@ -64,8 +64,6 @@
 #include <openssl/bio.h>
 #include <arpa/inet.h>
 
-#ifndef OPENSSL_NO_SOCK
-
 #include <openssl/dso.h>
 
 #define SOCKET_PROTOCOL IPPROTO_TCP
@@ -519,4 +517,3 @@ int BIO_socket_nbio(int s, int mode)
 #endif
     return (ret == 0);
 }
-#endif

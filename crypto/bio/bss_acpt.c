@@ -62,8 +62,6 @@
 #include "cryptlib.h"
 #include <openssl/bio.h>
 
-#ifndef OPENSSL_NO_SOCK
-
 #define SOCKET_PROTOCOL IPPROTO_TCP
 
 typedef struct bio_accept_st
@@ -464,5 +462,3 @@ BIO *BIO_new_accept(char *str)
         return (NULL);
         }
     }
-
-#endif
