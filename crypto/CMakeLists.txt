@@ -55,6 +55,7 @@ add_subdirectory(cmac)
 add_subdirectory(cms)
 add_subdirectory(conf)
 add_subdirectory(comp)
+add_subdirectory(compact)
 add_subdirectory(des)
 add_subdirectory(dh)
 add_subdirectory(dsa)
@@ -126,6 +127,7 @@ add_library(
 	$<TARGET_OBJECTS:cms>
 	$<TARGET_OBJECTS:conf>
 	$<TARGET_OBJECTS:comp>
+	$<TARGET_OBJECTS:compact>
 	$<TARGET_OBJECTS:des>
 	$<TARGET_OBJECTS:dh>
 	$<TARGET_OBJECTS:dsa>
