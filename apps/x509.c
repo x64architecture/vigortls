@@ -5,21 +5,21 @@
  * This package is an SSL implementation written
  * by Eric Young (eay@cryptsoft.com).
  * The implementation was written so as to conform with Netscapes SSL.
- * 
+ *
  * This library is free for commercial and non-commercial use as long as
  * the following conditions are aheared to.  The following conditions
  * apply to all code found in this distribution, be it the RC4, RSA,
  * lhash, DES, etc., code; not just the SSL code.  The SSL documentation
  * included with this distribution is covered by the same copyright terms
  * except that the holder is Tim Hudson (tjh@cryptsoft.com).
- * 
+ *
  * Copyright remains Eric Young's, and as such any Copyright notices in
  * the code are not to be removed.
  * If this package is used in a product, Eric Young should be given attribution
  * as the author of the parts of the library used.
  * This can be in the form of a textual message at program startup or
  * in documentation (online or textual) provided with the package.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
  * are met:
@@ -34,10 +34,10 @@
  *     Eric Young (eay@cryptsoft.com)"
  *    The word 'cryptographic' can be left out if the rouines from the library
  *    being used are not cryptographic related :-).
- * 4. If you include any Windows specific code (or a derivative thereof) from 
+ * 4. If you include any Windows specific code (or a derivative thereof) from
  *    the apps directory (application code) you must include an acknowledgement:
  *    "This product includes software written by Tim Hudson (tjh@cryptsoft.com)"
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY ERIC YOUNG ``AS IS'' AND
  * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -49,7 +49,7 @@
  * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
- * 
+ *
  * The licence and distribution terms for any publically available version or
  * derivative of this code cannot be changed.  i.e. this code cannot simply be
  * copied and put under another distribution licence
@@ -453,13 +453,6 @@ int MAIN(int argc, char **argv)
             CA_createserial= ++num;
         else if (strcmp(*argv,"-clrext") == 0)
             clrext = 1;
-#if 1 /* stay backwards-compatible with 0.9.5; this should go away soon */
-        else if (strcmp(*argv,"-crlext") == 0)
-            {
-            BIO_printf(bio_err,"use -clrext instead of -crlext\n");
-            clrext = 1;
-            }
-#endif
         else if (strcmp(*argv,"-ocspid") == 0)
             ocspid= ++num;
         else if ((md_alg=EVP_get_digestbyname(*argv + 1)))
@@ -629,12 +622,12 @@ bad:
             sno = ASN1_INTEGER_new();
             if (!sno || !rand_serial(NULL, sno))
                 goto end;
-            if (!X509_set_serialNumber(x, sno)) 
+            if (!X509_set_serialNumber(x, sno))
                 goto end;
             ASN1_INTEGER_free(sno);
             sno = NULL;
             }
-        else if (!X509_set_serialNumber(x, sno)) 
+        else if (!X509_set_serialNumber(x, sno))
             goto end;
 
         if (!X509_set_issuer_name(x,req->req_info->subject)) goto end;
@@ -714,7 +707,7 @@ bad:
                 print_name(STDout, "issuer= ",
                     X509_get_issuer_name(x), nmflag);
                 }
-            else if (subject == i) 
+            else if (subject == i)
                 {
                 print_name(STDout, "subject= ",
                     X509_get_subject_name(x), nmflag);
@@ -959,7 +952,7 @@ bad:
                         "CA Private Key");
                     if (CApkey == NULL) goto end;
                     }
-                
+
                 assert(need_rand);
                 if (!x509_certify(ctx,CAfile,digest,x,xca,
                     CApkey, sigopts,
@@ -1232,7 +1225,7 @@ static int callb(int ok, X509_STORE_CTX *ctx)
     }
 
 /* self sign */
-static int sign(X509 *x, EVP_PKEY *pkey, int days, int clrext, const EVP_MD *digest, 
+static int sign(X509 *x, EVP_PKEY *pkey, int days, int clrext, const EVP_MD *digest,
                         CONF *conf, char *section)
     {
 
@@ -1282,7 +1275,7 @@ static int purpose_print(BIO *bio, X509 *cert, X509_PURPOSE *pt)
     for (i = 0; i < 2; i++)
         {
         idret = X509_check_purpose(cert, id, i);
-        BIO_printf(bio, "%s%s : ", pname, i ? " CA" : ""); 
+        BIO_printf(bio, "%s%s : ", pname, i ? " CA" : "");
         if (idret == 1) BIO_printf(bio, "Yes\n");
         else if (idret == 0) BIO_printf(bio, "No\n");
         else BIO_printf(bio, "Yes (WARNING code=%d)\n", idret);
