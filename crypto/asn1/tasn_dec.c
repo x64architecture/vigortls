@@ -773,6 +773,7 @@ static int asn1_d2i_ex_primitive(ASN1_VALUE **pval,
     char cst, inf, free_cont = 0;
     const unsigned char *p;
     BUF_MEM buf;
+    buf.data = NULL;
     const unsigned char *cont = NULL;
     long len; 
     if (!pval)
