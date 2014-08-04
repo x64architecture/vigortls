@@ -56,16 +56,19 @@
  * [including the GNU Public Licence.]
  */
 
+#include <arpa/inet.h>
 #include <sys/ioctl.h>
 
+#include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <errno.h>
-#include "cryptlib.h"
-#include <openssl/bio.h>
-#include <arpa/inet.h>
+#include <string.h>
+#include <unistd.h>
 
+#include <openssl/bio.h>
+#include <openssl/buffer.h>
 #include <openssl/dso.h>
+#include <openssl/err.h>
 
 int BIO_get_host_ip(const char *str, unsigned char *ip)
 {
