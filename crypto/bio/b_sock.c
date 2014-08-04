@@ -61,22 +61,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <errno.h>
-#define USE_SOCKETS
 #include "cryptlib.h"
 #include <openssl/bio.h>
 #include <arpa/inet.h>
 
 #include <openssl/dso.h>
-
-#define SOCKET_PROTOCOL IPPROTO_TCP
-
-#ifdef SO_MAXCONN
-#define MAX_LISTEN  SO_MAXCONN
-#elif defined(SOMAXCONN)
-#define MAX_LISTEN  SOMAXCONN
-#else
-#define MAX_LISTEN  32
-#endif
 
 int BIO_get_host_ip(const char *str, unsigned char *ip)
 {
@@ -322,7 +311,7 @@ int BIO_get_accept_socket(char *host, int bind_mode)
     }
 
 again:
-    s = socket(server.sa.sa_family,SOCK_STREAM,SOCKET_PROTOCOL);
+    s = socket(server.sa.sa_family,SOCK_STREAM,IPPROTO_TCP);
     if (s == INVALID_SOCKET) {
         SYSerr(SYS_F_SOCKET, errno);
         ERR_asprintf_error_data("port='%s'", host);
@@ -357,7 +346,7 @@ again:
                 else
                     goto err;
             }
-            cs = socket(client.sa.sa_family, SOCK_STREAM,SOCKET_PROTOCOL);
+            cs = socket(client.sa.sa_family, SOCK_STREAM,IPPROTO_TCP);
             if (cs != INVALID_SOCKET) {
                 int ii;
                 ii=connect(cs, &client.sa, addrlen);
@@ -377,7 +366,7 @@ again:
         BIOerr(BIO_F_BIO_GET_ACCEPT_SOCKET, BIO_R_UNABLE_TO_BIND_SOCKET);
         goto err;
     }
-    if (listen(s, MAX_LISTEN) == -1) {
+    if (listen(s, SOMAXCONN) == -1) {
         SYSerr(SYS_F_BIND, errno);
         ERR_asprintf_error_data("port='%s'", host);
         BIOerr(BIO_F_BIO_GET_ACCEPT_SOCKET, BIO_R_UNABLE_TO_LISTEN_SOCKET);
