@@ -896,7 +896,6 @@ static int i2b_PVK(unsigned char **out, EVP_PKEY*pk, int enclevel,
         }
     do_i2b(&p, pk, 0);
     if (enclevel == 0) {
-        free(p);
         return outlen;
     }
     else
