@@ -1,7 +1,7 @@
 /* crypto/bio/bio_dgram.c */
-/* 
+/*
  * DTLS implementation written by Nagendra Modadugu
- * (nagendra@cs.stanford.edu) for the OpenSSL project 2005.  
+ * (nagendra@cs.stanford.edu) for the OpenSSL project 2005.
  */
 /* ====================================================================
  * Copyright (c) 1999-2005 The OpenSSL Project.  All rights reserved.
@@ -11,7 +11,7 @@
  * are met:
  *
  * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer. 
+ *    notice, this list of conditions and the following disclaimer.
  *
  * 2. Redistributions in binary form must reproduce the above copyright
  *    notice, this list of conditions and the following disclaimer in
@@ -174,7 +174,7 @@ static int dgram_clear(BIO *a)
     if (a->shutdown)
         {
         if (a->init) {
-            shutdown((a->num), 2); 
+            shutdown((a->num), 2);
             close((a->num));
         }
         a->init=0;
@@ -196,7 +196,7 @@ static void dgram_adjust_rcv_timeout(BIO *b)
 
         /* Read current socket timeout */
         sz.i = sizeof(data->socket_timeout);
-        if ( getsockopt(b->num, SOL_SOCKET, SO_RCVTIMEO, 
+        if ( getsockopt(b->num, SOL_SOCKET, SO_RCVTIMEO,
                         &(data->socket_timeout), (void *)&sz) < 0)
             { perror("getsockopt"); }
         else if (sizeof(sz.s)!=sizeof(sz.i) && sz.i==0)
@@ -258,10 +258,7 @@ static int dgram_read(BIO *b, char *out, int outl)
     bio_dgram_data *data = (bio_dgram_data *)b->ptr;
 
     struct    {
-    /*
-     * See commentary in b_sock.c. <appro>
-     */
-    union    { size_t s; int i; } len;
+    socklen_t len;
     union    {
         struct sockaddr sa;
         struct sockaddr_in sa_in;
@@ -271,20 +268,14 @@ static int dgram_read(BIO *b, char *out, int outl)
         } peer;
     } sa;
 
-    sa.len.s=0;
-    sa.len.i=sizeof(sa.peer);
+    sa.len = sizeof(sa.peer);
 
     if (out != NULL)
         {
         errno = 0;
         memset(&sa.peer, 0x00, sizeof(sa.peer));
         dgram_adjust_rcv_timeout(b);
-        ret=recvfrom(b->num,out,outl,0,&sa.peer.sa,(void *)&sa.len);
-        if (sizeof(sa.len.i)!=sizeof(sa.len.s) && sa.len.i==0)
-            {
-            OPENSSL_assert(sa.len.s<=sizeof(sa.peer));
-            sa.len.i = (int)sa.len.s;
-            }
+        ret = recvfrom(b->num, out, outl, 0, &sa.peer.sa, &sa.len);
 
         if ( ! data->connected  && ret >= 0)
             BIO_ctrl(b, BIO_CTRL_DGRAM_SET_PEER, 0, &sa.peer);
@@ -330,7 +321,7 @@ static int dgram_write(BIO *b, const char *in, int inl)
         {
         if (BIO_dgram_should_retry(ret))
             {
-            BIO_set_retry_write(b);  
+            BIO_set_retry_write(b);
             data->_errno = errno;
 
 #if 0 /* higher layers are responsible for querying MTU, if necessary */
@@ -622,7 +613,7 @@ static long dgram_ctrl(BIO *b, int cmd, long num, void *ptr)
         {
         union { size_t s; int i; } sz = {0};
         sz.i = sizeof(struct timeval);
-        if ( getsockopt(b->num, SOL_SOCKET, SO_RCVTIMEO, 
+        if ( getsockopt(b->num, SOL_SOCKET, SO_RCVTIMEO,
             ptr, (void *)&sz) < 0)
             { perror("getsockopt"); ret = -1; }
         else if (sizeof(sz.s)!=sizeof(sz.i) && sz.i==0)
@@ -645,7 +636,7 @@ static long dgram_ctrl(BIO *b, int cmd, long num, void *ptr)
         {
         union { size_t s; int i; } sz = {0};
         sz.i = sizeof(struct timeval);
-        if ( getsockopt(b->num, SOL_SOCKET, SO_SNDTIMEO, 
+        if ( getsockopt(b->num, SOL_SOCKET, SO_SNDTIMEO,
             ptr, (void *)&sz) < 0)
             { perror("getsockopt"); ret = -1; }
         else if (sizeof(sz.s)!=sizeof(sz.i) && sz.i==0)
