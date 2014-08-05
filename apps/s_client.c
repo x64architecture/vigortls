@@ -1588,7 +1588,7 @@ SSL_set_tlsext_status_ids(con, ids);
             }
         else if (!ssl_pending && FD_ISSET(fileno(stdout),&writefds))
             {
-            i=raw_write_stdout(&(sbuf[sbuf_off]),sbuf_len);
+            i = write (fileno(stdout), &(sbuf[sbuf_off]), sbuf_len);
 
             if (i <= 0)
                 {
@@ -1668,7 +1668,7 @@ printf("read=%d pending=%d peek=%d\n",k,SSL_pending(con),SSL_peek(con,zbuf,10240
                 {
                 int j, lf_num;
 
-                i=raw_read_stdin(cbuf,BUFSIZZ/2);
+                i = read(fileno(stdin), cbuf, BUFSIZZ / 2);
                 lf_num = 0;
                 /* both loops are skipped when i <= 0 */
                 for (j = 0; j < i; j++)
@@ -1687,7 +1687,7 @@ printf("read=%d pending=%d peek=%d\n",k,SSL_pending(con),SSL_peek(con,zbuf,10240
                 assert(lf_num == 0);
                 }
             else
-                i=raw_read_stdin(cbuf,BUFSIZZ);
+                i = read(fileno(stdin), cbuf, BUFSIZZ);
 
             if ((!c_ign_eof) && ((i <= 0) || (cbuf[0] == 'Q')))
                 {

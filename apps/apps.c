@@ -2456,14 +2456,3 @@ int app_isdir(const char *name)
     return -1;
 #endif
     }
-
-/* raw_read|write section */
-int raw_read_stdin(void *buf, int siz)
-{
-	return read(fileno(stdin), buf, siz);
-}
-
-int raw_write_stdout(const void *buf, int siz)
-{    
-	return write(fileno(stdout), buf, siz);    
-}
