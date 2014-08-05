@@ -110,7 +110,6 @@
 #define ENV_CRLNUMBER        "crlnumber"
 #define ENV_CRL            "crl"
 #define ENV_PRIVATE_KEY        "private_key"
-#define ENV_RANDFILE        "RANDFILE"
 #define ENV_DEFAULT_DAYS     "default_days"
 #define ENV_DEFAULT_STARTDATE     "default_startdate"
 #define ENV_DEFAULT_ENDDATE     "default_enddate"
@@ -312,7 +311,6 @@ int MAIN(int argc, char **argv)
 #undef BSIZE
 #define BSIZE 256
     char buf[3][BSIZE];
-    char *randfile=NULL;
 #ifndef OPENSSL_NO_ENGINE
     char *engine = NULL;
 #endif
@@ -654,11 +652,6 @@ bad:
             goto err;
             }
         }
-
-    randfile = NCONF_get_string(conf, BASE_SECTION, "RANDFILE");
-    if (randfile == NULL)
-        ERR_clear_error();
-    app_RAND_load_file(randfile, bio_err, 0);
 
     f = NCONF_get_string(conf, section, STRING_MASK);
     if (!f)
@@ -1504,7 +1497,6 @@ err:
         sk_X509_pop_free(cert_sk,X509_free);
 
     if (ret) ERR_print_errors(bio_err);
-    app_RAND_write_file(randfile, bio_err);
     if (free_key && key)
         free(key);
     BN_free(serial);

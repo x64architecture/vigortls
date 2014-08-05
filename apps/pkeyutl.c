@@ -247,9 +247,6 @@ int MAIN(int argc, char **argv)
         goto end;
         }
 
-/* FIXME: seed PRNG only if needed */
-    app_RAND_load_file(NULL, bio_err, 0);
-
     if (pkey_op != EVP_PKEY_OP_DERIVE)
         {
         if (infile)

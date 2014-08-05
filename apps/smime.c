@@ -107,8 +107,6 @@ int MAIN(int argc, char **argv)
     char *to = NULL, *from = NULL, *subject = NULL;
     char *CAfile = NULL, *CApath = NULL;
     char *passargin = NULL, *passin = NULL;
-    char *inrand = NULL;
-    int need_rand = 0;
     int indef = 0;
     const EVP_MD *sign_md = NULL;
     int informat = FORMAT_SMIME, outformat = FORMAT_SMIME;
@@ -207,14 +205,6 @@ int MAIN(int argc, char **argv)
                 flags |= PKCS7_NOOLDMIMETYPE;
         else if (!strcmp (*args, "-crlfeol"))
                 flags |= PKCS7_CRLFEOL;
-        else if (!strcmp(*args,"-rand"))
-            {
-            if (!args[1])
-                goto argerr;
-            args++;
-            inrand = *args;
-            need_rand = 1;
-            }
 #ifndef OPENSSL_NO_ENGINE
         else if (!strcmp(*args,"-engine"))
             {
@@ -400,7 +390,6 @@ int MAIN(int argc, char **argv)
             }
         signerfile = NULL;
         keyfile = NULL;
-        need_rand = 1;
         }
     else if (operation == SMIME_DECRYPT)
         {
@@ -417,7 +406,6 @@ int MAIN(int argc, char **argv)
             BIO_printf(bio_err, "No recipient(s) certificate(s) specified\n");
             badarg = 1;
             }
-        need_rand = 1;
         }
     else if (!operation)
         badarg = 1;
@@ -478,9 +466,6 @@ int MAIN(int argc, char **argv)
         BIO_printf (bio_err, "-engine e      use engine e, possibly a hardware device.\n");
 #endif
         BIO_printf (bio_err, "-passin arg    input file pass phrase source\n");
-        BIO_printf(bio_err,  "-rand file%cfile%c...\n", ':', ':');
-        BIO_printf(bio_err,  "               load the file (or the files in the directory) into\n");
-        BIO_printf(bio_err,  "               the random number generator\n");
         BIO_printf (bio_err, "cert.pem       recipient certificate(s) for encryption\n");
         goto end;
         }
@@ -493,14 +478,6 @@ int MAIN(int argc, char **argv)
         {
         BIO_printf(bio_err, "Error getting password\n");
         goto end;
-        }
-
-    if (need_rand)
-        {
-        app_RAND_load_file(NULL, bio_err, (inrand != NULL));
-        if (inrand != NULL)
-            BIO_printf(bio_err,"%ld semi-random bytes loaded\n",
-                app_RAND_load_files(inrand));
         }
 
     ret = 2;
@@ -786,8 +763,6 @@ int MAIN(int argc, char **argv)
         }
     ret = 0;
 end:
-    if (need_rand)
-        app_RAND_write_file(NULL, bio_err);
     if (ret) ERR_print_errors(bio_err);
     sk_X509_pop_free(encerts, X509_free);
     sk_X509_pop_free(other, X509_free);

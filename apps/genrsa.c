@@ -75,7 +75,6 @@
 #include <openssl/evp.h>
 #include <openssl/x509.h>
 #include <openssl/pem.h>
-#include <openssl/rand.h>
 
 #define DEFBITS    2048
 #undef PROG
@@ -101,7 +100,6 @@ int MAIN(int argc, char **argv)
 #ifndef OPENSSL_NO_ENGINE
     char *engine=NULL;
 #endif
-    char *inrand=NULL;
     BIO *out=NULL;
     BIGNUM *bn = BN_new();
     RSA *rsa = NULL;
@@ -144,11 +142,6 @@ int MAIN(int argc, char **argv)
             engine= *(++argv);
             }
 #endif
-        else if (strcmp(*argv,"-rand") == 0)
-            {
-            if (--argc < 1) goto bad;
-            inrand= *(++argv);
-            }
 #ifndef OPENSSL_NO_DES
         else if (strcmp(*argv,"-des") == 0)
             enc=EVP_des_cbc();
@@ -209,9 +202,6 @@ bad:
 #ifndef OPENSSL_NO_ENGINE
         BIO_printf(bio_err," -engine e       use engine e, possibly a hardware device.\n");
 #endif
-        BIO_printf(bio_err," -rand file%cfile%c...\n", ':', ':');
-        BIO_printf(bio_err,"                 load the file (or the files in the directory) into\n");
-        BIO_printf(bio_err,"                 the random number generator\n");
         goto err;
         }
         
@@ -239,15 +229,6 @@ bad:
             }
         }
 
-    if (!app_RAND_load_file(NULL, bio_err, 1) && inrand == NULL
-        && !RAND_status())
-        {
-        BIO_printf(bio_err,"warning, not much extra random data, consider using the -rand option\n");
-        }
-    if (inrand != NULL)
-        BIO_printf(bio_err,"%ld semi-random bytes loaded\n",
-            app_RAND_load_files(inrand));
-
     BIO_printf(bio_err,"Generating RSA private key, %d bit long modulus\n",
         num);
 #ifdef OPENSSL_NO_ENGINE
@@ -260,8 +241,6 @@ bad:
 
     if (!BN_set_word(bn, f4) || !RSA_generate_key_ex(rsa, num, bn, &cb))
         goto err;
-        
-    app_RAND_write_file(NULL, bio_err);
 
     /* We need to do the following for when the base number size is <
      * long, esp windows 3.1 :-(. */

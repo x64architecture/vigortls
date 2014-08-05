@@ -121,7 +121,6 @@ int MAIN(int argc, char **argv)
     char *cpass = NULL, *mpass = NULL;
     char *passargin = NULL, *passargout = NULL, *passarg = NULL;
     char *passin = NULL, *passout = NULL;
-    char *inrand = NULL;
     char *macalg = NULL;
     char *CApath = NULL, *CAfile = NULL;
 #ifndef OPENSSL_NO_ENGINE
@@ -191,11 +190,6 @@ int MAIN(int argc, char **argv)
         } else if (!strcmp (*args, "-keypbe")) {
             if (!set_pbe(bio_err, &key_pbe, *++args))
                 badarg = 1;
-        } else if (!strcmp (*args, "-rand")) {
-            if (args[1]) {
-            args++;    
-            inrand = *args;
-            } else badarg = 1;
         } else if (!strcmp (*args, "-inkey")) {
             if (args[1]) {
             args++;    
@@ -324,9 +318,6 @@ int MAIN(int argc, char **argv)
 #ifndef OPENSSL_NO_ENGINE
     BIO_printf (bio_err, "-engine e     use engine e, possibly a hardware device.\n");
 #endif
-    BIO_printf(bio_err,  "-rand file%cfile%c...\n", ':', ':');
-    BIO_printf(bio_err,  "              load the file (or the files in the directory) into\n");
-    BIO_printf(bio_err,  "              the random number generator\n");
     BIO_printf(bio_err,  "-CSP name     Microsoft CSP name\n");
     BIO_printf(bio_err,  "-LMK          Add local machine keyset attribute to private key\n");
         goto end;
@@ -359,12 +350,6 @@ int MAIN(int argc, char **argv)
     mpass = macpass;
     }
 
-    if (export_cert || inrand) {
-        app_RAND_load_file(NULL, bio_err, (inrand != NULL));
-        if (inrand != NULL)
-        BIO_printf(bio_err,"%ld semi-random bytes loaded\n",
-            app_RAND_load_files(inrand));
-    }
     ERR_load_crypto_strings();
 
 #ifdef CRYPTO_MDEBUG
@@ -671,7 +656,6 @@ int MAIN(int argc, char **argv)
     ret = 0;
  end:
     if (p12) PKCS12_free(p12);
-    if (export_cert || inrand) app_RAND_write_file(NULL, bio_err);
 #ifdef CRYPTO_MDEBUG
     CRYPTO_remove_all_info();
 #endif

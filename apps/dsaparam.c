@@ -115,9 +115,8 @@ int MAIN(int argc, char **argv)
     int i,badops=0,text=0;
     BIO *in=NULL,*out=NULL;
     int informat,outformat,noout=0,C=0,ret=1;
-    char *infile,*outfile,*prog,*inrand=NULL;
+    char *infile,*outfile,*prog;
     int numbits= -1,num,genkey=0;
-    int need_rand=0;
 #ifndef OPENSSL_NO_ENGINE
     char *engine=NULL;
 #endif
@@ -185,13 +184,6 @@ int MAIN(int argc, char **argv)
         else if (strcmp(*argv,"-genkey") == 0)
             {
             genkey=1;
-            need_rand=1;
-            }
-        else if (strcmp(*argv,"-rand") == 0)
-            {
-            if (--argc < 1) goto bad;
-            inrand= *(++argv);
-            need_rand=1;
             }
         else if (strcmp(*argv,"-noout") == 0)
             noout=1;
@@ -199,7 +191,6 @@ int MAIN(int argc, char **argv)
             {
             /* generate a key */
             numbits=num;
-            need_rand=1;
             }
         else
             {
@@ -224,7 +215,6 @@ bad:
         BIO_printf(bio_err," -C            Output C code\n");
         BIO_printf(bio_err," -noout        no output\n");
         BIO_printf(bio_err," -genkey       generate a DSA key\n");
-        BIO_printf(bio_err," -rand         files to use for random number input\n");
 #ifndef OPENSSL_NO_ENGINE
         BIO_printf(bio_err," -engine e     use engine e, possibly a hardware device.\n");
 #endif
@@ -272,19 +262,10 @@ bad:
         setup_engine(bio_err, engine, 0);
 #endif
 
-    if (need_rand)
-        {
-        app_RAND_load_file(NULL, bio_err, (inrand != NULL));
-        if (inrand != NULL)
-            BIO_printf(bio_err,"%ld semi-random bytes loaded\n",
-                app_RAND_load_files(inrand));
-        }
-
     if (numbits > 0)
         {
         BN_GENCB cb;
         BN_GENCB_set(&cb, dsa_cb, bio_err);
-        assert(need_rand);
         dsa = DSA_new();
         if (!dsa)
             {
@@ -422,7 +403,6 @@ bad:
         {
         DSA *dsakey;
 
-        assert(need_rand);
         if ((dsakey=DSAparams_dup(dsa)) == NULL) goto end;
         if (!DSA_generate_key(dsakey))
             {
@@ -441,8 +421,6 @@ bad:
             }
         DSA_free(dsakey);
         }
-    if (need_rand)
-        app_RAND_write_file(NULL, bio_err);
     ret=0;
 end:
     if (in != NULL) BIO_free(in);

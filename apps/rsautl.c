@@ -191,9 +191,6 @@ int MAIN(int argc, char **argv)
         BIO_printf(bio_err, "Error getting password\n");
         goto end;
     }
-
-/* FIXME: seed PRNG only if needed */
-    app_RAND_load_file(NULL, bio_err, 0);
     
     switch(key_type) {
         case KEY_PRIVKEY:

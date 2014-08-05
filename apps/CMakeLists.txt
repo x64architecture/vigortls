@@ -5,7 +5,6 @@ add_executable(
 	openssl
 
 	apps.c
-	app_rand.c
 	asn1pars.c
 	ca.c
 	ciphers.c

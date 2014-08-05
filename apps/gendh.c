@@ -70,7 +70,6 @@
 #include <sys/stat.h>
 #include "apps.h"
 #include <openssl/bio.h>
-#include <openssl/rand.h>
 #include <openssl/err.h>
 #include <openssl/bn.h>
 #include <openssl/dh.h>
@@ -92,7 +91,6 @@ int MAIN(int argc, char **argv)
     int ret=1,num=DEFBITS;
     int g=2;
     char *outfile=NULL;
-    char *inrand=NULL;
 #ifndef OPENSSL_NO_ENGINE
     char *engine=NULL;
 #endif
@@ -131,11 +129,6 @@ int MAIN(int argc, char **argv)
             engine= *(++argv);
             }
 #endif
-        else if (strcmp(*argv,"-rand") == 0)
-            {
-            if (--argc < 1) goto bad;
-            inrand= *(++argv);
-            }
         else
             break;
         argv++;
@@ -152,9 +145,6 @@ bad:
 #ifndef OPENSSL_NO_ENGINE
         BIO_printf(bio_err," -engine e - use engine e, possibly a hardware device.\n");
 #endif
-        BIO_printf(bio_err," -rand file%cfile%c...\n", ':', ':');
-        BIO_printf(bio_err,"           - load the file (or the files in the directory) into\n");
-        BIO_printf(bio_err,"             the random number generator\n");
         goto end;
         }
         
@@ -182,21 +172,11 @@ bad:
             }
         }
 
-    if (!app_RAND_load_file(NULL, bio_err, 1) && inrand == NULL)
-        {
-        BIO_printf(bio_err,"warning, not much extra random data, consider using the -rand option\n");
-        }
-    if (inrand != NULL)
-        BIO_printf(bio_err,"%ld semi-random bytes loaded\n",
-            app_RAND_load_files(inrand));
-
     BIO_printf(bio_err,"Generating DH parameters, %d bit long safe prime, generator %d\n",num,g);
     BIO_printf(bio_err,"This is going to take a long time\n");
 
     if (((dh = DH_new()) == NULL) || !DH_generate_parameters_ex(dh, num, g, &cb))
         goto end;
-        
-    app_RAND_write_file(NULL, bio_err);
 
     if (!PEM_write_bio_DHparams(out,dh))
         goto end;

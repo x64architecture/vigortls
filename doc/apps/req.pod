@@ -20,7 +20,6 @@ B<openssl> B<req>
 [B<-verify>]
 [B<-modulus>]
 [B<-new>]
-[B<-rand file(s)>]
 [B<-newkey rsa:bits>]
 [B<-newkey alg:file>]
 [B<-nodes>]
@@ -134,14 +133,6 @@ Replaces subject field of input request with specified data and outputs
 modified request. The arg must be formatted as
 I</type0=value0/type1=value1/type2=...>,
 characters may be escaped by \ (backslash), no spaces are skipped.
-
-=item B<-rand file(s)>
-
-a file or files containing random data used to seed the random number
-generator, or an EGD socket (see L<RAND_egd(3)|RAND_egd(3)>).
-Multiple files can be specified separated by a OS-dependent character.
-The separator is B<;> for MS-Windows, B<,> for OpenVMS, and B<:> for
-all others.
 
 =item B<-newkey arg>
 
@@ -372,12 +363,6 @@ object identifiers. Each line should consist of the short name of the
 object identifier followed by B<=> and the numerical form. The short
 and long names are the same when this option is used.
 
-=item B<RANDFILE>
-
-This specifies a filename in which random number seed information is
-placed and read from, or an EGD socket (see L<RAND_egd(3)|RAND_egd(3)>).
-It is used for private key generation.
-
 =item B<encrypt_key>
 
 If this is set to B<no> then if a private key is generated it is
@@ -567,9 +552,6 @@ Sample configuration file prompting for field values:
  basicConstraints = CA:true
 
 Sample configuration containing all field values:
-
-
- RANDFILE		= $ENV::HOME/.rnd
 
  [ req ]
  default_bits		= 1024

@@ -31,7 +31,6 @@ B<openssl> B<smime>
 [B<-indef>]
 [B<-noindef>]
 [B<-stream>]
-[B<-rand file(s)>]
 [B<-md digest>]
 [cert.pem]...
 
@@ -238,14 +237,6 @@ multiple times to specify successive keys.
 
 the private key password source. For more information about the format of B<arg>
 see the B<PASS PHRASE ARGUMENTS> section in L<openssl(1)|openssl(1)>.
-
-=item B<-rand file(s)>
-
-a file or files containing random data used to seed the random number
-generator, or an EGD socket (see L<RAND_egd(3)|RAND_egd(3)>).
-Multiple files can be specified separated by a OS-dependent character.
-The separator is B<;> for MS-Windows, B<,> for OpenVMS, and B<:> for
-all others.
 
 =item B<cert.pem...>
 

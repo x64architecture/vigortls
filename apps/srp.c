@@ -76,8 +76,6 @@
 #define BASE_SECTION    "srp"
 #define CONFIG_FILE "openssl.cnf"
 
-#define ENV_RANDFILE        "RANDFILE"
-
 #define ENV_DATABASE        "srpvfile"
 #define ENV_DEFAULT_SRP        "default_srp"
 
@@ -293,7 +291,6 @@ int MAIN(int argc, char **argv)
     char **pp ;
     int i;
     long errorline = -1;
-    char *randfile=NULL;
 #ifndef OPENSSL_NO_ENGINE
     char *engine = NULL;
 #endif
@@ -411,10 +408,6 @@ bad:
         {
         for (pp=srp_usage; (*pp != NULL); pp++)
             BIO_printf(bio_err,"%s",*pp);
-
-        BIO_printf(bio_err," -rand file%cfile%c...\n", ':', ':');
-        BIO_printf(bio_err,"                 load the file (or the files in the directory) into\n");
-        BIO_printf(bio_err,"                 the random number generator\n");
         goto err;
         }
 
@@ -484,9 +477,6 @@ bad:
                 goto err;
                 }
             }
-         
-        if (randfile == NULL && conf)
-                randfile = NCONF_get_string(conf, BASE_SECTION, "RANDFILE");
 
     
         VERBOSE BIO_printf(bio_err,"trying to read " ENV_DATABASE " in section \"%s\"\n",section);
@@ -498,10 +488,6 @@ bad:
             }
 
             }
-    if (randfile == NULL)
-        ERR_clear_error();
-           else 
-        app_RAND_load_file(randfile, bio_err, 0);
 
     VERBOSE BIO_printf(bio_err,"Trying to read SRP verifier file \"%s\"\n",dbfile);
 
@@ -737,7 +723,6 @@ err:
     free(passin);
 
     if (ret) ERR_print_errors(bio_err);
-    if (randfile) app_RAND_write_file(randfile, bio_err);
     if (conf) NCONF_free(conf);
     if (db) free_index(db);
 

@@ -116,7 +116,7 @@ int MAIN(int argc, char **argv)
     int debug=0;
     int keyform=FORMAT_PEM;
     const char *outfile = NULL, *keyfile = NULL;
-    const char *sigfile = NULL, *randfile = NULL;
+    const char *sigfile = NULL;
     int out_bin = -1, want_pub = 0, do_verify = 0;
     EVP_PKEY *sigkey = NULL;
     unsigned char *sigbuf = NULL;
@@ -157,11 +157,6 @@ int MAIN(int argc, char **argv)
             separator=1;
         else if (strcmp(*argv,"-r") == 0)
             separator=2;
-        else if (strcmp(*argv,"-rand") == 0)
-            {
-            if (--argc < 1) break;
-            randfile=*(++argv);
-            }
         else if (strcmp(*argv,"-out") == 0)
             {
             if (--argc < 1) break;
@@ -313,9 +308,6 @@ int MAIN(int argc, char **argv)
         else
             out_bin = 0;
     }
-
-    if (randfile)
-        app_RAND_load_file(randfile, bio_err, 0);
 
     if (outfile) {
         if (out_bin)

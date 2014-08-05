@@ -67,7 +67,6 @@
 #define PROG rand_main
 
 /* -out file         - write to file
- * -rand file:file   - PRNG seed files
  * -base64           - base64 encode output
  * -hex              - hex encode output
  * num               - write 'num' bytes
@@ -80,7 +79,6 @@ int MAIN(int argc, char **argv)
     int i, r, ret = 1;
     int badopt;
     char *outfile = NULL;
-    char *inrand = NULL;
     int base64 = 0;
     int hex = 0;
     BIO *out = NULL;
@@ -118,13 +116,6 @@ int MAIN(int argc, char **argv)
                 badopt = 1;
             }
 #endif
-        else if (strcmp(argv[i], "-rand") == 0)
-            {
-            if ((argv[i+1] != NULL) && (inrand == NULL))
-                inrand = argv[++i];
-            else
-                badopt = 1;
-            }
         else if (strcmp(argv[i], "-base64") == 0)
             {
             if (!base64)
@@ -168,7 +159,6 @@ int MAIN(int argc, char **argv)
 #ifndef OPENSSL_NO_ENGINE
         BIO_printf(bio_err, "-engine e             - use engine e, possibly a hardware device.\n");
 #endif
-        BIO_printf(bio_err, "-rand file%cfile%c... - seed PRNG from files\n", ':', ':');
         BIO_printf(bio_err, "-base64               - base64 encode output\n");
         BIO_printf(bio_err, "-hex                  - hex encode output\n");
         goto err;
@@ -177,11 +167,6 @@ int MAIN(int argc, char **argv)
 #ifndef OPENSSL_NO_ENGINE
         setup_engine(bio_err, engine, 0);
 #endif
-
-    app_RAND_load_file(NULL, bio_err, (inrand != NULL));
-    if (inrand != NULL)
-        BIO_printf(bio_err,"%ld semi-random bytes loaded\n",
-            app_RAND_load_files(inrand));
 
     out = BIO_new(BIO_s_file());
     if (out == NULL)
@@ -227,7 +212,6 @@ int MAIN(int argc, char **argv)
         BIO_puts(out, "\n");
     (void)BIO_flush(out);
 
-    app_RAND_write_file(NULL, bio_err);
     ret = 0;
     
 err:

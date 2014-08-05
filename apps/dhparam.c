@@ -155,7 +155,6 @@ int MAIN(int argc, char **argv)
     BIO *in=NULL,*out=NULL;
     int informat,outformat,check=0,noout=0,C=0,ret=1;
     char *infile,*outfile,*prog;
-    char *inrand=NULL;
 #ifndef OPENSSL_NO_ENGINE
     char *engine=NULL;
 #endif
@@ -223,11 +222,6 @@ int MAIN(int argc, char **argv)
             g=2;
         else if (strcmp(*argv,"-5") == 0)
             g=5;
-        else if (strcmp(*argv,"-rand") == 0)
-            {
-            if (--argc < 1) goto bad;
-            inrand= *(++argv);
-            }
         else if (((sscanf(*argv,"%d",&num) == 0) || (num <= 0)))
             goto bad;
         argv++;
@@ -255,9 +249,6 @@ bad:
 #ifndef OPENSSL_NO_ENGINE
         BIO_printf(bio_err," -engine e     use engine e, possibly a hardware device.\n");
 #endif
-        BIO_printf(bio_err," -rand file%cfile%c...\n", ':', ':');
-        BIO_printf(bio_err,"               - load the file (or the files in the directory) into\n");
-        BIO_printf(bio_err,"               the random number generator\n");
         BIO_printf(bio_err," -noout        no output\n");
         goto end;
         }
@@ -292,13 +283,6 @@ bad:
 
         BN_GENCB cb;
         BN_GENCB_set(&cb, dh_cb, bio_err);
-        if (!app_RAND_load_file(NULL, bio_err, 1) && inrand == NULL)
-            {
-            BIO_printf(bio_err,"warning, not much extra random data, consider using the -rand option\n");
-            }
-        if (inrand != NULL)
-            BIO_printf(bio_err,"%ld semi-random bytes loaded\n",
-                app_RAND_load_files(inrand));
 
 #ifndef OPENSSL_NO_DSA
         if (dsaparam)
@@ -334,8 +318,6 @@ bad:
                 goto end;
                 }
             }
-
-        app_RAND_write_file(NULL, bio_err);
     } else {
 
         in=BIO_new(BIO_s_file());

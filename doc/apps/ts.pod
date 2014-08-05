@@ -8,7 +8,6 @@ ts - Time Stamping Authority tool (client/server)
 
 B<openssl> B<ts>
 B<-query>
-[B<-rand> file:file...]
 [B<-config> configfile]
 [B<-data> file_to_hash]
 [B<-digest> digest_bytes]
@@ -97,12 +96,6 @@ The B<-query> switch can be used for creating and printing a time stamp
 request with the following options:
 
 =over 4
-
-=item B<-rand> file:file...
-
-The files containing random data for seeding the random number
-generator. Multiple files can be specified, the separator is B<;> for
-MS-Windows, B<,> for VMS and B<:> for all other platforms. (Optional)
 
 =item B<-config> configfile
 
@@ -359,10 +352,6 @@ section can be overridden with the B<-section> command line switch. (Optional)
 See L<ca(1)|ca(1)> for description. (Optional)
 
 =item B<oid_section>
-
-See L<ca(1)|ca(1)> for description. (Optional)
-
-=item B<RANDFILE>
 
 See L<ca(1)|ca(1)> for description. (Optional)
 

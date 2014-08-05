@@ -149,7 +149,6 @@
 #include <openssl/ssl.h>
 #include <openssl/err.h>
 #include <openssl/pem.h>
-#include <openssl/rand.h>
 #include <openssl/ocsp.h>
 #include <openssl/bn.h>
 #ifndef OPENSSL_NO_SRP
@@ -323,7 +322,6 @@ static void sc_usage(void)
 #ifndef OPENSSL_NO_ENGINE
     BIO_printf(bio_err," -engine id    - Initialize and use the specified engine\n");
 #endif
-    BIO_printf(bio_err," -rand file%cfile%c...\n", ':', ':');
     BIO_printf(bio_err," -sess_out arg - file to write SSL session to\n");
     BIO_printf(bio_err," -sess_in arg  - file to read SSL session from\n");
 #ifndef OPENSSL_NO_TLSEXT
@@ -562,7 +560,6 @@ int MAIN(int argc, char **argv)
     const SSL_METHOD *meth=NULL;
     int socket_type=SOCK_STREAM;
     BIO *sbio;
-    char *inrand=NULL;
     int mbuf_len=0;
     struct timeval timeout, *timeoutp;
 #ifndef OPENSSL_NO_ENGINE
@@ -886,11 +883,6 @@ int MAIN(int argc, char **argv)
             ssl_client_engine_id = *(++argv);
             }
 #endif
-        else if (strcmp(*argv,"-rand") == 0)
-            {
-            if (--argc < 1) goto bad;
-            inrand= *(++argv);
-            }
 #ifndef OPENSSL_NO_TLSEXT
         else if (strcmp(*argv,"-servername") == 0)
             {
@@ -1001,15 +993,6 @@ bad:
             goto end;
             }
         }
-
-    if (!app_RAND_load_file(NULL, bio_err, 1) && inrand == NULL
-        && !RAND_status())
-        {
-        BIO_printf(bio_err,"warning, not much extra random data, consider using the -rand option\n");
-        }
-    if (inrand != NULL)
-        BIO_printf(bio_err,"%ld semi-random bytes loaded\n",
-            app_RAND_load_files(inrand));
 
     if (bio_c_out == NULL)
         {
