@@ -112,9 +112,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #define USE_SOCKETS
-#define NON_MAIN
 #include "apps.h"
-#undef NON_MAIN
 #undef USE_SOCKETS
 #include <openssl/err.h>
 #include <openssl/rand.h>

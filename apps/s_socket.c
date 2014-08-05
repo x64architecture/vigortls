@@ -64,10 +64,8 @@
 #include <unistd.h>
 
 #define USE_SOCKETS
-#define NON_MAIN
 #include "apps.h"
 #undef USE_SOCKETS
-#undef NON_MAIN
 #include "s_apps.h"
 #include <openssl/ssl.h>
 

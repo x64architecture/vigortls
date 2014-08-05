@@ -133,9 +133,7 @@
 #include <openssl/rsa.h>
 #include <openssl/bn.h>
 
-#define NON_MAIN
 #include "apps.h"
-#undef NON_MAIN
 
 typedef struct {
     const char *name;

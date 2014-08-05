@@ -125,26 +125,10 @@
 #endif
 #include <openssl/ossl_typ.h>
 
-#ifndef MONOLITH
-
-#define MAIN(a,v)    main(a,v)
-
-#ifndef NON_MAIN
-CONF *config=NULL;
-BIO *bio_err=NULL;
-#else
-extern CONF *config;
-extern BIO *bio_err;
-#endif
-
-#else
-
 #define MAIN(a,v)    PROG(a,v)
 extern CONF *config;
 extern char *default_config_file;
 extern BIO *bio_err;
-
-#endif
 
 #include <signal.h>
 
