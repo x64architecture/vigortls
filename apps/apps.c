@@ -1436,14 +1436,9 @@ int load_config(BIO *err, CONF *cnf)
 char *make_config_name()
     {
     const char *t=X509_get_default_cert_area();
-    size_t len;
     char *p;
 
-    len=strlen(t)+strlen("openssl.cnf")+2;
-    p=malloc(len);
-    BUF_strlcpy(p,t,len);
-    BUF_strlcat(p,"/",len);
-    BUF_strlcat(p,"openssl.cnf",len);
+    asprintf(&p, "%s/openssl.cnf", t);
 
     return p;
     }

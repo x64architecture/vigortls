@@ -74,7 +74,6 @@ extern "C" {
 #ifdef OPENSSL_SYS_UNIX
 # if defined(linux) || defined(__linux__) || defined(OPENSSL_SYSNAME_LINUX)
 #  define OPENSSL_SYS_LINUX
-#  define _GNU_SOURCE
 # endif
 # ifdef OPENSSL_SYSNAME_MACOSX
 #  define OPENSSL_SYS_MACOSX

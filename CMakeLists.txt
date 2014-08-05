@@ -24,6 +24,10 @@ else()
 	message(FATAL_ERROR "Unsupported processor:" ${CMAKE_SYSTEM_PROCESSOR})
 endif()
 
+if(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
+	add_definitions(-D_GNU_SOURCE)
+endif()
+
 add_definitions(
 	-DOPENSSL_NO_CAMELLIA
 	-DOPENSSL_NO_EC_NISTP_64_GCC_128
