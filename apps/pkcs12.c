@@ -68,8 +68,6 @@
 #include <openssl/pem.h>
 #include <openssl/pkcs12.h>
 
-#define PROG pkcs12_main
-
 const EVP_CIPHER *enc;
 
 
@@ -90,9 +88,9 @@ int alg_print(BIO *x, X509_ALGOR *alg);
 int cert_load(BIO *in, STACK_OF(X509) *sk);
 static int set_pbe(BIO *err, int *ppbe, const char *str);
 
-int MAIN(int, char **);
+int pkcs12_main(int, char **);
 
-int MAIN(int argc, char **argv)
+int pkcs12_main(int argc, char **argv)
 {
     ENGINE *e = NULL;
     char *infile=NULL, *outfile=NULL, *keyname = NULL;    

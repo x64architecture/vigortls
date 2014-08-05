@@ -71,9 +71,6 @@
 #include <openssl/pem.h>
 #include <openssl/bn.h>
 
-#undef PROG
-#define PROG    dsa_main
-
 /* -inform arg    - input format - default PEM (one of DER, NET or PEM)
  * -outform arg - output format - default PEM
  * -in arg    - input file - default stdin
@@ -92,9 +89,9 @@
  * -modulus    - print the DSA public key
  */
 
-int MAIN(int, char **);
+int dsa_main(int, char **);
 
-int MAIN(int argc, char **argv)
+int dsa_main(int argc, char **argv)
     {
     ENGINE *e = NULL;
     int ret=1;

@@ -70,9 +70,6 @@
 
 #include "apps.h"
 
-#undef PROG
-#define PROG srp_main
-
 #define BASE_SECTION    "srp"
 #define CONFIG_FILE "openssl.cnf"
 
@@ -113,7 +110,7 @@ static char *section=NULL;
 #define VVERBOSE if (verbose>1) 
 
 
-int MAIN(int, char **);
+int srp_main(int, char **);
 
 static int get_index(CA_DB *db, char* id, char type)
     {
@@ -263,7 +260,7 @@ static char *srp_create_user(char *user, char **srp_verifier,
     return gNid;
     }
 
-int MAIN(int argc, char **argv)
+int srp_main(int argc, char **argv)
     {
     int add_user = 0;
     int list_user= 0;

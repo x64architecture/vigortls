@@ -62,11 +62,9 @@
 #include <openssl/err.h>
 #include <openssl/evp.h>
 
-#define PROG pkey_main
+int pkey_main(int, char **);
 
-int MAIN(int, char **);
-
-int MAIN(int argc, char **argv)
+int pkey_main(int argc, char **argv)
     {
     ENGINE *e = NULL;
     char **args, *infile = NULL, *outfile = NULL;

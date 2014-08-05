@@ -70,9 +70,6 @@
 #include <openssl/pem.h>
 #include <openssl/bn.h>
 
-#undef PROG
-#define PROG    rsa_main
-
 /* -inform arg    - input format - default PEM (one of DER, NET or PEM)
  * -outform arg - output format - default PEM
  * -in arg    - input file - default stdin
@@ -94,9 +91,9 @@
  * -pubout    - Output a public key.
  */
 
-int MAIN(int, char **);
+int rsa_main(int, char **);
 
-int MAIN(int argc, char **argv)
+int rsa_main(int argc, char **argv)
     {
     ENGINE *e = NULL;
     int ret=1;

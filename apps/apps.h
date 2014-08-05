@@ -125,7 +125,6 @@
 #endif
 #include <openssl/ossl_typ.h>
 
-#define MAIN(a,v)    PROG(a,v)
 extern CONF *config;
 extern char *default_config_file;
 extern BIO *bio_err;

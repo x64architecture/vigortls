@@ -76,9 +76,6 @@
 #include <openssl/err.h>
 #include <unistd.h>
 
-#undef PROG
-#define PROG s_time_main
-
 #undef ioctl
 #define ioctl ioctlsocket
 
@@ -309,12 +306,11 @@ static double tm_Time_F(int s)
     }
 
 /***********************************************************************
- * MAIN - main processing area for client
- *            real name depends on MONOLITH
+ * s_time_main - main processing area for client
  */
-int MAIN(int, char **);
+int s_time_main(int, char **);
 
-int MAIN(int argc, char **argv)
+int s_time_main(int argc, char **argv)
     {
     double totalTime = 0.0;
     int nConn = 0;

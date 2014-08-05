@@ -89,9 +89,6 @@
 #  define R_OK 4
 #endif
 
-#undef PROG
-#define PROG ca_main
-
 #define BASE_SECTION    "ca"
 #define CONFIG_FILE "openssl.cnf"
 
@@ -233,9 +230,9 @@ static int preserve=0;
 static int msie_hack=0;
 
 
-int MAIN(int, char **);
+int ca_main(int, char **);
 
-int MAIN(int argc, char **argv)
+int ca_main(int argc, char **argv)
     {
     ENGINE *e = NULL;
     char *key=NULL,*passargin=NULL;

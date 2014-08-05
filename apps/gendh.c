@@ -77,14 +77,12 @@
 #include <openssl/pem.h>
 
 #define DEFBITS    512
-#undef PROG
-#define PROG gendh_main
 
 static int dh_cb(int p, int n, BN_GENCB *cb);
 
-int MAIN(int, char **);
+int gendh_main(int, char **);
 
-int MAIN(int argc, char **argv)
+int gendh_main(int argc, char **argv)
     {
     BN_GENCB cb;
     DH *dh=NULL;

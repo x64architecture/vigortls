@@ -77,14 +77,12 @@
 #include <openssl/pem.h>
 
 #define DEFBITS    2048
-#undef PROG
-#define PROG genrsa_main
 
 static int genrsa_cb(int p, int n, BN_GENCB *cb);
 
-int MAIN(int, char **);
+int genrsa_main(int, char **);
 
-int MAIN(int argc, char **argv)
+int genrsa_main(int argc, char **argv)
     {
     BN_GENCB cb;
 #ifndef OPENSSL_NO_ENGINE

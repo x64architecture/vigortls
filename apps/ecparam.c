@@ -84,9 +84,6 @@
 #include <openssl/x509.h>
 #include <openssl/pem.h>
 
-#undef PROG
-#define PROG    ecparam_main
-
 /* -inform arg      - input format - default PEM (DER or PEM)
  * -outform arg     - output format - default PEM
  * -in  arg         - input file  - default stdin
@@ -113,9 +110,9 @@
 
 static int ecparam_print_var(BIO *,BIGNUM *,const char *,int,unsigned char *);
 
-int MAIN(int, char **);
+int ecparam_main(int, char **);
 
-int MAIN(int argc, char **argv)
+int ecparam_main(int argc, char **argv)
     {
     EC_GROUP *group = NULL;
     point_conversion_form_t form = POINT_CONVERSION_UNCOMPRESSED; 

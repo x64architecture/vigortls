@@ -77,9 +77,6 @@
 #include <openssl/x509.h>
 #include <openssl/pem.h>
 
-#undef PROG
-#define PROG    dsaparam_main
-
 /* -inform arg    - input format - default PEM (DER or PEM)
  * -outform arg - output format - default PEM
  * -in arg    - input file - default stdin
@@ -107,9 +104,9 @@ static void timebomb_sigalarm(int foo)
 
 static int dsa_cb(int p, int n, BN_GENCB *cb);
 
-int MAIN(int, char **);
+int dsaparam_main(int, char **);
 
-int MAIN(int argc, char **argv)
+int dsaparam_main(int argc, char **argv)
     {
     DSA *dsa=NULL;
     int i,badops=0,text=0;

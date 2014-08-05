@@ -68,10 +68,6 @@
 
 static void usage(void);
 
-#undef PROG
-
-#define PROG pkeyutl_main
-
 static EVP_PKEY_CTX *init_ctx(int *pkeysize,
                 char *keyfile, int keyform, int key_type,
                 char *passargin, int pkey_op, ENGINE *e);
@@ -83,9 +79,9 @@ static int do_keyop(EVP_PKEY_CTX *ctx, int pkey_op,
         unsigned char *out, size_t *poutlen,
         unsigned char *in, size_t inlen);
 
-int MAIN(int argc, char **);
+int pkeyutl_main(int argc, char **);
 
-int MAIN(int argc, char **argv)
+int pkeyutl_main(int argc, char **argv)
 {
     BIO *in = NULL, *out = NULL;
     char *infile = NULL, *outfile = NULL, *sigfile = NULL;

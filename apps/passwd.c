@@ -23,10 +23,6 @@
 #endif
 
 
-#undef PROG
-#define PROG passwd_main
-
-
 static unsigned const char cov_2char[64]={
     /* from crypto/des/fcrypt.c */
     0x2E,0x2F,0x30,0x31,0x32,0x33,0x34,0x35,
@@ -55,9 +51,9 @@ static int do_passwd(int passed_salt, char **salt_p, char **salt_malloc_p,
  * -reverse      - switch table columns
  */
 
-int MAIN(int, char **);
+int passwd_main(int, char **);
 
-int MAIN(int argc, char **argv)
+int passwd_main(int argc, char **argv)
     {
     int ret = 1;
     char *infile = NULL;
@@ -494,7 +490,7 @@ err:
     }
 #else
 
-int MAIN(int argc, char **argv)
+int passwd_main(int argc, char **argv)
     {
     fputs("Program not available.\n", stderr)
     return (1);

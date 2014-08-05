@@ -225,8 +225,6 @@ static int accept_socket= -1;
 
 #define TEST_CERT    "server.pem"
 #define TEST_CERT2    "server2.pem"
-#undef PROG
-#define PROG        s_server_main
 
 extern int verify_depth, verify_return_error;
 
@@ -713,7 +711,7 @@ static int next_proto_cb(SSL *s, const unsigned char **data, unsigned int *len, 
 # endif  /* ndef OPENSSL_NO_NEXTPROTONEG */
 
 
-int MAIN(int, char **);
+int s_server_main(int, char **);
 
 #ifndef OPENSSL_NO_SRP
     static srpsrvparm srp_callback_parm;
@@ -722,7 +720,7 @@ int MAIN(int, char **);
 static char *srtp_profiles = NULL;
 #endif
 
-int MAIN(int argc, char *argv[])
+int s_server_main(int argc, char *argv[])
     {
     X509_VERIFY_PARAM *vpm = NULL;
     int badarg = 0;

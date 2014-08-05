@@ -97,9 +97,6 @@
 #define DEFAULT_KEY_LENGTH    512
 #define MIN_KEY_LENGTH        384
 
-#undef PROG
-#define PROG    req_main
-
 /* -inform arg    - input format - default PEM (DER or PEM)
  * -outform arg - output format - default PEM
  * -in arg    - input file - default stdin
@@ -147,9 +144,9 @@ static char *default_config_file=NULL;
 static CONF *req_conf=NULL;
 static int batch=0;
 
-int MAIN(int, char **);
+int req_main(int, char **);
 
-int MAIN(int argc, char **argv)
+int req_main(int argc, char **argv)
     {
     ENGINE *e = NULL, *gen_eng = NULL;
     unsigned long nmflag = 0, reqflag = 0;

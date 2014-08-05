@@ -157,9 +157,6 @@
 #include "s_apps.h"
 #include "timeouts.h"
 
-#undef PROG
-#define PROG    s_client_main
-
 /*#define SSL_HOST_NAME    "www.netscape.com" */
 /*#define SSL_HOST_NAME    "193.118.187.102" */
 #define SSL_HOST_NAME    "localhost"
@@ -525,9 +522,9 @@ enum
     PROTO_XMPP
 };
 
-int MAIN(int, char **);
+int s_client_main(int, char **);
 
-int MAIN(int argc, char **argv)
+int s_client_main(int argc, char **argv)
     {
     unsigned int off=0, clr=0;
     SSL *con=NULL;

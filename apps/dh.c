@@ -69,9 +69,6 @@
 #include <openssl/x509.h>
 #include <openssl/pem.h>
 
-#undef PROG
-#define PROG    dh_main
-
 /* -inform arg    - input format - default PEM (DER or PEM)
  * -outform arg - output format - default PEM
  * -in arg    - input file - default stdin
@@ -82,9 +79,9 @@
  * -C
  */
 
-int MAIN(int, char **);
+int dh_main(int, char **);
 
-int MAIN(int argc, char **argv)
+int dh_main(int argc, char **argv)
     {
     DH *dh=NULL;
     int i,badops=0,text=0;

@@ -125,9 +125,6 @@
 #include <openssl/dsa.h>
 #endif
 
-#undef PROG
-#define PROG    dhparam_main
-
 #define DEFBITS    512
 
 /* -inform arg    - input format - default PEM (DER or PEM)
@@ -143,9 +140,9 @@
 
 static int dh_cb(int p, int n, BN_GENCB *cb);
 
-int MAIN(int, char **);
+int dhparam_main(int, char **);
 
-int MAIN(int argc, char **argv)
+int dhparam_main(int argc, char **argv)
     {
     DH *dh=NULL;
     int i,badops=0,text=0;

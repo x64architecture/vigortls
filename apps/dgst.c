@@ -71,9 +71,6 @@
 #undef BUFSIZE
 #define BUFSIZE    1024*8
 
-#undef PROG
-#define PROG    dgst_main
-
 int do_fp(BIO *out, unsigned char *buf, BIO *bp, int sep, int binout,
       EVP_PKEY *key, unsigned char *sigin, int siglen,
       const char *sig_name, const char *md_name,
@@ -99,9 +96,9 @@ static void list_md_fn(const EVP_MD *m,
             mname, mname);
     }
 
-int MAIN(int, char **);
+int dgst_main(int, char **);
 
-int MAIN(int argc, char **argv)
+int dgst_main(int argc, char **argv)
     {
     ENGINE *e = NULL;
     unsigned char *buf=NULL;

@@ -75,13 +75,9 @@
 
 static void usage(void);
 
-#undef PROG
+int rsautl_main(int argc, char **);
 
-#define PROG rsautl_main
-
-int MAIN(int argc, char **);
-
-int MAIN(int argc, char **argv)
+int rsautl_main(int argc, char **argv)
 {
     ENGINE *e = NULL;
     BIO *in = NULL, *out = NULL;

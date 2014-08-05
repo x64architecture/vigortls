@@ -71,12 +71,10 @@
 #include <openssl/pem.h>
 
 #define DEFBITS    512
-#undef PROG
-#define PROG gendsa_main
 
-int MAIN(int, char **);
+int gendsa_main(int, char **);
 
-int MAIN(int argc, char **argv)
+int gendsa_main(int argc, char **argv)
     {
     DSA *dsa=NULL;
     int ret=1;
