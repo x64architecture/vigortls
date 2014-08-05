@@ -192,7 +192,7 @@ int args_from_file(char *file, int *argc, char **argv[])
     for (p=buf; *p; p++)
         if (*p == '\n') i++;
     if (arg != NULL) free(arg);
-    arg=(char **)malloc(sizeof(char *)*(i*2));
+    arg = reallocarray(NULL, (i * 2), sizeof(char*));
 
     *argv=arg;
     num=0;
@@ -293,7 +293,7 @@ int chopup_args(ARGS *arg, char *buf, int *argc, char **argv[])
     if (arg->count == 0)
         {
         arg->count=20;
-        arg->data=(char **)malloc(sizeof(char *)*arg->count);
+        arg->data = reallocarray(NULL, arg->count, sizeof(char *));
         }
     for (i=0; i<arg->count; i++)
         arg->data[i]=NULL;
@@ -313,8 +313,7 @@ int chopup_args(ARGS *arg, char *buf, int *argc, char **argv[])
             {
             char **tmp_p;
             int tlen = arg->count + 20;
-            tmp_p = (char **)realloc(arg->data,
-                sizeof(char *)*tlen);
+            tmp_p = reallocarray(arg->data, tlen, sizeof(char *));
             if (tmp_p == NULL)
                 return 0;
             arg->data  = tmp_p;
@@ -1966,9 +1965,9 @@ X509_NAME *parse_name(char *subject, long chtype, int multirdn)
     size_t buflen = strlen(subject)+1; /* to copy the types and values into. due to escaping, the copy can only become shorter */
     char *buf = malloc(buflen);
     size_t max_ne = buflen / 2 + 1; /* maximum number of name elements */
-    char **ne_types = malloc(max_ne * sizeof (char *));
-    char **ne_values = malloc(max_ne * sizeof (char *));
-    int *mval = malloc (max_ne * sizeof (int));
+    char **ne_types = reallocarray(NULL, max_ne, sizeof(char *));
+    char **ne_values = reallocarray(NULL, max_ne, sizeof(char *));
+    int *mval = reallocarray(NULL, max_ne, sizeof(int));
 
     char *sp = subject, *bp = buf;
     int i, ne_num = 0;

@@ -118,7 +118,7 @@ _LHASH *lh_new(LHASH_HASH_FN_TYPE h, LHASH_COMP_FN_TYPE c)
 
     if ((ret=malloc(sizeof(_LHASH))) == NULL)
         goto err0;
-    if ((ret->b=malloc(sizeof(LHASH_NODE *)*MIN_NODES)) == NULL)
+    if ((ret->b = reallocarray(NULL, MIN_NODES, sizeof(LHASH_NODE *))) == NULL)
         goto err1;
     for (i=0; i<MIN_NODES; i++)
         ret->b[i]=NULL;

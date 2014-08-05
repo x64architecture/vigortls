@@ -414,7 +414,7 @@ static int int_new_ex_data(int class_index, void *obj,
     mx = sk_CRYPTO_EX_DATA_FUNCS_num(item->meth);
     if (mx > 0)
         {
-        storage = malloc(mx * sizeof(CRYPTO_EX_DATA_FUNCS*));
+        storage = reallocarray(NULL, mx, sizeof(CRYPTO_EX_DATA_FUNCS*));
         if (!storage)
             goto skip;
         for(i = 0; i < mx; i++)
@@ -461,7 +461,7 @@ static int int_dup_ex_data(int class_index, CRYPTO_EX_DATA *to,
         mx = j;
     if (mx > 0)
         {
-        storage = malloc(mx * sizeof(CRYPTO_EX_DATA_FUNCS*));
+        storage = reallocarray(NULL, mx, sizeof(CRYPTO_EX_DATA_FUNCS*));
         if (!storage)
             goto skip;
         for(i = 0; i < mx; i++)
@@ -501,7 +501,7 @@ static void int_free_ex_data(int class_index, void *obj,
     mx = sk_CRYPTO_EX_DATA_FUNCS_num(item->meth);
     if (mx > 0)
         {
-        storage = malloc(mx * sizeof(CRYPTO_EX_DATA_FUNCS*));
+        storage = reallocarray(NULL, mx, sizeof(CRYPTO_EX_DATA_FUNCS*));
         if (!storage)
             goto skip;
         for(i = 0; i < mx; i++)

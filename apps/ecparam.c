@@ -342,7 +342,7 @@ bad:
 
         crv_len = EC_get_builtin_curves(NULL, 0);
 
-        curves = malloc((int)(sizeof(EC_builtin_curve) * crv_len));
+        curves = reallocarray(NULL, crv_len, sizeof(EC_builtin_curve));
 
         if (curves == NULL)
             goto end;

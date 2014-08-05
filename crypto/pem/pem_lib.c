@@ -587,7 +587,7 @@ int PEM_write_bio(BIO *bp, const char *name, char *header, unsigned char *data,
             goto err;
         }
 
-    buf = malloc(PEM_BUFSIZE*8);
+    buf = reallocarray(NULL, PEM_BUFSIZE, 8);
     if (buf == NULL)
         {
         reason=ERR_R_MALLOC_FAILURE;

@@ -1192,7 +1192,7 @@ int ec_GFp_simple_points_make_affine(const EC_GROUP *group, size_t num, EC_POINT
     tmp_Z = BN_CTX_get(ctx);
     if (tmp == NULL || tmp_Z == NULL) goto err;
 
-    prod_Z = malloc(num * sizeof prod_Z[0]);
+    prod_Z = reallocarray(NULL, num, sizeof prod_Z[0]);
     if (prod_Z == NULL) goto err;
     for (i = 0; i < num; i++)
         {

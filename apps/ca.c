@@ -2153,7 +2153,7 @@ again2:
     row[DB_type][0]='V';
     row[DB_type][1]='\0';
 
-    if ((irow=(char **)malloc(sizeof(char *)*(DB_NUMBER+1))) == NULL)
+    if ((irow = reallocarray(NULL, DB_NUMBER + 1, sizeof(char *))) == NULL)
         {
         BIO_printf(bio_err,"Memory allocation failure\n");
         goto err;
@@ -2421,7 +2421,7 @@ static int do_revoke(X509 *x509, CA_DB *db, int type, char *value)
         row[DB_type][0]='V';
         row[DB_type][1]='\0';
 
-        if ((irow=(char **)malloc(sizeof(char *)*(DB_NUMBER+1))) == NULL)
+        if ((irow = reallocarray(NULL, sizeof(char *), DB_NUMBER + 1)) == NULL)
             {
             BIO_printf(bio_err,"Memory allocation failure\n");
             goto err;

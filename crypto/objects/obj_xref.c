@@ -162,7 +162,7 @@ int OBJ_add_sigid(int signid, int dig_id, int pkey_id)
         sigx_app = sk_nid_triple_new(sigx_cmp);
     if (!sigx_app)
         return 0;
-    ntr = malloc(sizeof(int) * 3);
+    ntr = reallocarray(NULL, 3, sizeof(int));
     if (!ntr)
         return 0;
     ntr->sign_id = signid;

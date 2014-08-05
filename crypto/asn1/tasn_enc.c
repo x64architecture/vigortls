@@ -451,8 +451,8 @@ static int asn1_set_seq_out(STACK_OF(ASN1_VALUE) *sk, unsigned char **out,
             do_sort = 0;
         else
             {
-            derlst = malloc(sk_ASN1_VALUE_num(sk)
-                        * sizeof(*derlst));
+            derlst = reallocarray(NULL, sk_ASN1_VALUE_num(sk),
+            	sizeof(*derlst));
             tmpdat = malloc(skcontlen);
             if (!derlst || !tmpdat) {
                 free(derlst);

@@ -252,7 +252,7 @@ static BN_ULONG *bn_expand_internal(const BIGNUM *b, int words)
         BNerr(BN_F_BN_EXPAND_INTERNAL,BN_R_EXPAND_ON_STATIC_BIGNUM_DATA);
         return (NULL);
         }
-    a=A=(BN_ULONG *)malloc(sizeof(BN_ULONG)*words);
+    a = A = reallocarray(NULL, sizeof(BN_ULONG), words);
     if (A == NULL)
         {
         BNerr(BN_F_BN_EXPAND_INTERNAL,ERR_R_MALLOC_FAILURE);

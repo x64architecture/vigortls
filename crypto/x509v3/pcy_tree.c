@@ -225,7 +225,7 @@ static int tree_init(X509_POLICY_TREE **ptree, STACK_OF(X509) *certs,
         return 0;
 
     tree->flags = 0;
-    tree->levels = malloc(sizeof(X509_POLICY_LEVEL) * n);
+    tree->levels = reallocarray(NULL, n, sizeof(X509_POLICY_LEVEL));
     tree->nlevel = 0;
     tree->extra_data = NULL;
     tree->auth_policies = NULL;
