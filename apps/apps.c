@@ -113,6 +113,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <strings.h>
+#include <sys/stat.h>
+#include <sys/times.h>
 #include <sys/types.h>
 #include <unistd.h>
 #include <ctype.h>
@@ -154,89 +156,6 @@ load_netscape_key(BIO *err, BIO *key, const char *file,
 #endif
 
 int app_init(long mesgwin);
-#ifdef undef /* never finished - probably never will be :-) */
-int args_from_file(char *file, int *argc, char **argv[])
-    {
-    FILE *fp;
-    int num,i;
-    unsigned int len;
-    static char *buf=NULL;
-    static char **arg=NULL;
-    char *p;
-
-    fp=fopen(file,"r");
-    if (fp == NULL)
-        return (0);
-
-    if (fseek(fp,0,SEEK_END)==0)
-        len=ftell(fp), rewind(fp);
-    else    len=-1;
-    if (len<=0)
-        {
-        fclose(fp);
-        return (0);
-        }
-
-    *argc=0;
-    *argv=NULL;
-
-    if (buf != NULL) free(buf);
-    buf=(char *)malloc(len+1);
-    if (buf == NULL) return (0);
-
-    len=fread(buf,1,len,fp);
-    if (len <= 1) return (0);
-    buf[len]='\0';
-
-    i=0;
-    for (p=buf; *p; p++)
-        if (*p == '\n') i++;
-    if (arg != NULL) free(arg);
-    arg = reallocarray(NULL, (i * 2), sizeof(char*));
-
-    *argv=arg;
-    num=0;
-    p=buf;
-    for (;;)
-        {
-        if (!*p) break;
-        if (*p == '#') /* comment line */
-            {
-            while (*p && (*p != '\n')) p++;
-            continue;
-            }
-        /* else we have a line */
-        *(arg++)=p;
-        num++;
-        while (*p && ((*p != ' ') && (*p != '\t') && (*p != '\n')))
-            p++;
-        if (!*p) break;
-        if (*p == '\n')
-            {
-            *(p++)='\0';
-            continue;
-            }
-        /* else it is a tab or space */
-        p++;
-        while (*p && ((*p == ' ') || (*p == '\t') || (*p == '\n')))
-            p++;
-        if (!*p) break;
-        if (*p == '\n')
-            {
-            p++;
-            continue;
-            }
-        *(arg++)=p++;
-        num++;
-        while (*p && (*p != '\n')) p++;
-        if (!*p) break;
-        /* else *p == '\n' */
-        *(p++)='\0';
-        }
-    *argc=num;
-    return (1);
-    }
-#endif
 
 int str2fmt(char *s)
     {
@@ -2381,14 +2300,6 @@ unsigned char *next_protos_parse(unsigned short *outlen, const char *in)
     }
 #endif  /* !OPENSSL_NO_NEXTPROTONEG */
 
-/*
- * Platform-specific sections
- */
-
-/* app_tminterval section */
-#if defined(_SC_CLK_TCK)    /* by means of unistd.h */
-#include <sys/times.h>
-
 double app_tminterval(int stop,int usertime)
     {
     double        ret = 0;
@@ -2408,46 +2319,12 @@ double app_tminterval(int stop,int usertime)
     return (ret);
     }
 
-#else
-#include <sys/time.h>
-#include <sys/resource.h>
-
-double app_tminterval(int stop,int usertime)
-    {
-    double        ret = 0;
-    struct rusage    rus;
-    struct timeval    now;
-    static struct timeval tmstart;
-
-    if (usertime)        getrusage(RUSAGE_SELF,&rus), now = rus.ru_utime;
-    else            gettimeofday(&now,NULL);
-
-    if (stop==TM_START)    tmstart = now;
-    else            ret = ( (now.tv_sec+now.tv_usec*1e-6)
-                    - (tmstart.tv_sec+tmstart.tv_usec*1e-6) );
-
-    return ret;
-    }
-#endif
-
-/* app_isdir section */
-#include <sys/stat.h>
-#ifndef S_ISDIR
-# if defined(_S_IFMT) && defined(_S_IFDIR)
-#  define S_ISDIR(a)   (((a) & _S_IFMT) == _S_IFDIR)
-# else 
-#  define S_ISDIR(a)   (((a) & S_IFMT) == S_IFDIR)
-# endif 
-#endif 
-
 int app_isdir(const char *name)
-    {
-#if defined(S_ISDIR)
+{
     struct stat st;
 
-    if (stat(name,&st)==0)    return S_ISDIR(st.st_mode);
-    else            return -1;
-#else
-    return -1;
-#endif
-    }
+    if (stat(name, &st) == 0)
+        return S_ISDIR(st.st_mode);
+    else
+        return -1;
+}
