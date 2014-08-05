@@ -155,8 +155,6 @@ load_netscape_key(BIO *err, BIO *key, const char *file,
         const char *key_descrip, int format);
 #endif
 
-int app_init(long mesgwin);
-
 int str2fmt(char *s)
     {
     if (s == NULL)
@@ -269,14 +267,6 @@ int chopup_args(ARGS *arg, char *buf, int *argc, char **argv[])
     *argv=arg->data;
     return (1);
     }
-
-#ifndef APP_INIT
-int app_init(long mesgwin)
-    {
-    return (1);
-    }
-#endif
-
 
 int dump_cert_text (BIO *out, X509 *x)
 {
