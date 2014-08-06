@@ -2110,7 +2110,7 @@ unsigned char *next_protos_parse(unsigned short *outlen, const char *in)
     if (len >= 65535)
         return NULL;
 
-    out = malloc(strlen(in) + 1);
+    out = malloc(len + 1);
     if (!out)
         return NULL;
 
