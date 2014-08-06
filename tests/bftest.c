@@ -278,6 +278,7 @@ int main(int argc, char *argv[])
 
 static int print_test_data(void)
     {
+    int len;
     unsigned int i,j;
 
     printf("ecb test data\n");
@@ -318,10 +319,13 @@ static int print_test_data(void)
     printf("\niv[8]     = ");
     for (j=0; j<8; j++)
         printf("%02X",cbc_iv[j]);
-    printf("\ndata[%d]  = '%s'",(int)strlen(cbc_data)+1,cbc_data);
-    printf("\ndata[%d]  = ",(int)strlen(cbc_data)+1);
-    for (j=0; j<strlen(cbc_data)+1; j++)
-        printf("%02X",cbc_data[j]);
+
+    len = strlen(cbc_data) + 1;
+
+    printf("\ndata[%d]  = '%s'", len,cbc_data);
+    printf("\ndata[%d]  = ", len);
+    for (j=0; j < len; j++)
+        printf("%02X", cbc_data[j]);
     printf("\n");
     printf("cbc cipher text\n");
     printf("cipher[%d]= ",32);
@@ -330,14 +334,14 @@ static int print_test_data(void)
     printf("\n");
 
     printf("cfb64 cipher text\n");
-    printf("cipher[%d]= ",(int)strlen(cbc_data)+1);
-    for (j=0; j<strlen(cbc_data)+1; j++)
+    printf("cipher[%d]= ", len);
+    for (j=0; j < len; j++)
         printf("%02X",cfb64_ok[j]);
     printf("\n");
 
     printf("ofb64 cipher text\n");
-    printf("cipher[%d]= ",(int)strlen(cbc_data)+1);
-    for (j=0; j<strlen(cbc_data)+1; j++)
+    printf("cipher[%d]= ", len);
+    for (j=0; j < len; j++)
         printf("%02X",ofb64_ok[j]);
     printf("\n");
     return (0);
@@ -441,7 +445,7 @@ static int test(void)
         }
 
     printf("testing blowfish in cbc mode\n");
-    len=strlen(cbc_data)+1;
+    len = strlen(cbc_data) + 1;
 
     BF_set_key(&key,16,cbc_key);
     memset(cbc_in,0,sizeof cbc_in);
@@ -458,7 +462,7 @@ static int test(void)
     memcpy(iv,cbc_iv,8);
     BF_cbc_encrypt(cbc_out,cbc_in,len,
         &key,iv,BF_DECRYPT);
-    if (memcmp(cbc_in,cbc_data,strlen(cbc_data)+1) != 0)
+    if (memcmp(cbc_in,cbc_data,len) != 0)
         {
         printf("BF_cbc_encrypt decrypt error\n");
         err=1;
