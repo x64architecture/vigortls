@@ -900,7 +900,6 @@ int dtls1_send_server_key_exchange(SSL *s)
             }
 
             if (s->s3->tmp.dh != NULL) {
-                DH_free(dh);
                 SSLerr(SSL_F_DTLS1_SEND_SERVER_KEY_EXCHANGE, ERR_R_INTERNAL_ERROR);
                 goto err;
             }
@@ -949,7 +948,6 @@ int dtls1_send_server_key_exchange(SSL *s)
             }
 
             if (s->s3->tmp.ecdh != NULL) {
-                EC_KEY_free(s->s3->tmp.ecdh); 
                 SSLerr(SSL_F_DTLS1_SEND_SERVER_KEY_EXCHANGE, ERR_R_INTERNAL_ERROR);
                 goto err;
             }
