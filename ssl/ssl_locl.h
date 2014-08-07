@@ -1147,4 +1147,6 @@ void ssl3_cbc_digest_record(
     unsigned mac_secret_length,
     char is_sslv3);
 
+int srp_verify_server_param(SSL *s, int *al);
+
 #endif

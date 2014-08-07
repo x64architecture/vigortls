@@ -1073,14 +1073,13 @@ int ssl_parse_clienthello_tlsext(SSL *s, unsigned char **p, unsigned char *d, in
                 return 0;
             }
             if (!s->hit) {
-                if (s->session->tlsext_ecpointformatlist) {
-                    free(s->session->tlsext_ecpointformatlist);
-                    s->session->tlsext_ecpointformatlist = NULL;
-                }
                 s->session->tlsext_ecpointformatlist_length = 0;
-                if ((s->session->tlsext_ecpointformatlist = malloc(ecpointformatlist_length)) == NULL) {
-                    *al = TLS1_AD_INTERNAL_ERROR;
-                    return 0;
+                if (s->session->tlsext_ecpointformatlist != NULL)
+                    free(s->session->tlsext_ecpointformatlist);
+                if ((s->session->tlsext_ecpointformatlist =
+                    malloc(ecpointformatlist_length)) == NULL) {
+                        *al = TLS1_AD_INTERNAL_ERROR;
+                        return 0;
                 }
                 s->session->tlsext_ecpointformatlist_length = ecpointformatlist_length;
                 memcpy(s->session->tlsext_ecpointformatlist, sdata, ecpointformatlist_length);
