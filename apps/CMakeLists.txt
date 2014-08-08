@@ -1,5 +1,7 @@
-include_directories (.. ../include)
+include_directories (.. ../include ${CMAKE_CURRENT_BINARY_DIR})
 add_definitions (-DMONOLITH)
+
+configure_file(buildinf.h.cmake buildinf.h)
 
 add_executable(
 	openssl

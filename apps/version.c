@@ -128,6 +128,7 @@
 #ifndef OPENSSL_NO_BF
 # include <openssl/blowfish.h>
 #endif
+#include "buildinf.h"
 
 int version_main(int, char **);
 
@@ -174,10 +175,10 @@ int version_main(int argc, char **argv)
     if (date)
 		printf("Built on: %s at %s\n", __DATE__, __TIME__);
     if (platform)
-		printf("Not supported... Yet\n");
+		printf("Platform: %s\n", PLATFORM);
     if (options) 
         {
-        printf("options:  ");
+        printf("Options:  ");
         printf("%s ",BN_options());
 #ifndef OPENSSL_NO_RC4
         printf("%s ",RC4_options());
@@ -194,7 +195,7 @@ int version_main(int argc, char **argv)
         printf("\n");
         }
     if (cflags)
-		printf("Not supported... Yet\n");
+		printf("Compiler: %s\n", CFLAGS);
     if (dir)
 		printf("Not supported... Yet\n");
 end:
