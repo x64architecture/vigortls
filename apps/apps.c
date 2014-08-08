@@ -220,9 +220,8 @@ int chopup_args(ARGS *arg, char *buf, int *argc, char **argv[])
         /* first scan over white space */
         if (!*p)
             break;
-        do {
+        while (*p && ((*p == ' ') || (*p == '\t') || (*p == '\n')))
             p++;
-        } while (*p && ((*p == ' ') || (*p == '\t') || (*p == '\n')));
 
         if (!*p)
             break;
@@ -246,15 +245,12 @@ int chopup_args(ARGS *arg, char *buf, int *argc, char **argv[])
         if ((*p == '\'') || (*p == '\"')) { /* scan for closing quote */
             i = *(p++);
             arg->data[num - 1]++; /* jump over quote */
-            do {
+            while (*p && (*p != i))
                 p++;
-            } while (*p && (*p != i));
             *p='\0';
         } else {
-            do {
+            while (*p && ((*p != ' ') &&  (*p != '\t') && (*p != '\n')))
                 p++;
-            } while (*p && ((*p != ' ') &&
-                (*p != '\t') && (*p != '\n')));
 
             if (*p == '\0')
                 p--;
