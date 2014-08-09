@@ -1474,14 +1474,10 @@ void nistp_tests()
     }
 #endif
 
-static const char rnd_seed[] = "string to make the random number generator think it has entropy";
-
 int main(int argc, char *argv[])
     {    
 
     ERR_load_crypto_strings();
-
-    RAND_seed(rnd_seed, sizeof rnd_seed); /* or BN_generate_prime may fail */
 
     prime_field_tests();
     puts("");

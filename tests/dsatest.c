@@ -122,8 +122,6 @@ static unsigned char out_g[]={
 
 static const unsigned char str1[]="12345678901234567890";
 
-static const char rnd_seed[] = "string to make the random number generator think it has entropy";
-
 static BIO *bio_err=NULL;
 
 int main(int argc, char **argv)
@@ -144,7 +142,6 @@ int main(int argc, char **argv)
     CRYPTO_mem_ctrl(CRYPTO_MEM_CHECK_ON);
 
     ERR_load_crypto_strings();
-    RAND_seed(rnd_seed, sizeof rnd_seed);
 
     BIO_printf(bio_err,"test generation of DSA parameters\n");
 

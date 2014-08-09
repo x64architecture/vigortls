@@ -94,9 +94,6 @@ int main(int argc, char * argv[])
 #include <openssl/err.h>
 #include <openssl/rand.h>
 
-static const char rnd_seed[] = "string to make the random number generator "
-    "think it has entropy";
-
 /* declaration of the test functions */
 int x9_62_tests(BIO *);
 int x9_62_test_internal(BIO *out, int nid, const char *r, const char *s);
@@ -531,9 +528,6 @@ int main(void)
     out = BIO_new_fp(stdout, BIO_NOCLOSE);
 
     ERR_load_crypto_strings();
-
-    /* initialize the prng */
-    RAND_seed(rnd_seed, sizeof(rnd_seed));
 
     /* the tests */
     if (!x9_62_tests(out))  goto err;

@@ -123,8 +123,6 @@ static int results=0;
 static unsigned char lst[]="\xC6\x4F\x43\x04\x2A\xEA\xCA\x6E\x58\x36\x80\x5B\xE8\xC9"
 "\x9B\x04\x5D\x48\x36\xC2\xFD\x16\xC9\x64\xF0";
 
-static const char rnd_seed[] = "string to make the random number generator think it has entropy";
-
 static void message(BIO *out, char *m)
     {
     fprintf(stderr, "test %s\n", m);
@@ -140,8 +138,6 @@ int main(int argc, char *argv[])
     char *outfile=NULL;
 
     results = 0;
-
-    RAND_seed(rnd_seed, sizeof rnd_seed); /* or BN_generate_prime may fail */
 
     argc--;
     argv++;

@@ -75,8 +75,6 @@
 
 static int cb(int p, int n, BN_GENCB *arg);
 
-static const char rnd_seed[] = "string to make the random number generator think it has entropy";
-
 int main(int argc, char *argv[])
     {
     BN_GENCB _cb;
@@ -90,8 +88,6 @@ int main(int argc, char *argv[])
     CRYPTO_malloc_debug_init();
     CRYPTO_dbg_set_options(V_CRYPTO_MDEBUG_ALL);
     CRYPTO_mem_ctrl(CRYPTO_MEM_CHECK_ON);
-
-    RAND_seed(rnd_seed, sizeof rnd_seed);
 
     out=BIO_new(BIO_s_file());
     if (out == NULL) exit(1);

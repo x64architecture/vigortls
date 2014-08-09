@@ -276,8 +276,6 @@ static int s_nbio=0;
 #endif
 #endif
 
-static const char rnd_seed[] = "string to make the random number generator think it has entropy";
-
 int doit_biopair(SSL *s_ssl,SSL *c_ssl,long bytes,clock_t *s_time,clock_t *c_time);
 int doit(SSL *s_ssl,SSL *c_ssl,long bytes);
 static int do_test_cipherlist(void);
@@ -508,8 +506,6 @@ int main(int argc, char *argv[])
     bio_err=BIO_new_fp(stderr,BIO_NOCLOSE|BIO_FP_TEXT);    
 
     CRYPTO_set_locking_callback(lock_dbg_cb);
-
-    RAND_seed(rnd_seed, sizeof rnd_seed);
 
     bio_stdout=BIO_new_fp(stdout,BIO_NOCLOSE|BIO_FP_TEXT);
 

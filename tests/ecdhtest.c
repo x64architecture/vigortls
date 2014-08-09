@@ -94,9 +94,6 @@ int main(int argc, char *argv[])
 static void cb(int p, int n, void *arg);
 #endif
 
-static const char rnd_seed[] = "string to make the random number generator think it has entropy";
-
-
 static const int KDF1_SHA1_len = 20;
 static void *KDF1_SHA1(const void *in, size_t inlen, void *out, size_t *outlen)
     {
@@ -301,8 +298,6 @@ int main(int argc, char *argv[])
     CRYPTO_malloc_debug_init();
     CRYPTO_dbg_set_options(V_CRYPTO_MDEBUG_ALL);
     CRYPTO_mem_ctrl(CRYPTO_MEM_CHECK_ON);
-
-    RAND_seed(rnd_seed, sizeof rnd_seed);
 
     out=BIO_new(BIO_s_file());
     if (out == NULL) exit(1);
