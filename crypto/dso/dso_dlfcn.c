@@ -10,7 +10,7 @@
  * are met:
  *
  * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer. 
+ *    notice, this list of conditions and the following disclaimer.
  *
  * 2. Redistributions in binary form must reproduce the above copyright
  *    notice, this list of conditions and the following disclaimer in
@@ -335,14 +335,8 @@ static char *dlfcn_merger(DSO *dso, const char *filespec1,
     return (merged);
     }
 
-#ifdef OPENSSL_SYS_MACOSX
-#define DSO_ext    ".dylib"
-#define DSO_extlen 6
-#else
 #define DSO_ext    ".so"
 #define DSO_extlen 3
-#endif
-
 
 static char *dlfcn_name_converter(DSO *dso, const char *filename)
     {
@@ -409,7 +403,7 @@ static int dlfcn_pathbyaddr(void *addr,char *path,int sz)
 static void *dlfcn_globallookup(const char *name)
     {
     void *ret = NULL,*handle = dlopen(NULL,RTLD_LAZY);
-    
+
     if (handle)
         {
         ret = dlsym(handle,name);

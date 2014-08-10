@@ -61,26 +61,12 @@
 #include <stdio.h>
 #include <sys/time.h>
 #include <errno.h>
-#define USE_SOCKETS
+
 #include "cryptlib.h"
 
 #include <openssl/bio.h>
+
 #ifndef OPENSSL_NO_DGRAM
-
-#if defined(OPENSSL_SYS_LINUX) && !defined(IP_MTU)
-#define IP_MTU      14 /* linux is lame */
-#endif
-
-#if defined(__FreeBSD__) && defined(IN6_IS_ADDR_V4MAPPED)
-/* Standard definition causes type-punning problems. */
-#undef IN6_IS_ADDR_V4MAPPED
-#define s6_addr32 __u6_addr.__u6_addr32
-#define IN6_IS_ADDR_V4MAPPED(a)               \
-        (((a)->s6_addr32[0] == 0) &&          \
-         ((a)->s6_addr32[1] == 0) &&          \
-         ((a)->s6_addr32[2] == htonl(0x0000ffff)))
-#endif
-
 
 static int dgram_write(BIO *h, const char *buf, int num);
 static int dgram_read(BIO *h, char *buf, int size);
