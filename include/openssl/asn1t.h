@@ -62,11 +62,6 @@
 #include <openssl/e_os2.h>
 #include <openssl/asn1.h>
 
-#ifdef OPENSSL_BUILD_SHLIBCRYPTO
-# undef OPENSSL_EXTERN
-# define OPENSSL_EXTERN OPENSSL_EXPORT
-#endif
-
 /* ASN1 template defines, structures and functions */
 
 #ifdef  __cplusplus
@@ -81,7 +76,7 @@ extern "C" {
 /* Macros for start and end of ASN1_ITEM definition */
 
 #define ASN1_ITEM_start(itname) \
-    OPENSSL_GLOBAL const ASN1_ITEM itname##_it = {
+    const ASN1_ITEM itname##_it = {
 
 #define ASN1_ITEM_end(itname) \
         };

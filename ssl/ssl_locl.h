@@ -157,11 +157,6 @@
 #include <openssl/err.h>
 #include <openssl/ssl.h>
 
-#ifdef OPENSSL_BUILD_SHLIBSSL
-# undef OPENSSL_EXTERN
-# define OPENSSL_EXTERN OPENSSL_EXPORT
-#endif
-
 #undef PKCS1_CHECK
 
 #define c2l(c,l)    (l = ((unsigned long)(*((c)++)))     , \
@@ -541,7 +536,7 @@ struct ssl_aead_ctx_st
 };
 
 extern SSL3_ENC_METHOD ssl3_undef_enc_method;
-OPENSSL_EXTERN SSL_CIPHER ssl3_ciphers[];
+extern SSL_CIPHER ssl3_ciphers[];
 
 
 SSL_METHOD *ssl_bad_method(int ver);

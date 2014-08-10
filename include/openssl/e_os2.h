@@ -80,48 +80,6 @@ extern "C" {
 # endif
 #endif
 
-/**
- * That's it for OS-specific stuff
- *****************************************************************************/
-
-/* Definitions of OPENSSL_GLOBAL and OPENSSL_EXTERN, to define and declare
-   certain global symbols that, with some compilers under VMS, have to be
-   defined and declared explicitely with globaldef and globalref.
-   Definitions of OPENSSL_EXPORT and OPENSSL_IMPORT, to define and declare
-   DLL exports and imports for compilers under Win32.  These are a little
-   more complicated to use.  Basically, for any library that exports some
-   global variables, the following code must be present in the header file
-   that declares them, before OPENSSL_EXTERN is used:
-
-   #ifdef SOME_BUILD_FLAG_MACRO
-   # undef OPENSSL_EXTERN
-   # define OPENSSL_EXTERN OPENSSL_EXPORT
-   #endif
-
-   The default is to have OPENSSL_EXPORT, OPENSSL_IMPORT and OPENSSL_GLOBAL
-   have some generally sensible values, and for OPENSSL_EXTERN to have the
-   value OPENSSL_IMPORT.
-*/
-
-#define OPENSSL_EXPORT extern
-#define OPENSSL_IMPORT extern
-#define OPENSSL_GLOBAL
-#define OPENSSL_EXTERN OPENSSL_IMPORT
-
-/* Macros to allow global variables to be reached through function calls when
-   required (if a shared library version requires it, for example.
-   The way it's done allows definitions like this:
-
-    // in foobar.c
-    OPENSSL_IMPLEMENT_GLOBAL(int,foobar,0)
-    // in foobar.h
-    OPENSSL_DECLARE_GLOBAL(int,foobar);
-    #define foobar OPENSSL_GLOBAL_REF(foobar)
-*/
-#define OPENSSL_IMPLEMENT_GLOBAL(type,name,value) OPENSSL_GLOBAL type _shadow_##name=value;
-#define OPENSSL_DECLARE_GLOBAL(type,name) OPENSSL_EXPORT type _shadow_##name
-#define OPENSSL_GLOBAL_REF(name) _shadow_##name
-
 #ifdef  __cplusplus
 }
 #endif

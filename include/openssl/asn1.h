@@ -72,11 +72,6 @@
 #include <openssl/bn.h>
 #endif
 
-#ifdef OPENSSL_BUILD_SHLIBCRYPTO
-# undef OPENSSL_EXTERN
-# define OPENSSL_EXTERN OPENSSL_EXPORT
-#endif
-
 #ifdef  __cplusplus
 extern "C" {
 #endif
@@ -406,7 +401,7 @@ typedef const ASN1_ITEM ASN1_ITEM_EXP;
 #define ASN1_ITEM_rptr(ref) (&(ref##_it))
 
 #define DECLARE_ASN1_ITEM(name) \
-    OPENSSL_EXTERN const ASN1_ITEM name##_it;
+    extern const ASN1_ITEM name##_it;
 
 /* Parameters used by ASN1_STRING_print_ex() */
 
