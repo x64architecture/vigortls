@@ -101,19 +101,24 @@ const SSL_METHOD *SSLv23_method(void)
 
 static const SSL_METHOD *ssl23_get_method(int ver)
 {
+    switch (ver) {
 #ifndef OPENSSL_NO_SSL3
-    if (ver == SSL3_VERSION)
-        return (SSLv3_method());
-    else
+        case SSL3_VERSION:
+            return (SSLv3_method());
+            break;
 #endif
 #ifndef OPENSSL_NO_TLS1
-    if (ver == TLS1_VERSION)
-        return (TLSv1_method());
-    else if (ver == TLS1_1_VERSION)
-        return (TLSv1_1_method());
-    else if (ver == TLS1_2_VERSION)
-        return (TLSv1_2_method());
-    else
+        case TLS1_VERSION:
+            return (TLSv1_method());
+            break;
+        case TLS1_1_VERSION:
+            return (TLSv1_1_method());
+            break;
+        case TLS1_2_VERSION:
+            return (TLSv1_2_method());
+            break;
 #endif
-        return (NULL);
+        default:
+            return (NULL);
+    }
 }
