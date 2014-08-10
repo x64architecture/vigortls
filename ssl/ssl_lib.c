@@ -7,21 +7,21 @@
  * This package is an SSL implementation written
  * by Eric Young (eay@cryptsoft.com).
  * The implementation was written so as to conform with Netscapes SSL.
- * 
+ *
  * This library is free for commercial and non-commercial use as long as
  * the following conditions are aheared to.  The following conditions
  * apply to all code found in this distribution, be it the RC4, RSA,
  * lhash, DES, etc., code; not just the SSL code.  The SSL documentation
  * included with this distribution is covered by the same copyright terms
  * except that the holder is Tim Hudson (tjh@cryptsoft.com).
- * 
+ *
  * Copyright remains Eric Young's, and as such any Copyright notices in
  * the code are not to be removed.
  * If this package is used in a product, Eric Young should be given attribution
  * as the author of the parts of the library used.
  * This can be in the form of a textual message at program startup or
  * in documentation (online or textual) provided with the package.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
  * are met:
@@ -36,10 +36,10 @@
  *     Eric Young (eay@cryptsoft.com)"
  *    The word 'cryptographic' can be left out if the rouines from the library
  *    being used are not cryptographic related :-).
- * 4. If you include any Windows specific code (or a derivative thereof) from 
+ * 4. If you include any Windows specific code (or a derivative thereof) from
  *    the apps directory (application code) you must include an acknowledgement:
  *    "This product includes software written by Tim Hudson (tjh@cryptsoft.com)"
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY ERIC YOUNG ``AS IS'' AND
  * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -51,7 +51,7 @@
  * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
- * 
+ *
  * The licence and distribution terms for any publically available version or
  * derivative of this code cannot be changed.  i.e. this code cannot simply be
  * copied and put under another distribution licence
@@ -65,7 +65,7 @@
  * are met:
  *
  * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer. 
+ *    notice, this list of conditions and the following disclaimer.
  *
  * 2. Redistributions in binary form must reproduce the above copyright
  *    notice, this list of conditions and the following disclaimer in
@@ -112,7 +112,7 @@
  */
 /* ====================================================================
  * Copyright 2002 Sun Microsystems, Inc. ALL RIGHTS RESERVED.
- * ECC cipher suite support in OpenSSL originally developed by 
+ * ECC cipher suite support in OpenSSL originally developed by
  * SUN MICROSYSTEMS, INC., and contributed to the OpenSSL project.
  */
 /* ====================================================================
@@ -259,8 +259,7 @@ int SSL_CTX_set_ssl_version(SSL_CTX *ctx,const SSL_METHOD *meth)
     ctx->method=meth;
 
     sk=ssl_create_cipher_list(ctx->method,&(ctx->cipher_list),
-        &(ctx->cipher_list_by_id),
-        meth->version == SSL2_VERSION ? "SSLv2" : SSL_DEFAULT_CIPHER_LIST);
+        &(ctx->cipher_list_by_id), SSL_DEFAULT_CIPHER_LIST);
     if ((sk == NULL) || (sk_SSL_CIPHER_num(sk) <= 0))
         {
         SSLerr(SSL_F_SSL_CTX_SET_SSL_VERSION,SSL_R_SSL_LIBRARY_HAS_NO_CIPHERS);
@@ -449,17 +448,6 @@ int SSL_has_matching_session_id(const SSL *ssl, const unsigned char *id,
     r.ssl_version = ssl->version;
     r.session_id_length = id_len;
     memcpy(r.session_id, id, id_len);
-    /* NB: SSLv2 always uses a fixed 16-byte session ID, so even if a
-     * callback is calling us to check the uniqueness of a shorter ID, it
-     * must be compared as a padded-out ID because that is what it will be
-     * converted to when the callback has finished choosing it. */
-    if ((r.ssl_version == SSL2_VERSION) &&
-            (id_len < SSL2_SSL_SESSION_ID_LENGTH))
-        {
-        memset(r.session_id + id_len, 0,
-            SSL2_SSL_SESSION_ID_LENGTH - id_len);
-        r.session_id_length = SSL2_SSL_SESSION_ID_LENGTH;
-        }
 
     CRYPTO_r_lock(CRYPTO_LOCK_SSL_CTX);
     p = lh_SSL_SESSION_retrieve(ssl->ctx->sessions, &r);
@@ -723,7 +711,7 @@ err:
 size_t SSL_get_finished(const SSL *s, void *buf, size_t count)
     {
     size_t ret = 0;
-    
+
     if (s->s3 != NULL)
         {
         ret = s->s3->tmp.finish_md_len;
@@ -738,7 +726,7 @@ size_t SSL_get_finished(const SSL *s, void *buf, size_t count)
 size_t SSL_get_peer_finished(const SSL *s, void *buf, size_t count)
     {
     size_t ret = 0;
-    
+
     if (s->s3 != NULL)
         {
         ret = s->s3->tmp.peer_finish_md_len;
@@ -818,7 +806,7 @@ int SSL_pending(const SSL *s)
 X509 *SSL_get_peer_certificate(const SSL *s)
     {
     X509 *r;
-    
+
     if ((s == NULL) || (s->session == NULL))
         r=NULL;
     else
@@ -834,7 +822,7 @@ X509 *SSL_get_peer_certificate(const SSL *s)
 STACK_OF(X509) *SSL_get_peer_cert_chain(const SSL *s)
     {
     STACK_OF(X509) *r;
-    
+
     if ((s == NULL) || (s->session == NULL) || (s->session->sess_cert == NULL))
         r=NULL;
     else
@@ -842,7 +830,7 @@ STACK_OF(X509) *SSL_get_peer_cert_chain(const SSL *s)
 
     /* If we are a client, cert_chain includes the peer's own
      * certificate; if we are a server, it does not. */
-    
+
     return (r);
     }
 
@@ -1104,7 +1092,7 @@ long SSL_callback_ctrl(SSL *s, int cmd, void (*fp)(void))
     case SSL_CTRL_SET_MSG_CALLBACK:
         s->msg_callback = (void (*)(int write_p, int version, int content_type, const void *buf, size_t len, SSL *ssl, void *arg))(fp);
         return 1;
-        
+
     default:
         return (s->method->ssl_callback_ctrl(s,cmd,fp));
         }
@@ -1127,7 +1115,7 @@ long SSL_CTX_ctrl(SSL_CTX *ctx,int cmd,long larg,void *parg)
         l=ctx->read_ahead;
         ctx->read_ahead=larg;
         return (l);
-        
+
     case SSL_CTRL_SET_MSG_CALLBACK_ARG:
         ctx->msg_callback_arg = parg;
         return 1;
@@ -1287,7 +1275,7 @@ const char *SSL_get_cipher_list(const SSL *s,int n)
 int SSL_CTX_set_cipher_list(SSL_CTX *ctx, const char *str)
     {
     STACK_OF(SSL_CIPHER) *sk;
-    
+
     sk=ssl_create_cipher_list(ctx->method,&ctx->cipher_list,
         &ctx->cipher_list_by_id,str);
     /* ssl_create_cipher_list may return an empty stack if it
@@ -1311,7 +1299,7 @@ int SSL_CTX_set_cipher_list(SSL_CTX *ctx, const char *str)
 int SSL_set_cipher_list(SSL *s,const char *str)
     {
     STACK_OF(SSL_CIPHER) *sk;
-    
+
     sk=ssl_create_cipher_list(s->ctx->method,&s->cipher_list,
         &s->cipher_list_by_id,str);
     /* see comment in SSL_CTX_set_cipher_list */
@@ -1382,7 +1370,7 @@ int ssl_cipher_list_to_bytes(SSL *s,STACK_OF(SSL_CIPHER) *sk,unsigned char *p,
         {
         c=sk_SSL_CIPHER_value(sk,i);
         /* Skip TLS v1.2 only ciphersuites if lower than v1.2 */
-        if ((c->algorithm_ssl & SSL_TLSV1_2) && 
+        if ((c->algorithm_ssl & SSL_TLSV1_2) &&
             (TLS1_get_client_version(s) < TLS1_2_VERSION))
             continue;
 #ifndef OPENSSL_NO_KRB5
@@ -1454,7 +1442,7 @@ STACK_OF(SSL_CIPHER) *ssl_bytes_to_cipher_list(SSL *s,unsigned char *p,int num,
             if (s->renegotiate)
                 {
                 SSLerr(SSL_F_SSL_BYTES_TO_CIPHER_LIST,SSL_R_SCSV_RECEIVED_WHEN_RENEGOTIATING);
-                ssl3_send_alert(s,SSL3_AL_FATAL,SSL_AD_HANDSHAKE_FAILURE); 
+                ssl3_send_alert(s,SSL3_AL_FATAL,SSL_AD_HANDSHAKE_FAILURE);
                 goto err;
                 }
             s->s3->send_connection_binding = 1;
@@ -1740,8 +1728,7 @@ SSL_CTX *SSL_CTX_new(const SSL_METHOD *meth)
     if (ret->cert_store == NULL) goto err;
 
     ssl_create_cipher_list(ret->method,
-        &ret->cipher_list,&ret->cipher_list_by_id,
-        meth->version == SSL2_VERSION ? "SSLv2" : SSL_DEFAULT_CIPHER_LIST);
+        &ret->cipher_list,&ret->cipher_list_by_id, SSL_DEFAULT_CIPHER_LIST);
     if (ret->cipher_list == NULL
         || sk_SSL_CIPHER_num(ret->cipher_list) <= 0)
         {
@@ -1991,7 +1978,7 @@ void ssl_set_cert_masks(CERT *c, const SSL_CIPHER *cipher)
     mask_a=0;
     emask_k=0;
     emask_a=0;
-    
+
     cpk = &(c->pkeys[SSL_PKEY_GOST01]);
     if (cpk->x509 != NULL && cpk->privatekey !=NULL) {
         mask_k |= SSL_kGOST;
@@ -2217,7 +2204,7 @@ CERT_PKEY *ssl_get_server_send_pkey(const SSL *s)
 
     c=s->cert;
     ssl_set_cert_masks(c, s->s3->tmp.new_cipher);
-    
+
     alg_k = s->s3->tmp.new_cipher->algorithm_mkey;
     alg_a = s->s3->tmp.new_cipher->algorithm_auth;
 
@@ -2258,7 +2245,7 @@ CERT_PKEY *ssl_get_server_send_pkey(const SSL *s)
         /* VRS something else here? */
         return (NULL);
         }
-    else if (alg_a & SSL_aGOST94) 
+    else if (alg_a & SSL_aGOST94)
         i=SSL_PKEY_GOST94;
     else if (alg_a & SSL_aGOST01)
         i=SSL_PKEY_GOST01;
@@ -2448,17 +2435,9 @@ int SSL_get_error(const SSL *s,int i)
 
     if (i == 0)
         {
-        if (s->version == SSL2_VERSION)
-            {
-            /* assume it is the socket being closed */
-            return (SSL_ERROR_ZERO_RETURN);
-            }
-        else
-            {
             if ((s->shutdown & SSL_RECEIVED_SHUTDOWN) &&
                 (s->s3->warn_alert == SSL_AD_CLOSE_NOTIFY))
                 return (SSL_ERROR_ZERO_RETURN);
-            }
         }
     return (SSL_ERROR_SYSCALL);
     }
@@ -2542,8 +2521,6 @@ const char *SSL_get_version(const SSL *s)
         return ("TLSv1");
     else if (s->version == SSL3_VERSION)
         return ("SSLv3");
-    else if (s->version == SSL2_VERSION)
-        return ("SSLv2");
     else
         return ("unknown");
     }
@@ -2554,7 +2531,7 @@ SSL *SSL_dup(SSL *s)
     X509_NAME *xn;
     SSL *ret;
     int i;
-    
+
     if ((ret=SSL_new(SSL_get_SSL_CTX(s))) == NULL)
         return (NULL);
 
@@ -2588,7 +2565,7 @@ SSL *SSL_dup(SSL *s)
             if (ret->cert == NULL)
                 goto err;
             }
-                
+
         SSL_set_session_id_context(ret,
             s->sid_ctx, s->sid_ctx_length);
         }
@@ -2605,7 +2582,7 @@ SSL *SSL_dup(SSL *s)
     ret->generate_session_id = s->generate_session_id;
 
     SSL_set_info_callback(ret,SSL_get_info_callback(s));
-    
+
     ret->debug=s->debug;
 
     /* copy app data, a little dangerous perhaps */
@@ -2790,7 +2767,7 @@ void ssl_free_wbio_buffer(SSL *s)
     BIO_free(s->bbio);
     s->bbio=NULL;
     }
-    
+
 void SSL_CTX_set_quiet_shutdown(SSL_CTX *ctx,int mode)
     {
     ctx->quiet_shutdown=mode;
@@ -3121,14 +3098,14 @@ void SSL_set_msg_callback(SSL *ssl, void (*cb)(int write_p, int version, int con
  * Returns newly allocated ctx;
  */
 
-EVP_MD_CTX *ssl_replace_hash(EVP_MD_CTX **hash,const EVP_MD *md) 
+EVP_MD_CTX *ssl_replace_hash(EVP_MD_CTX **hash,const EVP_MD *md)
 {
     ssl_clear_hash_ctx(hash);
     *hash = EVP_MD_CTX_create();
     if (md) EVP_DigestInit_ex(*hash,md,NULL);
     return *hash;
 }
-void ssl_clear_hash_ctx(EVP_MD_CTX **hash) 
+void ssl_clear_hash_ctx(EVP_MD_CTX **hash)
 {
 
     if (*hash) EVP_MD_CTX_destroy(*hash);

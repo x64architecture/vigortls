@@ -5,21 +5,21 @@
  * This package is an SSL implementation written
  * by Eric Young (eay@cryptsoft.com).
  * The implementation was written so as to conform with Netscapes SSL.
- * 
+ *
  * This library is free for commercial and non-commercial use as long as
  * the following conditions are aheared to.  The following conditions
  * apply to all code found in this distribution, be it the RC4, RSA,
  * lhash, DES, etc., code; not just the SSL code.  The SSL documentation
  * included with this distribution is covered by the same copyright terms
  * except that the holder is Tim Hudson (tjh@cryptsoft.com).
- * 
+ *
  * Copyright remains Eric Young's, and as such any Copyright notices in
  * the code are not to be removed.
  * If this package is used in a product, Eric Young should be given attribution
  * as the author of the parts of the library used.
  * This can be in the form of a textual message at program startup or
  * in documentation (online or textual) provided with the package.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
  * are met:
@@ -34,10 +34,10 @@
  *     Eric Young (eay@cryptsoft.com)"
  *    The word 'cryptographic' can be left out if the rouines from the library
  *    being used are not cryptographic related :-).
- * 4. If you include any Windows specific code (or a derivative thereof) from 
+ * 4. If you include any Windows specific code (or a derivative thereof) from
  *    the apps directory (application code) you must include an acknowledgement:
  *    "This product includes software written by Tim Hudson (tjh@cryptsoft.com)"
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY ERIC YOUNG ``AS IS'' AND
  * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -49,7 +49,7 @@
  * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
- * 
+ *
  * The licence and distribution terms for any publically available version or
  * derivative of this code cannot be changed.  i.e. this code cannot simply be
  * copied and put under another distribution licence
@@ -157,19 +157,10 @@ int i2d_SSL_SESSION(SSL_SESSION *in, unsigned char **pp)
         l=in->cipher_id;
     else
         l=in->cipher->id;
-    if (in->ssl_version == SSL2_VERSION)
-        {
-        a.cipher.length=3;
-        buf[0]=((unsigned char)(l>>16L))&0xff;
-        buf[1]=((unsigned char)(l>> 8L))&0xff;
-        buf[2]=((unsigned char)(l     ))&0xff;
-        }
-    else
-        {
-        a.cipher.length=2;
-        buf[0]=((unsigned char)(l>>8L))&0xff;
-        buf[1]=((unsigned char)(l    ))&0xff;
-        }
+
+    a.cipher.length=2;
+    buf[0]=((unsigned char)(l>>8L))&0xff;
+    buf[1]=((unsigned char)(l    ))&0xff;
 
     a.master_key.length=in->master_key_length;
     a.master_key.type=V_ASN1_OCTET_STRING;
@@ -361,20 +352,7 @@ SSL_SESSION *d2i_SSL_SESSION(SSL_SESSION **a, const unsigned char **pp,
 
     os.data=NULL; os.length=0;
     M_ASN1_D2I_get_x(ASN1_OCTET_STRING,osp,d2i_ASN1_OCTET_STRING);
-    if (ssl_version == SSL2_VERSION)
-        {
-        if (os.length != 3)
-            {
-            c.error=SSL_R_CIPHER_CODE_WRONG_LENGTH;
-            c.line=__LINE__;
-            goto err;
-            }
-        id=0x02000000L|
-            ((unsigned long)os.data[0]<<16L)|
-            ((unsigned long)os.data[1]<< 8L)|
-             (unsigned long)os.data[2];
-        }
-    else if ((ssl_version>>8) >= SSL3_VERSION_MAJOR)
+    if ((ssl_version>>8) >= SSL3_VERSION_MAJOR)
         {
         if (os.length != 2)
             {
@@ -392,15 +370,13 @@ SSL_SESSION *d2i_SSL_SESSION(SSL_SESSION **a, const unsigned char **pp,
         c.line=__LINE__;
         goto err;
         }
-    
+
     ret->cipher=NULL;
     ret->cipher_id=id;
 
     M_ASN1_D2I_get_x(ASN1_OCTET_STRING,osp,d2i_ASN1_OCTET_STRING);
-    if ((ssl_version>>8) >= SSL3_VERSION_MAJOR)
-        i=SSL3_MAX_SSL_SESSION_ID_LENGTH;
-    else /* if (ssl_version>>8 == SSL2_VERSION_MAJOR) */
-        i=SSL2_MAX_SSL_SESSION_ID_LENGTH;
+
+    i = SSL3_MAX_SSL_SESSION_ID_LENGTH;
 
     if (os.length > i)
         os.length = i;

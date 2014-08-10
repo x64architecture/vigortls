@@ -9,7 +9,6 @@ ciphers - SSL cipher display and cipher list tool.
 B<openssl> B<ciphers>
 [B<-v>]
 [B<-V>]
-[B<-ssl2>]
 [B<-ssl3>]
 [B<-tls1>]
 [B<cipherlist>]
@@ -27,7 +26,7 @@ the appropriate cipherlist.
 =item B<-v>
 
 Verbose option. List ciphers with a complete description of
-protocol version (SSLv2 or SSLv3; the latter includes TLS), key exchange,
+protocol version (SSLv3; the latter includes TLS), key exchange,
 authentication, encryption and mac algorithms used along with any key size
 restrictions and whether the algorithm is classed as an "export" cipher.
 Note that without the B<-v> option, ciphers may seem to appear twice
@@ -41,10 +40,6 @@ Like B<-V>, but include cipher suite codes in output (hex format).
 =item B<-ssl3>
 
 only include SSL v3 ciphers.
-
-=item B<-ssl2>
-
-only include SSL v2 ciphers.
 
 =item B<-tls1>
 
@@ -199,9 +194,9 @@ DH keys.  Not implemented.
 ciphers suites using FORTEZZA key exchange, authentication, encryption or all
 FORTEZZA algorithms. Not implemented.
 
-=item B<TLSv1>, B<SSLv3>, B<SSLv2>
+=item B<TLSv1>, B<SSLv3>
 
-TLS v1.0, SSL v3.0 or SSL v2.0 cipher suites respectively.
+TLS v1.0 or SSL v3.0 cipher suites respectively.
 
 =item B<DH>
 
@@ -251,10 +246,10 @@ cipher suites using MD5.
 
 cipher suites using SHA1.
 
-=item B<aGOST> 
+=item B<aGOST>
 
 cipher suites using GOST R 34.10 (either 2001 or 94) for authenticaction
-(needs an engine supporting GOST algorithms). 
+(needs an engine supporting GOST algorithms).
 
 =item B<aGOST01>
 

@@ -5,21 +5,21 @@
  * This package is an SSL implementation written
  * by Eric Young (eay@cryptsoft.com).
  * The implementation was written so as to conform with Netscapes SSL.
- * 
+ *
  * This library is free for commercial and non-commercial use as long as
  * the following conditions are aheared to.  The following conditions
  * apply to all code found in this distribution, be it the RC4, RSA,
  * lhash, DES, etc., code; not just the SSL code.  The SSL documentation
  * included with this distribution is covered by the same copyright terms
  * except that the holder is Tim Hudson (tjh@cryptsoft.com).
- * 
+ *
  * Copyright remains Eric Young's, and as such any Copyright notices in
  * the code are not to be removed.
  * If this package is used in a product, Eric Young should be given attribution
  * as the author of the parts of the library used.
  * This can be in the form of a textual message at program startup or
  * in documentation (online or textual) provided with the package.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
  * are met:
@@ -34,10 +34,10 @@
  *     Eric Young (eay@cryptsoft.com)"
  *    The word 'cryptographic' can be left out if the rouines from the library
  *    being used are not cryptographic related :-).
- * 4. If you include any Windows specific code (or a derivative thereof) from 
+ * 4. If you include any Windows specific code (or a derivative thereof) from
  *    the apps directory (application code) you must include an acknowledgement:
  *    "This product includes software written by Tim Hudson (tjh@cryptsoft.com)"
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY ERIC YOUNG ``AS IS'' AND
  * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -49,7 +49,7 @@
  * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
- * 
+ *
  * The licence and distribution terms for any publically available version or
  * derivative of this code cannot be changed.  i.e. this code cannot simply be
  * copied and put under another distribution licence
@@ -63,7 +63,7 @@
  * are met:
  *
  * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer. 
+ *    notice, this list of conditions and the following disclaimer.
  *
  * 2. Redistributions in binary form must reproduce the above copyright
  *    notice, this list of conditions and the following disclaimer in
@@ -110,7 +110,7 @@
  */
 /* ====================================================================
  * Copyright 2002 Sun Microsystems, Inc. ALL RIGHTS RESERVED.
- * ECC cipher suite support in OpenSSL originally developed by 
+ * ECC cipher suite support in OpenSSL originally developed by
  * SUN MICROSYSTEMS, INC., and contributed to the OpenSSL project.
  */
 /* ====================================================================
@@ -474,10 +474,10 @@
 */
 
 #ifndef OPENSSL_NO_EC
-/* From ECC-TLS draft, used in encoding the curve type in 
+/* From ECC-TLS draft, used in encoding the curve type in
  * ECParameters
  */
-#define EXPLICIT_PRIME_CURVE_TYPE  1   
+#define EXPLICIT_PRIME_CURVE_TYPE  1
 #define EXPLICIT_CHAR2_CURVE_TYPE  2
 #define NAMED_CURVE_TYPE           3
 #endif  /* OPENSSL_NO_EC */
@@ -496,7 +496,7 @@ typedef struct cert_st
     CERT_PKEY *key; /* ALWAYS points to an element of the pkeys array
              * Probably it would make more sense to store
              * an index, not a pointer. */
- 
+
     /* The following masks are for the key and auth
      * algorithms that are supported by the certs below */
     int valid;
@@ -522,7 +522,7 @@ typedef struct cert_st
 
 typedef struct sess_cert_st
     {
-    STACK_OF(X509) *cert_chain; /* as received from peer (not for SSL2) */
+    STACK_OF(X509) *cert_chain; /* as received from peer */
 
     /* The 'peer_...' members are used only by clients. */
     int peer_cert_type;
@@ -532,8 +532,8 @@ typedef struct sess_cert_st
     /* Obviously we don't have the private keys of these,
      * so maybe we shouldn't even use the CERT_PKEY type here. */
 
-    RSA *peer_rsa_tmp; /* not used for SSL 2 */
-    DH *peer_dh_tmp; /* not used for SSL 2 */
+    RSA *peer_rsa_tmp;
+    DH *peer_dh_tmp;
 #ifndef OPENSSL_NO_ECDH
     EC_KEY *peer_ecdh_tmp;
 #endif
@@ -549,8 +549,8 @@ typedef struct sess_cert_st
 /*#define PKT_DEBUG 1   */
 /*#define DES_DEBUG    */
 /*#define DES_OFB_DEBUG    */
-/*#define RSA_DEBUG    */ 
-/*#define IDEA_DEBUG    */ 
+/*#define RSA_DEBUG    */
+/*#define IDEA_DEBUG    */
 
 #define FP_ICC  (int (*)(const void *,const void *))
 #define ssl_put_cipher_by_char(ssl,ciph,ptr) \
@@ -597,7 +597,6 @@ struct ssl_aead_ctx_st
 };
 
 extern SSL3_ENC_METHOD ssl3_undef_enc_method;
-OPENSSL_EXTERN const SSL_CIPHER ssl2_ciphers[];
 OPENSSL_EXTERN SSL_CIPHER ssl3_ciphers[];
 
 
@@ -721,43 +720,6 @@ const SSL_METHOD *func_name(void)  \
     return &func_name##_data; \
     }
 
-#define IMPLEMENT_ssl2_meth_func(func_name, s_accept, s_connect, s_get_meth) \
-const SSL_METHOD *func_name(void)  \
-    { \
-    static const SSL_METHOD func_name##_data= { \
-        SSL2_VERSION, \
-        ssl2_new,    /* local */ \
-        ssl2_clear,    /* local */ \
-        ssl2_free,    /* local */ \
-        s_accept, \
-        s_connect, \
-        ssl2_read, \
-        ssl2_peek, \
-        ssl2_write, \
-        ssl2_shutdown, \
-        ssl_ok,    /* NULL - renegotiate */ \
-        ssl_ok,    /* NULL - check renegotiate */ \
-        NULL, /* NULL - ssl_get_message */ \
-        NULL, /* NULL - ssl_get_record */ \
-        NULL, /* NULL - ssl_write_bytes */ \
-        NULL, /* NULL - dispatch_alert */ \
-        ssl2_ctrl,    /* local */ \
-        ssl2_ctx_ctrl,    /* local */ \
-        ssl2_get_cipher_by_char, \
-        ssl2_put_cipher_by_char, \
-        ssl2_pending, \
-        ssl2_num_ciphers, \
-        ssl2_get_cipher, \
-        s_get_meth, \
-        ssl2_default_timeout, \
-        &ssl3_undef_enc_method, \
-        ssl_undefined_void_function, \
-        ssl2_callback_ctrl,    /* local */ \
-        ssl2_ctx_callback_ctrl,    /* local */ \
-    }; \
-    return &func_name##_data; \
-    }
-
 #define IMPLEMENT_dtls1_meth_func(func_name, s_accept, s_connect, s_get_meth) \
 const SSL_METHOD *func_name(void)  \
     { \
@@ -824,7 +786,7 @@ int ssl_cipher_get_comp(const SSL_SESSION *s, SSL_COMP **comp);
 int ssl_cipher_get_evp_aead(const SSL_SESSION *s, const EVP_AEAD **aead);
 int ssl_cipher_get_evp(const SSL_SESSION *s,const EVP_CIPHER **enc,
                const EVP_MD **md,int *mac_pkey_type,int *mac_secret_size);
-int ssl_get_handshake_digest(int i,long *mask,const EVP_MD **md);               
+int ssl_get_handshake_digest(int i,long *mask,const EVP_MD **md);
 int ssl_verify_cert_chain(SSL *s,STACK_OF(X509) *sk);
 int ssl_undefined_function(SSL *s);
 int ssl_undefined_void_function(void);
@@ -838,35 +800,6 @@ STACK_OF(SSL_CIPHER) *ssl_get_ciphers_by_id(SSL *s);
 int ssl_verify_alarm_type(long type);
 void ssl_load_ciphers(void);
 int ssl_fill_hello_random(SSL *s, int server, unsigned char *field, int len);
-
-int ssl2_enc_init(SSL *s, int client);
-int ssl2_generate_key_material(SSL *s);
-void ssl2_enc(SSL *s,int send_data);
-void ssl2_mac(SSL *s,unsigned char *mac,int send_data);
-const SSL_CIPHER *ssl2_get_cipher_by_char(const unsigned char *p);
-int ssl2_put_cipher_by_char(const SSL_CIPHER *c,unsigned char *p);
-int ssl2_part_read(SSL *s, unsigned long f, int i);
-int ssl2_do_write(SSL *s);
-int ssl2_set_certificate(SSL *s, int type, int len, const unsigned char *data);
-void ssl2_return_error(SSL *s,int reason);
-void ssl2_write_error(SSL *s);
-int ssl2_num_ciphers(void);
-const SSL_CIPHER *ssl2_get_cipher(unsigned int u);
-int    ssl2_new(SSL *s);
-void    ssl2_free(SSL *s);
-int    ssl2_accept(SSL *s);
-int    ssl2_connect(SSL *s);
-int    ssl2_read(SSL *s, void *buf, int len);
-int    ssl2_peek(SSL *s, void *buf, int len);
-int    ssl2_write(SSL *s, const void *buf, int len);
-int    ssl2_shutdown(SSL *s);
-void    ssl2_clear(SSL *s);
-long    ssl2_ctrl(SSL *s,int cmd, long larg, void *parg);
-long    ssl2_ctx_ctrl(SSL_CTX *s,int cmd, long larg, void *parg);
-long    ssl2_callback_ctrl(SSL *s,int cmd, void (*fp)(void));
-long    ssl2_ctx_callback_ctrl(SSL_CTX *s,int cmd, void (*fp)(void));
-int    ssl2_pending(const SSL *s);
-long    ssl2_default_timeout(void );
 
 const SSL_CIPHER *ssl3_get_cipher_by_char(const unsigned char *p);
 int ssl3_put_cipher_by_char(const SSL_CIPHER *c,unsigned char *p);
@@ -888,8 +821,8 @@ long ssl3_get_message(SSL *s, int st1, int stn, int mt, long max, int *ok);
 int ssl3_send_finished(SSL *s, int a, int b, const char *sender,int slen);
 int ssl3_num_ciphers(void);
 const SSL_CIPHER *ssl3_get_cipher(unsigned int u);
-int ssl3_renegotiate(SSL *ssl); 
-int ssl3_renegotiate_check(SSL *ssl); 
+int ssl3_renegotiate(SSL *ssl);
+int ssl3_renegotiate_check(SSL *ssl);
 int ssl3_dispatch_alert(SSL *s);
 int ssl3_read_bytes(SSL *s, int type, unsigned char *buf, int len, int peek);
 int ssl3_write_bytes(SSL *s, int type, const void *buf, int len);
@@ -944,8 +877,8 @@ int ssl3_do_compress(SSL *ssl);
 int ssl3_do_uncompress(SSL *ssl);
 int ssl3_write_pending(SSL *s, int type, const unsigned char *buf,
     unsigned int len);
-unsigned char *dtls1_set_message_header(SSL *s, 
-    unsigned char *p, unsigned char mt,    unsigned long len, 
+unsigned char *dtls1_set_message_header(SSL *s,
+    unsigned char *p, unsigned char mt,    unsigned long len,
     unsigned long frag_off, unsigned long frag_len);
 
 int dtls1_write_app_data_bytes(SSL *s, int type, const void *buf, int len);
@@ -956,7 +889,7 @@ int dtls1_send_finished(SSL *s, int a, int b, const char *sender, int slen);
 unsigned long dtls1_output_cert_chain(SSL *s, X509 *x);
 int dtls1_read_failed(SSL *s, int code);
 int dtls1_buffer_message(SSL *s, int ccs);
-int dtls1_retransmit_message(SSL *s, unsigned short seq, 
+int dtls1_retransmit_message(SSL *s, unsigned short seq,
     unsigned long frag_off, int *found);
 int dtls1_get_queue_priority(unsigned short seq, int is_ccs);
 int dtls1_retransmit_buffered_messages(SSL *s);
@@ -1080,8 +1013,8 @@ int tls1_ec_curve_id2nid(int curve_id);
 int tls1_ec_nid2curve_id(int nid);
 #endif /* OPENSSL_NO_EC */
 
-unsigned char *ssl_add_clienthello_tlsext(SSL *s, unsigned char *buf, unsigned char *limit); 
-unsigned char *ssl_add_serverhello_tlsext(SSL *s, unsigned char *buf, unsigned char *limit); 
+unsigned char *ssl_add_clienthello_tlsext(SSL *s, unsigned char *buf, unsigned char *limit);
+unsigned char *ssl_add_serverhello_tlsext(SSL *s, unsigned char *buf, unsigned char *limit);
 int ssl_parse_clienthello_tlsext(SSL *s, unsigned char **data, unsigned char *d, int n, int *al);
 int ssl_parse_serverhello_tlsext(SSL *s, unsigned char **data, unsigned char *d, int n, int *al);
 int ssl_prepare_clienthello_tlsext(SSL *s);

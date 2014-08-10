@@ -37,10 +37,8 @@ B<openssl> B<s_server>
 [B<-cipher cipherlist>]
 [B<-quiet>]
 [B<-no_tmp_rsa>]
-[B<-ssl2>]
 [B<-ssl3>]
 [B<-tls1>]
-[B<-no_ssl2>]
 [B<-no_ssl3>]
 [B<-no_tls1>]
 [B<-no_dhe>]
@@ -206,11 +204,11 @@ Use the PSK key B<key> when using a PSK cipher suite. The key is
 given as a hexadecimal number without leading 0x, for example -psk
 1a2b3c4d.
 
-=item B<-ssl2>, B<-ssl3>, B<-tls1>, B<-no_ssl2>, B<-no_ssl3>, B<-no_tls1>
+=item B<-ssl3>, B<-tls1>, B<-no_ssl3>, B<-no_tls1>
 
 these options disable the use of certain SSL or TLS protocols. By default
 the initial handshake uses a method which should be compatible with all
-servers and permit them to use SSL v3, SSL v2 or TLS as appropriate.
+servers and permit them to use SSL v3 or TLS as appropriate.
 
 =item B<-bugs>
 
@@ -236,7 +234,7 @@ print out a hex dump of any TLS extensions received from the server.
 
 =item B<-no_ticket>
 
-disable RFC4507bis session ticket support. 
+disable RFC4507bis session ticket support.
 
 =item B<-www>
 
@@ -279,7 +277,7 @@ IDs (eg. with a certain prefix).
 
 If a connection request is established with an SSL client and neither the
 B<-www> nor the B<-WWW> option has been used then normally any data received
-from the client is displayed and any key presses will be sent to the client. 
+from the client is displayed and any key presses will be sent to the client.
 
 Certain single letter commands are also recognized which perform special
 operations: these are listed below.
