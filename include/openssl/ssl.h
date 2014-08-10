@@ -5,21 +5,21 @@
  * This package is an SSL implementation written
  * by Eric Young (eay@cryptsoft.com).
  * The implementation was written so as to conform with Netscapes SSL.
- * 
+ *
  * This library is free for commercial and non-commercial use as long as
  * the following conditions are aheared to.  The following conditions
  * apply to all code found in this distribution, be it the RC4, RSA,
  * lhash, DES, etc., code; not just the SSL code.  The SSL documentation
  * included with this distribution is covered by the same copyright terms
  * except that the holder is Tim Hudson (tjh@cryptsoft.com).
- * 
+ *
  * Copyright remains Eric Young's, and as such any Copyright notices in
  * the code are not to be removed.
  * If this package is used in a product, Eric Young should be given attribution
  * as the author of the parts of the library used.
  * This can be in the form of a textual message at program startup or
  * in documentation (online or textual) provided with the package.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
  * are met:
@@ -34,10 +34,10 @@
  *     Eric Young (eay@cryptsoft.com)"
  *    The word 'cryptographic' can be left out if the rouines from the library
  *    being used are not cryptographic related :-).
- * 4. If you include any Windows specific code (or a derivative thereof) from 
+ * 4. If you include any Windows specific code (or a derivative thereof) from
  *    the apps directory (application code) you must include an acknowledgement:
  *    "This product includes software written by Tim Hudson (tjh@cryptsoft.com)"
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY ERIC YOUNG ``AS IS'' AND
  * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -49,7 +49,7 @@
  * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
- * 
+ *
  * The licence and distribution terms for any publically available version or
  * derivative of this code cannot be changed.  i.e. this code cannot simply be
  * copied and put under another distribution licence
@@ -63,7 +63,7 @@
  * are met:
  *
  * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer. 
+ *    notice, this list of conditions and the following disclaimer.
  *
  * 2. Redistributions in binary form must reproduce the above copyright
  *    notice, this list of conditions and the following disclaimer in
@@ -110,7 +110,7 @@
  */
 /* ====================================================================
  * Copyright 2002 Sun Microsystems, Inc. ALL RIGHTS RESERVED.
- * ECC cipher suite support in OpenSSL originally developed by 
+ * ECC cipher suite support in OpenSSL originally developed by
  * SUN MICROSYSTEMS, INC., and contributed to the OpenSSL project.
  */
 /* ====================================================================
@@ -140,8 +140,8 @@
  * OTHERWISE.
  */
 
-#ifndef HEADER_SSL_H 
-#define HEADER_SSL_H 
+#ifndef HEADER_SSL_H
+#define HEADER_SSL_H
 
 #include <openssl/e_os2.h>
 
@@ -172,16 +172,16 @@ extern "C" {
 #define SSL_SESSION_ASN1_VERSION 0x0001
 
 /* text strings for the ciphers */
-#define SSL_TXT_NULL_WITH_MD5        SSL2_TXT_NULL_WITH_MD5            
-#define SSL_TXT_RC4_128_WITH_MD5    SSL2_TXT_RC4_128_WITH_MD5        
-#define SSL_TXT_RC4_128_EXPORT40_WITH_MD5 SSL2_TXT_RC4_128_EXPORT40_WITH_MD5    
-#define SSL_TXT_RC2_128_CBC_WITH_MD5    SSL2_TXT_RC2_128_CBC_WITH_MD5        
-#define SSL_TXT_RC2_128_CBC_EXPORT40_WITH_MD5 SSL2_TXT_RC2_128_CBC_EXPORT40_WITH_MD5    
-#define SSL_TXT_IDEA_128_CBC_WITH_MD5    SSL2_TXT_IDEA_128_CBC_WITH_MD5        
-#define SSL_TXT_DES_64_CBC_WITH_MD5    SSL2_TXT_DES_64_CBC_WITH_MD5        
-#define SSL_TXT_DES_64_CBC_WITH_SHA    SSL2_TXT_DES_64_CBC_WITH_SHA        
-#define SSL_TXT_DES_192_EDE3_CBC_WITH_MD5 SSL2_TXT_DES_192_EDE3_CBC_WITH_MD5    
-#define SSL_TXT_DES_192_EDE3_CBC_WITH_SHA SSL2_TXT_DES_192_EDE3_CBC_WITH_SHA    
+#define SSL_TXT_NULL_WITH_MD5        SSL2_TXT_NULL_WITH_MD5
+#define SSL_TXT_RC4_128_WITH_MD5    SSL2_TXT_RC4_128_WITH_MD5
+#define SSL_TXT_RC4_128_EXPORT40_WITH_MD5 SSL2_TXT_RC4_128_EXPORT40_WITH_MD5
+#define SSL_TXT_RC2_128_CBC_WITH_MD5    SSL2_TXT_RC2_128_CBC_WITH_MD5
+#define SSL_TXT_RC2_128_CBC_EXPORT40_WITH_MD5 SSL2_TXT_RC2_128_CBC_EXPORT40_WITH_MD5
+#define SSL_TXT_IDEA_128_CBC_WITH_MD5    SSL2_TXT_IDEA_128_CBC_WITH_MD5
+#define SSL_TXT_DES_64_CBC_WITH_MD5    SSL2_TXT_DES_64_CBC_WITH_MD5
+#define SSL_TXT_DES_64_CBC_WITH_SHA    SSL2_TXT_DES_64_CBC_WITH_SHA
+#define SSL_TXT_DES_192_EDE3_CBC_WITH_MD5 SSL2_TXT_DES_192_EDE3_CBC_WITH_MD5
+#define SSL_TXT_DES_192_EDE3_CBC_WITH_SHA SSL2_TXT_DES_192_EDE3_CBC_WITH_SHA
 
 /*    VRS Additional Kerberos5 entries
  */
@@ -189,16 +189,16 @@ extern "C" {
 #define SSL_TXT_KRB5_DES_192_CBC3_SHA SSL3_TXT_KRB5_DES_192_CBC3_SHA
 #define SSL_TXT_KRB5_RC4_128_SHA      SSL3_TXT_KRB5_RC4_128_SHA
 #define SSL_TXT_KRB5_IDEA_128_CBC_SHA SSL3_TXT_KRB5_IDEA_128_CBC_SHA
-#define SSL_TXT_KRB5_DES_64_CBC_MD5   SSL3_TXT_KRB5_DES_64_CBC_MD5       
-#define SSL_TXT_KRB5_DES_192_CBC3_MD5 SSL3_TXT_KRB5_DES_192_CBC3_MD5       
+#define SSL_TXT_KRB5_DES_64_CBC_MD5   SSL3_TXT_KRB5_DES_64_CBC_MD5
+#define SSL_TXT_KRB5_DES_192_CBC3_MD5 SSL3_TXT_KRB5_DES_192_CBC3_MD5
 #define SSL_TXT_KRB5_RC4_128_MD5      SSL3_TXT_KRB5_RC4_128_MD5
-#define SSL_TXT_KRB5_IDEA_128_CBC_MD5 SSL3_TXT_KRB5_IDEA_128_CBC_MD5 
+#define SSL_TXT_KRB5_IDEA_128_CBC_MD5 SSL3_TXT_KRB5_IDEA_128_CBC_MD5
 
-#define SSL_TXT_KRB5_DES_40_CBC_SHA   SSL3_TXT_KRB5_DES_40_CBC_SHA 
-#define SSL_TXT_KRB5_RC2_40_CBC_SHA   SSL3_TXT_KRB5_RC2_40_CBC_SHA 
+#define SSL_TXT_KRB5_DES_40_CBC_SHA   SSL3_TXT_KRB5_DES_40_CBC_SHA
+#define SSL_TXT_KRB5_RC2_40_CBC_SHA   SSL3_TXT_KRB5_RC2_40_CBC_SHA
 #define SSL_TXT_KRB5_RC4_40_SHA          SSL3_TXT_KRB5_RC4_40_SHA
-#define SSL_TXT_KRB5_DES_40_CBC_MD5   SSL3_TXT_KRB5_DES_40_CBC_MD5 
-#define SSL_TXT_KRB5_RC2_40_CBC_MD5   SSL3_TXT_KRB5_RC2_40_CBC_MD5 
+#define SSL_TXT_KRB5_DES_40_CBC_MD5   SSL3_TXT_KRB5_DES_40_CBC_MD5
+#define SSL_TXT_KRB5_RC2_40_CBC_MD5   SSL3_TXT_KRB5_RC2_40_CBC_MD5
 #define SSL_TXT_KRB5_RC4_40_MD5          SSL3_TXT_KRB5_RC4_40_MD5
 
 #define SSL_TXT_KRB5_DES_40_CBC_SHA   SSL3_TXT_KRB5_DES_40_CBC_SHA
@@ -218,9 +218,6 @@ extern "C" {
 
 
 /* These are used to specify which ciphers to use and not to use */
-
-#define SSL_TXT_EXP40        "EXPORT40"
-#define SSL_TXT_EXP56        "EXPORT56"
 #define SSL_TXT_LOW        "LOW"
 #define SSL_TXT_MEDIUM        "MEDIUM"
 #define SSL_TXT_HIGH        "HIGH"
@@ -290,8 +287,8 @@ extern "C" {
 #define SSL_TXT_MD5        "MD5"
 #define SSL_TXT_SHA1        "SHA1"
 #define SSL_TXT_SHA        "SHA" /* same as "SHA1" */
-#define SSL_TXT_GOST94        "GOST94" 
-#define SSL_TXT_GOST89MAC        "GOST89MAC" 
+#define SSL_TXT_GOST94        "GOST94"
+#define SSL_TXT_GOST89MAC        "GOST89MAC"
 #define SSL_TXT_SHA256        "SHA256"
 #define SSL_TXT_SHA384        "SHA384"
 
@@ -391,7 +388,7 @@ struct ssl_cipher_st
 
     unsigned long algo_strength;    /* strength and export flags */
     unsigned long algorithm2;	/* Extra flags. See SSL2_CF_* in ssl2.h
-                                 * and algorithm2 section in ssl_locl.h 
+                                 * and algorithm2 section in ssl_locl.h
                                  */
     int strength_bits;        /* Number of bits really used */
     int alg_bits;            /* Number of bits for algorithm */
@@ -415,7 +412,7 @@ struct ssl_method_st
     int (*ssl_renegotiate_check)(SSL *s);
     long (*ssl_get_message)(SSL *s, int st1, int stn, int mt, long
         max, int *ok);
-    int (*ssl_read_bytes)(SSL *s, int type, unsigned char *buf, int len, 
+    int (*ssl_read_bytes)(SSL *s, int type, unsigned char *buf, int len,
         int peek);
     int (*ssl_write_bytes)(SSL *s, int type, const void *buf_, int len);
     int (*ssl_dispatch_alert)(SSL *s);
@@ -447,7 +444,7 @@ struct ssl_method_st
  *    Peer [ 3 ] EXPLICIT    X509,        -- optional Peer Certificate
  *    Session_ID_context [ 4 ] EXPLICIT OCTET STRING,   -- the Session ID context
  *    Verify_result [ 5 ] EXPLICIT INTEGER,   -- X509_V_... code for `Peer'
- *    HostName [ 6 ] EXPLICIT OCTET STRING,   -- optional HostName from servername TLS extension 
+ *    HostName [ 6 ] EXPLICIT OCTET STRING,   -- optional HostName from servername TLS extension
  *    PSK_identity_hint [ 7 ] EXPLICIT OCTET STRING, -- optional PSK identity hint
  *    PSK_identity [ 8 ] EXPLICIT OCTET STRING,  -- optional PSK identity
  *    Ticket_lifetime_hint [9] EXPLICIT INTEGER, -- server's lifetime hint for session ticket
@@ -611,8 +608,8 @@ struct ssl_session_st
 #define SSL_OP_NETSCAPE_CA_DN_BUG            0x20000000L
 #define SSL_OP_NETSCAPE_DEMO_CIPHER_CHANGE_BUG        0x40000000L
 /* Make server add server-hello extension from early version of
- * cryptopro draft, when GOST ciphersuite is negotiated. 
- * Required for interoperability with CryptoPro CSP 3.x 
+ * cryptopro draft, when GOST ciphersuite is negotiated.
+ * Required for interoperability with CryptoPro CSP 3.x
  */
 #define SSL_OP_CRYPTOPRO_TLSEXT_BUG            0x80000000L
 
@@ -833,11 +830,11 @@ struct ssl_ctx_st
     int (*client_cert_cb)(SSL *ssl, X509 **x509, EVP_PKEY **pkey);
 
     /* cookie generate callback */
-    int (*app_gen_cookie_cb)(SSL *ssl, unsigned char *cookie, 
+    int (*app_gen_cookie_cb)(SSL *ssl, unsigned char *cookie,
         unsigned int *cookie_len);
 
     /* verify cookie callback */
-    int (*app_verify_cookie_cb)(SSL *ssl, unsigned char *cookie, 
+    int (*app_verify_cookie_cb)(SSL *ssl, unsigned char *cookie,
         unsigned int cookie_len);
 
     CRYPTO_EX_DATA ex_data;
@@ -953,7 +950,7 @@ struct ssl_ctx_st
     void *next_proto_select_cb_arg;
 # endif
         /* SRTP profiles we are willing to do from RFC 5764 */
-        STACK_OF(SRTP_PROTECTION_PROFILE) *srtp_profiles;  
+        STACK_OF(SRTP_PROTECTION_PROFILE) *srtp_profiles;
     };
 
 #endif
@@ -1042,15 +1039,15 @@ void SSL_get0_next_proto_negotiated(const SSL *s,
  * resulting identity/psk */
 #define PSK_MAX_IDENTITY_LEN 128
 #define PSK_MAX_PSK_LEN 256
-void SSL_CTX_set_psk_client_callback(SSL_CTX *ctx, 
-    unsigned int (*psk_client_callback)(SSL *ssl, const char *hint, 
+void SSL_CTX_set_psk_client_callback(SSL_CTX *ctx,
+    unsigned int (*psk_client_callback)(SSL *ssl, const char *hint,
         char *identity, unsigned int max_identity_len, unsigned char *psk,
         unsigned int max_psk_len));
-void SSL_set_psk_client_callback(SSL *ssl, 
-    unsigned int (*psk_client_callback)(SSL *ssl, const char *hint, 
+void SSL_set_psk_client_callback(SSL *ssl,
+    unsigned int (*psk_client_callback)(SSL *ssl, const char *hint,
         char *identity, unsigned int max_identity_len, unsigned char *psk,
         unsigned int max_psk_len));
-void SSL_CTX_set_psk_server_callback(SSL_CTX *ctx, 
+void SSL_CTX_set_psk_server_callback(SSL_CTX *ctx,
     unsigned int (*psk_server_callback)(SSL *ssl, const char *identity,
         unsigned char *psk, unsigned int max_psk_len));
 void SSL_set_psk_server_callback(SSL *ssl,
@@ -1180,7 +1177,7 @@ struct ssl_st
 
     EVP_CIPHER_CTX *enc_write_ctx;        /* cryptographic state */
     EVP_MD_CTX *write_hash;        /* used for mac generation */
-    char *compress;    
+    char *compress;
 
     /* session info */
 
@@ -1224,7 +1221,7 @@ struct ssl_st
     SSL_CTX *ctx;
     /* set this flag to 1 and a sleep(1) is put into all SSL_read()
      * and SSL_write() calls, good for nbio debuging :-) */
-    int debug;    
+    int debug;
 
     /* extra application data */
     long verify_result;
@@ -1247,7 +1244,7 @@ struct ssl_st
                     void *arg);
     void *tlsext_debug_arg;
     char *tlsext_hostname;
-    int servername_done;   /* no further mod of servername 
+    int servername_done;   /* no further mod of servername
                               0 : call the servername extension callback.
                               1 : prepare 2, allow last ack just after in server callback.
                               2 : don't call servername callback, no ack in server hello

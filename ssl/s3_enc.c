@@ -5,21 +5,21 @@
  * This package is an SSL implementation written
  * by Eric Young (eay@cryptsoft.com).
  * The implementation was written so as to conform with Netscapes SSL.
- * 
+ *
  * This library is free for commercial and non-commercial use as long as
  * the following conditions are aheared to.  The following conditions
  * apply to all code found in this distribution, be it the RC4, RSA,
  * lhash, DES, etc., code; not just the SSL code.  The SSL documentation
  * included with this distribution is covered by the same copyright terms
  * except that the holder is Tim Hudson (tjh@cryptsoft.com).
- * 
+ *
  * Copyright remains Eric Young's, and as such any Copyright notices in
  * the code are not to be removed.
  * If this package is used in a product, Eric Young should be given attribution
  * as the author of the parts of the library used.
  * This can be in the form of a textual message at program startup or
  * in documentation (online or textual) provided with the package.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
  * are met:
@@ -34,10 +34,10 @@
  *     Eric Young (eay@cryptsoft.com)"
  *    The word 'cryptographic' can be left out if the rouines from the library
  *    being used are not cryptographic related :-).
- * 4. If you include any Windows specific code (or a derivative thereof) from 
+ * 4. If you include any Windows specific code (or a derivative thereof) from
  *    the apps directory (application code) you must include an acknowledgement:
  *    "This product includes software written by Tim Hudson (tjh@cryptsoft.com)"
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY ERIC YOUNG ``AS IS'' AND
  * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -49,7 +49,7 @@
  * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
- * 
+ *
  * The licence and distribution terms for any publically available version or
  * derivative of this code cannot be changed.  i.e. this code cannot simply be
  * copied and put under another distribution licence
@@ -63,7 +63,7 @@
  * are met:
  *
  * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer. 
+ *    notice, this list of conditions and the following disclaimer.
  *
  * 2. Redistributions in binary form must reproduce the above copyright
  *    notice, this list of conditions and the following disclaimer in
@@ -177,7 +177,7 @@ static int ssl3_generate_key_block(SSL *s, unsigned char *km, int num)
             SSLerr(SSL_F_SSL3_GENERATE_KEY_BLOCK, ERR_R_INTERNAL_ERROR);
             return 0;
             }
-        
+
         for (j=0; j<k; j++)
             buf[j]=c;
         c++;
@@ -210,126 +210,110 @@ static int ssl3_generate_key_block(SSL *s, unsigned char *km, int num)
     }
 
 int ssl3_change_cipher_state(SSL *s, int which)
-    {
-    unsigned char *p,*mac_secret;
-    unsigned char exp_key[EVP_MAX_KEY_LENGTH];
-    unsigned char exp_iv[EVP_MAX_IV_LENGTH];
-    unsigned char *ms,*key,*iv,*er1,*er2;
-    EVP_CIPHER_CTX *dd;
-    const EVP_CIPHER *c;
-    const EVP_MD *m;
-    EVP_MD_CTX md;
-    int is_exp,n,i,j,k,cl;
-    int reuse_dd = 0;
+{
+    const unsigned char *client_write_mac_secret, *server_write_mac_secret;
+    const unsigned char *client_write_key, *server_write_key;
+    const unsigned char *client_write_iv, *server_write_iv;
+    const unsigned char *mac_secret, *key, *iv;
+    unsigned char *key_block;
+    int mac_len, key_len, iv_len;
+    char is_read, use_client_keys;
+    EVP_CIPHER_CTX *cipher_ctx;
+    const EVP_CIPHER *cipher;
+    const EVP_MD *mac;
 
-    is_exp=SSL_C_IS_EXPORT(s->s3->tmp.new_cipher);
-    c=s->s3->tmp.new_sym_enc;
-    m=s->s3->tmp.new_hash;
-    /* m == NULL will lead to a crash later */
-    OPENSSL_assert(m);
 
-    if (which & SSL3_CC_READ)
-        {
-        if (s->enc_read_ctx != NULL)
-            reuse_dd = 1;
-        else if ((s->enc_read_ctx=malloc(sizeof(EVP_CIPHER_CTX))) == NULL)
+    cipher = s->s3->tmp.new_sym_enc;
+    mac = s->s3->tmp.new_hash;
+
+    /* mac == NULL will lead to a crash later */
+    OPENSSL_assert(mac);
+
+    /*
+     * is_read is true if we have just read a ChangeCipherSpec message,
+     * that is we need to update the read cipherspec. Otherwise we have
+     * just written one.
+     */
+    is_read = (which & SSL3_CC_READ) != 0;
+
+    /*
+     * use_client_keys is true if we wish to use the keys for the "client
+     * write" direction. This is the case if we're a client sending a
+     * ChangeCipherSpec, or a server reading a client's ChangeCipherSpec.
+     */
+    use_client_keys = ((which == SSL3_CHANGE_CIPHER_CLIENT_WRITE) ||
+        (which == SSL3_CHANGE_CIPHER_SERVER_READ));
+
+
+    if (is_read) {
+        EVP_CIPHER_CTX_free(s->enc_read_ctx);
+        s->enc_read_ctx = NULL;
+        if ((cipher_ctx = EVP_CIPHER_CTX_new()) == NULL)
             goto err;
-        else
-            /* make sure it's intialized in case we exit later with an error */
-            EVP_CIPHER_CTX_init(s->enc_read_ctx);
-        dd= s->enc_read_ctx;
+        s->enc_read_ctx = cipher_ctx;
 
-        ssl_replace_hash(&s->read_hash,m);
-        memset(&(s->s3->read_sequence[0]),0,8);
-        mac_secret= &(s->s3->read_mac_secret[0]);
-        }
-    else
-        {
-        if (s->enc_write_ctx != NULL)
-            reuse_dd = 1;
-        else if ((s->enc_write_ctx=malloc(sizeof(EVP_CIPHER_CTX))) == NULL)
+        if (ssl_replace_hash(&s->read_hash, mac) == NULL)
             goto err;
-        else
-            /* make sure it's intialized in case we exit later with an error */
-            EVP_CIPHER_CTX_init(s->enc_write_ctx);
-        dd= s->enc_write_ctx;
-        ssl_replace_hash(&s->write_hash,m);
-        memset(&(s->s3->write_sequence[0]),0,8);
-        mac_secret= &(s->s3->write_mac_secret[0]);
-        }
+    } else {
+        EVP_CIPHER_CTX_free(s->enc_write_ctx);
+        s->enc_write_ctx = NULL;
+        if ((cipher_ctx = EVP_CIPHER_CTX_new()) == NULL)
+            goto err;
+        s->enc_write_ctx = cipher_ctx;
 
-    if (reuse_dd)
-        EVP_CIPHER_CTX_cleanup(dd);
+        if (ssl_replace_hash(&s->write_hash, mac) == NULL)
+            goto err;
+    }
 
-    p=s->s3->tmp.key_block;
-    i=EVP_MD_size(m);
-    if (i < 0)
+    memset(is_read ? s->s3->read_sequence : s->s3->write_sequence, 0, 8);
+
+    mac_len = EVP_MD_size(mac);
+    key_len = EVP_CIPHER_key_length(cipher);
+    iv_len = EVP_CIPHER_iv_length(cipher);
+
+    if (mac_len < 0)
         goto err2;
-    cl=EVP_CIPHER_key_length(c);
-    j=is_exp ? (cl < SSL_C_EXPORT_KEYLENGTH(s->s3->tmp.new_cipher) ?
-         cl : SSL_C_EXPORT_KEYLENGTH(s->s3->tmp.new_cipher)) : cl;
-    /* Was j=(is_exp)?5:EVP_CIPHER_key_length(c); */
-    k=EVP_CIPHER_iv_length(c);
-    if (    (which == SSL3_CHANGE_CIPHER_CLIENT_WRITE) ||
-        (which == SSL3_CHANGE_CIPHER_SERVER_READ))
-        {
-        ms=  &(p[ 0]); n=i+i;
-        key= &(p[ n]); n+=j+j;
-        iv=  &(p[ n]); n+=k+k;
-        er1= &(s->s3->client_random[0]);
-        er2= &(s->s3->server_random[0]);
-        }
-    else
-        {
-        n=i;
-        ms=  &(p[ n]); n+=i+j;
-        key= &(p[ n]); n+=j+k;
-        iv=  &(p[ n]); n+=k;
-        er1= &(s->s3->server_random[0]);
-        er2= &(s->s3->client_random[0]);
-        }
 
-    if (n > s->s3->tmp.key_block_length)
-        {
-        SSLerr(SSL_F_SSL3_CHANGE_CIPHER_STATE,ERR_R_INTERNAL_ERROR);
+    key_block = s->s3->tmp.key_block;
+    client_write_mac_secret = key_block;
+    key_block += mac_len;
+    server_write_mac_secret = key_block;
+    key_block += mac_len;
+    client_write_key = key_block;
+    key_block += key_len;
+    server_write_key = key_block;
+    key_block += key_len;
+    client_write_iv = key_block;
+    key_block += iv_len;
+    server_write_iv = key_block;
+    key_block += iv_len;
+
+    if (use_client_keys) {
+        mac_secret = client_write_mac_secret;
+        key = client_write_key;
+        iv = client_write_iv;
+    } else {
+        mac_secret = server_write_mac_secret;
+        key = server_write_key;
+        iv = server_write_iv;
+    }
+
+    if (key_block - s->s3->tmp.key_block != s->s3->tmp.key_block_length) {
+        SSLerr(SSL_F_SSL3_CHANGE_CIPHER_STATE, ERR_R_INTERNAL_ERROR);
         goto err2;
-        }
+    }
 
-    EVP_MD_CTX_init(&md);
-    memcpy(mac_secret,ms,i);
-    if (is_exp)
-        {
-        /* In here I set both the read and write key/iv to the
-         * same value since only the correct one will be used :-).
-         */
-        EVP_DigestInit_ex(&md,EVP_md5(), NULL);
-        EVP_DigestUpdate(&md,key,j);
-        EVP_DigestUpdate(&md,er1,SSL3_RANDOM_SIZE);
-        EVP_DigestUpdate(&md,er2,SSL3_RANDOM_SIZE);
-        EVP_DigestFinal_ex(&md,&(exp_key[0]),NULL);
-        key= &(exp_key[0]);
+    memcpy(is_read ? s->s3->read_mac_secret : s->s3->write_mac_secret,
+        mac_secret, mac_len);
 
-        if (k > 0)
-            {
-            EVP_DigestInit_ex(&md,EVP_md5(), NULL);
-            EVP_DigestUpdate(&md,er1,SSL3_RANDOM_SIZE);
-            EVP_DigestUpdate(&md,er2,SSL3_RANDOM_SIZE);
-            EVP_DigestFinal_ex(&md,&(exp_iv[0]),NULL);
-            iv= &(exp_iv[0]);
-            }
-        }
+    EVP_CipherInit_ex(cipher_ctx, cipher, NULL, key, iv, !is_read);
 
-    EVP_CipherInit_ex(dd,c,NULL,key,iv,(which & SSL3_CC_WRITE));
-
-    vigortls_zeroize(&(exp_key[0]),sizeof(exp_key));
-    vigortls_zeroize(&(exp_iv[0]),sizeof(exp_iv));
-    EVP_MD_CTX_cleanup(&md);
     return (1);
 err:
-    SSLerr(SSL_F_SSL3_CHANGE_CIPHER_STATE,ERR_R_MALLOC_FAILURE);
+    SSLerr(SSL_F_SSL3_CHANGE_CIPHER_STATE, ERR_R_MALLOC_FAILURE);
 err2:
     return (0);
-    }
+}
 
 int ssl3_setup_key_block(SSL *s)
     {
@@ -386,7 +370,7 @@ int ssl3_setup_key_block(SSL *s)
             {
             if (s->session->cipher->algorithm_enc == SSL_eNULL)
                 s->s3->need_empty_fragments = 0;
-            
+
 #ifndef OPENSSL_NO_RC4
             if (s->session->cipher->algorithm_enc == SSL_RC4)
                 s->s3->need_empty_fragments = 0;
@@ -395,7 +379,7 @@ int ssl3_setup_key_block(SSL *s)
         }
 
     return ret;
-        
+
 err:
     SSLerr(SSL_F_SSL3_SETUP_KEY_BLOCK,ERR_R_MALLOC_FAILURE);
     return (0);
@@ -474,14 +458,14 @@ int ssl3_enc(SSL *s, int send)
             rec->length+=i;
             rec->input[l-1]=(i-1);
             }
-        
+
         if (!send)
             {
             if (l == 0 || l%bs != 0)
                 return 0;
             /* otherwise, rec->length >= bs */
             }
-        
+
         EVP_Cipher(ds,rec->data,rec->input,l);
 
         if (EVP_MD_CTX_md(s->read_hash) != NULL)
@@ -496,40 +480,40 @@ void ssl3_init_finished_mac(SSL *s)
     {
     if (s->s3->handshake_buffer) BIO_free(s->s3->handshake_buffer);
     if (s->s3->handshake_dgst) ssl3_free_digest_list(s);
-    s->s3->handshake_buffer=BIO_new(BIO_s_mem());    
+    s->s3->handshake_buffer=BIO_new(BIO_s_mem());
     (void)BIO_set_close(s->s3->handshake_buffer,BIO_CLOSE);
     }
 
-void ssl3_free_digest_list(SSL *s) 
+void ssl3_free_digest_list(SSL *s)
     {
     int i;
     if (!s->s3->handshake_dgst) return;
-    for (i=0;i<SSL_MAX_DIGEST;i++) 
+    for (i=0;i<SSL_MAX_DIGEST;i++)
         {
         if (s->s3->handshake_dgst[i])
             EVP_MD_CTX_destroy(s->s3->handshake_dgst[i]);
         }
     free(s->s3->handshake_dgst);
     s->s3->handshake_dgst=NULL;
-    }    
+    }
 
 
 
 void ssl3_finish_mac(SSL *s, const unsigned char *buf, int len)
     {
-    if (s->s3->handshake_buffer && !(s->s3->flags & TLS1_FLAGS_KEEP_HANDSHAKE)) 
+    if (s->s3->handshake_buffer && !(s->s3->flags & TLS1_FLAGS_KEEP_HANDSHAKE))
         {
         BIO_write (s->s3->handshake_buffer,(void *)buf,len);
-        } 
-    else 
+        }
+    else
         {
         int i;
-        for (i=0;i< SSL_MAX_DIGEST;i++) 
+        for (i=0;i< SSL_MAX_DIGEST;i++)
             {
             if (s->s3->handshake_dgst[i]!= NULL)
             EVP_DigestUpdate(s->s3->handshake_dgst[i],buf,len);
             }
-        }    
+        }
     }
 
 int ssl3_digest_cached_records(SSL *s)
@@ -555,16 +539,16 @@ int ssl3_digest_cached_records(SSL *s)
         }
 
     /* Loop through bitso of algorithm2 field and create MD_CTX-es */
-    for (i=0;ssl_get_handshake_digest(i,&mask,&md); i++) 
+    for (i=0;ssl_get_handshake_digest(i,&mask,&md); i++)
         {
-        if ((mask & ssl_get_algorithm2(s)) && md) 
+        if ((mask & ssl_get_algorithm2(s)) && md)
             {
             s->s3->handshake_dgst[i]=EVP_MD_CTX_create();
             EVP_DigestInit_ex(s->s3->handshake_dgst[i],md,NULL);
             EVP_DigestUpdate(s->s3->handshake_dgst[i],hdata,hdatalen);
-            } 
-        else 
-            {    
+            }
+        else
+            {
             s->s3->handshake_dgst[i]=NULL;
             }
         }
@@ -582,7 +566,7 @@ int ssl3_cert_verify_mac(SSL *s, int md_nid, unsigned char *p)
     {
     return (ssl3_handshake_mac(s,md_nid,NULL,0,p));
     }
-int ssl3_final_finish_mac(SSL *s, 
+int ssl3_final_finish_mac(SSL *s,
          const char *sender, int len, unsigned char *p)
     {
     int ret, sha1len;
@@ -608,15 +592,15 @@ static int ssl3_handshake_mac(SSL *s, int md_nid,
     unsigned char md_buf[EVP_MAX_MD_SIZE];
     EVP_MD_CTX ctx,*d=NULL;
 
-    if (s->s3->handshake_buffer) 
+    if (s->s3->handshake_buffer)
         if (!ssl3_digest_cached_records(s))
             return 0;
 
     /* Search for digest of specified type in the handshake_dgst
      * array*/
-    for (i=0;i<SSL_MAX_DIGEST;i++) 
+    for (i=0;i<SSL_MAX_DIGEST;i++)
         {
-          if (s->s3->handshake_dgst[i]&&EVP_MD_CTX_type(s->s3->handshake_dgst[i])==md_nid) 
+          if (s->s3->handshake_dgst[i]&&EVP_MD_CTX_type(s->s3->handshake_dgst[i])==md_nid)
               {
               d=s->s3->handshake_dgst[i];
             break;
@@ -625,7 +609,7 @@ static int ssl3_handshake_mac(SSL *s, int md_nid,
     if (!d) {
         SSLerr(SSL_F_SSL3_HANDSHAKE_MAC,SSL_R_NO_REQUIRED_DIGEST);
         return 0;
-    }    
+    }
     EVP_MD_CTX_init(&ctx);
     EVP_MD_CTX_copy_ex(&ctx,d);
     n=EVP_MD_CTX_size(&ctx);
@@ -762,7 +746,7 @@ void ssl3_record_sequence_update(unsigned char *seq)
     for (i=7; i>=0; i--)
         {
         ++seq[i];
-        if (seq[i] != 0) break; 
+        if (seq[i] != 0) break;
         }
     }
 
@@ -839,4 +823,3 @@ int ssl3_alert_code(int code)
     default:            return (-1);
         }
     }
-

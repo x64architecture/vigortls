@@ -408,9 +408,6 @@ int dtls1_accept(SSL *s)
                 || (alg_k & SSL_kEECDH)
                 || ((alg_k & SSL_kRSA)
                 && (s->cert->pkeys[SSL_PKEY_RSA_ENC].privatekey == NULL
-                    || (SSL_C_IS_EXPORT(s->s3->tmp.new_cipher)
-                    && EVP_PKEY_size(s->cert->pkeys[SSL_PKEY_RSA_ENC].privatekey)*8 > SSL_C_EXPORT_PKEYLENGTH(s->s3->tmp.new_cipher)
-                    )
                     )
                 )
                 ) {
@@ -899,9 +896,7 @@ int dtls1_send_server_key_exchange(SSL *s)
         if (type & SSL_kRSA) {
             rsa = cert->rsa_tmp;
             if ((rsa == NULL) && (s->cert->rsa_tmp_cb != NULL)) {
-                rsa = s->cert->rsa_tmp_cb(s,
-                      SSL_C_IS_EXPORT(s->s3->tmp.new_cipher),
-                      SSL_C_EXPORT_PKEYLENGTH(s->s3->tmp.new_cipher));
+                rsa = s->cert->rsa_tmp_cb(s, 0, 0);
                 if (rsa == NULL) {
                     al = SSL_AD_HANDSHAKE_FAILURE;
                     SSLerr(SSL_F_DTLS1_SEND_SERVER_KEY_EXCHANGE, SSL_R_ERROR_GENERATING_TMP_RSA_KEY);
@@ -922,9 +917,7 @@ int dtls1_send_server_key_exchange(SSL *s)
             if (type & SSL_kEDH) {
             dhp = cert->dh_tmp;
             if ((dhp == NULL) && (s->cert->dh_tmp_cb != NULL))
-                dhp = s->cert->dh_tmp_cb(s,
-                      SSL_C_IS_EXPORT(s->s3->tmp.new_cipher),
-                      SSL_C_EXPORT_PKEYLENGTH(s->s3->tmp.new_cipher));
+                dhp = s->cert->dh_tmp_cb(s, 0, 0);
             if (dhp == NULL) {
                 al = SSL_AD_HANDSHAKE_FAILURE;
                 SSLerr(SSL_F_DTLS1_SEND_SERVER_KEY_EXCHANGE, SSL_R_MISSING_TMP_DH_KEY);
@@ -969,9 +962,7 @@ int dtls1_send_server_key_exchange(SSL *s)
 
             ecdhp = cert->ecdh_tmp;
             if ((ecdhp == NULL) && (s->cert->ecdh_tmp_cb != NULL)) {
-                ecdhp = s->cert->ecdh_tmp_cb(s,
-                      SSL_C_IS_EXPORT(s->s3->tmp.new_cipher),
-                      SSL_C_EXPORT_PKEYLENGTH(s->s3->tmp.new_cipher));
+                ecdhp = s->cert->ecdh_tmp_cb(s, 0, 0);
             }
             if (ecdhp == NULL) {
                 al = SSL_AD_HANDSHAKE_FAILURE;
@@ -1008,12 +999,6 @@ int dtls1_send_server_key_exchange(SSL *s)
                 (EC_KEY_get0_public_key(ecdh)  == NULL) ||
                 (EC_KEY_get0_private_key(ecdh) == NULL)) {
                 SSLerr(SSL_F_DTLS1_SEND_SERVER_KEY_EXCHANGE, ERR_R_ECDH_LIB);
-                goto err;
-            }
-
-            if (SSL_C_IS_EXPORT(s->s3->tmp.new_cipher) &&
-                (EC_GROUP_get_degree(group) > 163)) {
-                SSLerr(SSL_F_DTLS1_SEND_SERVER_KEY_EXCHANGE, SSL_R_ECGROUP_TOO_LARGE_FOR_CIPHER);
                 goto err;
             }
 
