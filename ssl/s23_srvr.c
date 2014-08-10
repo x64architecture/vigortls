@@ -5,21 +5,21 @@
  * This package is an SSL implementation written
  * by Eric Young (eay@cryptsoft.com).
  * The implementation was written so as to conform with Netscapes SSL.
- * 
+ *
  * This library is free for commercial and non-commercial use as long as
  * the following conditions are aheared to.  The following conditions
  * apply to all code found in this distribution, be it the RC4, RSA,
  * lhash, DES, etc., code; not just the SSL code.  The SSL documentation
  * included with this distribution is covered by the same copyright terms
  * except that the holder is Tim Hudson (tjh@cryptsoft.com).
- * 
+ *
  * Copyright remains Eric Young's, and as such any Copyright notices in
  * the code are not to be removed.
  * If this package is used in a product, Eric Young should be given attribution
  * as the author of the parts of the library used.
  * This can be in the form of a textual message at program startup or
  * in documentation (online or textual) provided with the package.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
  * are met:
@@ -34,10 +34,10 @@
  *     Eric Young (eay@cryptsoft.com)"
  *    The word 'cryptographic' can be left out if the rouines from the library
  *    being used are not cryptographic related :-).
- * 4. If you include any Windows specific code (or a derivative thereof) from 
+ * 4. If you include any Windows specific code (or a derivative thereof) from
  *    the apps directory (application code) you must include an acknowledgement:
  *    "This product includes software written by Tim Hudson (tjh@cryptsoft.com)"
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY ERIC YOUNG ``AS IS'' AND
  * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -49,7 +49,7 @@
  * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
- * 
+ *
  * The licence and distribution terms for any publically available version or
  * derivative of this code cannot be changed.  i.e. this code cannot simply be
  * copied and put under another distribution licence
@@ -63,7 +63,7 @@
  * are met:
  *
  * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer. 
+ *    notice, this list of conditions and the following disclaimer.
  *
  * 2. Redistributions in binary form must reproduce the above copyright
  *    notice, this list of conditions and the following disclaimer in
@@ -132,11 +132,42 @@ static const SSL_METHOD *ssl23_get_server_method(int ver)
         return (NULL);
     }
 
-IMPLEMENT_ssl23_meth_func(SSLv23_server_method,
-            ssl23_accept,
-            ssl_undefined_function,
-            ssl23_get_server_method)
+const SSL_METHOD SSLv23_server_method_data = {
+    .version = TLS1_2_VERSION,
+    .ssl_new = tls1_new,
+    .ssl_clear = tls1_clear,
+    .ssl_free = tls1_free,
+    .ssl_accept = ssl23_accept,
+    .ssl_connect = ssl_undefined_function,
+    .ssl_read = ssl23_read,
+    .ssl_peek = ssl23_peek,
+    .ssl_write = ssl23_write,
+    .ssl_shutdown = ssl_undefined_function,
+    .ssl_renegotiate = ssl_undefined_function,
+    .ssl_renegotiate_check = ssl_ok,
+    .ssl_get_message = ssl3_get_message,
+    .ssl_read_bytes = ssl3_read_bytes,
+    .ssl_write_bytes = ssl3_write_bytes,
+    .ssl_dispatch_alert = ssl3_dispatch_alert,
+    .ssl_ctrl = ssl3_ctrl,
+    .ssl_ctx_ctrl = ssl3_ctx_ctrl,
+    .get_cipher_by_char = ssl23_get_cipher_by_char,
+    .put_cipher_by_char = ssl23_put_cipher_by_char,
+    .ssl_pending = ssl_undefined_const_function,
+    .num_ciphers = ssl23_num_ciphers,
+    .get_cipher = ssl23_get_cipher,
+    .get_ssl_method = ssl23_get_server_method,
+    .get_timeout = ssl23_default_timeout,
+    .ssl3_enc = &ssl3_undef_enc_method,
+    .ssl_version = ssl_undefined_void_function,
+    .ssl_callback_ctrl = ssl3_callback_ctrl,
+    .ssl_ctx_callback_ctrl = ssl3_ctx_callback_ctrl,
+};
 
+const SSL_METHOD *SSLv23_server_method(void)
+{
+    return &SSLv23_server_method_data;
+}
 int ssl23_accept(SSL *s)
     {
     unsigned long Time=(unsigned long)time(NULL);
@@ -152,9 +183,9 @@ int ssl23_accept(SSL *s)
         cb=s->info_callback;
     else if (s->ctx->info_callback != NULL)
         cb=s->ctx->info_callback;
-    
+
     s->in_handshake++;
-    if (!SSL_in_init(s) || SSL_in_before(s)) SSL_clear(s); 
+    if (!SSL_in_init(s) || SSL_in_before(s)) SSL_clear(s);
 
     for (;;)
         {
@@ -334,7 +365,7 @@ int ssl23_get_client_hello(SSL *s)
             /*
              * SSLv3 or tls1 header
              */
-            
+
             v[0]=p[1]; /* major version (= SSL3_VERSION_MAJOR) */
             /* We must look at client_version inside the Client Hello message
              * to get the correct minor version.
@@ -508,7 +539,7 @@ int ssl23_get_client_hello(SSL *s)
         /* COMPRESSION */
         *(d++)=1;
         *(d++)=0;
-        
+
 #if 0
                 /* copy any remaining data with may be extensions */
             p = p+csl+sil+cl;
@@ -579,7 +610,7 @@ int ssl23_get_client_hello(SSL *s)
 #endif
         s->handshake_func=s->method->ssl_accept;
         }
-    
+
     if ((type < 1) || (type > 3))
         {
         /* bad, very bad */

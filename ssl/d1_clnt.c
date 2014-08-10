@@ -1,7 +1,7 @@
 /* ssl/d1_clnt.c */
-/* 
+/*
  * DTLS implementation written by Nagendra Modadugu
- * (nagendra@cs.stanford.edu) for the OpenSSL project 2005.  
+ * (nagendra@cs.stanford.edu) for the OpenSSL project 2005.
  */
 /* ====================================================================
  * Copyright (c) 1999-2007 The OpenSSL Project.  All rights reserved.
@@ -11,7 +11,7 @@
  * are met:
  *
  * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer. 
+ *    notice, this list of conditions and the following disclaimer.
  *
  * 2. Redistributions in binary form must reproduce the above copyright
  *    notice, this list of conditions and the following disclaimer in
@@ -62,21 +62,21 @@
  * This package is an SSL implementation written
  * by Eric Young (eay@cryptsoft.com).
  * The implementation was written so as to conform with Netscapes SSL.
- * 
+ *
  * This library is free for commercial and non-commercial use as long as
  * the following conditions are aheared to.  The following conditions
  * apply to all code found in this distribution, be it the RC4, RSA,
  * lhash, DES, etc., code; not just the SSL code.  The SSL documentation
  * included with this distribution is covered by the same copyright terms
  * except that the holder is Tim Hudson (tjh@cryptsoft.com).
- * 
+ *
  * Copyright remains Eric Young's, and as such any Copyright notices in
  * the code are not to be removed.
  * If this package is used in a product, Eric Young should be given attribution
  * as the author of the parts of the library used.
  * This can be in the form of a textual message at program startup or
  * in documentation (online or textual) provided with the package.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
  * are met:
@@ -91,10 +91,10 @@
  *     Eric Young (eay@cryptsoft.com)"
  *    The word 'cryptographic' can be left out if the rouines from the library
  *    being used are not cryptographic related :-).
- * 4. If you include any Windows specific code (or a derivative thereof) from 
+ * 4. If you include any Windows specific code (or a derivative thereof) from
  *    the apps directory (application code) you must include an acknowledgement:
  *    "This product includes software written by Tim Hudson (tjh@cryptsoft.com)"
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY ERIC YOUNG ``AS IS'' AND
  * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -106,7 +106,7 @@
  * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
- * 
+ *
  * The licence and distribution terms for any publically available version or
  * derivative of this code cannot be changed.  i.e. this code cannot simply be
  * copied and put under another distribution licence
@@ -126,6 +126,43 @@
 static const SSL_METHOD *dtls1_get_client_method(int ver);
 static int dtls1_get_hello_verify(SSL *s);
 
+const SSL_METHOD DTLSv1_client_method_data = {
+    .version = DTLS1_VERSION,
+    .ssl_new = dtls1_new,
+    .ssl_clear = dtls1_clear,
+    .ssl_free = dtls1_free,
+    .ssl_accept = ssl_undefined_function,
+    .ssl_connect = dtls1_connect,
+    .ssl_read = ssl3_read,
+    .ssl_peek = ssl3_peek,
+    .ssl_write = ssl3_write,
+    .ssl_shutdown = dtls1_shutdown,
+    .ssl_renegotiate = ssl3_renegotiate,
+    .ssl_renegotiate_check = ssl3_renegotiate_check,
+    .ssl_get_message = dtls1_get_message,
+    .ssl_read_bytes = dtls1_read_bytes,
+    .ssl_write_bytes = dtls1_write_app_data_bytes,
+    .ssl_dispatch_alert = dtls1_dispatch_alert,
+    .ssl_ctrl = dtls1_ctrl,
+    .ssl_ctx_ctrl = ssl3_ctx_ctrl,
+    .get_cipher_by_char = ssl3_get_cipher_by_char,
+    .put_cipher_by_char = ssl3_put_cipher_by_char,
+    .ssl_pending = ssl3_pending,
+    .num_ciphers = ssl3_num_ciphers,
+    .get_cipher = dtls1_get_cipher,
+    .get_ssl_method = dtls1_get_client_method,
+    .get_timeout = dtls1_default_timeout,
+    .ssl3_enc = &DTLSv1_enc_data,
+    .ssl_version = ssl_undefined_void_function,
+    .ssl_callback_ctrl = ssl3_callback_ctrl,
+    .ssl_ctx_callback_ctrl = ssl3_ctx_callback_ctrl,
+};
+
+const SSL_METHOD *DTLSv1_client_method(void)
+{
+    return &DTLSv1_client_method_data;
+}
+
 static const SSL_METHOD *dtls1_get_client_method(int ver)
     {
     if (ver == DTLS1_VERSION || ver == DTLS1_BAD_VER)
@@ -133,11 +170,6 @@ static const SSL_METHOD *dtls1_get_client_method(int ver)
     else
         return (NULL);
     }
-
-IMPLEMENT_dtls1_meth_func(DTLSv1_client_method,
-            ssl_undefined_function,
-            dtls1_connect,
-            dtls1_get_client_method)
 
 int dtls1_connect(SSL *s)
     {
@@ -155,9 +187,9 @@ int dtls1_connect(SSL *s)
         cb=s->info_callback;
     else if (s->ctx->info_callback != NULL)
         cb=s->ctx->info_callback;
-    
+
     s->in_handshake++;
-    if (!SSL_in_init(s) || SSL_in_before(s)) SSL_clear(s); 
+    if (!SSL_in_init(s) || SSL_in_before(s)) SSL_clear(s);
 
     for (;;)
         {
@@ -185,7 +217,7 @@ int dtls1_connect(SSL *s)
                 ret = -1;
                 goto end;
                 }
-                
+
             /* s->version=SSL3_VERSION; */
             s->type=SSL_ST_CONNECT;
 
@@ -450,7 +482,7 @@ int dtls1_connect(SSL *s)
                 if (s->tlsext_ticket_expected)
                     s->s3->tmp.next_state=SSL3_ST_CR_SESSION_TICKET_A;
                 else
-                
+
                 s->s3->tmp.next_state=SSL3_ST_CR_FINISHED_A;
                 }
             s->init_num=0;
@@ -498,7 +530,7 @@ int dtls1_connect(SSL *s)
                     s->rwstate=SSL_NOTHING;
                     s->state=s->s3->tmp.next_state;
                     }
-                
+
                 ret= -1;
                 goto end;
                 }
@@ -543,7 +575,7 @@ int dtls1_connect(SSL *s)
             s->d1->next_handshake_write_seq = 0;
             goto end;
             /* break; */
-            
+
         default:
             SSLerr(SSL_F_DTLS1_CONNECT,SSL_R_UNKNOWN_STATE);
             ret= -1;
@@ -639,7 +671,7 @@ int dtls1_client_hello(SSL *s)
             memcpy(p,s->session->session_id,i);
             p+=i;
             }
-        
+
         /* cookie stuff */
         if ( s->d1->cookie_len > sizeof(s->d1->cookie))
             {
@@ -677,7 +709,7 @@ int dtls1_client_hello(SSL *s)
             {
             SSLerr(SSL_F_DTLS1_CLIENT_HELLO,ERR_R_INTERNAL_ERROR);
             goto err;
-            }    
+            }
 
         l=(p-d);
         d=buf;
@@ -773,7 +805,7 @@ int dtls1_send_client_key_exchange(SSL *s)
         {
         d=(unsigned char *)s->init_buf->data;
         p= &(d[DTLS1_HM_HEADER_LENGTH]);
-        
+
         alg_k=s->s3->tmp.new_cipher->algorithm_mkey;
 
                 /* Fool emacs indentation */
@@ -804,7 +836,7 @@ int dtls1_send_client_key_exchange(SSL *s)
                 rsa=pkey->pkey.rsa;
                 EVP_PKEY_free(pkey);
                 }
-                
+
             tmp_buf[0]=s->client_version>>8;
             tmp_buf[1]=s->client_version&0xff;
             if (RAND_bytes(&(tmp_buf[2]),sizeof tmp_buf-2) <= 0)
@@ -853,7 +885,7 @@ int dtls1_send_client_key_exchange(SSL *s)
             const EVP_CIPHER *enc = NULL;
             unsigned char    iv[EVP_MAX_IV_LENGTH];
             unsigned char    tmp_buf[SSL_MAX_MASTER_KEY_LENGTH];
-            unsigned char    epms[SSL_MAX_MASTER_KEY_LENGTH 
+            unsigned char    epms[SSL_MAX_MASTER_KEY_LENGTH
                         + EVP_MAX_IV_LENGTH];
             int         padl, outl = sizeof(epms);
 
@@ -885,7 +917,7 @@ int dtls1_send_client_key_exchange(SSL *s)
                         **  Send ticket (copy to *p, set n = length)
                         **  n = krb5_ap_req.length;
                         **  memcpy(p, krb5_ap_req.data, krb5_ap_req.length);
-                        **  if (krb5_ap_req.data)  
+                        **  if (krb5_ap_req.data)
                         **    kssl_krb5_free_data_contents(NULL,&krb5_ap_req);
                         **
             **  Now using real RFC 2712 KerberosWrapper
@@ -905,13 +937,13 @@ int dtls1_send_client_key_exchange(SSL *s)
             n = enc_ticket->length + 2;
 
             /*  KerberosWrapper.Authenticator    */
-            if (authp  &&  authp->length)  
+            if (authp  &&  authp->length)
                 {
                 s2n(authp->length,p);
                 memcpy(p, authp->data, authp->length);
                 p+= authp->length;
                 n+= authp->length + 2;
-                
+
                 free(authp->data);
                 authp->data = NULL;
                 authp->length = 0;
@@ -921,7 +953,7 @@ int dtls1_send_client_key_exchange(SSL *s)
                 s2n(0,p);/*  null authenticator length    */
                 n+=2;
                 }
- 
+
             if (RAND_bytes(tmp_buf,sizeof tmp_buf) <= 0)
                 goto err;
 
@@ -980,7 +1012,7 @@ int dtls1_send_client_key_exchange(SSL *s)
                 SSLerr(SSL_F_DTLS1_SEND_CLIENT_KEY_EXCHANGE,SSL_R_UNABLE_TO_FIND_DH_PARAMETERS);
                 goto err;
                 }
-            
+
             /* generate a new random key */
             if ((dh_clnt=DHparams_dup(dh_srvr)) == NULL)
                 {
@@ -1021,7 +1053,7 @@ int dtls1_send_client_key_exchange(SSL *s)
 
             /* perhaps clean things up a bit EAY EAY EAY EAY*/
             }
-#ifndef OPENSSL_NO_ECDH 
+#ifndef OPENSSL_NO_ECDH
         else if (alg_k & (SSL_kEECDH|SSL_kECDHr|SSL_kECDHe))
             {
             const EC_GROUP *srvr_group = NULL;
@@ -1040,12 +1072,12 @@ int dtls1_send_client_key_exchange(SSL *s)
              * computation as part of client certificate?
              * If so, set ecdh_clnt_cert to 1.
              */
-            if ((alg_k & (SSL_kECDHr|SSL_kECDHe)) && (s->cert != NULL)) 
+            if ((alg_k & (SSL_kECDHr|SSL_kECDHe)) && (s->cert != NULL))
                 {
                 /* XXX: For now, we do not support client
                  * authentication using ECDH certificates.
                  * To add such support, one needs to add
-                 * code that checks for appropriate 
+                 * code that checks for appropriate
                  * conditions and sets ecdh_clnt_cert to 1.
                  * For example, the cert have an ECC
                  * key on the same curve as the server's
@@ -1094,7 +1126,7 @@ int dtls1_send_client_key_exchange(SSL *s)
                 goto err;
                 }
 
-            if ((clnt_ecdh=EC_KEY_new()) == NULL) 
+            if ((clnt_ecdh=EC_KEY_new()) == NULL)
                 {
                 SSLerr(SSL_F_DTLS1_SEND_CLIENT_KEY_EXCHANGE,ERR_R_MALLOC_FAILURE);
                 goto err;
@@ -1105,8 +1137,8 @@ int dtls1_send_client_key_exchange(SSL *s)
                 SSLerr(SSL_F_DTLS1_SEND_CLIENT_KEY_EXCHANGE,ERR_R_EC_LIB);
                 goto err;
                 }
-            if (ecdh_clnt_cert) 
-                { 
+            if (ecdh_clnt_cert)
+                {
                 /* Reuse key info from our certificate
                  * We only need our private key to perform
                  * the ECDH computation.
@@ -1125,7 +1157,7 @@ int dtls1_send_client_key_exchange(SSL *s)
                     goto err;
                     }
                 }
-            else 
+            else
                 {
                 /* Generate a new ECDH key pair */
                 if (!(EC_KEY_generate_key(clnt_ecdh)))
@@ -1142,72 +1174,72 @@ int dtls1_send_client_key_exchange(SSL *s)
             field_size = EC_GROUP_get_degree(srvr_group);
             if (field_size <= 0)
                 {
-                SSLerr(SSL_F_DTLS1_SEND_CLIENT_KEY_EXCHANGE, 
+                SSLerr(SSL_F_DTLS1_SEND_CLIENT_KEY_EXCHANGE,
                        ERR_R_ECDH_LIB);
                 goto err;
                 }
             n=ECDH_compute_key(p, (field_size+7)/8, srvr_ecpoint, clnt_ecdh, NULL);
             if (n <= 0)
                 {
-                SSLerr(SSL_F_DTLS1_SEND_CLIENT_KEY_EXCHANGE, 
+                SSLerr(SSL_F_DTLS1_SEND_CLIENT_KEY_EXCHANGE,
                        ERR_R_ECDH_LIB);
                 goto err;
                 }
 
             /* generate master key from the result */
             s->session->master_key_length = s->method->ssl3_enc \
-                -> generate_master_secret(s, 
+                -> generate_master_secret(s,
                 s->session->master_key,
                 p, n);
 
             memset(p, 0, n); /* clean up */
 
-            if (ecdh_clnt_cert) 
+            if (ecdh_clnt_cert)
                 {
                 /* Send empty client key exch message */
                 n = 0;
                 }
-            else 
+            else
                 {
                 /* First check the size of encoding and
                  * allocate memory accordingly.
                  */
-                encoded_pt_len = 
-                    EC_POINT_point2oct(srvr_group, 
-                    EC_KEY_get0_public_key(clnt_ecdh), 
-                    POINT_CONVERSION_UNCOMPRESSED, 
+                encoded_pt_len =
+                    EC_POINT_point2oct(srvr_group,
+                    EC_KEY_get0_public_key(clnt_ecdh),
+                    POINT_CONVERSION_UNCOMPRESSED,
                     NULL, 0, NULL);
 
-                encodedPoint = (unsigned char *) 
-                    malloc(encoded_pt_len * 
-                    sizeof(unsigned char)); 
+                encodedPoint = (unsigned char *)
+                    malloc(encoded_pt_len *
+                    sizeof(unsigned char));
                 bn_ctx = BN_CTX_new();
-                if ((encodedPoint == NULL) || 
-                    (bn_ctx == NULL)) 
+                if ((encodedPoint == NULL) ||
+                    (bn_ctx == NULL))
                     {
                     SSLerr(SSL_F_DTLS1_SEND_CLIENT_KEY_EXCHANGE,ERR_R_MALLOC_FAILURE);
                     goto err;
                     }
 
                 /* Encode the public key */
-                n = EC_POINT_point2oct(srvr_group, 
-                    EC_KEY_get0_public_key(clnt_ecdh), 
-                    POINT_CONVERSION_UNCOMPRESSED, 
+                n = EC_POINT_point2oct(srvr_group,
+                    EC_KEY_get0_public_key(clnt_ecdh),
+                    POINT_CONVERSION_UNCOMPRESSED,
                     encodedPoint, encoded_pt_len, bn_ctx);
 
                 *p = n; /* length of encoded point */
                 /* Encoded point will be copied here */
-                p += 1; 
+                p += 1;
                 /* copy the point */
                 memcpy((unsigned char *)p, encodedPoint, n);
                 /* increment n to account for length field */
-                n += 1; 
+                n += 1;
                 }
 
             /* Free allocated memory */
             BN_CTX_free(bn_ctx);
             if (encodedPoint != NULL) free(encodedPoint);
-            if (clnt_ecdh != NULL) 
+            if (clnt_ecdh != NULL)
                  EC_KEY_free(clnt_ecdh);
             EVP_PKEY_free(srvr_pub_pkey);
             }
@@ -1279,7 +1311,7 @@ int dtls1_send_client_key_exchange(SSL *s)
             s->session->master_key_length =
                 s->method->ssl3_enc->generate_master_secret(s,
                     s->session->master_key,
-                    psk_or_pre_ms, pre_ms_len); 
+                    psk_or_pre_ms, pre_ms_len);
             n = strlen(identity);
             s2n(n, p);
             memcpy(p, identity, n);
@@ -1301,7 +1333,7 @@ int dtls1_send_client_key_exchange(SSL *s)
             SSLerr(SSL_F_DTLS1_SEND_CLIENT_KEY_EXCHANGE,ERR_R_INTERNAL_ERROR);
             goto err;
             }
-        
+
         d = dtls1_set_message_header(s, d,
         SSL3_MT_CLIENT_KEY_EXCHANGE, n, 0, n);
         /*
@@ -1310,7 +1342,7 @@ int dtls1_send_client_key_exchange(SSL *s)
          l2n(s->d1->handshake_write_seq,d);
          s->d1->handshake_write_seq++;
         */
-        
+
         s->state=SSL3_ST_CW_KEY_EXCH_B;
         /* number of bytes to write */
         s->init_num=n+DTLS1_HM_HEADER_LENGTH;
@@ -1319,14 +1351,14 @@ int dtls1_send_client_key_exchange(SSL *s)
         /* buffer the message to handle re-xmits */
         dtls1_buffer_message(s, 0);
         }
-    
+
     /* SSL3_ST_CW_KEY_EXCH_B */
     return (dtls1_do_write(s,SSL3_RT_HANDSHAKE));
 err:
 #ifndef OPENSSL_NO_ECDH
     BN_CTX_free(bn_ctx);
     if (encodedPoint != NULL) free(encodedPoint);
-    if (clnt_ecdh != NULL) 
+    if (clnt_ecdh != NULL)
         EC_KEY_free(clnt_ecdh);
     EVP_PKEY_free(srvr_pub_pkey);
 #endif
@@ -1506,5 +1538,3 @@ int dtls1_send_client_certificate(SSL *s)
     /* SSL3_ST_CW_CERT_D */
     return (dtls1_do_write(s,SSL3_RT_HANDSHAKE));
     }
-
-

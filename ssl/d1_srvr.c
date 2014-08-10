@@ -1,7 +1,7 @@
 /* ssl/d1_srvr.c */
-/* 
+/*
  * DTLS implementation written by Nagendra Modadugu
- * (nagendra@cs.stanford.edu) for the OpenSSL project 2005.  
+ * (nagendra@cs.stanford.edu) for the OpenSSL project 2005.
  */
 /* ====================================================================
  * Copyright (c) 1999-2007 The OpenSSL Project.  All rights reserved.
@@ -11,7 +11,7 @@
  * are met:
  *
  * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer. 
+ *    notice, this list of conditions and the following disclaimer.
  *
  * 2. Redistributions in binary form must reproduce the above copyright
  *    notice, this list of conditions and the following disclaimer in
@@ -62,21 +62,21 @@
  * This package is an SSL implementation written
  * by Eric Young (eay@cryptsoft.com).
  * The implementation was written so as to conform with Netscapes SSL.
- * 
+ *
  * This library is free for commercial and non-commercial use as long as
  * the following conditions are aheared to.  The following conditions
  * apply to all code found in this distribution, be it the RC4, RSA,
  * lhash, DES, etc., code; not just the SSL code.  The SSL documentation
  * included with this distribution is covered by the same copyright terms
  * except that the holder is Tim Hudson (tjh@cryptsoft.com).
- * 
+ *
  * Copyright remains Eric Young's, and as such any Copyright notices in
  * the code are not to be removed.
  * If this package is used in a product, Eric Young should be given attribution
  * as the author of the parts of the library used.
  * This can be in the form of a textual message at program startup or
  * in documentation (online or textual) provided with the package.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
  * are met:
@@ -91,10 +91,10 @@
  *     Eric Young (eay@cryptsoft.com)"
  *    The word 'cryptographic' can be left out if the rouines from the library
  *    being used are not cryptographic related :-).
- * 4. If you include any Windows specific code (or a derivative thereof) from 
+ * 4. If you include any Windows specific code (or a derivative thereof) from
  *    the apps directory (application code) you must include an acknowledgement:
  *    "This product includes software written by Tim Hudson (tjh@cryptsoft.com)"
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY ERIC YOUNG ``AS IS'' AND
  * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -106,7 +106,7 @@
  * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
- * 
+ *
  * The licence and distribution terms for any publically available version or
  * derivative of this code cannot be changed.  i.e. this code cannot simply be
  * copied and put under another distribution licence
@@ -135,10 +135,42 @@ static const SSL_METHOD *dtls1_get_server_method(int ver)
         return (NULL);
 }
 
-IMPLEMENT_dtls1_meth_func(DTLSv1_server_method,
-            dtls1_accept,
-            ssl_undefined_function,
-            dtls1_get_server_method)
+const SSL_METHOD DTLSv1_server_method_data = {
+    .version = DTLS1_VERSION,
+    .ssl_new = dtls1_new,
+    .ssl_clear = dtls1_clear,
+    .ssl_free = dtls1_free,
+    .ssl_accept = dtls1_accept,
+    .ssl_connect = ssl_undefined_function,
+    .ssl_read = ssl3_read,
+    .ssl_peek = ssl3_peek,
+    .ssl_write = ssl3_write,
+    .ssl_shutdown = dtls1_shutdown,
+    .ssl_renegotiate = ssl3_renegotiate,
+    .ssl_renegotiate_check = ssl3_renegotiate_check,
+    .ssl_get_message = dtls1_get_message,
+    .ssl_read_bytes = dtls1_read_bytes,
+    .ssl_write_bytes = dtls1_write_app_data_bytes,
+    .ssl_dispatch_alert = dtls1_dispatch_alert,
+    .ssl_ctrl = dtls1_ctrl,
+    .ssl_ctx_ctrl = ssl3_ctx_ctrl,
+    .get_cipher_by_char = ssl3_get_cipher_by_char,
+    .put_cipher_by_char = ssl3_put_cipher_by_char,
+    .ssl_pending = ssl3_pending,
+    .num_ciphers = ssl3_num_ciphers,
+    .get_cipher = dtls1_get_cipher,
+    .get_ssl_method = dtls1_get_server_method,
+    .get_timeout = dtls1_default_timeout,
+    .ssl3_enc = &DTLSv1_enc_data,
+    .ssl_version = ssl_undefined_void_function,
+    .ssl_callback_ctrl = ssl3_callback_ctrl,
+    .ssl_ctx_callback_ctrl = ssl3_ctx_callback_ctrl,
+};
+
+const SSL_METHOD *DTLSv1_server_method(void)
+{
+    return &DTLSv1_server_method_data;
+}
 
 int dtls1_accept(SSL *s)
 {
@@ -157,7 +189,7 @@ int dtls1_accept(SSL *s)
         cb = s->info_callback;
     else if (s->ctx->info_callback != NULL)
         cb = s->ctx->info_callback;
-    
+
     listen = s->d1->listen;
 
     /* init things to blank */
@@ -220,9 +252,9 @@ int dtls1_accept(SSL *s)
                 /* Ok, we now need to push on a buffering BIO so that
                  * the output is sent in a way that TCP likes :-)
                  */
-                    if (!ssl_init_wbio_buffer(s, 1)) { 
-                        ret = -1; 
-                        goto end; 
+                    if (!ssl_init_wbio_buffer(s, 1)) {
+                        ret = -1;
+                        goto end;
                     }
 
                 ssl3_init_finished_mac(s);
@@ -244,7 +276,7 @@ int dtls1_accept(SSL *s)
             dtls1_clear_record_buffer(s);
             dtls1_start_timer(s);
             ret = dtls1_send_hello_request(s);
-            if (ret <= 0) 
+            if (ret <= 0)
                 goto end;
             s->s3->tmp.next_state = SSL3_ST_SR_CLNT_HELLO_A;
             s->state = SSL3_ST_SW_FLUSH;
@@ -290,9 +322,9 @@ int dtls1_accept(SSL *s)
                 s->d1->next_handshake_write_seq = 1;
                 goto end;
             }
-            
+
             break;
-            
+
         case DTLS1_ST_SW_HELLO_VERIFY_REQUEST_A:
         case DTLS1_ST_SW_HELLO_VERIFY_REQUEST_B:
 
@@ -443,7 +475,7 @@ int dtls1_accept(SSL *s)
             s->state = SSL3_ST_SW_FLUSH;
             s->init_num = 0;
             break;
-        
+
         case SSL3_ST_SW_FLUSH:
             s->rwstate = SSL_WRITING;
             if (BIO_flush(s->wbio) <= 0) {
@@ -452,7 +484,7 @@ int dtls1_accept(SSL *s)
                     s->rwstate = SSL_NOTHING;
                     s->state = s->s3->tmp.next_state;
                 }
-                
+
                 ret = -1;
                 goto end;
             }
@@ -502,7 +534,7 @@ int dtls1_accept(SSL *s)
                 s->init_num = 0;
 
                 /* We need to get hashes here so if there is
-                 * a client cert, it can be verified */ 
+                 * a client cert, it can be verified */
                 s->method->ssl3_enc->cert_verify_mac(s,
                     NID_md5,
                     &(s->s3->tmp.cert_verify_md[0]));
@@ -519,7 +551,7 @@ int dtls1_accept(SSL *s)
             /* we should decide if we expected this one */
             ret = ssl3_get_cert_verify(s);
             if (ret <= 0)
-                goto end;            
+                goto end;
             s->state = SSL3_ST_SR_FINISHED_A;
             s->init_num = 0;
             break;
@@ -563,9 +595,9 @@ int dtls1_accept(SSL *s)
         case SSL3_ST_SW_CHANGE_B:
 
             s->session->cipher = s->s3->tmp.new_cipher;
-            if (!s->method->ssl3_enc->setup_key_block(s)) { 
-                ret = -1; 
-                goto end; 
+            if (!s->method->ssl3_enc->setup_key_block(s)) {
+                ret = -1;
+                goto end;
             }
 
             ret = dtls1_send_change_cipher_spec(s,
@@ -619,17 +651,17 @@ int dtls1_accept(SSL *s)
             if (s->renegotiate == 2) { /* skipped if we just sent a HelloRequest */
                 s->renegotiate = 0;
                 s->new_session = 0;
-                
+
                 ssl_update_cache(s, SSL_SESS_CACHE_SERVER);
-                
+
                 s->ctx->stats.sess_accept_good++;
                 /* s->server=1; */
                 s->handshake_func = dtls1_accept;
 
-                if (cb != NULL) 
+                if (cb != NULL)
                     cb(s, SSL_CB_HANDSHAKE_DONE, 1);
             }
-            
+
             ret = 1;
 
             /* done handshaking, next message is client hello */
@@ -646,7 +678,7 @@ int dtls1_accept(SSL *s)
             goto end;
             /* break; */
         }
-        
+
         if (!s->s3->tmp.reuse_message && !skip) {
             if (s->debug) {
                 if ((ret = BIO_flush(s->wbio)) <= 0)
@@ -686,7 +718,7 @@ int dtls1_send_hello_request(SSL *s)
         s->init_num = DTLS1_HM_HEADER_LENGTH;
         s->init_off = 0;
 
-        /* no need to buffer this message, since there are no retransmit 
+        /* no need to buffer this message, since there are no retransmit
          * requests for it */
     }
 
@@ -708,7 +740,7 @@ int dtls1_send_hello_verify_request(SSL *s)
 
         if (s->ctx->app_gen_cookie_cb == NULL ||
              s->ctx->app_gen_cookie_cb(s, s->d1->cookie,
-             &(s->d1->cookie_len)) == 0) {  
+             &(s->d1->cookie_len)) == 0) {
             SSLerr(SSL_F_DTLS1_SEND_HELLO_VERIFY_REQUEST, ERR_R_INTERNAL_ERROR);
             return 0;
         }
@@ -842,7 +874,7 @@ int dtls1_send_server_key_exchange(SSL *s)
     unsigned char *encodedPoint = NULL;
     int encodedlen = 0;
     int curve_id = 0;
-    BN_CTX *bn_ctx = NULL; 
+    BN_CTX *bn_ctx = NULL;
 #endif
     EVP_PKEY *pkey;
     unsigned char *p, *d;
@@ -930,7 +962,7 @@ int dtls1_send_server_key_exchange(SSL *s)
             r[0] = dh->p;
             r[1] = dh->g;
             r[2] = dh->pub_key;
-        } else 
+        } else
 #ifndef OPENSSL_NO_ECDH
             if (type & SSL_kEECDH) {
             const EC_GROUP *group;
@@ -986,11 +1018,11 @@ int dtls1_send_server_key_exchange(SSL *s)
             }
 
             /* XXX: For now, we only support ephemeral ECDH
-             * keys over named (not generic) curves. For 
+             * keys over named (not generic) curves. For
              * supported named curves, curve_id is non-zero.
              */
-            if ((curve_id = 
-                tls1_ec_nid2curve_id(EC_GROUP_get_curve_name(group))) 
+            if ((curve_id =
+                tls1_ec_nid2curve_id(EC_GROUP_get_curve_name(group)))
                 == 0) {
                 SSLerr(SSL_F_DTLS1_SEND_SERVER_KEY_EXCHANGE, SSL_R_UNSUPPORTED_ELLIPTIC_CURVE);
                 goto err;
@@ -1000,13 +1032,13 @@ int dtls1_send_server_key_exchange(SSL *s)
              * First check the size of encoding and
              * allocate memory accordingly.
              */
-            encodedlen = EC_POINT_point2oct(group, 
+            encodedlen = EC_POINT_point2oct(group,
                 EC_KEY_get0_public_key(ecdh),
-                POINT_CONVERSION_UNCOMPRESSED, 
+                POINT_CONVERSION_UNCOMPRESSED,
                 NULL, 0, NULL);
 
-            encodedPoint = (unsigned char *) 
-                malloc(encodedlen * sizeof(unsigned char)); 
+            encodedPoint = (unsigned char *)
+                malloc(encodedlen * sizeof(unsigned char));
             bn_ctx = BN_CTX_new();
             if ((encodedPoint == NULL) || (bn_ctx == NULL)) {
                 SSLerr(SSL_F_DTLS1_SEND_SERVER_KEY_EXCHANGE, ERR_R_MALLOC_FAILURE);
@@ -1014,9 +1046,9 @@ int dtls1_send_server_key_exchange(SSL *s)
             }
 
 
-            encodedlen = EC_POINT_point2oct(group, 
-                EC_KEY_get0_public_key(ecdh), 
-                POINT_CONVERSION_UNCOMPRESSED, 
+            encodedlen = EC_POINT_point2oct(group,
+                EC_KEY_get0_public_key(ecdh),
+                POINT_CONVERSION_UNCOMPRESSED,
                 encodedPoint, encodedlen, bn_ctx);
 
             if (encodedlen == 0) {
@@ -1027,11 +1059,11 @@ int dtls1_send_server_key_exchange(SSL *s)
             BN_CTX_free(bn_ctx);
             bn_ctx = NULL;
 
-            /* XXX: For now, we only support named (not 
+            /* XXX: For now, we only support named (not
              * generic) curves in ECDH ephemeral key exchanges.
              * In this situation, we need four additional bytes
              * to encode the entire ServerECDHParams
-             * structure. 
+             * structure.
              */
             n = 4 + encodedlen;
 
@@ -1042,7 +1074,7 @@ int dtls1_send_server_key_exchange(SSL *s)
             r[1] = NULL;
             r[2] = NULL;
             r[3] = NULL;
-        } else 
+        } else
 #endif /* !OPENSSL_NO_ECDH */
 #ifndef OPENSSL_NO_PSK
             if (type & SSL_kPSK) {
@@ -1102,8 +1134,8 @@ int dtls1_send_server_key_exchange(SSL *s)
             p += 1;
             *p = encodedlen;
             p += 1;
-            memcpy((unsigned char*)p, 
-                (unsigned char *)encodedPoint, 
+            memcpy((unsigned char*)p,
+                (unsigned char *)encodedPoint,
                 encodedlen);
             free(encodedPoint);
             encodedPoint = NULL;
@@ -1114,7 +1146,7 @@ int dtls1_send_server_key_exchange(SSL *s)
 #ifndef OPENSSL_NO_PSK
         if (type & SSL_kPSK) {
             /* copy PSK identity hint */
-            s2n(strlen(s->ctx->psk_identity_hint), p); 
+            s2n(strlen(s->ctx->psk_identity_hint), p);
             strncpy((char *)p, s->ctx->psk_identity_hint, strlen(s->ctx->psk_identity_hint));
             p += strlen(s->ctx->psk_identity_hint);
         }
