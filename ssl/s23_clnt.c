@@ -288,7 +288,7 @@ static int ssl23_client_hello(SSL *s)
      * SSL_OP_NO_X disables all protocols above X *if* there are
      * some protocols below X enabled. This is required in order
      * to maintain "version capability" vector contiguous. So
-     * that if application wants to disable TLS1.0 in favour of
+     * that if application wants to disable TLS1.0 in favor of
      * TLS1>=1, it would be insufficient to pass SSL_NO_TLSv1, the
      * answer is SSL_OP_NO_TLSv1|SSL_OP_NO_SSLv3|SSL_OP_NO_SSLv2.
      */
