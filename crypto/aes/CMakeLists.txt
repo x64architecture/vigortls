@@ -24,6 +24,7 @@ else()
 	set(
 		AES_ARCH_SOURCES
 
+		aes_core.c
 		aes_cbc.c
 	)
 endif()
@@ -33,7 +34,6 @@ add_library(
 
 	OBJECT
 
-	aes_core.c
 	aes_misc.c
 	aes_ecb.c
 	aes_cfb.c

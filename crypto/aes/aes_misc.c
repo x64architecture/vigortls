@@ -7,7 +7,7 @@
  * are met:
  *
  * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer. 
+ *    notice, this list of conditions and the following disclaimer.
  *
  * 2. Redistributions in binary form must reproduce the above copyright
  *    notice, this list of conditions and the following disclaimer in
@@ -59,21 +59,7 @@ const char AES_version[] = "AES" OPENSSL_VERSION_PTEXT;
 const char *AES_options(void) {
 #ifdef FULL_UNROLL
         return "aes(full)";
-#else   
+#else
         return "aes(partial)";
 #endif
-}
-
-/* FIPS wrapper functions to block low level AES calls in FIPS mode */
-
-int AES_set_encrypt_key(const unsigned char *userKey, const int bits,
-            AES_KEY *key)
-{
-    return private_AES_set_encrypt_key(userKey, bits, key);
-}
-
-int AES_set_decrypt_key(const unsigned char *userKey, const int bits,
-            AES_KEY *key)
-{
-    return private_AES_set_decrypt_key(userKey, bits, key);
 }

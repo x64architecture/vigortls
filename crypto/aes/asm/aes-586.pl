@@ -39,7 +39,7 @@
 # but exhibits up to 10% improvement on other cores.
 #
 # Second version is "monolithic" replacement for aes_core.c, which in
-# addition to AES_[de|en]crypt implements private_AES_set_[de|en]cryption_key.
+# addition to AES_[de|en]crypt implements AES_set_[de|en]cryption_key.
 # This made it possible to implement little-endian variant of the
 # algorithm without modifying the base C code. Motivating factor for
 # the undertaken effort was that it appeared that in tight IA-32
@@ -115,7 +115,7 @@
 # words every cache-line is *guaranteed* to be accessed within ~50
 # cycles window. Why just SSE? Because it's needed on hyper-threading
 # CPU! Which is also why it's prefetched with 64 byte stride. Best
-# part is that it has no negative effect on performance:-)  
+# part is that it has no negative effect on performance:-)
 #
 # Version 4.3 implements switch between compact and non-compact block
 # functions in AES_cbc_encrypt depending on how much data was asked
@@ -571,7 +571,7 @@ sub enctransform()
 # +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
 # |          mm4          |          mm0          |
 # +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
-# |     s3    |     s2    |     s1    |     s0    |    
+# |     s3    |     s2    |     s1    |     s0    |
 # +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
 # |15|14|13|12|11|10| 9| 8| 7| 6| 5| 4| 3| 2| 1| 0|
 # +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
@@ -789,7 +789,7 @@ sub encstep()
 
 	if ($i==3)  {	$tmp=$s[3]; &mov ($s[2],$__s1);		}##%ecx
 	elsif($i==2){	&movz	($tmp,&HB($s[3]));		}#%ebx[2]
-	else        {	&mov	($tmp,$s[3]); 
+	else        {	&mov	($tmp,$s[3]);
 			&shr	($tmp,24)			}
 			&xor	($out,&DWP(1,$te,$tmp,8));
 	if ($i<2)   {	&mov	(&DWP(4+4*$i,"esp"),$out);	}
@@ -1540,7 +1540,7 @@ sub sse_deccompact()
 		&pxor	("mm1","mm3");		&pxor	("mm5","mm7");	# tp4
 		&pshufw	("mm3","mm1",0xb1);	&pshufw	("mm7","mm5",0xb1);
 		&pxor	("mm0","mm1");		&pxor	("mm4","mm5");	# ^= tp4
-		&pxor	("mm0","mm3");		&pxor	("mm4","mm7");	# ^= ROTATE(tp4,16)	
+		&pxor	("mm0","mm3");		&pxor	("mm4","mm7");	# ^= ROTATE(tp4,16)
 
 		&pxor	("mm3","mm3");		&pxor	("mm7","mm7");
 		&pcmpgtb("mm3","mm1");		&pcmpgtb("mm7","mm5");
@@ -2010,7 +2010,7 @@ sub declast()
 {
 # stack frame layout
 #             -4(%esp)		# return address	 0(%esp)
-#              0(%esp)		# s0 backing store	 4(%esp)	
+#              0(%esp)		# s0 backing store	 4(%esp)
 #              4(%esp)		# s1 backing store	 8(%esp)
 #              8(%esp)		# s2 backing store	12(%esp)
 #             12(%esp)		# s3 backing store	16(%esp)
@@ -2720,7 +2720,7 @@ sub enckey()
 	&mov	(&DWP(80,"edi"),10);		# setup number of rounds
 	&xor	("eax","eax");
 	&jmp	(&label("exit"));
-		
+
     &set_label("12rounds");
 	&mov	("eax",&DWP(0,"esi"));		# copy first 6 dwords
 	&mov	("ebx",&DWP(4,"esi"));
@@ -2854,12 +2854,12 @@ sub enckey()
     &set_label("exit");
 &function_end("_x86_AES_set_encrypt_key");
 
-# int private_AES_set_encrypt_key(const unsigned char *userKey, const int bits,
+# int AES_set_encrypt_key(const unsigned char *userKey, const int bits,
 #                        AES_KEY *key)
-&function_begin_B("private_AES_set_encrypt_key");
+&function_begin_B("AES_set_encrypt_key");
 	&call	("_x86_AES_set_encrypt_key");
 	&ret	();
-&function_end_B("private_AES_set_encrypt_key");
+&function_end_B("AES_set_encrypt_key");
 
 sub deckey()
 { my ($i,$key,$tp1,$tp2,$tp4,$tp8) = @_;
@@ -2916,9 +2916,9 @@ sub deckey()
 	&mov	(&DWP(4*$i,$key),$tp1);
 }
 
-# int private_AES_set_decrypt_key(const unsigned char *userKey, const int bits,
+# int AES_set_decrypt_key(const unsigned char *userKey, const int bits,
 #                        AES_KEY *key)
-&function_begin_B("private_AES_set_decrypt_key");
+&function_begin_B("AES_set_decrypt_key");
 	&call	("_x86_AES_set_encrypt_key");
 	&cmp	("eax",0);
 	&je	(&label("proceed"));
@@ -2974,7 +2974,7 @@ sub deckey()
 	&jb	(&label("permute"));
 
 	&xor	("eax","eax");			# return success
-&function_end("private_AES_set_decrypt_key");
+&function_end("AES_set_decrypt_key");
 &asciz("AES for x86, CRYPTOGAMS by <appro\@openssl.org>");
 
 &asm_finish();
