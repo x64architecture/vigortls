@@ -121,9 +121,7 @@ static STACK_OF(CONF_VALUE) *i2v_AUTHORITY_INFO_ACCESS(X509V3_EXT_METHOD *method
                     ERR_R_MALLOC_FAILURE);
             return NULL;
         }
-        BUF_strlcpy(ntmp, objtmp, nlen);
-        BUF_strlcat(ntmp, " - ", nlen);
-        BUF_strlcat(ntmp, vtmp->name, nlen);
+        snprintf(ntmp, nlen, "%s - %s", objtmp, vtmp->name);
         free(vtmp->name);
         vtmp->name = ntmp;
         
