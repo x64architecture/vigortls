@@ -145,8 +145,6 @@ const SSL_METHOD DTLSv1_client_method_data = {
     .ssl_dispatch_alert = dtls1_dispatch_alert,
     .ssl_ctrl = dtls1_ctrl,
     .ssl_ctx_ctrl = ssl3_ctx_ctrl,
-    .get_cipher_by_char = ssl3_get_cipher_by_char,
-    .put_cipher_by_char = ssl3_put_cipher_by_char,
     .ssl_pending = ssl3_pending,
     .num_ciphers = ssl3_num_ciphers,
     .get_cipher = dtls1_get_cipher,
@@ -683,7 +681,7 @@ int dtls1_client_hello(SSL *s)
         p += s->d1->cookie_len;
 
         /* Ciphers supported */
-        i=ssl_cipher_list_to_bytes(s,SSL_get_ciphers(s),&(p[2]),0);
+        i=ssl_cipher_list_to_bytes(s,SSL_get_ciphers(s),&(p[2]));
         if (i == 0)
             {
             SSLerr(SSL_F_DTLS1_CLIENT_HELLO,SSL_R_NO_CIPHERS_AVAILABLE);

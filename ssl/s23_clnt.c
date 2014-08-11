@@ -153,11 +153,9 @@ const SSL_METHOD SSLv23_client_method_data = {
     .ssl_dispatch_alert = ssl3_dispatch_alert,
     .ssl_ctrl = ssl3_ctrl,
     .ssl_ctx_ctrl = ssl3_ctx_ctrl,
-    .get_cipher_by_char = ssl23_get_cipher_by_char,
-    .put_cipher_by_char = ssl23_put_cipher_by_char,
     .ssl_pending = ssl_undefined_const_function,
-    .num_ciphers = ssl23_num_ciphers,
-    .get_cipher = ssl23_get_cipher,
+    .num_ciphers = ssl3_num_ciphers,
+    .get_cipher = ssl3_get_cipher,
     .get_ssl_method = ssl23_get_client_method,
     .get_timeout = ssl23_default_timeout,
     .ssl3_enc = &ssl3_undef_enc_method,
@@ -395,7 +393,7 @@ static int ssl23_client_hello(SSL *s)
         *(p++) = 0;
 
         /* Ciphers supported (using SSL 3.0/TLS 1.0 format) */
-        i = ssl_cipher_list_to_bytes(s, SSL_get_ciphers(s), &(p[2]), ssl3_put_cipher_by_char);
+        i = ssl_cipher_list_to_bytes(s, SSL_get_ciphers(s), &p[2]);
         if (i == 0) {
             SSLerr(SSL_F_SSL23_CLIENT_HELLO, SSL_R_NO_CIPHERS_AVAILABLE);
             return -1;

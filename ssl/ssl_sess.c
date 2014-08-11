@@ -564,9 +564,9 @@ int ssl_get_prev_session(SSL *s, unsigned char *session_id, int len,
         l=ret->cipher_id;
         l2n(l,p);
         if ((ret->ssl_version>>8) >= SSL3_VERSION_MAJOR)
-            ret->cipher=ssl_get_cipher_by_char(s,&(buf[2]));
+            ret->cipher=ssl3_get_cipher_by_char(&(buf[2]));
         else
-            ret->cipher=ssl_get_cipher_by_char(s,&(buf[1]));
+            ret->cipher=ssl3_get_cipher_by_char(&(buf[1]));
         if (ret->cipher == NULL)
             goto err;
         }

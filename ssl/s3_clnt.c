@@ -191,8 +191,6 @@ const SSL_METHOD SSLv3_client_method_data = {
     .ssl_dispatch_alert = ssl3_dispatch_alert,
     .ssl_ctrl = ssl3_ctrl,
     .ssl_ctx_ctrl = ssl3_ctx_ctrl,
-    .get_cipher_by_char = ssl3_get_cipher_by_char,
-    .put_cipher_by_char = ssl3_put_cipher_by_char,
     .ssl_pending = ssl3_pending,
     .num_ciphers = ssl3_num_ciphers,
     .get_cipher = ssl3_get_cipher,
@@ -729,7 +727,7 @@ int ssl3_client_hello(SSL *s)
             }
 
         /* Ciphers supported */
-        i=ssl_cipher_list_to_bytes(s,SSL_get_ciphers(s),&(p[2]),0);
+        i=ssl_cipher_list_to_bytes(s,SSL_get_ciphers(s),&p[2]);
         if (i == 0)
             {
             SSLerr(SSL_F_SSL3_CLIENT_HELLO,SSL_R_NO_CIPHERS_AVAILABLE);
@@ -860,7 +858,7 @@ int ssl3_get_server_hello(SSL *s)
                          s->tls_session_secret_cb_arg))
             {
             s->session->cipher = pref_cipher ?
-                pref_cipher : ssl_get_cipher_by_char(s, p+j);
+                pref_cipher : ssl3_get_cipher_by_char(p+j);
             }
         }
 
@@ -895,7 +893,7 @@ int ssl3_get_server_hello(SSL *s)
         memcpy(s->session->session_id,p,j); /* j could be 0 */
         }
     p+=j;
-    c=ssl_get_cipher_by_char(s,p);
+    c=ssl3_get_cipher_by_char(p);
     if (c == NULL)
         {
         /* unknown cipher */
@@ -919,7 +917,7 @@ int ssl3_get_server_hello(SSL *s)
             goto f_err;
     }
 #endif /* OPENSSL_NO_SRP */
-    p+=ssl_put_cipher_by_char(s,NULL,NULL);
+    p+=ssl3_put_cipher_by_char(NULL,NULL);
 
     sk=ssl_get_ciphers_by_id(s);
     i=sk_SSL_CIPHER_find(sk,c);

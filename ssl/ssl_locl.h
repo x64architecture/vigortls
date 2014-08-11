@@ -491,12 +491,6 @@ typedef struct sess_cert_st
 /*#define RSA_DEBUG    */
 /*#define IDEA_DEBUG    */
 
-#define FP_ICC  (int (*)(const void *,const void *))
-#define ssl_put_cipher_by_char(ssl,ciph,ptr) \
-        ((ssl)->method->put_cipher_by_char((ciph),(ptr)))
-#define ssl_get_cipher_by_char(ssl,ptr) \
-        ((ssl)->method->get_cipher_by_char(ptr))
-
 /* This is for the SSLv3/TLSv1.0 differences in crypto/hash stuff
  * It is a bit of a mess of functions, but hell, think of it as
  * an opaque structure :-) */
@@ -565,8 +559,7 @@ int ssl_cipher_ptr_id_cmp(const SSL_CIPHER * const *ap,
             const SSL_CIPHER * const *bp);
 STACK_OF(SSL_CIPHER) *ssl_bytes_to_cipher_list(SSL *s,unsigned char *p,int num,
                            STACK_OF(SSL_CIPHER) **skp);
-int ssl_cipher_list_to_bytes(SSL *s,STACK_OF(SSL_CIPHER) *sk,unsigned char *p,
-                             int (*put_cb)(const SSL_CIPHER *, unsigned char *));
+int ssl_cipher_list_to_bytes(SSL *s,STACK_OF(SSL_CIPHER) *sk,unsigned char *p);
 STACK_OF(SSL_CIPHER) *ssl_create_cipher_list(const SSL_METHOD *meth,
                          STACK_OF(SSL_CIPHER) **pref,
                          STACK_OF(SSL_CIPHER) **sorted,
@@ -650,13 +643,9 @@ void ssl3_record_sequence_update(unsigned char *seq);
 int ssl3_do_change_cipher_spec(SSL *ssl);
 long ssl3_default_timeout(void );
 
-int ssl23_num_ciphers(void );
-const SSL_CIPHER *ssl23_get_cipher(unsigned int u);
 int ssl23_read(SSL *s, void *buf, int len);
 int ssl23_peek(SSL *s, void *buf, int len);
 int ssl23_write(SSL *s, const void *buf, int len);
-int ssl23_put_cipher_by_char(const SSL_CIPHER *c, unsigned char *p);
-const SSL_CIPHER *ssl23_get_cipher_by_char(const unsigned char *p);
 long ssl23_default_timeout(void );
 
 long tls1_default_timeout(void);

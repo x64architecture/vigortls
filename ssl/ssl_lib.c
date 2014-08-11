@@ -1313,10 +1313,9 @@ char *SSL_get_shared_ciphers(const SSL *s, char *buf, int len)
     return (buf);
 }
 
-int ssl_cipher_list_to_bytes(SSL *s, STACK_OF(SSL_CIPHER) *sk, unsigned char *p,
-    int (*put_cb)(const SSL_CIPHER *, unsigned char *))
+int ssl_cipher_list_to_bytes(SSL *s, STACK_OF(SSL_CIPHER) *sk, unsigned char *p)
 {
-    int i, j = 0;
+    int i;
     SSL_CIPHER *c;
     unsigned char *q;
 #ifndef OPENSSL_NO_KRB5
@@ -1349,8 +1348,7 @@ int ssl_cipher_list_to_bytes(SSL *s, STACK_OF(SSL_CIPHER) *sk, unsigned char *p,
         !(s->srp_ctx.srp_Mask & SSL_kSRP))
             continue;
 #endif /* OPENSSL_NO_SRP */
-        j = put_cb ? put_cb(c, p) : ssl_put_cipher_by_char(s, c, p);
-        p += j;
+        p += ssl3_put_cipher_by_char(c, p);
     }
     /* If p == q, no ciphers and caller indicates an error. Otherwise
      * add SCSV if not renegotiating.
@@ -1359,8 +1357,7 @@ int ssl_cipher_list_to_bytes(SSL *s, STACK_OF(SSL_CIPHER) *sk, unsigned char *p,
         static SSL_CIPHER scsv = {
             0, NULL, SSL3_CK_SCSV, 0, 0, 0, 0, 0, 0, 0, 0, 0
         };
-        j = put_cb ? put_cb(&scsv, p) : ssl_put_cipher_by_char(s, &scsv, p);
-        p += j;
+        p += ssl3_put_cipher_by_char(&scsv, p);
     }
 
     return (p - q);
@@ -1375,7 +1372,7 @@ STACK_OF(SSL_CIPHER) *ssl_bytes_to_cipher_list(SSL *s, unsigned char *p, int num
     if (s->s3)
         s->s3->send_connection_binding = 0;
 
-    n = ssl_put_cipher_by_char(s, NULL, NULL);
+    n = ssl3_put_cipher_by_char(NULL, NULL);
     if ((num % n) != 0) {
         SSLerr(SSL_F_SSL_BYTES_TO_CIPHER_LIST, SSL_R_ERROR_IN_RECEIVED_CIPHER_LIST);
         return (NULL);
@@ -1403,7 +1400,7 @@ STACK_OF(SSL_CIPHER) *ssl_bytes_to_cipher_list(SSL *s, unsigned char *p, int num
             continue;
         }
 
-        c = ssl_get_cipher_by_char(s, p);
+        c = ssl3_get_cipher_by_char(p);
         p += n;
         if (c != NULL) {
             if (!sk_SSL_CIPHER_push(sk, c)) {
