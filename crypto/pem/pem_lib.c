@@ -118,32 +118,35 @@ int PEM_def_callback(char *buf, int num, int w, void *key)
     }
 
 void PEM_proc_type(char *buf, int type)
-    {
+{
     const char *str;
 
-    if (type == PEM_TYPE_ENCRYPTED)
-        str="ENCRYPTED";
-    else if (type == PEM_TYPE_MIC_CLEAR)
-        str="MIC-CLEAR";
-    else if (type == PEM_TYPE_MIC_ONLY)
-        str="MIC-ONLY";
-    else
-        str="BAD-TYPE";
-        
-    BUF_strlcat(buf,"Proc-Type: 4,",PEM_BUFSIZE);
-    BUF_strlcat(buf,str,PEM_BUFSIZE);
-    BUF_strlcat(buf,"\n",PEM_BUFSIZE);
+    switch (type) {
+        case PEM_TYPE_ENCRYPTED:
+            str = "ENCRYPTED";
+            break;
+        case PEM_TYPE_MIC_CLEAR:
+            str = "MIC-CLEAR";
+            break;
+        case PEM_TYPE_MIC_ONLY:
+            str = "MIC-ONLY";
+            break;
+        default:
+            str = "BAD-TYPE";
+            break;
     }
 
+    snprintf(buf, PEM_BUFSIZE, "Proc-Type: 4,%s\n", str);
+}
+
 void PEM_dek_info(char *buf, const char *type, int len, char *str)
-    {
+{
     static const unsigned char map[17]="0123456789ABCDEF";
     long i;
     int j;
 
-    BUF_strlcat(buf,"DEK-Info: ",PEM_BUFSIZE);
-    BUF_strlcat(buf,type,PEM_BUFSIZE);
-    BUF_strlcat(buf,",",PEM_BUFSIZE);
+    snprintf(buf, PEM_BUFSIZE, "DEK-Info: %s,", type);
+
     j=strlen(buf);
     if (j + (len * 2) + 1 > PEM_BUFSIZE)
             return;
