@@ -1817,6 +1817,59 @@ SSL_CIPHER ssl3_ciphers[] = {
         .alg_bits = 256
     },
 #endif
+
+#if !defined(OPENSSL_NO_CHACHA) && !defined(OPENSSL_NO_POLY1305)
+    /* Cipher CC13 */
+    {
+        .valid = 1,
+        .name = TLS1_TXT_ECDHE_RSA_WITH_CHACHA20_POLY1305,
+        .id = TLS1_CK_ECDHE_RSA_CHACHA20_POLY1305,
+        .algorithm_auth = SSL_aRSA,
+        .algorithm_enc = SSL_CHACHA20POLY1305,
+        .algorithm_mac = SSL_AEAD,
+        .algorithm_ssl = SSL_TLSV1_2,
+        .algo_strength = SSL_HIGH,
+        .algorithm2 = SSL_HANDSHAKE_MAC_SHA256|TLS1_PRF_SHA256|
+            SSL_CIPHER_ALGORITHM2_AEAD|FIXED_NONCE_LEN(0),
+        .strength_bits = 256,
+        .alg_bits = 0,
+    },
+
+    /* Cipher CC14 */
+    {
+        .valid = 1,
+        .name = TLS1_TXT_ECDHE_ECDSA_WITH_CHACHA20_POLY1305,
+        .id = TLS1_CK_ECDHE_ECDSA_CHACHA20_POLY1305,
+        .algorithm_mkey = SSL_kEECDH,
+        .algorithm_auth = SSL_aECDSA,
+        .algorithm_enc = SSL_CHACHA20POLY1305,
+        .algorithm_mac = SSL_AEAD,
+        .algorithm_ssl = SSL_TLSV1_2,
+        .algo_strength = SSL_HIGH,
+        .algorithm2 = SSL_HANDSHAKE_MAC_SHA256|TLS1_PRF_SHA256|
+            SSL_CIPHER_ALGORITHM2_AEAD|FIXED_NONCE_LEN(0),
+        .strength_bits = 256,
+        .alg_bits = 0,
+    },
+
+    /* Cipher CC15 */
+    {
+        .valid = 1,
+        .name = TLS1_TXT_DHE_RSA_WITH_CHACHA20_POLY1305,
+        .id = TLS1_CK_DHE_RSA_CHACHA20_POLY1305,
+        .algorithm_mkey = SSL_kEDH,
+        .algorithm_auth = SSL_aRSA,
+        .algorithm_enc = SSL_CHACHA20POLY1305,
+        .algorithm_mac = SSL_AEAD,
+        .algorithm_ssl = SSL_TLSV1_2,
+        .algo_strength = SSL_HIGH,
+        .algorithm2 = SSL_HANDSHAKE_MAC_SHA256|TLS1_PRF_SHA256|
+            SSL_CIPHER_ALGORITHM2_AEAD|FIXED_NONCE_LEN(0),
+        .strength_bits = 256,
+        .alg_bits = 0,
+    },
+#endif
+
     /* end of list */
 };
 
