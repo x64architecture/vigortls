@@ -2722,26 +2722,11 @@ char *make_revocation_str(int rev_type, char *rev_arg)
 
     revtm = X509_gmtime_adj(NULL, 0);
 
-    i = revtm->length + 1;
+    if (asprintf(&str, "%s%s%s%s%s", revtm->data,
+        reason ? "," : "", reason ? reason : "",
+        other ? "," : "", other ? other : "") == -1)
+        str = NULL;
 
-    if (reason) i += strlen(reason) + 1;
-    if (other) i += strlen(other) + 1;
-
-    str = malloc(i);
-
-    if (!str) return NULL;
-
-    BUF_strlcpy(str, (char *)revtm->data, i);
-    if (reason)
-        {
-        BUF_strlcat(str, ",", i);
-        BUF_strlcat(str, reason, i);
-        }
-    if (other)
-        {
-        BUF_strlcat(str, ",", i);
-        BUF_strlcat(str, other, i);
-        }
     ASN1_UTCTIME_free(revtm);
     return str;
     }
