@@ -383,26 +383,13 @@ char *UI_construct_prompt(UI *ui, const char *object_desc,
         prompt = ui->meth->ui_construct_prompt(ui,
             object_desc, object_name);
     else {
-        char prompt1[] = "Enter ";
-        char prompt2[] = " for ";
-        char prompt3[] = ":";
-        int len = 0;
-
         if (object_desc == NULL)
             return NULL;
-        len = sizeof(prompt1) - 1 + strlen(object_desc);
-        if (object_name)
-            len += sizeof(prompt2) - 1 + strlen(object_name);
-        len += sizeof(prompt3) - 1;
 
-        prompt = (char *)malloc(len + 1);
-        BUF_strlcpy(prompt, prompt1, len + 1);
-        BUF_strlcat(prompt, object_desc, len + 1);
-        if (object_name) {
-            BUF_strlcat(prompt, prompt2, len + 1);
-            BUF_strlcat(prompt, object_name, len + 1);
-        }
-        BUF_strlcat(prompt, prompt3, len + 1);
+        if (asprintf(&prompt, "Enter %s%s%s:", object_desc,
+            object_name ? " for " : "", object_name ?
+            object_name : "") == -1)
+            return NULL;
     }
     return prompt;
 }
