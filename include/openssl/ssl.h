@@ -1662,7 +1662,7 @@ void    SSL_set_verify(SSL *s, int mode,
                int (*callback)(int ok,X509_STORE_CTX *ctx));
 void    SSL_set_verify_depth(SSL *s, int depth);
 int    SSL_use_RSAPrivateKey(SSL *ssl, RSA *rsa);
-int    SSL_use_RSAPrivateKey_ASN1(SSL *ssl, unsigned char *d, long len);
+int    SSL_use_RSAPrivateKey_ASN1(SSL *ssl, const unsigned char *d, long len);
 int    SSL_use_PrivateKey(SSL *ssl, EVP_PKEY *pkey);
 int    SSL_use_PrivateKey_ASN1(int pk,SSL *ssl, const unsigned char *d, long len);
 int    SSL_use_certificate(SSL *ssl, X509 *x);

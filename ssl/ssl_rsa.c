@@ -264,7 +264,7 @@ end:
     return (ret);
     }
 
-int SSL_use_RSAPrivateKey_ASN1(SSL *ssl, unsigned char *d, long len)
+int SSL_use_RSAPrivateKey_ASN1(SSL *ssl, const unsigned char *d, long len)
     {
     int ret;
     const unsigned char *p;
