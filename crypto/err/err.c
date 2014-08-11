@@ -1062,34 +1062,22 @@ void ERR_add_error_data(int num, ...)
 
 void ERR_add_error_vdata(int num, va_list args)
 {
-    int i, n, s;
-    char *str, *p, *a;
-
-    s = 80;
-    str = malloc(s + 1);
-    if (str == NULL) 
-        return;
+    char str[90];
+    char *buf;
+    int i;
     str[0] = '\0';
 
-    n = 0;
     for (i = 0; i < num; i++) {
-        a = va_arg(args, char*);
-        /* ignore NULLs, thanks to Bob Beck <beck@obtuse.com> */
-        if (a != NULL) {
-            n += strlen(a);
-            if (n > s) {
-                s = n + 20;
-                p = realloc(str, s + 1);
-                if (p == NULL) {
-                    free(str);
-                    return;
-                } else
-                    str = p;
-                }
-            BUF_strlcat(str, a, (size_t)s + 1);
+        if (BUF_strlcat(str, "%s", sizeof(str)) >= sizeof(str)) {
+            ERR_set_error_data("error trunication occured",
+                ERR_TXT_STRING);
+            return;
         }
     }
-    ERR_set_error_data(str, ERR_TXT_MALLOCED | ERR_TXT_STRING);
+    if (vasprintf(&buf, str, args) == -1)
+        ERR_set_error_data("malloc failure", ERR_TXT_STRING);
+    else
+        ERR_set_error_data(buf, ERR_TXT_MALLOCED | ERR_TXT_STRING);
 }
 
 int ERR_set_mark(void)
