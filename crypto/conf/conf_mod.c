@@ -545,24 +545,18 @@ void CONF_module_set_usr_data(CONF_MODULE *pmod, void *usr_data)
 
 char *CONF_get1_default_config_file(void)
     {
+    const char *s = X509_get_default_cert_area();
     char *file;
-    int len;
+    int ret;
 
     file = getenv("OPENSSL_CONF");
     if (file) 
         return BUF_strdup(file);
 
-    len = strlen(X509_get_default_cert_area());
-    len++;
-    len += strlen("openssl.cnf");
+    ret = asprintf(&file, "%s/openssl.cnf", s);
 
-    file = malloc(len + 1);
-
-    if (!file)
+    if (ret == -1)
         return NULL;
-    BUF_strlcpy(file,X509_get_default_cert_area(),len + 1);
-    BUF_strlcat(file,"/",len + 1);
-    BUF_strlcat(file,"openssl.cnf",len + 1);
 
     return file;
     }
