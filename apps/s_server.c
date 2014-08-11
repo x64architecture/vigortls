@@ -1972,9 +1972,22 @@ again:
 #endif
                 switch (SSL_get_error(con,i))
                     {
-                case SSL_ERROR_NONE:
-                    write(fileno(stdout), buf, (unsigned int)i);
-                    if (SSL_pending(con)) goto again;
+                    case SSL_ERROR_NONE: {
+                        int len, n;
+                        for (len = 0; len < i;) {
+                            do {
+                                n = write(fileno(stdout), buf + len, i - len);
+                            } while (n == -1 && errno == EINTR);
+
+                            if (n < 0) {
+                                BIO_printf(bio_s_out, "ERROR\n");
+                                goto err;
+                            }
+                            len += n;
+                        }
+                    }
+                    if (SSL_pending(con))
+                        goto again;
                     break;
                 case SSL_ERROR_WANT_WRITE:
                 case SSL_ERROR_WANT_READ:

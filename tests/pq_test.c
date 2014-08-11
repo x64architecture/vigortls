@@ -59,15 +59,16 @@
 
 #include <pqueue.h>
 #include <string.h>
+#include <openssl/buffer.h>
 
 /* remember to change the expected results if you change these values */
 unsigned char prio1[8] = "trutheca";
 unsigned char prio2[8] = "kapuvuxu";
 unsigned char prio3[8] = "chusuwru";
 
-const char prio1_expected[16] = "6368757375777275";
-const char prio2_expected[16] = "6b61707576757875";
-const char prio3_expected[16] = "7472757468656361";
+const char prio1_expected[] = "6368757375777275";
+const char prio2_expected[] = "6b61707576757875";
+const char prio3_expected[] = "7472757468656361";
 
 static void pqueue_print(pqueue pq)
 {
@@ -86,21 +87,25 @@ static void pqueue_print(pqueue pq)
 static void pqueue_test(pqueue pq)
 {
     pitem *iter, *item;
-    char buf[17];
-    char buf2[16 * 3 + 1];
-    char expected[16 * 3 + 1];
+    char *buf;
+    char buf2[49];
+    char *expected;
+    buf2[0] = '\0';
 
-    snprintf(expected, sizeof(expected), "%s%s%s",
-        prio1_expected, prio2_expected, prio3_expected);
+    if (asprintf(&expected, "%s%s%s",
+        prio1_expected, prio2_expected, prio3_expected) == -1)
+        exit(-1);
 
     iter = pqueue_iterator(pq);
     for (item = pqueue_next(&iter); item != NULL; item = pqueue_next(&iter)) {
-        snprintf(buf, sizeof(buf), "%02x%02x%02x%02x%02x%02x%02x%02x",
+        if (asprintf(&buf, "%02x%02x%02x%02x%02x%02x%02x%02x",
             item->priority[0], item->priority[1],
             item->priority[2], item->priority[3],
             item->priority[4], item->priority[5],
-            item->priority[6], item->priority[7]);
-        strncat(buf2, buf, sizeof(buf2) - strlen(buf2) - 1);
+            item->priority[6], item->priority[7]) == -1)
+            exit(-1);
+
+        BUF_strlcat(buf2, buf, sizeof(buf2));
     }
 
     if (strcmp(expected, buf2) != 0) {
