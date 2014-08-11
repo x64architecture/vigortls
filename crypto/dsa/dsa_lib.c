@@ -68,8 +68,6 @@
 #endif
 #include <openssl/dh.h>
 
-const char DSA_version[]="DSA" OPENSSL_VERSION_PTEXT;
-
 static const DSA_METHOD *default_DSA_method = NULL;
 
 void DSA_set_default_method(const DSA_METHOD *meth)

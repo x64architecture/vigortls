@@ -58,10 +58,7 @@
 
 #include <stdio.h>
 #include "rmd_locl.h"
-#include <openssl/opensslv.h>
 #include <openssl/crypto.h>
-
-const char RMD160_version[]="RIPE-MD160" OPENSSL_VERSION_PTEXT;
 
 #  ifndef OPENSSL_NO_ASM
      void ripemd160_block_x86(RIPEMD160_CTX *c, unsigned long *p,size_t num);

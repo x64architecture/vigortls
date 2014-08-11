@@ -151,8 +151,6 @@ static CRYPTO_THREADID locking_threadid; /* valid iff crypto_lock_rand is set */
 int rand_predictable=0;
 #endif
 
-const char RAND_version[]="RAND" OPENSSL_VERSION_PTEXT;
-
 static void ssleay_rand_cleanup(void);
 static void ssleay_rand_seed(const void *buf, int num);
 static void ssleay_rand_add(const void *buf, int num, double add_entropy);

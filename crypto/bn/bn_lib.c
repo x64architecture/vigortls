@@ -67,8 +67,6 @@
 #include "cryptlib.h"
 #include "bn_lcl.h"
 
-const char BN_version[]="Big Number" OPENSSL_VERSION_PTEXT;
-
 const BIGNUM *BN_value_one(void)
     {
     static const BN_ULONG data_one=1L;

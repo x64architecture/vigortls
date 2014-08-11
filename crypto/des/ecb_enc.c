@@ -57,10 +57,7 @@
  */
 
 #include "des_locl.h"
-#include <openssl/opensslv.h>
 #include <openssl/bio.h>
-
-const char DES_version[]="DES" OPENSSL_VERSION_PTEXT;
 
 const char *DES_options(void)
     {

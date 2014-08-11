@@ -68,9 +68,6 @@
 
 #define M_do_cipher(ctx, out, in, inl) ctx->cipher->do_cipher(ctx, out, in, inl)
 
-
-const char EVP_version[]="EVP" OPENSSL_VERSION_PTEXT;
-
 void EVP_CIPHER_CTX_init(EVP_CIPHER_CTX *ctx)
     {
     memset(ctx,0,sizeof(EVP_CIPHER_CTX));

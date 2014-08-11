@@ -63,10 +63,6 @@
 #undef  SHA_1
 #define SHA_0
 
-#include <openssl/opensslv.h>
-
-const char SHA_version[]="SHA" OPENSSL_VERSION_PTEXT;
-
 /* The implementation is in ../md32_common.h */
 
 #include "sha_locl.h"

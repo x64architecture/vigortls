@@ -73,8 +73,6 @@
 #undef MIN_NODES
 #define MIN_NODES    4
 
-const char STACK_version[]="Stack" OPENSSL_VERSION_PTEXT;
-
 #include <errno.h>
 
 int (*sk_set_cmp_func(_STACK *sk, int (*c)(const void *, const void *)))
