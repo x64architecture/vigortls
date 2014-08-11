@@ -431,13 +431,9 @@ bad:
         if (configfile == NULL)
             {
             const char *s=X509_get_default_cert_area();
-            size_t len;
 
-            len = strlen(s)+sizeof(CONFIG_FILE)+1;
-            tofree=malloc(len);
-            BUF_strlcpy(tofree,s,len);
-            BUF_strlcat(tofree,"/",len);
-            BUF_strlcat(tofree,CONFIG_FILE,len);
+            asprintf(&tofree, "%s/%s", s, CONFIG_FILE);
+
             configfile=tofree;
             }
 
