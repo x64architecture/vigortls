@@ -35,10 +35,13 @@ B<openssl> B<s_server>
 [B<-CAfile filename>]
 [B<-nocert>]
 [B<-cipher cipherlist>]
+[B<-serverpref>]
 [B<-quiet>]
 [B<-no_tmp_rsa>]
+[B<-ssl2>]
 [B<-ssl3>]
 [B<-tls1>]
+[B<-no_ssl2>]
 [B<-no_ssl3>]
 [B<-no_tls1>]
 [B<-no_dhe>]
@@ -52,6 +55,12 @@ B<openssl> B<s_server>
 [B<-tlsextdebug>]
 [B<-no_ticket>]
 [B<-id_prefix arg>]
+[B<-rand file(s)>]
+[B<-status>]
+[B<-status_verbose>]
+[B<-status_timeout nsec>]
+[B<-status_url url>]
+[B<-nextprotoneg protocols>]
 
 =head1 DESCRIPTION
 
@@ -147,6 +156,9 @@ the client. With the B<-verify> option a certificate is requested but the
 client does not have to send one, with the B<-Verify> option the client
 must supply a certificate or an error occurs.
 
+If the ciphersuite cannot request a client certificate (for example an
+anonymous ciphersuite or PSK) this option has no effect.
+
 =item B<-crl_check>, B<-crl_check_all>
 
 Check the peer certificate has not been revoked by its CA.
@@ -204,11 +216,11 @@ Use the PSK key B<key> when using a PSK cipher suite. The key is
 given as a hexadecimal number without leading 0x, for example -psk
 1a2b3c4d.
 
-=item B<-ssl3>, B<-tls1>, B<-no_ssl3>, B<-no_tls1>
+=item B<-ssl2>, B<-ssl3>, B<-tls1>, B<-no_ssl2>, B<-no_ssl3>, B<-no_tls1>
 
 these options disable the use of certain SSL or TLS protocols. By default
 the initial handshake uses a method which should be compatible with all
-servers and permit them to use SSL v3 or TLS as appropriate.
+servers and permit them to use SSL v3, SSL v2 or TLS as appropriate.
 
 =item B<-bugs>
 
@@ -228,13 +240,17 @@ also included in the server list is used. Because the client specifies
 the preference order, the order of the server cipherlist irrelevant. See
 the B<ciphers> command for more information.
 
+=item B<-serverpref>
+
+use the server's cipher preferences, rather than the client's preferences.
+
 =item B<-tlsextdebug>
 
 print out a hex dump of any TLS extensions received from the server.
 
 =item B<-no_ticket>
 
-disable RFC4507bis session ticket support.
+disable RFC4507bis session ticket support. 
 
 =item B<-www>
 
@@ -271,13 +287,48 @@ for testing any SSL/TLS code (eg. proxies) that wish to deal with multiple
 servers, when each of which might be generating a unique range of session
 IDs (eg. with a certain prefix).
 
+=item B<-rand file(s)>
+
+a file or files containing random data used to seed the random number
+generator, or an EGD socket (see L<RAND_egd(3)|RAND_egd(3)>).
+Multiple files can be specified separated by a OS-dependent character.
+The separator is B<;> for MS-Windows, B<,> for OpenVMS, and B<:> for
+all others.
+
+=item B<-status>
+
+enables certificate status request support (aka OCSP stapling).
+
+=item B<-status_verbose>
+
+enables certificate status request support (aka OCSP stapling) and gives
+a verbose printout of the OCSP response.
+
+=item B<-status_timeout nsec>
+
+sets the timeout for OCSP response to B<nsec> seconds.
+
+=item B<-status_url url>
+
+sets a fallback responder URL to use if no responder URL is present in the
+server certificate. Without this option an error is returned if the server
+certificate does not contain a responder address.
+
+=item B<-nextprotoneg protocols>
+
+enable Next Protocol Negotiation TLS extension and provide a
+comma-separated list of supported protocol names.
+The list should contain most wanted protocols first.
+Protocol names are printable ASCII strings, for example "http/1.1" or
+"spdy/3".
+
 =back
 
 =head1 CONNECTED COMMANDS
 
 If a connection request is established with an SSL client and neither the
 B<-www> nor the B<-WWW> option has been used then normally any data received
-from the client is displayed and any key presses will be sent to the client.
+from the client is displayed and any key presses will be sent to the client. 
 
 Certain single letter commands are also recognized which perform special
 operations: these are listed below.

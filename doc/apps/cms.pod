@@ -58,6 +58,7 @@ B<openssl> B<cms>
 [B<-econtent_type type>]
 [B<-inkey file>]
 [B<-passin arg>]
+[B<-rand file(s)>]
 [B<cert.pem...>]
 [B<-to addr>]
 [B<-from addr>]
@@ -142,7 +143,7 @@ output an error.
 
 =item B<-EncryptedData_encrypt>
 
-Encrypt suppled content using supplied symmetric key and algorithm using a CMS
+Encrypt content using supplied symmetric key and algorithm using a CMS
 B<EncrytedData> type and output the content.
 
 =item B<-sign_receipt>
@@ -384,6 +385,14 @@ multiple times to specify successive keys.
 
 the private key password source. For more information about the format of B<arg>
 see the B<PASS PHRASE ARGUMENTS> section in L<openssl(1)|openssl(1)>.
+
+=item B<-rand file(s)>
+
+a file or files containing random data used to seed the random number
+generator, or an EGD socket (see L<RAND_egd(3)|RAND_egd(3)>).
+Multiple files can be specified separated by a OS-dependent character.
+The separator is B<;> for MS-Windows, B<,> for OpenVMS, and B<:> for
+all others.
 
 =item B<cert.pem...>
 

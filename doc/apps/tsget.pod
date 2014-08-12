@@ -111,6 +111,12 @@ certificate. The directory must be prepared with the B<c_rehash>
 OpenSSL utility. Either option B<-C> or option B<-P> must be given in case of
 HTTPS. (Optional)
 
+=item B<-rand> file:file...
+
+The files containing random data for seeding the random number
+generator. Multiple files can be specified, the separator is B<;> for
+MS-Windows, B<,> for VMS and B<:> for all other platforms. (Optional)
+
 =item B<-g> EGD_socket
 
 The name of an EGD socket to get random data from. (Optional)

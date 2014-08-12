@@ -16,10 +16,11 @@ B<openssl ecparam>
 [B<-C>]
 [B<-check>]
 [B<-name arg>]
-[B<-list_curve>]
+[B<-list_curves>]
 [B<-conv_form arg>]
 [B<-param_enc arg>]
 [B<-no_seed>]
+[B<-rand file(s)>]
 [B<-genkey>]
 [B<-engine id>]
 
@@ -109,6 +110,14 @@ is included in the ECParameters structure (see RFC 3279).
 =item B<-genkey>
 
 This option will generate a EC private key using the specified parameters.
+
+=item B<-rand file(s)>
+
+a file or files containing random data used to seed the random number
+generator, or an EGD socket (see L<RAND_egd(3)|RAND_egd(3)>).
+Multiple files can be specified separated by a OS-dependent character.
+The separator is B<;> for MS-Windows, B<,> for OpenVMS, and B<:> for
+all others.
 
 =item B<-engine id>
 
