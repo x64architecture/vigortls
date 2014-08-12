@@ -57,11 +57,12 @@
  */
 
 #include <stdio.h>
-#include "cryptlib.h"
 #include <openssl/evp.h>
 #ifndef OPENSSL_NO_ENGINE
 #include <openssl/engine.h>
 #endif
+
+#include "cryptlib.h"
 
 #if 0
 #undef OpenSSL_add_all_algorithms

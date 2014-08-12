@@ -57,9 +57,11 @@
  */
 
 #include <stdio.h>
-#include "cryptlib.h"
+#include <string.h>
+
 #include <openssl/asn1.h>
 #include <openssl/bn.h>
+#include <openssl/err.h>
 
 ASN1_INTEGER *ASN1_INTEGER_dup(const ASN1_INTEGER *x)
 { return M_ASN1_INTEGER_dup(x);}

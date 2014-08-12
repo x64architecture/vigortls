@@ -117,7 +117,6 @@
  */
 
 #include <stdio.h>
-#include "cryptlib.h"
 #include "bn_lcl.h"
 
 #define MONT_WORD /* use the faster word-based algorithm */

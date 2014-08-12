@@ -56,11 +56,12 @@
  * [including the GNU Public Licence.]
  */
 
-#include <stdio.h>
 #include <errno.h>
-#include <openssl/crypto.h>
-#include "cryptlib.h"
+#include <stdio.h>
+
 #include <openssl/bio.h>
+#include <openssl/crypto.h>
+#include <openssl/err.h>
 #include <openssl/stack.h>
 
 BIO *BIO_new(BIO_METHOD *method)

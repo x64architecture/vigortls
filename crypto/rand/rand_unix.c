@@ -108,20 +108,24 @@
  * Hudson (tjh@cryptsoft.com).
  *
  */
-#include <stdio.h>
 
-#define USE_SOCKETS
-#include "cryptlib.h"
-#include <openssl/rand.h>
-#include "rand_lcl.h"
+#include <stdio.h>
+#include <string.h>
 
 #include <sys/types.h>
 #include <sys/time.h>
 #include <sys/times.h>
 #include <sys/stat.h>
+
+#include <errno.h>
 #include <fcntl.h>
-#include <unistd.h>
 #include <time.h>
+#include <unistd.h>
+
+#include <openssl/rand.h>
+
+#include "rand_lcl.h"
+
 #if defined(OPENSSL_SYS_LINUX) /* should actually be available virtually everywhere */
 # include <poll.h>
 #endif

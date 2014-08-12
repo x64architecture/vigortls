@@ -56,13 +56,17 @@
  *
  */
 
-#include <stdio.h>
 #include <ctype.h>
-#include <openssl/crypto.h>
-#include "cryptlib.h"
+#include <stdio.h>
+#include <string.h>
+
 #include <openssl/conf.h>
+#include <openssl/crypto.h>
 #include <openssl/dso.h>
+#include <openssl/err.h>
 #include <openssl/x509.h>
+
+#include "cryptlib.h"
 
 
 #define DSO_mod_init_name "OPENSSL_init"

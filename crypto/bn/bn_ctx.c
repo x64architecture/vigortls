@@ -54,17 +54,19 @@
  *
  */
 
+#include <assert.h>
+#include <stdio.h>
+#include <string.h>
+
+#include <openssl/err.h>
+
+#include "bn_lcl.h"
+
 #if !defined(BN_CTX_DEBUG) && !defined(BN_DEBUG)
 #ifndef NDEBUG
 #define NDEBUG
 #endif
 #endif
-
-#include <stdio.h>
-#include <assert.h>
-
-#include "cryptlib.h"
-#include "bn_lcl.h"
 
 /* TODO list
  *

@@ -53,7 +53,6 @@
  *
  */
 
-#include "cryptlib.h"
 #include "bn_lcl.h"
 
 /* least significant word */

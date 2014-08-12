@@ -57,12 +57,12 @@
  *
  */
 
-
-#include <stdio.h>
-#include <sys/time.h>
 #include <errno.h>
+#include <stdio.h>
+#include <string.h>
 
-#include "cryptlib.h"
+#include <sys/time.h>
+#include <unistd.h>
 
 #include <openssl/bio.h>
 

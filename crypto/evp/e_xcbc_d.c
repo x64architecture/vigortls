@@ -57,7 +57,7 @@
  */
 
 #include <stdio.h>
-#include "cryptlib.h"
+#include <string.h>
 
 #ifndef OPENSSL_NO_DES
 

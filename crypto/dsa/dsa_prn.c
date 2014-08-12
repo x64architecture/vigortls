@@ -57,9 +57,10 @@
  */
 
 #include <stdio.h>
-#include "cryptlib.h"
-#include <openssl/evp.h>
+
 #include <openssl/dsa.h>
+#include <openssl/err.h>
+#include <openssl/evp.h>
 
 int DSA_print_fp(FILE *fp, const DSA *x, int off)
     {

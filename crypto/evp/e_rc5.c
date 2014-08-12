@@ -57,10 +57,10 @@
  */
 
 #include <stdio.h>
-#include "cryptlib.h"
 
 #ifndef OPENSSL_NO_RC5
 
+#include <openssl/err.h>
 #include <openssl/evp.h>
 #include <openssl/objects.h>
 #include "evp_locl.h"

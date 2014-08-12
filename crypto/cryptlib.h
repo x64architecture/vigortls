@@ -59,10 +59,6 @@
 #ifndef HEADER_CRYPTLIB_H
 #define HEADER_CRYPTLIB_H
 
-#include <stdlib.h>
-#include <string.h>
-#include <unistd.h>
-
 #include <openssl/crypto.h>
 #include <openssl/buffer.h>
 #include <openssl/bio.h>

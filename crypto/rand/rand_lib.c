@@ -58,7 +58,6 @@
 
 #include <stdio.h>
 #include <time.h>
-#include "cryptlib.h"
 #include <openssl/rand.h>
 
 #ifndef OPENSSL_NO_ENGINE

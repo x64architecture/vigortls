@@ -56,10 +56,13 @@
  * [including the GNU Public Licence.]
  */
 
-#include <stdio.h>
 #include <ctype.h>
-#include "cryptlib.h"
+#include <stdio.h>
+
+#include <openssl/bio.h>
 #include <openssl/buffer.h>
+#include <openssl/err.h>
+
 #include "bn_lcl.h"
 
 static const char Hex[]="0123456789ABCDEF";

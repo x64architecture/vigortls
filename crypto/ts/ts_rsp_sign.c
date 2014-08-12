@@ -56,12 +56,10 @@
  *
  */
 
-#include "cryptlib.h"
-
-#if defined(OPENSSL_SYS_UNIX)
+#include <string.h>
 #include <sys/time.h>
-#endif
 
+#include <openssl/err.h>
 #include <openssl/objects.h>
 #include <openssl/ts.h>
 #include <openssl/pkcs7.h>

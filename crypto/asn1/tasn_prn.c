@@ -58,7 +58,6 @@
 
 
 #include <stddef.h>
-#include "cryptlib.h"
 #include <openssl/asn1.h>
 #include <openssl/asn1t.h>
 #include <openssl/objects.h>

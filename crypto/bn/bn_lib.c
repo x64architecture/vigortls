@@ -64,7 +64,10 @@
 #include <assert.h>
 #include <limits.h>
 #include <stdio.h>
-#include "cryptlib.h"
+#include <string.h>
+
+#include <openssl/err.h>
+
 #include "bn_lcl.h"
 
 const BIGNUM *BN_value_one(void)

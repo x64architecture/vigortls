@@ -57,10 +57,11 @@
  */
 
 #include <stdio.h>
-#include "cryptlib.h"
+
 #include <openssl/bn.h>
-#include <openssl/rsa.h>
+#include <openssl/err.h>
 #include <openssl/rand.h>
+#include <openssl/rsa.h>
 
 /* This is a dummy RSA implementation that just returns errors when called.
  * It is designed to allow some RSA functions to work while stopping those

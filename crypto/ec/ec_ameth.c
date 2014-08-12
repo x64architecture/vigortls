@@ -56,13 +56,14 @@
  */
 
 #include <stdio.h>
-#include "cryptlib.h"
-#include <openssl/x509.h>
-#include <openssl/ec.h>
+
 #include <openssl/bn.h>
 #ifndef OPENSSL_NO_CMS
 #include <openssl/cms.h>
 #endif
+#include <openssl/ec.h>
+#include <openssl/err.h>
+#include <openssl/x509.h>
 #include "asn1_locl.h"
 
 static int eckey_param2type(int *pptype, void **ppval, EC_KEY *ec_key)

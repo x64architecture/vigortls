@@ -109,11 +109,13 @@
  *
  */
 
+#include <stdlib.h>
+#include <string.h>
 
-#include "cryptlib.h"
+#include <openssl/err.h>
+
 #include "bn_lcl.h"
 
-#include <stdlib.h>
 # ifndef alloca
 #  define alloca(s) __builtin_alloca((s))
 # endif

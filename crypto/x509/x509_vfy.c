@@ -57,13 +57,14 @@
  */
 
 #include <stdio.h>
+#include <string.h>
 #include <time.h>
 #include <errno.h>
 
-#include "cryptlib.h"
 #include <openssl/crypto.h>
 #include <openssl/lhash.h>
 #include <openssl/buffer.h>
+#include <openssl/err.h>
 #include <openssl/evp.h>
 #include <openssl/asn1.h>
 #include <openssl/x509.h>

@@ -57,8 +57,10 @@
  */
 
 #include <stdio.h>
-#include "cryptlib.h"
+#include <string.h>
+
 #include <openssl/conf.h>
+#include <openssl/err.h>
 #include <openssl/x509v3.h>
 
 static GENERAL_NAMES *v2i_subject_alt(X509V3_EXT_METHOD *method, X509V3_CTX *ctx, STACK_OF(CONF_VALUE) *nval);

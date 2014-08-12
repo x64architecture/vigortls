@@ -59,7 +59,6 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include "cryptlib.h"
 #include <openssl/bio.h>
 #include <openssl/err.h>
 

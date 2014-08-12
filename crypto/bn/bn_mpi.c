@@ -57,7 +57,9 @@
  */
 
 #include <stdio.h>
-#include "cryptlib.h"
+
+#include <openssl/err.h>
+
 #include "bn_lcl.h"
 
 int BN_bn2mpi(const BIGNUM *a, unsigned char *d)

@@ -64,8 +64,9 @@
 
 #include <stdio.h>
 #include <time.h>
-#include "cryptlib.h"
+
 #include <openssl/bn.h>
+#include <openssl/err.h>
 #include <openssl/rsa.h>
 
 static int rsa_builtin_keygen(RSA *rsa, int bits, BIGNUM *e_value, BN_GENCB *cb);

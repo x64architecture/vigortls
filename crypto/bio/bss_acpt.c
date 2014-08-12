@@ -56,11 +56,14 @@
  * [including the GNU Public Licence.]
  */
 
-#include <stdio.h>
 #include <errno.h>
-#define USE_SOCKETS
-#include "cryptlib.h"
+#include <stdio.h>
+#include <string.h>
+#include <unistd.h>
+
 #include <openssl/bio.h>
+#include <openssl/buffer.h>
+#include <openssl/err.h>
 
 #define SOCKET_PROTOCOL IPPROTO_TCP
 

@@ -53,7 +53,6 @@
 
 #ifndef OPENSSL_NO_CMS
 
-#include "cryptlib.h"
 #include <openssl/asn1t.h>
 #include <openssl/pem.h>
 #include <openssl/x509v3.h>

@@ -57,7 +57,6 @@
  *
  */
 
-#include "cryptlib.h"
 #include <openssl/bn.h>
 #include <pqueue.h>
 

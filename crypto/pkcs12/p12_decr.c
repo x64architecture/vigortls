@@ -57,7 +57,8 @@
  */
 
 #include <stdio.h>
-#include "cryptlib.h"
+
+#include <openssl/err.h>
 #include <openssl/pkcs12.h>
 
 /* Define this to dump decrypted output to files called DERnnn */

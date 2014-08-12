@@ -141,7 +141,6 @@
 # endif
 
 #include "ui_locl.h"
-#include "cryptlib.h"
 
 
 /* There are 3 types of terminal interface supported,

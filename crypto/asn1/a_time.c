@@ -62,10 +62,14 @@
  */
 
 #include <stdio.h>
+#include <string.h>
 #include <time.h>
-#include "cryptlib.h"
-#include "time_support.h"
+
 #include <openssl/asn1t.h>
+#include <openssl/buffer.h>
+#include <openssl/err.h>
+
+#include "time_support.h"
 
 IMPLEMENT_ASN1_MSTRING(ASN1_TIME, B_ASN1_TIME)
 

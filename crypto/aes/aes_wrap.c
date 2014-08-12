@@ -51,7 +51,8 @@
  * ====================================================================
  */
 
-#include "cryptlib.h"
+#include <string.h>
+
 #include <openssl/aes.h>
 #include <openssl/bio.h>
 

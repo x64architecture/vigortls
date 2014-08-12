@@ -57,12 +57,12 @@
  */
 /* extension creation utilities */
 
-
-
-#include <stdio.h>
 #include <ctype.h>
-#include "cryptlib.h"
+#include <stdio.h>
+#include <string.h>
+
 #include <openssl/conf.h>
+#include <openssl/err.h>
 #include <openssl/x509.h>
 #include <openssl/x509v3.h>
 

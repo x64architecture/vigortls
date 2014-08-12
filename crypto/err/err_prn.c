@@ -57,11 +57,12 @@
  */
 
 #include <stdio.h>
-#include "cryptlib.h"
-#include <openssl/lhash.h>
-#include <openssl/crypto.h>
+#include <string.h>
+
 #include <openssl/buffer.h>
+#include <openssl/crypto.h>
 #include <openssl/err.h>
+#include <openssl/lhash.h>
 
 void ERR_print_errors_cb(int (*cb)(const char *str, size_t len, void *u),
              void *u)

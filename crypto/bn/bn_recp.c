@@ -57,7 +57,9 @@
  */
 
 #include <stdio.h>
-#include "cryptlib.h"
+
+#include <openssl/err.h>
+
 #include "bn_lcl.h"
 
 void BN_RECP_CTX_init(BN_RECP_CTX *recp)

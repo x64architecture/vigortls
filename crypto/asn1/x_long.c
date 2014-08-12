@@ -57,9 +57,11 @@
  */
 
 #include <stdio.h>
-#include "cryptlib.h"
+#include <string.h>
+
 #include <openssl/asn1t.h>
 #include <openssl/bn.h>
+#include <openssl/err.h>
 
 /* Custom primitive type for long handling. This converts between an ASN1_INTEGER
  * and a long directly.

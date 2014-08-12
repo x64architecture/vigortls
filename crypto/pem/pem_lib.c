@@ -56,23 +56,25 @@
  * [including the GNU Public Licence.]
  */
 
-#include <stdio.h>
 #include <ctype.h>
-#include "cryptlib.h"
+#include <stdio.h>
+#include <string.h>
+
 #include <openssl/buffer.h>
-#include <openssl/objects.h>
-#include <openssl/evp.h>
-#include <openssl/rand.h>
-#include <openssl/x509.h>
-#include <openssl/pem.h>
-#include <openssl/pkcs12.h>
-#include "asn1_locl.h"
 #ifndef OPENSSL_NO_DES
 #include <openssl/des.h>
 #endif
 #ifndef OPENSSL_NO_ENGINE
 #include <openssl/engine.h>
 #endif
+#include <openssl/evp.h>
+#include <openssl/objects.h>
+#include <openssl/pem.h>
+#include <openssl/pkcs12.h>
+#include <openssl/rand.h>
+#include <openssl/x509.h>
+
+#include "asn1_locl.h"
 
 #define MIN_LENGTH    4
 

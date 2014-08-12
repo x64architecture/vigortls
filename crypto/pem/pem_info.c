@@ -57,16 +57,18 @@
  */
 
 #include <stdio.h>
-#include "cryptlib.h"
+#include <string.h>
+
 #include <openssl/buffer.h>
-#include <openssl/objects.h>
-#include <openssl/evp.h>
-#include <openssl/x509.h>
-#include <openssl/pem.h>
-#include <openssl/rsa.h>
 #ifndef OPENSSL_NO_DSA
 #include <openssl/dsa.h>
 #endif
+#include <openssl/err.h>
+#include <openssl/evp.h>
+#include <openssl/objects.h>
+#include <openssl/pem.h>
+#include <openssl/rsa.h>
+#include <openssl/x509.h>
 
 STACK_OF(X509_INFO) *PEM_X509_INFO_read(FILE *fp, STACK_OF(X509_INFO) *sk, pem_password_cb *cb, void *u)
     {

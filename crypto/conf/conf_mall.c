@@ -58,7 +58,6 @@
 
 #include <stdio.h>
 #include <openssl/crypto.h>
-#include "cryptlib.h"
 #include <openssl/conf.h>
 #include <openssl/dso.h>
 #include <openssl/x509.h>

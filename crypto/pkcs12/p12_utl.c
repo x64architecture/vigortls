@@ -57,7 +57,8 @@
  */
 
 #include <stdio.h>
-#include "cryptlib.h"
+#include <string.h>
+
 #include <openssl/pkcs12.h>
 
 /* Cheap and nasty Unicode stuff */

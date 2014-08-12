@@ -80,7 +80,6 @@
 
 #include <stdio.h>
 #include <assert.h>
-#include "cryptlib.h"
 #include <openssl/dso.h>
 #include <openssl/engine.h>
 #include <openssl/evp.h>

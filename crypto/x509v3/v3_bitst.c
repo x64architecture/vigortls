@@ -57,8 +57,10 @@
  */
 
 #include <stdio.h>
-#include "cryptlib.h"
+#include <string.h>
+
 #include <openssl/conf.h>
+#include <openssl/err.h>
 #include <openssl/x509v3.h>
 
 static BIT_STRING_BITNAME ns_cert_type_table[] = {

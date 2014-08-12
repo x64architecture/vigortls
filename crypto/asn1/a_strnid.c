@@ -56,10 +56,12 @@
  *
  */
 
-#include <stdio.h>
 #include <ctype.h>
-#include "cryptlib.h"
+#include <stdio.h>
+#include <string.h>
+
 #include <openssl/asn1.h>
+#include <openssl/err.h>
 #include <openssl/objects.h>
 
 

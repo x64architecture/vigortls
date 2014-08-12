@@ -57,9 +57,10 @@
  */
 
 #include <stdio.h>
-#include "cryptlib.h"
 #include <openssl/crypto.h>
 #include <openssl/x509.h>
+
+#include "cryptlib.h"
 
 const char *X509_get_default_private_dir(void)
     { return (X509_PRIVATE_DIR); }

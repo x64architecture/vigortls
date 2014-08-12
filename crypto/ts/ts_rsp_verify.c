@@ -57,7 +57,9 @@
  */
 
 #include <stdio.h>
-#include "cryptlib.h"
+#include <string.h>
+
+#include <openssl/err.h>
 #include <openssl/objects.h>
 #include <openssl/ts.h>
 #include <openssl/pkcs7.h>

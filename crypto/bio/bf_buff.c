@@ -56,10 +56,12 @@
  * [including the GNU Public Licence.]
  */
 
-#include <stdio.h>
 #include <errno.h>
-#include "cryptlib.h"
+#include <stdio.h>
+#include <string.h>
+
 #include <openssl/bio.h>
+#include <openssl/err.h>
 
 static int buffer_write(BIO *h, const char *buf,int num);
 static int buffer_read(BIO *h, char *buf, int size);

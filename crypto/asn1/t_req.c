@@ -57,16 +57,17 @@
  */
 
 #include <stdio.h>
-#include "cryptlib.h"
-#include <openssl/buffer.h>
+
 #include <openssl/bn.h>
-#include <openssl/objects.h>
-#include <openssl/x509.h>
-#include <openssl/x509v3.h>
-#include <openssl/rsa.h>
+#include <openssl/buffer.h>
 #ifndef OPENSSL_NO_DSA
 #include <openssl/dsa.h>
 #endif
+#include <openssl/err.h>
+#include <openssl/objects.h>
+#include <openssl/rsa.h>
+#include <openssl/x509.h>
+#include <openssl/x509v3.h>
 
 int X509_REQ_print_fp(FILE *fp, X509_REQ *x)
         {

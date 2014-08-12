@@ -57,8 +57,9 @@
  */
 
 #include <stdio.h>
-#include "cryptlib.h"
+
 #include <openssl/crypto.h>
+#include <openssl/err.h>
 #include <openssl/x509.h>
 
 int X509_STORE_set_default_paths(X509_STORE *ctx)

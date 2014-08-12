@@ -110,10 +110,11 @@
  */
 
 #include <stdio.h>
-#include "cryptlib.h"
+
 #include <openssl/bn.h>
-#include <openssl/rsa.h>
+#include <openssl/err.h>
 #include <openssl/rand.h>
+#include <openssl/rsa.h>
 
 #ifndef RSA_NULL
 

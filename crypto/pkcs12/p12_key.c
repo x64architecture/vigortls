@@ -57,9 +57,11 @@
  */
 
 #include <stdio.h>
-#include "cryptlib.h"
-#include <openssl/pkcs12.h>
+#include <string.h>
+
 #include <openssl/bn.h>
+#include <openssl/err.h>
+#include <openssl/pkcs12.h>
 
 /* Uncomment out this line to get debugging info about key generation */
 /*#define DEBUG_KEYGEN*/

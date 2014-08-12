@@ -83,9 +83,11 @@
 #endif
 #endif
 
-#include <stdio.h>
 #include <errno.h>
-#include "cryptlib.h"
+#include <stdio.h>
+#include <string.h>
+
+#include <openssl/buffer.h>
 #include <openssl/err.h>
 
 static int file_write(BIO *h, const char *buf, int num);

@@ -55,7 +55,8 @@
  *
  */
 
-#include "cryptlib.h"
+#include <openssl/err.h>
+
 #include "bn_lcl.h"
 
 

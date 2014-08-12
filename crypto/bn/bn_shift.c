@@ -57,7 +57,8 @@
  */
 
 #include <stdio.h>
-#include "cryptlib.h"
+#include <string.h>
+
 #include "bn_lcl.h"
 
 int BN_lshift1(BIGNUM *r, const BIGNUM *a)

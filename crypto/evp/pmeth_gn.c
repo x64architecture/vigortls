@@ -58,7 +58,8 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include "cryptlib.h"
+
+#include <openssl/err.h>
 #include <openssl/objects.h>
 #include <openssl/evp.h>
 #include <openssl/bn.h>

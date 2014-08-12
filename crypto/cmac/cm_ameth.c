@@ -51,7 +51,6 @@
  */
 
 #include <stdio.h>
-#include "cryptlib.h"
 #include <openssl/evp.h>
 #include <openssl/cmac.h>
 #include "asn1_locl.h"

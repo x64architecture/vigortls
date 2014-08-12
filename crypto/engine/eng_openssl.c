@@ -63,21 +63,22 @@
 
 
 #include <stdio.h>
+#include <string.h>
+
 #include <openssl/crypto.h>
-#include "cryptlib.h"
-#include <openssl/engine.h>
-#include <openssl/dso.h>
-#include <openssl/pem.h>
-#include <openssl/evp.h>
-#include <openssl/rand.h>
-#ifndef OPENSSL_NO_RSA
-#include <openssl/rsa.h>
+#ifndef OPENSSL_NO_DH
+#include <openssl/dh.h>
 #endif
 #ifndef OPENSSL_NO_DSA
 #include <openssl/dsa.h>
 #endif
-#ifndef OPENSSL_NO_DH
-#include <openssl/dh.h>
+#include <openssl/dso.h>
+#include <openssl/engine.h>
+#include <openssl/evp.h>
+#include <openssl/pem.h>
+#include <openssl/rand.h>
+#ifndef OPENSSL_NO_RSA
+#include <openssl/rsa.h>
 #endif
 
 /* This testing gunk is implemented (and explained) lower down. It also assumes

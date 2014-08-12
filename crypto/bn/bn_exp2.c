@@ -110,7 +110,9 @@
  */
 
 #include <stdio.h>
-#include "cryptlib.h"
+
+#include <openssl/err.h>
+
 #include "bn_lcl.h"
 
 #define TABLE_SIZE    32

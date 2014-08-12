@@ -57,7 +57,6 @@
  */
 
 #include "bn_lcl.h"
-#include "cryptlib.h"
 
 #include <machine/endian.h>
 

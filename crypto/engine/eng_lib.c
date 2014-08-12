@@ -56,8 +56,11 @@
  *
  */
 
-#include "eng_int.h"
+#include <string.h>
+
 #include <openssl/rand.h>
+
+#include "eng_int.h"
 
 /* The "new"/"free" stuff first */
 

@@ -57,10 +57,12 @@
  */
 
 #include <stdio.h>
-#include "cryptlib.h"
+#include <string.h>
+
+#include <openssl/bn.h>
+#include <openssl/err.h>
 #include <openssl/lhash.h>
 #include <openssl/objects.h>
-#include <openssl/buffer.h>
 
 ASN1_OBJECT *OBJ_dup(const ASN1_OBJECT *o)
     {

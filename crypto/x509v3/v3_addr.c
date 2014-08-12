@@ -61,12 +61,13 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
-#include "cryptlib.h"
-#include <openssl/conf.h>
 #include <openssl/asn1.h>
 #include <openssl/asn1t.h>
 #include <openssl/buffer.h>
+#include <openssl/conf.h>
+#include <openssl/err.h>
 #include <openssl/x509v3.h>
 
 #ifndef OPENSSL_NO_RFC3779

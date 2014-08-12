@@ -57,10 +57,10 @@
  */
 
 #include <stdio.h>
+#include <string.h>
 #include <time.h>
 #include <errno.h>
 
-#include "cryptlib.h"
 
 #ifndef NO_SYS_TYPES_H
 # include <sys/types.h>
@@ -69,6 +69,7 @@
 # include <sys/stat.h>
 #endif
 
+#include <openssl/err.h>
 #include <openssl/lhash.h>
 #include <openssl/x509.h>
 

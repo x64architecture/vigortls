@@ -57,7 +57,6 @@
  */
 
 #include <stdio.h>
-#include "cryptlib.h"
 #include "bn_lcl.h"
 
 BN_ULONG BN_mod_word(const BIGNUM *a, BN_ULONG w)

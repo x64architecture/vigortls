@@ -110,7 +110,9 @@
  */
 
 #include <stdio.h>
-#include "cryptlib.h"
+
+#include <openssl/err.h>
+
 #include "bn_lcl.h"
 
 #define BN_BLINDING_COUNTER 32

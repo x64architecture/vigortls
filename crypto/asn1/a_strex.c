@@ -58,12 +58,14 @@
 
 #include <stdio.h>
 #include <string.h>
-#include "cryptlib.h"
-#include <openssl/crypto.h>
-#include <openssl/x509.h>
+
 #include <openssl/asn1.h>
+#include <openssl/crypto.h>
+#include <openssl/err.h>
+#include <openssl/x509.h>
 
 #include "charmap.h"
+#include "cryptlib.h"
 
 /* ASN1_STRING_print_ex() and X509_NAME_print_ex().
  * Enhanced string and name printing routines handling

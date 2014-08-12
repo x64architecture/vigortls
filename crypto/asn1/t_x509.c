@@ -57,19 +57,21 @@
  */
 
 #include <stdio.h>
-#include "cryptlib.h"
-#include <openssl/buffer.h>
+
 #include <openssl/bn.h>
-#include <openssl/rsa.h>
+#include <openssl/buffer.h>
 #ifndef OPENSSL_NO_DSA
 #include <openssl/dsa.h>
 #endif
 #ifndef OPENSSL_NO_EC
 #include <openssl/ec.h>
 #endif
+#include <openssl/err.h>
 #include <openssl/objects.h>
+#include <openssl/rsa.h>
 #include <openssl/x509.h>
 #include <openssl/x509v3.h>
+
 #include "asn1_locl.h"
 
 int X509_print_fp(FILE *fp, X509 *x)

@@ -57,10 +57,11 @@
  */
 
 #include <stdio.h>
-#include "cryptlib.h"
-#include <openssl/dsa.h>
+
 #include <openssl/asn1.h>
 #include <openssl/asn1t.h>
+#include <openssl/dsa.h>
+#include <openssl/err.h>
 #include <openssl/rand.h>
 
 /* Override the default new methods */

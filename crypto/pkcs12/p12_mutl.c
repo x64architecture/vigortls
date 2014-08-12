@@ -58,10 +58,12 @@
 
 #ifndef OPENSSL_NO_HMAC
 #include <stdio.h>
-#include "cryptlib.h"
+#include <string.h>
+
+#include <openssl/err.h>
 #include <openssl/hmac.h>
-#include <openssl/rand.h>
 #include <openssl/pkcs12.h>
+#include <openssl/rand.h>
 
 /* Generate a MAC */
 int PKCS12_gen_mac(PKCS12 *p12, const char *pass, int passlen,

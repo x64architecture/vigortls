@@ -57,18 +57,19 @@
  */
 
 #include <stdio.h>
-#include "cryptlib.h"
-#include <openssl/bn.h>
-#include <openssl/evp.h>
-#include <openssl/objects.h>
+
 #include <openssl/asn1.h>
-#include <openssl/rsa.h>
+#include <openssl/bn.h>
 #ifndef OPENSSL_NO_DSA
 #include <openssl/dsa.h>
 #endif
 #ifndef OPENSSL_NO_EC
 #include <openssl/ec.h>
 #endif
+#include <openssl/err.h>
+#include <openssl/evp.h>
+#include <openssl/objects.h>
+#include <openssl/rsa.h>
 
 EVP_PKEY *d2i_PublicKey(int type, EVP_PKEY **a, const unsigned char **pp,
          long length)

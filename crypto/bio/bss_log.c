@@ -62,11 +62,9 @@
 
 */
 
-
-#include <stdio.h>
 #include <errno.h>
-
-#include "cryptlib.h"
+#include <stdio.h>
+#include <string.h>
 
 #if !defined(NO_SYSLOG)
 #  include <syslog.h>

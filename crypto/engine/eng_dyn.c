@@ -55,9 +55,11 @@
  *
  */
 
+#include <string.h>
+
+#include <openssl/dso.h>
 
 #include "eng_int.h"
-#include <openssl/dso.h>
 
 /* Shared libraries implementing ENGINEs for use by the "dynamic" ENGINE loader
  * should implement the hook-up functions with the following prototypes. */

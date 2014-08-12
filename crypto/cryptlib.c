@@ -114,7 +114,13 @@
  * SUN MICROSYSTEMS, INC., and contributed to the OpenSSL project.
  */
 
-#include "cryptlib.h"
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+
+#include <openssl/buffer.h>
+#include <openssl/crypto.h>
+#include <openssl/err.h>
 #include <openssl/safestack.h>
 
 DECLARE_STACK_OF(CRYPTO_dynlock)

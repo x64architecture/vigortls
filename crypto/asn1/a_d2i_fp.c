@@ -58,9 +58,10 @@
 
 #include <stdio.h>
 #include <limits.h>
-#include "cryptlib.h"
-#include <openssl/buffer.h>
+
 #include <openssl/asn1_mac.h>
+#include <openssl/buffer.h>
+#include <openssl/err.h>
 
 static int asn1_d2i_read_bio(BIO *in, BUF_MEM **pb);
 

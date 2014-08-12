@@ -57,10 +57,13 @@
  */
 
 #include <stdio.h>
+#include <string.h>
 #include <time.h>
-#include "cryptlib.h"
-#include "time_support.h"
+
 #include <openssl/asn1.h>
+#include <openssl/err.h>
+
+#include "time_support.h"
 
 #if 0
 int i2d_ASN1_UTCTIME(ASN1_UTCTIME *a, unsigned char **pp)

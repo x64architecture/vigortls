@@ -56,7 +56,9 @@
  *
  */
 
-#include "cryptlib.h"
+#include <string.h>
+
+#include <openssl/err.h>
 #include <openssl/objects.h>
 #include <openssl/ts.h>
 

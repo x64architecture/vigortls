@@ -57,14 +57,16 @@
  */
 
 #include <stdio.h>
-#include "cryptlib.h"
+
 #include <openssl/asn1t.h>
-#include <openssl/x509.h>
-#include "asn1_locl.h"
-#include <openssl/rsa.h>
 #ifndef OPENSSL_NO_DSA
 #include <openssl/dsa.h>
 #endif
+#include <openssl/err.h>
+#include <openssl/rsa.h>
+#include <openssl/x509.h>
+
+#include "asn1_locl.h"
 
 /* Minor tweak to operation: free up EVP_PKEY */
 static int pubkey_cb(int operation, ASN1_VALUE **pval, const ASN1_ITEM *it,

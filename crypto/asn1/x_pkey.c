@@ -57,10 +57,12 @@
  */
 
 #include <stdio.h>
-#include "cryptlib.h"
+#include <string.h>
+
+#include <openssl/asn1_mac.h>
+#include <openssl/err.h>
 #include <openssl/evp.h>
 #include <openssl/objects.h>
-#include <openssl/asn1_mac.h>
 #include <openssl/x509.h>
 
 /* need to implement */

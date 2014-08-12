@@ -74,11 +74,13 @@
 #ifndef OPENSSL_NO_SHA
 
 #include <stdio.h>
-#include "cryptlib.h"
-#include <openssl/evp.h>
+#include <string.h>
+
 #include <openssl/bn.h>
+#include <openssl/evp.h>
 #include <openssl/rand.h>
 #include <openssl/sha.h>
+
 #include "dsa_locl.h"
 
 int DSA_generate_parameters_ex(DSA *ret, int bits,

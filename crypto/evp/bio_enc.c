@@ -57,8 +57,8 @@
  */
 
 #include <stdio.h>
+#include <string.h>
 #include <errno.h>
-#include "cryptlib.h"
 #include <openssl/buffer.h>
 #include <openssl/evp.h>
 

@@ -138,7 +138,7 @@
  *
  */
 
-#include "cryptlib.h"
+#include <openssl/err.h>
 #include <openssl/lhash.h>
 
 /* What an "implementation of ex_data functionality" looks like */

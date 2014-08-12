@@ -56,11 +56,14 @@
  * [including the GNU Public Licence.]
  */
 
-#include <stdio.h>
 #include <ctype.h>
-#include "cryptlib.h"
+#include <stdio.h>
+#include <string.h>
+
 #include <openssl/asn1t.h>
+#include <openssl/err.h>
 #include <openssl/x509.h>
+
 #include "asn1_locl.h"
 
 typedef STACK_OF(X509_NAME_ENTRY) STACK_OF_X509_NAME_ENTRY;

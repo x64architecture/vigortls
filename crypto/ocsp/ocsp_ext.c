@@ -62,11 +62,12 @@
  */
 
 #include <stdio.h>
-#include <cryptlib.h>
+#include <string.h>
+
 #include <openssl/objects.h>
-#include <openssl/x509.h>
 #include <openssl/ocsp.h>
 #include <openssl/rand.h>
+#include <openssl/x509.h>
 #include <openssl/x509v3.h>
 
 /* Standard wrapper functions for extensions */

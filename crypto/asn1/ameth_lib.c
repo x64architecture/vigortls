@@ -56,13 +56,14 @@
  */
 
 #include <stdio.h>
-#include <strings.h>
-#include "cryptlib.h"
+#include <string.h>
+
 #include <openssl/asn1t.h>
 #include <openssl/x509.h>
 #ifndef OPENSSL_NO_ENGINE
 #include <openssl/engine.h>
 #endif
+
 #include "asn1_locl.h"
 
 extern const EVP_PKEY_ASN1_METHOD rsa_asn1_meths[];

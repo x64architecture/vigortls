@@ -58,7 +58,6 @@
 
 #include <stdio.h>
 #include <errno.h>
-#include "cryptlib.h"
 #include <openssl/bio.h>
 #include <openssl/evp.h>
 

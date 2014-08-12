@@ -55,16 +55,16 @@
  * copied and put under another distribution licence
  * [including the GNU Public Licence.]
  */
+#include <assert.h>
+#include <stdio.h>
+#include <string.h>
+
+#include "bn_lcl.h"
 
 #ifndef BN_DEBUG
 # undef NDEBUG /* avoid conflicting definitions */
 # define NDEBUG
 #endif
-
-#include <stdio.h>
-#include <assert.h>
-#include "cryptlib.h"
-#include "bn_lcl.h"
 
 #if defined(OPENSSL_NO_ASM) || !defined(OPENSSL_BN_ASM_PART_WORDS)
 /* Here follows specialised variants of bn_add_words() and

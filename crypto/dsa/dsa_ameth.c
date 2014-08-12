@@ -56,14 +56,16 @@
  */
 
 #include <stdio.h>
-#include "cryptlib.h"
-#include <openssl/x509.h>
+
 #include <openssl/asn1.h>
-#include <openssl/dsa.h>
 #include <openssl/bn.h>
 #ifndef OPENSSL_NO_CMS
 #include <openssl/cms.h>
 #endif
+#include <openssl/dsa.h>
+#include <openssl/err.h>
+#include <openssl/x509.h>
+
 #include "asn1_locl.h"
 
 static int dsa_pub_decode(EVP_PKEY *pkey, X509_PUBKEY *pubkey)

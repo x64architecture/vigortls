@@ -57,7 +57,6 @@
  */
 
 #include <stdio.h>
-#include "cryptlib.h"
 #include <openssl/dso.h>
 
 /* We just pinch the method from an appropriate "default" method. */
