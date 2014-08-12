@@ -81,8 +81,8 @@ ENGINE_register_digests(ENGINE *e)
         int num_nids = e->digests(e, NULL, &nids, 0);
         if (num_nids > 0)
             return engine_table_register(&digest_table,
-                engine_unregister_all_digests, e, nids,
-                num_nids, 0);
+                                         engine_unregister_all_digests, e, nids,
+                                         num_nids, 0);
     }
     return 1;
 }
@@ -104,8 +104,8 @@ ENGINE_set_default_digests(ENGINE *e)
         int num_nids = e->digests(e, NULL, &nids, 0);
         if (num_nids > 0)
             return engine_table_register(&digest_table,
-                engine_unregister_all_digests, e, nids,
-                num_nids, 1);
+                                         engine_unregister_all_digests, e, nids,
+                                         num_nids, 1);
     }
     return 1;
 }
@@ -128,7 +128,7 @@ ENGINE_get_digest(ENGINE *e, int nid)
 
     if (!fn || !fn(e, &ret, NULL, nid)) {
         ENGINEerr(ENGINE_F_ENGINE_GET_DIGEST,
-            ENGINE_R_UNIMPLEMENTED_DIGEST);
+                  ENGINE_R_UNIMPLEMENTED_DIGEST);
         return NULL;
     }
     return ret;

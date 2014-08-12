@@ -69,13 +69,13 @@
 
 typedef struct
     {
-    const EVP_MD *md;    /* MD for HMAC use */
+    const EVP_MD *md;       /* MD for HMAC use */
     ASN1_OCTET_STRING ktmp; /* Temp storage for key */
     HMAC_CTX ctx;
-    } HMAC_PKEY_CTX;
+} HMAC_PKEY_CTX;
 
 static int pkey_hmac_init(EVP_PKEY_CTX *ctx)
-    {
+{
     HMAC_PKEY_CTX *hctx;
     hctx = malloc(sizeof(HMAC_PKEY_CTX));
     if (!hctx)
@@ -91,44 +91,42 @@ static int pkey_hmac_init(EVP_PKEY_CTX *ctx)
     ctx->keygen_info_count = 0;
 
     return 1;
-    }
+}
 
 static int pkey_hmac_copy(EVP_PKEY_CTX *dst, EVP_PKEY_CTX *src)
-    {
+{
     HMAC_PKEY_CTX *sctx, *dctx;
     if (!pkey_hmac_init(dst))
         return 0;
-           sctx = src->data;
+    sctx = src->data;
     dctx = dst->data;
     dctx->md = sctx->md;
     HMAC_CTX_init(&dctx->ctx);
     if (!HMAC_CTX_copy(&dctx->ctx, &sctx->ctx))
         return 0;
-    if (sctx->ktmp.data)
-        {
+    if (sctx->ktmp.data) {
         if (!ASN1_OCTET_STRING_set(&dctx->ktmp,
-                    sctx->ktmp.data, sctx->ktmp.length))
+                                   sctx->ktmp.data, sctx->ktmp.length))
             return 0;
-        }
-    return 1;
     }
+    return 1;
+}
 
 static void pkey_hmac_cleanup(EVP_PKEY_CTX *ctx)
-    {
+{
     HMAC_PKEY_CTX *hctx = ctx->data;
     HMAC_CTX_cleanup(&hctx->ctx);
-    if (hctx->ktmp.data)
-        {
+    if (hctx->ktmp.data) {
         if (hctx->ktmp.length)
             vigortls_zeroize(hctx->ktmp.data, hctx->ktmp.length);
         free(hctx->ktmp.data);
         hctx->ktmp.data = NULL;
-        }
-    free(hctx);
     }
+    free(hctx);
+}
 
 static int pkey_hmac_keygen(EVP_PKEY_CTX *ctx, EVP_PKEY *pkey)
-    {
+{
     ASN1_OCTET_STRING *hkey = NULL;
     HMAC_PKEY_CTX *hctx = ctx->data;
     if (!hctx->ktmp.data)
@@ -137,30 +135,30 @@ static int pkey_hmac_keygen(EVP_PKEY_CTX *ctx, EVP_PKEY *pkey)
     if (!hkey)
         return 0;
     EVP_PKEY_assign(pkey, EVP_PKEY_HMAC, hkey);
-    
-    return 1;
-    }
 
-static int int_update(EVP_MD_CTX *ctx,const void *data,size_t count)
-    {
+    return 1;
+}
+
+static int int_update(EVP_MD_CTX *ctx, const void *data, size_t count)
+{
     HMAC_PKEY_CTX *hctx = ctx->pctx->data;
     if (!HMAC_Update(&hctx->ctx, data, count))
         return 0;
     return 1;
-    }
+}
 
 static int hmac_signctx_init(EVP_PKEY_CTX *ctx, EVP_MD_CTX *mctx)
-    {
+{
     HMAC_PKEY_CTX *hctx = ctx->data;
     HMAC_CTX_set_flags(&hctx->ctx, mctx->flags & ~EVP_MD_CTX_FLAG_NO_INIT);
     EVP_MD_CTX_set_flags(mctx, EVP_MD_CTX_FLAG_NO_INIT);
     mctx->update = int_update;
     return 1;
-    }
+}
 
 static int hmac_signctx(EVP_PKEY_CTX *ctx, unsigned char *sig, size_t *siglen,
-                    EVP_MD_CTX *mctx)
-    {
+                        EVP_MD_CTX *mctx)
+{
     unsigned int hlen;
     HMAC_PKEY_CTX *hctx = ctx->data;
     int l = EVP_MD_CTX_size(mctx);
@@ -175,55 +173,50 @@ static int hmac_signctx(EVP_PKEY_CTX *ctx, unsigned char *sig, size_t *siglen,
         return 0;
     *siglen = (size_t)hlen;
     return 1;
-    }
+}
 
 static int pkey_hmac_ctrl(EVP_PKEY_CTX *ctx, int type, int p1, void *p2)
-    {
+{
     HMAC_PKEY_CTX *hctx = ctx->data;
     ASN1_OCTET_STRING *key;
-    switch (type)
-        {
+    switch (type) {
 
         case EVP_PKEY_CTRL_SET_MAC_KEY:
-        if ((!p2 && p1 > 0) || (p1 < -1))
-            return 0;
-        if (!ASN1_OCTET_STRING_set(&hctx->ktmp, p2, p1))
-            return 0;
-        break;
+            if ((!p2 && p1 > 0) || (p1 < -1))
+                return 0;
+            if (!ASN1_OCTET_STRING_set(&hctx->ktmp, p2, p1))
+                return 0;
+            break;
 
         case EVP_PKEY_CTRL_MD:
-        hctx->md = p2;
-        break;
+            hctx->md = p2;
+            break;
 
         case EVP_PKEY_CTRL_DIGESTINIT:
-        key = (ASN1_OCTET_STRING *)ctx->pkey->pkey.ptr;
-        if (!HMAC_Init_ex(&hctx->ctx, key->data, key->length, hctx->md,
-                ctx->engine))
-            return 0;
-        break;
+            key = (ASN1_OCTET_STRING *)ctx->pkey->pkey.ptr;
+            if (!HMAC_Init_ex(&hctx->ctx, key->data, key->length, hctx->md,
+                              ctx->engine))
+                return 0;
+            break;
 
         default:
-        return -2;
-
-        }
-    return 1;
+            return -2;
     }
+    return 1;
+}
 
 static int pkey_hmac_ctrl_str(EVP_PKEY_CTX *ctx,
-            const char *type, const char *value)
-    {
-    if (!value)
-        {
+                              const char *type, const char *value)
+{
+    if (!value) {
         return 0;
-        }
-    if (!strcmp(type, "key"))
-        {
+    }
+    if (!strcmp(type, "key")) {
         void *p = (void *)value;
         return pkey_hmac_ctrl(ctx, EVP_PKEY_CTRL_SET_MAC_KEY,
-                -1, p);
-        }
-    if (!strcmp(type, "hexkey"))
-        {
+                              -1, p);
+    }
+    if (!strcmp(type, "hexkey")) {
         unsigned char *key;
         int r;
         long keylen;
@@ -233,12 +226,11 @@ static int pkey_hmac_ctrl_str(EVP_PKEY_CTX *ctx,
         r = pkey_hmac_ctrl(ctx, EVP_PKEY_CTRL_SET_MAC_KEY, keylen, key);
         free(key);
         return r;
-        }
-    return -2;
     }
+    return -2;
+}
 
-const EVP_PKEY_METHOD hmac_pkey_meth = 
-    {
+const EVP_PKEY_METHOD hmac_pkey_meth = {
     EVP_PKEY_HMAC,
     0,
     pkey_hmac_init,
@@ -254,20 +246,20 @@ const EVP_PKEY_METHOD hmac_pkey_meth =
 
     0, 0,
 
-    0,0,
+    0, 0,
 
     hmac_signctx_init,
     hmac_signctx,
 
-    0,0,
+    0, 0,
 
-    0,0,
+    0, 0,
 
-    0,0,
+    0, 0,
 
-    0,0,
+    0, 0,
 
     pkey_hmac_ctrl,
     pkey_hmac_ctrl_str
 
-    };
+};

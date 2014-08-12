@@ -81,7 +81,7 @@ OCSP_CERTID *OCSP_cert_to_id(const EVP_MD *dgst, X509 *subject, X509 *issuer)
     ASN1_INTEGER *serial;
     ASN1_BIT_STRING *ikey;
 #ifndef OPENSSL_NO_SHA1
-    if (!dgst) 
+    if (!dgst)
         dgst = EVP_sha1();
 #endif
     if (subject) {
@@ -95,11 +95,10 @@ OCSP_CERTID *OCSP_cert_to_id(const EVP_MD *dgst, X509 *subject, X509 *issuer)
     return OCSP_cert_id_new(dgst, iname, ikey, serial);
 }
 
-
-OCSP_CERTID *OCSP_cert_id_new(const EVP_MD *dgst, 
-                  X509_NAME *issuerName, 
-                  ASN1_BIT_STRING* issuerKey, 
-                  ASN1_INTEGER *serialNumber)
+OCSP_CERTID *OCSP_cert_id_new(const EVP_MD *dgst,
+                              X509_NAME *issuerName,
+                              ASN1_BIT_STRING *issuerKey,
+                              ASN1_INTEGER *serialNumber)
 {
     int nid;
     unsigned int i;
@@ -107,23 +106,23 @@ OCSP_CERTID *OCSP_cert_id_new(const EVP_MD *dgst,
     OCSP_CERTID *cid = NULL;
     unsigned char md[EVP_MAX_MD_SIZE];
 
-    if (!(cid = OCSP_CERTID_new())) 
+    if (!(cid = OCSP_CERTID_new()))
         goto err;
 
     alg = cid->hashAlgorithm;
-    if (alg->algorithm != NULL) 
+    if (alg->algorithm != NULL)
         ASN1_OBJECT_free(alg->algorithm);
     if ((nid = EVP_MD_type(dgst)) == NID_undef) {
         OCSPerr(OCSP_F_OCSP_CERT_ID_NEW, OCSP_R_UNKNOWN_NID);
         goto err;
     }
-    if (!(alg->algorithm = OBJ_nid2obj(nid))) 
+    if (!(alg->algorithm = OBJ_nid2obj(nid)))
         goto err;
-    if ((alg->parameter = ASN1_TYPE_new()) == NULL) 
+    if ((alg->parameter = ASN1_TYPE_new()) == NULL)
         goto err;
     alg->parameter->type = V_ASN1_NULL;
 
-    if (!X509_NAME_digest(issuerName, dgst, md, &i)) 
+    if (!X509_NAME_digest(issuerName, dgst, md, &i))
         goto digerr;
     if (!(ASN1_OCTET_STRING_set(cid->issuerNameHash, md, i)))
         goto err;
@@ -137,14 +136,14 @@ OCSP_CERTID *OCSP_cert_id_new(const EVP_MD *dgst,
 
     if (serialNumber) {
         ASN1_INTEGER_free(cid->serialNumber);
-        if (!(cid->serialNumber = ASN1_INTEGER_dup(serialNumber))) 
+        if (!(cid->serialNumber = ASN1_INTEGER_dup(serialNumber)))
             goto err;
     }
     return cid;
 digerr:
     OCSPerr(OCSP_F_OCSP_CERT_ID_NEW, OCSP_R_DIGEST_ERR);
 err:
-    if (cid) 
+    if (cid)
         OCSP_CERTID_free(cid);
     return NULL;
 }
@@ -153,10 +152,10 @@ int OCSP_id_issuer_cmp(OCSP_CERTID *a, OCSP_CERTID *b)
 {
     int ret;
     ret = OBJ_cmp(a->hashAlgorithm->algorithm, b->hashAlgorithm->algorithm);
-    if (ret) 
+    if (ret)
         return ret;
     ret = ASN1_OCTET_STRING_cmp(a->issuerNameHash, b->issuerNameHash);
-    if (ret) 
+    if (ret)
         return ret;
     return ASN1_OCTET_STRING_cmp(a->issuerKeyHash, b->issuerKeyHash);
 }
@@ -169,7 +168,6 @@ int OCSP_id_cmp(OCSP_CERTID *a, OCSP_CERTID *b)
         return ret;
     return ASN1_INTEGER_cmp(a->serialNumber, b->serialNumber);
 }
-
 
 /* Parse a URL and split it up into host, port and path components and whether
  * it is SSL.
@@ -187,13 +185,13 @@ int OCSP_parse_url(char *url, char **phost, char **pport, char **ppath, int *pss
 
     /* dup the buffer since we are going to mess with it */
     buf = BUF_strdup(url);
-    if (!buf) 
+    if (!buf)
         goto mem_err;
 
     /* Check for initial colon */
     p = strchr(buf, ':');
 
-    if (!p) 
+    if (!p)
         goto parse_err;
 
     *(p++) = '\0';
@@ -219,7 +217,7 @@ int OCSP_parse_url(char *url, char **phost, char **pport, char **ppath, int *pss
 
     p = strchr(p, '/');
 
-    if (!p) 
+    if (!p)
         *ppath = BUF_strdup("/");
     else {
         *ppath = BUF_strdup(p);
@@ -259,29 +257,28 @@ int OCSP_parse_url(char *url, char **phost, char **pport, char **ppath, int *pss
 
     *phost = BUF_strdup(host);
 
-    if (!*phost) 
+    if (!*phost)
         goto mem_err;
 
     free(buf);
 
     return 1;
 
-    mem_err:
+mem_err:
     OCSPerr(OCSP_F_OCSP_PARSE_URL, ERR_R_MALLOC_FAILURE);
     goto err;
 
-    parse_err:
+parse_err:
     OCSPerr(OCSP_F_OCSP_PARSE_URL, OCSP_R_ERROR_PARSING_URL);
 
-
-    err:
-    if (buf) 
+err:
+    if (buf)
         free(buf);
-    if (*ppath) 
+    if (*ppath)
         free(*ppath);
-    if (*pport) 
+    if (*pport)
         free(*pport);
-    if (*phost) 
+    if (*phost)
         free(*phost);
     return 0;
 }

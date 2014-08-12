@@ -98,23 +98,23 @@ static long file_ctrl(BIO *h, int cmd, long arg1, void *arg2);
 static int file_new(BIO *h);
 static int file_free(BIO *data);
 static BIO_METHOD methods_filep = {
-    .type    = BIO_TYPE_FILE,
-    .name    = "FILE pointer",
-    .bwrite  = file_write,
-    .bread   = file_read,
-    .bputs   = file_puts,
-    .bgets   = file_gets,
-    .ctrl    = file_ctrl,
-    .create  = file_new,
+    .type = BIO_TYPE_FILE,
+    .name = "FILE pointer",
+    .bwrite = file_write,
+    .bread = file_read,
+    .bputs = file_puts,
+    .bgets = file_gets,
+    .ctrl = file_ctrl,
+    .create = file_new,
     .destroy = file_free
 };
 
 BIO *BIO_new_file(const char *filename, const char *mode)
 {
-    BIO  *ret;
+    BIO *ret;
     FILE *file = NULL;
 
-    file = fopen(filename, mode);    
+    file = fopen(filename, mode);
 
     if (file == NULL) {
         SYSerr(SYS_F_FOPEN, errno);
@@ -171,7 +171,7 @@ static int file_free(BIO *a)
     }
     return (1);
 }
-    
+
 static int file_read(BIO *b, char *out, int outl)
 {
     int ret = 0;
@@ -211,81 +211,80 @@ static long file_ctrl(BIO *b, int cmd, long num, void *ptr)
     char p[4];
 
     switch (cmd) {
-    case BIO_C_FILE_SEEK:
-    case BIO_CTRL_RESET:
-        ret = (long)fseek(fp, num, 0);
-        break;
-    case BIO_CTRL_EOF:
-        ret = (long)feof(fp);
-        break;
-    case BIO_C_FILE_TELL:
-    case BIO_CTRL_INFO:
-        ret = ftell(fp);
-        break;
-    case BIO_C_SET_FILE_PTR:
-        file_free(b);
-        b->shutdown = (int)num & BIO_CLOSE;
-        b->ptr = ptr;
-        b->init = 1;
-        break;
-    case BIO_C_SET_FILENAME:
-        file_free(b);
-        b->shutdown = (int)num & BIO_CLOSE;
-        if (num & BIO_FP_APPEND) {
-            if (num & BIO_FP_READ)
-                BUF_strlcpy(p, "a+", sizeof p);
-            else
-                BUF_strlcpy(p, "a", sizeof p);
-        }
-        else if ((num & BIO_FP_READ) && (num & BIO_FP_WRITE))
-            BUF_strlcpy(p,"r+",sizeof p);
-        else if (num & BIO_FP_WRITE)
-            BUF_strlcpy(p,"w",sizeof p);
-        else if (num & BIO_FP_READ)
-            BUF_strlcpy(p,"r",sizeof p);
-        else {
-            BIOerr(BIO_F_FILE_CTRL, BIO_R_BAD_FOPEN_MODE);
-            ret = 0;
+        case BIO_C_FILE_SEEK:
+        case BIO_CTRL_RESET:
+            ret = (long)fseek(fp, num, 0);
             break;
-        }
-        fp = fopen(ptr, p);
-        if (fp == NULL) {
-            SYSerr(SYS_F_FOPEN, errno);
-            ERR_asprintf_error_data("fopen('%s','%s')", ptr, p);
-            BIOerr(BIO_F_FILE_CTRL, ERR_R_SYS_LIB);
-            ret = 0;
+        case BIO_CTRL_EOF:
+            ret = (long)feof(fp);
             break;
-        }
-        b->ptr = fp;
-        b->init = 1;
-        break;
-    case BIO_C_GET_FILE_PTR:
-        /* the ptr parameter is actually a FILE ** in this case. */
-        if (ptr != NULL) {
-            fpp = (FILE **)ptr;
-            *fpp = (FILE *)b->ptr;
-        }
-        break;
-    case BIO_CTRL_GET_CLOSE:
-        ret = (long)b->shutdown;
-        break;
-    case BIO_CTRL_SET_CLOSE:
-        b->shutdown = (int)num;
-        break;
-    case BIO_CTRL_FLUSH:
-        fflush((FILE *)b->ptr);
-        break;
-    case BIO_CTRL_DUP:
-        ret = 1;
-        break;
+        case BIO_C_FILE_TELL:
+        case BIO_CTRL_INFO:
+            ret = ftell(fp);
+            break;
+        case BIO_C_SET_FILE_PTR:
+            file_free(b);
+            b->shutdown = (int)num & BIO_CLOSE;
+            b->ptr = ptr;
+            b->init = 1;
+            break;
+        case BIO_C_SET_FILENAME:
+            file_free(b);
+            b->shutdown = (int)num & BIO_CLOSE;
+            if (num & BIO_FP_APPEND) {
+                if (num & BIO_FP_READ)
+                    BUF_strlcpy(p, "a+", sizeof p);
+                else
+                    BUF_strlcpy(p, "a", sizeof p);
+            } else if ((num & BIO_FP_READ) && (num & BIO_FP_WRITE))
+                BUF_strlcpy(p, "r+", sizeof p);
+            else if (num & BIO_FP_WRITE)
+                BUF_strlcpy(p, "w", sizeof p);
+            else if (num & BIO_FP_READ)
+                BUF_strlcpy(p, "r", sizeof p);
+            else {
+                BIOerr(BIO_F_FILE_CTRL, BIO_R_BAD_FOPEN_MODE);
+                ret = 0;
+                break;
+            }
+            fp = fopen(ptr, p);
+            if (fp == NULL) {
+                SYSerr(SYS_F_FOPEN, errno);
+                ERR_asprintf_error_data("fopen('%s','%s')", ptr, p);
+                BIOerr(BIO_F_FILE_CTRL, ERR_R_SYS_LIB);
+                ret = 0;
+                break;
+            }
+            b->ptr = fp;
+            b->init = 1;
+            break;
+        case BIO_C_GET_FILE_PTR:
+            /* the ptr parameter is actually a FILE ** in this case. */
+            if (ptr != NULL) {
+                fpp = (FILE **)ptr;
+                *fpp = (FILE *)b->ptr;
+            }
+            break;
+        case BIO_CTRL_GET_CLOSE:
+            ret = (long)b->shutdown;
+            break;
+        case BIO_CTRL_SET_CLOSE:
+            b->shutdown = (int)num;
+            break;
+        case BIO_CTRL_FLUSH:
+            fflush((FILE *)b->ptr);
+            break;
+        case BIO_CTRL_DUP:
+            ret = 1;
+            break;
 
-    case BIO_CTRL_WPENDING:
-    case BIO_CTRL_PENDING:
-    case BIO_CTRL_PUSH:
-    case BIO_CTRL_POP:
-    default:
-        ret = 0;
-        break;
+        case BIO_CTRL_WPENDING:
+        case BIO_CTRL_PENDING:
+        case BIO_CTRL_PUSH:
+        case BIO_CTRL_POP:
+        default:
+            ret = 0;
+            break;
     }
     return (ret);
 }
@@ -313,5 +312,3 @@ static int file_puts(BIO *bp, const char *str)
 }
 
 #endif /* HEADER_BSS_FILE_C */
-
-

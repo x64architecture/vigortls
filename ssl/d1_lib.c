@@ -63,7 +63,7 @@
 #include "ssl_locl.h"
 
 static void get_current_time(struct timeval *t);
-const char dtls1_version_str[]="DTLSv1" OPENSSL_VERSION_PTEXT;
+const char dtls1_version_str[] = "DTLSv1" OPENSSL_VERSION_PTEXT;
 int dtls1_listen(SSL *s, struct sockaddr *client);
 
 SSL3_ENC_METHOD DTLSv1_enc_data = {
@@ -75,8 +75,8 @@ SSL3_ENC_METHOD DTLSv1_enc_data = {
     tls1_final_finish_mac,
     TLS1_FINISH_MAC_LENGTH,
     tls1_cert_verify_mac,
-    TLS_MD_CLIENT_FINISH_CONST,TLS_MD_CLIENT_FINISH_CONST_SIZE,
-    TLS_MD_SERVER_FINISH_CONST,TLS_MD_SERVER_FINISH_CONST_SIZE,
+    TLS_MD_CLIENT_FINISH_CONST, TLS_MD_CLIENT_FINISH_CONST_SIZE,
+    TLS_MD_SERVER_FINISH_CONST, TLS_MD_SERVER_FINISH_CONST_SIZE,
     tls1_alert_code,
     tls1_export_keying_material,
 };
@@ -92,7 +92,7 @@ int dtls1_new(SSL *s)
 {
     DTLS1_STATE *d1;
 
-    if (!ssl3_new(s)) 
+    if (!ssl3_new(s))
         return (0);
     if ((d1 = calloc(1, sizeof *d1)) == NULL) {
         ssl3_free(s);
@@ -110,18 +110,18 @@ int dtls1_new(SSL *s)
     if (s->server)
         d1->cookie_len = sizeof(s->d1->cookie);
 
-    if (!d1->unprocessed_rcds.q || !d1->processed_rcds.q 
-        || !d1->buffered_messages || !d1->sent_messages 
+    if (!d1->unprocessed_rcds.q || !d1->processed_rcds.q
+        || !d1->buffered_messages || !d1->sent_messages
         || !d1->buffered_app_data.q) {
-        if (d1->unprocessed_rcds.q) 
+        if (d1->unprocessed_rcds.q)
             pqueue_free(d1->unprocessed_rcds.q);
         if (d1->processed_rcds.q)
             pqueue_free(d1->processed_rcds.q);
         if (d1->buffered_messages)
             pqueue_free(d1->buffered_messages);
-        if (d1->sent_messages) 
+        if (d1->sent_messages)
             pqueue_free(d1->sent_messages);
-        if (d1->buffered_app_data.q) 
+        if (d1->buffered_app_data.q)
             pqueue_free(d1->buffered_app_data.q);
         free(d1);
         ssl3_free(s);
@@ -139,23 +139,23 @@ static void dtls1_clear_queues(SSL *s)
     hm_fragment *frag = NULL;
     DTLS1_RECORD_DATA *rdata;
 
-    while((item = pqueue_pop(s->d1->unprocessed_rcds.q)) != NULL) {
-        rdata = (DTLS1_RECORD_DATA *) item->data;
-        if (rdata->rbuf.buf)
-            free(rdata->rbuf.buf);
-        free(item->data);
-        pitem_free(item);
-    } 
-    
-    while((item = pqueue_pop(s->d1->processed_rcds.q)) != NULL) {
-        rdata = (DTLS1_RECORD_DATA *) item->data;
+    while ((item = pqueue_pop(s->d1->unprocessed_rcds.q)) != NULL) {
+        rdata = (DTLS1_RECORD_DATA *)item->data;
         if (rdata->rbuf.buf)
             free(rdata->rbuf.buf);
         free(item->data);
         pitem_free(item);
     }
 
-    while((item = pqueue_pop(s->d1->buffered_messages)) != NULL) {
+    while ((item = pqueue_pop(s->d1->processed_rcds.q)) != NULL) {
+        rdata = (DTLS1_RECORD_DATA *)item->data;
+        if (rdata->rbuf.buf)
+            free(rdata->rbuf.buf);
+        free(item->data);
+        pitem_free(item);
+    }
+
+    while ((item = pqueue_pop(s->d1->buffered_messages)) != NULL) {
         frag = (hm_fragment *)item->data;
         free(frag->fragment);
         free(frag);
@@ -170,12 +170,12 @@ static void dtls1_clear_queues(SSL *s)
     }
 
     while ((item = pqueue_pop(s->d1->buffered_app_data.q)) != NULL) {
-        rdata = (DTLS1_RECORD_DATA *) item->data;
+        rdata = (DTLS1_RECORD_DATA *)item->data;
         if (rdata->rbuf.buf)
             free(rdata->rbuf.buf);
         free(item->data);
         pitem_free(item);
-        }
+    }
 }
 
 void dtls1_free(SSL *s)
@@ -240,20 +240,20 @@ long dtls1_ctrl(SSL *s, int cmd, long larg, void *parg)
     int ret = 0;
 
     switch (cmd) {
-    case DTLS_CTRL_GET_TIMEOUT:
-        if (dtls1_get_timeout(s, (struct timeval*) parg) != NULL)
-            ret = 1;
-        break;
-    case DTLS_CTRL_HANDLE_TIMEOUT:
-        ret = dtls1_handle_timeout(s);
-        break;
-    case DTLS_CTRL_LISTEN:
-        ret = dtls1_listen(s, parg);
-        break;
+        case DTLS_CTRL_GET_TIMEOUT:
+            if (dtls1_get_timeout(s, (struct timeval *)parg) != NULL)
+                ret = 1;
+            break;
+        case DTLS_CTRL_HANDLE_TIMEOUT:
+            ret = dtls1_handle_timeout(s);
+            break;
+        case DTLS_CTRL_LISTEN:
+            ret = dtls1_listen(s, parg);
+            break;
 
-    default:
-        ret = ssl3_ctrl(s, cmd, larg, parg);
-        break;
+        default:
+            ret = ssl3_ctrl(s, cmd, larg, parg);
+            break;
     }
     return (ret);
 }
@@ -283,7 +283,7 @@ void dtls1_start_timer(SSL *s)
     /* If timer is not set, initialize duration with 1 second */
     if (s->d1->next_timeout.tv_sec == 0 && s->d1->next_timeout.tv_usec == 0)
         s->d1->timeout_duration = 1;
-    
+
     /* Set timeout to current time */
     get_current_time(&(s->d1->next_timeout));
 
@@ -292,7 +292,7 @@ void dtls1_start_timer(SSL *s)
     BIO_ctrl(SSL_get_rbio(s), BIO_CTRL_DGRAM_SET_NEXT_TIMEOUT, 0, &(s->d1->next_timeout));
 }
 
-struct timeval* dtls1_get_timeout(SSL *s, struct timeval* timeleft)
+struct timeval *dtls1_get_timeout(SSL *s, struct timeval *timeleft)
 {
     struct timeval timenow;
 
@@ -304,9 +304,7 @@ struct timeval* dtls1_get_timeout(SSL *s, struct timeval* timeleft)
     get_current_time(&timenow);
 
     /* If timer already expired, set remaining time to 0 */
-    if (s->d1->next_timeout.tv_sec < timenow.tv_sec ||
-        (s->d1->next_timeout.tv_sec == timenow.tv_sec &&
-         s->d1->next_timeout.tv_usec <= timenow.tv_usec)) {
+    if (s->d1->next_timeout.tv_sec < timenow.tv_sec || (s->d1->next_timeout.tv_sec == timenow.tv_sec && s->d1->next_timeout.tv_usec <= timenow.tv_usec)) {
         memset(timeleft, 0, sizeof(struct timeval));
         return timeleft;
     }
@@ -326,7 +324,6 @@ struct timeval* dtls1_get_timeout(SSL *s, struct timeval* timeleft)
      */
     if (timeleft->tv_sec == 0 && timeleft->tv_usec < 15000)
         memset(timeleft, 0, sizeof(struct timeval));
-    
 
     return timeleft;
 }
@@ -343,20 +340,20 @@ int dtls1_is_timer_expired(SSL *s)
     if (timeleft.tv_sec > 0 || timeleft.tv_usec > 0)
         return 0;
 
-    /* Timer expired, so return true */    
+    /* Timer expired, so return true */
     return 1;
 }
 
 void dtls1_double_timeout(SSL *s)
-    {
+{
     s->d1->timeout_duration *= 2;
     if (s->d1->timeout_duration > 60)
         s->d1->timeout_duration = 60;
     dtls1_start_timer(s);
-    }
+}
 
 void dtls1_stop_timer(SSL *s)
-    {
+{
     /* Reset everything */
     memset(&(s->d1->timeout), 0, sizeof(struct dtls1_timeout_st));
     memset(&(s->d1->next_timeout), 0, sizeof(struct timeval));
@@ -364,27 +361,25 @@ void dtls1_stop_timer(SSL *s)
     BIO_ctrl(SSL_get_rbio(s), BIO_CTRL_DGRAM_SET_NEXT_TIMEOUT, 0, &(s->d1->next_timeout));
     /* Clear retransmission buffer */
     dtls1_clear_record_buffer(s);
-    }
+}
 
 int dtls1_check_timeout_num(SSL *s)
-    {
+{
     s->d1->timeout.num_alerts++;
 
     /* Reduce MTU after 2 unsuccessful retransmissions */
-    if (s->d1->timeout.num_alerts > 2)
-        {
-        s->d1->mtu = BIO_ctrl(SSL_get_wbio(s), BIO_CTRL_DGRAM_GET_FALLBACK_MTU, 0, NULL);        
-        }
+    if (s->d1->timeout.num_alerts > 2) {
+        s->d1->mtu = BIO_ctrl(SSL_get_wbio(s), BIO_CTRL_DGRAM_GET_FALLBACK_MTU, 0, NULL);
+    }
 
-    if (s->d1->timeout.num_alerts > DTLS1_TMO_ALERT_COUNT)
-        {
+    if (s->d1->timeout.num_alerts > DTLS1_TMO_ALERT_COUNT) {
         /* fail the connection, enough alerts have been sent */
-        SSLerr(SSL_F_DTLS1_CHECK_TIMEOUT_NUM,SSL_R_READ_TIMEOUT_EXPIRED);
+        SSLerr(SSL_F_DTLS1_CHECK_TIMEOUT_NUM, SSL_R_READ_TIMEOUT_EXPIRED);
         return -1;
-        }
+    }
 
     return 0;
-    }
+}
 
 int dtls1_handle_timeout(SSL *s)
 {
@@ -418,9 +413,9 @@ int dtls1_listen(SSL *s, struct sockaddr *client)
     s->d1->listen = 1;
 
     ret = SSL_accept(s);
-    if (ret <= 0) 
+    if (ret <= 0)
         return ret;
-    
+
     (void)BIO_dgram_get_peer(SSL_get_rbio(s), client);
     return 1;
 }

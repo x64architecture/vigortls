@@ -136,7 +136,7 @@ int SSL_SESSION_print(BIO *bp, const SSL_SESSION *x)
                 goto err;
         }
     } else {
-        if (BIO_printf(bp, "    Cipher    : %s\n",((x->cipher == NULL) ? "unknown" : x->cipher->name)) <= 0)
+        if (BIO_printf(bp, "    Cipher    : %s\n", ((x->cipher == NULL) ? "unknown" : x->cipher->name)) <= 0)
             goto err;
     }
     if (BIO_puts(bp, "    Session-ID: ") <= 0)
@@ -187,8 +187,8 @@ int SSL_SESSION_print(BIO *bp, const SSL_SESSION *x)
 #endif
     if (x->tlsext_tick_lifetime_hint) {
         if (BIO_printf(bp,
-            "\n    TLS session ticket lifetime hint: %ld (seconds)",
-            x->tlsext_tick_lifetime_hint) <= 0)
+                       "\n    TLS session ticket lifetime hint: %ld (seconds)",
+                       x->tlsext_tick_lifetime_hint) <= 0)
             goto err;
     }
     if (x->tlsext_tick) {
@@ -212,7 +212,7 @@ int SSL_SESSION_print(BIO *bp, const SSL_SESSION *x)
     if (BIO_puts(bp, "    Verify return code: ") <= 0)
         goto err;
     if (BIO_printf(bp, "%ld (%s)\n", x->verify_result,
-        X509_verify_cert_error_string(x->verify_result)) <= 0)
+                   X509_verify_cert_error_string(x->verify_result)) <= 0)
         goto err;
 
     return (1);

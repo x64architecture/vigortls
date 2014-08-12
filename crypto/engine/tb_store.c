@@ -79,7 +79,7 @@ ENGINE_register_STORE(ENGINE *e)
 {
     if (e->store_meth)
         return engine_table_register(&store_table,
-            engine_unregister_all_STORE, e, &dummy_nid, 1, 0);
+                                     engine_unregister_all_STORE, e, &dummy_nid, 1, 0);
     return 1;
 }
 

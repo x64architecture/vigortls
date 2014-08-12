@@ -127,23 +127,23 @@
 #include "rand_lcl.h"
 
 #if defined(OPENSSL_SYS_LINUX) /* should actually be available virtually everywhere */
-# include <poll.h>
+#include <poll.h>
 #endif
 #include <limits.h>
 #ifndef FD_SETSIZE
-# define FD_SETSIZE (8*sizeof(fd_set))
+#define FD_SETSIZE (8 * sizeof(fd_set))
 #endif
 
 #ifndef DEVRANDOM
 /* set this to a comma-separated list of 'random' device files to try out.
 * My default, we will try to read at least one of these files */
-#define DEVRANDOM "/dev/urandom","/dev/random","/dev/srandom"
+#define DEVRANDOM "/dev/urandom", "/dev/random", "/dev/srandom"
 #endif
 #ifndef DEVRANDOM_EGD
 /* set this to a comma-seperated list of 'egd' sockets to try out. These
 * sockets will be tried in the order listed in case accessing the device files
 * listed in DEVRANDOM did not return enough entropy. */
-#define DEVRANDOM_EGD "/var/run/egd-pool","/dev/egd-pool","/etc/egd-pool","/etc/entropy"
+#define DEVRANDOM_EGD "/var/run/egd-pool", "/dev/egd-pool", "/etc/egd-pool", "/etc/entropy"
 #endif
 
 int RAND_poll(void)
@@ -156,7 +156,7 @@ int RAND_poll(void)
 #endif
 #ifdef DEVRANDOM
     static const char *randomfiles[] = { DEVRANDOM };
-    struct stat randomstats[sizeof(randomfiles)/sizeof(randomfiles[0])];
+    struct stat randomstats[sizeof(randomfiles) / sizeof(randomfiles[0])];
     int fd;
     unsigned int i;
 #endif
@@ -166,51 +166,51 @@ int RAND_poll(void)
 #endif
 
 #ifdef DEVRANDOM
-    memset(randomstats,0,sizeof(randomstats));
+    memset(randomstats, 0, sizeof(randomstats));
     /* Use a random entropy pool device. Linux, FreeBSD and OpenBSD
      * have this. Use /dev/urandom if you can as /dev/random may block
      * if it runs out of random entries.  */
 
-    for (i = 0; (i < sizeof(randomfiles)/sizeof(randomfiles[0])) &&
-            (n < ENTROPY_NEEDED); i++)
-        {
+    for (i = 0; (i < sizeof(randomfiles) / sizeof(randomfiles[0])) && (n < ENTROPY_NEEDED); i++) {
         if ((fd = open(randomfiles[i], O_RDONLY
 #ifdef O_NONBLOCK
-            |O_NONBLOCK
+                                       | O_NONBLOCK
 #endif
 #ifdef O_BINARY
-            |O_BINARY
+                                       | O_BINARY
 #endif
-#ifdef O_NOCTTY /* If it happens to be a TTY (god forbid), do not make it
+#ifdef O_NOCTTY /* If it happens to be a TTY (god forbid), do not make it \
            our controlling tty */
-            |O_NOCTTY
+                                       | O_NOCTTY
 #endif
-            )) >= 0)
-            {
-            int usec = 10*1000; /* spend 10ms on each file */
+                       )) >= 0) {
+            int usec = 10 * 1000; /* spend 10ms on each file */
             int r;
             unsigned int j;
-            struct stat *st=&randomstats[i];
+            struct stat *st = &randomstats[i];
 
             /* Avoid using same input... Used to be O_NOFOLLOW
              * above, but it's not universally appropriate... */
-            if (fstat(fd,st) != 0)    { close(fd); continue; }
-            for (j=0;j<i;j++)
-                {
-                if (randomstats[j].st_ino==st->st_ino &&
-                    randomstats[j].st_dev==st->st_dev)
+            if (fstat(fd, st) != 0) {
+                close(fd);
+                continue;
+            }
+            for (j = 0; j < i; j++) {
+                if (randomstats[j].st_ino == st->st_ino && randomstats[j].st_dev == st->st_dev)
                     break;
-                }
-            if (j<i)        { close(fd); continue; }
+            }
+            if (j < i) {
+                close(fd);
+                continue;
+            }
 
-            do
-                {
+            do {
                 int try_read = 0;
 
 #if defined(OPENSSL_SYS_LINUX)
                 /* use poll() */
                 struct pollfd pset;
-                
+
                 pset.fd = fd;
                 pset.events = POLLIN;
                 pset.revents = 0;
@@ -224,88 +224,77 @@ int RAND_poll(void)
                 /* use select() */
                 fd_set fset;
                 struct timeval t;
-                
+
                 t.tv_sec = 0;
                 t.tv_usec = usec;
 
-                if (FD_SETSIZE > 0 && (unsigned)fd >= FD_SETSIZE)
-                    {
+                if (FD_SETSIZE > 0 && (unsigned)fd >= FD_SETSIZE) {
                     /* can't use select, so just try to read once anyway */
                     try_read = 1;
-                    }
-                else
-                    {
+                } else {
                     FD_ZERO(&fset);
                     FD_SET(fd, &fset);
-                    
-                    if (select(fd+1,&fset,NULL,NULL,&t) >= 0)
-                        {
+
+                    if (select(fd + 1, &fset, NULL, NULL, &t) >= 0) {
                         usec = t.tv_usec;
                         if (FD_ISSET(fd, &fset))
                             try_read = 1;
-                        }
-                    else
+                    } else
                         usec = 0;
-                    }
+                }
 #endif
-                
-                if (try_read)
-                    {
-                    r = read(fd,(unsigned char *)tmpbuf+n, ENTROPY_NEEDED-n);
+
+                if (try_read) {
+                    r = read(fd, (unsigned char *)tmpbuf + n, ENTROPY_NEEDED - n);
                     if (r > 0)
                         n += r;
-                    }
-                else
+                } else
                     r = -1;
-                
+
                 /* Some Unixen will update t in select(), some
                    won't.  For those who won't, or if we
                    didn't use select() in the first place,
                    give up here, otherwise, we will do
                    this once again for the remaining
                    time. */
-                if (usec == 10*1000)
+                if (usec == 10 * 1000)
                     usec = 0;
-                }
-            while ((r > 0 ||
-                   (errno == EINTR || errno == EAGAIN)) && usec != 0 && n < ENTROPY_NEEDED);
+            } while ((r > 0 || (errno == EINTR || errno == EAGAIN)) && usec != 0 && n < ENTROPY_NEEDED);
 
             close(fd);
-            }
         }
+    }
 #endif /* defined(DEVRANDOM) */
 
 #ifdef DEVRANDOM_EGD
     /* Use an EGD socket to read entropy from an EGD or PRNGD entropy
      * collecting daemon. */
 
-    for (egdsocket = egdsockets; *egdsocket && n < ENTROPY_NEEDED; egdsocket++)
-        {
+    for (egdsocket = egdsockets; *egdsocket && n < ENTROPY_NEEDED; egdsocket++) {
         int r;
 
-        r = RAND_query_egd_bytes(*egdsocket, (unsigned char *)tmpbuf+n,
-                     ENTROPY_NEEDED-n);
+        r = RAND_query_egd_bytes(*egdsocket, (unsigned char *)tmpbuf + n,
+                                 ENTROPY_NEEDED - n);
         if (r > 0)
             n += r;
-        }
+    }
 #endif /* defined(DEVRANDOM_EGD) */
 
 #if defined(DEVRANDOM) || defined(DEVRANDOM_EGD)
-    if (n > 0)
-        {
-        RAND_add(tmpbuf,sizeof tmpbuf,(double)n);
-        vigortls_zeroize(tmpbuf,n);
-        }
+    if (n > 0) {
+        RAND_add(tmpbuf, sizeof tmpbuf, (double)n);
+        vigortls_zeroize(tmpbuf, n);
+    }
 #endif
 
     /* put in some default random data, we need more than just this */
-    l=curr_pid;
-    RAND_add(&l,sizeof(l),0.0);
-    l=getuid();
-    RAND_add(&l,sizeof(l),0.0);
+    l = curr_pid;
+    RAND_add(&l, sizeof(l), 0.0);
+    l = getuid();
+    RAND_add(&l, sizeof(l), 0.0);
 
-    l=time(NULL);
-    RAND_add(&l,sizeof(l),0.0);
+    l = time(NULL);
+    RAND_add(&l, sizeof(l), 0.0);
 
 #if defined(DEVRANDOM) || defined(DEVRANDOM_EGD)
     return 1;
@@ -313,4 +302,3 @@ int RAND_poll(void)
     return 0;
 #endif
 }
-

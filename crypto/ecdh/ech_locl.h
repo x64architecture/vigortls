@@ -58,12 +58,11 @@
 
 #include <openssl/ecdh.h>
 
-#ifdef  __cplusplus
+#ifdef __cplusplus
 extern "C" {
 #endif
 
-struct ecdh_method 
-    {
+struct ecdh_method {
     const char *name;
     int (*compute_key)(void *key, size_t outlen, const EC_POINT *pub_key, EC_KEY *ecdh,
                        void *(*KDF)(const void *in, size_t inlen, void *out, size_t *outlen));
@@ -73,21 +72,21 @@ struct ecdh_method
 #endif
     int flags;
     char *app_data;
-    };
+};
 
 typedef struct ecdh_data_st {
     /* EC_KEY_METH_DATA part */
     int (*init)(EC_KEY *);
     /* method specific part */
-    ENGINE    *engine;
-    int    flags;
+    ENGINE *engine;
+    int flags;
     const ECDH_METHOD *meth;
     CRYPTO_EX_DATA ex_data;
 } ECDH_DATA;
 
 ECDH_DATA *ecdh_check(EC_KEY *);
 
-#ifdef  __cplusplus
+#ifdef __cplusplus
 }
 #endif
 

@@ -67,15 +67,14 @@
  */
 
 static int bn_x931_derive_pi(BIGNUM *pi, const BIGNUM *Xpi, BN_CTX *ctx,
-            BN_GENCB *cb)
-    {
+                             BN_GENCB *cb)
+{
     int i = 0;
     if (!BN_copy(pi, Xpi))
         return 0;
     if (!BN_is_odd(pi) && !BN_add_word(pi, 1))
         return 0;
-    for(;;)
-        {
+    for (;;) {
         i++;
         BN_GENCB_call(cb, 0, i);
         /* NB 27 MR is specificed in X9.31 */
@@ -83,10 +82,10 @@ static int bn_x931_derive_pi(BIGNUM *pi, const BIGNUM *Xpi, BN_CTX *ctx,
             break;
         if (!BN_add_word(pi, 2))
             return 0;
-        }
+    }
     BN_GENCB_call(cb, 2, i);
     return 1;
-    }
+}
 
 /* This is the main X9.31 prime derivation function. From parameters
  * Xp1, Xp2 and Xp derive the prime p. If the parameters p1 or p2 are
@@ -94,9 +93,9 @@ static int bn_x931_derive_pi(BIGNUM *pi, const BIGNUM *Xpi, BN_CTX *ctx,
  */
 
 int BN_X931_derive_prime_ex(BIGNUM *p, BIGNUM *p1, BIGNUM *p2,
-            const BIGNUM *Xp, const BIGNUM *Xp1, const BIGNUM *Xp2,
-            const BIGNUM *e, BN_CTX *ctx, BN_GENCB *cb)
-    {
+                            const BIGNUM *Xp, const BIGNUM *Xp1, const BIGNUM *Xp2,
+                            const BIGNUM *e, BN_CTX *ctx, BN_GENCB *cb)
+{
     int ret = 0;
 
     BIGNUM *t, *p1p2, *pm1;
@@ -157,8 +156,7 @@ int BN_X931_derive_prime_ex(BIGNUM *p, BIGNUM *p1, BIGNUM *p2,
 
     /* p now equals Yp0 */
 
-    for (;;)
-        {
+    for (;;) {
         int i = 1;
         BN_GENCB_call(cb, 0, i++);
         if (!BN_copy(pm1, p))
@@ -168,7 +166,7 @@ int BN_X931_derive_prime_ex(BIGNUM *p, BIGNUM *p1, BIGNUM *p2,
         if (!BN_gcd(t, pm1, e, ctx))
             goto err;
         if (BN_is_one(t)
-        /* X9.31 specifies 8 MR and 1 Lucas test or any prime test
+                /* X9.31 specifies 8 MR and 1 Lucas test or any prime test
          * offering similar or better guarantees 50 MR is considerably 
          * better.
          */
@@ -176,25 +174,25 @@ int BN_X931_derive_prime_ex(BIGNUM *p, BIGNUM *p1, BIGNUM *p2,
             break;
         if (!BN_add(p, p, p1p2))
             goto err;
-        }
+    }
 
     BN_GENCB_call(cb, 3, 0);
 
     ret = 1;
 
-    err:
+err:
 
     BN_CTX_end(ctx);
 
     return ret;
-    }
+}
 
 /* Generate pair of paramters Xp, Xq for X9.31 prime generation.
  * Note: nbits paramter is sum of number of bits in both.
  */
 
 int BN_X931_generate_Xpq(BIGNUM *Xp, BIGNUM *Xq, int nbits, BN_CTX *ctx)
-    {
+{
     BIGNUM *t;
     int i;
     /* Number of bits for each prime is of the form
@@ -213,15 +211,14 @@ int BN_X931_generate_Xpq(BIGNUM *Xp, BIGNUM *Xq, int nbits, BN_CTX *ctx)
     BN_CTX_start(ctx);
     t = BN_CTX_get(ctx);
 
-    for (i = 0; i < 1000; i++)
-        {
+    for (i = 0; i < 1000; i++) {
         if (!BN_rand(Xq, nbits, 1, 0))
             return 0;
         /* Check that |Xp - Xq| > 2^(nbits - 100) */
         BN_sub(t, Xp, Xq);
         if (BN_num_bits(t) > (nbits - 100))
             break;
-        }
+    }
 
     BN_CTX_end(ctx);
 
@@ -229,8 +226,7 @@ int BN_X931_generate_Xpq(BIGNUM *Xp, BIGNUM *Xq, int nbits, BN_CTX *ctx)
         return 1;
 
     return 0;
-
-    }
+}
 
 /* Generate primes using X9.31 algorithm. Of the values p, p1, p2, Xp1
  * and Xp2 only 'p' needs to be non-NULL. If any of the others are not NULL
@@ -241,11 +237,11 @@ int BN_X931_generate_Xpq(BIGNUM *Xp, BIGNUM *Xq, int nbits, BN_CTX *ctx)
  */
 
 int BN_X931_generate_prime_ex(BIGNUM *p, BIGNUM *p1, BIGNUM *p2,
-            BIGNUM *Xp1, BIGNUM *Xp2,
-            const BIGNUM *Xp,
-            const BIGNUM *e, BN_CTX *ctx,
-            BN_GENCB *cb)
-    {
+                              BIGNUM *Xp1, BIGNUM *Xp2,
+                              const BIGNUM *Xp,
+                              const BIGNUM *e, BN_CTX *ctx,
+                              BN_GENCB *cb)
+{
     int ret = 0;
 
     BN_CTX_start(ctx);
@@ -263,10 +259,8 @@ int BN_X931_generate_prime_ex(BIGNUM *p, BIGNUM *p1, BIGNUM *p2,
 
     ret = 1;
 
-    error:
+error:
     BN_CTX_end(ctx);
 
     return ret;
-
-    }
-
+}

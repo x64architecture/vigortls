@@ -62,30 +62,29 @@
 #include <openssl/evp.h>
 
 #if (BN_BYTES == 8)
-# if (defined(_WIN32) || defined(_WIN64)) && !defined(__MINGW32__)
-#  define bn_pack4(a1,a2,a3,a4) ((a1##UI64<<48)|(a2##UI64<<32)|(a3##UI64<<16)|a4##UI64)
-# elif defined(__arch64__)
-#  define bn_pack4(a1,a2,a3,a4) ((a1##UL<<48)|(a2##UL<<32)|(a3##UL<<16)|a4##UL)
-# else
-#  define bn_pack4(a1,a2,a3,a4) ((a1##ULL<<48)|(a2##ULL<<32)|(a3##ULL<<16)|a4##ULL)
-# endif
-#elif (BN_BYTES == 4)
-# define bn_pack4(a1,a2,a3,a4)  ((a3##UL<<16)|a4##UL), ((a1##UL<<16)|a2##UL)
+#if (defined(_WIN32) || defined(_WIN64)) && !defined(__MINGW32__)
+#define bn_pack4(a1, a2, a3, a4) ((a1##UI64 << 48) | (a2##UI64 << 32) | (a3##UI64 << 16) | a4##UI64)
+#elif defined(__arch64__)
+#define bn_pack4(a1, a2, a3, a4) ((a1##UL << 48) | (a2##UL << 32) | (a3##UL << 16) | a4##UL)
 #else
-# error "unsupported BN_BYTES"
+#define bn_pack4(a1, a2, a3, a4) ((a1##ULL << 48) | (a2##ULL << 32) | (a3##ULL << 16) | a4##ULL)
 #endif
-
+#elif(BN_BYTES == 4)
+#define bn_pack4(a1, a2, a3, a4) ((a3##UL << 16) | a4##UL), ((a1##UL << 16) | a2##UL)
+#else
+#error "unsupported BN_BYTES"
+#endif
 
 #include "srp_grps.h"
 
 static BIGNUM *srp_Calc_k(BIGNUM *N, BIGNUM *g)
-    {
+{
     /* k = SHA1(N | PAD(g)) -- tls-srp draft 8 */
 
     unsigned char digest[SHA_DIGEST_LENGTH];
     unsigned char *tmp;
     EVP_MD_CTX ctxt;
-    int longg ;
+    int longg;
     int longN = BN_num_bytes(N);
 
     if (BN_ucmp(g, N) >= 0)
@@ -93,40 +92,40 @@ static BIGNUM *srp_Calc_k(BIGNUM *N, BIGNUM *g)
 
     if ((tmp = malloc(longN)) == NULL)
         return NULL;
-    BN_bn2bin(N,tmp) ;
+    BN_bn2bin(N, tmp);
 
     EVP_MD_CTX_init(&ctxt);
     EVP_DigestInit_ex(&ctxt, EVP_sha1(), NULL);
     EVP_DigestUpdate(&ctxt, tmp, longN);
 
     memset(tmp, 0, longN);
-    longg = BN_bn2bin(g,tmp) ;
-        /* use the zeros behind to pad on left */
-    EVP_DigestUpdate(&ctxt, tmp + longg, longN-longg);
+    longg = BN_bn2bin(g, tmp);
+    /* use the zeros behind to pad on left */
+    EVP_DigestUpdate(&ctxt, tmp + longg, longN - longg);
     EVP_DigestUpdate(&ctxt, tmp, longg);
     free(tmp);
 
     EVP_DigestFinal_ex(&ctxt, digest, NULL);
     EVP_MD_CTX_cleanup(&ctxt);
-    return BN_bin2bn(digest, sizeof(digest), NULL);    
-    }
+    return BN_bin2bn(digest, sizeof(digest), NULL);
+}
 
 BIGNUM *SRP_Calc_u(BIGNUM *A, BIGNUM *B, BIGNUM *N)
-    {
+{
     /* k = SHA1(PAD(A) || PAD(B) ) -- tls-srp draft 8 */
 
-    BIGNUM *u;    
+    BIGNUM *u;
     unsigned char cu[SHA_DIGEST_LENGTH];
     unsigned char *cAB;
     EVP_MD_CTX ctxt;
-    int longN;  
-    if ((A == NULL) ||(B == NULL) || (N == NULL))
+    int longN;
+    if ((A == NULL) || (B == NULL) || (N == NULL))
         return NULL;
 
     if (BN_ucmp(A, N) >= 0 || BN_ucmp(B, N) >= 0)
         return NULL;
 
-    longN= BN_num_bytes(N);
+    longN = BN_num_bytes(N);
 
     if ((cAB = reallocarray(NULL, 2, longN)) == NULL)
         return NULL;
@@ -135,8 +134,8 @@ BIGNUM *SRP_Calc_u(BIGNUM *A, BIGNUM *B, BIGNUM *N)
 
     EVP_MD_CTX_init(&ctxt);
     EVP_DigestInit_ex(&ctxt, EVP_sha1(), NULL);
-    EVP_DigestUpdate(&ctxt, cAB + BN_bn2bin(A,cAB+longN), longN);
-    EVP_DigestUpdate(&ctxt, cAB + BN_bn2bin(B,cAB+longN), longN);
+    EVP_DigestUpdate(&ctxt, cAB + BN_bn2bin(A, cAB + longN), longN);
+    EVP_DigestUpdate(&ctxt, cAB + BN_bn2bin(B, cAB + longN), longN);
     free(cAB);
     EVP_DigestFinal_ex(&ctxt, cu, NULL);
     EVP_MD_CTX_cleanup(&ctxt);
@@ -150,74 +149,63 @@ BIGNUM *SRP_Calc_u(BIGNUM *A, BIGNUM *B, BIGNUM *N)
 }
 
 BIGNUM *SRP_Calc_server_key(BIGNUM *A, BIGNUM *v, BIGNUM *u, BIGNUM *b, BIGNUM *N)
-    {
+{
     BIGNUM *tmp = NULL, *S = NULL;
-    BN_CTX *bn_ctx; 
-    
+    BN_CTX *bn_ctx;
+
     if (u == NULL || A == NULL || v == NULL || b == NULL || N == NULL)
-        return NULL; 
+        return NULL;
 
-    if ((bn_ctx = BN_CTX_new()) == NULL ||
-        (tmp = BN_new()) == NULL ||
-        (S = BN_new()) == NULL )
+    if ((bn_ctx = BN_CTX_new()) == NULL || (tmp = BN_new()) == NULL || (S = BN_new()) == NULL)
         goto err;
 
-    /* S = (A*v**u) ** b */ 
+    /* S = (A*v**u) ** b */
 
-    if (!BN_mod_exp(tmp,v,u,N,bn_ctx))
+    if (!BN_mod_exp(tmp, v, u, N, bn_ctx))
         goto err;
-    if (!BN_mod_mul(tmp,A,tmp,N,bn_ctx))
+    if (!BN_mod_mul(tmp, A, tmp, N, bn_ctx))
         goto err;
-    if (!BN_mod_exp(S,tmp,b,N,bn_ctx))
+    if (!BN_mod_exp(S, tmp, b, N, bn_ctx))
         goto err;
 err:
     BN_CTX_free(bn_ctx);
     BN_clear_free(tmp);
     return S;
-    }
+}
 
 BIGNUM *SRP_Calc_B(BIGNUM *b, BIGNUM *N, BIGNUM *g, BIGNUM *v)
-    {
-    BIGNUM  *kv = NULL, *gb = NULL;
+{
+    BIGNUM *kv = NULL, *gb = NULL;
     BIGNUM *B = NULL, *k = NULL;
     BN_CTX *bn_ctx;
 
-    if (b == NULL || N == NULL || g == NULL || v == NULL ||
-        (bn_ctx = BN_CTX_new()) == NULL)
-        return NULL; 
+    if (b == NULL || N == NULL || g == NULL || v == NULL || (bn_ctx = BN_CTX_new()) == NULL)
+        return NULL;
 
-    if ( (kv = BN_new()) == NULL ||
-        (gb = BN_new()) == NULL ||
-        (B = BN_new())== NULL)
+    if ((kv = BN_new()) == NULL || (gb = BN_new()) == NULL || (B = BN_new()) == NULL)
         goto err;
 
     /* B = g**b + k*v */
 
-    if (!BN_mod_exp(gb,g,b,N,bn_ctx) ||
-       !(k = srp_Calc_k(N,g)) ||
-       !BN_mod_mul(kv,v,k,N,bn_ctx) || 
-       !BN_mod_add(B,gb,kv,N,bn_ctx))
-        {
+    if (!BN_mod_exp(gb, g, b, N, bn_ctx) || !(k = srp_Calc_k(N, g)) || !BN_mod_mul(kv, v, k, N, bn_ctx) || !BN_mod_add(B, gb, kv, N, bn_ctx)) {
         BN_free(B);
         B = NULL;
-        }
+    }
 err:
     BN_CTX_free(bn_ctx);
     BN_clear_free(kv);
     BN_clear_free(gb);
-    BN_free(k); 
+    BN_free(k);
     return B;
-    }
+}
 
 BIGNUM *SRP_Calc_x(BIGNUM *s, const char *user, const char *pass)
-    {
+{
     unsigned char dig[SHA_DIGEST_LENGTH];
     EVP_MD_CTX ctxt;
     unsigned char *cs;
 
-    if ((s == NULL) ||
-        (user == NULL) ||
-        (pass == NULL))
+    if ((s == NULL) || (user == NULL) || (pass == NULL))
         return NULL;
 
     if ((cs = malloc(BN_num_bytes(s))) == NULL)
@@ -231,7 +219,7 @@ BIGNUM *SRP_Calc_x(BIGNUM *s, const char *user, const char *pass)
     EVP_DigestFinal_ex(&ctxt, dig, NULL);
 
     EVP_DigestInit_ex(&ctxt, EVP_sha1(), NULL);
-    BN_bn2bin(s,cs);
+    BN_bn2bin(s, cs);
     EVP_DigestUpdate(&ctxt, cs, BN_num_bytes(s));
     free(cs);
     EVP_DigestUpdate(&ctxt, dig, sizeof(dig));
@@ -239,102 +227,92 @@ BIGNUM *SRP_Calc_x(BIGNUM *s, const char *user, const char *pass)
     EVP_MD_CTX_cleanup(&ctxt);
 
     return BN_bin2bn(dig, sizeof(dig), NULL);
-    }
+}
 
 BIGNUM *SRP_Calc_A(BIGNUM *a, BIGNUM *N, BIGNUM *g)
-    {
-    BN_CTX *bn_ctx; 
-    BIGNUM * A = NULL;
+{
+    BN_CTX *bn_ctx;
+    BIGNUM *A = NULL;
 
-    if (a == NULL || N == NULL || g == NULL ||
-        (bn_ctx = BN_CTX_new()) == NULL) 
+    if (a == NULL || N == NULL || g == NULL || (bn_ctx = BN_CTX_new()) == NULL)
         return NULL;
 
-    if ((A = BN_new()) != NULL &&
-       !BN_mod_exp(A,g,a,N,bn_ctx))
-        {
+    if ((A = BN_new()) != NULL && !BN_mod_exp(A, g, a, N, bn_ctx)) {
         BN_free(A);
         A = NULL;
-        }
+    }
     BN_CTX_free(bn_ctx);
     return A;
-    }
-
+}
 
 BIGNUM *SRP_Calc_client_key(BIGNUM *N, BIGNUM *B, BIGNUM *g, BIGNUM *x, BIGNUM *a, BIGNUM *u)
-    {
-    BIGNUM *tmp = NULL, *tmp2 = NULL, *tmp3 = NULL , *k = NULL, *K = NULL;
+{
+    BIGNUM *tmp = NULL, *tmp2 = NULL, *tmp3 = NULL, *k = NULL, *K = NULL;
     BN_CTX *bn_ctx;
 
-    if (u == NULL || B == NULL || N == NULL || g == NULL || x == NULL || a == NULL ||
-        (bn_ctx = BN_CTX_new()) == NULL)
-        return NULL; 
+    if (u == NULL || B == NULL || N == NULL || g == NULL || x == NULL || a == NULL || (bn_ctx = BN_CTX_new()) == NULL)
+        return NULL;
 
-    if ((tmp = BN_new()) == NULL ||
-        (tmp2 = BN_new())== NULL ||
-        (tmp3 = BN_new())== NULL ||
-        (K = BN_new()) == NULL)
-        goto err;
-    
-    if (!BN_mod_exp(tmp,g,x,N,bn_ctx))
-        goto err;
-    if (!(k = srp_Calc_k(N,g)))
-        goto err;
-    if (!BN_mod_mul(tmp2,tmp,k,N,bn_ctx))
-        goto err;
-    if (!BN_mod_sub(tmp,B,tmp2,N,bn_ctx))
+    if ((tmp = BN_new()) == NULL || (tmp2 = BN_new()) == NULL || (tmp3 = BN_new()) == NULL || (K = BN_new()) == NULL)
         goto err;
 
-    if (!BN_mod_mul(tmp3,u,x,N,bn_ctx))
+    if (!BN_mod_exp(tmp, g, x, N, bn_ctx))
         goto err;
-    if (!BN_mod_add(tmp2,a,tmp3,N,bn_ctx))
+    if (!(k = srp_Calc_k(N, g)))
         goto err;
-    if (!BN_mod_exp(K,tmp,tmp2,N,bn_ctx))
+    if (!BN_mod_mul(tmp2, tmp, k, N, bn_ctx))
+        goto err;
+    if (!BN_mod_sub(tmp, B, tmp2, N, bn_ctx))
         goto err;
 
-err :
+    if (!BN_mod_mul(tmp3, u, x, N, bn_ctx))
+        goto err;
+    if (!BN_mod_add(tmp2, a, tmp3, N, bn_ctx))
+        goto err;
+    if (!BN_mod_exp(K, tmp, tmp2, N, bn_ctx))
+        goto err;
+
+err:
     BN_CTX_free(bn_ctx);
     BN_clear_free(tmp);
     BN_clear_free(tmp2);
     BN_clear_free(tmp3);
     BN_free(k);
-    return K;    
-    }
+    return K;
+}
 
 int SRP_Verify_B_mod_N(BIGNUM *B, BIGNUM *N)
-    {
+{
     BIGNUM *r;
-    BN_CTX *bn_ctx; 
+    BN_CTX *bn_ctx;
     int ret = 0;
 
-    if (B == NULL || N == NULL ||
-        (bn_ctx = BN_CTX_new()) == NULL)
+    if (B == NULL || N == NULL || (bn_ctx = BN_CTX_new()) == NULL)
         return 0;
 
     if ((r = BN_new()) == NULL)
         goto err;
     /* Checks if B % N == 0 */
-    if (!BN_nnmod(r,B,N,bn_ctx))
+    if (!BN_nnmod(r, B, N, bn_ctx))
         goto err;
     ret = !BN_is_zero(r);
 err:
     BN_CTX_free(bn_ctx);
     BN_free(r);
     return ret;
-    }
+}
 
 int SRP_Verify_A_mod_N(BIGNUM *A, BIGNUM *N)
-    {
+{
     /* Checks if A % N == 0 */
-    return SRP_Verify_B_mod_N(A,N) ;
-    }
-
+    return SRP_Verify_B_mod_N(A, N);
+}
 
 /* Check if G and N are kwown parameters. 
    The values have been generated from the ietf-tls-srp draft version 8
 */
 char *SRP_check_known_gN_param(BIGNUM *g, BIGNUM *N)
-    {
+{
     size_t i;
     if ((g == NULL) || (N == NULL))
         return 0;
@@ -342,25 +320,23 @@ char *SRP_check_known_gN_param(BIGNUM *g, BIGNUM *N)
     srp_bn_print(g);
     srp_bn_print(N);
 
-    for(i = 0; i < KNOWN_GN_NUMBER; i++)
-        {
-        if (BN_cmp(knowngN[i].g, g) == 0 && BN_cmp(knowngN[i].N, N) == 0) 
+    for (i = 0; i < KNOWN_GN_NUMBER; i++) {
+        if (BN_cmp(knowngN[i].g, g) == 0 && BN_cmp(knowngN[i].N, N) == 0)
             return knowngN[i].id;
-        }
-    return NULL;
     }
+    return NULL;
+}
 
 SRP_gN *SRP_get_default_gN(const char *id)
-    {
+{
     size_t i;
 
-    if (id == NULL) 
+    if (id == NULL)
         return knowngN;
-    for(i = 0; i < KNOWN_GN_NUMBER; i++)
-        {
-        if (strcmp(knowngN[i].id, id)==0)
+    for (i = 0; i < KNOWN_GN_NUMBER; i++) {
+        if (strcmp(knowngN[i].id, id) == 0)
             return knowngN + i;
-        }
-    return NULL;
     }
+    return NULL;
+}
 #endif

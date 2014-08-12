@@ -9,7 +9,7 @@
 #endif
 
 #undef OPENSSL_UNISTD
-#define OPENSSL_UNISTD <unistd.h>
+#define OPENSSL_UNISTD < unistd.h >
 
 #if defined(HEADER_IDEA_H) && !defined(IDEA_INT)
 #define IDEA_INT unsigned int
@@ -97,7 +97,7 @@
 #endif
 
 #if defined(DES_RISC1) && defined(DES_RISC2)
-YOU SHOULD NOT HAVE BOTH DES_RISC1 AND DES_RISC2 DEFINED!!!!!
+YOU SHOULD NOT HAVE BOTH DES_RISC1 AND DES_RISC2 DEFINED !!!!!
 #endif
 
 /* Unroll the inner loop, this sometimes helps, sometimes hinders.
@@ -116,33 +116,33 @@ YOU SHOULD NOT HAVE BOTH DES_RISC1 AND DES_RISC2 DEFINED!!!!!
    optimization options.  Older Sparc's work better with only UNROLL, but
    there's no way to tell at compile time what it is you're running on */
 
-#if defined( sun )		/* Newer Sparc's */
-#  define DES_PTR
-#  define DES_RISC1
-#  define DES_UNROLL
-#elif defined( __ultrix )	/* Older MIPS */
-#  define DES_PTR
-#  define DES_RISC2
-#  define DES_UNROLL
-#elif defined( __osf1__ )	/* Alpha */
-#  define DES_PTR
-#  define DES_RISC2
-#elif defined ( _AIX )		/* RS6000 */
-  /* Unknown */
-#elif defined( __hpux )		/* HP-PA */
-  /* Unknown */
-#elif defined( __aux )		/* 68K */
-  /* Unknown */
-#elif defined( __dgux )		/* 88K (but P6 in latest boxes) */
-#  define DES_UNROLL
-#elif defined( __sgi )		/* Newer MIPS */
-#  define DES_PTR
-#  define DES_RISC2
-#  define DES_UNROLL
-#elif defined(i386) || defined(__i386__)	/* x86 boxes, should be gcc */
-#  define DES_PTR
-#  define DES_RISC1
-#  define DES_UNROLL
+#if defined(sun) /* Newer Sparc's */
+#define DES_PTR
+#define DES_RISC1
+#define DES_UNROLL
+#elif defined(__ultrix) /* Older MIPS */
+#define DES_PTR
+#define DES_RISC2
+#define DES_UNROLL
+#elif defined(__osf1__) /* Alpha */
+#define DES_PTR
+#define DES_RISC2
+#elif defined(_AIX)   /* RS6000 */
+/* Unknown */
+#elif defined(__hpux) /* HP-PA */
+/* Unknown */
+#elif defined(__aux)  /* 68K */
+/* Unknown */
+#elif defined(__dgux) /* 88K (but P6 in latest boxes) */
+#define DES_UNROLL
+#elif defined(__sgi) /* Newer MIPS */
+#define DES_PTR
+#define DES_RISC2
+#define DES_UNROLL
+#elif defined(i386) || defined(__i386__) /* x86 boxes, should be gcc */
+#define DES_PTR
+#define DES_RISC1
+#define DES_UNROLL
 #endif /* Systems-specific speed defines */
 #endif
 

@@ -63,7 +63,7 @@
 #include <openssl/objects.h>
 
 static int nsseq_cb(int operation, ASN1_VALUE **pval, const ASN1_ITEM *it,
-                            void *exarg)
+                    void *exarg)
 {
     if (operation == ASN1_OP_NEW_POST) {
         NETSCAPE_CERT_SEQUENCE *nsseq;
@@ -80,4 +80,4 @@ ASN1_SEQUENCE_cb(NETSCAPE_CERT_SEQUENCE, nsseq_cb) = {
     ASN1_EXP_SEQUENCE_OF_OPT(NETSCAPE_CERT_SEQUENCE, certs, X509, 0)
 } ASN1_SEQUENCE_END_cb(NETSCAPE_CERT_SEQUENCE, NETSCAPE_CERT_SEQUENCE)
 
-IMPLEMENT_ASN1_FUNCTIONS(NETSCAPE_CERT_SEQUENCE)
+    IMPLEMENT_ASN1_FUNCTIONS(NETSCAPE_CERT_SEQUENCE)

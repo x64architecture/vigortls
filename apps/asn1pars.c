@@ -87,7 +87,7 @@ int asn1parse_main(int argc, char **argv)
     unsigned int length = 0;
     long num, tmplen;
     BIO *in = NULL, *out = NULL, *b64 = NULL, *derout = NULL;
-    int informat, indent=0, noout = 0, dump = 0;
+    int informat, indent = 0, noout = 0, dump = 0;
     char *infile = NULL, *str = NULL, *prog, *oidfile = NULL, *derfile = NULL;
     char *genstr = NULL, *genconf = NULL;
     unsigned char *tmpbuf;
@@ -115,7 +115,7 @@ int asn1parse_main(int argc, char **argv)
         goto end;
     }
     while (argc >= 1) {
-        if (strcmp(*argv,"-inform") == 0) {
+        if (strcmp(*argv, "-inform") == 0) {
             if (--argc < 1)
                 goto bad;
             informat = str2fmt(*(++argv));
@@ -129,13 +129,13 @@ int asn1parse_main(int argc, char **argv)
             derfile = *(++argv);
         } else if (strcmp(*argv, "-i") == 0)
             indent = 1;
-        else if (strcmp(*argv,"-noout") == 0)
+        else if (strcmp(*argv, "-noout") == 0)
             noout = 1;
-        else if (strcmp(*argv,"-oid") == 0) {
+        else if (strcmp(*argv, "-oid") == 0) {
             if (--argc < 1)
                 goto bad;
             oidfile = *(++argv);
-        } else if (strcmp(*argv,"-offset") == 0) {
+        } else if (strcmp(*argv, "-offset") == 0) {
             if (--argc < 1)
                 goto bad;
             offset = atoi(*(++argv));
@@ -145,23 +145,23 @@ int asn1parse_main(int argc, char **argv)
             length = atoi(*(++argv));
             if (length == 0)
                 goto bad;
-        } else if (strcmp(*argv,"-dump") == 0)
+        } else if (strcmp(*argv, "-dump") == 0)
             dump = -1;
-        else if (strcmp(*argv,"-dlimit") == 0) {
+        else if (strcmp(*argv, "-dlimit") == 0) {
             if (--argc < 1)
                 goto bad;
             dump = atoi(*(++argv));
             if (dump <= 0)
                 goto bad;
-        } else if (strcmp(*argv,"-strparse") == 0) {
+        } else if (strcmp(*argv, "-strparse") == 0) {
             if (--argc < 1)
                 goto bad;
             sk_OPENSSL_STRING_push(osk, *(++argv));
-        } else if (strcmp(*argv,"-genstr") == 0) {
+        } else if (strcmp(*argv, "-genstr") == 0) {
             if (--argc < 1)
                 goto bad;
             genstr = *(++argv);
-        } else if (strcmp(*argv,"-genconf") == 0) {
+        } else if (strcmp(*argv, "-genconf") == 0) {
             if (--argc < 1)
                 goto bad;
             genconf = *(++argv);
@@ -175,8 +175,8 @@ int asn1parse_main(int argc, char **argv)
     }
 
     if (badops) {
-bad:
-        BIO_printf(bio_err, "%s [options] <infile\n",prog);
+    bad:
+        BIO_printf(bio_err, "%s [options] <infile\n", prog);
         BIO_printf(bio_err, "where options are\n");
         BIO_printf(bio_err, " -inform arg   input format - one of DER PEM\n");
         BIO_printf(bio_err, " -in arg       input file\n");
@@ -208,7 +208,7 @@ bad:
 
     if (oidfile != NULL) {
         if (BIO_read_filename(in, oidfile) <= 0) {
-            BIO_printf(bio_err,"problems opening %s\n", oidfile);
+            BIO_printf(bio_err, "problems opening %s\n", oidfile);
             ERR_print_errors(bio_err);
             goto end;
         }
@@ -218,7 +218,7 @@ bad:
     if (infile == NULL)
         BIO_set_fp(in, stdin, BIO_NOCLOSE);
     else {
-        if (BIO_read_filename(in,infile) <= 0) {
+        if (BIO_read_filename(in, infile) <= 0) {
             perror(infile);
             goto end;
         }
@@ -277,7 +277,7 @@ bad:
             int typ;
             j = atoi(sk_OPENSSL_STRING_value(osk, i));
             if (j == 0) {
-                BIO_printf(bio_err,"'%s' is an invalid number\n",sk_OPENSSL_STRING_value(osk,i));
+                BIO_printf(bio_err, "'%s' is an invalid number\n", sk_OPENSSL_STRING_value(osk, i));
                 continue;
             }
             tmpbuf += j;
@@ -296,7 +296,7 @@ bad:
                 || (typ == V_ASN1_NULL)) {
 
                 BIO_printf(bio_err, "Can't parse %s type\n",
-                    typ == V_ASN1_NULL ? "NULL" : "OBJECT");
+                           typ == V_ASN1_NULL ? "NULL" : "OBJECT");
                 ERR_print_errors(bio_err);
                 goto end;
             }
@@ -324,9 +324,7 @@ bad:
             goto end;
         }
     }
-    if (!noout &&
-        !ASN1_parse_dump(out, (unsigned char *) & (str[offset]), length,
-            indent, dump)) {
+    if (!noout && !ASN1_parse_dump(out, (unsigned char *)&(str[offset]), length, indent, dump)) {
         ERR_print_errors(bio_err);
         goto end;
     }
@@ -384,7 +382,7 @@ static int do_generate(BIO *bio, char *genstr, char *genconf, BUF_MEM *buf)
     if (len <= 0)
         goto err;
 
-    if (!BUF_MEM_grow(buf,len))
+    if (!BUF_MEM_grow(buf, len))
         goto err;
 
     p = (unsigned char *)buf->data;
@@ -394,11 +392,11 @@ static int do_generate(BIO *bio, char *genstr, char *genconf, BUF_MEM *buf)
     ASN1_TYPE_free(atyp);
     return len;
 
-    conferr:
+conferr:
 
     if (errline > 0)
         BIO_printf(bio, "Error on line %ld of config file '%s'\n",
-                            errline, genconf);
+                   errline, genconf);
     else
         BIO_printf(bio, "Error loading config file '%s'\n", genconf);
 

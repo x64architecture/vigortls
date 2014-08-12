@@ -79,9 +79,9 @@
    Therefore, it seems natural to first check for PATH_MAX and use that,
    and if it doesn't exist, use NAME_MAX. */
 #if defined(PATH_MAX)
-# define LP_ENTRY_SIZE PATH_MAX
+#define LP_ENTRY_SIZE PATH_MAX
 #elif defined(NAME_MAX)
-# define LP_ENTRY_SIZE NAME_MAX
+#define LP_ENTRY_SIZE NAME_MAX
 #endif
 
 /* Of course, there's the possibility that neither PATH_MAX nor NAME_MAX
@@ -90,14 +90,13 @@
    result, and if it meets a minimum standard, and create or change it
    if not. */
 #if !defined(LP_ENTRY_SIZE) || LP_ENTRY_SIZE < 255
-# undef LP_ENTRY_SIZE
-# define LP_ENTRY_SIZE 255
+#undef LP_ENTRY_SIZE
+#define LP_ENTRY_SIZE 255
 #endif
 
-struct LP_dir_context_st
-{
-  DIR *dir;
-  char entry_name[LP_ENTRY_SIZE + 1];
+struct LP_dir_context_st {
+    DIR *dir;
+    char entry_name[LP_ENTRY_SIZE + 1];
 };
 
 const char *LP_find_file(LP_DIR_CTX **ctx, const char *directory)
@@ -130,7 +129,7 @@ const char *LP_find_file(LP_DIR_CTX **ctx, const char *directory)
 
     direntry = readdir((*ctx)->dir);
     if (direntry == NULL) {
-      return 0;
+        return 0;
     }
 
     strncpy((*ctx)->entry_name, direntry->d_name, sizeof((*ctx)->entry_name) - 1);
@@ -145,12 +144,12 @@ int LP_find_file_end(LP_DIR_CTX **ctx)
 
         free(*ctx);
         switch (ret) {
-        case 0:
-            return 1;
-        case -1:
-            return 0;
-        default:
-            break;
+            case 0:
+                return 1;
+            case -1:
+                return 0;
+            default:
+                break;
         }
     }
     errno = EINVAL;

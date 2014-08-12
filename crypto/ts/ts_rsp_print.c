@@ -62,22 +62,21 @@
 #include <openssl/x509v3.h>
 #include <openssl/ts.h>
 
-struct status_map_st
-    {
+struct status_map_st {
     int bit;
     const char *text;
-    };
+};
 
 /* Local function declarations. */
 
 static int TS_status_map_print(BIO *bio, struct status_map_st *a,
-                   ASN1_BIT_STRING *v);
+                               ASN1_BIT_STRING *v);
 static int TS_ACCURACY_print_bio(BIO *bio, const TS_ACCURACY *accuracy);
 
 /* Function definitions. */
 
 int TS_RESP_print_bio(BIO *bio, TS_RESP *a)
-    {
+{
     TS_TST_INFO *tst_info;
 
     BIO_printf(bio, "Status info:\n");
@@ -91,61 +90,58 @@ int TS_RESP_print_bio(BIO *bio, TS_RESP *a)
         BIO_printf(bio, "Not included.\n");
 
     return 1;
-    }
+}
 
 int TS_STATUS_INFO_print_bio(BIO *bio, TS_STATUS_INFO *a)
-    {
-    static const char *status_map[] =
-        {
+{
+    static const char *status_map[] = {
         "Granted.",
         "Granted with modifications.",
         "Rejected.",
         "Waiting.",
         "Revocation warning.",
         "Revoked."
-        };
-    static struct status_map_st failure_map[] =
-        {
+    };
+    static struct status_map_st failure_map[] = {
         { TS_INFO_BAD_ALG,
-        "unrecognized or unsupported algorithm identifier" },
+          "unrecognized or unsupported algorithm identifier" },
         { TS_INFO_BAD_REQUEST,
-        "transaction not permitted or supported" },
+          "transaction not permitted or supported" },
         { TS_INFO_BAD_DATA_FORMAT,
-        "the data submitted has the wrong format" },
+          "the data submitted has the wrong format" },
         { TS_INFO_TIME_NOT_AVAILABLE,
-        "the TSA's time source is not available" },
+          "the TSA's time source is not available" },
         { TS_INFO_UNACCEPTED_POLICY,
-        "the requested TSA policy is not supported by the TSA" },
+          "the requested TSA policy is not supported by the TSA" },
         { TS_INFO_UNACCEPTED_EXTENSION,
-        "the requested extension is not supported by the TSA" },
+          "the requested extension is not supported by the TSA" },
         { TS_INFO_ADD_INFO_NOT_AVAILABLE,
-        "the additional information requested could not be understood "
-        "or is not available" },
+          "the additional information requested could not be understood "
+          "or is not available" },
         { TS_INFO_SYSTEM_FAILURE,
-        "the request cannot be handled due to system failure" },
+          "the request cannot be handled due to system failure" },
         { -1, NULL }
-        };
+    };
     long status;
     int i, lines = 0;
 
     /* Printing status code. */
     BIO_printf(bio, "Status: ");
     status = ASN1_INTEGER_get(a->status);
-    if (0 <= status && status < (long)(sizeof(status_map)/sizeof(status_map[0])))
+    if (0 <= status && status < (long)(sizeof(status_map) / sizeof(status_map[0])))
         BIO_printf(bio, "%s\n", status_map[status]);
     else
         BIO_printf(bio, "out of bounds\n");
 
     /* Printing status description. */
     BIO_printf(bio, "Status description: ");
-    for (i = 0; i < sk_ASN1_UTF8STRING_num(a->text); ++i)
-        {
+    for (i = 0; i < sk_ASN1_UTF8STRING_num(a->text); ++i) {
         if (i > 0)
             BIO_puts(bio, "\t");
         ASN1_STRING_print_ex(bio, sk_ASN1_UTF8STRING_value(a->text, i),
-                     0);
+                             0);
         BIO_puts(bio, "\n");
-        }
+    }
     if (i == 0)
         BIO_printf(bio, "unspecified\n");
 
@@ -153,34 +149,32 @@ int TS_STATUS_INFO_print_bio(BIO *bio, TS_STATUS_INFO *a)
     BIO_printf(bio, "Failure info: ");
     if (a->failure_info != NULL)
         lines = TS_status_map_print(bio, failure_map,
-                        a->failure_info);
+                                    a->failure_info);
     if (lines == 0)
         BIO_printf(bio, "unspecified");
     BIO_printf(bio, "\n");
 
     return 1;
-    }
+}
 
 static int TS_status_map_print(BIO *bio, struct status_map_st *a,
-                   ASN1_BIT_STRING *v)
-    {
+                               ASN1_BIT_STRING *v)
+{
     int lines = 0;
 
-    for (; a->bit >= 0; ++a)
-        {
-        if (ASN1_BIT_STRING_get_bit(v, a->bit))
-            {
+    for (; a->bit >= 0; ++a) {
+        if (ASN1_BIT_STRING_get_bit(v, a->bit)) {
             if (++lines > 1)
                 BIO_printf(bio, ", ");
             BIO_printf(bio, "%s", a->text);
-            }
         }
-
-    return lines;
     }
 
+    return lines;
+}
+
 int TS_TST_INFO_print_bio(BIO *bio, TS_TST_INFO *a)
-    {
+{
     int v;
     ASN1_OBJECT *policy_id;
     const ASN1_INTEGER *serial;
@@ -189,7 +183,8 @@ int TS_TST_INFO_print_bio(BIO *bio, TS_TST_INFO *a)
     const ASN1_INTEGER *nonce;
     GENERAL_NAME *tsa_name;
 
-    if (a == NULL) return 0;
+    if (a == NULL)
+        return 0;
 
     /* Print version. */
     v = TS_TST_INFO_get_version(a);
@@ -229,7 +224,7 @@ int TS_TST_INFO_print_bio(BIO *bio, TS_TST_INFO *a)
 
     /* Print ordering. */
     BIO_printf(bio, "Ordering: %s\n",
-           TS_TST_INFO_get_ordering(a) ? "yes" : "no");
+               TS_TST_INFO_get_ordering(a) ? "yes" : "no");
 
     /* Print nonce. */
     BIO_printf(bio, "Nonce: ");
@@ -245,23 +240,22 @@ int TS_TST_INFO_print_bio(BIO *bio, TS_TST_INFO *a)
     tsa_name = TS_TST_INFO_get_tsa(a);
     if (tsa_name == NULL)
         BIO_printf(bio, "unspecified");
-    else
-        {
-        STACK_OF(CONF_VALUE) *nval;
+    else {
+        STACK_OF(CONF_VALUE) * nval;
         if ((nval = i2v_GENERAL_NAME(NULL, tsa_name, NULL)))
             X509V3_EXT_val_prn(bio, nval, 0, 0);
         sk_CONF_VALUE_pop_free(nval, X509V3_conf_free);
-        }
+    }
     BIO_write(bio, "\n", 1);
 
     /* Print extensions. */
     TS_ext_print_bio(bio, TS_TST_INFO_get_exts(a));
 
     return 1;
-    }
+}
 
 static int TS_ACCURACY_print_bio(BIO *bio, const TS_ACCURACY *accuracy)
-    {
+{
     const ASN1_INTEGER *seconds = TS_ACCURACY_get_seconds(accuracy);
     const ASN1_INTEGER *millis = TS_ACCURACY_get_millis(accuracy);
     const ASN1_INTEGER *micros = TS_ACCURACY_get_micros(accuracy);
@@ -283,4 +277,4 @@ static int TS_ACCURACY_print_bio(BIO *bio, const TS_ACCURACY *accuracy)
     BIO_printf(bio, " micros");
 
     return 1;
-    }
+}

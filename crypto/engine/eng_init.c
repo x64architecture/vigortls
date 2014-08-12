@@ -72,7 +72,7 @@ engine_unlocked_init(ENGINE *e)
         e->struct_ref++;
         e->funct_ref++;
         engine_ref_debug(e, 0, 1)
-        engine_ref_debug(e, 1, 1)
+            engine_ref_debug(e, 1, 1)
     }
     return to_return;
 }
@@ -105,7 +105,7 @@ engine_unlocked_finish(ENGINE *e, int unlock_for_handlers)
     /* Release the structural reference too */
     if (!engine_free_util(e, 0)) {
         ENGINEerr(ENGINE_F_ENGINE_UNLOCKED_FINISH,
-            ENGINE_R_FINISH_FAILED);
+                  ENGINE_R_FINISH_FAILED);
         return 0;
     }
     return to_return;

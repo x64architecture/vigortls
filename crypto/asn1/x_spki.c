@@ -56,7 +56,7 @@
  * [including the GNU Public Licence.]
  */
 
- /* This module was send to me my Pat Richards <patr@x509.com> who
+/* This module was send to me my Pat Richards <patr@x509.com> who
   * wrote it.  It is under my Copyright with his permission
   */
 
@@ -69,12 +69,12 @@ ASN1_SEQUENCE(NETSCAPE_SPKAC) = {
     ASN1_SIMPLE(NETSCAPE_SPKAC, challenge, ASN1_IA5STRING)
 } ASN1_SEQUENCE_END(NETSCAPE_SPKAC)
 
-IMPLEMENT_ASN1_FUNCTIONS(NETSCAPE_SPKAC)
+    IMPLEMENT_ASN1_FUNCTIONS(NETSCAPE_SPKAC)
 
-ASN1_SEQUENCE(NETSCAPE_SPKI) = {
-    ASN1_SIMPLE(NETSCAPE_SPKI, spkac, NETSCAPE_SPKAC),
-    ASN1_SIMPLE(NETSCAPE_SPKI, sig_algor, X509_ALGOR),
-    ASN1_SIMPLE(NETSCAPE_SPKI, signature, ASN1_BIT_STRING)
-} ASN1_SEQUENCE_END(NETSCAPE_SPKI)
+        ASN1_SEQUENCE(NETSCAPE_SPKI) = {
+            ASN1_SIMPLE(NETSCAPE_SPKI, spkac, NETSCAPE_SPKAC),
+            ASN1_SIMPLE(NETSCAPE_SPKI, sig_algor, X509_ALGOR),
+            ASN1_SIMPLE(NETSCAPE_SPKI, signature, ASN1_BIT_STRING)
+        } ASN1_SEQUENCE_END(NETSCAPE_SPKI)
 
-IMPLEMENT_ASN1_FUNCTIONS(NETSCAPE_SPKI)
+            IMPLEMENT_ASN1_FUNCTIONS(NETSCAPE_SPKI)

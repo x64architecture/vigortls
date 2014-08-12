@@ -56,7 +56,6 @@
  *
  */
 
-
 #include <stdio.h>
 #include <openssl/asn1.h>
 #include <openssl/conf.h>
@@ -81,7 +80,8 @@ int main(int argc, char **argv)
         exit(1);
     }
     conf_file = argv[2];
-    if (!conf_file) conf_file = "test.cnf";
+    if (!conf_file)
+        conf_file = "test.cnf";
     conf = CONF_load(NULL, "test.cnf", NULL);
     if (!conf) {
         fprintf(stderr, "Error opening Config file %s\n", conf_file);
@@ -112,15 +112,15 @@ int main(int argc, char **argv)
 
     count = X509_get_ext_count(cert);
     printf("%d extensions\n", count);
-    for(i = 0; i < count; i++) {
+    for (i = 0; i < count; i++) {
         ext = X509_get_ext(cert, i);
         printf("%s", OBJ_nid2ln(OBJ_obj2nid(ext->object)));
-        if (ext->critical) printf(",critical:\n");
-        else printf(":\n");
+        if (ext->critical)
+            printf(",critical:\n");
+        else
+            printf(":\n");
         X509V3_EXT_print_fp(stdout, ext, 0, 0);
         printf("\n");
-        
     }
     return 0;
 }
-

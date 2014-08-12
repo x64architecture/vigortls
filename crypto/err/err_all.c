@@ -96,7 +96,7 @@
 #endif
 
 void ERR_load_crypto_strings(void)
-    {
+{
 #ifndef OPENSSL_NO_ERR
     ERR_load_ERR_strings(); /* include error strings for SYSerr */
     ERR_load_BN_strings();
@@ -124,7 +124,7 @@ void ERR_load_crypto_strings(void)
 #endif
     /* skip ERR_load_SSL_strings() because it is not in this library */
     ERR_load_BIO_strings();
-    ERR_load_PKCS7_strings();    
+    ERR_load_PKCS7_strings();
     ERR_load_X509V3_strings();
     ERR_load_PKCS12_strings();
     ERR_load_RAND_strings();
@@ -139,4 +139,4 @@ void ERR_load_crypto_strings(void)
     ERR_load_CMS_strings();
 #endif
 #endif
-    }
+}

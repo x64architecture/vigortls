@@ -78,13 +78,12 @@
 /* RSAX is available **ONLY* on x86_64 CPUs */
 #undef COMPILE_RSAX
 
-#if (defined(__x86_64) || defined(__x86_64__) || \
-     defined(_M_AMD64) || defined (_M_X64)) && !defined(OPENSSL_NO_ASM)
+#if (defined(__x86_64) || defined(__x86_64__) || defined(_M_AMD64) || defined(_M_X64)) && !defined(OPENSSL_NO_ASM)
 #define COMPILE_RSAX
-static ENGINE *ENGINE_rsax (void);
+static ENGINE *ENGINE_rsax(void);
 #endif
 
-void ENGINE_load_rsax (void)
+void ENGINE_load_rsax(void)
 {
 /* On non-x86 CPUs it just returns. */
 #ifdef COMPILE_RSAX
@@ -108,12 +107,12 @@ static int e_rsax_ctrl(ENGINE *e, int cmd, long i, void *p, void (*f)(void));
 #ifndef OPENSSL_NO_RSA
 /* RSA stuff */
 static int e_rsax_rsa_mod_exp(BIGNUM *r, const BIGNUM *I, RSA *rsa,
-    BN_CTX *ctx);
+                              BN_CTX *ctx);
 static int e_rsax_rsa_finish(RSA *r);
 #endif
 
 static const ENGINE_CMD_DEFN e_rsax_cmd_defns[] = {
-    {0, NULL, NULL, 0}
+    { 0, NULL, NULL, 0 }
 };
 
 #ifndef OPENSSL_NO_RSA
@@ -122,7 +121,7 @@ static RSA_METHOD e_rsax_rsa = {
     .name = "Intel RSA-X method",
     .rsa_mod_exp = e_rsax_rsa_mod_exp,
     .finish = e_rsax_rsa_finish,
-    .flags = RSA_FLAG_CACHE_PUBLIC|RSA_FLAG_CACHE_PRIVATE,
+    .flags = RSA_FLAG_CACHE_PUBLIC | RSA_FLAG_CACHE_PRIVATE,
 };
 #endif
 
@@ -137,16 +136,11 @@ bind_helper(ENGINE *e)
 #ifndef OPENSSL_NO_RSA
     const RSA_METHOD *meth1;
 #endif
-    if (!ENGINE_set_id(e, engine_e_rsax_id) ||
-        !ENGINE_set_name(e, engine_e_rsax_name) ||
+    if (!ENGINE_set_id(e, engine_e_rsax_id) || !ENGINE_set_name(e, engine_e_rsax_name) ||
 #ifndef OPENSSL_NO_RSA
         !ENGINE_set_RSA(e, &e_rsax_rsa) ||
 #endif
-        !ENGINE_set_destroy_function(e, e_rsax_destroy) ||
-        !ENGINE_set_init_function(e, e_rsax_init) ||
-        !ENGINE_set_finish_function(e, e_rsax_finish) ||
-        !ENGINE_set_ctrl_function(e, e_rsax_ctrl) ||
-        !ENGINE_set_cmd_defns(e, e_rsax_cmd_defns))
+        !ENGINE_set_destroy_function(e, e_rsax_destroy) || !ENGINE_set_init_function(e, e_rsax_init) || !ENGINE_set_finish_function(e, e_rsax_finish) || !ENGINE_set_ctrl_function(e, e_rsax_ctrl) || !ENGINE_set_cmd_defns(e, e_rsax_cmd_defns))
         return 0;
 
 #ifndef OPENSSL_NO_RSA
@@ -192,9 +186,9 @@ e_rsax_init(ENGINE *e)
 #ifndef OPENSSL_NO_RSA
     if (rsax_ex_data_idx == -1)
         rsax_ex_data_idx = RSA_get_ex_new_index(0, NULL, NULL,
-            NULL, NULL);
+                                                NULL, NULL);
 #endif
-    if (rsax_ex_data_idx  == -1)
+    if (rsax_ex_data_idx == -1)
         return 0;
     return 1;
 }
@@ -212,14 +206,13 @@ e_rsax_ctrl(ENGINE *e, int cmd, long i, void *p, void (*f)(void))
 
     switch (cmd) {
         /* The command isn't understood by this engine */
-    default:
-        to_return = 0;
-        break;
+        default:
+            to_return = 0;
+            break;
     }
 
     return to_return;
 }
-
 
 #ifndef OPENSSL_NO_RSA
 
@@ -234,13 +227,13 @@ typedef unsigned short UINT16;
  */
 
 /* Init BIGNUM b from the interleaved UINT64 array */
-static int interleaved_array_to_bn_512(BIGNUM* b, UINT64 *array);
+static int interleaved_array_to_bn_512(BIGNUM *b, UINT64 *array);
 
 /* Extract array elements from BIGNUM b
  * To set the whole array from b, call with n=8
  */
-static int bn_extract_to_array_512(const BIGNUM* b, unsigned int n,
-    UINT64 *array);
+static int bn_extract_to_array_512(const BIGNUM *b, unsigned int n,
+                                   UINT64 *array);
 
 struct mod_ctx_512 {
     UINT64 t[8][8];
@@ -253,9 +246,9 @@ struct mod_ctx_512 {
 static int mod_exp_pre_compute_data_512(UINT64 *m, struct mod_ctx_512 *data);
 
 void mod_exp_512(UINT64 *result, /* 512 bits, 8 qwords */
-UINT64 *g,      /* 512 bits, 8 qwords */
-UINT64 *exp,    /* 512 bits, 8 qwords */
-struct mod_ctx_512 *data);
+                 UINT64 *g,      /* 512 bits, 8 qwords */
+                 UINT64 *exp,    /* 512 bits, 8 qwords */
+                 struct mod_ctx_512 *data);
 
 typedef struct st_e_rsax_mod_ctx {
     UINT64 type;
@@ -265,7 +258,7 @@ typedef struct st_e_rsax_mod_ctx {
 } E_RSAX_MOD_CTX;
 
 static E_RSAX_MOD_CTX *
-e_rsax_get_ctx(RSA *rsa, int idx, BIGNUM* m)
+e_rsax_get_ctx(RSA *rsa, int idx, BIGNUM *m)
 {
     E_RSAX_MOD_CTX *hptr;
 
@@ -287,7 +280,7 @@ e_rsax_get_ctx(RSA *rsa, int idx, BIGNUM* m)
     if (BN_num_bits(m) == 512) {
         UINT64 _m[8];
         bn_extract_to_array_512(m, 8, _m);
-        memset( &hptr[idx].ctx.b512, 0, sizeof(struct mod_ctx_512));
+        memset(&hptr[idx].ctx.b512, 0, sizeof(struct mod_ctx_512));
         mod_exp_pre_compute_data_512(_m, &hptr[idx].ctx.b512);
     }
 
@@ -315,7 +308,7 @@ e_rsax_rsa_finish(RSA *rsa)
 
 static int
 e_rsax_bn_mod_exp(BIGNUM *r, const BIGNUM *g, const BIGNUM *e, const BIGNUM *m,
-    BN_CTX *ctx, BN_MONT_CTX *in_mont, E_RSAX_MOD_CTX* rsax_mod_ctx)
+                  BN_CTX *ctx, BN_MONT_CTX *in_mont, E_RSAX_MOD_CTX *rsax_mod_ctx)
 {
     if (rsax_mod_ctx && BN_get_flags(e, BN_FLG_CONSTTIME) != 0) {
         if (BN_num_bits(m) == 512) {
@@ -348,7 +341,7 @@ e_rsax_bn_mod_exp(BIGNUM *r, const BIGNUM *g, const BIGNUM *e, const BIGNUM *m,
  * an array. Call with n=8 to extract an entire 512-bit BIGNUM
  */
 static int
-bn_extract_to_array_512(const BIGNUM* b, unsigned int n, UINT64 *array)
+bn_extract_to_array_512(const BIGNUM *b, unsigned int n, UINT64 *array)
 {
     int i;
     UINT64 tmp;
@@ -356,12 +349,12 @@ bn_extract_to_array_512(const BIGNUM* b, unsigned int n, UINT64 *array)
 
     memset(bn_buff, 0, 64);
     if (BN_num_bytes(b) > 64) {
-        printf ("Can't support this byte size\n");
+        printf("Can't support this byte size\n");
         return 0;
     }
     if (BN_num_bytes(b) != 0) {
         if (!BN_bn2bin(b, bn_buff + (64 - BN_num_bytes(b)))) {
-            printf ("Error's in bn2bin\n");
+            printf("Error's in bn2bin\n");
             /* We have to error, here */
             return 0;
         }
@@ -369,8 +362,8 @@ bn_extract_to_array_512(const BIGNUM* b, unsigned int n, UINT64 *array)
     while (n-- > 0) {
         array[n] = 0;
         for (i = 7; i >= 0; i--) {
-            tmp = bn_buff[63 - (n*8 + i)];
-            array[n] |= tmp << (8*i);
+            tmp = bn_buff[63 - (n * 8 + i)];
+            array[n] |= tmp << (8 * i);
         }
     }
     return 1;
@@ -378,7 +371,7 @@ bn_extract_to_array_512(const BIGNUM* b, unsigned int n, UINT64 *array)
 
 /* Init a 512-bit BIGNUM from the UINT64*_ (8 * 64) interleaved array */
 static int
-interleaved_array_to_bn_512(BIGNUM* b, UINT64 *array)
+interleaved_array_to_bn_512(BIGNUM *b, UINT64 *array)
 {
     unsigned char tmp[64];
     int n = 8;
@@ -386,8 +379,7 @@ interleaved_array_to_bn_512(BIGNUM* b, UINT64 *array)
 
     while (n-- > 0) {
         for (i = 7; i >= 0; i--) {
-            tmp[63 - (n * 8 + i)] =
-                (unsigned char)(array[n] >> (8 * i));
+            tmp[63 - (n * 8 + i)] = (unsigned char)(array[n] >> (8 * i));
         }
     }
     BN_bin2bn(tmp, 64, b);
@@ -401,7 +393,7 @@ mod_exp_pre_compute_data_512(UINT64 *m, struct mod_ctx_512 *data)
     BIGNUM two_768, two_640, two_128, two_512, tmp, _m, tmp2;
 
     /* We need a BN_CTX for the modulo functions */
-    BN_CTX* ctx;
+    BN_CTX *ctx;
     /* Some tmps */
     UINT64 _t[8];
     int i, j, ret = 0;
@@ -548,10 +540,10 @@ e_rsax_rsa_mod_exp(BIGNUM *r0, const BIGNUM *I, RSA *rsa, BN_CTX *ctx)
 
         if (rsa->flags & RSA_FLAG_CACHE_PRIVATE) {
             if (!BN_MONT_CTX_set_locked(&rsa->_method_mod_p,
-                CRYPTO_LOCK_RSA, p, ctx))
+                                        CRYPTO_LOCK_RSA, p, ctx))
                 error = 1;
             if (!BN_MONT_CTX_set_locked(&rsa->_method_mod_q,
-                CRYPTO_LOCK_RSA, q, ctx))
+                                        CRYPTO_LOCK_RSA, q, ctx))
                 error = 1;
         }
 
@@ -560,13 +552,13 @@ e_rsax_rsa_mod_exp(BIGNUM *r0, const BIGNUM *I, RSA *rsa, BN_CTX *ctx)
             BN_free(&local_p);
             BN_free(&local_q);
         }
-        if (error )
+        if (error)
             goto err;
     }
 
     if (rsa->flags & RSA_FLAG_CACHE_PUBLIC)
         if (!BN_MONT_CTX_set_locked(&rsa->_method_mod_n,
-            CRYPTO_LOCK_RSA, rsa->n, ctx))
+                                    CRYPTO_LOCK_RSA, rsa->n, ctx))
             goto err;
 
     /* compute I mod q */
@@ -588,7 +580,7 @@ e_rsax_rsa_mod_exp(BIGNUM *r0, const BIGNUM *I, RSA *rsa, BN_CTX *ctx)
         dmq1 = rsa->dmq1;
 
     if (!e_rsax_bn_mod_exp(m1, r1, dmq1, rsa->q, ctx, rsa->_method_mod_q,
-        e_rsax_get_ctx(rsa, 0, rsa->q)))
+                           e_rsax_get_ctx(rsa, 0, rsa->q)))
         goto err;
 
     /* compute I mod p */
@@ -610,7 +602,7 @@ e_rsax_rsa_mod_exp(BIGNUM *r0, const BIGNUM *I, RSA *rsa, BN_CTX *ctx)
         dmp1 = rsa->dmp1;
 
     if (!e_rsax_bn_mod_exp(r0, r1, dmp1, rsa->p, ctx, rsa->_method_mod_p,
-        e_rsax_get_ctx(rsa, 1, rsa->p)))
+                           e_rsax_get_ctx(rsa, 1, rsa->p)))
         goto err;
 
     if (!BN_sub(r0, r0, m1))
@@ -650,7 +642,7 @@ e_rsax_rsa_mod_exp(BIGNUM *r0, const BIGNUM *I, RSA *rsa, BN_CTX *ctx)
 
     if (rsa->e && rsa->n) {
         if (!e_rsax_bn_mod_exp(vrfy, r0, rsa->e, rsa->n, ctx,
-            rsa->_method_mod_n, e_rsax_get_ctx(rsa, 2, rsa->n)))
+                               rsa->_method_mod_n, e_rsax_get_ctx(rsa, 2, rsa->n)))
             goto err;
 
         /* If 'I' was greater than (or equal to) rsa->n, the operation
@@ -677,8 +669,8 @@ e_rsax_rsa_mod_exp(BIGNUM *r0, const BIGNUM *I, RSA *rsa, BN_CTX *ctx)
                 BN_with_flags(d, rsa->d, BN_FLG_CONSTTIME);
             } else
                 d = rsa->d;
-            if (!e_rsax_bn_mod_exp(r0, I,d, rsa->n, ctx,
-                rsa->_method_mod_n, e_rsax_get_ctx(rsa, 2, rsa->n)))
+            if (!e_rsax_bn_mod_exp(r0, I, d, rsa->n, ctx,
+                                   rsa->_method_mod_n, e_rsax_get_ctx(rsa, 2, rsa->n)))
                 goto err;
         }
     }

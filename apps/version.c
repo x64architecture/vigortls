@@ -117,16 +117,16 @@
 #include <openssl/crypto.h>
 #include <openssl/bn.h>
 #ifndef OPENSSL_NO_RC4
-# include <openssl/rc4.h>
+#include <openssl/rc4.h>
 #endif
 #ifndef OPENSSL_NO_DES
-# include <openssl/des.h>
+#include <openssl/des.h>
 #endif
 #ifndef OPENSSL_NO_IDEA
-# include <openssl/idea.h>
+#include <openssl/idea.h>
 #endif
 #ifndef OPENSSL_NO_BF
-# include <openssl/blowfish.h>
+#include <openssl/blowfish.h>
 #endif
 
 #include "apps.h"
@@ -163,7 +163,7 @@ int version_main(int argc, char **argv)
         else if (strcmp(argv[i], "-a") == 0)
             date = version = cflags = options = platform = dir = 1;
         else {
-            BIO_printf(bio_err,"usage: version -[avbofpd]\n");
+            BIO_printf(bio_err, "usage: version -[avbofpd]\n");
             ret = 1;
             goto end;
         }

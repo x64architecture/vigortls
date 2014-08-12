@@ -67,7 +67,7 @@
 /* Take public definitions from engine.h */
 #include <openssl/engine.h>
 
-#ifdef  __cplusplus
+#ifdef __cplusplus
 extern "C" {
 #endif
 
@@ -79,12 +79,12 @@ extern "C" {
  * statements must come *after* the change. */
 #ifdef ENGINE_REF_COUNT_DEBUG
 
-#define engine_ref_debug(e, isfunct, diff) \
-    fprintf(stderr, "engine: %08x %s from %d to %d (%s:%d)\n", \
-        (unsigned int)(e), (isfunct ? "funct" : "struct"), \
-        ((isfunct) ? ((e)->funct_ref - (diff)) : ((e)->struct_ref - (diff))), \
-        ((isfunct) ? (e)->funct_ref : (e)->struct_ref), \
-        (__FILE__), (__LINE__));
+#define engine_ref_debug(e, isfunct, diff)                                        \
+    fprintf(stderr, "engine: %08x %s from %d to %d (%s:%d)\n",                    \
+            (unsigned int)(e), (isfunct ? "funct" : "struct"),                    \
+            ((isfunct) ? ((e)->funct_ref - (diff)) : ((e)->struct_ref - (diff))), \
+            ((isfunct) ? (e)->funct_ref : (e)->struct_ref),                       \
+            (__FILE__), (__LINE__));
 
 #else
 
@@ -96,7 +96,7 @@ extern "C" {
  * register callbacks. ENGINE_cleanup() will call all registered callbacks in
  * order. NB: both the "add" functions assume CRYPTO_LOCK_ENGINE to already be
  * held (in "write" mode). */
-typedef void (ENGINE_CLEANUP_CB)(void);
+typedef void(ENGINE_CLEANUP_CB)(void);
 typedef struct st_engine_cleanup_item {
     ENGINE_CLEANUP_CB *cb;
 } ENGINE_CLEANUP_ITEM;
@@ -116,20 +116,20 @@ DECLARE_STACK_OF(ENGINE)
  * as a (ENGINE_TABLE *) pointer value set initially to NULL. */
 typedef struct st_engine_table ENGINE_TABLE;
 int engine_table_register(ENGINE_TABLE **table, ENGINE_CLEANUP_CB *cleanup,
-    ENGINE *e, const int *nids, int num_nids, int setdefault);
+                          ENGINE *e, const int *nids, int num_nids, int setdefault);
 void engine_table_unregister(ENGINE_TABLE **table, ENGINE *e);
 void engine_table_cleanup(ENGINE_TABLE **table);
 #ifndef ENGINE_TABLE_DEBUG
 ENGINE *engine_table_select(ENGINE_TABLE **table, int nid);
 #else
 ENGINE *engine_table_select_tmp(ENGINE_TABLE **table, int nid, const char *f,
-    int l);
-#define engine_table_select(t,n) engine_table_select_tmp(t,n,__FILE__,__LINE__)
+                                int l);
+#define engine_table_select(t, n) engine_table_select_tmp(t, n, __FILE__, __LINE__)
 #endif
-typedef void (engine_table_doall_cb)(int nid, STACK_OF(ENGINE) *sk,
-    ENGINE *def, void *arg);
+typedef void(engine_table_doall_cb)(int nid, STACK_OF(ENGINE) * sk,
+                                    ENGINE * def, void *arg);
 void engine_table_doall(ENGINE_TABLE *table, engine_table_doall_cb *cb,
-    void *arg);
+                        void *arg);
 
 /* Internal versions of API functions that have control over locking. These are
  * used between C files when functionality needs to be shared but the caller may
@@ -172,7 +172,7 @@ struct engine_st {
     /* ASN1 public key handling via this callback */
     ENGINE_PKEY_ASN1_METHS_PTR pkey_asn1_meths;
 
-    ENGINE_GEN_INT_FUNC_PTR    destroy;
+    ENGINE_GEN_INT_FUNC_PTR destroy;
 
     ENGINE_GEN_INT_FUNC_PTR init;
     ENGINE_GEN_INT_FUNC_PTR finish;
@@ -199,7 +199,7 @@ struct engine_st {
     struct engine_st *next;
 };
 
-#ifdef  __cplusplus
+#ifdef __cplusplus
 }
 #endif
 

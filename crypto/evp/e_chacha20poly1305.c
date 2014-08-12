@@ -27,8 +27,7 @@
 #define POLY1305_TAG_LEN 16
 #define CHACHA20_NONCE_LEN 8
 
-struct aead_chacha20_poly1305_ctx
-{
+struct aead_chacha20_poly1305_ctx {
     unsigned char key[32];
     unsigned char tag_len;
 };
@@ -46,7 +45,7 @@ static int aead_chacha20_poly1305_init(EVP_AEAD_CTX *ctx, const unsigned char *k
     }
 
     if (key_len != sizeof(c20_ctx->key))
-        return 0;  /* internal error - EVP_AEAD_CTX_init should catch this. */
+        return 0; /* internal error - EVP_AEAD_CTX_init should catch this. */
 
     c20_ctx = malloc(sizeof(struct aead_chacha20_poly1305_ctx));
     if (c20_ctx == NULL)
@@ -67,7 +66,7 @@ static void aead_chacha20_poly1305_cleanup(EVP_AEAD_CTX *ctx)
 }
 
 static void poly1305_update_with_length(poly1305_state *poly1305,
-    const unsigned char *data, size_t data_len)
+                                        const unsigned char *data, size_t data_len)
 {
     size_t j = data_len;
     unsigned char length_bytes[8];
@@ -83,10 +82,10 @@ static void poly1305_update_with_length(poly1305_state *poly1305,
 }
 
 static ssize_t aead_chacha20_poly1305_seal(const EVP_AEAD_CTX *ctx,
-    unsigned char *out, size_t max_out_len,
-    const unsigned char *nonce, size_t nonce_len,
-    const unsigned char *in, size_t in_len,
-    const unsigned char *ad, size_t ad_len)
+                                           unsigned char *out, size_t max_out_len,
+                                           const unsigned char *nonce, size_t nonce_len,
+                                           const unsigned char *in, size_t in_len,
+                                           const unsigned char *ad, size_t ad_len)
 {
     const struct aead_chacha20_poly1305_ctx *c20_ctx = ctx->aead_state;
     unsigned char poly1305_key[32];
@@ -135,10 +134,10 @@ static ssize_t aead_chacha20_poly1305_seal(const EVP_AEAD_CTX *ctx,
 }
 
 static ssize_t aead_chacha20_poly1305_open(const EVP_AEAD_CTX *ctx,
-    unsigned char *out, size_t max_out_len,
-    const unsigned char *nonce, size_t nonce_len,
-    const unsigned char *in, size_t in_len,
-    const unsigned char *ad, size_t ad_len)
+                                           unsigned char *out, size_t max_out_len,
+                                           const unsigned char *nonce, size_t nonce_len,
+                                           const unsigned char *in, size_t in_len,
+                                           const unsigned char *ad, size_t ad_len)
 {
     const struct aead_chacha20_poly1305_ctx *c20_ctx = ctx->aead_state;
     unsigned char mac[POLY1305_TAG_LEN];
@@ -193,17 +192,16 @@ static ssize_t aead_chacha20_poly1305_open(const EVP_AEAD_CTX *ctx,
     return out_len;
 }
 
-static const EVP_AEAD aead_chacha20_poly1305 =
-{
-    .key_len    =  32,
-    .nonce_len  = CHACHA20_NONCE_LEN,
-    .overhead   = POLY1305_TAG_LEN,
+static const EVP_AEAD aead_chacha20_poly1305 = {
+    .key_len = 32,
+    .nonce_len = CHACHA20_NONCE_LEN,
+    .overhead = POLY1305_TAG_LEN,
     .max_tag_len = POLY1305_TAG_LEN,
 
-    .init     = aead_chacha20_poly1305_init,
-    .cleanup  = aead_chacha20_poly1305_cleanup,
-    .seal     = aead_chacha20_poly1305_seal,
-    .open     = aead_chacha20_poly1305_open,
+    .init = aead_chacha20_poly1305_init,
+    .cleanup = aead_chacha20_poly1305_cleanup,
+    .seal = aead_chacha20_poly1305_seal,
+    .open = aead_chacha20_poly1305_open,
 };
 
 const EVP_AEAD *EVP_aead_chacha20_poly1305()
@@ -211,4 +209,4 @@ const EVP_AEAD *EVP_aead_chacha20_poly1305()
     return &aead_chacha20_poly1305;
 }
 
-#endif  /* !OPENSSL_NO_CHACHA && !OPENSSL_NO_POLY1305 */
+#endif /* !OPENSSL_NO_CHACHA && !OPENSSL_NO_POLY1305 */

@@ -77,10 +77,10 @@ static void pqueue_print(pqueue pq)
     iter = pqueue_iterator(pq);
     for (item = pqueue_next(&iter); item != NULL; item = pqueue_next(&iter)) {
         printf("item\t%02x%02x%02x%02x%02x%02x%02x%02x\n",
-            item->priority[0], item->priority[1],
-            item->priority[2], item->priority[3],
-            item->priority[4], item->priority[5],
-            item->priority[6], item->priority[7]);
+               item->priority[0], item->priority[1],
+               item->priority[2], item->priority[3],
+               item->priority[4], item->priority[5],
+               item->priority[6], item->priority[7]);
     }
 }
 
@@ -93,16 +93,16 @@ static void pqueue_test(pqueue pq)
     buf2[0] = '\0';
 
     if (asprintf(&expected, "%s%s%s",
-        prio1_expected, prio2_expected, prio3_expected) == -1)
+                 prio1_expected, prio2_expected, prio3_expected) == -1)
         exit(-1);
 
     iter = pqueue_iterator(pq);
     for (item = pqueue_next(&iter); item != NULL; item = pqueue_next(&iter)) {
         if (asprintf(&buf, "%02x%02x%02x%02x%02x%02x%02x%02x",
-            item->priority[0], item->priority[1],
-            item->priority[2], item->priority[3],
-            item->priority[4], item->priority[5],
-            item->priority[6], item->priority[7]) == -1)
+                     item->priority[0], item->priority[1],
+                     item->priority[2], item->priority[3],
+                     item->priority[4], item->priority[5],
+                     item->priority[6], item->priority[7]) == -1)
             exit(-1);
 
         BUF_strlcat(buf2, buf, sizeof(buf2));
@@ -137,7 +137,7 @@ int main(void)
     fprintf(stderr, "found %p\n", item->priority);
 
     item = pqueue_find(pq, prio3);
-    fprintf(stderr, "found %p\n", item ? item->priority: 0);
+    fprintf(stderr, "found %p\n", item ? item->priority : 0);
 
     pqueue_print(pq);
 

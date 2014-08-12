@@ -71,13 +71,13 @@
 
 static struct hostent *GetHostByName(char *name);
 static int ssl_sock_init(void);
-static int init_client_ip(int *sock,unsigned char ip[4], int port, int type);
+static int init_client_ip(int *sock, unsigned char ip[4], int port, int type);
 static int init_server(int *sock, int port, int type);
-static int init_server_long(int *sock, int port,char *ip, int type);
+static int init_server_long(int *sock, int port, char *ip, int type);
 static int do_accept(int acc_sock, int *sock, char **host);
 static int host_ip(char *str, unsigned char ip[4]);
 
-#define SOCKET_PROTOCOL    IPPROTO_TCP
+#define SOCKET_PROTOCOL IPPROTO_TCP
 
 static int ssl_sock_init(void)
 {
@@ -85,183 +85,187 @@ static int ssl_sock_init(void)
 }
 
 int init_client(int *sock, char *host, int port, int type)
-    {
+{
     unsigned char ip[4];
 
     memset(ip, '\0', sizeof ip);
-    if (!host_ip(host,&(ip[0])))
+    if (!host_ip(host, &(ip[0])))
         return 0;
-    return init_client_ip(sock,ip,port,type);
-    }
+    return init_client_ip(sock, ip, port, type);
+}
 
 static int init_client_ip(int *sock, unsigned char ip[4], int port, int type)
-    {
+{
     unsigned long addr;
     struct sockaddr_in them;
-    int s,i;
+    int s, i;
 
-    if (!ssl_sock_init()) return (0);
+    if (!ssl_sock_init())
+        return (0);
 
-    memset((char *)&them,0,sizeof(them));
-    them.sin_family=AF_INET;
-    them.sin_port=htons((unsigned short)port);
-    addr=(unsigned long)
-        ((unsigned long)ip[0]<<24L)|
-        ((unsigned long)ip[1]<<16L)|
-        ((unsigned long)ip[2]<< 8L)|
-        ((unsigned long)ip[3]);
-    them.sin_addr.s_addr=htonl(addr);
+    memset((char *)&them, 0, sizeof(them));
+    them.sin_family = AF_INET;
+    them.sin_port = htons((unsigned short)port);
+    addr = (unsigned long)((unsigned long)ip[0] << 24L) | ((unsigned long)ip[1] << 16L) | ((unsigned long)ip[2] << 8L) | ((unsigned long)ip[3]);
+    them.sin_addr.s_addr = htonl(addr);
 
     if (type == SOCK_STREAM)
-        s=socket(AF_INET,SOCK_STREAM,SOCKET_PROTOCOL);
+        s = socket(AF_INET, SOCK_STREAM, SOCKET_PROTOCOL);
     else /* ( type == SOCK_DGRAM) */
-        s=socket(AF_INET,SOCK_DGRAM,IPPROTO_UDP);
-            
-    if (s == INVALID_SOCKET) { perror("socket"); return (0); }
+        s = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
 
-#if defined(SO_KEEPALIVE)
-    if (type == SOCK_STREAM)
-        {
-        i=0;
-        i=setsockopt(s,SOL_SOCKET,SO_KEEPALIVE,(char *)&i,sizeof(i));
-        if (i < 0) { close(s); perror("keepalive"); return (0); }
-        }
-#endif
-
-    if (connect(s,(struct sockaddr *)&them,sizeof(them)) == -1)
-        { close(s); perror("connect"); return (0); }
-    *sock=s;
-    return (1);
+    if (s == INVALID_SOCKET) {
+        perror("socket");
+        return (0);
     }
 
+#if defined(SO_KEEPALIVE)
+    if (type == SOCK_STREAM) {
+        i = 0;
+        i = setsockopt(s, SOL_SOCKET, SO_KEEPALIVE, (char *)&i, sizeof(i));
+        if (i < 0) {
+            close(s);
+            perror("keepalive");
+            return (0);
+        }
+    }
+#endif
+
+    if (connect(s, (struct sockaddr *)&them, sizeof(them)) == -1) {
+        close(s);
+        perror("connect");
+        return (0);
+    }
+    *sock = s;
+    return (1);
+}
+
 int do_server(int port, int type, int *ret, int (*cb)(char *hostname, int s, unsigned char *context), unsigned char *context)
-    {
+{
     int sock;
     char *name = NULL;
     int accept_socket = 0;
     int i;
 
-    if (!init_server(&accept_socket,port,type)) return (0);
+    if (!init_server(&accept_socket, port, type))
+        return (0);
 
-    if (ret != NULL)
-        {
-        *ret=accept_socket;
+    if (ret != NULL) {
+        *ret = accept_socket;
         /* return (1);*/
-        }
-      for (;;)
-          {
-        if (type==SOCK_STREAM)
-            {
-            if (do_accept(accept_socket,&sock,&name) == 0)
-                {
-                shutdown((accept_socket), 2); 
-                close((accept_socket));
-                }
-            }
-        else
-            sock = accept_socket;
-        i=(*cb)(name,sock, context);
-        if (name != NULL) free(name);
+    }
+    for (;;) {
         if (type == SOCK_STREAM) {
-            shutdown((sock), 2); 
+            if (do_accept(accept_socket, &sock, &name) == 0) {
+                shutdown((accept_socket), 2);
+                close((accept_socket));
+            }
+        } else
+            sock = accept_socket;
+        i = (*cb)(name, sock, context);
+        if (name != NULL)
+            free(name);
+        if (type == SOCK_STREAM) {
+            shutdown((sock), 2);
             close((sock));
         }
         if (i < 0) {
-            shutdown((accept_socket), 2); 
+            shutdown((accept_socket), 2);
             close((accept_socket));
             return (i);
         }
-        }
     }
+}
 
 static int init_server_long(int *sock, int port, char *ip, int type)
-    {
-    int ret=0;
+{
+    int ret = 0;
     struct sockaddr_in server;
-    int s= -1;
+    int s = -1;
 
-    if (!ssl_sock_init()) return (0);
+    if (!ssl_sock_init())
+        return (0);
 
-    memset((char *)&server,0,sizeof(server));
-    server.sin_family=AF_INET;
-    server.sin_port=htons((unsigned short)port);
+    memset((char *)&server, 0, sizeof(server));
+    server.sin_family = AF_INET;
+    server.sin_port = htons((unsigned short)port);
     if (ip == NULL)
-        server.sin_addr.s_addr=INADDR_ANY;
+        server.sin_addr.s_addr = INADDR_ANY;
     else
 /* Added for T3E, address-of fails on bit field (beckman@acl.lanl.gov) */
 #ifndef BIT_FIELD_LIMITS
-        memcpy(&server.sin_addr.s_addr,ip,4);
+        memcpy(&server.sin_addr.s_addr, ip, 4);
 #else
-        memcpy(&server.sin_addr,ip,4);
+        memcpy(&server.sin_addr, ip, 4);
 #endif
-    
-        if (type == SOCK_STREAM)
-            s=socket(AF_INET,SOCK_STREAM,SOCKET_PROTOCOL);
-        else /* type == SOCK_DGRAM */
-            s=socket(AF_INET, SOCK_DGRAM,IPPROTO_UDP);
 
-    if (s == INVALID_SOCKET) goto err;
+    if (type == SOCK_STREAM)
+        s = socket(AF_INET, SOCK_STREAM, SOCKET_PROTOCOL);
+    else /* type == SOCK_DGRAM */
+        s = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
+
+    if (s == INVALID_SOCKET)
+        goto err;
 #if defined SOL_SOCKET && defined SO_REUSEADDR
-        {
+    {
         int j = 1;
         setsockopt(s, SOL_SOCKET, SO_REUSEADDR,
-               (void *) &j, sizeof j);
-        }
+                   (void *)&j, sizeof j);
+    }
 #endif
-    if (bind(s,(struct sockaddr *)&server,sizeof(server)) == -1)
-        {
+    if (bind(s, (struct sockaddr *)&server, sizeof(server)) == -1) {
         perror("bind");
         goto err;
-        }
+    }
     /* Make it 128 for linux */
-    if (type==SOCK_STREAM && listen(s,128) == -1) goto err;
-    *sock=s;
-    ret=1;
+    if (type == SOCK_STREAM && listen(s, 128) == -1)
+        goto err;
+    *sock = s;
+    ret = 1;
 err:
     if ((ret == 0) && (s != -1)) {
-        shutdown((s), 0); 
+        shutdown((s), 0);
         close((s));
     }
     return (ret);
-    }
+}
 
 static int init_server(int *sock, int port, int type)
-    {
+{
     return (init_server_long(sock, port, NULL, type));
-    }
+}
 
 static int do_accept(int acc_sock, int *sock, char **host)
-    {
+{
     int ret;
-    struct hostent *h1,*h2;
+    struct hostent *h1, *h2;
     static struct sockaddr_in from;
     int len;
-/*    struct linger ling; */
+    /*    struct linger ling; */
 
-    if (!ssl_sock_init()) return (0);
+    if (!ssl_sock_init())
+        return (0);
 
 redoit:
-    memset((char *)&from,0,sizeof(from));
-    len=sizeof(from);
+    memset((char *)&from, 0, sizeof(from));
+    len = sizeof(from);
     /* Note: under VMS with SOCKETSHR the fourth parameter is currently
      * of type (int *) whereas under other systems it is (void *) if
      * you don't have a cast it will choke the compiler: if you do
      * have a cast then you can either go for (int *) or (void *).
      */
-    ret=accept(acc_sock,(struct sockaddr *)&from,(void *)&len);
-    if (ret == INVALID_SOCKET)
-        {
-        if (errno == EINTR)
-            {
+    ret = accept(acc_sock, (struct sockaddr *)&from, (void *)&len);
+    if (ret == INVALID_SOCKET) {
+        if (errno == EINTR) {
             /*check_timeout(); */
             goto redoit;
-            }
-        fprintf(stderr,"errno=%d ",errno);
+        }
+        fprintf(stderr, "errno=%d ", errno);
         perror("accept");
         return (0);
-        }
+    }
 
-/*
+    /*
     ling.l_onoff=1;
     ling.l_linger=0;
     i=setsockopt(ret,SOL_SOCKET,SO_LINGER,(char *)&ling,sizeof(ling));
@@ -271,189 +275,171 @@ redoit:
     if (i < 0) { perror("keepalive"); return (0); }
 */
 
-    if (host == NULL) goto end;
+    if (host == NULL)
+        goto end;
 #ifndef BIT_FIELD_LIMITS
-    h1=gethostbyaddr((char *)&from.sin_addr.s_addr,
-        sizeof(from.sin_addr.s_addr),AF_INET);
+    h1 = gethostbyaddr((char *)&from.sin_addr.s_addr,
+                       sizeof(from.sin_addr.s_addr), AF_INET);
 #else
-    h1=gethostbyaddr((char *)&from.sin_addr,
-        sizeof(struct in_addr),AF_INET);
+    h1 = gethostbyaddr((char *)&from.sin_addr,
+                       sizeof(struct in_addr), AF_INET);
 #endif
-    if (h1 == NULL)
-        {
-        BIO_printf(bio_err,"bad gethostbyaddr\n");
-        *host=NULL;
+    if (h1 == NULL) {
+        BIO_printf(bio_err, "bad gethostbyaddr\n");
+        *host = NULL;
         /* return (0); */
-        }
-    else
-        {
-        if ((*host=(char *)malloc(strlen(h1->h_name)+1)) == NULL)
-            {
+    } else {
+        if ((*host = (char *)malloc(strlen(h1->h_name) + 1)) == NULL) {
             perror("malloc");
             close(ret);
             return (0);
-            }
-        BUF_strlcpy(*host,h1->h_name,strlen(h1->h_name)+1);
-
-        h2=GetHostByName(*host);
-        if (h2 == NULL)
-            {
-            BIO_printf(bio_err,"gethostbyname failure\n");
-            close(ret);
-            return (0);
-            }
-        if (h2->h_addrtype != AF_INET)
-            {
-            BIO_printf(bio_err,"gethostbyname addr is not AF_INET\n");
-            close(ret);
-            return (0);
-            }
         }
-end:
-    *sock=ret;
-    return (1);
+        BUF_strlcpy(*host, h1->h_name, strlen(h1->h_name) + 1);
+
+        h2 = GetHostByName(*host);
+        if (h2 == NULL) {
+            BIO_printf(bio_err, "gethostbyname failure\n");
+            close(ret);
+            return (0);
+        }
+        if (h2->h_addrtype != AF_INET) {
+            BIO_printf(bio_err, "gethostbyname addr is not AF_INET\n");
+            close(ret);
+            return (0);
+        }
     }
+end:
+    *sock = ret;
+    return (1);
+}
 
 int extract_host_port(char *str, char **host_ptr, unsigned char *ip,
-         short *port_ptr)
-    {
-    char *h,*p;
+                      short *port_ptr)
+{
+    char *h, *p;
 
-    h=str;
-    p=strchr(str,':');
-    if (p == NULL)
-        {
-        BIO_printf(bio_err,"no port defined\n");
+    h = str;
+    p = strchr(str, ':');
+    if (p == NULL) {
+        BIO_printf(bio_err, "no port defined\n");
         return (0);
-        }
-    *(p++)='\0';
+    }
+    *(p++) = '\0';
 
-    if ((ip != NULL) && !host_ip(str,ip))
+    if ((ip != NULL) && !host_ip(str, ip))
         goto err;
-    if (host_ptr != NULL) *host_ptr=h;
+    if (host_ptr != NULL)
+        *host_ptr = h;
 
-    if (!extract_port(p,port_ptr))
+    if (!extract_port(p, port_ptr))
         goto err;
     return (1);
 err:
     return (0);
-    }
+}
 
 static int host_ip(char *str, unsigned char ip[4])
-    {
-    unsigned int in[4]; 
+{
+    unsigned int in[4];
     int i;
 
-    if (sscanf(str,"%u.%u.%u.%u",&(in[0]),&(in[1]),&(in[2]),&(in[3])) == 4)
-        {
-        for (i=0; i<4; i++)
-            if (in[i] > 255)
-                {
-                BIO_printf(bio_err,"invalid IP address\n");
+    if (sscanf(str, "%u.%u.%u.%u", &(in[0]), &(in[1]), &(in[2]), &(in[3])) == 4) {
+        for (i = 0; i < 4; i++)
+            if (in[i] > 255) {
+                BIO_printf(bio_err, "invalid IP address\n");
                 goto err;
-                }
-        ip[0]=in[0];
-        ip[1]=in[1];
-        ip[2]=in[2];
-        ip[3]=in[3];
-        }
-    else
-        { /* do a gethostbyname */
+            }
+        ip[0] = in[0];
+        ip[1] = in[1];
+        ip[2] = in[2];
+        ip[3] = in[3];
+    } else { /* do a gethostbyname */
         struct hostent *he;
 
-        if (!ssl_sock_init()) return (0);
-
-        he=GetHostByName(str);
-        if (he == NULL)
-            {
-            BIO_printf(bio_err,"gethostbyname failure\n");
-            goto err;
-            }
-        if (he->h_addrtype != AF_INET)
-            {
-            BIO_printf(bio_err,"gethostbyname addr is not AF_INET\n");
+        if (!ssl_sock_init())
             return (0);
-            }
-        ip[0]=he->h_addr_list[0][0];
-        ip[1]=he->h_addr_list[0][1];
-        ip[2]=he->h_addr_list[0][2];
-        ip[3]=he->h_addr_list[0][3];
+
+        he = GetHostByName(str);
+        if (he == NULL) {
+            BIO_printf(bio_err, "gethostbyname failure\n");
+            goto err;
         }
+        if (he->h_addrtype != AF_INET) {
+            BIO_printf(bio_err, "gethostbyname addr is not AF_INET\n");
+            return (0);
+        }
+        ip[0] = he->h_addr_list[0][0];
+        ip[1] = he->h_addr_list[0][1];
+        ip[2] = he->h_addr_list[0][2];
+        ip[3] = he->h_addr_list[0][3];
+    }
     return (1);
 err:
     return (0);
-    }
+}
 
 int extract_port(char *str, short *port_ptr)
-    {
+{
     int i;
     struct servent *s;
 
-    i=atoi(str);
+    i = atoi(str);
     if (i != 0)
-        *port_ptr=(unsigned short)i;
-    else
-        {
-        s=getservbyname(str,"tcp");
-        if (s == NULL)
-            {
-            BIO_printf(bio_err,"getservbyname failure for %s\n",str);
+        *port_ptr = (unsigned short)i;
+    else {
+        s = getservbyname(str, "tcp");
+        if (s == NULL) {
+            BIO_printf(bio_err, "getservbyname failure for %s\n", str);
             return (0);
-            }
-        *port_ptr=ntohs((unsigned short)s->s_port);
         }
-    return (1);
+        *port_ptr = ntohs((unsigned short)s->s_port);
     }
+    return (1);
+}
 
-#define GHBN_NUM    4
-static struct ghbn_cache_st
-    {
+#define GHBN_NUM 4
+static struct ghbn_cache_st {
     char name[128];
     struct hostent ent;
     unsigned long order;
-    } ghbn_cache[GHBN_NUM];
+} ghbn_cache[GHBN_NUM];
 
-static unsigned long ghbn_hits=0L;
-static unsigned long ghbn_miss=0L;
+static unsigned long ghbn_hits = 0L;
+static unsigned long ghbn_miss = 0L;
 
 static struct hostent *GetHostByName(char *name)
-    {
+{
     struct hostent *ret;
-    int i,lowi=0;
-    unsigned long low= (unsigned long)-1;
+    int i, lowi = 0;
+    unsigned long low = (unsigned long)-1;
 
-    for (i=0; i<GHBN_NUM; i++)
-        {
-        if (low > ghbn_cache[i].order)
-            {
-            low=ghbn_cache[i].order;
-            lowi=i;
-            }
-        if (ghbn_cache[i].order > 0)
-            {
-            if (strncmp(name,ghbn_cache[i].name,128) == 0)
+    for (i = 0; i < GHBN_NUM; i++) {
+        if (low > ghbn_cache[i].order) {
+            low = ghbn_cache[i].order;
+            lowi = i;
+        }
+        if (ghbn_cache[i].order > 0) {
+            if (strncmp(name, ghbn_cache[i].name, 128) == 0)
                 break;
-            }
-        }
-    if (i == GHBN_NUM) /* no hit*/
-        {
-        ghbn_miss++;
-        ret=gethostbyname(name);
-        if (ret == NULL) return (NULL);
-        /* else add to cache */
-        if (strlen(name) < sizeof ghbn_cache[0].name)
-            {
-            strcpy(ghbn_cache[lowi].name,name);
-            memcpy((char *)&(ghbn_cache[lowi].ent),ret,sizeof(struct hostent));
-            ghbn_cache[lowi].order=ghbn_miss+ghbn_hits;
-            }
-        return (ret);
-        }
-    else
-        {
-        ghbn_hits++;
-        ret= &(ghbn_cache[i].ent);
-        ghbn_cache[i].order=ghbn_miss+ghbn_hits;
-        return (ret);
         }
     }
+    if (i == GHBN_NUM) /* no hit*/
+    {
+        ghbn_miss++;
+        ret = gethostbyname(name);
+        if (ret == NULL)
+            return (NULL);
+        /* else add to cache */
+        if (strlen(name) < sizeof ghbn_cache[0].name) {
+            strcpy(ghbn_cache[lowi].name, name);
+            memcpy((char *)&(ghbn_cache[lowi].ent), ret, sizeof(struct hostent));
+            ghbn_cache[lowi].order = ghbn_miss + ghbn_hits;
+        }
+        return (ret);
+    } else {
+        ghbn_hits++;
+        ret = &(ghbn_cache[i].ent);
+        ghbn_cache[i].order = ghbn_miss + ghbn_hits;
+        return (ret);
+    }
+}

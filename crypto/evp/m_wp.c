@@ -11,16 +11,21 @@
 #include "evp_locl.h"
 
 static int init(EVP_MD_CTX *ctx)
-    { return WHIRLPOOL_Init(ctx->md_data); }
+{
+    return WHIRLPOOL_Init(ctx->md_data);
+}
 
-static int update(EVP_MD_CTX *ctx,const void *data,size_t count)
-    { return WHIRLPOOL_Update(ctx->md_data,data,count); }
+static int update(EVP_MD_CTX *ctx, const void *data, size_t count)
+{
+    return WHIRLPOOL_Update(ctx->md_data, data, count);
+}
 
-static int final(EVP_MD_CTX *ctx,unsigned char *md)
-    { return WHIRLPOOL_Final(md,ctx->md_data); }
+static int final(EVP_MD_CTX *ctx, unsigned char *md)
+{
+    return WHIRLPOOL_Final(md, ctx->md_data);
+}
 
-static const EVP_MD whirlpool_md=
-    {
+static const EVP_MD whirlpool_md = {
     NID_whirlpool,
     0,
     WHIRLPOOL_DIGEST_LENGTH,
@@ -31,12 +36,12 @@ static const EVP_MD whirlpool_md=
     NULL,
     NULL,
     EVP_PKEY_NULL_method,
-    WHIRLPOOL_BBLOCK/8,
-    sizeof(EVP_MD *)+sizeof(WHIRLPOOL_CTX),
-    };
+    WHIRLPOOL_BBLOCK / 8,
+    sizeof(EVP_MD *) + sizeof(WHIRLPOOL_CTX),
+};
 
 const EVP_MD *EVP_whirlpool(void)
-    {
+{
     return (&whirlpool_md);
-    }
+}
 #endif

@@ -70,8 +70,8 @@ int main(int argc, char *argv[])
 #include <openssl/evp.h>
 #include <openssl/sha.h>
 
-#undef SHA_0 /* FIPS 180 */
-#define  SHA_1 /* FIPS 180-1 */
+#undef SHA_0  /* FIPS 180 */
+#define SHA_1 /* FIPS 180-1 */
 
 static char *test[] = {
     "abc",
@@ -84,16 +84,14 @@ static char *ret[] = {
     "0164b8a914cd2a5e74c4f7ff082c4d97f1edf880",
     "d2516ee1acfa5baf33dfc1c471e438449ef134c8",
 };
-static char *bigret=
-    "3232affa48628a26653b5aaa44541fd90d690603";
+static char *bigret = "3232affa48628a26653b5aaa44541fd90d690603";
 #endif
 #ifdef SHA_1
 static char *ret[] = {
     "a9993e364706816aba3e25717850c26c9cd0d89d",
     "84983e441c3bd26ebaae4aa1f95129e5e54670f1",
 };
-static char *bigret =
-    "34aa973cd4c4daa4f61eeb2bdbad27316534016f";
+static char *bigret = "34aa973cd4c4daa4f61eeb2bdbad27316534016f";
 #endif
 
 static char *pt(unsigned char *md);
@@ -125,7 +123,7 @@ int main(int argc, char *argv[])
     } while (*P != NULL);
 
     memset(buf, 'a', 1000);
-    EVP_DigestInit_ex(&c,EVP_sha1(), NULL);
+    EVP_DigestInit_ex(&c, EVP_sha1(), NULL);
     for (i = 0; i < 1000; i++)
         EVP_DigestUpdate(&c, buf, 1000);
     EVP_DigestFinal_ex(&c, md, NULL);
@@ -134,7 +132,7 @@ int main(int argc, char *argv[])
     r = bigret;
     if (strcmp(p, r) != 0) {
         printf("error calculating SHA1 on 'a' * 1000\n");
-        printf("got %s instead of %s\n",p,r);
+        printf("got %s instead of %s\n", p, r);
         err++;
     } else
         printf("test 3 ok\n");

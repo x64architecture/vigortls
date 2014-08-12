@@ -62,12 +62,11 @@
 #include <openssl/crypto.h>
 #include <openssl/store.h>
 
-#ifdef  __cplusplus
+#ifdef __cplusplus
 extern "C" {
 #endif
 
-struct store_method_st
-    {
+struct store_method_st {
     char *name;
 
     /* All the functions return a positive integer or non-NULL for success
@@ -106,18 +105,17 @@ struct store_method_st
 
     /* Generic control function */
     STORE_CTRL_FUNC_PTR ctrl;
-    };
+};
 
-struct store_st
-    {
+struct store_st {
     const STORE_METHOD *meth;
     /* functional reference if 'meth' is ENGINE-provided */
     ENGINE *engine;
 
     CRYPTO_EX_DATA ex_data;
     int references;
-    };
-#ifdef  __cplusplus
+};
+#ifdef __cplusplus
 }
 #endif
 

@@ -79,7 +79,7 @@ ENGINE_register_DSA(ENGINE *e)
 {
     if (e->dsa_meth)
         return engine_table_register(&dsa_table,
-            engine_unregister_all_DSA, e, &dummy_nid, 1, 0);
+                                     engine_unregister_all_DSA, e, &dummy_nid, 1, 0);
     return 1;
 }
 
@@ -97,7 +97,7 @@ ENGINE_set_default_DSA(ENGINE *e)
 {
     if (e->dsa_meth)
         return engine_table_register(&dsa_table,
-            engine_unregister_all_DSA, e, &dummy_nid, 1, 1);
+                                     engine_unregister_all_DSA, e, &dummy_nid, 1, 1);
     return 1;
 }
 

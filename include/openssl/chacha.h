@@ -25,7 +25,7 @@
 
 #include <stddef.h>
 
-#ifdef  __cplusplus
+#ifdef __cplusplus
 extern "C" {
 #endif
 
@@ -33,12 +33,12 @@ extern "C" {
  * nonce and writes the result to |out|, which may be equal to |in|. The
  * initial block counter is specified by |counter|. */
 void CRYPTO_chacha_20(unsigned char *out,
-              const unsigned char *in, size_t in_len,
-              const unsigned char key[32],
-              const unsigned char nonce[8],
-              size_t counter);
+                      const unsigned char *in, size_t in_len,
+                      const unsigned char key[32],
+                      const unsigned char nonce[8],
+                      size_t counter);
 
-#ifdef  __cplusplus
+#ifdef __cplusplus
 }
 #endif
 

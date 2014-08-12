@@ -61,7 +61,6 @@
  * SUN MICROSYSTEMS, INC., and contributed to the OpenSSL project.
  */
 
-
 #include <stdio.h>
 #include <string.h>
 
@@ -112,16 +111,16 @@
 
 #ifdef TEST_ENG_OPENSSL_RC4
 static int openssl_ciphers(ENGINE *e, const EVP_CIPHER **cipher,
-    const int **nids, int nid);
+                           const int **nids, int nid);
 #endif
 #ifdef TEST_ENG_OPENSSL_SHA
 static int openssl_digests(ENGINE *e, const EVP_MD **digest,
-    const int **nids, int nid);
+                           const int **nids, int nid);
 #endif
 
 #ifdef TEST_ENG_OPENSSL_PKEY
 static EVP_PKEY *openssl_load_privkey(ENGINE *eng, const char *key_id,
-    UI_METHOD *ui_method, void *callback_data);
+                                      UI_METHOD *ui_method, void *callback_data);
 #endif
 
 /* The constants used when creating the ENGINE */
@@ -133,8 +132,7 @@ static const char *engine_openssl_name = "Software engine support";
 static int
 bind_helper(ENGINE *e)
 {
-    if (!ENGINE_set_id(e, engine_openssl_id) ||
-        !ENGINE_set_name(e, engine_openssl_name)
+    if (!ENGINE_set_id(e, engine_openssl_id) || !ENGINE_set_name(e, engine_openssl_name)
 #ifndef TEST_ENG_OPENSSL_NO_ALGORITHMS
 #ifndef OPENSSL_NO_RSA
         || !ENGINE_set_RSA(e, RSA_get_default_method())
@@ -162,7 +160,7 @@ bind_helper(ENGINE *e)
 #ifdef TEST_ENG_OPENSSL_PKEY
         || !ENGINE_set_load_privkey_function(e, openssl_load_privkey)
 #endif
-        )
+            )
         return 0;
     /* If we add errors to this ENGINE, ensure the error handling is setup here */
     /* openssl_load_error_strings(); */
@@ -225,8 +223,8 @@ IMPLEMENT_DYNAMIC_BIND_FN(bind_fn)
  *    TEST_ENG_OPENSSL_RC4_P_CIPHER - ditto for the "cipher" handler.
  */
 #include <openssl/rc4.h>
-#define TEST_RC4_KEY_SIZE        16
-static int test_cipher_nids[] = {NID_rc4, NID_rc4_40};
+#define TEST_RC4_KEY_SIZE 16
+static int test_cipher_nids[] = { NID_rc4, NID_rc4_40 };
 static int test_cipher_nids_number = 2;
 
 typedef struct {
@@ -237,20 +235,20 @@ typedef struct {
 #define test(ctx) ((TEST_RC4_KEY *)(ctx)->cipher_data)
 static int
 test_rc4_init_key(EVP_CIPHER_CTX *ctx, const unsigned char *key,
-    const unsigned char *iv, int enc)
+                  const unsigned char *iv, int enc)
 {
 #ifdef TEST_ENG_OPENSSL_RC4_P_INIT
     fprintf(stderr, "(TEST_ENG_OPENSSL_RC4) test_init_key() called\n");
 #endif
     memcpy(&test(ctx)->key[0], key, EVP_CIPHER_CTX_key_length(ctx));
     RC4_set_key(&test(ctx)->ks, EVP_CIPHER_CTX_key_length(ctx),
-        test(ctx)->key);
+                test(ctx)->key);
     return 1;
 }
 
 static int
 test_rc4_cipher(EVP_CIPHER_CTX *ctx, unsigned char *out,
-    const unsigned char *in, size_t inl)
+                const unsigned char *in, size_t inl)
 {
 #ifdef TEST_ENG_OPENSSL_RC4_P_CIPHER
     fprintf(stderr, "(TEST_ENG_OPENSSL_RC4) test_cipher() called\n");
@@ -275,7 +273,7 @@ static const EVP_CIPHER test_r4_cipher = {
 
 static const EVP_CIPHER test_r4_40_cipher = {
     NID_rc4_40,
-    1,5 /* 40 bit */,0,
+    1, 5 /* 40 bit */, 0,
     EVP_CIPH_VARIABLE_LENGTH,
     test_rc4_init_key,
     test_rc4_cipher,
@@ -303,7 +301,8 @@ openssl_ciphers(ENGINE *e, const EVP_CIPHER **cipher, const int **nids, int nid)
     else {
 #ifdef TEST_ENG_OPENSSL_RC4_OTHERS
         fprintf(stderr, "(TEST_ENG_OPENSSL_RC4) returning NULL for "
-            "nid %d\n", nid);
+                        "nid %d\n",
+                nid);
 #endif
         *cipher = NULL;
         return 0;
@@ -315,7 +314,7 @@ openssl_ciphers(ENGINE *e, const EVP_CIPHER **cipher, const int **nids, int nid)
 #ifdef TEST_ENG_OPENSSL_SHA
 /* Much the same sort of comment as for TEST_ENG_OPENSSL_RC4 */
 #include <openssl/sha.h>
-static int test_digest_nids[] = {NID_sha1};
+static int test_digest_nids[] = { NID_sha1 };
 static int test_digest_nids_number = 1;
 
 static int
@@ -374,7 +373,8 @@ openssl_digests(ENGINE *e, const EVP_MD **digest, const int **nids, int nid)
     else {
 #ifdef TEST_ENG_OPENSSL_SHA_OTHERS
         fprintf(stderr, "(TEST_ENG_OPENSSL_SHA) returning NULL for "
-            "nid %d\n", nid);
+                        "nid %d\n",
+                nid);
 #endif
         *digest = NULL;
         return 0;
@@ -386,13 +386,13 @@ openssl_digests(ENGINE *e, const EVP_MD **digest, const int **nids, int nid)
 #ifdef TEST_ENG_OPENSSL_PKEY
 static EVP_PKEY *
 openssl_load_privkey(ENGINE *eng, const char *key_id, UI_METHOD *ui_method,
-    void *callback_data)
+                     void *callback_data)
 {
     BIO *in;
     EVP_PKEY *key;
 
     fprintf(stderr, "(TEST_ENG_OPENSSL_PKEY)Loading Private key %s\n",
-        key_id);
+            key_id);
     in = BIO_new_file(key_id, "r");
     if (!in)
         return NULL;

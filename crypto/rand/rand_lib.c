@@ -135,7 +135,7 @@ void RAND_seed(const void *buf, int num)
 {
     const RAND_METHOD *meth = RAND_get_rand_method();
     if (meth && meth->seed)
-        meth->seed(buf,num);
+        meth->seed(buf, num);
 }
 
 void RAND_add(const void *buf, int num, double entropy)

@@ -80,7 +80,7 @@ ENGINE_register_RAND(ENGINE *e)
 {
     if (e->rand_meth)
         return engine_table_register(&rand_table,
-            engine_unregister_all_RAND, e, &dummy_nid, 1, 0);
+                                     engine_unregister_all_RAND, e, &dummy_nid, 1, 0);
     return 1;
 }
 
@@ -98,7 +98,7 @@ ENGINE_set_default_RAND(ENGINE *e)
 {
     if (e->rand_meth)
         return engine_table_register(&rand_table,
-            engine_unregister_all_RAND, e, &dummy_nid, 1, 1);
+                                     engine_unregister_all_RAND, e, &dummy_nid, 1, 1);
     return 1;
 }
 

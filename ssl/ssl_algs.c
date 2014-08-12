@@ -103,12 +103,12 @@ int SSL_library_init(void)
 
 #ifndef OPENSSL_NO_MD5
     EVP_add_digest(EVP_md5());
-    EVP_add_digest_alias(SN_md5,"ssl3-md5");
+    EVP_add_digest_alias(SN_md5, "ssl3-md5");
 #endif
 #ifndef OPENSSL_NO_SHA
     EVP_add_digest(EVP_sha1()); /* RSA with sha1 */
-    EVP_add_digest_alias(SN_sha1,"ssl3-sha1");
-    EVP_add_digest_alias(SN_sha1WithRSAEncryption,SN_sha1WithRSA);
+    EVP_add_digest_alias(SN_sha1, "ssl3-sha1");
+    EVP_add_digest_alias(SN_sha1WithRSAEncryption, SN_sha1WithRSA);
 #endif
 #ifndef OPENSSL_NO_SHA256
     EVP_add_digest(EVP_sha224());
@@ -120,14 +120,14 @@ int SSL_library_init(void)
 #endif
 #if !defined(OPENSSL_NO_SHA) && !defined(OPENSSL_NO_DSA)
     EVP_add_digest(EVP_dss1()); /* DSA with sha1 */
-    EVP_add_digest_alias(SN_dsaWithSHA1,SN_dsaWithSHA1_2);
-    EVP_add_digest_alias(SN_dsaWithSHA1,"DSS1");
-    EVP_add_digest_alias(SN_dsaWithSHA1,"dss1");
+    EVP_add_digest_alias(SN_dsaWithSHA1, SN_dsaWithSHA1_2);
+    EVP_add_digest_alias(SN_dsaWithSHA1, "DSS1");
+    EVP_add_digest_alias(SN_dsaWithSHA1, "dss1");
 #endif
 #ifndef OPENSSL_NO_ECDSA
     EVP_add_digest(EVP_ecdsa());
 #endif
-    /* If you want support for phased out ciphers, add the following */
+/* If you want support for phased out ciphers, add the following */
 #if 0
     EVP_add_digest(EVP_sha());
     EVP_add_digest(EVP_dss());

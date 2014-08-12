@@ -52,9 +52,9 @@
 #ifndef OPENSSL_NO_CAMELLIA
 
 #ifndef CAMELLIA_DEBUG
-# ifndef NDEBUG
-#  define NDEBUG
-# endif
+#ifndef NDEBUG
+#define NDEBUG
+#endif
 #endif
 #include <assert.h>
 
@@ -62,15 +62,15 @@
 #include "cmll_locl.h"
 
 void Camellia_ecb_encrypt(const unsigned char *in, unsigned char *out,
-    const CAMELLIA_KEY *key, const int enc)
-    {
+                          const CAMELLIA_KEY *key, const int enc)
+{
 
     assert(in && out && key);
-    assert((CAMELLIA_ENCRYPT == enc)||(CAMELLIA_DECRYPT == enc));
+    assert((CAMELLIA_ENCRYPT == enc) || (CAMELLIA_DECRYPT == enc));
 
     if (CAMELLIA_ENCRYPT == enc)
         Camellia_encrypt(in, out, key);
     else
         Camellia_decrypt(in, out, key);
-    }
+}
 #endif

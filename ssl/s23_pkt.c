@@ -100,7 +100,7 @@ int ssl23_read_bytes(SSL *s, int n)
         for (;;) {
             s->rwstate = SSL_READING;
             j = BIO_read(s->rbio, (char *)&(p[s->packet_length]),
-                            n-s->packet_length);
+                         n - s->packet_length);
             if (j <= 0)
                 return (j);
             s->rwstate = SSL_NOTHING;
@@ -111,4 +111,3 @@ int ssl23_read_bytes(SSL *s, int n)
     }
     return (n);
 }
-

@@ -73,21 +73,21 @@ static int mem_new(BIO *h);
 static int mem_free(BIO *data);
 
 static BIO_METHOD mem_method = {
-    .type    =    BIO_TYPE_MEM,
-    .name    =    "memory buffer",
-    .bwrite  =    mem_write,
-    .bread   =    mem_read,
-    .bputs   =    mem_puts,
-    .bgets   =    mem_gets,
-    .ctrl    =    mem_ctrl,
-    .create  =    mem_new,
-    .destroy =    mem_free
+    .type = BIO_TYPE_MEM,
+    .name = "memory buffer",
+    .bwrite = mem_write,
+    .bread = mem_read,
+    .bputs = mem_puts,
+    .bgets = mem_gets,
+    .ctrl = mem_ctrl,
+    .create = mem_new,
+    .destroy = mem_free
 };
 
 /* bio->num is used to hold the value to return on 'empty', if it is
  * 0, should_retry is not set */
 
-BIO_METHOD *BIO_s_mem(void) 
+BIO_METHOD *BIO_s_mem(void)
 {
     return (&mem_method);
 }
@@ -103,7 +103,7 @@ BIO *BIO_new_mem_buf(void *buf, int len)
         return NULL;
     }
     sz = (len < 0) ? strlen(buf) : (size_t)len;
-    if (!(ret = BIO_new(BIO_s_mem()))) 
+    if (!(ret = BIO_new(BIO_s_mem())))
         return NULL;
     b = (BUF_MEM *)ret->ptr;
     b->data = buf;
@@ -123,7 +123,7 @@ static int mem_new(BIO *bi)
         return (0);
     bi->shutdown = 1;
     bi->init = 1;
-    bi->num= -1;
+    bi->num = -1;
     bi->ptr = (char *)b;
     return (1);
 }
@@ -144,7 +144,7 @@ static int mem_free(BIO *a)
     }
     return (1);
 }
-    
+
 static int mem_read(BIO *b, char *out, int outl)
 {
     int ret = -1;
@@ -152,7 +152,7 @@ static int mem_read(BIO *b, char *out, int outl)
 
     bm = (BUF_MEM *)b->ptr;
     BIO_clear_retry_flags(b);
-    ret = (outl >=0 && (size_t)outl > bm->length) ? (int)bm->length : outl;
+    ret = (outl >= 0 && (size_t)outl > bm->length) ? (int)bm->length : outl;
     if ((out != NULL) && (ret > 0)) {
         memcpy(out, bm->data, ret);
         bm->length -= ret;
@@ -197,71 +197,71 @@ end:
 }
 
 static long mem_ctrl(BIO *b, int cmd, long num, void *ptr)
-    {
+{
     long ret = 1;
     char **pptr;
 
     BUF_MEM *bm = (BUF_MEM *)b->ptr;
 
     switch (cmd) {
-    case BIO_CTRL_RESET:
-        if (bm->data != NULL) {
-            /* For read only case reset to the start again */
-            if (b->flags & BIO_FLAGS_MEM_RDONLY)  {
-                bm->data -= bm->max - bm->length;
-                bm->length = bm->max;
-            } else {
-                memset(bm->data, 0, bm->max);
-                bm->length = 0;
+        case BIO_CTRL_RESET:
+            if (bm->data != NULL) {
+                /* For read only case reset to the start again */
+                if (b->flags & BIO_FLAGS_MEM_RDONLY) {
+                    bm->data -= bm->max - bm->length;
+                    bm->length = bm->max;
+                } else {
+                    memset(bm->data, 0, bm->max);
+                    bm->length = 0;
+                }
             }
-        }
-        break;
-    case BIO_CTRL_EOF:
-        ret = (long)(bm->length == 0);
-        break;
-    case BIO_C_SET_BUF_MEM_EOF_RETURN:
-        b->num = (int)num;
-        break;
-    case BIO_CTRL_INFO:
-        ret = (long)bm->length;
-        if (ptr != NULL) {
-            pptr = (char **)ptr;
-            *pptr = (char *)&(bm->data[0]);
-        }
-        break;
-    case BIO_C_SET_BUF_MEM:
-        mem_free(b);
-        b->shutdown = (int)num;
-        b->ptr = ptr;
-        break;
-    case BIO_C_GET_BUF_MEM_PTR:
-        if (ptr != NULL) {
-            pptr = (char **)ptr;
-            *pptr = (char *)bm;
-        }
-        break;
-    case BIO_CTRL_GET_CLOSE:
-        ret = (long)b->shutdown;
-        break;
-    case BIO_CTRL_SET_CLOSE:
-        b->shutdown = (int)num;
-        break;
+            break;
+        case BIO_CTRL_EOF:
+            ret = (long)(bm->length == 0);
+            break;
+        case BIO_C_SET_BUF_MEM_EOF_RETURN:
+            b->num = (int)num;
+            break;
+        case BIO_CTRL_INFO:
+            ret = (long)bm->length;
+            if (ptr != NULL) {
+                pptr = (char **)ptr;
+                *pptr = (char *)&(bm->data[0]);
+            }
+            break;
+        case BIO_C_SET_BUF_MEM:
+            mem_free(b);
+            b->shutdown = (int)num;
+            b->ptr = ptr;
+            break;
+        case BIO_C_GET_BUF_MEM_PTR:
+            if (ptr != NULL) {
+                pptr = (char **)ptr;
+                *pptr = (char *)bm;
+            }
+            break;
+        case BIO_CTRL_GET_CLOSE:
+            ret = (long)b->shutdown;
+            break;
+        case BIO_CTRL_SET_CLOSE:
+            b->shutdown = (int)num;
+            break;
 
-    case BIO_CTRL_WPENDING:
-        ret = 0L;
-        break;
-    case BIO_CTRL_PENDING:
-        ret = (long)bm->length;
-        break;
-    case BIO_CTRL_DUP:
-    case BIO_CTRL_FLUSH:
-        ret = 1;
-        break;
-    case BIO_CTRL_PUSH:
-    case BIO_CTRL_POP:
-    default:
-        ret = 0;
-        break;
+        case BIO_CTRL_WPENDING:
+            ret = 0L;
+            break;
+        case BIO_CTRL_PENDING:
+            ret = (long)bm->length;
+            break;
+        case BIO_CTRL_DUP:
+        case BIO_CTRL_FLUSH:
+            ret = 1;
+            break;
+        case BIO_CTRL_PUSH:
+        case BIO_CTRL_POP:
+        default:
+            ret = 0;
+            break;
     }
     return (ret);
 }
@@ -292,7 +292,7 @@ static int mem_gets(BIO *bp, char *buf, int size)
     /*
      * i is now the max num of bytes to copy, either j or up to
      * and including the first newline
-     */ 
+     */
 
     i = mem_read(bp, buf, i);
     if (i > 0)
@@ -303,11 +303,10 @@ static int mem_gets(BIO *bp, char *buf, int size)
 
 static int mem_puts(BIO *bp, const char *str)
 {
-    int n,ret;
+    int n, ret;
 
     n = strlen(str);
     ret = mem_write(bp, str, n);
     /* memory semantics is that it will always work */
     return (ret);
 }
-

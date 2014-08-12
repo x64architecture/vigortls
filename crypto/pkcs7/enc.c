@@ -62,49 +62,49 @@
 #include <openssl/pem.h>
 #include <openssl/err.h>
 
-int main(argc,argv)
-int argc;
+int main(argc, argv) int argc;
 char *argv[];
-    {
+{
     X509 *x509;
     PKCS7 *p7;
     BIO *in;
-    BIO *data,*p7bio;
-    char buf[1024*4];
+    BIO *data, *p7bio;
+    char buf[1024 * 4];
     int i;
-    int nodetach=1;
+    int nodetach = 1;
     char *keyfile = NULL;
-    const EVP_CIPHER *cipher=NULL;
-    STACK_OF(X509) *recips=NULL;
+    const EVP_CIPHER *cipher = NULL;
+    STACK_OF(X509) *recips = NULL;
 
     OpenSSL_add_all_algorithms();
 
-    data=BIO_new(BIO_s_file());
-    while(argc > 1)
-        {
-        if (strcmp(argv[1],"-nd") == 0)
-            {
-            nodetach=1;
-            argv++; argc--;
-            }
-        else if ((strcmp(argv[1],"-c") == 0) && (argc >= 2)) {
+    data = BIO_new(BIO_s_file());
+    while (argc > 1) {
+        if (strcmp(argv[1], "-nd") == 0) {
+            nodetach = 1;
+            argv++;
+            argc--;
+        } else if ((strcmp(argv[1], "-c") == 0) && (argc >= 2)) {
             if (!(cipher = EVP_get_cipherbyname(argv[2]))) {
                 fprintf(stderr, "Unknown cipher %s\n", argv[2]);
                 goto err;
             }
-            argc-=2;
-            argv+=2;
-        } else if ((strcmp(argv[1],"-k") == 0) && (argc >= 2)) {
+            argc -= 2;
+            argv += 2;
+        } else if ((strcmp(argv[1], "-k") == 0) && (argc >= 2)) {
             keyfile = argv[2];
-            argc-=2;
-            argv+=2;
-            if (!(in=BIO_new_file(keyfile,"r"))) goto err;
-            if (!(x509=PEM_read_bio_X509(in,NULL,NULL,NULL)))
+            argc -= 2;
+            argv += 2;
+            if (!(in = BIO_new_file(keyfile, "r")))
                 goto err;
-            if (!recips) recips = sk_X509_new_null();
+            if (!(x509 = PEM_read_bio_X509(in, NULL, NULL, NULL)))
+                goto err;
+            if (!recips)
+                recips = sk_X509_new_null();
             sk_X509_push(recips, x509);
             BIO_free(in);
-        } else break;
+        } else
+            break;
     }
 
     if (!recips) {
@@ -112,9 +112,10 @@ char *argv[];
         goto err;
     }
 
-    if (!BIO_read_filename(data,argv[1])) goto err;
+    if (!BIO_read_filename(data, argv[1]))
+        goto err;
 
-    p7=PKCS7_new();
+    p7 = PKCS7_new();
 #if 0
     BIO_reset(in);
     if ((pkey=PEM_read_bio_PrivateKey(in,NULL,NULL)) == NULL) goto err;
@@ -125,9 +126,9 @@ char *argv[];
     /* we may want to add more */
     PKCS7_add_certificate(p7,x509);
 #else
-    PKCS7_set_type(p7,NID_pkcs7_enveloped);
+    PKCS7_set_type(p7, NID_pkcs7_enveloped);
 #endif
-    if (!cipher)    {
+    if (!cipher) {
 #ifndef OPENSSL_NO_DES
         cipher = EVP_des_ede3_cbc();
 #else
@@ -136,9 +137,11 @@ char *argv[];
 #endif
     }
 
-    if (!PKCS7_set_cipher(p7,cipher)) goto err;
-    for(i = 0; i < sk_X509_num(recips); i++) {
-        if (!PKCS7_add_recipient(p7,sk_X509_value(recips, i))) goto err;
+    if (!PKCS7_set_cipher(p7, cipher))
+        goto err;
+    for (i = 0; i < sk_X509_num(recips); i++) {
+        if (!PKCS7_add_recipient(p7, sk_X509_value(recips, i)))
+            goto err;
     }
     sk_X509_pop_free(recips, X509_free);
 
@@ -149,20 +152,22 @@ char *argv[];
     if (!nodetach) PKCS7_set_detached(p7,1);
     */
 
-    if ((p7bio=PKCS7_dataInit(p7,NULL)) == NULL) goto err;
+    if ((p7bio = PKCS7_dataInit(p7, NULL)) == NULL)
+        goto err;
 
-    for (;;)
-        {
-        i=BIO_read(data,buf,sizeof(buf));
-        if (i <= 0) break;
-        BIO_write(p7bio,buf,i);
-        }
+    for (;;) {
+        i = BIO_read(data, buf, sizeof(buf));
+        if (i <= 0)
+            break;
+        BIO_write(p7bio, buf, i);
+    }
     BIO_flush(p7bio);
 
-    if (!PKCS7_dataFinal(p7,p7bio)) goto err;
+    if (!PKCS7_dataFinal(p7, p7bio))
+        goto err;
     BIO_free(p7bio);
 
-    PEM_write_PKCS7(stdout,p7);
+    PEM_write_PKCS7(stdout, p7);
     PKCS7_free(p7);
 
     exit(0);
@@ -170,5 +175,4 @@ err:
     ERR_load_crypto_strings();
     ERR_print_errors_fp(stderr);
     exit(1);
-    }
-
+}

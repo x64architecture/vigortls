@@ -82,8 +82,8 @@ ENGINE_register_ciphers(ENGINE *e)
         int num_nids = e->ciphers(e, NULL, &nids, 0);
         if (num_nids > 0)
             return engine_table_register(&cipher_table,
-                engine_unregister_all_ciphers, e, nids,
-                num_nids, 0);
+                                         engine_unregister_all_ciphers, e, nids,
+                                         num_nids, 0);
     }
     return 1;
 }
@@ -105,8 +105,8 @@ ENGINE_set_default_ciphers(ENGINE *e)
         int num_nids = e->ciphers(e, NULL, &nids, 0);
         if (num_nids > 0)
             return engine_table_register(&cipher_table,
-                engine_unregister_all_ciphers, e, nids,
-                num_nids, 1);
+                                         engine_unregister_all_ciphers, e, nids,
+                                         num_nids, 1);
     }
     return 1;
 }
@@ -129,7 +129,7 @@ ENGINE_get_cipher(ENGINE *e, int nid)
 
     if (!fn || !fn(e, &ret, NULL, nid)) {
         ENGINEerr(ENGINE_F_ENGINE_GET_CIPHER,
-            ENGINE_R_UNIMPLEMENTED_CIPHER);
+                  ENGINE_R_UNIMPLEMENTED_CIPHER);
         return NULL;
     }
     return ret;

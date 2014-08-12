@@ -56,8 +56,6 @@
  *
  */
 
-
-
 #include <stdio.h>
 #include <openssl/asn1.h>
 #include <openssl/conf.h>
@@ -88,12 +86,12 @@ int main(int argc, char **argv)
     fclose(inf);
     count = X509_get_ext_count(cert);
     printf("%d extensions\n", count);
-    for(i = 0; i < count; i++) {
+    for (i = 0; i < count; i++) {
         ext = X509_get_ext(cert, i);
         printf("%s\n", OBJ_nid2ln(OBJ_obj2nid(ext->object)));
-        if (!X509V3_EXT_print_fp(stdout, ext, 0, 0)) ERR_print_errors_fp(stderr);
+        if (!X509V3_EXT_print_fp(stdout, ext, 0, 0))
+            ERR_print_errors_fp(stderr);
         printf("\n");
-        
     }
     return 0;
 }

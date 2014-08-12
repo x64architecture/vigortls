@@ -73,90 +73,96 @@ int main(int argc, char *argv[])
 #endif
 
 #ifndef OPENSSL_NO_MD5
-static struct test_st
-    {
+static struct test_st {
     unsigned char key[16];
     int key_len;
     unsigned char data[64];
     int data_len;
     unsigned char *digest;
-    } test[4]={
-    {    "",
+} test[4] = {
+      {
+        "",
         0,
         "More text test vectors to stuff up EBCDIC machines :-)",
         54,
         (unsigned char *)"e9139d1e6ee064ef8cf514fc7dc83e86",
-    },{    {0x0b,0x0b,0x0b,0x0b,0x0b,0x0b,0x0b,0x0b,
-         0x0b,0x0b,0x0b,0x0b,0x0b,0x0b,0x0b,0x0b,},
+      },
+      {
+        {
+          0x0b, 0x0b, 0x0b, 0x0b, 0x0b, 0x0b, 0x0b, 0x0b,
+          0x0b, 0x0b, 0x0b, 0x0b, 0x0b, 0x0b, 0x0b, 0x0b,
+        },
         16,
         "Hi There",
         8,
         (unsigned char *)"9294727a3638bb1c13f48ef8158bfc9d",
-    },{    "Jefe",
+      },
+      {
+        "Jefe",
         4,
         "what do ya want for nothing?",
         28,
         (unsigned char *)"750c783e6ab0b503eaa86e310a5db738",
-    },{
-        {0xaa,0xaa,0xaa,0xaa,0xaa,0xaa,0xaa,0xaa,
-         0xaa,0xaa,0xaa,0xaa,0xaa,0xaa,0xaa,0xaa,},
+      },
+      {
+        {
+          0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa,
+          0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa,
+        },
         16,
-        {0xdd,0xdd,0xdd,0xdd,0xdd,0xdd,0xdd,0xdd,
-         0xdd,0xdd,0xdd,0xdd,0xdd,0xdd,0xdd,0xdd,
-         0xdd,0xdd,0xdd,0xdd,0xdd,0xdd,0xdd,0xdd,
-         0xdd,0xdd,0xdd,0xdd,0xdd,0xdd,0xdd,0xdd,
-         0xdd,0xdd,0xdd,0xdd,0xdd,0xdd,0xdd,0xdd,
-         0xdd,0xdd,0xdd,0xdd,0xdd,0xdd,0xdd,0xdd,
-         0xdd,0xdd},
+        { 0xdd, 0xdd, 0xdd, 0xdd, 0xdd, 0xdd, 0xdd, 0xdd,
+          0xdd, 0xdd, 0xdd, 0xdd, 0xdd, 0xdd, 0xdd, 0xdd,
+          0xdd, 0xdd, 0xdd, 0xdd, 0xdd, 0xdd, 0xdd, 0xdd,
+          0xdd, 0xdd, 0xdd, 0xdd, 0xdd, 0xdd, 0xdd, 0xdd,
+          0xdd, 0xdd, 0xdd, 0xdd, 0xdd, 0xdd, 0xdd, 0xdd,
+          0xdd, 0xdd, 0xdd, 0xdd, 0xdd, 0xdd, 0xdd, 0xdd,
+          0xdd, 0xdd },
         50,
         (unsigned char *)"56be34521d144c88dbb8c733f0e8b3f6",
-    },
-    };
+      },
+  };
 #endif
 
 static char *pt(unsigned char *md);
 int main(int argc, char *argv[])
-    {
+{
 #ifndef OPENSSL_NO_MD5
     int i;
     char *p;
 #endif
-    int err=0;
+    int err = 0;
 
 #ifdef OPENSSL_NO_MD5
     printf("test skipped: MD5 disabled\n");
 #else
 
-    for (i=0; i<4; i++)
-        {
-        p=pt(HMAC(EVP_md5(),
-            test[i].key, test[i].key_len,
-            test[i].data, test[i].data_len,
-            NULL,NULL));
+    for (i = 0; i < 4; i++) {
+        p = pt(HMAC(EVP_md5(),
+                    test[i].key, test[i].key_len,
+                    test[i].data, test[i].data_len,
+                    NULL, NULL));
 
-        if (strcmp(p,(char *)test[i].digest) != 0)
-            {
-            printf("error calculating HMAC on %d entry'\n",i);
-            printf("got %s instead of %s\n",p,test[i].digest);
+        if (strcmp(p, (char *)test[i].digest) != 0) {
+            printf("error calculating HMAC on %d entry'\n", i);
+            printf("got %s instead of %s\n", p, test[i].digest);
             err++;
-            }
-        else
-            printf("test %d ok\n",i);
-        }
+        } else
+            printf("test %d ok\n", i);
+    }
 #endif /* OPENSSL_NO_MD5 */
     exit(err);
     return (0);
-    }
+}
 
 #ifndef OPENSSL_NO_MD5
 static char *pt(unsigned char *md)
-    {
+{
     int i;
     static char buf[80];
 
-    for (i=0; i<MD5_DIGEST_LENGTH; i++)
-        sprintf(&(buf[i*2]),"%02x",md[i]);
+    for (i = 0; i < MD5_DIGEST_LENGTH; i++)
+        sprintf(&(buf[i * 2]), "%02x", md[i]);
     return (buf);
-    }
+}
 #endif
 #endif

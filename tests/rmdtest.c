@@ -70,7 +70,7 @@ int main(int argc, char *argv[])
 #include <openssl/ripemd.h>
 #include <openssl/evp.h>
 
-static char *test[]={
+static char *test[] = {
     "",
     "a",
     "abc",
@@ -80,9 +80,9 @@ static char *test[]={
     "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789",
     "12345678901234567890123456789012345678901234567890123456789012345678901234567890",
     NULL,
-    };
+};
 
-static char *ret[]={
+static char *ret[] = {
     "9c1185a5c5e9fc54612808977ee8f548b2258d31",
     "0bdc9d2d256b3ee9daae347be6f4dc835a467ffe",
     "8eb208f7e05d987a9b044a8e98c6b087f15a0bfc",
@@ -91,46 +91,43 @@ static char *ret[]={
     "12a053384a9c0c88e405a06c27dcf49ada62eb2b",
     "b0e20b6e3116640286ed3a87a5713079b21f5189",
     "9b752e45573d4b39f4dbd3323cab82bf63326bfb",
-    };
+};
 
 static char *pt(unsigned char *md);
 int main(int argc, char *argv[])
-    {
-    int i,err=0;
-    char **P,**R;
+{
+    int i, err = 0;
+    char **P, **R;
     char *p;
     unsigned char md[RIPEMD160_DIGEST_LENGTH];
 
-    P=test;
-    R=ret;
-    i=1;
-    while (*P != NULL)
-        {
-        EVP_Digest(&(P[0][0]),strlen((char *)*P),md,NULL,EVP_ripemd160(), NULL);
-        p=pt(md);
-        if (strcmp(p,(char *)*R) != 0)
-            {
-            printf("error calculating RIPEMD160 on '%s'\n",*P);
-            printf("got %s instead of %s\n",p,*R);
+    P = test;
+    R = ret;
+    i = 1;
+    while (*P != NULL) {
+        EVP_Digest(&(P[0][0]), strlen((char *)*P), md, NULL, EVP_ripemd160(), NULL);
+        p = pt(md);
+        if (strcmp(p, (char *)*R) != 0) {
+            printf("error calculating RIPEMD160 on '%s'\n", *P);
+            printf("got %s instead of %s\n", p, *R);
             err++;
-            }
-        else
-            printf("test %d ok\n",i);
+        } else
+            printf("test %d ok\n", i);
         i++;
         R++;
         P++;
-        }
+    }
     exit(err);
     return (0);
-    }
+}
 
 static char *pt(unsigned char *md)
-    {
+{
     int i;
     static char buf[80];
 
-    for (i=0; i<RIPEMD160_DIGEST_LENGTH; i++)
-        sprintf(&(buf[i*2]),"%02x",md[i]);
+    for (i = 0; i < RIPEMD160_DIGEST_LENGTH; i++)
+        sprintf(&(buf[i * 2]), "%02x", md[i]);
     return (buf);
-    }
+}
 #endif

@@ -89,8 +89,7 @@
 #include <openssl/objects.h>
 #include <openssl/x509.h>
 
-typedef struct ssl_session_asn1_st
-{
+typedef struct ssl_session_asn1_st {
     ASN1_INTEGER version;
     ASN1_INTEGER ssl_version;
     ASN1_OCTET_STRING cipher;
@@ -118,7 +117,7 @@ typedef struct ssl_session_asn1_st
 
 int i2d_SSL_SESSION(SSL_SESSION *in, unsigned char **pp)
 {
-#define LSIZE2 (sizeof(long)*2)
+#define LSIZE2 (sizeof(long) * 2)
     int v1 = 0, v2 = 0, v3 = 0, v4 = 0, v5 = 0, v6 = 0, v9 = 0, v10 = 0;
     unsigned char buf[4], ibuf1[LSIZE2], ibuf2[LSIZE2];
     unsigned char ibuf3[LSIZE2], ibuf4[LSIZE2], ibuf5[LSIZE2], ibuf6[LSIZE2];
@@ -160,7 +159,7 @@ int i2d_SSL_SESSION(SSL_SESSION *in, unsigned char **pp)
 
     a.cipher.length = 2;
     buf[0] = ((unsigned char)(l >> 8L)) & 0xff;
-    buf[1] = ((unsigned char)(l      )) & 0xff;
+    buf[1] = ((unsigned char)(l)) & 0xff;
 
     a.master_key.length = in->master_key_length;
     a.master_key.type = V_ASN1_OCTET_STRING;
@@ -186,7 +185,7 @@ int i2d_SSL_SESSION(SSL_SESSION *in, unsigned char **pp)
         a.time.length = LSIZE2;
         a.time.type = V_ASN1_INTEGER;
         a.time.data = ibuf3;
-        ASN1_INTEGER_set(&(a.time), in->time);    /* XXX 2038 */
+        ASN1_INTEGER_set(&(a.time), in->time); /* XXX 2038 */
     }
 
     if (in->timeout != 0L) {
@@ -292,8 +291,8 @@ int i2d_SSL_SESSION(SSL_SESSION *in, unsigned char **pp)
         M_ASN1_I2D_put_EXP_opt(&(a.timeout), i2d_ASN1_INTEGER, 2, v2);
     if (in->peer != NULL)
         M_ASN1_I2D_put_EXP_opt(in->peer, i2d_X509, 3, v3);
-        M_ASN1_I2D_put_EXP_opt(&a.session_id_context, i2d_ASN1_OCTET_STRING, 4,
-            v4);
+    M_ASN1_I2D_put_EXP_opt(&a.session_id_context, i2d_ASN1_OCTET_STRING, 4,
+                           v4);
     if (in->verify_result != X509_V_OK)
         M_ASN1_I2D_put_EXP_opt(&a.verify_result, i2d_ASN1_INTEGER, 5, v5);
     if (in->tlsext_hostname)
@@ -316,7 +315,7 @@ int i2d_SSL_SESSION(SSL_SESSION *in, unsigned char **pp)
 }
 
 SSL_SESSION *d2i_SSL_SESSION(SSL_SESSION **a, const unsigned char **pp,
-    long length)
+                             long length)
 {
     int ssl_version = 0, i;
     long id;
@@ -358,9 +357,7 @@ SSL_SESSION *d2i_SSL_SESSION(SSL_SESSION **a, const unsigned char **pp,
             c.line = __LINE__;
             goto err;
         }
-        id = 0x03000000L |
-            ((unsigned long)os.data[0] << 8L) |
-             (unsigned long)os.data[1];
+        id = 0x03000000L | ((unsigned long)os.data[0] << 8L) | (unsigned long)os.data[1];
     } else {
         c.error = SSL_R_UNKNOWN_SSL_VERSION;
         c.line = __LINE__;
@@ -396,10 +393,10 @@ SSL_SESSION *d2i_SSL_SESSION(SSL_SESSION **a, const unsigned char **pp,
     os.length = 0;
     M_ASN1_D2I_get_opt(osp, d2i_ASN1_OCTET_STRING, V_ASN1_OCTET_STRING);
     if (os.data) {
-            if (os.length > SSL_MAX_KRB5_PRINCIPAL_LENGTH)
-                ret->krb5_client_princ_len = 0;
-            else
-                ret->krb5_client_princ_len = os.length;
+        if (os.length > SSL_MAX_KRB5_PRINCIPAL_LENGTH)
+            ret->krb5_client_princ_len = 0;
+        else
+            ret->krb5_client_princ_len = os.length;
         memcpy(ret->krb5_client_princ, os.data, ret->krb5_client_princ_len);
         free(os.data);
         os.data = NULL;
@@ -424,25 +421,25 @@ SSL_SESSION *d2i_SSL_SESSION(SSL_SESSION **a, const unsigned char **pp,
         ret->timeout = ASN1_INTEGER_get(aip);
         free(ai.data);
         ai.data = NULL;
-        ai.length= 0;
+        ai.length = 0;
     } else
         ret->timeout = 3;
 
     if (ret->peer != NULL) {
         X509_free(ret->peer);
-        ret->peer=NULL;
+        ret->peer = NULL;
     }
     M_ASN1_D2I_get_EXP_opt(ret->peer, d2i_X509, 3);
 
     os.length = 0;
-    os.data= NULL;
+    os.data = NULL;
     M_ASN1_D2I_get_EXP_opt(osp, d2i_ASN1_OCTET_STRING, 4);
 
     if (os.data != NULL) {
         if (os.length > SSL_MAX_SID_CTX_LENGTH) {
-        c.error = SSL_R_BAD_LENGTH;
-        c.line = __LINE__;
-        goto err;
+            c.error = SSL_R_BAD_LENGTH;
+            c.line = __LINE__;
+            goto err;
         } else {
             ret->sid_ctx_length = os.length;
             memcpy(ret->sid_ctx, os.data, os.length);
@@ -512,7 +509,7 @@ SSL_SESSION *d2i_SSL_SESSION(SSL_SESSION **a, const unsigned char **pp,
     os.length = 0;
     os.data = NULL;
     M_ASN1_D2I_get_EXP_opt(osp, d2i_ASN1_OCTET_STRING, 10);
-    if (os.data)  {
+    if (os.data) {
         ret->tlsext_tick = os.data;
         ret->tlsext_ticklen = os.length;
         os.data = NULL;

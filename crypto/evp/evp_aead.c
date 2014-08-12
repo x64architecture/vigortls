@@ -64,45 +64,44 @@
 #include "evp_locl.h"
 
 size_t EVP_AEAD_key_length(const EVP_AEAD *aead)
-	{
-	return aead->key_len;
-	}
+{
+    return aead->key_len;
+}
 
 size_t EVP_AEAD_nonce_length(const EVP_AEAD *aead)
-	{
-	return aead->nonce_len;
-	}
+{
+    return aead->nonce_len;
+}
 
 size_t EVP_AEAD_max_overhead(const EVP_AEAD *aead)
-	{
-	return aead->overhead;
-	}
+{
+    return aead->overhead;
+}
 
 size_t EVP_AEAD_max_tag_len(const EVP_AEAD *aead)
-	{
-	return aead->max_tag_len;
-	}
+{
+    return aead->max_tag_len;
+}
 
 int EVP_AEAD_CTX_init(EVP_AEAD_CTX *ctx, const EVP_AEAD *aead,
-		      const unsigned char *key, size_t key_len,
-		      size_t tag_len, ENGINE *impl)
-	{
-	ctx->aead = aead;
-	if (key_len != aead->key_len)
-		{
-		EVPerr(EVP_F_EVP_AEAD_CTX_INIT,EVP_R_UNSUPPORTED_KEY_SIZE);
-		return 0;
-		}
-	return aead->init(ctx, key, key_len, tag_len);
-	}
+                      const unsigned char *key, size_t key_len,
+                      size_t tag_len, ENGINE *impl)
+{
+    ctx->aead = aead;
+    if (key_len != aead->key_len) {
+        EVPerr(EVP_F_EVP_AEAD_CTX_INIT, EVP_R_UNSUPPORTED_KEY_SIZE);
+        return 0;
+    }
+    return aead->init(ctx, key, key_len, tag_len);
+}
 
 void EVP_AEAD_CTX_cleanup(EVP_AEAD_CTX *ctx)
-	{
-	if (ctx->aead == NULL)
-		return;
-	ctx->aead->cleanup(ctx);
-	ctx->aead = NULL;
-	}
+{
+    if (ctx->aead == NULL)
+        return;
+    ctx->aead->cleanup(ctx);
+    ctx->aead = NULL;
+}
 
 /* check_alias returns 0 if |out| points within the buffer determined by |in|
  * and |in_len| and 1 otherwise.
@@ -113,80 +112,75 @@ void EVP_AEAD_CTX_cleanup(EVP_AEAD_CTX *ctx)
  *
  * This function checks for that case. */
 static int check_alias(const unsigned char *in, size_t in_len,
-		       const unsigned char *out)
-	{
-	if (out <= in)
-		return 1;
-	if (in + in_len <= out)
-		return 1;
-	return 0;
-	}
+                       const unsigned char *out)
+{
+    if (out <= in)
+        return 1;
+    if (in + in_len <= out)
+        return 1;
+    return 0;
+}
 
 ssize_t EVP_AEAD_CTX_seal(const EVP_AEAD_CTX *ctx,
-			  unsigned char *out, size_t max_out_len,
-			  const unsigned char *nonce, size_t nonce_len,
-			  const unsigned char *in, size_t in_len,
-			  const unsigned char *ad, size_t ad_len)
-	{
-	size_t possible_out_len = in_len + ctx->aead->overhead;
-	ssize_t r;
+                          unsigned char *out, size_t max_out_len,
+                          const unsigned char *nonce, size_t nonce_len,
+                          const unsigned char *in, size_t in_len,
+                          const unsigned char *ad, size_t ad_len)
+{
+    size_t possible_out_len = in_len + ctx->aead->overhead;
+    ssize_t r;
 
-	if (possible_out_len < in_len /* overflow */ ||
-	    possible_out_len > SSIZE_MAX /* return value cannot be
-					    represented */)
-		{
-		EVPerr(EVP_F_AEAD_CTX_SEAL, EVP_R_TOO_LARGE);
-		goto error;
-		}
+    if (possible_out_len < in_len /* overflow */ || possible_out_len > SSIZE_MAX /* return value cannot be
+					    represented */) {
+        EVPerr(EVP_F_AEAD_CTX_SEAL, EVP_R_TOO_LARGE);
+        goto error;
+    }
 
-	if (!check_alias(in, in_len, out))
-		{
-		EVPerr(EVP_F_AEAD_CTX_SEAL, EVP_R_OUTPUT_ALIASES_INPUT);
-		goto error;
-		}
+    if (!check_alias(in, in_len, out)) {
+        EVPerr(EVP_F_AEAD_CTX_SEAL, EVP_R_OUTPUT_ALIASES_INPUT);
+        goto error;
+    }
 
-	r = ctx->aead->seal(ctx, out, max_out_len, nonce, nonce_len,
-			    in, in_len, ad, ad_len);
-	if (r >= 0)
-		return r;
+    r = ctx->aead->seal(ctx, out, max_out_len, nonce, nonce_len,
+                        in, in_len, ad, ad_len);
+    if (r >= 0)
+        return r;
 
 error:
-	/* In the event of an error, clear the output buffer so that a caller
+    /* In the event of an error, clear the output buffer so that a caller
 	 * that doesn't check the return value doesn't send raw data. */
-	memset(out, 0, max_out_len);
-	return -1;
-	}
+    memset(out, 0, max_out_len);
+    return -1;
+}
 
 ssize_t EVP_AEAD_CTX_open(const EVP_AEAD_CTX *ctx,
-			 unsigned char *out, size_t max_out_len,
-			 const unsigned char *nonce, size_t nonce_len,
-			 const unsigned char *in, size_t in_len,
-			 const unsigned char *ad, size_t ad_len)
-	{
-	ssize_t r;
+                          unsigned char *out, size_t max_out_len,
+                          const unsigned char *nonce, size_t nonce_len,
+                          const unsigned char *in, size_t in_len,
+                          const unsigned char *ad, size_t ad_len)
+{
+    ssize_t r;
 
-	if (in_len > SSIZE_MAX)
-		{
-		EVPerr(EVP_F_AEAD_CTX_OPEN, EVP_R_TOO_LARGE);
-		goto error;  /* may not be able to represent return value. */
-		}
+    if (in_len > SSIZE_MAX) {
+        EVPerr(EVP_F_AEAD_CTX_OPEN, EVP_R_TOO_LARGE);
+        goto error; /* may not be able to represent return value. */
+    }
 
-	if (!check_alias(in, in_len, out))
-		{
-		EVPerr(EVP_F_AEAD_CTX_OPEN, EVP_R_OUTPUT_ALIASES_INPUT);
-		goto error;
-		}
+    if (!check_alias(in, in_len, out)) {
+        EVPerr(EVP_F_AEAD_CTX_OPEN, EVP_R_OUTPUT_ALIASES_INPUT);
+        goto error;
+    }
 
-	r = ctx->aead->open(ctx, out, max_out_len, nonce, nonce_len,
-			    in, in_len, ad, ad_len);
+    r = ctx->aead->open(ctx, out, max_out_len, nonce, nonce_len,
+                        in, in_len, ad, ad_len);
 
-	if (r >= 0)
-		return r;
+    if (r >= 0)
+        return r;
 
 error:
-	/* In the event of an error, clear the output buffer so that a caller
+    /* In the event of an error, clear the output buffer so that a caller
 	 * that doesn't check the return value doesn't try and process bad
 	 * data. */
-	memset(out, 0, max_out_len);
-	return -1;
-	}
+    memset(out, 0, max_out_len);
+    return -1;
+}

@@ -67,7 +67,7 @@
 #include <string.h>
 
 #if !defined(NO_SYSLOG)
-#  include <syslog.h>
+#include <syslog.h>
 #endif
 
 #include <openssl/buffer.h>
@@ -80,13 +80,12 @@ static int slg_puts(BIO *h, const char *str);
 static long slg_ctrl(BIO *h, int cmd, long arg1, void *arg2);
 static int slg_new(BIO *h);
 static int slg_free(BIO *data);
-static void xopenlog(BIO* bp, char* name, int level);
-static void xsyslog(BIO* bp, int priority, const char* string);
-static void xcloselog(BIO* bp);
+static void xopenlog(BIO *bp, char *name, int level);
+static void xsyslog(BIO *bp, int priority, const char *string);
+static void xcloselog(BIO *bp);
 
-static BIO_METHOD methods_slg=
-    {
-    BIO_TYPE_MEM,"syslog",
+static BIO_METHOD methods_slg = {
+    BIO_TYPE_MEM, "syslog",
     slg_write,
     NULL,
     slg_puts,
@@ -95,73 +94,73 @@ static BIO_METHOD methods_slg=
     slg_new,
     slg_free,
     NULL,
-    };
+};
 
 BIO_METHOD *BIO_s_log(void)
-    {
+{
     return (&methods_slg);
-    }
+}
 
 static int slg_new(BIO *bi)
-    {
-    bi->init=1;
-    bi->num=0;
-    bi->ptr=NULL;
+{
+    bi->init = 1;
+    bi->num = 0;
+    bi->ptr = NULL;
     xopenlog(bi, "application", LOG_DAEMON);
     return (1);
-    }
+}
 
 static int slg_free(BIO *a)
-    {
-    if (a == NULL) return (0);
+{
+    if (a == NULL)
+        return (0);
     xcloselog(a);
     return (1);
-    }
-    
+}
+
 static int slg_write(BIO *b, const char *in, int inl)
-    {
-    int ret= inl;
-    char* buf;
-    char* pp;
+{
+    int ret = inl;
+    char *buf;
+    char *pp;
     int priority, i;
     static const struct
-        {
+    {
         int strl;
         char str[10];
         int log_level;
-        }
-    mapping[] =
-        {
-        { 6, "PANIC ", LOG_EMERG },
-        { 6, "EMERG ", LOG_EMERG },
-        { 4, "EMR ", LOG_EMERG },
-        { 6, "ALERT ", LOG_ALERT },
-        { 4, "ALR ", LOG_ALERT },
-        { 5, "CRIT ", LOG_CRIT },
-        { 4, "CRI ", LOG_CRIT },
-        { 6, "ERROR ", LOG_ERR },
-        { 4, "ERR ", LOG_ERR },
-        { 8, "WARNING ", LOG_WARNING },
-        { 5, "WARN ", LOG_WARNING },
-        { 4, "WAR ", LOG_WARNING },
-        { 7, "NOTICE ", LOG_NOTICE },
-        { 5, "NOTE ", LOG_NOTICE },
-        { 4, "NOT ", LOG_NOTICE },
-        { 5, "INFO ", LOG_INFO },
-        { 4, "INF ", LOG_INFO },
-        { 6, "DEBUG ", LOG_DEBUG },
-        { 4, "DBG ", LOG_DEBUG },
-        { 0, "", LOG_ERR } /* The default */
-        };
+    } mapping[] = {
+          { 6, "PANIC ", LOG_EMERG },
+          { 6, "EMERG ", LOG_EMERG },
+          { 4, "EMR ", LOG_EMERG },
+          { 6, "ALERT ", LOG_ALERT },
+          { 4, "ALR ", LOG_ALERT },
+          { 5, "CRIT ", LOG_CRIT },
+          { 4, "CRI ", LOG_CRIT },
+          { 6, "ERROR ", LOG_ERR },
+          { 4, "ERR ", LOG_ERR },
+          { 8, "WARNING ", LOG_WARNING },
+          { 5, "WARN ", LOG_WARNING },
+          { 4, "WAR ", LOG_WARNING },
+          { 7, "NOTICE ", LOG_NOTICE },
+          { 5, "NOTE ", LOG_NOTICE },
+          { 4, "NOT ", LOG_NOTICE },
+          { 5, "INFO ", LOG_INFO },
+          { 4, "INF ", LOG_INFO },
+          { 6, "DEBUG ", LOG_DEBUG },
+          { 4, "DBG ", LOG_DEBUG },
+          { 0, "", LOG_ERR } /* The default */
+      };
 
-    if ((buf= (char *)malloc(inl+ 1)) == NULL){
+    if ((buf = (char *)malloc(inl + 1)) == NULL) {
         return (0);
     }
     strncpy(buf, in, inl);
-    buf[inl]= '\0';
+    buf[inl] = '\0';
 
     i = 0;
-    while(strncmp(buf, mapping[i].str, mapping[i].strl) != 0) i++;
+    while (strncmp(buf, mapping[i].str, mapping[i].strl) != 0)
+        i++;
     priority = mapping[i].log_level;
     pp = buf + mapping[i].strl;
 
@@ -169,34 +168,33 @@ static int slg_write(BIO *b, const char *in, int inl)
 
     free(buf);
     return (ret);
-    }
+}
 
 static long slg_ctrl(BIO *b, int cmd, long num, void *ptr)
-    {
-    switch (cmd)
-        {
-    case BIO_CTRL_SET:
-        xcloselog(b);
-        xopenlog(b, ptr, num);
-        break;
-    default:
-        break;
-        }
-    return (0);
+{
+    switch (cmd) {
+        case BIO_CTRL_SET:
+            xcloselog(b);
+            xopenlog(b, ptr, num);
+            break;
+        default:
+            break;
     }
+    return (0);
+}
 
 static int slg_puts(BIO *bp, const char *str)
-    {
-    int n,ret;
-
-    n=strlen(str);
-    ret=slg_write(bp,str,n);
-    return (ret);
-    }
-
-static void xopenlog(BIO* bp, char* name, int level)
 {
-    openlog(name, LOG_PID|LOG_CONS, level);
+    int n, ret;
+
+    n = strlen(str);
+    ret = slg_write(bp, str, n);
+    return (ret);
+}
+
+static void xopenlog(BIO *bp, char *name, int level)
+{
+    openlog(name, LOG_PID | LOG_CONS, level);
 }
 
 static void xsyslog(BIO *bp, int priority, const char *string)
@@ -204,7 +202,7 @@ static void xsyslog(BIO *bp, int priority, const char *string)
     syslog(priority, "%s", string);
 }
 
-static void xcloselog(BIO* bp)
+static void xcloselog(BIO *bp)
 {
     closelog();
 }

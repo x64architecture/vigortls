@@ -126,7 +126,6 @@ int gmtime_r_adj(struct tm *tm, int off_day, long offset_sec)
     tm->tm_sec = offset_hms % 60;
 
     return 1;
-
 }
 
 /* Convert date to and from julian day
@@ -134,17 +133,14 @@ int gmtime_r_adj(struct tm *tm, int off_day, long offset_sec)
  */
 static long date_to_julian(int y, int m, int d)
 {
-    return (1461 * (y + 4800 + (m - 14) / 12)) / 4 +
-        (367 * (m - 2 - 12 * ((m - 14) / 12))) / 12 -
-        (3 * ((y + 4900 + (m - 14) / 12) / 100)) / 4 +
-        d - 32075;
+    return (1461 * (y + 4800 + (m - 14) / 12)) / 4 + (367 * (m - 2 - 12 * ((m - 14) / 12))) / 12 - (3 * ((y + 4900 + (m - 14) / 12) / 100)) / 4 + d - 32075;
 }
 
 static void julian_to_date(long jd, int *y, int *m, int *d)
 {
-    long  L = jd + 68569;
-    long  n = (4 * L) / 146097;
-    long  i, j;
+    long L = jd + 68569;
+    long n = (4 * L) / 146097;
+    long i, j;
 
     L = L - (146097 * n + 3) / 4;
     i = (4000 * (L + 1)) / 1461001;

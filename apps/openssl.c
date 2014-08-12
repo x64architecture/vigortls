@@ -109,7 +109,6 @@
  *
  */
 
-
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -136,8 +135,8 @@
  * type of "FUNCTION*"). This removes the necessity for macro-generated wrapper
  * functions. */
 
-static LHASH_OF(FUNCTION) *prog_init(void );
-static int do_cmd(LHASH_OF(FUNCTION) *prog, int argc, char *argv[]);
+static LHASH_OF(FUNCTION) * prog_init(void);
+static int do_cmd(LHASH_OF(FUNCTION) * prog, int argc, char *argv[]);
 static void list_pkey(BIO *out);
 static void list_cipher(BIO *out);
 static void list_md(BIO *out);
@@ -152,7 +151,7 @@ BIO *bio_err = NULL;
 int main(int argc, char *argv[])
 {
     ARGS arg;
-#define PROG_NAME_SIZE    39
+#define PROG_NAME_SIZE 39
     char pname[PROG_NAME_SIZE + 1];
     FUNCTION f, *fp;
     const char *prompt;
@@ -221,7 +220,7 @@ int main(int argc, char *argv[])
     }
 
     /* ok, lets enter the old 'OpenSSL>' mode */
-    
+
     for (;;) {
         ret = 0;
         p = buf;
@@ -230,9 +229,9 @@ int main(int argc, char *argv[])
         for (;;) {
             p[0] = '\0';
             if (i++)
-                prompt=">";
+                prompt = ">";
             else
-                prompt="OpenSSL> ";
+                prompt = "OpenSSL> ";
             fputs(prompt, stdout);
             fflush(stdout);
             if (!fgets(p, n, stdin))
@@ -242,13 +241,13 @@ int main(int argc, char *argv[])
             i = strlen(p);
             if (i <= 1)
                 break;
-            if (p[i-2] != '\\') 
+            if (p[i - 2] != '\\')
                 break;
             i -= 2;
             p += i;
             n -= i;
         }
-        if (!chopup_args(&arg, buf, &argc, &argv)) 
+        if (!chopup_args(&arg, buf, &argc, &argv))
             break;
 
         ret = do_cmd(prog, argc, argv);
@@ -289,15 +288,14 @@ end:
 #define LIST_CIPHER_ALGORITHMS "list-cipher-algorithms"
 #define LIST_PUBLIC_KEY_ALGORITHMS "list-public-key-algorithms"
 
-
-static int do_cmd(LHASH_OF(FUNCTION) *prog, int argc, char *argv[])
+static int do_cmd(LHASH_OF(FUNCTION) * prog, int argc, char *argv[])
 {
     FUNCTION f, *fp;
     int i, ret = 1, tp, nl;
 
-    if ((argc <= 0) || (argv[0] == NULL)) { 
-        ret = 0; 
-        goto end; 
+    if ((argc <= 0) || (argv[0] == NULL)) {
+        ret = 0;
+        goto end;
     }
     f.name = argv[0];
     fp = lh_FUNCTION_retrieve(prog, &f);
@@ -324,18 +322,10 @@ static int do_cmd(LHASH_OF(FUNCTION) *prog, int argc, char *argv[])
             BIO_printf(bio_stdout, "%s\n", argv[0] + 3);
         BIO_free_all(bio_stdout);
         goto end;
-    } else if ((strcmp(argv[0], "quit") == 0) ||
-        (strcmp(argv[0], "q") == 0) ||
-        (strcmp(argv[0], "exit") == 0) ||
-        (strcmp(argv[0], "bye") == 0)) {
+    } else if ((strcmp(argv[0], "quit") == 0) || (strcmp(argv[0], "q") == 0) || (strcmp(argv[0], "exit") == 0) || (strcmp(argv[0], "bye") == 0)) {
         ret = -1;
         goto end;
-    } else if ((strcmp(argv[0], LIST_STANDARD_COMMANDS) == 0) ||
-        (strcmp(argv[0], LIST_MESSAGE_DIGEST_COMMANDS) == 0) ||
-        (strcmp(argv[0], LIST_MESSAGE_DIGEST_ALGORITHMS) == 0) ||
-        (strcmp(argv[0], LIST_CIPHER_COMMANDS) == 0) ||
-        (strcmp(argv[0], LIST_CIPHER_ALGORITHMS) == 0) ||
-        (strcmp(argv[0], LIST_PUBLIC_KEY_ALGORITHMS) == 0)) {
+    } else if ((strcmp(argv[0], LIST_STANDARD_COMMANDS) == 0) || (strcmp(argv[0], LIST_MESSAGE_DIGEST_COMMANDS) == 0) || (strcmp(argv[0], LIST_MESSAGE_DIGEST_ALGORITHMS) == 0) || (strcmp(argv[0], LIST_CIPHER_COMMANDS) == 0) || (strcmp(argv[0], LIST_CIPHER_ALGORITHMS) == 0) || (strcmp(argv[0], LIST_PUBLIC_KEY_ALGORITHMS) == 0)) {
         int list_type;
         BIO *bio_stdout;
 
@@ -357,16 +347,16 @@ static int do_cmd(LHASH_OF(FUNCTION) *prog, int argc, char *argv[])
             goto end;
 
         if (list_type == FUNC_TYPE_PKEY)
-            list_pkey(bio_stdout);    
+            list_pkey(bio_stdout);
         if (list_type == FUNC_TYPE_MD_ALG)
-            list_md(bio_stdout);    
+            list_md(bio_stdout);
         if (list_type == FUNC_TYPE_CIPHER_ALG)
-            list_cipher(bio_stdout);    
+            list_cipher(bio_stdout);
         else {
             for (fp = functions; fp->name != NULL; fp++)
                 if (fp->type == list_type)
                     BIO_printf(bio_stdout, "%s\n",
-                                fp->name);
+                               fp->name);
         }
         BIO_free_all(bio_stdout);
         ret = 0;
@@ -394,7 +384,7 @@ static int do_cmd(LHASH_OF(FUNCTION) *prog, int argc, char *argv[])
                 if (tp == FUNC_TYPE_MD) {
                     i = 1;
                     BIO_printf(bio_err,
-                        "\nMessage Digest commands (see the `dgst' command for more details)\n");
+                               "\nMessage Digest commands (see the `dgst' command for more details)\n");
                 } else if (tp == FUNC_TYPE_CIPHER) {
                     i = 1;
                     BIO_printf(bio_err, "\nCipher commands (see the `enc' command for more details)\n");
@@ -419,7 +409,7 @@ static int SortFnByName(const void *_f1, const void *_f2)
     const FUNCTION *f2 = _f2;
 
     if (f1->type != f2->type)
-        return f1->type-f2->type;
+        return f1->type - f2->type;
 
     return strcmp(f1->name, f2->name);
 }
@@ -433,28 +423,28 @@ static void list_pkey(BIO *out)
         const char *pinfo, *pem_str;
         ameth = EVP_PKEY_asn1_get0(i);
         EVP_PKEY_asn1_get0_info(&pkey_id, &pkey_base_id, &pkey_flags,
-                        &pinfo, &pem_str, ameth);
+                                &pinfo, &pem_str, ameth);
         if (pkey_flags & ASN1_PKEY_ALIAS) {
-            BIO_printf(out, "Name: %s\n", 
-                    OBJ_nid2ln(pkey_id));
+            BIO_printf(out, "Name: %s\n",
+                       OBJ_nid2ln(pkey_id));
             BIO_printf(out, "\tType: Alias to %s\n",
-                    OBJ_nid2ln(pkey_base_id));
+                       OBJ_nid2ln(pkey_base_id));
         } else {
             BIO_printf(out, "Name: %s\n", pinfo);
-            BIO_printf(out, "\tType: %s Algorithm\n", 
-                pkey_flags & ASN1_PKEY_DYNAMIC ?
-                    "External" : "Builtin");
+            BIO_printf(out, "\tType: %s Algorithm\n",
+                       pkey_flags & ASN1_PKEY_DYNAMIC ?
+                           "External" :
+                           "Builtin");
             BIO_printf(out, "\tOID: %s\n", OBJ_nid2ln(pkey_id));
             if (pem_str == NULL)
                 pem_str = "(none)";
             BIO_printf(out, "\tPEM string: %s\n", pem_str);
         }
-                    
     }
 }
 
 static void list_cipher_fn(const EVP_CIPHER *c,
-            const char *from, const char *to, void *arg)
+                           const char *from, const char *to, void *arg)
 {
     if (c)
         BIO_printf(arg, "%s\n", EVP_CIPHER_name(c));
@@ -473,7 +463,7 @@ static void list_cipher(BIO *out)
 }
 
 static void list_md_fn(const EVP_MD *m,
-            const char *from, const char *to, void *arg)
+                       const char *from, const char *to, void *arg)
 {
     if (m)
         BIO_printf(arg, "%s\n", EVP_MD_name(m));
@@ -497,20 +487,21 @@ static int function_cmp(const FUNCTION *a, const FUNCTION *b)
 }
 static IMPLEMENT_LHASH_COMP_FN(function, FUNCTION)
 
-static unsigned long function_hash(const FUNCTION *a)
+    static unsigned long function_hash(const FUNCTION *a)
 {
     return lh_strhash(a->name);
-}    
+}
 static IMPLEMENT_LHASH_HASH_FN(function, FUNCTION)
 
-static LHASH_OF(FUNCTION) *prog_init(void)
+    static LHASH_OF(FUNCTION) * prog_init(void)
 {
-    LHASH_OF(FUNCTION) *ret;
+    LHASH_OF(FUNCTION) * ret;
     FUNCTION *f;
     size_t i;
 
     /* Purely so it looks nice when the user hits ? */
-    for(i = 0, f = functions; f->name != NULL; ++f, ++i);
+    for (i = 0, f = functions; f->name != NULL; ++f, ++i)
+        ;
     qsort(functions, i, sizeof *functions, SortFnByName);
 
     if ((ret = lh_FUNCTION_new()) == NULL)
@@ -520,4 +511,3 @@ static LHASH_OF(FUNCTION) *prog_init(void)
         (void)lh_FUNCTION_insert(ret, f);
     return (ret);
 }
-

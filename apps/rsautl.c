@@ -64,14 +64,14 @@
 #include <openssl/pem.h>
 #include <openssl/rsa.h>
 
-#define RSA_SIGN     1
-#define RSA_VERIFY     2
-#define RSA_ENCRYPT     3
-#define RSA_DECRYPT     4
+#define RSA_SIGN 1
+#define RSA_VERIFY 2
+#define RSA_ENCRYPT 3
+#define RSA_DECRYPT 4
 
-#define KEY_PRIVKEY    1
-#define KEY_PUBKEY    2
-#define KEY_CERT    3
+#define KEY_PRIVKEY 1
+#define KEY_PUBKEY 2
+#define KEY_CERT 3
 
 static void usage(void);
 
@@ -103,41 +103,41 @@ int rsautl_main(int argc, char **argv)
     argc--;
     argv++;
 
-    if (!bio_err) bio_err = BIO_new_fp(stderr, BIO_NOCLOSE);
+    if (!bio_err)
+        bio_err = BIO_new_fp(stderr, BIO_NOCLOSE);
 
     if (!load_config(bio_err, NULL))
         goto end;
     ERR_load_crypto_strings();
     OpenSSL_add_all_algorithms();
     pad = RSA_PKCS1_PADDING;
-    
-    while(argc >= 1)
-    {
-        if (!strcmp(*argv,"-in")) {
+
+    while (argc >= 1) {
+        if (!strcmp(*argv, "-in")) {
             if (--argc < 1)
                 badarg = 1;
             else
-                infile= *(++argv);
-        } else if (!strcmp(*argv,"-out")) {
+                infile = *(++argv);
+        } else if (!strcmp(*argv, "-out")) {
             if (--argc < 1)
                 badarg = 1;
             else
-                outfile= *(++argv);
+                outfile = *(++argv);
         } else if (!strcmp(*argv, "-inkey")) {
             if (--argc < 1)
                 badarg = 1;
             else
                 keyfile = *(++argv);
-        } else if (!strcmp(*argv,"-passin")) {
+        } else if (!strcmp(*argv, "-passin")) {
             if (--argc < 1)
                 badarg = 1;
             else
-                passargin= *(++argv);
-        } else if (strcmp(*argv,"-keyform") == 0) {
+                passargin = *(++argv);
+        } else if (strcmp(*argv, "-keyform") == 0) {
             if (--argc < 1)
                 badarg = 1;
             else
-                keyform=str2fmt(*(++argv));
+                keyform = str2fmt(*(++argv));
 #ifndef OPENSSL_NO_ENGINE
         } else if (!strcmp(*argv, "-engine")) {
             if (--argc < 1)
@@ -149,24 +149,34 @@ int rsautl_main(int argc, char **argv)
             key_type = KEY_PUBKEY;
         } else if (!strcmp(*argv, "-certin")) {
             key_type = KEY_CERT;
-        } 
-        else if (!strcmp(*argv, "-asn1parse")) asn1parse = 1;
-        else if (!strcmp(*argv, "-hexdump")) hexdump = 1;
-        else if (!strcmp(*argv, "-raw")) pad = RSA_NO_PADDING;
-        else if (!strcmp(*argv, "-oaep")) pad = RSA_PKCS1_OAEP_PADDING;
-        else if (!strcmp(*argv, "-ssl")) pad = RSA_SSLV23_PADDING;
-        else if (!strcmp(*argv, "-pkcs")) pad = RSA_PKCS1_PADDING;
-        else if (!strcmp(*argv, "-x931")) pad = RSA_X931_PADDING;
+        } else if (!strcmp(*argv, "-asn1parse"))
+            asn1parse = 1;
+        else if (!strcmp(*argv, "-hexdump"))
+            hexdump = 1;
+        else if (!strcmp(*argv, "-raw"))
+            pad = RSA_NO_PADDING;
+        else if (!strcmp(*argv, "-oaep"))
+            pad = RSA_PKCS1_OAEP_PADDING;
+        else if (!strcmp(*argv, "-ssl"))
+            pad = RSA_SSLV23_PADDING;
+        else if (!strcmp(*argv, "-pkcs"))
+            pad = RSA_PKCS1_PADDING;
+        else if (!strcmp(*argv, "-x931"))
+            pad = RSA_X931_PADDING;
         else if (!strcmp(*argv, "-sign")) {
             rsa_mode = RSA_SIGN;
             need_priv = 1;
-        } else if (!strcmp(*argv, "-verify")) rsa_mode = RSA_VERIFY;
-        else if (!strcmp(*argv, "-rev")) rev = 1;
-        else if (!strcmp(*argv, "-encrypt")) rsa_mode = RSA_ENCRYPT;
+        } else if (!strcmp(*argv, "-verify"))
+            rsa_mode = RSA_VERIFY;
+        else if (!strcmp(*argv, "-rev"))
+            rev = 1;
+        else if (!strcmp(*argv, "-encrypt"))
+            rsa_mode = RSA_ENCRYPT;
         else if (!strcmp(*argv, "-decrypt")) {
             rsa_mode = RSA_DECRYPT;
             need_priv = 1;
-        } else badarg = 1;
+        } else
+            badarg = 1;
         if (badarg) {
             usage();
             goto end;
@@ -181,32 +191,32 @@ int rsautl_main(int argc, char **argv)
     }
 
 #ifndef OPENSSL_NO_ENGINE
-        e = setup_engine(bio_err, engine, 0);
+    e = setup_engine(bio_err, engine, 0);
 #endif
     if (!app_passwd(bio_err, passargin, NULL, &passin, NULL)) {
         BIO_printf(bio_err, "Error getting password\n");
         goto end;
     }
-    
-    switch(key_type) {
+
+    switch (key_type) {
         case KEY_PRIVKEY:
-        pkey = load_key(bio_err, keyfile, keyform, 0,
-            passin, e, "Private Key");
-        break;
+            pkey = load_key(bio_err, keyfile, keyform, 0,
+                            passin, e, "Private Key");
+            break;
 
         case KEY_PUBKEY:
-        pkey = load_pubkey(bio_err, keyfile, keyform, 0,
-            NULL, e, "Public Key");
-        break;
+            pkey = load_pubkey(bio_err, keyfile, keyform, 0,
+                               NULL, e, "Public Key");
+            break;
 
         case KEY_CERT:
-        x = load_cert(bio_err, keyfile, keyform,
-            NULL, e, "Certificate");
-        if (x) {
-            pkey = X509_get_pubkey(x);
-            X509_free(x);
-        }
-        break;
+            x = load_cert(bio_err, keyfile, keyform,
+                          NULL, e, "Certificate");
+            if (x) {
+                pkey = X509_get_pubkey(x);
+                X509_free(x);
+            }
+            break;
     }
 
     if (!pkey) {
@@ -222,19 +232,19 @@ int rsautl_main(int argc, char **argv)
         goto end;
     }
 
-
     if (infile) {
         if (!(in = BIO_new_file(infile, "rb"))) {
             BIO_printf(bio_err, "Error Reading Input File\n");
-            ERR_print_errors(bio_err);    
+            ERR_print_errors(bio_err);
             goto end;
         }
-    } else in = BIO_new_fp(stdin, BIO_NOCLOSE);
+    } else
+        in = BIO_new_fp(stdin, BIO_NOCLOSE);
 
     if (outfile) {
         if (!(out = BIO_new_file(outfile, "wb"))) {
             BIO_printf(bio_err, "Error Reading Output File\n");
-            ERR_print_errors(bio_err);    
+            ERR_print_errors(bio_err);
             goto end;
         }
     } else {
@@ -255,30 +265,29 @@ int rsautl_main(int argc, char **argv)
     if (rev) {
         int i;
         unsigned char ctmp;
-        for(i = 0; i < rsa_inlen/2; i++) {
+        for (i = 0; i < rsa_inlen / 2; i++) {
             ctmp = rsa_in[i];
             rsa_in[i] = rsa_in[rsa_inlen - 1 - i];
             rsa_in[rsa_inlen - 1 - i] = ctmp;
         }
     }
-    switch(rsa_mode) {
+    switch (rsa_mode) {
 
         case RSA_VERIFY:
-            rsa_outlen  = RSA_public_decrypt(rsa_inlen, rsa_in, rsa_out, rsa, pad);
-        break;
+            rsa_outlen = RSA_public_decrypt(rsa_inlen, rsa_in, rsa_out, rsa, pad);
+            break;
 
         case RSA_SIGN:
-            rsa_outlen  = RSA_private_encrypt(rsa_inlen, rsa_in, rsa_out, rsa, pad);
-        break;
+            rsa_outlen = RSA_private_encrypt(rsa_inlen, rsa_in, rsa_out, rsa, pad);
+            break;
 
         case RSA_ENCRYPT:
-            rsa_outlen  = RSA_public_encrypt(rsa_inlen, rsa_in, rsa_out, rsa, pad);
-        break;
+            rsa_outlen = RSA_public_encrypt(rsa_inlen, rsa_in, rsa_out, rsa, pad);
+            break;
 
         case RSA_DECRYPT:
-            rsa_outlen  = RSA_private_decrypt(rsa_inlen, rsa_in, rsa_out, rsa, pad);
-        break;
-
+            rsa_outlen = RSA_private_decrypt(rsa_inlen, rsa_in, rsa_out, rsa, pad);
+            break;
     }
 
     if (rsa_outlen <= 0) {
@@ -291,15 +300,20 @@ int rsautl_main(int argc, char **argv)
         if (!ASN1_parse_dump(out, rsa_out, rsa_outlen, 1, -1)) {
             ERR_print_errors(bio_err);
         }
-    } else if (hexdump) BIO_dump(out, (char *)rsa_out, rsa_outlen);
-    else BIO_write(out, rsa_out, rsa_outlen);
-    end:
+    } else if (hexdump)
+        BIO_dump(out, (char *)rsa_out, rsa_outlen);
+    else
+        BIO_write(out, rsa_out, rsa_outlen);
+end:
     RSA_free(rsa);
     BIO_free(in);
     BIO_free_all(out);
-    if (rsa_in) free(rsa_in);
-    if (rsa_out) free(rsa_out);
-    if (passin) free(passin);
+    if (rsa_in)
+        free(rsa_in);
+    if (rsa_out)
+        free(rsa_out);
+    if (passin)
+        free(passin);
     return ret;
 }
 
@@ -323,7 +337,6 @@ static void usage()
     BIO_printf(bio_err, "-hexdump        hex dump output\n");
 #ifndef OPENSSL_NO_ENGINE
     BIO_printf(bio_err, "-engine e       use engine e, possibly a hardware device.\n");
-    BIO_printf (bio_err, "-passin arg    pass phrase source\n");
+    BIO_printf(bio_err, "-passin arg    pass phrase source\n");
 #endif
-
 }

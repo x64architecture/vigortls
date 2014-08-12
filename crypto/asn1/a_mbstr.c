@@ -63,7 +63,7 @@
 #include <openssl/err.h>
 
 static int traverse_string(const unsigned char *p, int len, int inform,
-         int (*rfunc)(unsigned long value, void *in), void *arg);
+                           int (*rfunc)(unsigned long value, void *in), void *arg);
 static int in_utf8(unsigned long value, void *arg);
 static int out_utf8(unsigned long value, void *arg);
 static int type_str(unsigned long value, void *arg);
@@ -82,14 +82,14 @@ static int is_printable(unsigned long value);
  */
 
 int ASN1_mbstring_copy(ASN1_STRING **out, const unsigned char *in, int len,
-                    int inform, unsigned long mask)
+                       int inform, unsigned long mask)
 {
     return ASN1_mbstring_ncopy(out, in, len, inform, mask, 0, 0);
 }
 
 int ASN1_mbstring_ncopy(ASN1_STRING **out, const unsigned char *in, int len,
-                    int inform, unsigned long mask, 
-                    long minsize, long maxsize)
+                        int inform, unsigned long mask,
+                        long minsize, long maxsize)
 {
     int str_type;
     int ret;
@@ -99,49 +99,51 @@ int ASN1_mbstring_ncopy(ASN1_STRING **out, const unsigned char *in, int len,
     unsigned char *p;
     int nchar;
     char strbuf[32];
-    int (*cpyfunc)(unsigned long,void *) = NULL;
-    if (len == -1) len = strlen((const char *)in);
-    if (!mask) mask = DIRSTRING_TYPE;
+    int (*cpyfunc)(unsigned long, void *) = NULL;
+    if (len == -1)
+        len = strlen((const char *)in);
+    if (!mask)
+        mask = DIRSTRING_TYPE;
 
     /* First do a string check and work out the number of characters */
-    switch(inform) {
+    switch (inform) {
 
         case MBSTRING_BMP:
-        if (len & 1) {
-            ASN1err(ASN1_F_ASN1_MBSTRING_NCOPY,
-                     ASN1_R_INVALID_BMPSTRING_LENGTH);
-            return -1;
-        }
-        nchar = len >> 1;
-        break;
+            if (len & 1) {
+                ASN1err(ASN1_F_ASN1_MBSTRING_NCOPY,
+                        ASN1_R_INVALID_BMPSTRING_LENGTH);
+                return -1;
+            }
+            nchar = len >> 1;
+            break;
 
         case MBSTRING_UNIV:
-        if (len & 3) {
-            ASN1err(ASN1_F_ASN1_MBSTRING_NCOPY,
-                     ASN1_R_INVALID_UNIVERSALSTRING_LENGTH);
-            return -1;
-        }
-        nchar = len >> 2;
-        break;
+            if (len & 3) {
+                ASN1err(ASN1_F_ASN1_MBSTRING_NCOPY,
+                        ASN1_R_INVALID_UNIVERSALSTRING_LENGTH);
+                return -1;
+            }
+            nchar = len >> 2;
+            break;
 
         case MBSTRING_UTF8:
-        nchar = 0;
-        /* This counts the characters and does utf8 syntax checking */
-        ret = traverse_string(in, len, MBSTRING_UTF8, in_utf8, &nchar);
-        if (ret < 0) {
-            ASN1err(ASN1_F_ASN1_MBSTRING_NCOPY,
-                         ASN1_R_INVALID_UTF8STRING);
-            return -1;
-        }
-        break;
+            nchar = 0;
+            /* This counts the characters and does utf8 syntax checking */
+            ret = traverse_string(in, len, MBSTRING_UTF8, in_utf8, &nchar);
+            if (ret < 0) {
+                ASN1err(ASN1_F_ASN1_MBSTRING_NCOPY,
+                        ASN1_R_INVALID_UTF8STRING);
+                return -1;
+            }
+            break;
 
         case MBSTRING_ASC:
-        nchar = len;
-        break;
+            nchar = len;
+            break;
 
         default:
-        ASN1err(ASN1_F_ASN1_MBSTRING_NCOPY, ASN1_R_UNKNOWN_FORMAT);
-        return -1;
+            ASN1err(ASN1_F_ASN1_MBSTRING_NCOPY, ASN1_R_UNKNOWN_FORMAT);
+            return -1;
     }
 
     if ((minsize > 0) && (nchar < minsize)) {
@@ -164,12 +166,14 @@ int ASN1_mbstring_ncopy(ASN1_STRING **out, const unsigned char *in, int len,
         return -1;
     }
 
-
     /* Now work out output format and string type */
     outform = MBSTRING_ASC;
-    if (mask & B_ASN1_PRINTABLESTRING) str_type = V_ASN1_PRINTABLESTRING;
-    else if (mask & B_ASN1_IA5STRING) str_type = V_ASN1_IA5STRING;
-    else if (mask & B_ASN1_T61STRING) str_type = V_ASN1_T61STRING;
+    if (mask & B_ASN1_PRINTABLESTRING)
+        str_type = V_ASN1_PRINTABLESTRING;
+    else if (mask & B_ASN1_IA5STRING)
+        str_type = V_ASN1_IA5STRING;
+    else if (mask & B_ASN1_T61STRING)
+        str_type = V_ASN1_T61STRING;
     else if (mask & B_ASN1_BMPSTRING) {
         str_type = V_ASN1_BMPSTRING;
         outform = MBSTRING_BMP;
@@ -180,7 +184,8 @@ int ASN1_mbstring_ncopy(ASN1_STRING **out, const unsigned char *in, int len,
         str_type = V_ASN1_UTF8STRING;
         outform = MBSTRING_UTF8;
     }
-    if (!out) return str_type;
+    if (!out)
+        return str_type;
     if (*out) {
         free_out = 0;
         dest = *out;
@@ -195,7 +200,7 @@ int ASN1_mbstring_ncopy(ASN1_STRING **out, const unsigned char *in, int len,
         dest = ASN1_STRING_type_new(str_type);
         if (!dest) {
             ASN1err(ASN1_F_ASN1_MBSTRING_NCOPY,
-                            ERR_R_MALLOC_FAILURE);
+                    ERR_R_MALLOC_FAILURE);
             return -1;
         }
         *out = dest;
@@ -203,45 +208,46 @@ int ASN1_mbstring_ncopy(ASN1_STRING **out, const unsigned char *in, int len,
     /* If both the same type just copy across */
     if (inform == outform) {
         if (!ASN1_STRING_set(dest, in, len)) {
-            ASN1err(ASN1_F_ASN1_MBSTRING_NCOPY,ERR_R_MALLOC_FAILURE);
+            ASN1err(ASN1_F_ASN1_MBSTRING_NCOPY, ERR_R_MALLOC_FAILURE);
             return -1;
         }
         return str_type;
-    } 
+    }
 
     /* Work out how much space the destination will need */
-    switch(outform) {
+    switch (outform) {
         case MBSTRING_ASC:
-        outlen = nchar;
-        cpyfunc = cpy_asc;
-        break;
+            outlen = nchar;
+            cpyfunc = cpy_asc;
+            break;
 
         case MBSTRING_BMP:
-        outlen = nchar << 1;
-        cpyfunc = cpy_bmp;
-        break;
+            outlen = nchar << 1;
+            cpyfunc = cpy_bmp;
+            break;
 
         case MBSTRING_UNIV:
-        outlen = nchar << 2;
-        cpyfunc = cpy_univ;
-        break;
+            outlen = nchar << 2;
+            cpyfunc = cpy_univ;
+            break;
 
         case MBSTRING_UTF8:
-        outlen = 0;
-        traverse_string(in, len, inform, out_utf8, &outlen);
-        cpyfunc = cpy_utf8;
-        break;
+            outlen = 0;
+            traverse_string(in, len, inform, out_utf8, &outlen);
+            cpyfunc = cpy_utf8;
+            break;
     }
     if (!(p = malloc(outlen + 1))) {
-        if (free_out) ASN1_STRING_free(dest);
-        ASN1err(ASN1_F_ASN1_MBSTRING_NCOPY,ERR_R_MALLOC_FAILURE);
+        if (free_out)
+            ASN1_STRING_free(dest);
+        ASN1err(ASN1_F_ASN1_MBSTRING_NCOPY, ERR_R_MALLOC_FAILURE);
         return -1;
     }
     dest->length = outlen;
     dest->data = p;
     p[outlen] = 0;
     traverse_string(in, len, inform, cpyfunc, &p);
-    return str_type;    
+    return str_type;
 }
 
 /* This function traverses a string and passes the value of each character
@@ -249,11 +255,11 @@ int ASN1_mbstring_ncopy(ASN1_STRING **out, const unsigned char *in, int len,
  */
 
 static int traverse_string(const unsigned char *p, int len, int inform,
-         int (*rfunc)(unsigned long value, void *in), void *arg)
+                           int (*rfunc)(unsigned long value, void *in), void *arg)
 {
     unsigned long value;
     int ret;
-    while(len) {
+    while (len) {
         if (inform == MBSTRING_ASC) {
             value = *p++;
             len--;
@@ -269,13 +275,15 @@ static int traverse_string(const unsigned char *p, int len, int inform,
             len -= 4;
         } else {
             ret = UTF8_getc(p, len, &value);
-            if (ret < 0) return -1;
+            if (ret < 0)
+                return -1;
             len -= ret;
             p += ret;
         }
         if (rfunc) {
             ret = rfunc(value, arg);
-            if (ret <= 0) return ret;
+            if (ret <= 0)
+                return ret;
         }
     }
     return 1;
@@ -312,14 +320,15 @@ static int type_str(unsigned long value, void *arg)
     unsigned long types;
     types = *((unsigned long *)arg);
     if ((types & B_ASN1_PRINTABLESTRING) && !is_printable(value))
-                    types &= ~B_ASN1_PRINTABLESTRING;
+        types &= ~B_ASN1_PRINTABLESTRING;
     if ((types & B_ASN1_IA5STRING) && (value > 127))
-                    types &= ~B_ASN1_IA5STRING;
+        types &= ~B_ASN1_IA5STRING;
     if ((types & B_ASN1_T61STRING) && (value > 0xff))
-                    types &= ~B_ASN1_T61STRING;
+        types &= ~B_ASN1_T61STRING;
     if ((types & B_ASN1_BMPSTRING) && (value > 0xffff))
-                    types &= ~B_ASN1_BMPSTRING;
-    if (!types) return -1;
+        types &= ~B_ASN1_BMPSTRING;
+    if (!types)
+        return -1;
     *((unsigned long *)arg) = types;
     return 1;
 }
@@ -331,7 +340,7 @@ static int cpy_asc(unsigned long value, void *arg)
     unsigned char **p, *q;
     p = arg;
     q = *p;
-    *q = (unsigned char) value;
+    *q = (unsigned char)value;
     (*p)++;
     return 1;
 }
@@ -343,8 +352,8 @@ static int cpy_bmp(unsigned long value, void *arg)
     unsigned char **p, *q;
     p = arg;
     q = *p;
-    *q++ = (unsigned char) ((value >> 8) & 0xff);
-    *q = (unsigned char) (value & 0xff);
+    *q++ = (unsigned char)((value >> 8) & 0xff);
+    *q = (unsigned char)(value & 0xff);
     *p += 2;
     return 1;
 }
@@ -356,10 +365,10 @@ static int cpy_univ(unsigned long value, void *arg)
     unsigned char **p, *q;
     p = arg;
     q = *p;
-    *q++ = (unsigned char) ((value >> 24) & 0xff);
-    *q++ = (unsigned char) ((value >> 16) & 0xff);
-    *q++ = (unsigned char) ((value >> 8) & 0xff);
-    *q = (unsigned char) (value & 0xff);
+    *q++ = (unsigned char)((value >> 24) & 0xff);
+    *q++ = (unsigned char)((value >> 16) & 0xff);
+    *q++ = (unsigned char)((value >> 8) & 0xff);
+    *q = (unsigned char)(value & 0xff);
     *p += 4;
     return 1;
 }
@@ -381,14 +390,19 @@ static int cpy_utf8(unsigned long value, void *arg)
 static int is_printable(unsigned long value)
 {
     int ch;
-    if (value > 0x7f) return 0;
-    ch = (int) value;
+    if (value > 0x7f)
+        return 0;
+    ch = (int)value;
     /* Note: we can't use 'isalnum' because certain accented 
      * characters may count as alphanumeric in some environments.
      */
-    if ((ch >= 'a') && (ch <= 'z')) return 1;
-    if ((ch >= 'A') && (ch <= 'Z')) return 1;
-    if ((ch >= '0') && (ch <= '9')) return 1;
-    if ((ch == ' ') || strchr("'()+,-./:=?", ch)) return 1;
+    if ((ch >= 'a') && (ch <= 'z'))
+        return 1;
+    if ((ch >= 'A') && (ch <= 'Z'))
+        return 1;
+    if ((ch >= '0') && (ch <= '9'))
+        return 1;
+    if ((ch == ' ') || strchr("'()+,-./:=?", ch))
+        return 1;
     return 0;
 }

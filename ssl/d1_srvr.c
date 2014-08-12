@@ -175,7 +175,7 @@ int dtls1_accept(SSL *s)
     unsigned long Time = (unsigned long)time(NULL);
     void (*cb)(const SSL *ssl, int type, int val) = NULL;
     unsigned long alg_k;
-    int ret= -1;
+    int ret = -1;
     int new_state, state, skip = 0;
     int listen;
 
@@ -206,48 +206,48 @@ int dtls1_accept(SSL *s)
         state = s->state;
 
         switch (s->state) {
-        case SSL_ST_RENEGOTIATE:
-            s->renegotiate = 1;
+            case SSL_ST_RENEGOTIATE:
+                s->renegotiate = 1;
             /* s->state = SSL_ST_ACCEPT; */
 
-        case SSL_ST_BEFORE:
-        case SSL_ST_ACCEPT:
-        case SSL_ST_BEFORE|SSL_ST_ACCEPT:
-        case SSL_ST_OK|SSL_ST_ACCEPT:
+            case SSL_ST_BEFORE:
+            case SSL_ST_ACCEPT:
+            case SSL_ST_BEFORE | SSL_ST_ACCEPT:
+            case SSL_ST_OK | SSL_ST_ACCEPT:
 
-            s->server = 1;
-            if (cb != NULL)
-                cb(s, SSL_CB_HANDSHAKE_START, 1);
+                s->server = 1;
+                if (cb != NULL)
+                    cb(s, SSL_CB_HANDSHAKE_START, 1);
 
-            if ((s->version & 0xff00) != (DTLS1_VERSION & 0xff00)) {
-                SSLerr(SSL_F_DTLS1_ACCEPT, ERR_R_INTERNAL_ERROR);
-                return -1;
-            }
-            s->type = SSL_ST_ACCEPT;
+                if ((s->version & 0xff00) != (DTLS1_VERSION & 0xff00)) {
+                    SSLerr(SSL_F_DTLS1_ACCEPT, ERR_R_INTERNAL_ERROR);
+                    return -1;
+                }
+                s->type = SSL_ST_ACCEPT;
 
-            if (s->init_buf == NULL) {
-                BUF_MEM *buf;
-                if ((buf = BUF_MEM_new()) == NULL) {
+                if (s->init_buf == NULL) {
+                    BUF_MEM *buf;
+                    if ((buf = BUF_MEM_new()) == NULL) {
+                        ret = -1;
+                        goto end;
+                    }
+                    if (!BUF_MEM_grow(buf, SSL3_RT_MAX_PLAIN_LENGTH)) {
+                        BUF_MEM_free(buf);
+                        ret = -1;
+                        goto end;
+                    }
+                    s->init_buf = buf;
+                }
+
+                if (!ssl3_setup_buffers(s)) {
                     ret = -1;
                     goto end;
                 }
-                if (!BUF_MEM_grow(buf, SSL3_RT_MAX_PLAIN_LENGTH)) {
-                    BUF_MEM_free(buf);
-                    ret= -1;
-                    goto end;
-                }
-                s->init_buf = buf;
-            }
 
-            if (!ssl3_setup_buffers(s)) {
-                ret = -1;
-                goto end;
-            }
+                s->init_num = 0;
 
-            s->init_num = 0;
-
-            if (s->state != SSL_ST_RENEGOTIATE) {
-                /* Ok, we now need to push on a buffering BIO so that
+                if (s->state != SSL_ST_RENEGOTIATE) {
+                    /* Ok, we now need to push on a buffering BIO so that
                  * the output is sent in a way that TCP likes :-)
                  */
                     if (!ssl_init_wbio_buffer(s, 1)) {
@@ -255,423 +255,419 @@ int dtls1_accept(SSL *s)
                         goto end;
                     }
 
-                ssl3_init_finished_mac(s);
-                s->state = SSL3_ST_SR_CLNT_HELLO_A;
-                s->ctx->stats.sess_accept++;
-            } else {
-                /* s->state == SSL_ST_RENEGOTIATE,
+                    ssl3_init_finished_mac(s);
+                    s->state = SSL3_ST_SR_CLNT_HELLO_A;
+                    s->ctx->stats.sess_accept++;
+                } else {
+                    /* s->state == SSL_ST_RENEGOTIATE,
                  * we will just send a HelloRequest */
-                s->ctx->stats.sess_accept_renegotiate++;
-                s->state = SSL3_ST_SW_HELLO_REQ_A;
-            }
+                    s->ctx->stats.sess_accept_renegotiate++;
+                    s->state = SSL3_ST_SW_HELLO_REQ_A;
+                }
 
-            break;
+                break;
 
-        case SSL3_ST_SW_HELLO_REQ_A:
-        case SSL3_ST_SW_HELLO_REQ_B:
+            case SSL3_ST_SW_HELLO_REQ_A:
+            case SSL3_ST_SW_HELLO_REQ_B:
 
-            s->shutdown = 0;
-            dtls1_clear_record_buffer(s);
-            dtls1_start_timer(s);
-            ret = dtls1_send_hello_request(s);
-            if (ret <= 0)
-                goto end;
-            s->s3->tmp.next_state = SSL3_ST_SR_CLNT_HELLO_A;
-            s->state = SSL3_ST_SW_FLUSH;
-            s->init_num = 0;
-
-            ssl3_init_finished_mac(s);
-            break;
-
-        case SSL3_ST_SW_HELLO_REQ_C:
-            s->state = SSL_ST_OK;
-            break;
-
-        case SSL3_ST_SR_CLNT_HELLO_A:
-        case SSL3_ST_SR_CLNT_HELLO_B:
-        case SSL3_ST_SR_CLNT_HELLO_C:
-
-            s->shutdown = 0;
-            ret = ssl3_get_client_hello(s);
-            if (ret <= 0)
-                goto end;
-            dtls1_stop_timer(s);
-
-            if (ret == 1 && (SSL_get_options(s) & SSL_OP_COOKIE_EXCHANGE))
-                s->state = DTLS1_ST_SW_HELLO_VERIFY_REQUEST_A;
-            else
-                s->state = SSL3_ST_SW_SRVR_HELLO_A;
-
-            s->init_num = 0;
-
-            /* Reflect ClientHello sequence to remain stateless while listening */
-            if (listen)
-                memcpy(s->s3->write_sequence, s->s3->read_sequence, sizeof(s->s3->write_sequence));
-
-            /* If we're just listening, stop here */
-            if (listen && s->state == SSL3_ST_SW_SRVR_HELLO_A) {
-                ret = 2;
-                s->d1->listen = 0;
-                /* Set expected sequence numbers
-                 * to continue the handshake.
-                 */
-                s->d1->handshake_read_seq = 2;
-                s->d1->handshake_write_seq = 1;
-                s->d1->next_handshake_write_seq = 1;
-                goto end;
-            }
-
-            break;
-
-        case DTLS1_ST_SW_HELLO_VERIFY_REQUEST_A:
-        case DTLS1_ST_SW_HELLO_VERIFY_REQUEST_B:
-
-            ret = dtls1_send_hello_verify_request(s);
-            if ( ret <= 0)
-                goto end;
-            s->state = SSL3_ST_SW_FLUSH;
-            s->s3->tmp.next_state = SSL3_ST_SR_CLNT_HELLO_A;
-
-            /* HelloVerifyRequest resets Finished MAC */
-            if (s->version != DTLS1_BAD_VER)
-                ssl3_init_finished_mac(s);
-            break;
-
-        case SSL3_ST_SW_SRVR_HELLO_A:
-        case SSL3_ST_SW_SRVR_HELLO_B:
-            s->renegotiate = 2;
-            dtls1_start_timer(s);
-            ret = dtls1_send_server_hello(s);
-            if (ret <= 0)
-                goto end;
-
-            if (s->hit) {
-                if (s->tlsext_ticket_expected)
-                    s->state = SSL3_ST_SW_SESSION_TICKET_A;
-                else
-                    s->state = SSL3_ST_SW_CHANGE_A;
-            } else
-                s->state = SSL3_ST_SW_CERT_A;
-            s->init_num = 0;
-            break;
-
-        case SSL3_ST_SW_CERT_A:
-        case SSL3_ST_SW_CERT_B:
-            /* Check if it is anon DH or normal PSK */
-            if (!(s->s3->tmp.new_cipher->algorithm_auth & SSL_aNULL)
-                && !(s->s3->tmp.new_cipher->algorithm_mkey & SSL_kPSK)) {
+                s->shutdown = 0;
+                dtls1_clear_record_buffer(s);
                 dtls1_start_timer(s);
-                ret = dtls1_send_server_certificate(s);
+                ret = dtls1_send_hello_request(s);
                 if (ret <= 0)
                     goto end;
-                if (s->tlsext_status_expected)
-                    s->state = SSL3_ST_SW_CERT_STATUS_A;
+                s->s3->tmp.next_state = SSL3_ST_SR_CLNT_HELLO_A;
+                s->state = SSL3_ST_SW_FLUSH;
+                s->init_num = 0;
+
+                ssl3_init_finished_mac(s);
+                break;
+
+            case SSL3_ST_SW_HELLO_REQ_C:
+                s->state = SSL_ST_OK;
+                break;
+
+            case SSL3_ST_SR_CLNT_HELLO_A:
+            case SSL3_ST_SR_CLNT_HELLO_B:
+            case SSL3_ST_SR_CLNT_HELLO_C:
+
+                s->shutdown = 0;
+                ret = ssl3_get_client_hello(s);
+                if (ret <= 0)
+                    goto end;
+                dtls1_stop_timer(s);
+
+                if (ret == 1 && (SSL_get_options(s) & SSL_OP_COOKIE_EXCHANGE))
+                    s->state = DTLS1_ST_SW_HELLO_VERIFY_REQUEST_A;
                 else
+                    s->state = SSL3_ST_SW_SRVR_HELLO_A;
+
+                s->init_num = 0;
+
+                /* Reflect ClientHello sequence to remain stateless while listening */
+                if (listen)
+                    memcpy(s->s3->write_sequence, s->s3->read_sequence, sizeof(s->s3->write_sequence));
+
+                /* If we're just listening, stop here */
+                if (listen && s->state == SSL3_ST_SW_SRVR_HELLO_A) {
+                    ret = 2;
+                    s->d1->listen = 0;
+                    /* Set expected sequence numbers
+                 * to continue the handshake.
+                 */
+                    s->d1->handshake_read_seq = 2;
+                    s->d1->handshake_write_seq = 1;
+                    s->d1->next_handshake_write_seq = 1;
+                    goto end;
+                }
+
+                break;
+
+            case DTLS1_ST_SW_HELLO_VERIFY_REQUEST_A:
+            case DTLS1_ST_SW_HELLO_VERIFY_REQUEST_B:
+
+                ret = dtls1_send_hello_verify_request(s);
+                if (ret <= 0)
+                    goto end;
+                s->state = SSL3_ST_SW_FLUSH;
+                s->s3->tmp.next_state = SSL3_ST_SR_CLNT_HELLO_A;
+
+                /* HelloVerifyRequest resets Finished MAC */
+                if (s->version != DTLS1_BAD_VER)
+                    ssl3_init_finished_mac(s);
+                break;
+
+            case SSL3_ST_SW_SRVR_HELLO_A:
+            case SSL3_ST_SW_SRVR_HELLO_B:
+                s->renegotiate = 2;
+                dtls1_start_timer(s);
+                ret = dtls1_send_server_hello(s);
+                if (ret <= 0)
+                    goto end;
+
+                if (s->hit) {
+                    if (s->tlsext_ticket_expected)
+                        s->state = SSL3_ST_SW_SESSION_TICKET_A;
+                    else
+                        s->state = SSL3_ST_SW_CHANGE_A;
+                } else
+                    s->state = SSL3_ST_SW_CERT_A;
+                s->init_num = 0;
+                break;
+
+            case SSL3_ST_SW_CERT_A:
+            case SSL3_ST_SW_CERT_B:
+                /* Check if it is anon DH or normal PSK */
+                if (!(s->s3->tmp.new_cipher->algorithm_auth & SSL_aNULL)
+                    && !(s->s3->tmp.new_cipher->algorithm_mkey & SSL_kPSK)) {
+                    dtls1_start_timer(s);
+                    ret = dtls1_send_server_certificate(s);
+                    if (ret <= 0)
+                        goto end;
+                    if (s->tlsext_status_expected)
+                        s->state = SSL3_ST_SW_CERT_STATUS_A;
+                    else
+                        s->state = SSL3_ST_SW_KEY_EXCH_A;
+                } else {
+                    skip = 1;
                     s->state = SSL3_ST_SW_KEY_EXCH_A;
-            } else {
-                skip = 1;
-                s->state = SSL3_ST_SW_KEY_EXCH_A;
-            }
-            s->init_num = 0;
-            break;
+                }
+                s->init_num = 0;
+                break;
 
-        case SSL3_ST_SW_KEY_EXCH_A:
-        case SSL3_ST_SW_KEY_EXCH_B:
-            alg_k = s->s3->tmp.new_cipher->algorithm_mkey;
+            case SSL3_ST_SW_KEY_EXCH_A:
+            case SSL3_ST_SW_KEY_EXCH_B:
+                alg_k = s->s3->tmp.new_cipher->algorithm_mkey;
 
-            /* clear this, it may get reset by
+                /* clear this, it may get reset by
              * send_server_key_exchange */
-            if ((s->options & SSL_OP_EPHEMERAL_RSA)
+                if ((s->options & SSL_OP_EPHEMERAL_RSA)
 #ifndef OPENSSL_NO_KRB5
-                && !(alg_k & SSL_kKRB5)
+                    && !(alg_k & SSL_kKRB5)
 #endif /* OPENSSL_NO_KRB5 */
-                )
-                /* option SSL_OP_EPHEMERAL_RSA sends temporary RSA key
+                        )
+                    /* option SSL_OP_EPHEMERAL_RSA sends temporary RSA key
                  * even when forbidden by protocol specs
                  * (handshake may fail as clients are not required to
                  * be able to handle this) */
-                s->s3->tmp.use_rsa_tmp = 1;
-            else
-                s->s3->tmp.use_rsa_tmp = 0;
+                    s->s3->tmp.use_rsa_tmp = 1;
+                else
+                    s->s3->tmp.use_rsa_tmp = 0;
 
-            /* only send if a DH key exchange or
+                /* only send if a DH key exchange or
              * RSA but we have a sign only certificate */
-            if (s->s3->tmp.use_rsa_tmp
-            /* PSK: send ServerKeyExchange if PSK identity
+                if (s->s3->tmp.use_rsa_tmp
+/* PSK: send ServerKeyExchange if PSK identity
              * hint if provided */
 #ifndef OPENSSL_NO_PSK
-                || ((alg_k & SSL_kPSK) && s->ctx->psk_identity_hint)
+                    || ((alg_k & SSL_kPSK) && s->ctx->psk_identity_hint)
 #endif
-                || (alg_k & (SSL_kEDH | SSL_kDHr | SSL_kDHd))
-                || (alg_k & SSL_kEECDH)
-                || ((alg_k & SSL_kRSA)
-                && (s->cert->pkeys[SSL_PKEY_RSA_ENC].privatekey == NULL
-                    )
-                )
-                ) {
-                dtls1_start_timer(s);
-                ret = dtls1_send_server_key_exchange(s);
-                if (ret <= 0)
-                    goto end;
-            } else
-                skip = 1;
+                    || (alg_k & (SSL_kEDH | SSL_kDHr | SSL_kDHd))
+                    || (alg_k & SSL_kEECDH)
+                    || ((alg_k & SSL_kRSA)
+                        && (s->cert->pkeys[SSL_PKEY_RSA_ENC].privatekey == NULL))) {
+                    dtls1_start_timer(s);
+                    ret = dtls1_send_server_key_exchange(s);
+                    if (ret <= 0)
+                        goto end;
+                } else
+                    skip = 1;
 
-            s->state = SSL3_ST_SW_CERT_REQ_A;
-            s->init_num = 0;
-            break;
+                s->state = SSL3_ST_SW_CERT_REQ_A;
+                s->init_num = 0;
+                break;
 
-        case SSL3_ST_SW_CERT_REQ_A:
-        case SSL3_ST_SW_CERT_REQ_B:
-            if (/* don't request cert unless asked for it: */
-                !(s->verify_mode & SSL_VERIFY_PEER) ||
-                /* if SSL_VERIFY_CLIENT_ONCE is set,
+            case SSL3_ST_SW_CERT_REQ_A:
+            case SSL3_ST_SW_CERT_REQ_B:
+                if (/* don't request cert unless asked for it: */
+                    !(s->verify_mode & SSL_VERIFY_PEER) ||
+                    /* if SSL_VERIFY_CLIENT_ONCE is set,
                  * don't request cert during re-negotiation: */
-                ((s->session->peer != NULL) &&
-                 (s->verify_mode & SSL_VERIFY_CLIENT_ONCE)) ||
-                /* never request cert in anonymous ciphersuites
+                    ((s->session->peer != NULL) && (s->verify_mode & SSL_VERIFY_CLIENT_ONCE)) ||
+                    /* never request cert in anonymous ciphersuites
                  * (see section "Certificate request" in SSL 3 drafts
                  * and in RFC 2246): */
-                ((s->s3->tmp.new_cipher->algorithm_auth & SSL_aNULL) &&
-                 /* ... except when the application insists on verification
+                    ((s->s3->tmp.new_cipher->algorithm_auth & SSL_aNULL) &&
+                     /* ... except when the application insists on verification
                   * (against the specs, but s3_clnt.c accepts this for SSL 3) */
-                 !(s->verify_mode & SSL_VERIFY_FAIL_IF_NO_PEER_CERT)) ||
-                 /* never request cert in Kerberos ciphersuites */
-                (s->s3->tmp.new_cipher->algorithm_auth & SSL_aKRB5)
-                /* With normal PSK Certificates and
+                     !(s->verify_mode & SSL_VERIFY_FAIL_IF_NO_PEER_CERT)) ||
+                    /* never request cert in Kerberos ciphersuites */
+                    (s->s3->tmp.new_cipher->algorithm_auth & SSL_aKRB5)
+                        /* With normal PSK Certificates and
                  * Certificate Requests are omitted */
-                || (s->s3->tmp.new_cipher->algorithm_mkey & SSL_kPSK)) {
-                /* no cert request */
-                skip = 1;
-                s->s3->tmp.cert_request = 0;
-                s->state = SSL3_ST_SW_SRVR_DONE_A;
-            } else {
-                s->s3->tmp.cert_request = 1;
-                dtls1_start_timer(s);
-                ret = dtls1_send_certificate_request(s);
-                if (ret <= 0)
-                    goto end;
+                    || (s->s3->tmp.new_cipher->algorithm_mkey & SSL_kPSK)) {
+                    /* no cert request */
+                    skip = 1;
+                    s->s3->tmp.cert_request = 0;
+                    s->state = SSL3_ST_SW_SRVR_DONE_A;
+                } else {
+                    s->s3->tmp.cert_request = 1;
+                    dtls1_start_timer(s);
+                    ret = dtls1_send_certificate_request(s);
+                    if (ret <= 0)
+                        goto end;
 #ifndef NETSCAPE_HANG_BUG
-                s->state = SSL3_ST_SW_SRVR_DONE_A;
+                    s->state = SSL3_ST_SW_SRVR_DONE_A;
 #else
-                s->state = SSL3_ST_SW_FLUSH;
-                s->s3->tmp.next_state = SSL3_ST_SR_CERT_A;
+                    s->state = SSL3_ST_SW_FLUSH;
+                    s->s3->tmp.next_state = SSL3_ST_SR_CERT_A;
 #endif
-                s->init_num = 0;
-            }
-            break;
-
-        case SSL3_ST_SW_SRVR_DONE_A:
-        case SSL3_ST_SW_SRVR_DONE_B:
-            dtls1_start_timer(s);
-            ret = dtls1_send_server_done(s);
-            if (ret <= 0)
-                goto end;
-            s->s3->tmp.next_state = SSL3_ST_SR_CERT_A;
-            s->state = SSL3_ST_SW_FLUSH;
-            s->init_num = 0;
-            break;
-
-        case SSL3_ST_SW_FLUSH:
-            s->rwstate = SSL_WRITING;
-            if (BIO_flush(s->wbio) <= 0) {
-                /* If the write error was fatal, stop trying */
-                if (!BIO_should_retry(s->wbio)) {
-                    s->rwstate = SSL_NOTHING;
-                    s->state = s->s3->tmp.next_state;
+                    s->init_num = 0;
                 }
+                break;
 
-                ret = -1;
-                goto end;
-            }
-            s->rwstate = SSL_NOTHING;
-            s->state = s->s3->tmp.next_state;
-            break;
-
-        case SSL3_ST_SR_CERT_A:
-        case SSL3_ST_SR_CERT_B:
-            /* Check for second client hello (MS SGC) */
-            ret = ssl3_check_client_hello(s);
-            if (ret <= 0)
-                goto end;
-            if (ret == 2) {
-                dtls1_stop_timer(s);
-                s->state = SSL3_ST_SR_CLNT_HELLO_C;
-            } else {
-                /* could be sent for a DH cert, even if we
-                 * have not asked for it :-) */
-                ret = ssl3_get_client_certificate(s);
+            case SSL3_ST_SW_SRVR_DONE_A:
+            case SSL3_ST_SW_SRVR_DONE_B:
+                dtls1_start_timer(s);
+                ret = dtls1_send_server_done(s);
                 if (ret <= 0)
                     goto end;
+                s->s3->tmp.next_state = SSL3_ST_SR_CERT_A;
+                s->state = SSL3_ST_SW_FLUSH;
                 s->init_num = 0;
-                s->state = SSL3_ST_SR_KEY_EXCH_A;
-            }
-            break;
+                break;
 
-        case SSL3_ST_SR_KEY_EXCH_A:
-        case SSL3_ST_SR_KEY_EXCH_B:
-            ret = ssl3_get_client_key_exchange(s);
-            if (ret <= 0)
-                goto end;
+            case SSL3_ST_SW_FLUSH:
+                s->rwstate = SSL_WRITING;
+                if (BIO_flush(s->wbio) <= 0) {
+                    /* If the write error was fatal, stop trying */
+                    if (!BIO_should_retry(s->wbio)) {
+                        s->rwstate = SSL_NOTHING;
+                        s->state = s->s3->tmp.next_state;
+                    }
 
-            s->state = SSL3_ST_SR_CERT_VRFY_A;
-            s->init_num = 0;
+                    ret = -1;
+                    goto end;
+                }
+                s->rwstate = SSL_NOTHING;
+                s->state = s->s3->tmp.next_state;
+                break;
 
-            if (ret == 2) {
-                /* For the ECDH ciphersuites when
+            case SSL3_ST_SR_CERT_A:
+            case SSL3_ST_SR_CERT_B:
+                /* Check for second client hello (MS SGC) */
+                ret = ssl3_check_client_hello(s);
+                if (ret <= 0)
+                    goto end;
+                if (ret == 2) {
+                    dtls1_stop_timer(s);
+                    s->state = SSL3_ST_SR_CLNT_HELLO_C;
+                } else {
+                    /* could be sent for a DH cert, even if we
+                 * have not asked for it :-) */
+                    ret = ssl3_get_client_certificate(s);
+                    if (ret <= 0)
+                        goto end;
+                    s->init_num = 0;
+                    s->state = SSL3_ST_SR_KEY_EXCH_A;
+                }
+                break;
+
+            case SSL3_ST_SR_KEY_EXCH_A:
+            case SSL3_ST_SR_KEY_EXCH_B:
+                ret = ssl3_get_client_key_exchange(s);
+                if (ret <= 0)
+                    goto end;
+
+                s->state = SSL3_ST_SR_CERT_VRFY_A;
+                s->init_num = 0;
+
+                if (ret == 2) {
+                    /* For the ECDH ciphersuites when
                  * the client sends its ECDH pub key in
                  * a certificate, the CertificateVerify
                  * message is not sent.
                  */
+                    s->state = SSL3_ST_SR_FINISHED_A;
+                    s->init_num = 0;
+                } else {
+                    s->state = SSL3_ST_SR_CERT_VRFY_A;
+                    s->init_num = 0;
+
+                    /* We need to get hashes here so if there is
+                 * a client cert, it can be verified */
+                    s->method->ssl3_enc->cert_verify_mac(s,
+                                                         NID_md5,
+                                                         &(s->s3->tmp.cert_verify_md[0]));
+                    s->method->ssl3_enc->cert_verify_mac(s,
+                                                         NID_sha1,
+                                                         &(s->s3->tmp.cert_verify_md[MD5_DIGEST_LENGTH]));
+                }
+                break;
+
+            case SSL3_ST_SR_CERT_VRFY_A:
+            case SSL3_ST_SR_CERT_VRFY_B:
+
+                s->d1->change_cipher_spec_ok = 1;
+                /* we should decide if we expected this one */
+                ret = ssl3_get_cert_verify(s);
+                if (ret <= 0)
+                    goto end;
                 s->state = SSL3_ST_SR_FINISHED_A;
                 s->init_num = 0;
-            } else {
-                s->state = SSL3_ST_SR_CERT_VRFY_A;
+                break;
+
+            case SSL3_ST_SR_FINISHED_A:
+            case SSL3_ST_SR_FINISHED_B:
+                s->d1->change_cipher_spec_ok = 1;
+                ret = ssl3_get_finished(s, SSL3_ST_SR_FINISHED_A,
+                                        SSL3_ST_SR_FINISHED_B);
+                if (ret <= 0)
+                    goto end;
+                dtls1_stop_timer(s);
+                if (s->hit)
+                    s->state = SSL_ST_OK;
+                else if (s->tlsext_ticket_expected)
+                    s->state = SSL3_ST_SW_SESSION_TICKET_A;
+                else
+                    s->state = SSL3_ST_SW_CHANGE_A;
+                s->init_num = 0;
+                break;
+
+            case SSL3_ST_SW_SESSION_TICKET_A:
+            case SSL3_ST_SW_SESSION_TICKET_B:
+                ret = dtls1_send_newsession_ticket(s);
+                if (ret <= 0)
+                    goto end;
+                s->state = SSL3_ST_SW_CHANGE_A;
+                s->init_num = 0;
+                break;
+
+            case SSL3_ST_SW_CERT_STATUS_A:
+            case SSL3_ST_SW_CERT_STATUS_B:
+                ret = ssl3_send_cert_status(s);
+                if (ret <= 0)
+                    goto end;
+                s->state = SSL3_ST_SW_KEY_EXCH_A;
+                s->init_num = 0;
+                break;
+
+            case SSL3_ST_SW_CHANGE_A:
+            case SSL3_ST_SW_CHANGE_B:
+
+                s->session->cipher = s->s3->tmp.new_cipher;
+                if (!s->method->ssl3_enc->setup_key_block(s)) {
+                    ret = -1;
+                    goto end;
+                }
+
+                ret = dtls1_send_change_cipher_spec(s,
+                                                    SSL3_ST_SW_CHANGE_A, SSL3_ST_SW_CHANGE_B);
+
+                if (ret <= 0)
+                    goto end;
+
+                s->state = SSL3_ST_SW_FINISHED_A;
                 s->init_num = 0;
 
-                /* We need to get hashes here so if there is
-                 * a client cert, it can be verified */
-                s->method->ssl3_enc->cert_verify_mac(s,
-                    NID_md5,
-                    &(s->s3->tmp.cert_verify_md[0]));
-                s->method->ssl3_enc->cert_verify_mac(s,
-                    NID_sha1,
-                    &(s->s3->tmp.cert_verify_md[MD5_DIGEST_LENGTH]));
+                if (!s->method->ssl3_enc->change_cipher_state(s,
+                                                              SSL3_CHANGE_CIPHER_SERVER_WRITE)) {
+                    ret = -1;
+                    goto end;
                 }
-            break;
 
-        case SSL3_ST_SR_CERT_VRFY_A:
-        case SSL3_ST_SR_CERT_VRFY_B:
+                dtls1_reset_seq_numbers(s, SSL3_CC_WRITE);
+                break;
 
-            s->d1->change_cipher_spec_ok = 1;
-            /* we should decide if we expected this one */
-            ret = ssl3_get_cert_verify(s);
-            if (ret <= 0)
-                goto end;
-            s->state = SSL3_ST_SR_FINISHED_A;
-            s->init_num = 0;
-            break;
+            case SSL3_ST_SW_FINISHED_A:
+            case SSL3_ST_SW_FINISHED_B:
+                ret = dtls1_send_finished(s,
+                                          SSL3_ST_SW_FINISHED_A, SSL3_ST_SW_FINISHED_B,
+                                          s->method->ssl3_enc->server_finished_label,
+                                          s->method->ssl3_enc->server_finished_label_len);
+                if (ret <= 0)
+                    goto end;
+                s->state = SSL3_ST_SW_FLUSH;
+                if (s->hit)
+                    s->s3->tmp.next_state = SSL3_ST_SR_FINISHED_A;
+                else
+                    s->s3->tmp.next_state = SSL_ST_OK;
+                s->init_num = 0;
+                break;
 
-        case SSL3_ST_SR_FINISHED_A:
-        case SSL3_ST_SR_FINISHED_B:
-            s->d1->change_cipher_spec_ok = 1;
-            ret = ssl3_get_finished(s, SSL3_ST_SR_FINISHED_A,
-                SSL3_ST_SR_FINISHED_B);
-            if (ret <= 0)
-                goto end;
-            dtls1_stop_timer(s);
-            if (s->hit)
-                s->state = SSL_ST_OK;
-            else if (s->tlsext_ticket_expected)
-                s->state = SSL3_ST_SW_SESSION_TICKET_A;
-            else
-                s->state = SSL3_ST_SW_CHANGE_A;
-            s->init_num = 0;
-            break;
-
-        case SSL3_ST_SW_SESSION_TICKET_A:
-        case SSL3_ST_SW_SESSION_TICKET_B:
-            ret = dtls1_send_newsession_ticket(s);
-            if (ret <= 0)
-                goto end;
-            s->state = SSL3_ST_SW_CHANGE_A;
-            s->init_num = 0;
-            break;
-
-        case SSL3_ST_SW_CERT_STATUS_A:
-        case SSL3_ST_SW_CERT_STATUS_B:
-            ret = ssl3_send_cert_status(s);
-            if (ret <= 0)
-                goto end;
-            s->state = SSL3_ST_SW_KEY_EXCH_A;
-            s->init_num = 0;
-            break;
-
-        case SSL3_ST_SW_CHANGE_A:
-        case SSL3_ST_SW_CHANGE_B:
-
-            s->session->cipher = s->s3->tmp.new_cipher;
-            if (!s->method->ssl3_enc->setup_key_block(s)) {
-                ret = -1;
-                goto end;
-            }
-
-            ret = dtls1_send_change_cipher_spec(s,
-                SSL3_ST_SW_CHANGE_A, SSL3_ST_SW_CHANGE_B);
-
-            if (ret <= 0)
-                goto end;
-
-            s->state = SSL3_ST_SW_FINISHED_A;
-            s->init_num = 0;
-
-            if (!s->method->ssl3_enc->change_cipher_state(s,
-                SSL3_CHANGE_CIPHER_SERVER_WRITE)) {
-                ret = -1;
-                goto end;
-            }
-
-            dtls1_reset_seq_numbers(s, SSL3_CC_WRITE);
-            break;
-
-        case SSL3_ST_SW_FINISHED_A:
-        case SSL3_ST_SW_FINISHED_B:
-            ret = dtls1_send_finished(s,
-                SSL3_ST_SW_FINISHED_A, SSL3_ST_SW_FINISHED_B,
-                s->method->ssl3_enc->server_finished_label,
-                s->method->ssl3_enc->server_finished_label_len);
-            if (ret <= 0)
-                goto end;
-            s->state = SSL3_ST_SW_FLUSH;
-            if (s->hit)
-                s->s3->tmp.next_state = SSL3_ST_SR_FINISHED_A;
-            else
-                s->s3->tmp.next_state = SSL_ST_OK;
-            s->init_num = 0;
-            break;
-
-        case SSL_ST_OK:
-            /* clean a few things up */
-            ssl3_cleanup_key_block(s);
+            case SSL_ST_OK:
+                /* clean a few things up */
+                ssl3_cleanup_key_block(s);
 
 #if 0
             BUF_MEM_free(s->init_buf);
             s->init_buf = NULL;
 #endif
 
-            /* remove buffering on output */
-            ssl_free_wbio_buffer(s);
+                /* remove buffering on output */
+                ssl_free_wbio_buffer(s);
 
-            s->init_num = 0;
+                s->init_num = 0;
 
-            if (s->renegotiate == 2) { /* skipped if we just sent a HelloRequest */
-                s->renegotiate = 0;
-                s->new_session = 0;
+                if (s->renegotiate == 2) { /* skipped if we just sent a HelloRequest */
+                    s->renegotiate = 0;
+                    s->new_session = 0;
 
-                ssl_update_cache(s, SSL_SESS_CACHE_SERVER);
+                    ssl_update_cache(s, SSL_SESS_CACHE_SERVER);
 
-                s->ctx->stats.sess_accept_good++;
-                /* s->server=1; */
-                s->handshake_func = dtls1_accept;
+                    s->ctx->stats.sess_accept_good++;
+                    /* s->server=1; */
+                    s->handshake_func = dtls1_accept;
 
-                if (cb != NULL)
-                    cb(s, SSL_CB_HANDSHAKE_DONE, 1);
-            }
+                    if (cb != NULL)
+                        cb(s, SSL_CB_HANDSHAKE_DONE, 1);
+                }
 
-            ret = 1;
+                ret = 1;
 
-            /* done handshaking, next message is client hello */
-            s->d1->handshake_read_seq = 0;
-            /* next message is server hello */
-            s->d1->handshake_write_seq = 0;
-            s->d1->next_handshake_write_seq = 0;
-            goto end;
+                /* done handshaking, next message is client hello */
+                s->d1->handshake_read_seq = 0;
+                /* next message is server hello */
+                s->d1->handshake_write_seq = 0;
+                s->d1->next_handshake_write_seq = 0;
+                goto end;
             /* break; */
 
-        default:
-            SSLerr(SSL_F_DTLS1_ACCEPT, SSL_R_UNKNOWN_STATE);
-            ret = -1;
-            goto end;
-            /* break; */
+            default:
+                SSLerr(SSL_F_DTLS1_ACCEPT, SSL_R_UNKNOWN_STATE);
+                ret = -1;
+                goto end;
+                /* break; */
         }
 
         if (!s->s3->tmp.reuse_message && !skip) {
@@ -679,7 +675,6 @@ int dtls1_accept(SSL *s)
                 if ((ret = BIO_flush(s->wbio)) <= 0)
                     goto end;
             }
-
 
             if ((cb != NULL) && (s->state != state)) {
                 new_state = s->state;
@@ -733,9 +728,7 @@ int dtls1_send_hello_verify_request(SSL *s)
         *(p++) = s->version >> 8;
         *(p++) = s->version & 0xFF;
 
-        if (s->ctx->app_gen_cookie_cb == NULL ||
-             s->ctx->app_gen_cookie_cb(s, s->d1->cookie,
-             &(s->d1->cookie_len)) == 0) {
+        if (s->ctx->app_gen_cookie_cb == NULL || s->ctx->app_gen_cookie_cb(s, s->d1->cookie, &(s->d1->cookie_len)) == 0) {
             SSLerr(SSL_F_DTLS1_SEND_HELLO_VERIFY_REQUEST, ERR_R_INTERNAL_ERROR);
             return 0;
         }
@@ -746,7 +739,7 @@ int dtls1_send_hello_verify_request(SSL *s)
         msg_len = p - msg;
 
         dtls1_set_message_header(s, buf,
-            DTLS1_MT_HELLO_VERIFY_REQUEST, msg_len, 0, msg_len);
+                                 DTLS1_MT_HELLO_VERIFY_REQUEST, msg_len, 0, msg_len);
 
         s->state = DTLS1_ST_SW_HELLO_VERIFY_REQUEST_B;
         /* number of bytes to write */
@@ -911,8 +904,7 @@ int dtls1_send_server_key_exchange(SSL *s)
             r[0] = rsa->n;
             r[1] = rsa->e;
             s->s3->tmp.use_rsa_tmp = 1;
-        } else
-            if (type & SSL_kEDH) {
+        } else if (type & SSL_kEDH) {
             dhp = cert->dh_tmp;
             if ((dhp == NULL) && (s->cert->dh_tmp_cb != NULL))
                 dhp = s->cert->dh_tmp_cb(s, 0, 0);
@@ -933,19 +925,16 @@ int dtls1_send_server_key_exchange(SSL *s)
             }
 
             s->s3->tmp.dh = dh;
-            if ((dhp->pub_key == NULL ||
-                 dhp->priv_key == NULL ||
-                 (s->options & SSL_OP_SINGLE_DH_USE))) {
+            if ((dhp->pub_key == NULL || dhp->priv_key == NULL || (s->options & SSL_OP_SINGLE_DH_USE))) {
                 if (!DH_generate_key(dh)) {
                     SSLerr(SSL_F_DTLS1_SEND_SERVER_KEY_EXCHANGE,
-                       ERR_R_DH_LIB);
+                           ERR_R_DH_LIB);
                     goto err;
                 }
             } else {
                 dh->pub_key = BN_dup(dhp->pub_key);
                 dh->priv_key = BN_dup(dhp->priv_key);
-                if ((dh->pub_key == NULL) ||
-                    (dh->priv_key == NULL)) {
+                if ((dh->pub_key == NULL) || (dh->priv_key == NULL)) {
                     SSLerr(SSL_F_DTLS1_SEND_SERVER_KEY_EXCHANGE, ERR_R_DH_LIB);
                     goto err;
                 }
@@ -984,18 +973,14 @@ int dtls1_send_server_key_exchange(SSL *s)
             }
 
             s->s3->tmp.ecdh = ecdh;
-            if ((EC_KEY_get0_public_key(ecdh) == NULL) ||
-                (EC_KEY_get0_private_key(ecdh) == NULL) ||
-                (s->options & SSL_OP_SINGLE_ECDH_USE)) {
+            if ((EC_KEY_get0_public_key(ecdh) == NULL) || (EC_KEY_get0_private_key(ecdh) == NULL) || (s->options & SSL_OP_SINGLE_ECDH_USE)) {
                 if (!EC_KEY_generate_key(ecdh)) {
                     SSLerr(SSL_F_DTLS1_SEND_SERVER_KEY_EXCHANGE, ERR_R_ECDH_LIB);
                     goto err;
                 }
             }
 
-            if (((group = EC_KEY_get0_group(ecdh)) == NULL) ||
-                (EC_KEY_get0_public_key(ecdh)  == NULL) ||
-                (EC_KEY_get0_private_key(ecdh) == NULL)) {
+            if (((group = EC_KEY_get0_group(ecdh)) == NULL) || (EC_KEY_get0_public_key(ecdh) == NULL) || (EC_KEY_get0_private_key(ecdh) == NULL)) {
                 SSLerr(SSL_F_DTLS1_SEND_SERVER_KEY_EXCHANGE, ERR_R_ECDH_LIB);
                 goto err;
             }
@@ -1004,8 +989,7 @@ int dtls1_send_server_key_exchange(SSL *s)
              * keys over named (not generic) curves. For
              * supported named curves, curve_id is non-zero.
              */
-            if ((curve_id =
-                tls1_ec_nid2curve_id(EC_GROUP_get_curve_name(group)))
+            if ((curve_id = tls1_ec_nid2curve_id(EC_GROUP_get_curve_name(group)))
                 == 0) {
                 SSLerr(SSL_F_DTLS1_SEND_SERVER_KEY_EXCHANGE, SSL_R_UNSUPPORTED_ELLIPTIC_CURVE);
                 goto err;
@@ -1016,9 +1000,9 @@ int dtls1_send_server_key_exchange(SSL *s)
              * allocate memory accordingly.
              */
             encodedlen = EC_POINT_point2oct(group,
-                EC_KEY_get0_public_key(ecdh),
-                POINT_CONVERSION_UNCOMPRESSED,
-                NULL, 0, NULL);
+                                            EC_KEY_get0_public_key(ecdh),
+                                            POINT_CONVERSION_UNCOMPRESSED,
+                                            NULL, 0, NULL);
 
             encodedPoint = (unsigned char *)
                 malloc(encodedlen * sizeof(unsigned char));
@@ -1028,11 +1012,10 @@ int dtls1_send_server_key_exchange(SSL *s)
                 goto err;
             }
 
-
             encodedlen = EC_POINT_point2oct(group,
-                EC_KEY_get0_public_key(ecdh),
-                POINT_CONVERSION_UNCOMPRESSED,
-                encodedPoint, encodedlen, bn_ctx);
+                                            EC_KEY_get0_public_key(ecdh),
+                                            POINT_CONVERSION_UNCOMPRESSED,
+                                            encodedPoint, encodedlen, bn_ctx);
 
             if (encodedlen == 0) {
                 SSLerr(SSL_F_DTLS1_SEND_SERVER_KEY_EXCHANGE, ERR_R_ECDH_LIB);
@@ -1061,15 +1044,15 @@ int dtls1_send_server_key_exchange(SSL *s)
 #endif /* !OPENSSL_NO_ECDH */
 #ifndef OPENSSL_NO_PSK
             if (type & SSL_kPSK) {
-                /* reserve size for record length and PSK identity hint*/
-                n += 2 + strlen(s->ctx->psk_identity_hint);
-            } else
+            /* reserve size for record length and PSK identity hint*/
+            n += 2 + strlen(s->ctx->psk_identity_hint);
+        } else
 #endif /* !OPENSSL_NO_PSK */
-            {
+        {
             al = SSL_AD_HANDSHAKE_FAILURE;
             SSLerr(SSL_F_DTLS1_SEND_SERVER_KEY_EXCHANGE, SSL_R_UNKNOWN_KEY_EXCHANGE_TYPE);
             goto f_err;
-            }
+        }
         for (i = 0; r[i] != NULL; i++) {
             nr[i] = BN_num_bytes(r[i]);
             n += 2 + nr[i];
@@ -1117,9 +1100,9 @@ int dtls1_send_server_key_exchange(SSL *s)
             p += 1;
             *p = encodedlen;
             p += 1;
-            memcpy((unsigned char*)p,
-                (unsigned char *)encodedPoint,
-                encodedlen);
+            memcpy((unsigned char *)p,
+                   (unsigned char *)encodedPoint,
+                   encodedlen);
             free(encodedPoint);
             encodedPoint = NULL;
             p += encodedlen;
@@ -1144,18 +1127,17 @@ int dtls1_send_server_key_exchange(SSL *s)
                 q = md_buf;
                 j = 0;
                 for (num = 2; num > 0; num--) {
-                    EVP_DigestInit_ex(&md_ctx, (num == 2)
-                        ? s->ctx->md5 : s->ctx->sha1, NULL);
+                    EVP_DigestInit_ex(&md_ctx, (num == 2) ? s->ctx->md5 : s->ctx->sha1, NULL);
                     EVP_DigestUpdate(&md_ctx, &(s->s3->client_random[0]), SSL3_RANDOM_SIZE);
                     EVP_DigestUpdate(&md_ctx, &(s->s3->server_random[0]), SSL3_RANDOM_SIZE);
                     EVP_DigestUpdate(&md_ctx, &(d[DTLS1_HM_HEADER_LENGTH]), n);
                     EVP_DigestFinal_ex(&md_ctx, q,
-                        (unsigned int *)&i);
+                                       (unsigned int *)&i);
                     q += i;
                     j += i;
                 }
                 if (RSA_sign(NID_md5_sha1, md_buf, j,
-                    &(p[2]), &u, pkey->pkey.rsa) <= 0) {
+                             &(p[2]), &u, pkey->pkey.rsa) <= 0) {
                     SSLerr(SSL_F_DTLS1_SEND_SERVER_KEY_EXCHANGE, ERR_LIB_RSA);
                     goto err;
                 }
@@ -1170,13 +1152,13 @@ int dtls1_send_server_key_exchange(SSL *s)
                 EVP_SignUpdate(&md_ctx, &(s->s3->server_random[0]), SSL3_RANDOM_SIZE);
                 EVP_SignUpdate(&md_ctx, &(d[DTLS1_HM_HEADER_LENGTH]), n);
                 if (!EVP_SignFinal(&md_ctx, &(p[2]),
-                    (unsigned int *)&i, pkey)) {
+                                   (unsigned int *)&i, pkey)) {
                     SSLerr(SSL_F_DTLS1_SEND_SERVER_KEY_EXCHANGE, ERR_LIB_DSA);
                     goto err;
                 }
                 s2n(i, p);
                 n += i + 2;
-                } else
+            } else
 #endif
 #if !defined(OPENSSL_NO_ECDSA)
                 if (pkey->type == EVP_PKEY_EC) {
@@ -1186,24 +1168,24 @@ int dtls1_send_server_key_exchange(SSL *s)
                 EVP_SignUpdate(&md_ctx, &(s->s3->server_random[0]), SSL3_RANDOM_SIZE);
                 EVP_SignUpdate(&md_ctx, &(d[DTLS1_HM_HEADER_LENGTH]), n);
                 if (!EVP_SignFinal(&md_ctx, &(p[2]),
-                    (unsigned int *)&i, pkey)) {
+                                   (unsigned int *)&i, pkey)) {
                     SSLerr(SSL_F_DTLS1_SEND_SERVER_KEY_EXCHANGE, ERR_LIB_ECDSA);
                     goto err;
                 }
                 s2n(i, p);
                 n += i + 2;
-                } else
+            } else
 #endif
-                {
+            {
                 /* Is this error check actually needed? */
                 al = SSL_AD_HANDSHAKE_FAILURE;
                 SSLerr(SSL_F_DTLS1_SEND_SERVER_KEY_EXCHANGE, SSL_R_UNKNOWN_PKEY_TYPE);
                 goto f_err;
-                }
             }
+        }
 
         d = dtls1_set_message_header(s, d,
-            SSL3_MT_SERVER_KEY_EXCHANGE, n, 0, n);
+                                     SSL3_MT_SERVER_KEY_EXCHANGE, n, 0, n);
 
         /* we should now have things packed up, so lets send
          * it off */
@@ -1297,7 +1279,7 @@ int dtls1_send_certificate_request(SSL *s)
         s->init_num = n + DTLS1_HM_HEADER_LENGTH;
         s->init_off = 0;
 #ifdef NETSCAPE_HANG_BUG
-/* XXX: what to do about this? */
+        /* XXX: what to do about this? */
         p = (unsigned char *)s->init_buf->data + s->init_num;
 
         /* do the header */
@@ -1311,7 +1293,7 @@ int dtls1_send_certificate_request(SSL *s)
         /* XDTLS:  set message header ? */
         msg_len = s->init_num - DTLS1_HM_HEADER_LENGTH;
         dtls1_set_message_header(s, (void *)s->init_buf->data,
-            SSL3_MT_CERTIFICATE_REQUEST, msg_len, 0, msg_len);
+                                 SSL3_MT_CERTIFICATE_REQUEST, msg_len, 0, msg_len);
 
         /* buffer the message to handle re-xmits */
         dtls1_buffer_message(s, 0);
@@ -1334,8 +1316,7 @@ int dtls1_send_server_certificate(SSL *s)
         x = ssl_get_server_send_cert(s);
         if (x == NULL) {
             /* VRS: allow null cert if auth == KRB5 */
-            if ((s->s3->tmp.new_cipher->algorithm_mkey != SSL_kKRB5) ||
-                (s->s3->tmp.new_cipher->algorithm_auth != SSL_aKRB5)) {
+            if ((s->s3->tmp.new_cipher->algorithm_mkey != SSL_kKRB5) || (s->s3->tmp.new_cipher->algorithm_auth != SSL_aKRB5)) {
                 SSLerr(SSL_F_DTLS1_SEND_SERVER_CERTIFICATE, ERR_R_INTERNAL_ERROR);
                 return (0);
             }
@@ -1381,8 +1362,7 @@ int dtls1_send_newsession_ticket(SSL *s)
           * length) + max_md_size (HMAC).
           */
         if (!BUF_MEM_grow(s->init_buf,
-            DTLS1_HM_HEADER_LENGTH + 22 + EVP_MAX_IV_LENGTH +
-            EVP_MAX_BLOCK_LENGTH + EVP_MAX_MD_SIZE + slen))
+                          DTLS1_HM_HEADER_LENGTH + 22 + EVP_MAX_IV_LENGTH + EVP_MAX_BLOCK_LENGTH + EVP_MAX_MD_SIZE + slen))
             return -1;
         senc = malloc(slen);
         if (!senc)
@@ -1399,16 +1379,16 @@ int dtls1_send_newsession_ticket(SSL *s)
          */
         if (tctx->tlsext_ticket_key_cb) {
             if (tctx->tlsext_ticket_key_cb(s, key_name, iv, &ctx,
-                    &hctx, 1) < 0) {
+                                           &hctx, 1) < 0) {
                 free(senc);
                 return -1;
             }
         } else {
             RAND_pseudo_bytes(iv, 16);
             EVP_EncryptInit_ex(&ctx, EVP_aes_128_cbc(), NULL,
-                    tctx->tlsext_tick_aes_key, iv);
+                               tctx->tlsext_tick_aes_key, iv);
             HMAC_Init_ex(&hctx, tctx->tlsext_tick_hmac_key, 16,
-                    tlsext_tick_md(), NULL);
+                         tlsext_tick_md(), NULL);
             memcpy(key_name, tctx->tlsext_tick_key_name, 16);
         }
         l2n(s->session->tlsext_tick_lifetime_hint, p);
@@ -1449,7 +1429,7 @@ int dtls1_send_newsession_ticket(SSL *s)
         /* XDTLS:  set message header ? */
         msg_len = s->init_num - DTLS1_HM_HEADER_LENGTH;
         dtls1_set_message_header(s, (void *)s->init_buf->data,
-            SSL3_MT_NEWSESSION_TICKET, msg_len, 0, msg_len);
+                                 SSL3_MT_NEWSESSION_TICKET, msg_len, 0, msg_len);
 
         /* buffer the message to handle re-xmits */
         dtls1_buffer_message(s, 0);

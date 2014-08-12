@@ -5,44 +5,42 @@ typedef struct
     int sign_id;
     int hash_id;
     int pkey_id;
-    } nid_triple;
+} nid_triple;
 
-static const nid_triple sigoid_srt[] =
-    {
-    {NID_md2WithRSAEncryption, NID_md2, NID_rsaEncryption},
-    {NID_md5WithRSAEncryption, NID_md5, NID_rsaEncryption},
-    {NID_shaWithRSAEncryption, NID_sha, NID_rsaEncryption},
-    {NID_sha1WithRSAEncryption, NID_sha1, NID_rsaEncryption},
-    {NID_dsaWithSHA, NID_sha, NID_dsa},
-    {NID_dsaWithSHA1_2, NID_sha1, NID_dsa_2},
-    {NID_mdc2WithRSA, NID_mdc2, NID_rsaEncryption},
-    {NID_md5WithRSA, NID_md5, NID_rsa},
-    {NID_dsaWithSHA1, NID_sha1, NID_dsa},
-    {NID_sha1WithRSA, NID_sha1, NID_rsa},
-    {NID_ripemd160WithRSA, NID_ripemd160, NID_rsaEncryption},
-    {NID_md4WithRSAEncryption, NID_md4, NID_rsaEncryption},
-    {NID_ecdsa_with_SHA1, NID_sha1, NID_X9_62_id_ecPublicKey},
-    {NID_sha256WithRSAEncryption, NID_sha256, NID_rsaEncryption},
-    {NID_sha384WithRSAEncryption, NID_sha384, NID_rsaEncryption},
-    {NID_sha512WithRSAEncryption, NID_sha512, NID_rsaEncryption},
-    {NID_sha224WithRSAEncryption, NID_sha224, NID_rsaEncryption},
-    {NID_ecdsa_with_Recommended, NID_undef, NID_X9_62_id_ecPublicKey},
-    {NID_ecdsa_with_Specified, NID_undef, NID_X9_62_id_ecPublicKey},
-    {NID_ecdsa_with_SHA224, NID_sha224, NID_X9_62_id_ecPublicKey},
-    {NID_ecdsa_with_SHA256, NID_sha256, NID_X9_62_id_ecPublicKey},
-    {NID_ecdsa_with_SHA384, NID_sha384, NID_X9_62_id_ecPublicKey},
-    {NID_ecdsa_with_SHA512, NID_sha512, NID_X9_62_id_ecPublicKey},
-    {NID_dsa_with_SHA224, NID_sha224, NID_dsa},
-    {NID_dsa_with_SHA256, NID_sha256, NID_dsa},
-    {NID_id_GostR3411_94_with_GostR3410_2001, NID_id_GostR3411_94, NID_id_GostR3410_2001},
-    {NID_id_GostR3411_94_with_GostR3410_94, NID_id_GostR3411_94, NID_id_GostR3410_94},
-    {NID_id_GostR3411_94_with_GostR3410_94_cc, NID_id_GostR3411_94, NID_id_GostR3410_94_cc},
-    {NID_id_GostR3411_94_with_GostR3410_2001_cc, NID_id_GostR3411_94, NID_id_GostR3410_2001_cc},
-    {NID_rsassaPss, NID_undef, NID_rsaEncryption},
-    };
+static const nid_triple sigoid_srt[] = {
+    { NID_md2WithRSAEncryption, NID_md2, NID_rsaEncryption },
+    { NID_md5WithRSAEncryption, NID_md5, NID_rsaEncryption },
+    { NID_shaWithRSAEncryption, NID_sha, NID_rsaEncryption },
+    { NID_sha1WithRSAEncryption, NID_sha1, NID_rsaEncryption },
+    { NID_dsaWithSHA, NID_sha, NID_dsa },
+    { NID_dsaWithSHA1_2, NID_sha1, NID_dsa_2 },
+    { NID_mdc2WithRSA, NID_mdc2, NID_rsaEncryption },
+    { NID_md5WithRSA, NID_md5, NID_rsa },
+    { NID_dsaWithSHA1, NID_sha1, NID_dsa },
+    { NID_sha1WithRSA, NID_sha1, NID_rsa },
+    { NID_ripemd160WithRSA, NID_ripemd160, NID_rsaEncryption },
+    { NID_md4WithRSAEncryption, NID_md4, NID_rsaEncryption },
+    { NID_ecdsa_with_SHA1, NID_sha1, NID_X9_62_id_ecPublicKey },
+    { NID_sha256WithRSAEncryption, NID_sha256, NID_rsaEncryption },
+    { NID_sha384WithRSAEncryption, NID_sha384, NID_rsaEncryption },
+    { NID_sha512WithRSAEncryption, NID_sha512, NID_rsaEncryption },
+    { NID_sha224WithRSAEncryption, NID_sha224, NID_rsaEncryption },
+    { NID_ecdsa_with_Recommended, NID_undef, NID_X9_62_id_ecPublicKey },
+    { NID_ecdsa_with_Specified, NID_undef, NID_X9_62_id_ecPublicKey },
+    { NID_ecdsa_with_SHA224, NID_sha224, NID_X9_62_id_ecPublicKey },
+    { NID_ecdsa_with_SHA256, NID_sha256, NID_X9_62_id_ecPublicKey },
+    { NID_ecdsa_with_SHA384, NID_sha384, NID_X9_62_id_ecPublicKey },
+    { NID_ecdsa_with_SHA512, NID_sha512, NID_X9_62_id_ecPublicKey },
+    { NID_dsa_with_SHA224, NID_sha224, NID_dsa },
+    { NID_dsa_with_SHA256, NID_sha256, NID_dsa },
+    { NID_id_GostR3411_94_with_GostR3410_2001, NID_id_GostR3411_94, NID_id_GostR3410_2001 },
+    { NID_id_GostR3411_94_with_GostR3410_94, NID_id_GostR3411_94, NID_id_GostR3410_94 },
+    { NID_id_GostR3411_94_with_GostR3410_94_cc, NID_id_GostR3411_94, NID_id_GostR3410_94_cc },
+    { NID_id_GostR3411_94_with_GostR3410_2001_cc, NID_id_GostR3411_94, NID_id_GostR3410_2001_cc },
+    { NID_rsassaPss, NID_undef, NID_rsaEncryption },
+};
 
-static const nid_triple * const sigoid_srt_xref[] =
-    {
+static const nid_triple *const sigoid_srt_xref[] = {
     &sigoid_srt[29],
     &sigoid_srt[17],
     &sigoid_srt[18],
@@ -73,5 +71,4 @@ static const nid_triple * const sigoid_srt_xref[] =
     &sigoid_srt[26],
     &sigoid_srt[27],
     &sigoid_srt[28],
-    };
-
+};

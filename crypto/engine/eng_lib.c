@@ -77,7 +77,7 @@ ENGINE_new(void)
     memset(ret, 0, sizeof(ENGINE));
     ret->struct_ref = 1;
     engine_ref_debug(ret, 0, 1)
-    CRYPTO_new_ex_data(CRYPTO_EX_INDEX_ENGINE, ret, &ret->ex_data);
+        CRYPTO_new_ex_data(CRYPTO_EX_INDEX_ENGINE, ret, &ret->ex_data);
     return ret;
 }
 
@@ -113,16 +113,14 @@ engine_free_util(ENGINE *e, int locked)
 
     if (e == NULL) {
         ENGINEerr(ENGINE_F_ENGINE_FREE_UTIL,
-            ERR_R_PASSED_NULL_PARAMETER);
+                  ERR_R_PASSED_NULL_PARAMETER);
         return 0;
     }
     if (locked)
         i = CRYPTO_add(&e->struct_ref, -1, CRYPTO_LOCK_ENGINE);
     else
         i = --e->struct_ref;
-    engine_ref_debug(e, 0, -1)
-    if (i > 0)
-        return 1;
+    engine_ref_debug(e, 0, -1) if (i > 0) return 1;
 
     /* Free up any dynamically allocated public key methods */
     engine_pkey_meths_free(e);
@@ -207,7 +205,7 @@ ENGINE_cleanup(void)
 {
     if (int_cleanup_check(0)) {
         sk_ENGINE_CLEANUP_ITEM_pop_free(cleanup_stack,
-            engine_cleanup_cb_free);
+                                        engine_cleanup_cb_free);
         cleanup_stack = NULL;
     }
     /* FIXME: This should be handled (somehow) through RAND, eg. by it
@@ -219,10 +217,10 @@ ENGINE_cleanup(void)
 
 int
 ENGINE_get_ex_new_index(long argl, void *argp, CRYPTO_EX_new *new_func,
-    CRYPTO_EX_dup *dup_func, CRYPTO_EX_free *free_func)
+                        CRYPTO_EX_dup *dup_func, CRYPTO_EX_free *free_func)
 {
     return CRYPTO_get_ex_new_index(CRYPTO_EX_INDEX_ENGINE, argl, argp,
-        new_func, dup_func, free_func);
+                                   new_func, dup_func, free_func);
 }
 
 int
@@ -245,7 +243,7 @@ ENGINE_set_id(ENGINE *e, const char *id)
 {
     if (id == NULL) {
         ENGINEerr(ENGINE_F_ENGINE_SET_ID,
-            ERR_R_PASSED_NULL_PARAMETER);
+                  ERR_R_PASSED_NULL_PARAMETER);
         return 0;
     }
     e->id = id;
@@ -257,7 +255,7 @@ ENGINE_set_name(ENGINE *e, const char *name)
 {
     if (name == NULL) {
         ENGINEerr(ENGINE_F_ENGINE_SET_NAME,
-            ERR_R_PASSED_NULL_PARAMETER);
+                  ERR_R_PASSED_NULL_PARAMETER);
         return 0;
     }
     e->name = name;

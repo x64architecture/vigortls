@@ -62,17 +62,17 @@
 #include <openssl/crypto.h>
 
 unsigned char *MD4(const unsigned char *d, size_t n, unsigned char *md)
-    {
+{
     MD4_CTX c;
     static unsigned char m[MD4_DIGEST_LENGTH];
 
-    if (md == NULL) md=m;
+    if (md == NULL)
+        md = m;
     if (!MD4_Init(&c))
         return NULL;
 
-    MD4_Update(&c,d,n);
-    MD4_Final(md,&c);
-    vigortls_zeroize(&c,sizeof(c)); /* security consideration */
+    MD4_Update(&c, d, n);
+    MD4_Final(md, &c);
+    vigortls_zeroize(&c, sizeof(c)); /* security consideration */
     return (md);
-    }
-
+}

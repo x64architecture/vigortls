@@ -83,8 +83,8 @@ ENGINE_register_pkey_meths(ENGINE *e)
         int num_nids = e->pkey_meths(e, NULL, &nids, 0);
         if (num_nids > 0)
             return engine_table_register(&pkey_meth_table,
-                engine_unregister_all_pkey_meths, e, nids,
-                num_nids, 0);
+                                         engine_unregister_all_pkey_meths, e, nids,
+                                         num_nids, 0);
     }
     return 1;
 }
@@ -106,8 +106,8 @@ ENGINE_set_default_pkey_meths(ENGINE *e)
         int num_nids = e->pkey_meths(e, NULL, &nids, 0);
         if (num_nids > 0)
             return engine_table_register(&pkey_meth_table,
-                engine_unregister_all_pkey_meths, e, nids,
-                num_nids, 1);
+                                         engine_unregister_all_pkey_meths, e, nids,
+                                         num_nids, 1);
     }
     return 1;
 }
@@ -130,7 +130,7 @@ ENGINE_get_pkey_meth(ENGINE *e, int nid)
 
     if (!fn || !fn(e, &ret, NULL, nid)) {
         ENGINEerr(ENGINE_F_ENGINE_GET_PKEY_METH,
-            ENGINE_R_UNIMPLEMENTED_PUBLIC_KEY_METHOD);
+                  ENGINE_R_UNIMPLEMENTED_PUBLIC_KEY_METHOD);
         return NULL;
     }
     return ret;

@@ -19,16 +19,15 @@
 #include <string.h>
 #include <openssl/crypto.h>
 
-
 int CRYPTO_set_mem_functions(void *(*m)(size_t), void *(*r)(void *, size_t),
-    void (*f)(void *))
+                             void (*f)(void *))
 {
     return 0;
 }
 
-int CRYPTO_set_mem_ex_functions(void *(*m)(size_t,const char *,int),
-        void *(*r)(void *, size_t,const char *,int),
-        void (*f)(void *))
+int CRYPTO_set_mem_ex_functions(void *(*m)(size_t, const char *, int),
+                                void *(*r)(void *, size_t, const char *, int),
+                                void (*f)(void *))
 {
     return 0;
 }
@@ -39,37 +38,36 @@ int CRYPTO_set_locked_mem_functions(void *(*m)(size_t), void (*f)(void *))
 }
 
 int CRYPTO_set_locked_mem_ex_functions(
-        void *(*m)(size_t,const char *,int),
-        void (*f)(void *))
+    void *(*m)(size_t, const char *, int),
+    void (*f)(void *))
 {
     return 0;
 }
 
-int CRYPTO_set_mem_debug_functions(void (*m)(void *,int,const char *,int,int),
-            void (*r)(void *,void *,int,const char *,int,int),
-            void (*f)(void *,int),
-            void (*so)(long),
-            long (*go)(void))
+int CRYPTO_set_mem_debug_functions(void (*m)(void *, int, const char *, int, int),
+                                   void (*r)(void *, void *, int, const char *, int, int),
+                                   void (*f)(void *, int),
+                                   void (*so)(long),
+                                   long (*go)(void))
 {
     return 0;
 }
-
 
 void CRYPTO_get_mem_functions(void *(**m)(size_t), void *(**r)(void *, size_t),
-        void (**f)(void *))
+                              void (**f)(void *))
 {
     if (m != NULL)
         *m = malloc;
-    if (r != NULL) 
+    if (r != NULL)
         *r = realloc;
-    if (f != NULL) 
+    if (f != NULL)
         *f = free;
 }
 
 void *CRYPTO_malloc_locked(int num, const char *file, int line)
 {
 
-    if (num <= 0) 
+    if (num <= 0)
         return NULL;
 
     return malloc(num);
@@ -82,7 +80,7 @@ void CRYPTO_free_locked(void *str)
 
 void *CRYPTO_malloc(int num, const char *file, int line)
 {
-    if (num <= 0) 
+    if (num <= 0)
         return NULL;
 
     return malloc(num);
@@ -98,18 +96,18 @@ void *CRYPTO_realloc(void *str, int num, const char *file, int line)
     if (num <= 0)
         return NULL;
 
-    return realloc(str,num);
+    return realloc(str, num);
 }
 
 void *CRYPTO_realloc_clean(void *str, int old_len, int num, const char *file,
-               int line)
+                           int line)
 {
     void *ret = NULL;
 
-    if (num <= 0) 
+    if (num <= 0)
         return NULL;
 
-    if (num < old_len) 
+    if (num < old_len)
         return NULL;
 
     ret = malloc(num);

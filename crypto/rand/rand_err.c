@@ -69,16 +69,16 @@
 #define ERR_REASON(reason) ERR_PACK(ERR_LIB_RAND, 0, reason)
 
 static ERR_STRING_DATA RAND_str_functs[] = {
-    {ERR_FUNC(RAND_F_RAND_GET_RAND_METHOD),     "RAND_get_rand_method"},
-    {ERR_FUNC(RAND_F_SSLEAY_RAND_BYTES),        "SSLEAY_RAND_BYTES"},
-    {0, NULL}
+    { ERR_FUNC(RAND_F_RAND_GET_RAND_METHOD), "RAND_get_rand_method" },
+    { ERR_FUNC(RAND_F_SSLEAY_RAND_BYTES), "SSLEAY_RAND_BYTES" },
+    { 0, NULL }
 };
 
 static ERR_STRING_DATA RAND_str_reasons[] = {
-    {ERR_REASON(RAND_R_ERROR_INITIALISING_DRBG),    "error initializing drbg"},
-    {ERR_REASON(RAND_R_ERROR_INSTANTIATING_DRBG),   "error instantiating drbg"},
-    {ERR_REASON(RAND_R_PRNG_NOT_SEEDED),            "PRNG not seeded"},
-    {0, NULL}
+    { ERR_REASON(RAND_R_ERROR_INITIALISING_DRBG), "error initializing drbg" },
+    { ERR_REASON(RAND_R_ERROR_INSTANTIATING_DRBG), "error instantiating drbg" },
+    { ERR_REASON(RAND_R_PRNG_NOT_SEEDED), "PRNG not seeded" },
+    { 0, NULL }
 };
 
 #endif

@@ -92,14 +92,13 @@ int_engine_init(ENGINE *e)
     return 1;
 }
 
-
 static int
 int_engine_configure(char *name, char *value, const CONF *cnf)
 {
     int i;
     int ret = 0;
     long do_init = -1;
-    STACK_OF(CONF_VALUE) *ecmds;
+    STACK_OF(CONF_VALUE) * ecmds;
     CONF_VALUE *ecmd = NULL;
     char *ctrlname, *ctrlvalue;
     ENGINE *e = NULL;
@@ -114,7 +113,7 @@ int_engine_configure(char *name, char *value, const CONF *cnf)
 
     if (!ecmds) {
         ENGINEerr(ENGINE_F_INT_ENGINE_CONFIGURE,
-            ENGINE_R_ENGINE_SECTION_ERROR);
+                  ENGINE_R_ENGINE_SECTION_ERROR);
         return 0;
     }
 
@@ -124,7 +123,7 @@ int_engine_configure(char *name, char *value, const CONF *cnf)
         ctrlvalue = ecmd->value;
 #ifdef ENGINE_CONF_DEBUG
         fprintf(stderr, "ENGINE conf: doing ctrl(%s,%s)\n",
-            ctrlname, ctrlvalue);
+                ctrlname, ctrlvalue);
 #endif
 
         /* First handle some special pseudo ctrls */
@@ -167,22 +166,21 @@ int_engine_configure(char *name, char *value, const CONF *cnf)
                 ctrlvalue = NULL;
             if (!strcmp(ctrlname, "init")) {
                 if (!NCONF_get_number_e(cnf, value, "init",
-                    &do_init))
+                                        &do_init))
                     goto err;
                 if (do_init == 1) {
                     if (!int_engine_init(e))
                         goto err;
                 } else if (do_init != 0) {
                     ENGINEerr(ENGINE_F_INT_ENGINE_CONFIGURE,
-                        ENGINE_R_INVALID_INIT_VALUE);
+                              ENGINE_R_INVALID_INIT_VALUE);
                     goto err;
                 }
-            }
-            else if (!strcmp(ctrlname, "default_algorithms")) {
+            } else if (!strcmp(ctrlname, "default_algorithms")) {
                 if (!ENGINE_set_default_string(e, ctrlvalue))
                     goto err;
             } else if (!ENGINE_ctrl_cmd_string(e,
-                ctrlname, ctrlvalue, 0))
+                                               ctrlname, ctrlvalue, 0))
                 goto err;
         }
     }
@@ -195,34 +193,33 @@ int_engine_configure(char *name, char *value, const CONF *cnf)
 err:
     if (ret != 1) {
         ENGINEerr(ENGINE_F_INT_ENGINE_CONFIGURE,
-            ENGINE_R_ENGINE_CONFIGURATION_ERROR);
+                  ENGINE_R_ENGINE_CONFIGURATION_ERROR);
         if (ecmd)
-            ERR_asprintf_error_data("section=%s, name=%s, value=%s", 
-                ecmd->section, ecmd->name, ecmd->value);
+            ERR_asprintf_error_data("section=%s, name=%s, value=%s",
+                                    ecmd->section, ecmd->name, ecmd->value);
     }
     if (e)
         ENGINE_free(e);
     return ret;
 }
 
-
 static int
 int_engine_module_init(CONF_IMODULE *md, const CONF *cnf)
 {
-    STACK_OF(CONF_VALUE) *elist;
+    STACK_OF(CONF_VALUE) * elist;
     CONF_VALUE *cval;
     int i;
 
 #ifdef ENGINE_CONF_DEBUG
     fprintf(stderr, "Called engine module: name %s, value %s\n",
-        CONF_imodule_get_name(md), CONF_imodule_get_value(md));
+            CONF_imodule_get_name(md), CONF_imodule_get_value(md));
 #endif
     /* Value is a section containing ENGINEs to configure */
     elist = NCONF_get_section(cnf, CONF_imodule_get_value(md));
 
     if (!elist) {
         ENGINEerr(ENGINE_F_INT_ENGINE_MODULE_INIT,
-            ENGINE_R_ENGINES_SECTION_ERROR);
+                  ENGINE_R_ENGINES_SECTION_ERROR);
         return 0;
     }
 
@@ -250,5 +247,5 @@ void
 ENGINE_add_conf_module(void)
 {
     CONF_module_add("engines", int_engine_module_init,
-        int_engine_module_finish);
+                    int_engine_module_finish);
 }

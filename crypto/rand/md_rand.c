@@ -110,9 +110,9 @@
  */
 
 #ifdef MD_RAND_DEBUG
-# ifndef NDEBUG
-#   define NDEBUG
-# endif
+#ifndef NDEBUG
+#define NDEBUG
+#endif
 #endif
 
 #include <assert.h>
@@ -127,18 +127,18 @@
 #include <openssl/err.h>
 
 #ifdef BN_DEBUG
-# define PREDICT
+#define PREDICT
 #endif
 
 /* #define PREDICT    1 */
 
-#define STATE_SIZE    1023
-static int state_num=0,state_index=0;
-static unsigned char state[STATE_SIZE+MD_DIGEST_LENGTH];
+#define STATE_SIZE 1023
+static int state_num = 0, state_index = 0;
+static unsigned char state[STATE_SIZE + MD_DIGEST_LENGTH];
 static unsigned char md[MD_DIGEST_LENGTH];
-static long md_count[2]={0,0};
-static double entropy=0;
-static int initialized=0;
+static long md_count[2] = { 0, 0 };
+static double entropy = 0;
+static int initialized = 0;
 
 static unsigned int crypto_lock_rand = 0; /* may be set only when a thread
                                            * holds CRYPTO_LOCK_RAND
@@ -146,9 +146,8 @@ static unsigned int crypto_lock_rand = 0; /* may be set only when a thread
 /* access to lockin_thread is synchronized by CRYPTO_LOCK_RAND2 */
 static CRYPTO_THREADID locking_threadid; /* valid iff crypto_lock_rand is set */
 
-
 #ifdef PREDICT
-int rand_predictable=0;
+int rand_predictable = 0;
 #endif
 
 static void ssleay_rand_cleanup(void);
@@ -159,35 +158,35 @@ static int ssleay_rand_nopseudo_bytes(unsigned char *buf, int num);
 static int ssleay_rand_pseudo_bytes(unsigned char *buf, int num);
 static int ssleay_rand_status(void);
 
-RAND_METHOD rand_ssleay_meth={
+RAND_METHOD rand_ssleay_meth = {
     ssleay_rand_seed,
     ssleay_rand_nopseudo_bytes,
     ssleay_rand_cleanup,
     ssleay_rand_add,
     ssleay_rand_pseudo_bytes,
     ssleay_rand_status
-    }; 
+};
 
 RAND_METHOD *RAND_SSLeay(void)
-    {
+{
     return (&rand_ssleay_meth);
-    }
+}
 
 static void ssleay_rand_cleanup(void)
-    {
-    vigortls_zeroize(state,sizeof(state));
-    state_num=0;
-    state_index=0;
-    vigortls_zeroize(md,MD_DIGEST_LENGTH);
-    md_count[0]=0;
-    md_count[1]=0;
-    entropy=0;
-    initialized=0;
-    }
+{
+    vigortls_zeroize(state, sizeof(state));
+    state_num = 0;
+    state_index = 0;
+    vigortls_zeroize(md, MD_DIGEST_LENGTH);
+    md_count[0] = 0;
+    md_count[1] = 0;
+    entropy = 0;
+    initialized = 0;
+}
 
 static void ssleay_rand_add(const void *buf, int num, double add)
-    {
-    int i,j,k,st_idx;
+{
+    int i, j, k, st_idx;
     long md_c[2];
     unsigned char local_md[MD_DIGEST_LENGTH];
     EVP_MD_CTX m;
@@ -212,19 +211,18 @@ static void ssleay_rand_add(const void *buf, int num, double add)
      */
 
     /* check if we already have the lock */
-    if (crypto_lock_rand)
-        {
+    if (crypto_lock_rand) {
         CRYPTO_THREADID cur;
         CRYPTO_THREADID_current(&cur);
         CRYPTO_r_lock(CRYPTO_LOCK_RAND2);
         do_not_lock = !CRYPTO_THREADID_cmp(&locking_threadid, &cur);
         CRYPTO_r_unlock(CRYPTO_LOCK_RAND2);
-        }
-    else
+    } else
         do_not_lock = 0;
 
-    if (!do_not_lock) CRYPTO_w_lock(CRYPTO_LOCK_RAND);
-    st_idx=state_index;
+    if (!do_not_lock)
+        CRYPTO_w_lock(CRYPTO_LOCK_RAND);
+    st_idx = state_index;
 
     /* use our own copies of the counters so that even
      * if a concurrent thread seeds with exactly the
@@ -237,16 +235,13 @@ static void ssleay_rand_add(const void *buf, int num, double add)
 
     /* state_index <= state_num <= STATE_SIZE */
     state_index += num;
-    if (state_index >= STATE_SIZE)
-        {
-        state_index%=STATE_SIZE;
-        state_num=STATE_SIZE;
-        }
-    else if (state_num < STATE_SIZE)    
-        {
+    if (state_index >= STATE_SIZE) {
+        state_index %= STATE_SIZE;
+        state_num = STATE_SIZE;
+    } else if (state_num < STATE_SIZE) {
         if (state_index > state_num)
-            state_num=state_index;
-        }
+            state_num = state_index;
+    }
     /* state_index <= state_num <= STATE_SIZE */
 
     /* state[st_idx], ..., state[(st_idx + num - 1) % STATE_SIZE]
@@ -255,35 +250,32 @@ static void ssleay_rand_add(const void *buf, int num, double add)
 
     md_count[1] += (num / MD_DIGEST_LENGTH) + (num % MD_DIGEST_LENGTH > 0);
 
-    if (!do_not_lock) CRYPTO_w_unlock(CRYPTO_LOCK_RAND);
+    if (!do_not_lock)
+        CRYPTO_w_unlock(CRYPTO_LOCK_RAND);
 
     EVP_MD_CTX_init(&m);
-    for (i=0; i<num; i+=MD_DIGEST_LENGTH)
-        {
-        j=(num-i);
-        j=(j > MD_DIGEST_LENGTH)?MD_DIGEST_LENGTH:j;
+    for (i = 0; i < num; i += MD_DIGEST_LENGTH) {
+        j = (num - i);
+        j = (j > MD_DIGEST_LENGTH) ? MD_DIGEST_LENGTH : j;
 
         MD_Init(&m);
-        MD_Update(&m,local_md,MD_DIGEST_LENGTH);
-        k=(st_idx+j)-STATE_SIZE;
-        if (k > 0)
-            {
-            MD_Update(&m,&(state[st_idx]),j-k);
-            MD_Update(&m,&(state[0]),k);
-            }
-        else
-            MD_Update(&m,&(state[st_idx]),j);
+        MD_Update(&m, local_md, MD_DIGEST_LENGTH);
+        k = (st_idx + j) - STATE_SIZE;
+        if (k > 0) {
+            MD_Update(&m, &(state[st_idx]), j - k);
+            MD_Update(&m, &(state[0]), k);
+        } else
+            MD_Update(&m, &(state[st_idx]), j);
 
-        MD_Update(&m,buf,j);
+        MD_Update(&m, buf, j);
 
-        MD_Update(&m,(unsigned char *)&(md_c[0]),sizeof(md_c));
-        MD_Final(&m,local_md);
+        MD_Update(&m, (unsigned char *)&(md_c[0]), sizeof(md_c));
+        MD_Final(&m, local_md);
         md_c[1]++;
 
-        buf=(const char *)buf + j;
+        buf = (const char *)buf + j;
 
-        for (k=0; k<j; k++)
-            {
+        for (k = 0; k < j; k++) {
             /* Parallel threads may interfere with this,
              * but always each byte of the new state is
              * the XOR of some previous value of its
@@ -292,40 +284,41 @@ static void ssleay_rand_add(const void *buf, int num, double add)
              * than necessary given that conflicts occur only
              * when the total seeding is longer than the random
              * state. */
-            state[st_idx++]^=local_md[k];
+            state[st_idx++] ^= local_md[k];
             if (st_idx >= STATE_SIZE)
-                st_idx=0;
-            }
+                st_idx = 0;
         }
+    }
     EVP_MD_CTX_cleanup(&m);
 
-    if (!do_not_lock) CRYPTO_w_lock(CRYPTO_LOCK_RAND);
+    if (!do_not_lock)
+        CRYPTO_w_lock(CRYPTO_LOCK_RAND);
     /* Don't just copy back local_md into md -- this could mean that
      * other thread's seeding remains without effect (except for
      * the incremented counter).  By XORing it we keep at least as
      * much entropy as fits into md. */
-    for (k = 0; k < (int)sizeof(md); k++)
-        {
+    for (k = 0; k < (int)sizeof(md); k++) {
         md[k] ^= local_md[k];
-        }
+    }
     if (entropy < ENTROPY_NEEDED) /* stop counting when we have enough */
         entropy += add;
-    if (!do_not_lock) CRYPTO_w_unlock(CRYPTO_LOCK_RAND);
-    
+    if (!do_not_lock)
+        CRYPTO_w_unlock(CRYPTO_LOCK_RAND);
+
 #if !defined(OPENSSL_THREADS)
     assert(md_c[1] == md_count[1]);
 #endif
-    }
+}
 
 static void ssleay_rand_seed(const void *buf, int num)
-    {
+{
     ssleay_rand_add(buf, num, (double)num);
-    }
+}
 
 static int ssleay_rand_bytes(unsigned char *buf, int num, int pseudo)
-    {
+{
     static volatile int stirred_pool = 0;
-    int i,j,k,st_num,st_idx;
+    int i, j, k, st_num, st_idx;
     int num_ceil;
     int ok;
     long md_c[2];
@@ -337,14 +330,13 @@ static int ssleay_rand_bytes(unsigned char *buf, int num, int pseudo)
     int do_stir_pool = 0;
 
 #ifdef PREDICT
-    if (rand_predictable)
-        {
-        static unsigned char val=0;
+    if (rand_predictable) {
+        static unsigned char val = 0;
 
-        for (i=0; i<num; i++)
-            buf[i]=val++;
+        for (i = 0; i < num; i++)
+            buf[i] = val++;
         return (1);
-        }
+    }
 #endif
 
     if (num <= 0)
@@ -352,7 +344,7 @@ static int ssleay_rand_bytes(unsigned char *buf, int num, int pseudo)
 
     EVP_MD_CTX_init(&m);
     /* round upwards to multiple of MD_DIGEST_LENGTH/2 */
-    num_ceil = (1 + (num-1)/(MD_DIGEST_LENGTH/2)) * (MD_DIGEST_LENGTH/2);
+    num_ceil = (1 + (num - 1) / (MD_DIGEST_LENGTH / 2)) * (MD_DIGEST_LENGTH / 2);
 
     /*
      * (Based on the rand(3) manpage:)
@@ -371,7 +363,7 @@ static int ssleay_rand_bytes(unsigned char *buf, int num, int pseudo)
      * are fed into the hash function and the results are kept in the
      * global 'md'.
      */
-        CRYPTO_w_lock(CRYPTO_LOCK_RAND);
+    CRYPTO_w_lock(CRYPTO_LOCK_RAND);
 
     /* prevent ssleay_rand_bytes() from trying to obtain the lock again */
     CRYPTO_w_lock(CRYPTO_LOCK_RAND2);
@@ -379,18 +371,16 @@ static int ssleay_rand_bytes(unsigned char *buf, int num, int pseudo)
     CRYPTO_w_unlock(CRYPTO_LOCK_RAND2);
     crypto_lock_rand = 1;
 
-    if (!initialized)
-        {
+    if (!initialized) {
         RAND_poll();
         initialized = 1;
-        }
-    
+    }
+
     if (!stirred_pool)
         do_stir_pool = 1;
-    
+
     ok = (entropy >= ENTROPY_NEEDED);
-    if (!ok)
-        {
+    if (!ok) {
         /* If the PRNG state is not yet unpredictable, then seeing
          * the PRNG output may help attackers to determine the new
          * state; thus we have to decrease the entropy estimate.
@@ -406,10 +396,9 @@ static int ssleay_rand_bytes(unsigned char *buf, int num, int pseudo)
         entropy -= num;
         if (entropy < 0)
             entropy = 0;
-        }
+    }
 
-    if (do_stir_pool)
-        {
+    if (do_stir_pool) {
         /* In the output function only half of 'md' remains secret,
          * so we better make sure that the required entropy gets
          * 'evenly distributed' through 'state', our randomness pool.
@@ -418,28 +407,27 @@ static int ssleay_rand_bytes(unsigned char *buf, int num, int pseudo)
          */
 
         int n = STATE_SIZE; /* so that the complete pool gets accessed */
-        while (n > 0)
-            {
+        while (n > 0) {
 #if MD_DIGEST_LENGTH > 20
-# error "Please adjust DUMMY_SEED."
+#error "Please adjust DUMMY_SEED."
 #endif
 #define DUMMY_SEED "...................." /* at least MD_DIGEST_LENGTH */
             /* Note that the seed does not matter, it's just that
              * ssleay_rand_add expects to have something to hash. */
             ssleay_rand_add(DUMMY_SEED, MD_DIGEST_LENGTH, 0.0);
             n -= MD_DIGEST_LENGTH;
-            }
+        }
         if (ok)
             stirred_pool = 1;
-        }
+    }
 
-    st_idx=state_index;
-    st_num=state_num;
+    st_idx = state_index;
+    st_num = state_num;
     md_c[0] = md_count[0];
     md_c[1] = md_count[1];
     memcpy(local_md, md, sizeof md);
 
-    state_index+=num_ceil;
+    state_index += num_ceil;
     if (state_index > state_num)
         state_index %= state_num;
 
@@ -452,50 +440,46 @@ static int ssleay_rand_bytes(unsigned char *buf, int num, int pseudo)
     crypto_lock_rand = 0;
     CRYPTO_w_unlock(CRYPTO_LOCK_RAND);
 
-    while (num > 0)
-        {
+    while (num > 0) {
         /* num_ceil -= MD_DIGEST_LENGTH/2 */
-        j=(num >= MD_DIGEST_LENGTH/2)?MD_DIGEST_LENGTH/2:num;
-        num-=j;
+        j = (num >= MD_DIGEST_LENGTH / 2) ? MD_DIGEST_LENGTH / 2 : num;
+        num -= j;
         MD_Init(&m);
 #ifndef GETPID_IS_MEANINGLESS
         if (curr_pid) /* just in the first iteration to save time */
-            {
-            MD_Update(&m,(unsigned char*)&curr_pid,sizeof curr_pid);
+        {
+            MD_Update(&m, (unsigned char *)&curr_pid, sizeof curr_pid);
             curr_pid = 0;
-            }
-#endif
-        MD_Update(&m,local_md,MD_DIGEST_LENGTH);
-        MD_Update(&m,(unsigned char *)&(md_c[0]),sizeof(md_c));
-
-        MD_Update(&m,buf,j);
-
-        k=(st_idx+MD_DIGEST_LENGTH/2)-st_num;
-        if (k > 0)
-            {
-            MD_Update(&m,&(state[st_idx]),MD_DIGEST_LENGTH/2-k);
-            MD_Update(&m,&(state[0]),k);
-            }
-        else
-            MD_Update(&m,&(state[st_idx]),MD_DIGEST_LENGTH/2);
-        MD_Final(&m,local_md);
-
-        for (i=0; i<MD_DIGEST_LENGTH/2; i++)
-            {
-            state[st_idx++]^=local_md[i]; /* may compete with other threads */
-            if (st_idx >= st_num)
-                st_idx=0;
-            if (i < j)
-                *(buf++)=local_md[i+MD_DIGEST_LENGTH/2];
-            }
         }
+#endif
+        MD_Update(&m, local_md, MD_DIGEST_LENGTH);
+        MD_Update(&m, (unsigned char *)&(md_c[0]), sizeof(md_c));
+
+        MD_Update(&m, buf, j);
+
+        k = (st_idx + MD_DIGEST_LENGTH / 2) - st_num;
+        if (k > 0) {
+            MD_Update(&m, &(state[st_idx]), MD_DIGEST_LENGTH / 2 - k);
+            MD_Update(&m, &(state[0]), k);
+        } else
+            MD_Update(&m, &(state[st_idx]), MD_DIGEST_LENGTH / 2);
+        MD_Final(&m, local_md);
+
+        for (i = 0; i < MD_DIGEST_LENGTH / 2; i++) {
+            state[st_idx++] ^= local_md[i]; /* may compete with other threads */
+            if (st_idx >= st_num)
+                st_idx = 0;
+            if (i < j)
+                *(buf++) = local_md[i + MD_DIGEST_LENGTH / 2];
+        }
+    }
 
     MD_Init(&m);
-    MD_Update(&m,(unsigned char *)&(md_c[0]),sizeof(md_c));
-    MD_Update(&m,local_md,MD_DIGEST_LENGTH);
+    MD_Update(&m, (unsigned char *)&(md_c[0]), sizeof(md_c));
+    MD_Update(&m, local_md, MD_DIGEST_LENGTH);
     CRYPTO_w_lock(CRYPTO_LOCK_RAND);
-    MD_Update(&m,md,MD_DIGEST_LENGTH);
-    MD_Final(&m,md);
+    MD_Update(&m, md, MD_DIGEST_LENGTH);
+    MD_Final(&m, md);
     CRYPTO_w_unlock(CRYPTO_LOCK_RAND);
 
     EVP_MD_CTX_cleanup(&m);
@@ -503,29 +487,28 @@ static int ssleay_rand_bytes(unsigned char *buf, int num, int pseudo)
         return (1);
     else if (pseudo)
         return 0;
-    else 
-        {
-        RANDerr(RAND_F_SSLEAY_RAND_BYTES,RAND_R_PRNG_NOT_SEEDED);
+    else {
+        RANDerr(RAND_F_SSLEAY_RAND_BYTES, RAND_R_PRNG_NOT_SEEDED);
         ERR_asprintf_error_data("You need to read the OpenSSL FAQ, %s",
-            "http://www.openssl.org/support/faq.html");
+                                "http://www.openssl.org/support/faq.html");
         return (0);
-        }
     }
+}
 
 static int ssleay_rand_nopseudo_bytes(unsigned char *buf, int num)
-    {
+{
     return ssleay_rand_bytes(buf, num, 0);
-    }
+}
 
 /* pseudo-random bytes that are guaranteed to be unique but not
    unpredictable */
-static int ssleay_rand_pseudo_bytes(unsigned char *buf, int num) 
-    {
+static int ssleay_rand_pseudo_bytes(unsigned char *buf, int num)
+{
     return ssleay_rand_bytes(buf, num, 1);
-    }
+}
 
 static int ssleay_rand_status(void)
-    {
+{
     CRYPTO_THREADID cur;
     int ret;
     int do_not_lock;
@@ -533,41 +516,36 @@ static int ssleay_rand_status(void)
     CRYPTO_THREADID_current(&cur);
     /* check if we already have the lock
      * (could happen if a RAND_poll() implementation calls RAND_status()) */
-    if (crypto_lock_rand)
-        {
+    if (crypto_lock_rand) {
         CRYPTO_r_lock(CRYPTO_LOCK_RAND2);
         do_not_lock = !CRYPTO_THREADID_cmp(&locking_threadid, &cur);
         CRYPTO_r_unlock(CRYPTO_LOCK_RAND2);
-        }
-    else
+    } else
         do_not_lock = 0;
-    
-    if (!do_not_lock)
-        {
+
+    if (!do_not_lock) {
         CRYPTO_w_lock(CRYPTO_LOCK_RAND);
-        
+
         /* prevent ssleay_rand_bytes() from trying to obtain the lock again */
         CRYPTO_w_lock(CRYPTO_LOCK_RAND2);
         CRYPTO_THREADID_cpy(&locking_threadid, &cur);
         CRYPTO_w_unlock(CRYPTO_LOCK_RAND2);
         crypto_lock_rand = 1;
-        }
-    
-    if (!initialized)
-        {
+    }
+
+    if (!initialized) {
         RAND_poll();
         initialized = 1;
-        }
+    }
 
     ret = entropy >= ENTROPY_NEEDED;
 
-    if (!do_not_lock)
-        {
+    if (!do_not_lock) {
         /* before unlocking, we must clear 'crypto_lock_rand' */
         crypto_lock_rand = 0;
-        
+
         CRYPTO_w_unlock(CRYPTO_LOCK_RAND);
-        }
-    
-    return ret;
     }
+
+    return ret;
+}

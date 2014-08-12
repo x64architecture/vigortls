@@ -69,16 +69,21 @@
 #include "evp_locl.h"
 
 static int init(EVP_MD_CTX *ctx)
-    { return MD4_Init(ctx->md_data); }
+{
+    return MD4_Init(ctx->md_data);
+}
 
-static int update(EVP_MD_CTX *ctx,const void *data,size_t count)
-    { return MD4_Update(ctx->md_data,data,count); }
+static int update(EVP_MD_CTX *ctx, const void *data, size_t count)
+{
+    return MD4_Update(ctx->md_data, data, count);
+}
 
-static int final(EVP_MD_CTX *ctx,unsigned char *md)
-    { return MD4_Final(md,ctx->md_data); }
+static int final(EVP_MD_CTX *ctx, unsigned char *md)
+{
+    return MD4_Final(md, ctx->md_data);
+}
 
-static const EVP_MD md4_md=
-    {
+static const EVP_MD md4_md = {
     NID_md4,
     NID_md4WithRSAEncryption,
     MD4_DIGEST_LENGTH,
@@ -90,11 +95,11 @@ static const EVP_MD md4_md=
     NULL,
     EVP_PKEY_RSA_method,
     MD4_CBLOCK,
-    sizeof(EVP_MD *)+sizeof(MD4_CTX),
-    };
+    sizeof(EVP_MD *) + sizeof(MD4_CTX),
+};
 
 const EVP_MD *EVP_md4(void)
-    {
+{
     return (&md4_md);
-    }
+}
 #endif

@@ -77,9 +77,9 @@
 void CRYPTO_thread_setup(void);
 void CRYPTO_thread_cleanup(void);
 
-static void pthreads_locking_callback(int mode,int type,char *file,int line);
+static void pthreads_locking_callback(int mode, int type, char *file, int line);
 
-static unsigned long pthreads_thread_id(void );
+static unsigned long pthreads_thread_id(void);
 
 /* usage:
  * CRYPTO_thread_setup();
@@ -87,7 +87,7 @@ static unsigned long pthreads_thread_id(void );
  * CRYPTO_thread_cleanup();
  */
 
-#define THREAD_STACK_SIZE (16*1024)
+#define THREAD_STACK_SIZE (16 * 1024)
 
 /* Linux and a few others */
 #ifdef PTHREADS
@@ -96,37 +96,35 @@ static pthread_mutex_t *lock_cs;
 static long *lock_count;
 
 void CRYPTO_thread_setup(void)
-    {
+{
     int i;
 
-    lock_cs=malloc(CRYPTO_num_locks() * sizeof(pthread_mutex_t));
-    lock_count=malloc(CRYPTO_num_locks() * sizeof(long));
-    for (i=0; i<CRYPTO_num_locks(); i++)
-        {
-        lock_count[i]=0;
-        pthread_mutex_init(&(lock_cs[i]),NULL);
-        }
+    lock_cs = malloc(CRYPTO_num_locks() * sizeof(pthread_mutex_t));
+    lock_count = malloc(CRYPTO_num_locks() * sizeof(long));
+    for (i = 0; i < CRYPTO_num_locks(); i++) {
+        lock_count[i] = 0;
+        pthread_mutex_init(&(lock_cs[i]), NULL);
+    }
 
     CRYPTO_set_id_callback((unsigned long (*)())pthreads_thread_id);
     CRYPTO_set_locking_callback((void (*)())pthreads_locking_callback);
-    }
+}
 
 void thread_cleanup(void)
-    {
+{
     int i;
 
     CRYPTO_set_locking_callback(NULL);
-    for (i=0; i<CRYPTO_num_locks(); i++)
-        {
+    for (i = 0; i < CRYPTO_num_locks(); i++) {
         pthread_mutex_destroy(&(lock_cs[i]));
-        }
+    }
     free(lock_cs);
     free(lock_count);
-    }
+}
 
 void pthreads_locking_callback(int mode, int type, char *file,
-         int line)
-      {
+                               int line)
+{
 #if 0
     fprintf(stderr,"thread=%4d mode=%s lock=%s %s:%d\n",
         CRYPTO_thread_id(),
@@ -139,24 +137,20 @@ void pthreads_locking_callback(int mode, int type, char *file,
         CRYPTO_thread_id(),
         mode,file,line);
 #endif
-    if (mode & CRYPTO_LOCK)
-        {
+    if (mode & CRYPTO_LOCK) {
         pthread_mutex_lock(&(lock_cs[type]));
         lock_count[type]++;
-        }
-    else
-        {
+    } else {
         pthread_mutex_unlock(&(lock_cs[type]));
-        }
     }
+}
 
 unsigned long pthreads_thread_id(void)
-    {
+{
     unsigned long ret;
 
-    ret=(unsigned long)pthread_self();
+    ret = (unsigned long)pthread_self();
     return (ret);
-    }
+}
 
 #endif /* PTHREADS */
-

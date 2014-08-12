@@ -25,8 +25,8 @@ void *reallocarray(void *ptr, size_t newmem, size_t size)
 {
     if ((size | newmem) > SQRT_SIZE_MAX /* fast test */
         && size && newmem > SIZE_MAX / size) {
-            errno = ENOMEM;
-            return NULL;
+        errno = ENOMEM;
+        return NULL;
     }
 
     return realloc(ptr, size * newmem);

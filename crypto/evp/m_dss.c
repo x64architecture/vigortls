@@ -67,16 +67,21 @@
 #ifndef OPENSSL_NO_SHA
 
 static int init(EVP_MD_CTX *ctx)
-    { return SHA1_Init(ctx->md_data); }
+{
+    return SHA1_Init(ctx->md_data);
+}
 
-static int update(EVP_MD_CTX *ctx,const void *data,size_t count)
-    { return SHA1_Update(ctx->md_data,data,count); }
+static int update(EVP_MD_CTX *ctx, const void *data, size_t count)
+{
+    return SHA1_Update(ctx->md_data, data, count);
+}
 
-static int final(EVP_MD_CTX *ctx,unsigned char *md)
-    { return SHA1_Final(md,ctx->md_data); }
+static int final(EVP_MD_CTX *ctx, unsigned char *md)
+{
+    return SHA1_Final(md, ctx->md_data);
+}
 
-static const EVP_MD dsa_md=
-    {
+static const EVP_MD dsa_md = {
     NID_dsaWithSHA,
     NID_dsaWithSHA,
     SHA_DIGEST_LENGTH,
@@ -88,11 +93,11 @@ static const EVP_MD dsa_md=
     NULL,
     EVP_PKEY_DSA_method,
     SHA_CBLOCK,
-    sizeof(EVP_MD *)+sizeof(SHA_CTX),
-    };
+    sizeof(EVP_MD *) + sizeof(SHA_CTX),
+};
 
 const EVP_MD *EVP_dss(void)
-    {
+{
     return (&dsa_md);
-    }
+}
 #endif

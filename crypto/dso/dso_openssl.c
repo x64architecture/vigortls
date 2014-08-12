@@ -62,7 +62,7 @@
 /* We just pinch the method from an appropriate "default" method. */
 
 DSO_METHOD *DSO_METHOD_openssl(void)
-    {
+{
 #ifdef DEF_DSO_METHOD
     return (DEF_DSO_METHOD());
 #elif defined(DSO_DLFCN)
@@ -72,5 +72,4 @@ DSO_METHOD *DSO_METHOD_openssl(void)
 #else
     return (DSO_METHOD_null());
 #endif
-    }
-
+}

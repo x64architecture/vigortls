@@ -18,7 +18,6 @@
  * an equivalent notion.
  */
 
-
 #if !defined(OPENSSL_NO_SHA) && !defined(OPENSSL_NO_SHA1)
 #include <stdio.h>
 #include <string.h>
@@ -31,28 +30,26 @@
 #include <openssl/sha.h>
 
 static int MGF1(unsigned char *mask, long len,
-    const unsigned char *seed, long seedlen);
+                const unsigned char *seed, long seedlen);
 
 int RSA_padding_add_PKCS1_OAEP(unsigned char *to, int tlen,
-    const unsigned char *from, int flen,
-    const unsigned char *param, int plen)
-    {
+                               const unsigned char *from, int flen,
+                               const unsigned char *param, int plen)
+{
     int i, emlen = tlen - 1;
     unsigned char *db, *seed;
     unsigned char *dbmask, seedmask[SHA_DIGEST_LENGTH];
 
-    if (flen > emlen - 2 * SHA_DIGEST_LENGTH - 1)
-        {
+    if (flen > emlen - 2 * SHA_DIGEST_LENGTH - 1) {
         RSAerr(RSA_F_RSA_PADDING_ADD_PKCS1_OAEP,
-           RSA_R_DATA_TOO_LARGE_FOR_KEY_SIZE);
+               RSA_R_DATA_TOO_LARGE_FOR_KEY_SIZE);
         return 0;
-        }
+    }
 
-    if (emlen < 2 * SHA_DIGEST_LENGTH + 1)
-        {
+    if (emlen < 2 * SHA_DIGEST_LENGTH + 1) {
         RSAerr(RSA_F_RSA_PADDING_ADD_PKCS1_OAEP, RSA_R_KEY_SIZE_TOO_SMALL);
         return 0;
-        }
+    }
 
     to[0] = 0;
     seed = to + 1;
@@ -61,23 +58,22 @@ int RSA_padding_add_PKCS1_OAEP(unsigned char *to, int tlen,
     if (!EVP_Digest((void *)param, plen, db, NULL, EVP_sha1(), NULL))
         return 0;
     memset(db + SHA_DIGEST_LENGTH, 0,
-        emlen - flen - 2 * SHA_DIGEST_LENGTH - 1);
+           emlen - flen - 2 * SHA_DIGEST_LENGTH - 1);
     db[emlen - flen - SHA_DIGEST_LENGTH - 1] = 0x01;
-    memcpy(db + emlen - flen - SHA_DIGEST_LENGTH, from, (unsigned int) flen);
+    memcpy(db + emlen - flen - SHA_DIGEST_LENGTH, from, (unsigned int)flen);
     if (RAND_bytes(seed, SHA_DIGEST_LENGTH) <= 0)
         return 0;
 #ifdef PKCS_TESTVECT
     memcpy(seed,
-       "\xaa\xfd\x12\xf6\x59\xca\xe6\x34\x89\xb4\x79\xe5\x07\x6d\xde\xc2\xf0\x6c\xb5\x8f",
-       20);
+           "\xaa\xfd\x12\xf6\x59\xca\xe6\x34\x89\xb4\x79\xe5\x07\x6d\xde\xc2\xf0\x6c\xb5\x8f",
+           20);
 #endif
 
     dbmask = malloc(emlen - SHA_DIGEST_LENGTH);
-    if (dbmask == NULL)
-        {
+    if (dbmask == NULL) {
         RSAerr(RSA_F_RSA_PADDING_ADD_PKCS1_OAEP, ERR_R_MALLOC_FAILURE);
         return 0;
-        }
+    }
 
     if (MGF1(dbmask, emlen - SHA_DIGEST_LENGTH, seed, SHA_DIGEST_LENGTH) < 0)
         return 0;
@@ -91,12 +87,12 @@ int RSA_padding_add_PKCS1_OAEP(unsigned char *to, int tlen,
 
     free(dbmask);
     return 1;
-    }
+}
 
 int RSA_padding_check_PKCS1_OAEP(unsigned char *to, int tlen,
-    const unsigned char *from, int flen, int num,
-    const unsigned char *param, int plen)
-    {
+                                 const unsigned char *from, int flen, int num,
+                                 const unsigned char *param, int plen)
+{
     int i, dblen, mlen = -1;
     const unsigned char *maskeddb;
     int lzero;
@@ -110,8 +106,7 @@ int RSA_padding_check_PKCS1_OAEP(unsigned char *to, int tlen,
         goto decoding_err;
 
     lzero = num - flen;
-    if (lzero < 0)
-        {
+    if (lzero < 0) {
         /* signalling this error immediately after detection might allow
          * for side-channel attacks (e.g. timing if 'plen' is huge
          * -- cf. James H. Manger, "A Chosen Ciphertext Attack on RSA Optimal
@@ -120,15 +115,14 @@ int RSA_padding_check_PKCS1_OAEP(unsigned char *to, int tlen,
         bad = 1;
         lzero = 0;
         flen = num; /* don't overflow the memcpy to padded_from */
-        }
+    }
 
     dblen = num - SHA_DIGEST_LENGTH;
     db = malloc(dblen + num);
-    if (db == NULL)
-        {
+    if (db == NULL) {
         RSAerr(RSA_F_RSA_PADDING_CHECK_PKCS1_OAEP, ERR_R_MALLOC_FAILURE);
         return -1;
-        }
+    }
 
     /* Always do this zero-padding copy (even when lzero == 0)
      * to avoid leaking timing info about the value of lzero. */
@@ -142,7 +136,7 @@ int RSA_padding_check_PKCS1_OAEP(unsigned char *to, int tlen,
         return -1;
     for (i = 0; i < SHA_DIGEST_LENGTH; i++)
         seed[i] ^= padded_from[i];
-  
+
     if (MGF1(db, dblen, seed, SHA_DIGEST_LENGTH))
         return -1;
     for (i = 0; i < dblen; i++)
@@ -153,27 +147,23 @@ int RSA_padding_check_PKCS1_OAEP(unsigned char *to, int tlen,
 
     if (CRYPTO_memcmp(db, phash, SHA_DIGEST_LENGTH) != 0 || bad)
         goto decoding_err;
-    else
-        {
+    else {
         for (i = SHA_DIGEST_LENGTH; i < dblen; i++)
             if (db[i] != 0x00)
                 break;
         if (i == dblen || db[i] != 0x01)
             goto decoding_err;
-        else
-            {
+        else {
             /* everything looks OK */
 
             mlen = dblen - ++i;
-            if (tlen < mlen)
-                {
+            if (tlen < mlen) {
                 RSAerr(RSA_F_RSA_PADDING_CHECK_PKCS1_OAEP, RSA_R_DATA_TOO_LARGE);
                 mlen = -1;
-                }
-            else
+            } else
                 memcpy(to, db + i, mlen);
-            }
         }
+    }
     free(db);
     return mlen;
 
@@ -181,13 +171,14 @@ decoding_err:
     /* to avoid chosen ciphertext attacks, the error message should not reveal
      * which kind of decoding error happened */
     RSAerr(RSA_F_RSA_PADDING_CHECK_PKCS1_OAEP, RSA_R_OAEP_DECODING_ERROR);
-    if (db != NULL) free(db);
+    if (db != NULL)
+        free(db);
     return -1;
-    }
+}
 
 int PKCS1_MGF1(unsigned char *mask, long len,
-    const unsigned char *seed, long seedlen, const EVP_MD *dgst)
-    {
+               const unsigned char *seed, long seedlen, const EVP_MD *dgst)
+{
     long i, outlen = 0;
     unsigned char cnt[4];
     EVP_MD_CTX c;
@@ -199,39 +190,35 @@ int PKCS1_MGF1(unsigned char *mask, long len,
     mdlen = EVP_MD_size(dgst);
     if (mdlen < 0)
         goto err;
-    for (i = 0; outlen < len; i++)
-        {
+    for (i = 0; outlen < len; i++) {
         cnt[0] = (unsigned char)((i >> 24) & 255);
         cnt[1] = (unsigned char)((i >> 16) & 255);
         cnt[2] = (unsigned char)((i >> 8)) & 255;
         cnt[3] = (unsigned char)(i & 255);
-        if (!EVP_DigestInit_ex(&c,dgst, NULL)
+        if (!EVP_DigestInit_ex(&c, dgst, NULL)
             || !EVP_DigestUpdate(&c, seed, seedlen)
             || !EVP_DigestUpdate(&c, cnt, 4))
             goto err;
-        if (outlen + mdlen <= len)
-            {
+        if (outlen + mdlen <= len) {
             if (!EVP_DigestFinal_ex(&c, mask + outlen, NULL))
                 goto err;
             outlen += mdlen;
-            }
-        else
-            {
+        } else {
             if (!EVP_DigestFinal_ex(&c, md, NULL))
                 goto err;
             memcpy(mask + outlen, md, len - outlen);
             outlen = len;
-            }
         }
+    }
     rv = 0;
-    err:
+err:
     EVP_MD_CTX_cleanup(&c);
     return rv;
-    }
+}
 
 static int MGF1(unsigned char *mask, long len, const unsigned char *seed,
-         long seedlen)
-    {
+                long seedlen)
+{
     return PKCS1_MGF1(mask, len, seed, seedlen, EVP_sha1());
-    }
+}
 #endif

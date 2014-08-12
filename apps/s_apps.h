@@ -112,11 +112,11 @@
 #include <sys/types.h>
 #include <openssl/opensslconf.h>
 
-#define PORT            4433
-#define PORT_STR        "4433"
-#define PROTOCOL        "tcp"
+#define PORT 4433
+#define PORT_STR "4433"
+#define PROTOCOL "tcp"
 
-int do_server(int port, int type, int *ret, int (*cb) (char *hostname, int s, unsigned char *context), unsigned char *context);
+int do_server(int port, int type, int *ret, int (*cb)(char *hostname, int s, unsigned char *context), unsigned char *context);
 #ifdef HEADER_X509_H
 int verify_callback(int ok, X509_STORE_CTX *ctx);
 #endif
@@ -127,17 +127,17 @@ int set_cert_key_stuff(SSL_CTX *ctx, X509 *cert, EVP_PKEY *key);
 int init_client(int *sock, char *server, int port, int type);
 int should_retry(int i);
 int extract_port(char *str, short *port_ptr);
-int extract_host_port(char *str,char **host_ptr,unsigned char *ip,short *p);
+int extract_host_port(char *str, char **host_ptr, unsigned char *ip, short *p);
 
 long bio_dump_callback(BIO *bio, int cmd, const char *argp,
-                   int argi, long argl, long ret);
+                       int argi, long argl, long ret);
 
 #ifdef HEADER_SSL_H
 void apps_ssl_info_callback(const SSL *s, int where, int ret);
 void msg_cb(int write_p, int version, int content_type, const void *buf, size_t len, SSL *ssl, void *arg);
 void tlsext_cb(SSL *s, int client_server, int type,
-                    unsigned char *data, int len,
-                    void *arg);
+               unsigned char *data, int len,
+               void *arg);
 #endif
 
 int generate_cookie_callback(SSL *ssl, unsigned char *cookie, unsigned int *cookie_len);

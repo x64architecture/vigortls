@@ -69,11 +69,10 @@
 /* Load all OpenSSL builtin modules */
 
 void OPENSSL_load_builtin_modules(void)
-    {
+{
     /* Add builtin modules here */
     ASN1_add_oid_module();
 #ifndef OPENSSL_NO_ENGINE
     ENGINE_add_conf_module();
 #endif
-    }
-
+}

@@ -78,8 +78,7 @@
 
 /* BIO support data stored in the ASN1 BIO ex_arg */
 
-typedef struct ndef_aux_st
-    {
+typedef struct ndef_aux_st {
     /* ASN1 structure this BIO refers to */
     ASN1_VALUE *val;
     const ASN1_ITEM *it;
@@ -91,7 +90,7 @@ typedef struct ndef_aux_st
     unsigned char **boundary;
     /* DER buffer start */
     unsigned char *derbuf;
-    } NDEF_SUPPORT;
+} NDEF_SUPPORT;
 
 static int ndef_prefix(BIO *b, unsigned char **pbuf, int *plen, void *parg);
 static int ndef_prefix_free(BIO *b, unsigned char **pbuf, int *plen, void *parg);
@@ -99,17 +98,16 @@ static int ndef_suffix(BIO *b, unsigned char **pbuf, int *plen, void *parg);
 static int ndef_suffix_free(BIO *b, unsigned char **pbuf, int *plen, void *parg);
 
 BIO *BIO_new_NDEF(BIO *out, ASN1_VALUE *val, const ASN1_ITEM *it)
-    {
+{
     NDEF_SUPPORT *ndef_aux = NULL;
     BIO *asn_bio = NULL;
     const ASN1_AUX *aux = it->funcs;
     ASN1_STREAM_ARG sarg;
 
-    if (!aux || !aux->asn1_cb)
-        {
+    if (!aux || !aux->asn1_cb) {
         ASN1err(ASN1_F_BIO_NEW_NDEF, ASN1_R_STREAMING_NOT_SUPPORTED);
         return NULL;
-        }
+    }
     ndef_aux = malloc(sizeof(NDEF_SUPPORT));
     asn_bio = BIO_new(BIO_f_asn1());
 
@@ -144,16 +142,16 @@ BIO *BIO_new_NDEF(BIO *out, ASN1_VALUE *val, const ASN1_ITEM *it)
 
     return sarg.ndef_bio;
 
-    err:
+err:
     if (asn_bio)
         BIO_free(asn_bio);
     if (ndef_aux)
         free(ndef_aux);
     return NULL;
-    }
+}
 
 static int ndef_prefix(BIO *b, unsigned char **pbuf, int *plen, void *parg)
-    {
+{
     NDEF_SUPPORT *ndef_aux;
     unsigned char *p;
     int derlen;
@@ -175,10 +173,10 @@ static int ndef_prefix(BIO *b, unsigned char **pbuf, int *plen, void *parg)
     *plen = *ndef_aux->boundary - *pbuf;
 
     return 1;
-    }
+}
 
 static int ndef_prefix_free(BIO *b, unsigned char **pbuf, int *plen, void *parg)
-    {
+{
     NDEF_SUPPORT *ndef_aux;
 
     if (!parg)
@@ -193,20 +191,20 @@ static int ndef_prefix_free(BIO *b, unsigned char **pbuf, int *plen, void *parg)
     *pbuf = NULL;
     *plen = 0;
     return 1;
-    }
+}
 
 static int ndef_suffix_free(BIO *b, unsigned char **pbuf, int *plen, void *parg)
-    {
+{
     NDEF_SUPPORT **pndef_aux = (NDEF_SUPPORT **)parg;
     if (!ndef_prefix_free(b, pbuf, plen, parg))
         return 0;
     free(*pndef_aux);
     *pndef_aux = NULL;
     return 1;
-    }
+}
 
 static int ndef_suffix(BIO *b, unsigned char **pbuf, int *plen, void *parg)
-    {
+{
     NDEF_SUPPORT *ndef_aux;
     unsigned char *p;
     int derlen;
@@ -225,7 +223,7 @@ static int ndef_suffix(BIO *b, unsigned char **pbuf, int *plen, void *parg)
     sarg.out = ndef_aux->out;
     sarg.boundary = ndef_aux->boundary;
     if (aux->asn1_cb(ASN1_OP_STREAM_POST,
-                &ndef_aux->val, ndef_aux->it, &sarg) <= 0)
+                     &ndef_aux->val, ndef_aux->it, &sarg) <= 0)
         return 0;
 
     derlen = ASN1_item_ndef_i2d(ndef_aux->val, NULL, ndef_aux->it);
@@ -240,4 +238,4 @@ static int ndef_suffix(BIO *b, unsigned char **pbuf, int *plen, void *parg)
     *plen = derlen - (*ndef_aux->boundary - ndef_aux->derbuf);
 
     return 1;
-    }
+}

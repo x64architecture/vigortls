@@ -80,7 +80,7 @@ ENGINE_register_RSA(ENGINE *e)
 {
     if (e->rsa_meth)
         return engine_table_register(&rsa_table,
-            engine_unregister_all_RSA, e, &dummy_nid, 1, 0);
+                                     engine_unregister_all_RSA, e, &dummy_nid, 1, 0);
     return 1;
 }
 
@@ -98,7 +98,7 @@ ENGINE_set_default_RSA(ENGINE *e)
 {
     if (e->rsa_meth)
         return engine_table_register(&rsa_table,
-            engine_unregister_all_RSA, e, &dummy_nid, 1, 1);
+                                     engine_unregister_all_RSA, e, &dummy_nid, 1, 1);
     return 1;
 }
 

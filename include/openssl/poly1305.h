@@ -28,18 +28,18 @@ typedef unsigned char poly1305_state[512];
  * authentication tag with the one-time key |key|. Note that |key| is a
  * one-time key and therefore there is no `reset' method because that would
  * enable several messages to be authenticated with the same key. */
-extern void CRYPTO_poly1305_init(poly1305_state* state,
-				 const unsigned char key[32]);
+extern void CRYPTO_poly1305_init(poly1305_state *state,
+                                 const unsigned char key[32]);
 
 /* poly1305_update processes |in_len| bytes from |in|. It can be called zero or
  * more times after poly1305_init. */
-extern void CRYPTO_poly1305_update(poly1305_state* state,
-				   const unsigned char *in,
-				   size_t in_len);
+extern void CRYPTO_poly1305_update(poly1305_state *state,
+                                   const unsigned char *in,
+                                   size_t in_len);
 
 /* poly1305_finish completes the poly1305 calculation and writes a 16 byte
  * authentication tag to |mac|. */
-extern void CRYPTO_poly1305_finish(poly1305_state* state,
-				   unsigned char mac[16]);
+extern void CRYPTO_poly1305_finish(poly1305_state *state,
+                                   unsigned char mac[16]);
 
-#endif  /* HEADER_POLY1305_H_ */
+#endif /* HEADER_POLY1305_H_ */

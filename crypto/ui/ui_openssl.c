@@ -114,7 +114,6 @@
  * [including the GNU Public Licence.]
  */
 
-
 #include <openssl/e_os2.h>
 
 /* need for #define _POSIX_C_SOURCE arises whenever you pass -ansi to gcc
@@ -131,81 +130,79 @@
 
 /* If unistd.h defines _POSIX_VERSION, we conclude that we
  * are on a POSIX system and have sigaction and termios. */
-# if defined(_POSIX_VERSION)
+#if defined(_POSIX_VERSION)
 
-#  define SIGACTION
-#  if !defined(TERMIOS) && !defined(TERMIO) && !defined(SGTTY)
-#   define TERMIOS
-#  endif
+#define SIGACTION
+#if !defined(TERMIOS) && !defined(TERMIO) && !defined(SGTTY)
+#define TERMIOS
+#endif
 
-# endif
+#endif
 
 #include "ui_locl.h"
-
 
 /* There are 3 types of terminal interface supported,
  * TERMIO, TERMIOS and SGTTY
  */
 
 #if defined(linux) && !defined(TERMIO)
-# undef  TERMIOS
-# define TERMIO
-# undef  SGTTY
+#undef TERMIOS
+#define TERMIO
+#undef SGTTY
 #endif
 
 #ifdef _LIBC
-# undef  TERMIOS
-# define TERMIO
-# undef  SGTTY
+#undef TERMIOS
+#define TERMIO
+#undef SGTTY
 #endif
 
 #if !defined(TERMIO) && !defined(TERMIOS)
-# undef  TERMIOS
-# undef  TERMIO
-# define SGTTY
+#undef TERMIOS
+#undef TERMIO
+#define SGTTY
 #endif
 
 #ifdef TERMIOS
-# include <termios.h>
-# define TTY_STRUCT        struct termios
-# define TTY_FLAGS        c_lflag
-# define TTY_get(tty,data)    tcgetattr(tty,data)
-# define TTY_set(tty,data)    tcsetattr(tty,TCSANOW,data)
+#include <termios.h>
+#define TTY_STRUCT struct termios
+#define TTY_FLAGS c_lflag
+#define TTY_get(tty, data) tcgetattr(tty, data)
+#define TTY_set(tty, data) tcsetattr(tty, TCSANOW, data)
 #endif
 
 #ifdef TERMIO
-# include <termio.h>
-# define TTY_STRUCT        struct termio
-# define TTY_FLAGS        c_lflag
-# define TTY_get(tty,data)    ioctl(tty,TCGETA,data)
-# define TTY_set(tty,data)    ioctl(tty,TCSETA,data)
+#include <termio.h>
+#define TTY_STRUCT struct termio
+#define TTY_FLAGS c_lflag
+#define TTY_get(tty, data) ioctl(tty, TCGETA, data)
+#define TTY_set(tty, data) ioctl(tty, TCSETA, data)
 #endif
 
 #ifdef SGTTY
-# include <sgtty.h>
-# define TTY_STRUCT        struct sgttyb
-# define TTY_FLAGS        sg_flags
-# define TTY_get(tty,data)    ioctl(tty,TIOCGETP,data)
-# define TTY_set(tty,data)    ioctl(tty,TIOCSETP,data)
+#include <sgtty.h>
+#define TTY_STRUCT struct sgttyb
+#define TTY_FLAGS sg_flags
+#define TTY_get(tty, data) ioctl(tty, TIOCGETP, data)
+#define TTY_set(tty, data) ioctl(tty, TIOCSETP, data)
 #endif
 
 #if !defined(_LIBC)
-# include <sys/ioctl.h>
+#include <sys/ioctl.h>
 #endif
 
 #ifndef NX509_SIG
-# define NX509_SIG 32
+#define NX509_SIG 32
 #endif
-
 
 /* Define globals.  They are protected by a lock */
 #ifdef SIGACTION
 static struct sigaction savsig[NX509_SIG];
 #else
-static void (*savsig[NX509_SIG])(int );
+static void (*savsig[NX509_SIG])(int);
 #endif
 
-static TTY_STRUCT tty_orig,tty_new;
+static TTY_STRUCT tty_orig, tty_new;
 static FILE *tty_in, *tty_out;
 static int is_a_tty;
 
@@ -224,228 +221,221 @@ static int echo_console(UI *ui);
 static int noecho_console(UI *ui);
 static int close_console(UI *ui);
 
-static UI_METHOD ui_openssl =
-    {
+static UI_METHOD ui_openssl = {
     "OpenSSL default user interface",
     open_console,
     write_string,
-    NULL,            /* No flusher is needed for command lines */
+    NULL, /* No flusher is needed for command lines */
     read_string,
     close_console,
     NULL
-    };
+};
 
 /* The method with all the built-in thingies */
 UI_METHOD *UI_OpenSSL(void)
-    {
+{
     return &ui_openssl;
-    }
+}
 
 /* The following function makes sure that info and error strings are printed
    before any prompt. */
 static int write_string(UI *ui, UI_STRING *uis)
-    {
-    switch (UI_get_string_type(uis))
-        {
-    case UIT_ERROR:
-    case UIT_INFO:
-        fputs(UI_get0_output_string(uis), tty_out);
-        fflush(tty_out);
-        break;
-    default:
-        break;
-        }
-    return 1;
+{
+    switch (UI_get_string_type(uis)) {
+        case UIT_ERROR:
+        case UIT_INFO:
+            fputs(UI_get0_output_string(uis), tty_out);
+            fflush(tty_out);
+            break;
+        default:
+            break;
     }
+    return 1;
+}
 
 static int read_string(UI *ui, UI_STRING *uis)
-    {
+{
     int ok = 0;
 
-    switch (UI_get_string_type(uis))
-        {
-    case UIT_BOOLEAN:
-        fputs(UI_get0_output_string(uis), tty_out);
-        fputs(UI_get0_action_string(uis), tty_out);
-        fflush(tty_out);
-        return read_string_inner(ui, uis,
-            UI_get_input_flags(uis) & UI_INPUT_FLAG_ECHO, 0);
-    case UIT_PROMPT:
-        fputs(UI_get0_output_string(uis), tty_out);
-        fflush(tty_out);
-        return read_string_inner(ui, uis,
-            UI_get_input_flags(uis) & UI_INPUT_FLAG_ECHO, 1);
-    case UIT_VERIFY:
-        fprintf(tty_out,"Verifying - %s",
-            UI_get0_output_string(uis));
-        fflush(tty_out);
-        if ((ok = read_string_inner(ui, uis,
-            UI_get_input_flags(uis) & UI_INPUT_FLAG_ECHO, 1)) <= 0)
-            return ok;
-        if (strcmp(UI_get0_result_string(uis),
-            UI_get0_test_string(uis)) != 0)
-            {
-            fprintf(tty_out,"Verify failure\n");
+    switch (UI_get_string_type(uis)) {
+        case UIT_BOOLEAN:
+            fputs(UI_get0_output_string(uis), tty_out);
+            fputs(UI_get0_action_string(uis), tty_out);
             fflush(tty_out);
-            return 0;
+            return read_string_inner(ui, uis,
+                                     UI_get_input_flags(uis) & UI_INPUT_FLAG_ECHO, 0);
+        case UIT_PROMPT:
+            fputs(UI_get0_output_string(uis), tty_out);
+            fflush(tty_out);
+            return read_string_inner(ui, uis,
+                                     UI_get_input_flags(uis) & UI_INPUT_FLAG_ECHO, 1);
+        case UIT_VERIFY:
+            fprintf(tty_out, "Verifying - %s",
+                    UI_get0_output_string(uis));
+            fflush(tty_out);
+            if ((ok = read_string_inner(ui, uis,
+                                        UI_get_input_flags(uis) & UI_INPUT_FLAG_ECHO, 1)) <= 0)
+                return ok;
+            if (strcmp(UI_get0_result_string(uis),
+                       UI_get0_test_string(uis)) != 0) {
+                fprintf(tty_out, "Verify failure\n");
+                fflush(tty_out);
+                return 0;
             }
-        break;
-    default:
-        break;
-        }
-    return 1;
+            break;
+        default:
+            break;
     }
-
+    return 1;
+}
 
 /* Internal functions to read a string without echoing */
 static int read_till_nl(FILE *in)
-    {
+{
 #define SIZE 4
-    char buf[SIZE+1];
+    char buf[SIZE + 1];
 
-    do    {
-        if (!fgets(buf,SIZE,in))
+    do {
+        if (!fgets(buf, SIZE, in))
             return 0;
-        } while (strchr(buf,'\n') == NULL);
+    } while (strchr(buf, '\n') == NULL);
     return 1;
-    }
+}
 
 static volatile sig_atomic_t intr_signal;
 
 static int read_string_inner(UI *ui, UI_STRING *uis, int echo, int strip_nl)
-    {
+{
     static int ps;
     int ok;
     char result[BUFSIZ];
-    int maxsize = BUFSIZ-1;
+    int maxsize = BUFSIZ - 1;
     char *p;
 
-    intr_signal=0;
-    ok=0;
-    ps=0;
+    intr_signal = 0;
+    ok = 0;
+    ps = 0;
 
     pushsig();
-    ps=1;
+    ps = 1;
 
     if (!echo && !noecho_console(ui))
         goto error;
-    ps=2;
+    ps = 2;
 
-    result[0]='\0';
-    p = fgets(result,maxsize,tty_in);
+    result[0] = '\0';
+    p = fgets(result, maxsize, tty_in);
     if (!p)
         goto error;
-    if (feof(tty_in)) goto error;
-    if (ferror(tty_in)) goto error;
-    if ((p=(char *)strchr(result,'\n')) != NULL)
-        {
+    if (feof(tty_in))
+        goto error;
+    if (ferror(tty_in))
+        goto error;
+    if ((p = (char *)strchr(result, '\n')) != NULL) {
         if (strip_nl)
-            *p='\0';
-        }
-    else
-        if (!read_till_nl(tty_in))
-            goto error;
+            *p = '\0';
+    } else if (!read_till_nl(tty_in))
+        goto error;
     if (UI_set_result(ui, uis, result) >= 0)
-        ok=1;
+        ok = 1;
 
 error:
     if (intr_signal == SIGINT)
-        ok=-1;
-    if (!echo) fprintf(tty_out,"\n");
+        ok = -1;
+    if (!echo)
+        fprintf(tty_out, "\n");
     if (ps >= 2 && !echo && !echo_console(ui))
-        ok=0;
+        ok = 0;
 
     if (ps >= 1)
         popsig();
 
-    vigortls_zeroize(result,BUFSIZ);
+    vigortls_zeroize(result, BUFSIZ);
     return ok;
-    }
-
+}
 
 /* Internal functions to open, handle and close a channel to the console.  */
 static int open_console(UI *ui)
-    {
+{
     CRYPTO_w_lock(CRYPTO_LOCK_UI);
     is_a_tty = 1;
 
-    if ((tty_in=fopen("/dev/tty","r")) == NULL)
-        tty_in=stdin;
-    if ((tty_out=fopen("/dev/tty","w")) == NULL)
-        tty_out=stderr;
+    if ((tty_in = fopen("/dev/tty", "r")) == NULL)
+        tty_in = stdin;
+    if ((tty_out = fopen("/dev/tty", "w")) == NULL)
+        tty_out = stderr;
 
 #if defined(TTY_get)
-     if (TTY_get(fileno(tty_in),&tty_orig) == -1)
-        {
+    if (TTY_get(fileno(tty_in), &tty_orig) == -1) {
 #ifdef ENOTTY
         if (errno == ENOTTY)
-            is_a_tty=0;
+            is_a_tty = 0;
         else
 #endif
 #ifdef EINVAL
-        /* Ariel Glenn ariel@columbia.edu reports that solaris
+            /* Ariel Glenn ariel@columbia.edu reports that solaris
          * can return EINVAL instead.  This should be ok */
-        if (errno == EINVAL)
-            is_a_tty=0;
+            if (errno == EINVAL)
+            is_a_tty = 0;
         else
 #endif
             return 0;
-        }
+    }
 #endif
     return 1;
-    }
+}
 
 static int noecho_console(UI *ui)
-    {
+{
 #ifdef TTY_FLAGS
-    memcpy(&(tty_new),&(tty_orig),sizeof(tty_orig));
+    memcpy(&(tty_new), &(tty_orig), sizeof(tty_orig));
     tty_new.TTY_FLAGS &= ~ECHO;
 #endif
 
 #if defined(TTY_set)
-    if (is_a_tty && (TTY_set(fileno(tty_in),&tty_new) == -1))
+    if (is_a_tty && (TTY_set(fileno(tty_in), &tty_new) == -1))
         return 0;
 #endif
     return 1;
-    }
+}
 
 static int echo_console(UI *ui)
-    {
+{
 #if defined(TTY_set)
-    memcpy(&(tty_new),&(tty_orig),sizeof(tty_orig));
+    memcpy(&(tty_new), &(tty_orig), sizeof(tty_orig));
     tty_new.TTY_FLAGS |= ECHO;
 #endif
 
 #if defined(TTY_set)
-    if (is_a_tty && (TTY_set(fileno(tty_in),&tty_new) == -1))
+    if (is_a_tty && (TTY_set(fileno(tty_in), &tty_new) == -1))
         return 0;
 #endif
     return 1;
-    }
+}
 
 static int close_console(UI *ui)
-    {
-    if (tty_in != stdin) fclose(tty_in);
-    if (tty_out != stderr) fclose(tty_out);
+{
+    if (tty_in != stdin)
+        fclose(tty_in);
+    if (tty_out != stderr)
+        fclose(tty_out);
     CRYPTO_w_unlock(CRYPTO_LOCK_UI);
 
     return 1;
-    }
-
+}
 
 /* Internal functions to handle signals and act on them */
 static void pushsig(void)
-    {
+{
     int i;
 #ifdef SIGACTION
     struct sigaction sa;
 
-    memset(&sa,0,sizeof sa);
-    sa.sa_handler=recsig;
+    memset(&sa, 0, sizeof sa);
+    sa.sa_handler = recsig;
 #endif
 
-    for (i=1; i<NX509_SIG; i++)
-        {
+    for (i = 1; i < NX509_SIG; i++) {
 #ifdef SIGUSR1
         if (i == SIGUSR1)
             continue;
@@ -459,22 +449,21 @@ static void pushsig(void)
             continue;
 #endif
 #ifdef SIGACTION
-        sigaction(i,&sa,&savsig[i]);
+        sigaction(i, &sa, &savsig[i]);
 #else
-        savsig[i]=signal(i,recsig);
-#endif
-        }
-
-#ifdef SIGWINCH
-    signal(SIGWINCH,SIG_DFL);
+        savsig[i] = signal(i, recsig);
 #endif
     }
 
+#ifdef SIGWINCH
+    signal(SIGWINCH, SIG_DFL);
+#endif
+}
+
 static void popsig(void)
-    {
+{
     int i;
-    for (i=1; i<NX509_SIG; i++)
-        {
+    for (i = 1; i < NX509_SIG; i++) {
 #ifdef SIGUSR1
         if (i == SIGUSR1)
             continue;
@@ -484,14 +473,14 @@ static void popsig(void)
             continue;
 #endif
 #ifdef SIGACTION
-        sigaction(i,&savsig[i],NULL);
+        sigaction(i, &savsig[i], NULL);
 #else
-        signal(i,savsig[i]);
+        signal(i, savsig[i]);
 #endif
-        }
     }
+}
 
 static void recsig(int i)
-    {
-    intr_signal=i;
-    }
+{
+    intr_signal = i;
+}

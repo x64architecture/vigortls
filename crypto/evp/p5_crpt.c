@@ -72,8 +72,8 @@ void PKCS5_PBE_add(void)
 }
 
 int PKCS5_PBE_keyivgen(EVP_CIPHER_CTX *cctx, const char *pass, int passlen,
-             ASN1_TYPE *param, const EVP_CIPHER *cipher, const EVP_MD *md,
-             int en_de)
+                       ASN1_TYPE *param, const EVP_CIPHER *cipher, const EVP_MD *md,
+                       int en_de)
 {
     EVP_MD_CTX ctx;
     unsigned char md_tmp[EVP_MAX_MD_SIZE];
@@ -88,25 +88,28 @@ int PKCS5_PBE_keyivgen(EVP_CIPHER_CTX *cctx, const char *pass, int passlen,
     EVP_MD_CTX_init(&ctx);
 
     /* Extract useful info from parameter */
-    if (param == NULL || param->type != V_ASN1_SEQUENCE ||
-        param->value.sequence == NULL) {
-        EVPerr(EVP_F_PKCS5_PBE_KEYIVGEN,EVP_R_DECODE_ERROR);
+    if (param == NULL || param->type != V_ASN1_SEQUENCE || param->value.sequence == NULL) {
+        EVPerr(EVP_F_PKCS5_PBE_KEYIVGEN, EVP_R_DECODE_ERROR);
         return 0;
     }
 
     pbuf = param->value.sequence->data;
     if (!(pbe = d2i_PBEPARAM(NULL, &pbuf, param->value.sequence->length))) {
-        EVPerr(EVP_F_PKCS5_PBE_KEYIVGEN,EVP_R_DECODE_ERROR);
+        EVPerr(EVP_F_PKCS5_PBE_KEYIVGEN, EVP_R_DECODE_ERROR);
         return 0;
     }
 
-    if (!pbe->iter) iter = 1;
-    else iter = ASN1_INTEGER_get (pbe->iter);
+    if (!pbe->iter)
+        iter = 1;
+    else
+        iter = ASN1_INTEGER_get(pbe->iter);
     salt = pbe->salt->data;
     saltlen = pbe->salt->length;
 
-    if (!pass) passlen = 0;
-    else if (passlen == -1) passlen = strlen(pass);
+    if (!pass)
+        passlen = 0;
+    else if (passlen == -1)
+        passlen = strlen(pass);
 
     if (!EVP_DigestInit_ex(&ctx, md, NULL))
         goto err;
@@ -125,21 +128,21 @@ int PKCS5_PBE_keyivgen(EVP_CIPHER_CTX *cctx, const char *pass, int passlen,
             goto err;
         if (!EVP_DigestUpdate(&ctx, md_tmp, mdsize))
             goto err;
-        if (!EVP_DigestFinal_ex (&ctx, md_tmp, NULL))
+        if (!EVP_DigestFinal_ex(&ctx, md_tmp, NULL))
             goto err;
     }
     OPENSSL_assert(EVP_CIPHER_key_length(cipher) <= (int)sizeof(md_tmp));
     memcpy(key, md_tmp, EVP_CIPHER_key_length(cipher));
     OPENSSL_assert(EVP_CIPHER_iv_length(cipher) <= 16);
     memcpy(iv, md_tmp + (16 - EVP_CIPHER_iv_length(cipher)),
-                         EVP_CIPHER_iv_length(cipher));
+           EVP_CIPHER_iv_length(cipher));
     if (!EVP_CipherInit_ex(cctx, cipher, NULL, key, iv, en_de))
         goto err;
     vigortls_zeroize(md_tmp, EVP_MAX_MD_SIZE);
     vigortls_zeroize(key, EVP_MAX_KEY_LENGTH);
     vigortls_zeroize(iv, EVP_MAX_IV_LENGTH);
     rv = 1;
-    err:
+err:
     EVP_MD_CTX_cleanup(&ctx);
     return rv;
 }

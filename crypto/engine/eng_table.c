@@ -62,7 +62,7 @@ typedef struct st_engine_pile {
     /* The 'nid' of this algorithm/mode */
     int nid;
     /* ENGINEs that implement this algorithm/mode. */
-    STACK_OF(ENGINE) *sk;
+    STACK_OF(ENGINE) * sk;
     /* The default ENGINE to perform this algorithm/mode. */
     ENGINE *funct;
     /* Zero if 'sk' is newer than the cached 'funct', non-zero otherwise */
@@ -109,13 +109,11 @@ engine_pile_cmp(const ENGINE_PILE *a, const ENGINE_PILE *b)
 {
     return a->nid - b->nid;
 }
-static IMPLEMENT_LHASH_HASH_FN(engine_pile, ENGINE_PILE)
-static IMPLEMENT_LHASH_COMP_FN(engine_pile, ENGINE_PILE)
+static IMPLEMENT_LHASH_HASH_FN(engine_pile, ENGINE_PILE) static IMPLEMENT_LHASH_COMP_FN(engine_pile, ENGINE_PILE)
 
-static int
-int_table_check(ENGINE_TABLE **t, int create)
+    static int int_table_check(ENGINE_TABLE **t, int create)
 {
-    LHASH_OF(ENGINE_PILE) *lh;
+    LHASH_OF(ENGINE_PILE) * lh;
 
     if (*t)
         return 1;
@@ -131,7 +129,7 @@ int_table_check(ENGINE_TABLE **t, int create)
  * ENGINEs from the implementation table */
 int
 engine_table_register(ENGINE_TABLE **table, ENGINE_CLEANUP_CB *cleanup,
-    ENGINE *e, const int *nids, int num_nids, int setdefault)
+                      ENGINE *e, const int *nids, int num_nids, int setdefault)
 {
     int ret = 0, added = 0;
     ENGINE_PILE tmplate, *fnd;
@@ -171,7 +169,7 @@ engine_table_register(ENGINE_TABLE **table, ENGINE_CLEANUP_CB *cleanup,
         if (setdefault) {
             if (!engine_unlocked_init(e)) {
                 ENGINEerr(ENGINE_F_ENGINE_TABLE_REGISTER,
-                    ENGINE_R_INIT_FAILED);
+                          ENGINE_R_INIT_FAILED);
                 goto end;
             }
             if (fnd->funct)
@@ -204,13 +202,12 @@ int_unregister_cb_doall_arg(ENGINE_PILE *pile, ENGINE *e)
 }
 static IMPLEMENT_LHASH_DOALL_ARG_FN(int_unregister_cb, ENGINE_PILE, ENGINE)
 
-void
-engine_table_unregister(ENGINE_TABLE **table, ENGINE *e)
+    void engine_table_unregister(ENGINE_TABLE **table, ENGINE *e)
 {
     CRYPTO_w_lock(CRYPTO_LOCK_ENGINE);
     if (int_table_check(table, 0))
         lh_ENGINE_PILE_doall_arg(&(*table)->piles,
-            LHASH_DOALL_ARG_FN(int_unregister_cb), ENGINE, e);
+                                 LHASH_DOALL_ARG_FN(int_unregister_cb), ENGINE, e);
     CRYPTO_w_unlock(CRYPTO_LOCK_ENGINE);
 }
 
@@ -224,13 +221,12 @@ int_cleanup_cb_doall(ENGINE_PILE *p)
 }
 static IMPLEMENT_LHASH_DOALL_FN(int_cleanup_cb, ENGINE_PILE)
 
-void
-engine_table_cleanup(ENGINE_TABLE **table)
+    void engine_table_cleanup(ENGINE_TABLE **table)
 {
     CRYPTO_w_lock(CRYPTO_LOCK_ENGINE);
     if (*table) {
         lh_ENGINE_PILE_doall(&(*table)->piles,
-            LHASH_DOALL_FN(int_cleanup_cb));
+                             LHASH_DOALL_FN(int_cleanup_cb));
         lh_ENGINE_PILE_free(&(*table)->piles);
         *table = NULL;
     }
@@ -253,7 +249,8 @@ engine_table_select_tmp(ENGINE_TABLE **table, int nid, const char *f, int l)
     if (!(*table)) {
 #ifdef ENGINE_TABLE_DEBUG
         fprintf(stderr, "engine_table_dbg: %s:%d, nid=%d, nothing "
-            "registered!\n", f, l, nid);
+                        "registered!\n",
+                f, l, nid);
 #endif
         return NULL;
     }
@@ -270,7 +267,8 @@ engine_table_select_tmp(ENGINE_TABLE **table, int nid, const char *f, int l)
     if (fnd->funct && engine_unlocked_init(fnd->funct)) {
 #ifdef ENGINE_TABLE_DEBUG
         fprintf(stderr, "engine_table_dbg: %s:%d, nid=%d, using "
-            "ENGINE '%s' cached\n", f, l, nid, fnd->funct->id);
+                        "ENGINE '%s' cached\n",
+                f, l, nid, fnd->funct->id);
 #endif
         ret = fnd->funct;
         goto end;
@@ -284,7 +282,8 @@ trynext:
     if (!ret) {
 #ifdef ENGINE_TABLE_DEBUG
         fprintf(stderr, "engine_table_dbg: %s:%d, nid=%d, no "
-            "registered implementations would initialise\n", f, l, nid);
+                        "registered implementations would initialise\n",
+                f, l, nid);
 #endif
         goto end;
     }
@@ -302,12 +301,14 @@ trynext:
             fnd->funct = ret;
 #ifdef ENGINE_TABLE_DEBUG
             fprintf(stderr, "engine_table_dbg: %s:%d, nid=%d, "
-                "setting default to '%s'\n", f, l, nid, ret->id);
+                            "setting default to '%s'\n",
+                    f, l, nid, ret->id);
 #endif
         }
 #ifdef ENGINE_TABLE_DEBUG
         fprintf(stderr, "engine_table_dbg: %s:%d, nid=%d, using "
-            "newly initialised '%s'\n", f, l, nid, ret->id);
+                        "newly initialised '%s'\n",
+                f, l, nid, ret->id);
 #endif
         goto end;
     }
@@ -320,10 +321,12 @@ end:
 #ifdef ENGINE_TABLE_DEBUG
     if (ret)
         fprintf(stderr, "engine_table_dbg: %s:%d, nid=%d, caching "
-            "ENGINE '%s'\n", f, l, nid, ret->id);
+                        "ENGINE '%s'\n",
+                f, l, nid, ret->id);
     else
         fprintf(stderr, "engine_table_dbg: %s:%d, nid=%d, caching "
-            "'no matching ENGINE'\n", f, l, nid);
+                        "'no matching ENGINE'\n",
+                f, l, nid);
 #endif
     CRYPTO_w_unlock(CRYPTO_LOCK_ENGINE);
     /* Whatever happened, any failed init()s are not failures in this
@@ -341,13 +344,12 @@ int_cb_doall_arg(ENGINE_PILE *pile, ENGINE_PILE_DOALL *dall)
 }
 static IMPLEMENT_LHASH_DOALL_ARG_FN(int_cb, ENGINE_PILE, ENGINE_PILE_DOALL)
 
-void
-engine_table_doall(ENGINE_TABLE *table, engine_table_doall_cb *cb, void *arg)
+    void engine_table_doall(ENGINE_TABLE *table, engine_table_doall_cb *cb, void *arg)
 {
     ENGINE_PILE_DOALL dall;
 
     dall.cb = cb;
     dall.arg = arg;
     lh_ENGINE_PILE_doall_arg(&table->piles, LHASH_DOALL_ARG_FN(int_cb),
-        ENGINE_PILE_DOALL, &dall);
+                             ENGINE_PILE_DOALL, &dall);
 }

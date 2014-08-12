@@ -193,74 +193,74 @@ int ssl23_connect(SSL *s)
     for (;;) {
         state = s->state;
 
-        switch(s->state) {
-        case SSL_ST_BEFORE:
-        case SSL_ST_CONNECT:
-        case SSL_ST_BEFORE|SSL_ST_CONNECT:
-        case SSL_ST_OK | SSL_ST_CONNECT:
+        switch (s->state) {
+            case SSL_ST_BEFORE:
+            case SSL_ST_CONNECT:
+            case SSL_ST_BEFORE | SSL_ST_CONNECT:
+            case SSL_ST_OK | SSL_ST_CONNECT:
 
-            if (s->session != NULL) {
-                SSLerr(SSL_F_SSL23_CONNECT, SSL_R_SSL23_DOING_SESSION_ID_REUSE);
-                ret = -1;
-                goto end;
-            }
-            s->server = 0;
-            if (cb != NULL)
-                cb(s, SSL_CB_HANDSHAKE_START, 1);
-
-            /* s->version = TLS1_VERSION; */
-            s->type = SSL_ST_CONNECT;
-
-            if (s->init_buf == NULL) {
-                if ((buf=BUF_MEM_new()) == NULL) {
+                if (s->session != NULL) {
+                    SSLerr(SSL_F_SSL23_CONNECT, SSL_R_SSL23_DOING_SESSION_ID_REUSE);
                     ret = -1;
                     goto end;
                 }
-                if (!BUF_MEM_grow(buf, SSL3_RT_MAX_PLAIN_LENGTH)) {
+                s->server = 0;
+                if (cb != NULL)
+                    cb(s, SSL_CB_HANDSHAKE_START, 1);
+
+                /* s->version = TLS1_VERSION; */
+                s->type = SSL_ST_CONNECT;
+
+                if (s->init_buf == NULL) {
+                    if ((buf = BUF_MEM_new()) == NULL) {
+                        ret = -1;
+                        goto end;
+                    }
+                    if (!BUF_MEM_grow(buf, SSL3_RT_MAX_PLAIN_LENGTH)) {
+                        ret = -1;
+                        goto end;
+                    }
+                    s->init_buf = buf;
+                    buf = NULL;
+                }
+
+                if (!ssl3_setup_buffers(s)) {
                     ret = -1;
                     goto end;
                 }
-                s->init_buf = buf;
-                buf = NULL;
-            }
 
-            if (!ssl3_setup_buffers(s)) {
+                ssl3_init_finished_mac(s);
+
+                s->state = SSL23_ST_CW_CLNT_HELLO_A;
+                s->ctx->stats.sess_connect++;
+                s->init_num = 0;
+                break;
+
+            case SSL23_ST_CW_CLNT_HELLO_A:
+            case SSL23_ST_CW_CLNT_HELLO_B:
+
+                s->shutdown = 0;
+                ret = ssl23_client_hello(s);
+                if (ret <= 0)
+                    goto end;
+                s->state = SSL23_ST_CR_SRVR_HELLO_A;
+                s->init_num = 0;
+
+                break;
+
+            case SSL23_ST_CR_SRVR_HELLO_A:
+            case SSL23_ST_CR_SRVR_HELLO_B:
+                ret = ssl23_get_server_hello(s);
+                if (ret >= 0)
+                    cb = NULL;
+                goto end;
+            /* break; */
+
+            default:
+                SSLerr(SSL_F_SSL23_CONNECT, SSL_R_UNKNOWN_STATE);
                 ret = -1;
                 goto end;
-            }
-
-            ssl3_init_finished_mac(s);
-
-            s->state = SSL23_ST_CW_CLNT_HELLO_A;
-            s->ctx->stats.sess_connect++;
-            s->init_num = 0;
-            break;
-
-        case SSL23_ST_CW_CLNT_HELLO_A:
-        case SSL23_ST_CW_CLNT_HELLO_B:
-
-            s->shutdown = 0;
-            ret = ssl23_client_hello(s);
-            if (ret <= 0)
-                goto end;
-            s->state = SSL23_ST_CR_SRVR_HELLO_A;
-            s->init_num = 0;
-
-            break;
-
-        case SSL23_ST_CR_SRVR_HELLO_A:
-        case SSL23_ST_CR_SRVR_HELLO_B:
-            ret = ssl23_get_server_hello(s);
-            if (ret >= 0)
-                cb = NULL;
-            goto end;
-            /* break; */
-
-        default:
-            SSLerr(SSL_F_SSL23_CONNECT, SSL_R_UNKNOWN_STATE);
-            ret = -1;
-            goto end;
-            /* break; */
+                /* break; */
         }
 
         if (s->debug) {
@@ -322,9 +322,9 @@ static int ssl23_client_hello(SSL *s)
      * TLS1>=1, it would be insufficient to pass SSL_NO_TLSv1, the
      * answer is SSL_OP_NO_TLSv1|SSL_OP_NO_SSLv3|SSL_OP_NO_SSLv2.
      */
-    mask = SSL_OP_NO_TLSv1_1|SSL_OP_NO_TLSv1
+    mask = SSL_OP_NO_TLSv1_1 | SSL_OP_NO_TLSv1
 #if !defined(OPENSSL_NO_SSL3)
-        |SSL_OP_NO_SSLv3
+           | SSL_OP_NO_SSLv3
 #endif
         ;
 #if !defined(OPENSSL_NO_TLS1_2_CLIENT)
@@ -419,7 +419,7 @@ static int ssl23_client_hello(SSL *s)
             SSLerr(SSL_F_SSL23_CLIENT_HELLO, SSL_R_CLIENTHELLO_TLSEXT);
             return -1;
         }
-        if ((p = ssl_add_clienthello_tlsext(s, p, buf+SSL3_RT_MAX_PLAIN_LENGTH)) == NULL) {
+        if ((p = ssl_add_clienthello_tlsext(s, p, buf + SSL3_RT_MAX_PLAIN_LENGTH)) == NULL) {
             SSLerr(SSL_F_SSL23_CLIENT_HELLO, ERR_R_INTERNAL_ERROR);
             return -1;
         }
@@ -488,31 +488,24 @@ static int ssl23_get_server_hello(SSL *s)
     memcpy(buf, p, n);
 
     /* Unsupported SSLV2 */
-    if ((p[0] & 0x80) && (p[2] == SSL2_MT_SERVER_HELLO) &&
-        (p[5] == 0x00) && (p[6] == 0x02)) {
+    if ((p[0] & 0x80) && (p[2] == SSL2_MT_SERVER_HELLO) && (p[5] == 0x00) && (p[6] == 0x02)) {
         SSLerr(SSL_F_SSL23_GET_SERVER_HELLO, SSL_R_UNSUPPORTED_PROTOCOL);
         goto err;
     }
 
-    if (p[1] == SSL3_VERSION_MAJOR && p[2] <= TLS1_2_VERSION_MINOR &&
-        ((p[0] == SSL3_RT_HANDSHAKE && p[5] == SSL3_MT_SERVER_HELLO) ||
-        (p[0] == SSL3_RT_ALERT && p[3] == 0 && p[4] == 2))) {
+    if (p[1] == SSL3_VERSION_MAJOR && p[2] <= TLS1_2_VERSION_MINOR && ((p[0] == SSL3_RT_HANDSHAKE && p[5] == SSL3_MT_SERVER_HELLO) || (p[0] == SSL3_RT_ALERT && p[3] == 0 && p[4] == 2))) {
         /* we have sslv3 or tls1 (server hello or alert) */
 
-        if ((p[2] == SSL3_VERSION_MINOR) &&
-            !(s->options & SSL_OP_NO_SSLv3)) {
+        if ((p[2] == SSL3_VERSION_MINOR) && !(s->options & SSL_OP_NO_SSLv3)) {
             s->version = SSL3_VERSION;
             s->method = SSLv3_client_method();
-        } else if ((p[2] == TLS1_VERSION_MINOR) &&
-            !(s->options & SSL_OP_NO_TLSv1)) {
+        } else if ((p[2] == TLS1_VERSION_MINOR) && !(s->options & SSL_OP_NO_TLSv1)) {
             s->version = TLS1_VERSION;
             s->method = TLSv1_client_method();
-        } else if ((p[2] == TLS1_1_VERSION_MINOR) &&
-            !(s->options & SSL_OP_NO_TLSv1_1)) {
+        } else if ((p[2] == TLS1_1_VERSION_MINOR) && !(s->options & SSL_OP_NO_TLSv1_1)) {
             s->version = TLS1_1_VERSION;
             s->method = TLSv1_1_client_method();
-        } else if ((p[2] == TLS1_2_VERSION_MINOR) &&
-            !(s->options & SSL_OP_NO_TLSv1_2)) {
+        } else if ((p[2] == TLS1_2_VERSION_MINOR) && !(s->options & SSL_OP_NO_TLSv1_2)) {
             s->version = TLS1_2_VERSION;
             s->method = TLSv1_2_client_method();
         } else {

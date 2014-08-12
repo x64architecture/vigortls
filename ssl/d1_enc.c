@@ -151,12 +151,12 @@ int dtls1_enc(SSL *s, int send)
             if (rec->data != rec->input)
                 /* we can't write into the input stream */
                 fprintf(stderr, "%s:%d: rec->data != rec->input\n",
-                    __FILE__, __LINE__);
+                        __FILE__, __LINE__);
             else if (EVP_CIPHER_block_size(ds->cipher) > 1) {
                 if (RAND_bytes(rec->input, EVP_CIPHER_block_size(ds->cipher)) <= 0)
                     return -1;
-                }
             }
+        }
     } else {
         if (EVP_MD_CTX_md(s->read_hash)) {
             mac_size = EVP_MD_CTX_size(s->read_hash);
@@ -178,7 +178,7 @@ int dtls1_enc(SSL *s, int send)
         bs = EVP_CIPHER_block_size(ds->cipher);
 
         if ((bs != 1) && send) {
-            i = bs- ((int)l % bs);
+            i = bs - ((int)l % bs);
 
             /* Add weird padding of upto 256 bytes */
 
@@ -195,10 +195,10 @@ int dtls1_enc(SSL *s, int send)
         }
 
         if (!send) {
-            if (l == 0 || l%bs != 0)
+            if (l == 0 || l % bs != 0)
                 return 0;
         }
-        
+
         EVP_Cipher(ds, rec->data, rec->input, l);
 
         if ((bs != 1) && !send)
@@ -206,4 +206,3 @@ int dtls1_enc(SSL *s, int send)
     }
     return (1);
 }
-

@@ -62,17 +62,17 @@
 #include <openssl/crypto.h>
 
 unsigned char *RIPEMD160(const unsigned char *d, size_t n,
-         unsigned char *md)
-    {
+                         unsigned char *md)
+{
     RIPEMD160_CTX c;
     static unsigned char m[RIPEMD160_DIGEST_LENGTH];
 
-    if (md == NULL) md=m;
+    if (md == NULL)
+        md = m;
     if (!RIPEMD160_Init(&c))
         return NULL;
-    RIPEMD160_Update(&c,d,n);
-    RIPEMD160_Final(md,&c);
-    vigortls_zeroize(&c,sizeof(c)); /* security consideration */
+    RIPEMD160_Update(&c, d, n);
+    RIPEMD160_Final(md, &c);
+    vigortls_zeroize(&c, sizeof(c)); /* security consideration */
     return (md);
-    }
-
+}

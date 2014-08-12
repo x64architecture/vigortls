@@ -92,11 +92,9 @@ ENGINE_set_default(ENGINE *e, unsigned int flags)
 #endif
     if ((flags & ENGINE_METHOD_RAND) && !ENGINE_set_default_RAND(e))
         return 0;
-    if ((flags & ENGINE_METHOD_PKEY_METHS) &&
-        !ENGINE_set_default_pkey_meths(e))
+    if ((flags & ENGINE_METHOD_PKEY_METHS) && !ENGINE_set_default_pkey_meths(e))
         return 0;
-    if ((flags & ENGINE_METHOD_PKEY_ASN1_METHS) &&
-        !ENGINE_set_default_pkey_asn1_meths(e))
+    if ((flags & ENGINE_METHOD_PKEY_ASN1_METHS) && !ENGINE_set_default_pkey_asn1_meths(e))
         return 0;
     return 1;
 }
@@ -127,8 +125,7 @@ int_def_cb(const char *alg, int len, void *arg)
     else if (!strncmp(alg, "DIGESTS", len))
         *pflags |= ENGINE_METHOD_DIGESTS;
     else if (!strncmp(alg, "PKEY", len))
-        *pflags |= ENGINE_METHOD_PKEY_METHS |
-            ENGINE_METHOD_PKEY_ASN1_METHS;
+        *pflags |= ENGINE_METHOD_PKEY_METHS | ENGINE_METHOD_PKEY_ASN1_METHS;
     else if (!strncmp(alg, "PKEY_CRYPTO", len))
         *pflags |= ENGINE_METHOD_PKEY_METHS;
     else if (!strncmp(alg, "PKEY_ASN1", len))
@@ -145,7 +142,7 @@ ENGINE_set_default_string(ENGINE *e, const char *def_list)
 
     if (!CONF_parse_list(def_list, ',', 1, int_def_cb, &flags)) {
         ENGINEerr(ENGINE_F_ENGINE_SET_DEFAULT_STRING,
-            ENGINE_R_INVALID_STRING);
+                  ENGINE_R_INVALID_STRING);
         ERR_asprintf_error_data("str=%s", def_list);
         return 0;
     }

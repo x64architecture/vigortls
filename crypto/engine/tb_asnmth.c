@@ -88,8 +88,8 @@ ENGINE_register_pkey_asn1_meths(ENGINE *e)
         int num_nids = e->pkey_asn1_meths(e, NULL, &nids, 0);
         if (num_nids > 0)
             return engine_table_register(&pkey_asn1_meth_table,
-                engine_unregister_all_pkey_asn1_meths, e, nids,
-                num_nids, 0);
+                                         engine_unregister_all_pkey_asn1_meths, e, nids,
+                                         num_nids, 0);
     }
     return 1;
 }
@@ -111,8 +111,8 @@ ENGINE_set_default_pkey_asn1_meths(ENGINE *e)
         int num_nids = e->pkey_asn1_meths(e, NULL, &nids, 0);
         if (num_nids > 0)
             return engine_table_register(&pkey_asn1_meth_table,
-                engine_unregister_all_pkey_asn1_meths, e, nids,
-                num_nids, 1);
+                                         engine_unregister_all_pkey_asn1_meths, e, nids,
+                                         num_nids, 1);
     }
     return 1;
 }
@@ -135,7 +135,7 @@ ENGINE_get_pkey_asn1_meth(ENGINE *e, int nid)
 
     if (!fn || !fn(e, &ret, NULL, nid)) {
         ENGINEerr(ENGINE_F_ENGINE_GET_PKEY_ASN1_METH,
-            ENGINE_R_UNIMPLEMENTED_PUBLIC_KEY_METHOD);
+                  ENGINE_R_UNIMPLEMENTED_PUBLIC_KEY_METHOD);
         return NULL;
     }
     return ret;
@@ -198,8 +198,7 @@ ENGINE_get_pkey_asn1_meth_str(ENGINE *e, const char *str, int len)
     nidcount = e->pkey_asn1_meths(e, NULL, &nids, 0);
     for (i = 0; i < nidcount; i++) {
         e->pkey_asn1_meths(e, &ameth, NULL, nids[i]);
-        if (((int)strlen(ameth->pem_str) == len) &&
-            !strncasecmp(ameth->pem_str, str, len))
+        if (((int)strlen(ameth->pem_str) == len) && !strncasecmp(ameth->pem_str, str, len))
             return ameth;
     }
     return NULL;
@@ -213,7 +212,7 @@ typedef struct {
 } ENGINE_FIND_STR;
 
 static void
-look_str_cb(int nid, STACK_OF(ENGINE) *sk, ENGINE *def, void *arg)
+look_str_cb(int nid, STACK_OF(ENGINE) * sk, ENGINE * def, void *arg)
 {
     ENGINE_FIND_STR *lk = arg;
     int i;
@@ -224,8 +223,7 @@ look_str_cb(int nid, STACK_OF(ENGINE) *sk, ENGINE *def, void *arg)
         ENGINE *e = sk_ENGINE_value(sk, i);
         EVP_PKEY_ASN1_METHOD *ameth;
         e->pkey_asn1_meths(e, &ameth, NULL, nid);
-        if (((int)strlen(ameth->pem_str) == lk->len) &&
-            !strncasecmp(ameth->pem_str, lk->str, lk->len)) {
+        if (((int)strlen(ameth->pem_str) == lk->len) && !strncasecmp(ameth->pem_str, lk->str, lk->len)) {
             lk->e = e;
             lk->ameth = ameth;
             return;

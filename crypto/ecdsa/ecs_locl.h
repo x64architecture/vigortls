@@ -61,33 +61,32 @@
 
 #include <openssl/ecdsa.h>
 
-#ifdef  __cplusplus
+#ifdef __cplusplus
 extern "C" {
 #endif
 
-struct ecdsa_method 
-    {
+struct ecdsa_method {
     const char *name;
-    ECDSA_SIG *(*ecdsa_do_sign)(const unsigned char *dgst, int dgst_len, 
-            const BIGNUM *inv, const BIGNUM *rp, EC_KEY *eckey);
-    int (*ecdsa_sign_setup)(EC_KEY *eckey, BN_CTX *ctx, BIGNUM **kinv, 
-            BIGNUM **r);
-    int (*ecdsa_do_verify)(const unsigned char *dgst, int dgst_len, 
-            const ECDSA_SIG *sig, EC_KEY *eckey);
+    ECDSA_SIG *(*ecdsa_do_sign)(const unsigned char *dgst, int dgst_len,
+                                const BIGNUM *inv, const BIGNUM *rp, EC_KEY *eckey);
+    int (*ecdsa_sign_setup)(EC_KEY *eckey, BN_CTX *ctx, BIGNUM **kinv,
+                            BIGNUM **r);
+    int (*ecdsa_do_verify)(const unsigned char *dgst, int dgst_len,
+                           const ECDSA_SIG *sig, EC_KEY *eckey);
 #if 0
     int (*init)(EC_KEY *eckey);
     int (*finish)(EC_KEY *eckey);
 #endif
     int flags;
     char *app_data;
-    };
+};
 
 typedef struct ecdsa_data_st {
     /* EC_KEY_METH_DATA part */
     int (*init)(EC_KEY *);
     /* method (ECDSA) specific part */
-    ENGINE    *engine;
-    int    flags;
+    ENGINE *engine;
+    int flags;
     const ECDSA_METHOD *meth;
     CRYPTO_EX_DATA ex_data;
 } ECDSA_DATA;
@@ -100,7 +99,7 @@ typedef struct ecdsa_data_st {
  */
 ECDSA_DATA *ecdsa_check(EC_KEY *eckey);
 
-#ifdef  __cplusplus
+#ifdef __cplusplus
 }
 #endif
 

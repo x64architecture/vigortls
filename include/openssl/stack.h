@@ -59,22 +59,21 @@
 #ifndef HEADER_STACK_H
 #define HEADER_STACK_H
 
-#ifdef  __cplusplus
+#ifdef __cplusplus
 extern "C" {
 #endif
 
-typedef struct stack_st
-    {
+typedef struct stack_st {
     int num;
     char **data;
     int sorted;
 
     int num_alloc;
     int (*comp)(const void *, const void *);
-    } _STACK;  /* Use STACK_OF(...) instead */
+} _STACK; /* Use STACK_OF(...) instead */
 
-#define M_sk_num(sk)        ((sk) ? (sk)->num:-1)
-#define M_sk_value(sk,n)    ((sk) ? (sk)->data[n] : NULL)
+#define M_sk_num(sk) ((sk) ? (sk)->num : -1)
+#define M_sk_value(sk, n) ((sk) ? (sk)->data[n] : NULL)
 
 int sk_num(const _STACK *);
 void *sk_value(const _STACK *, int);
@@ -95,13 +94,12 @@ int sk_unshift(_STACK *st, void *data);
 void *sk_shift(_STACK *st);
 void *sk_pop(_STACK *st);
 void sk_zero(_STACK *st);
-int (*sk_set_cmp_func(_STACK *sk, int (*c)(const void *, const void *)))
-    (const void *, const void *);
+int (*sk_set_cmp_func(_STACK *sk, int (*c)(const void *, const void *)))(const void *, const void *);
 _STACK *sk_dup(_STACK *st);
 void sk_sort(_STACK *st);
 int sk_is_sorted(const _STACK *st);
 
-#ifdef  __cplusplus
+#ifdef __cplusplus
 }
 #endif
 

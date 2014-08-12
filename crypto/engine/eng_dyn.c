@@ -73,55 +73,48 @@ typedef struct st_dynamic_data_ctx dynamic_data_ctx;
 /* The implementation for the important control command */
 static int dynamic_load(ENGINE *e, dynamic_data_ctx *ctx);
 
-#define DYNAMIC_CMD_SO_PATH        ENGINE_CMD_BASE
-#define DYNAMIC_CMD_NO_VCHECK        (ENGINE_CMD_BASE + 1)
-#define DYNAMIC_CMD_ID            (ENGINE_CMD_BASE + 2)
-#define DYNAMIC_CMD_LIST_ADD        (ENGINE_CMD_BASE + 3)
-#define DYNAMIC_CMD_DIR_LOAD        (ENGINE_CMD_BASE + 4)
-#define DYNAMIC_CMD_DIR_ADD        (ENGINE_CMD_BASE + 5)
-#define DYNAMIC_CMD_LOAD        (ENGINE_CMD_BASE + 6)
+#define DYNAMIC_CMD_SO_PATH ENGINE_CMD_BASE
+#define DYNAMIC_CMD_NO_VCHECK (ENGINE_CMD_BASE + 1)
+#define DYNAMIC_CMD_ID (ENGINE_CMD_BASE + 2)
+#define DYNAMIC_CMD_LIST_ADD (ENGINE_CMD_BASE + 3)
+#define DYNAMIC_CMD_DIR_LOAD (ENGINE_CMD_BASE + 4)
+#define DYNAMIC_CMD_DIR_ADD (ENGINE_CMD_BASE + 5)
+#define DYNAMIC_CMD_LOAD (ENGINE_CMD_BASE + 6)
 
 /* The constants used when creating the ENGINE */
 static const char *engine_dynamic_id = "dynamic";
 static const char *engine_dynamic_name = "Dynamic engine loading support";
 static const ENGINE_CMD_DEFN dynamic_cmd_defns[] = {
-    {
-        DYNAMIC_CMD_SO_PATH,
-        "SO_PATH",
-        "Specifies the path to the new ENGINE shared library",
-        ENGINE_CMD_FLAG_STRING},
-    {
-        DYNAMIC_CMD_NO_VCHECK,
-        "NO_VCHECK",
-        "Specifies to continue even if version checking fails (boolean)",
-        ENGINE_CMD_FLAG_NUMERIC},
-    {
-        DYNAMIC_CMD_ID,
-        "ID",
-        "Specifies an ENGINE id name for loading",
-        ENGINE_CMD_FLAG_STRING},
-    {
-        DYNAMIC_CMD_LIST_ADD,
-        "LIST_ADD",
-        "Whether to add a loaded ENGINE to the internal list (0=no,1=yes,2=mandatory)",
-        ENGINE_CMD_FLAG_NUMERIC},
-    {
-        DYNAMIC_CMD_DIR_LOAD,
-        "DIR_LOAD",
-        "Specifies whether to load from 'DIR_ADD' directories (0=no,1=yes,2=mandatory)",
-        ENGINE_CMD_FLAG_NUMERIC},
-    {
-        DYNAMIC_CMD_DIR_ADD,
-        "DIR_ADD",
-        "Adds a directory from which ENGINEs can be loaded",
-        ENGINE_CMD_FLAG_STRING},
-    {
-        DYNAMIC_CMD_LOAD,
-        "LOAD",
-        "Load up the ENGINE specified by other settings",
-        ENGINE_CMD_FLAG_NO_INPUT},
+    { DYNAMIC_CMD_SO_PATH,
+      "SO_PATH",
+      "Specifies the path to the new ENGINE shared library",
+      ENGINE_CMD_FLAG_STRING },
+    { DYNAMIC_CMD_NO_VCHECK,
+      "NO_VCHECK",
+      "Specifies to continue even if version checking fails (boolean)",
+      ENGINE_CMD_FLAG_NUMERIC },
+    { DYNAMIC_CMD_ID,
+      "ID",
+      "Specifies an ENGINE id name for loading",
+      ENGINE_CMD_FLAG_STRING },
+    { DYNAMIC_CMD_LIST_ADD,
+      "LIST_ADD",
+      "Whether to add a loaded ENGINE to the internal list (0=no,1=yes,2=mandatory)",
+      ENGINE_CMD_FLAG_NUMERIC },
+    { DYNAMIC_CMD_DIR_LOAD,
+      "DIR_LOAD",
+      "Specifies whether to load from 'DIR_ADD' directories (0=no,1=yes,2=mandatory)",
+      ENGINE_CMD_FLAG_NUMERIC },
+    { DYNAMIC_CMD_DIR_ADD,
+      "DIR_ADD",
+      "Adds a directory from which ENGINEs can be loaded",
+      ENGINE_CMD_FLAG_STRING },
+    { DYNAMIC_CMD_LOAD,
+      "LOAD",
+      "Load up the ENGINE specified by other settings",
+      ENGINE_CMD_FLAG_NO_INPUT },
 
-    {0, NULL, NULL, 0}
+    { 0, NULL, NULL, 0 }
 };
 
 /* Loading code stores state inside the ENGINE structure via the "ex_data"
@@ -151,7 +144,7 @@ struct st_dynamic_data_ctx {
      * 'dirs' for loading. Default is to use 'dirs' as a fallback. */
     int dir_load;
     /* A stack of directories from which ENGINEs could be loaded */
-    STACK_OF(OPENSSL_STRING) *dirs;
+    STACK_OF(OPENSSL_STRING) * dirs;
 };
 
 /* This is the "ex_data" index we obtain and reserve for use with our context
@@ -173,7 +166,7 @@ int_free_str(char *s)
  * was an ex_data element corresponding to our context type. */
 static void
 dynamic_data_ctx_free_func(void *parent, void *ptr, CRYPTO_EX_DATA *ad,
-    int idx, long argl, void *argp)
+                           int idx, long argl, void *argp)
 {
     if (ptr) {
         dynamic_data_ctx *ctx = (dynamic_data_ctx *)ptr;
@@ -220,7 +213,7 @@ dynamic_set_data_ctx(ENGINE *e, dynamic_data_ctx **ctx)
     }
     CRYPTO_w_lock(CRYPTO_LOCK_ENGINE);
     if ((*ctx = (dynamic_data_ctx *)ENGINE_get_ex_data(e,
-        dynamic_ex_data_idx)) == NULL) {
+                                                       dynamic_ex_data_idx)) == NULL) {
         /* Good, we're the first */
         ENGINE_set_ex_data(e, dynamic_ex_data_idx, c);
         *ctx = c;
@@ -244,10 +237,10 @@ dynamic_get_data_ctx(ENGINE *e)
          * "free" function with it to ensure any allocated contexts get
          * freed when an ENGINE goes underground. */
         int new_idx = ENGINE_get_ex_new_index(0, NULL, NULL, NULL,
-            dynamic_data_ctx_free_func);
+                                              dynamic_data_ctx_free_func);
         if (new_idx == -1) {
             ENGINEerr(ENGINE_F_DYNAMIC_GET_DATA_CTX,
-                ENGINE_R_NO_INDEX);
+                      ENGINE_R_NO_INDEX);
             return NULL;
         }
         CRYPTO_w_lock(CRYPTO_LOCK_ENGINE);
@@ -278,13 +271,7 @@ engine_dynamic(void)
     if (!ret)
         return NULL;
 
-    if (!ENGINE_set_id(ret, engine_dynamic_id) ||
-        !ENGINE_set_name(ret, engine_dynamic_name) ||
-        !ENGINE_set_init_function(ret, dynamic_init) ||
-        !ENGINE_set_finish_function(ret, dynamic_finish) ||
-        !ENGINE_set_ctrl_function(ret, dynamic_ctrl) ||
-        !ENGINE_set_flags(ret, ENGINE_FLAGS_BY_ID_COPY) ||
-        !ENGINE_set_cmd_defns(ret, dynamic_cmd_defns)) {
+    if (!ENGINE_set_id(ret, engine_dynamic_id) || !ENGINE_set_name(ret, engine_dynamic_name) || !ENGINE_set_init_function(ret, dynamic_init) || !ENGINE_set_finish_function(ret, dynamic_finish) || !ENGINE_set_ctrl_function(ret, dynamic_ctrl) || !ENGINE_set_flags(ret, ENGINE_FLAGS_BY_ID_COPY) || !ENGINE_set_cmd_defns(ret, dynamic_cmd_defns)) {
         ENGINE_free(ret);
         return NULL;
     }
@@ -342,66 +329,66 @@ dynamic_ctrl(ENGINE *e, int cmd, long i, void *p, void (*f)(void))
         return 0;
     }
     switch (cmd) {
-    case DYNAMIC_CMD_SO_PATH:
-        /* a NULL 'p' or a string of zero-length is the same thing */
-        if (p && (strlen((const char *)p) < 1))
-            p = NULL;
-        free((void *)ctx->DYNAMIC_LIBNAME);
-        if (p)
-            ctx->DYNAMIC_LIBNAME = BUF_strdup(p);
-        else
-            ctx->DYNAMIC_LIBNAME = NULL;
-        return (ctx->DYNAMIC_LIBNAME ? 1 : 0);
-    case DYNAMIC_CMD_NO_VCHECK:
-        ctx->no_vcheck = ((i == 0) ? 0 : 1);
-        return 1;
-    case DYNAMIC_CMD_ID:
-        /* a NULL 'p' or a string of zero-length is the same thing */
-        if (p && (strlen((const char *)p) < 1))
-            p = NULL;
-        free((void *)ctx->engine_id);
-        if (p)
-            ctx->engine_id = BUF_strdup(p);
-        else
-            ctx->engine_id = NULL;
-        return (ctx->engine_id ? 1 : 0);
-    case DYNAMIC_CMD_LIST_ADD:
-        if ((i < 0) || (i > 2)) {
-            ENGINEerr(ENGINE_F_DYNAMIC_CTRL,
-                ENGINE_R_INVALID_ARGUMENT);
-            return 0;
-        }
-        ctx->list_add_value = (int)i;
-        return 1;
-    case DYNAMIC_CMD_LOAD:
-        return dynamic_load(e, ctx);
-    case DYNAMIC_CMD_DIR_LOAD:
-        if ((i < 0) || (i > 2)) {
-            ENGINEerr(ENGINE_F_DYNAMIC_CTRL,
-                ENGINE_R_INVALID_ARGUMENT);
-            return 0;
-        }
-        ctx->dir_load = (int)i;
-        return 1;
-    case DYNAMIC_CMD_DIR_ADD:
-        /* a NULL 'p' or a string of zero-length is the same thing */
-        if (!p || (strlen((const char *)p) < 1)) {
-            ENGINEerr(ENGINE_F_DYNAMIC_CTRL,
-                ENGINE_R_INVALID_ARGUMENT);
-            return 0;
-        }
-        {
-            char *tmp_str = BUF_strdup(p);
-            if (!tmp_str) {
+        case DYNAMIC_CMD_SO_PATH:
+            /* a NULL 'p' or a string of zero-length is the same thing */
+            if (p && (strlen((const char *)p) < 1))
+                p = NULL;
+            free((void *)ctx->DYNAMIC_LIBNAME);
+            if (p)
+                ctx->DYNAMIC_LIBNAME = BUF_strdup(p);
+            else
+                ctx->DYNAMIC_LIBNAME = NULL;
+            return (ctx->DYNAMIC_LIBNAME ? 1 : 0);
+        case DYNAMIC_CMD_NO_VCHECK:
+            ctx->no_vcheck = ((i == 0) ? 0 : 1);
+            return 1;
+        case DYNAMIC_CMD_ID:
+            /* a NULL 'p' or a string of zero-length is the same thing */
+            if (p && (strlen((const char *)p) < 1))
+                p = NULL;
+            free((void *)ctx->engine_id);
+            if (p)
+                ctx->engine_id = BUF_strdup(p);
+            else
+                ctx->engine_id = NULL;
+            return (ctx->engine_id ? 1 : 0);
+        case DYNAMIC_CMD_LIST_ADD:
+            if ((i < 0) || (i > 2)) {
                 ENGINEerr(ENGINE_F_DYNAMIC_CTRL,
-                    ERR_R_MALLOC_FAILURE);
+                          ENGINE_R_INVALID_ARGUMENT);
                 return 0;
             }
-            sk_OPENSSL_STRING_insert(ctx->dirs, tmp_str, -1);
-        }
-        return 1;
-    default:
-        break;
+            ctx->list_add_value = (int)i;
+            return 1;
+        case DYNAMIC_CMD_LOAD:
+            return dynamic_load(e, ctx);
+        case DYNAMIC_CMD_DIR_LOAD:
+            if ((i < 0) || (i > 2)) {
+                ENGINEerr(ENGINE_F_DYNAMIC_CTRL,
+                          ENGINE_R_INVALID_ARGUMENT);
+                return 0;
+            }
+            ctx->dir_load = (int)i;
+            return 1;
+        case DYNAMIC_CMD_DIR_ADD:
+            /* a NULL 'p' or a string of zero-length is the same thing */
+            if (!p || (strlen((const char *)p) < 1)) {
+                ENGINEerr(ENGINE_F_DYNAMIC_CTRL,
+                          ENGINE_R_INVALID_ARGUMENT);
+                return 0;
+            }
+            {
+                char *tmp_str = BUF_strdup(p);
+                if (!tmp_str) {
+                    ENGINEerr(ENGINE_F_DYNAMIC_CTRL,
+                              ERR_R_MALLOC_FAILURE);
+                    return 0;
+                }
+                sk_OPENSSL_STRING_insert(ctx->dirs, tmp_str, -1);
+            }
+            return 1;
+        default:
+            break;
     }
     ENGINEerr(ENGINE_F_DYNAMIC_CTRL, ENGINE_R_CTRL_COMMAND_NOT_IMPLEMENTED);
     return 0;
@@ -413,8 +400,7 @@ int_load(dynamic_data_ctx *ctx)
     int num, loop;
 
     /* Unless told not to, try a direct load */
-    if ((ctx->dir_load != 2) && (DSO_load(ctx->dynamic_dso,
-        ctx->DYNAMIC_LIBNAME, NULL, 0)) != NULL)
+    if ((ctx->dir_load != 2) && (DSO_load(ctx->dynamic_dso, ctx->DYNAMIC_LIBNAME, NULL, 0)) != NULL)
         return 1;
     /* If we're not allowed to use 'dirs' or we have none, fail */
     if (!ctx->dir_load || (num = sk_OPENSSL_STRING_num(ctx->dirs)) < 1)
@@ -422,7 +408,7 @@ int_load(dynamic_data_ctx *ctx)
     for (loop = 0; loop < num; loop++) {
         const char *s = sk_OPENSSL_STRING_value(ctx->dirs, loop);
         char *merge = DSO_merge(ctx->dynamic_dso,
-            ctx->DYNAMIC_LIBNAME, s);
+                                ctx->DYNAMIC_LIBNAME, s);
         if (!merge)
             return 0;
         if (DSO_load(ctx->dynamic_dso, merge, NULL, 0)) {
@@ -447,23 +433,23 @@ dynamic_load(ENGINE *e, dynamic_data_ctx *ctx)
         if (!ctx->engine_id)
             return 0;
         ctx->DYNAMIC_LIBNAME = DSO_convert_filename(ctx->dynamic_dso,
-            ctx->engine_id);
+                                                    ctx->engine_id);
     }
     if (!int_load(ctx)) {
         ENGINEerr(ENGINE_F_DYNAMIC_LOAD,
-            ENGINE_R_DSO_NOT_FOUND);
+                  ENGINE_R_DSO_NOT_FOUND);
         DSO_free(ctx->dynamic_dso);
         ctx->dynamic_dso = NULL;
         return 0;
     }
     /* We have to find a bind function otherwise it'll always end badly */
     if (!(ctx->bind_engine = (dynamic_bind_engine)DSO_bind_func(
-        ctx->dynamic_dso, ctx->DYNAMIC_F2))) {
+              ctx->dynamic_dso, ctx->DYNAMIC_F2))) {
         ctx->bind_engine = NULL;
         DSO_free(ctx->dynamic_dso);
         ctx->dynamic_dso = NULL;
         ENGINEerr(ENGINE_F_DYNAMIC_LOAD,
-            ENGINE_R_DSO_FAILURE);
+                  ENGINE_R_DSO_FAILURE);
         return 0;
     }
     /* Do we perform version checking? */
@@ -485,7 +471,7 @@ dynamic_load(ENGINE *e, dynamic_data_ctx *ctx)
             DSO_free(ctx->dynamic_dso);
             ctx->dynamic_dso = NULL;
             ENGINEerr(ENGINE_F_DYNAMIC_LOAD,
-                ENGINE_R_VERSION_INCOMPATIBILITY);
+                      ENGINE_R_VERSION_INCOMPATIBILITY);
             return 0;
         }
     }
@@ -501,8 +487,8 @@ dynamic_load(ENGINE *e, dynamic_data_ctx *ctx)
     fns.err_fns = ERR_get_implementation();
     fns.ex_data_fns = CRYPTO_get_ex_data_implementation();
     CRYPTO_get_mem_functions(&fns.mem_fns.malloc_cb,
-        &fns.mem_fns.realloc_cb,
-        &fns.mem_fns.free_cb);
+                             &fns.mem_fns.realloc_cb,
+                             &fns.mem_fns.free_cb);
     fns.lock_fns.lock_locking_cb = CRYPTO_get_locking_callback();
     fns.lock_fns.lock_add_lock_cb = CRYPTO_get_add_lock_callback();
     fns.lock_fns.dynlock_create_cb = CRYPTO_get_dynlock_create_callback();
@@ -534,7 +520,7 @@ dynamic_load(ENGINE *e, dynamic_data_ctx *ctx)
                  * just have to fail where we are, after the
                  * ENGINE has changed. */
                 ENGINEerr(ENGINE_F_DYNAMIC_LOAD,
-                    ENGINE_R_CONFLICTING_ENGINE_ID);
+                          ENGINE_R_CONFLICTING_ENGINE_ID);
                 return 0;
             }
             /* Tolerate */

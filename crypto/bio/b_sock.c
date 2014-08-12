@@ -176,7 +176,6 @@ struct hostent *BIO_gethostbyname(const char *name)
     return gethostbyname(name);
 }
 
-
 int BIO_sock_init(void)
 {
     return (1);
@@ -265,7 +264,8 @@ int BIO_get_accept_socket(char *host, int bind_mode)
             break;
 
         addrlen = res->ai_addrlen <= sizeof(server) ?
-            res->ai_addrlen : sizeof(server);
+                      res->ai_addrlen :
+                      sizeof(server);
         memcpy(&server, res->ai_addr, addrlen);
 
         freeaddrinfo(res);
@@ -273,7 +273,7 @@ int BIO_get_accept_socket(char *host, int bind_mode)
     } while (0);
 #endif
 
-    if (!BIO_get_port(p,&port))
+    if (!BIO_get_port(p, &port))
         goto err;
 
     memset((char *)&server, 0, sizeof(server));
@@ -286,16 +286,12 @@ int BIO_get_accept_socket(char *host, int bind_mode)
     else {
         if (!BIO_get_host_ip(h, &(ip[0])))
             goto err;
-        l = (unsigned long)
-            ((unsigned long)ip[0] << 24L)|
-            ((unsigned long)ip[1] << 16L)|
-            ((unsigned long)ip[2] << 8L)|
-            ((unsigned long)ip[3]);
-        server.sa_in.sin_addr.s_addr=htonl(l);
+        l = (unsigned long)((unsigned long)ip[0] << 24L) | ((unsigned long)ip[1] << 16L) | ((unsigned long)ip[2] << 8L) | ((unsigned long)ip[3]);
+        server.sa_in.sin_addr.s_addr = htonl(l);
     }
 
 again:
-    s = socket(server.sa.sa_family,SOCK_STREAM,IPPROTO_TCP);
+    s = socket(server.sa.sa_family, SOCK_STREAM, IPPROTO_TCP);
     if (s == INVALID_SOCKET) {
         SYSerr(SYS_F_SOCKET, errno);
         ERR_asprintf_error_data("port='%s'", host);
@@ -314,8 +310,7 @@ again:
     if (bind(s, &server.sa, addrlen) == -1) {
 #ifdef SO_REUSEADDR
         err_num = errno;
-        if ((bind_mode == BIO_BIND_REUSEADDR_IF_UNUSED) &&
-            (err_num == EADDRINUSE)) {
+        if ((bind_mode == BIO_BIND_REUSEADDR_IF_UNUSED) && (err_num == EADDRINUSE)) {
             client = server;
             if (h == NULL || strcmp(h, "*") == 0) {
 #if OPENSSL_USE_IPV6
@@ -324,16 +319,15 @@ again:
                     client.sa_in6.sin6_addr.s6_addr[15] = 1;
                 } else
 #endif
-                if (client.sa.sa_family == AF_INET) {
-                    client.sa_in.sin_addr.s_addr=htonl(0x7F000001);
-                }
-                else
+                    if (client.sa.sa_family == AF_INET) {
+                    client.sa_in.sin_addr.s_addr = htonl(0x7F000001);
+                } else
                     goto err;
             }
-            cs = socket(client.sa.sa_family, SOCK_STREAM,IPPROTO_TCP);
+            cs = socket(client.sa.sa_family, SOCK_STREAM, IPPROTO_TCP);
             if (cs != INVALID_SOCKET) {
                 int ii;
-                ii=connect(cs, &client.sa, addrlen);
+                ii = connect(cs, &client.sa, addrlen);
                 close(cs);
                 if (ii == INVALID_SOCKET) {
                     bind_mode = BIO_BIND_REUSEADDR;
@@ -400,11 +394,11 @@ int BIO_accept(int sock, char **addr)
 
 #ifdef EAI_FAMILY
     do {
-        char   h[NI_MAXHOST], s[NI_MAXSERV];
+        char h[NI_MAXHOST], s[NI_MAXSERV];
         size_t nl;
 
         if (getnameinfo(&sa.from.sa, sa.len, h, sizeof(h),
-            s, sizeof(s), NI_NUMERICHOST|NI_NUMERICSERV))
+                        s, sizeof(s), NI_NUMERICHOST | NI_NUMERICSERV))
             break;
         nl = strlen(h) + strlen(s) + 2;
         p = *addr;
@@ -437,8 +431,8 @@ int BIO_accept(int sock, char **addr)
     snprintf(*addr, 24, "%d.%d.%d.%d:%d",
              (unsigned char)(l >> 24L) & 0xff,
              (unsigned char)(l >> 16L) & 0xff,
-             (unsigned char)(l >>  8L) & 0xff,
-             (unsigned char)(l       ) & 0xff,
+             (unsigned char)(l >> 8L) & 0xff,
+             (unsigned char)(l) & 0xff,
              port);
 end:
     return (ret);

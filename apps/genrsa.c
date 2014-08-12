@@ -150,7 +150,7 @@ int genrsa_main(int argc, char **argv)
 #endif
 #ifndef OPENSSL_NO_IDEA
         else if (strcmp(*argv, "-idea") == 0)
-            enc=EVP_idea_cbc();
+            enc = EVP_idea_cbc();
 #endif
 #ifndef OPENSSL_NO_AES
         else if (strcmp(*argv, "-aes128") == 0)
@@ -178,7 +178,7 @@ int genrsa_main(int argc, char **argv)
         argc--;
     }
     if ((argc >= 1) && ((sscanf(*argv, "%d", &num) == 0) || (num < 0))) {
-bad:
+    bad:
         BIO_printf(bio_err, "usage: genrsa [args] [numbits]\n");
         BIO_printf(bio_err, " -des            encrypt the generated key with DES in cbc mode\n");
         BIO_printf(bio_err, " -des3           encrypt the generated key with DES in ede cbc mode (168 bit key)\n");
@@ -211,7 +211,7 @@ bad:
     }
 
 #ifndef OPENSSL_NO_ENGINE
-        e = setup_engine(bio_err, engine, 0);
+    e = setup_engine(bio_err, engine, 0);
 #endif
 
     if (outfile == NULL)
@@ -247,12 +247,12 @@ bad:
     }
     BIO_printf(bio_err, "e is %ld (0x%lX)\n", l, l);
     {
-    PW_CB_DATA cb_data;
-    cb_data.password = passout;
-    cb_data.prompt_info = outfile;
-    if (!PEM_write_bio_RSAPrivateKey(out, rsa, enc, NULL, 0,
-        (pem_password_cb *)password_callback, &cb_data))
-        goto err;
+        PW_CB_DATA cb_data;
+        cb_data.password = passout;
+        cb_data.prompt_info = outfile;
+        if (!PEM_write_bio_RSAPrivateKey(out, rsa, enc, NULL, 0,
+                                         (pem_password_cb *)password_callback, &cb_data))
+            goto err;
     }
 
     ret = 0;

@@ -125,7 +125,6 @@ int CRYPTO_is_mem_check_on(void)
     return (0);
 }
 
-
 void CRYPTO_dbg_set_options(long bits)
 {
     return;
@@ -152,7 +151,7 @@ int CRYPTO_remove_all_info(void)
 }
 
 void CRYPTO_dbg_malloc(void *addr, int num, const char *file, int line,
-        int before_p)
+                       int before_p)
 {
     fprintf(stderr, "this is a bad idea");
     abort();
@@ -165,7 +164,7 @@ void CRYPTO_dbg_free(void *addr, int before_p)
 }
 
 void CRYPTO_dbg_realloc(void *addr1, void *addr2, int num,
-        const char *file, int line, int before_p)
+                        const char *file, int line, int before_p)
 {
     fprintf(stderr, "this is a bad idea");
     abort();
@@ -180,7 +179,6 @@ void CRYPTO_mem_leaks_fp(FILE *fp)
 {
     return;
 }
-
 
 typedef CRYPTO_MEM_LEAK_CB *PCRYPTO_MEM_LEAK_CB;
 

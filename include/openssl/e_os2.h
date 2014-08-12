@@ -58,7 +58,7 @@
 #ifndef HEADER_E_OS2_H
 #define HEADER_E_OS2_H
 
-#ifdef  __cplusplus
+#ifdef __cplusplus
 extern "C" {
 #endif
 
@@ -72,15 +72,15 @@ extern "C" {
 
 /* --------------------------------- Unix ---------------------------------- */
 #ifdef OPENSSL_SYS_UNIX
-# if defined(linux) || defined(__linux__) || defined(OPENSSL_SYSNAME_LINUX)
-#  define OPENSSL_SYS_LINUX
-# endif
-# ifdef OPENSSL_SYSNAME_MACOSX
-#  define OPENSSL_SYS_MACOSX
-# endif
+#if defined(linux) || defined(__linux__) || defined(OPENSSL_SYSNAME_LINUX)
+#define OPENSSL_SYS_LINUX
+#endif
+#ifdef OPENSSL_SYSNAME_MACOSX
+#define OPENSSL_SYS_MACOSX
+#endif
 #endif
 
-#ifdef  __cplusplus
+#ifdef __cplusplus
 }
 #endif
 #endif

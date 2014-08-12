@@ -104,7 +104,7 @@ int BUF_MEM_grow(BUF_MEM *str, size_t len)
         return (len);
     }
     if (str->max >= len) {
-        memset(&str->data[str->length], 0, len-str->length);
+        memset(&str->data[str->length], 0, len - str->length);
         str->length = len;
         return (len);
     }
@@ -124,7 +124,7 @@ int BUF_MEM_grow(BUF_MEM *str, size_t len)
     } else {
         str->data = ret;
         str->max = n;
-        memset(&str->data[str->length], 0, len-str->length);
+        memset(&str->data[str->length], 0, len - str->length);
         str->length = len;
     }
     return (len);
@@ -136,12 +136,12 @@ int BUF_MEM_grow_clean(BUF_MEM *str, size_t len)
     size_t n;
 
     if (str->length >= len) {
-        memset(&str->data[len], 0, str->length-len);
+        memset(&str->data[len], 0, str->length - len);
         str->length = len;
         return (len);
     }
     if (str->max >= len) {
-        memset(&str->data[str->length], 0, len-str->length);
+        memset(&str->data[str->length], 0, len - str->length);
         str->length = len;
         return (len);
     }
@@ -161,7 +161,7 @@ int BUF_MEM_grow_clean(BUF_MEM *str, size_t len)
     } else {
         str->data = ret;
         str->max = n;
-        memset(&str->data[str->length], 0, len-str->length);
+        memset(&str->data[str->length], 0, len - str->length);
         str->length = len;
     }
     return (len);

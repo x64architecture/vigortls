@@ -103,7 +103,7 @@ void *BUF_memdup(const void *data, size_t siz)
 size_t BUF_strlcpy(char *dst, const char *src, size_t size)
 {
     size_t l = 0;
-    for(; size > 1 && *src; size--) {
+    for (; size > 1 && *src; size--) {
         *dst++ = *src++;
         l++;
     }
@@ -115,7 +115,7 @@ size_t BUF_strlcpy(char *dst, const char *src, size_t size)
 size_t BUF_strlcat(char *dst, const char *src, size_t size)
 {
     size_t l = 0;
-    for(; size > 0 && *dst; size--, dst++)
+    for (; size > 0 && *dst; size--, dst++)
         l++;
     return l + BUF_strlcpy(dst, src, size);
 }

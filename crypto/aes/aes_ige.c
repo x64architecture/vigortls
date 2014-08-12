@@ -56,7 +56,7 @@
 
 #define N_WORDS (AES_BLOCK_SIZE / sizeof(unsigned long))
 typedef struct {
-        unsigned long data[N_WORDS];
+    unsigned long data[N_WORDS];
 } aes_block_t;
 
 /* XXX: probably some better way to do this */
@@ -67,11 +67,11 @@ typedef struct {
 #endif
 
 #if UNALIGNED_MEMOPS_ARE_FAST
-#define load_block(d, s)        (d) = *(const aes_block_t *)(s)
-#define store_block(d, s)       *(aes_block_t *)(d) = (s)
+#define load_block(d, s) (d) = *(const aes_block_t *)(s)
+#define store_block(d, s) *(aes_block_t *)(d) = (s)
 #else
-#define load_block(d, s)        memcpy((d).data, (s), AES_BLOCK_SIZE)
-#define store_block(d, s)       memcpy((d), (s).data, AES_BLOCK_SIZE)
+#define load_block(d, s) memcpy((d).data, (s), AES_BLOCK_SIZE)
+#define store_block(d, s) memcpy((d), (s).data, AES_BLOCK_SIZE)
 #endif
 
 /* N.B. The IV for this mode is _twice_ the block size */
@@ -90,8 +90,7 @@ void AES_ige_encrypt(const unsigned char *in, unsigned char *out,
     len = length / AES_BLOCK_SIZE;
 
     if (AES_ENCRYPT == enc) {
-        if (in != out && (UNALIGNED_MEMOPS_ARE_FAST ||
-            ((size_t)in | (size_t)out | (size_t)ivec) % sizeof(long) == 0)) {
+        if (in != out && (UNALIGNED_MEMOPS_ARE_FAST || ((size_t)in | (size_t)out | (size_t)ivec) % sizeof(long) == 0)) {
 
             aes_block_t *ivp = (aes_block_t *)ivec;
             aes_block_t *iv2p = (aes_block_t *)(ivec + AES_BLOCK_SIZE);
@@ -103,7 +102,7 @@ void AES_ige_encrypt(const unsigned char *in, unsigned char *out,
                 for (n = 0; n < N_WORDS; ++n)
                     outp->data[n] = inp->data[n] ^ ivp->data[n];
                 AES_encrypt((unsigned char *)outp->data, (unsigned char *)outp->data, key);
-                for (n = 0 ; n < N_WORDS; ++n)
+                for (n = 0; n < N_WORDS; ++n)
                     outp->data[n] ^= iv2p->data[n];
                 ivp = outp;
                 iv2p = inp;
@@ -123,10 +122,10 @@ void AES_ige_encrypt(const unsigned char *in, unsigned char *out,
 
             while (len) {
                 load_block(tmp, in);
-                for(n = 0; n < N_WORDS; ++n)
+                for (n = 0; n < N_WORDS; ++n)
                     tmp2.data[n] = tmp.data[n] ^ iv.data[n];
                 AES_encrypt((unsigned char *)tmp2.data, (unsigned char *)tmp2.data, key);
-                for(n = 0; n < N_WORDS; ++n)
+                for (n = 0; n < N_WORDS; ++n)
                     tmp2.data[n] ^= iv2.data[n];
                 store_block(out, tmp2);
                 iv = tmp2;
@@ -139,8 +138,7 @@ void AES_ige_encrypt(const unsigned char *in, unsigned char *out,
             memcpy(ivec + AES_BLOCK_SIZE, iv2.data, AES_BLOCK_SIZE);
         }
     } else {
-        if (in != out && (UNALIGNED_MEMOPS_ARE_FAST ||
-            ((size_t)in | (size_t)out | (size_t)ivec) % sizeof(long) == 0)) {
+        if (in != out && (UNALIGNED_MEMOPS_ARE_FAST || ((size_t)in | (size_t)out | (size_t)ivec) % sizeof(long) == 0)) {
 
             aes_block_t *ivp = (aes_block_t *)ivec;
             aes_block_t *iv2p = (aes_block_t *)(ivec + AES_BLOCK_SIZE);
@@ -174,10 +172,10 @@ void AES_ige_encrypt(const unsigned char *in, unsigned char *out,
             while (len) {
                 load_block(tmp, in);
                 tmp2 = tmp;
-                for(n = 0; n < N_WORDS; ++n)
+                for (n = 0; n < N_WORDS; ++n)
                     tmp.data[n] ^= iv2.data[n];
                 AES_decrypt((unsigned char *)tmp.data, (unsigned char *)tmp.data, key);
-                for(n = 0; n < N_WORDS; ++n)
+                for (n = 0; n < N_WORDS; ++n)
                     tmp.data[n] ^= iv.data[n];
                 store_block(out, tmp);
                 iv = tmp2;
@@ -246,7 +244,7 @@ void AES_bi_ige_encrypt(const unsigned char *in, unsigned char *out,
             out -= AES_BLOCK_SIZE;
             /* XXX: reduce copies by alternating between buffers */
             memcpy(tmp, out, AES_BLOCK_SIZE);
-            for(n = 0; n < AES_BLOCK_SIZE; ++n)
+            for (n = 0; n < AES_BLOCK_SIZE; ++n)
                 out[n] ^= iv[n];
             /*            hexdump(stdout, "out ^ iv", out, AES_BLOCK_SIZE); */
             AES_encrypt(out, out, key);

@@ -29,7 +29,6 @@ fail:
     return (ret);
 }
 
-
 int BIO_snprintf(char *buf, size_t n, const char *format, ...)
 {
     va_list args;

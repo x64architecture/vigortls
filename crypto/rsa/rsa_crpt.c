@@ -67,53 +67,52 @@
 #endif
 
 int RSA_size(const RSA *r)
-    {
+{
     return (BN_num_bytes(r->n));
-    }
+}
 
 int RSA_public_encrypt(int flen, const unsigned char *from, unsigned char *to,
-         RSA *rsa, int padding)
-    {
+                       RSA *rsa, int padding)
+{
     return (rsa->meth->rsa_pub_enc(flen, from, to, rsa, padding));
-    }
+}
 
 int RSA_private_encrypt(int flen, const unsigned char *from, unsigned char *to,
-         RSA *rsa, int padding)
-    {
+                        RSA *rsa, int padding)
+{
     return (rsa->meth->rsa_priv_enc(flen, from, to, rsa, padding));
-    }
+}
 
 int RSA_private_decrypt(int flen, const unsigned char *from, unsigned char *to,
-         RSA *rsa, int padding)
-    {
+                        RSA *rsa, int padding)
+{
     return (rsa->meth->rsa_priv_dec(flen, from, to, rsa, padding));
-    }
+}
 
 int RSA_public_decrypt(int flen, const unsigned char *from, unsigned char *to,
-         RSA *rsa, int padding)
-    {
+                       RSA *rsa, int padding)
+{
     return (rsa->meth->rsa_pub_dec(flen, from, to, rsa, padding));
-    }
+}
 
 int RSA_flags(const RSA *r)
-    {
-    return ((r == NULL)?0:r->meth->flags);
-    }
+{
+    return ((r == NULL) ? 0 : r->meth->flags);
+}
 
 void RSA_blinding_off(RSA *rsa)
-    {
-    if (rsa->blinding != NULL)
-        {
+{
+    if (rsa->blinding != NULL) {
         BN_BLINDING_free(rsa->blinding);
-        rsa->blinding=NULL;
-        }
+        rsa->blinding = NULL;
+    }
     rsa->flags &= ~RSA_FLAG_BLINDING;
     rsa->flags |= RSA_FLAG_NO_BLINDING;
-    }
+}
 
 int RSA_blinding_on(RSA *rsa, BN_CTX *ctx)
-    {
-    int ret=0;
+{
+    int ret = 0;
 
     if (rsa->blinding != NULL)
         RSA_blinding_off(rsa);
@@ -124,13 +123,13 @@ int RSA_blinding_on(RSA *rsa, BN_CTX *ctx)
 
     rsa->flags |= RSA_FLAG_BLINDING;
     rsa->flags &= ~RSA_FLAG_NO_BLINDING;
-    ret=1;
+    ret = 1;
 err:
     return (ret);
-    }
+}
 
 static BIGNUM *rsa_get_public_exp(const BIGNUM *d, const BIGNUM *p,
-    const BIGNUM *q, BN_CTX *ctx)
+                                  const BIGNUM *q, BN_CTX *ctx)
 {
     BIGNUM *ret = NULL, *r0, *r1, *r2;
 
@@ -144,9 +143,12 @@ static BIGNUM *rsa_get_public_exp(const BIGNUM *d, const BIGNUM *p,
     if (r2 == NULL)
         goto err;
 
-    if (!BN_sub(r1, p, BN_value_one())) goto err;
-    if (!BN_sub(r2, q, BN_value_one())) goto err;
-    if (!BN_mul(r0, r1, r2, ctx)) goto err;
+    if (!BN_sub(r1, p, BN_value_one()))
+        goto err;
+    if (!BN_sub(r2, q, BN_value_one()))
+        goto err;
+    if (!BN_mul(r0, r1, r2, ctx))
+        goto err;
 
     ret = BN_mod_inverse(NULL, d, r0, ctx);
 err:
@@ -157,53 +159,45 @@ err:
 BN_BLINDING *RSA_setup_blinding(RSA *rsa, BN_CTX *in_ctx)
 {
     BIGNUM local_n;
-    BIGNUM *e,*n;
+    BIGNUM *e, *n;
     BN_CTX *ctx;
     BN_BLINDING *ret = NULL;
 
-    if (in_ctx == NULL)
-        {
-        if ((ctx = BN_CTX_new()) == NULL) return 0;
-        }
-    else
+    if (in_ctx == NULL) {
+        if ((ctx = BN_CTX_new()) == NULL)
+            return 0;
+    } else
         ctx = in_ctx;
 
     BN_CTX_start(ctx);
-    e  = BN_CTX_get(ctx);
-    if (e == NULL)
-        {
+    e = BN_CTX_get(ctx);
+    if (e == NULL) {
         RSAerr(RSA_F_RSA_SETUP_BLINDING, ERR_R_MALLOC_FAILURE);
         goto err;
-        }
+    }
 
-    if (rsa->e == NULL)
-        {
+    if (rsa->e == NULL) {
         e = rsa_get_public_exp(rsa->d, rsa->p, rsa->q, ctx);
-        if (e == NULL)
-            {
+        if (e == NULL) {
             RSAerr(RSA_F_RSA_SETUP_BLINDING, RSA_R_NO_PUBLIC_EXPONENT);
             goto err;
-            }
         }
-    else
+    } else
         e = rsa->e;
 
-    if (!(rsa->flags & RSA_FLAG_NO_CONSTTIME))
-        {
+    if (!(rsa->flags & RSA_FLAG_NO_CONSTTIME)) {
         /* Set BN_FLG_CONSTTIME flag */
         n = &local_n;
         BN_with_flags(n, rsa->n, BN_FLG_CONSTTIME);
-        }
-    else
+    } else
         n = rsa->n;
 
     ret = BN_BLINDING_create_param(NULL, e, n, ctx,
-            rsa->meth->bn_mod_exp, rsa->_method_mod_n);
-    if (ret == NULL)
-        {
+                                   rsa->meth->bn_mod_exp, rsa->_method_mod_n);
+    if (ret == NULL) {
         RSAerr(RSA_F_RSA_SETUP_BLINDING, ERR_R_BN_LIB);
         goto err;
-        }
+    }
     CRYPTO_THREADID_current(BN_BLINDING_thread_id(ret));
 err:
     BN_CTX_end(ctx);

@@ -63,28 +63,28 @@
 
 #ifdef OPENSSL_NO_DEPRECATED
 
-static void *dummy=&dummy;
+static void *dummy = &dummy;
 
 #else
 
 RSA *RSA_generate_key(int bits, unsigned long e_value,
-         void (*callback)(int,int,void *), void *cb_arg)
-    {
+                      void (*callback)(int, int, void *), void *cb_arg)
+{
     BN_GENCB cb;
     int i;
     RSA *rsa = RSA_new();
     BIGNUM *e = BN_new();
 
-    if (!rsa || !e) goto err;
+    if (!rsa || !e)
+        goto err;
 
     /* The problem is when building with 8, 16, or 32 BN_ULONG,
      * unsigned long can be larger */
-    for (i=0; i<(int)sizeof(unsigned long)*8; i++)
-        {
-        if (e_value & (1UL<<i))
-            if (BN_set_bit(e,i) == 0)
+    for (i = 0; i < (int)sizeof(unsigned long) * 8; i++) {
+        if (e_value & (1UL << i))
+            if (BN_set_bit(e, i) == 0)
                 goto err;
-        }
+    }
 
     BN_GENCB_set_old(&cb, callback, cb_arg);
 
@@ -93,8 +93,10 @@ RSA *RSA_generate_key(int bits, unsigned long e_value,
         return rsa;
     }
 err:
-    if (e) BN_free(e);
-    if (rsa) RSA_free(rsa);
+    if (e)
+        BN_free(e);
+    if (rsa)
+        RSA_free(rsa);
     return 0;
-    }
+}
 #endif
