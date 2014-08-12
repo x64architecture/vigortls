@@ -83,6 +83,7 @@ add_subdirectory(pqueue)
 add_subdirectory(rand)
 add_subdirectory(rc2)
 add_subdirectory(rc4)
+add_subdirectory(rc5)
 add_subdirectory(ripemd)
 add_subdirectory(rsa)
 add_subdirectory(sha)
@@ -156,6 +157,7 @@ add_library(
 	$<TARGET_OBJECTS:rand>
 	$<TARGET_OBJECTS:rc2>
 	$<TARGET_OBJECTS:rc4>
+	$<TARGET_OBJECTS:rc5>
 	$<TARGET_OBJECTS:ripemd>
 	$<TARGET_OBJECTS:rsa>
 	$<TARGET_OBJECTS:sha>
