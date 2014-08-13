@@ -5,6 +5,6 @@ add_library(
 
 	OBJECT
 
+	chacha.c
 	chacha_enc.c
-	chacha_vec.c
 )
