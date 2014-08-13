@@ -154,7 +154,7 @@ int_ctrl_helper(ENGINE *e, int cmd, long i, void *p, void (*f)(void))
         case ENGINE_CTRL_GET_NAME_FROM_CMD:
             ret = snprintf(s, strlen(e->cmd_defns[idx].cmd_name) + 1,
                            "%s", e->cmd_defns[idx].cmd_name);
-            if (ret >= (strlen(e->cmd_defns[idx].cmd_name) + 1))
+            if (ret >= ((int)strlen(e->cmd_defns[idx].cmd_name) + 1))
                 ret = -1;
             return ret;
         case ENGINE_CTRL_GET_DESC_LEN_FROM_CMD:
@@ -166,13 +166,13 @@ int_ctrl_helper(ENGINE *e, int cmd, long i, void *p, void (*f)(void))
                 ret = snprintf(s,
                                strlen(e->cmd_defns[idx].cmd_desc) + 1,
                                "%s", e->cmd_defns[idx].cmd_desc);
-                if (ret >= strlen(e->cmd_defns[idx].cmd_desc) + 1)
+                if (ret >= (int)strlen(e->cmd_defns[idx].cmd_desc) + 1)
                     ret = -1;
                 return ret;
             }
             ret = snprintf(s, strlen(int_no_description) + 1, "%s",
                            int_no_description);
-            if (ret >= strlen(int_no_description) + 1)
+            if (ret >= (int)strlen(int_no_description) + 1)
                 ret = -1;
             return ret;
         case ENGINE_CTRL_GET_CMD_FLAGS:

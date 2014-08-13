@@ -73,22 +73,12 @@ static void cmac_key_free(EVP_PKEY *pkey)
 }
 
 const EVP_PKEY_ASN1_METHOD cmac_asn1_meth = {
-    EVP_PKEY_CMAC,
-    EVP_PKEY_CMAC,
-    0,
+    .pkey_id = EVP_PKEY_CMAC,
+    .pkey_base_id = EVP_PKEY_CMAC,
 
-    "CMAC",
-    "OpenSSL CMAC method",
+    .pem_str = "CMAC",
+    .info = "OpenSSL CMAC method",
 
-    0, 0, 0, 0,
-
-    0, 0, 0,
-
-    cmac_size,
-    0,
-    0, 0, 0, 0, 0, 0, 0,
-
-    cmac_key_free,
-    0,
-    0, 0
+    .pkey_size = cmac_size,
+    .pkey_free = cmac_key_free
 };

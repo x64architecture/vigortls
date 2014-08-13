@@ -75,12 +75,10 @@ static int bn_i2c(ASN1_VALUE **pval, unsigned char *cont, int *putype, const ASN
 static int bn_c2i(ASN1_VALUE **pval, const unsigned char *cont, int len, int utype, char *free_cont, const ASN1_ITEM *it);
 
 static ASN1_PRIMITIVE_FUNCS bignum_pf = {
-    NULL, 0,
-    bn_new,
-    bn_free,
-    0,
-    bn_c2i,
-    bn_i2c
+    .prim_new = bn_new,
+    .prim_free = bn_free,
+    .prim_c2i = bn_c2i,
+    .prim_i2c = bn_i2c,
 };
 
 ASN1_ITEM_start(BIGNUM)
