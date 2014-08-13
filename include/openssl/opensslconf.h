@@ -1,5 +1,3 @@
-/* crypto/opensslconf.h.in */
-
 /* Generate 80386 code? */
 #undef I386_ONLY
 
@@ -9,7 +7,7 @@
 #endif
 
 #undef OPENSSL_UNISTD
-#define OPENSSL_UNISTD < unistd.h >
+#define OPENSSL_UNISTD <unistd.h>
 
 #if defined(HEADER_IDEA_H) && !defined(IDEA_INT)
 #define IDEA_INT unsigned int
