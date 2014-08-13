@@ -5,9 +5,7 @@ add_library(
 
 	OBJECT
 
-	md_rand.c
-	rand_lib.c
-	rand_err.c
-	rand_egd.c
-	rand_unix.c
+	rand.c
+	urandom.c
+    rand_err.c
 )

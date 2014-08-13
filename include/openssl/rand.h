@@ -59,9 +59,9 @@
 #ifndef HEADER_RAND_H
 #define HEADER_RAND_H
 
+#include <stdint.h>
 #include <stdlib.h>
 #include <openssl/ossl_typ.h>
-#include <openssl/e_os2.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -90,8 +90,8 @@ int RAND_set_rand_engine(ENGINE *engine);
 #endif
 RAND_METHOD *RAND_SSLeay(void);
 void RAND_cleanup(void);
-int RAND_bytes(unsigned char *buf, int num);
-int RAND_pseudo_bytes(unsigned char *buf, int num);
+int RAND_bytes(uint8_t *buf, size_t len);
+int RAND_pseudo_bytes(uint8_t *buf, size_t len);
 void RAND_seed(const void *buf, int num);
 void RAND_add(const void *buf, int num, double entropy);
 int RAND_load_file(const char *file, long max_bytes);
