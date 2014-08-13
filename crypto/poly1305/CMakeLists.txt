@@ -6,5 +6,5 @@ add_library(
 	OBJECT
 
 	poly1305.c
-	poly1305_vec.c
+	poly1305-donna.c
 )
