@@ -104,13 +104,12 @@
 static const BN_ULONG SQR_tb[16] = { 0, 1, 4, 5, 16, 17, 20, 21,
                                      64, 65, 68, 69, 80, 81, 84, 85 };
 /* Platform-specific macros to accelerate squaring. */
-#if defined(SIXTY_FOUR_BIT) || defined(SIXTY_FOUR_BIT_LONG)
+#ifdef _LP64
 #define SQR1(w) \
     SQR_tb[(w) >> 60 & 0xF] << 56 | SQR_tb[(w) >> 56 & 0xF] << 48 | SQR_tb[(w) >> 52 & 0xF] << 40 | SQR_tb[(w) >> 48 & 0xF] << 32 | SQR_tb[(w) >> 44 & 0xF] << 24 | SQR_tb[(w) >> 40 & 0xF] << 16 | SQR_tb[(w) >> 36 & 0xF] << 8 | SQR_tb[(w) >> 32 & 0xF]
 #define SQR0(w) \
     SQR_tb[(w) >> 28 & 0xF] << 56 | SQR_tb[(w) >> 24 & 0xF] << 48 | SQR_tb[(w) >> 20 & 0xF] << 40 | SQR_tb[(w) >> 16 & 0xF] << 32 | SQR_tb[(w) >> 12 & 0xF] << 24 | SQR_tb[(w) >> 8 & 0xF] << 16 | SQR_tb[(w) >> 4 & 0xF] << 8 | SQR_tb[(w)&0xF]
-#endif
-#ifdef THIRTY_TWO_BIT
+#else
 #define SQR1(w) \
     SQR_tb[(w) >> 28 & 0xF] << 24 | SQR_tb[(w) >> 24 & 0xF] << 16 | SQR_tb[(w) >> 20 & 0xF] << 8 | SQR_tb[(w) >> 16 & 0xF]
 #define SQR0(w) \
@@ -123,9 +122,9 @@ static const BN_ULONG SQR_tb[16] = { 0, 1, 4, 5, 16, 17, 20, 21,
  * The caller MUST ensure that the variables have the right amount
  * of space allocated.
  */
-#ifdef THIRTY_TWO_BIT
 static void bn_GF2m_mul_1x1(BN_ULONG *r1, BN_ULONG *r0, const BN_ULONG a, const BN_ULONG b)
 {
+#ifndef _LP64
     register BN_ULONG h, l, s;
     BN_ULONG tab[8], top2b = a >> 30;
     register BN_ULONG a1, a2, a4;
@@ -189,10 +188,7 @@ static void bn_GF2m_mul_1x1(BN_ULONG *r1, BN_ULONG *r0, const BN_ULONG a, const 
 
     *r1 = h;
     *r0 = l;
-}
-#endif
-#if defined(SIXTY_FOUR_BIT) || defined(SIXTY_FOUR_BIT_LONG)
-static void bn_GF2m_mul_1x1(BN_ULONG *r1, BN_ULONG *r0, const BN_ULONG a, const BN_ULONG b)
+#else
 {
     register BN_ULONG h, l, s;
     BN_ULONG tab[16], top3b = a >> 61;
@@ -285,8 +281,8 @@ static void bn_GF2m_mul_1x1(BN_ULONG *r1, BN_ULONG *r0, const BN_ULONG a, const 
 
     *r1 = h;
     *r0 = l;
-}
 #endif
+}
 
 /* Product of two polynomials a, b each with degree < 2 * BN_BITS2 - 1,
  * result is a polynomial r with degree < 4 * BN_BITS2 - 1
