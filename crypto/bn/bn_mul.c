@@ -66,6 +66,10 @@
 #define NDEBUG
 #endif
 
+#if defined(__i386) || defined(__i386__)
+    #define OPENSSL_BN_ASM_PART_WORDS
+#endif
+
 #if defined(OPENSSL_NO_ASM) || !defined(OPENSSL_BN_ASM_PART_WORDS)
 /* Here follows specialised variants of bn_add_words() and
    bn_sub_words().  They have the property performing operations on

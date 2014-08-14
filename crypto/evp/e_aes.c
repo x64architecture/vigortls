@@ -59,6 +59,11 @@
 #include "modes_lcl.h"
 #include <openssl/rand.h>
 
+#ifndef OPENSSL_NO_ASM
+    #define VPAES_ASM
+    #define BSAES_ASM
+#endif
+
 typedef struct {
     AES_KEY ks;
     block128_f block;
@@ -103,7 +108,7 @@ typedef struct {
 
 #define MAXBITCHUNK ((size_t)1 << (sizeof(size_t) * 8 - 4))
 
-#ifndef OPENSSL_NO_ASM
+#ifdef VPAES_ASM
 int vpaes_set_encrypt_key(const unsigned char *userKey, int bits,
                           AES_KEY *key);
 int vpaes_set_decrypt_key(const unsigned char *userKey, int bits,
@@ -120,7 +125,7 @@ void vpaes_cbc_encrypt(const unsigned char *in,
                        const AES_KEY *key,
                        unsigned char *ivec, int enc);
 #endif
-#ifndef OPENSSL_NO_ASM
+#ifdef BSAES_ASM
 void bsaes_cbc_encrypt(const unsigned char *in, unsigned char *out,
                        size_t length, const AES_KEY *key,
                        unsigned char ivec[16], int enc);
@@ -148,14 +153,14 @@ void AES_xts_decrypt(const char *inp, char *out, size_t len,
                      const unsigned char iv[16]);
 #endif
 
-#if !defined(OPENSSL_NO_ASM) && !defined(I386_ONLY) && (((defined(__i386) || defined(__i386__) || defined(_M_IX86)) && defined(OPENSSL_IA32_SSE2)) || defined(__x86_64) || defined(__x86_64__) || defined(_M_AMD64) || defined(_M_X64) || defined(__INTEL__))
+#if defined(AES_ASM) && !defined(I386_ONLY) && (((defined(__i386) || defined(__i386__) || defined(_M_IX86)) && defined(OPENSSL_IA32_SSE2)) || defined(__x86_64) || defined(__x86_64__) || defined(_M_AMD64) || defined(_M_X64) || defined(__INTEL__))
 
 extern unsigned int OPENSSL_ia32cap_P[2];
 
-#ifndef OPENSSL_NO_ASM
-#define VPAES_CAPABLE (OPENSSL_ia32cap_P[1] & (1 << (41 - 32)))
+#ifdef VPAES_ASM
+#define VPAES_CAPABLE (OPENSSL_ia32cap_P[1]&(1<<(41-32)))
 #endif
-#ifndef OPENSSL_NO_ASM
+#ifdef BSAES_ASM
 #define BSAES_CAPABLE VPAES_CAPABLE
 #endif
 /*

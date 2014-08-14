@@ -5,6 +5,7 @@ if (${ARCH} STREQUAL "x86_64")
 		BN_ARCH_SOURCES
 
 		asm/x86_64-gcc.c
+		bn_asm.c
 		x86_64-mont.${ASM_EXT}
 		x86_64-mont5.${ASM_EXT}
 		x86_64-gf2m.${ASM_EXT}
@@ -45,7 +46,6 @@ add_library(
 	bn_prime.c
 	bn_err.c
 	bn_sqr.c
-	bn_asm.c
 	bn_recp.c
 	bn_mont.c
 	bn_mpi.c

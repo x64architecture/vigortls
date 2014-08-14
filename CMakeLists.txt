@@ -7,7 +7,7 @@ include(CTest)
 # to use ASM (not recommended).
 set(USE_ASM TRUE)
 
-if(CMAKE_COMPILER_IS_GNUCXX OR "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
+if (CMAKE_COMPILER_IS_GNUCXX OR "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
 	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Werror -ggdb -std=gnu99")
 else()
 	message(FATAL_ERROR "Unsupported compiler:" ${CMAKE_C_COMPILER})
@@ -27,13 +27,17 @@ if(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
 	add_definitions(-D_GNU_SOURCE)
 endif()
 
-if(USE_ASM)
+if (USE_ASM)
 	set(ASM_C_FLAGS "
 #define OPENSSL_BN_ASM_MONT
-#define OPENSSL_BN_ASM_MONT5
-#define OPENSSL_BN_ASM_GF2m
 #define OPENSSL_IA32_SSE2"
 )
+if (${ARCH} STREQUAL "x86_64")
+	set(ASM_C_FLAGS "
+#define OPENSSL_BN_ASM_MONT5
+#define OPENSSL_BN_ASM_GF2m"
+)
+endif()
 else()
 	set(ASM_C_FLAGS "#define OPENSSL_NO_ASM")
 endif()

@@ -7,6 +7,13 @@ if (${ARCH} STREQUAL "x86_64")
 		wp-x86_64.${ASM_EXT}
 	)
 endif()
+if (${ARCH} STREQUAL "x86")
+	set(
+		WHRL_ARCH_SOURCES
+
+		wp-mmx.${ASM_EXT}
+	)
+endif()
 
 add_library(
 	whrlpool
@@ -20,3 +27,4 @@ add_library(
 )
 
 perlasm(wp-x86_64.${ASM_EXT} asm/wp-x86_64.pl)
+perlasm(wp-mmx.${ASM_EXT} asm/wp-mmx.pl)
