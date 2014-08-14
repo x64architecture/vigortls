@@ -1321,8 +1321,9 @@ err:
         BN_CTX_free(new_ctx);
     if (prod_Z != NULL) {
         for (i = 0; i < num; i++) {
-            if (prod_Z[i] != NULL)
-                BN_clear_free(prod_Z[i]);
+            if (prod_Z[i] == NULL)
+                break;
+            BN_clear_free(prod_Z[i]);
         }
         free(prod_Z);
     }
