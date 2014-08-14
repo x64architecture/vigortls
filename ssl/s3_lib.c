@@ -1837,6 +1837,7 @@ SSL3_ENC_METHOD SSLv3_enc_data = {
     .export_keying_material = (int (*)(SSL *, unsigned char *, size_t,
                                        const char *, size_t, const unsigned char *, size_t,
                                        int use_context))ssl_undefined_function,
+    .enc_flags = 0,
 };
 
 long ssl3_default_timeout(void)

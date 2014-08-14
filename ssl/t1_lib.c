@@ -140,6 +140,42 @@ SSL3_ENC_METHOD TLSv1_enc_data = {
     .export_keying_material = tls1_export_keying_material,
 };
 
+SSL3_ENC_METHOD TLSv1_1_enc_data = {
+    .enc = tls1_enc,
+    .mac = tls1_mac,
+    .setup_key_block = tls1_setup_key_block,
+    .generate_master_secret = tls1_generate_master_secret,
+    .change_cipher_state = tls1_change_cipher_state,
+    .final_finish_mac = tls1_final_finish_mac,
+    .finish_mac_length = TLS1_FINISH_MAC_LENGTH,
+    .cert_verify_mac = tls1_cert_verify_mac,
+    .client_finished_label = TLS_MD_CLIENT_FINISH_CONST,
+    .client_finished_label_len = TLS_MD_CLIENT_FINISH_CONST_SIZE,
+    .server_finished_label = TLS_MD_SERVER_FINISH_CONST,
+    .server_finished_label_len = TLS_MD_SERVER_FINISH_CONST_SIZE,
+    .alert_value = tls1_alert_code,
+    .export_keying_material = tls1_export_keying_material,
+    .enc_flags = SSL_ENC_FLAG_EXPLICIT_IV,
+};
+
+SSL3_ENC_METHOD TLSv1_2_enc_data = {
+    .enc = tls1_enc,
+    .mac = tls1_mac,
+    .setup_key_block = tls1_setup_key_block,
+    .generate_master_secret = tls1_generate_master_secret,
+    .change_cipher_state = tls1_change_cipher_state,
+    .final_finish_mac = tls1_final_finish_mac,
+    .finish_mac_length = TLS1_FINISH_MAC_LENGTH,
+    .cert_verify_mac = tls1_cert_verify_mac,
+    .client_finished_label = TLS_MD_CLIENT_FINISH_CONST,
+    .client_finished_label_len = TLS_MD_CLIENT_FINISH_CONST_SIZE,
+    .server_finished_label = TLS_MD_SERVER_FINISH_CONST,
+    .server_finished_label_len = TLS_MD_SERVER_FINISH_CONST_SIZE,
+    .alert_value = tls1_alert_code,
+    .export_keying_material = tls1_export_keying_material,
+    .enc_flags = SSL_ENC_FLAG_EXPLICIT_IV | SSL_ENC_FLAG_SIGALGS | SSL_ENC_FLAG_SHA256_PRF | SSL_ENC_FLAG_TLS1_2_CIPHERS,
+};
+
 long tls1_default_timeout(void)
 {
     /* 2 hours, the 24 hours mentioned in the TLSv1 spec
