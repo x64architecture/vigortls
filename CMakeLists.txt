@@ -7,7 +7,7 @@ include(CTest)
 # to use ASM (not recommended).
 set(USE_ASM TRUE)
 
-if (CMAKE_COMPILER_IS_GNUCXX OR "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
+if (CMAKE_COMPILER_IS_GNUCC OR "${CMAKE_C_COMPILER_ID}" STREQUAL "Clang")
 	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Werror -ggdb -std=gnu99")
 else()
 	message(FATAL_ERROR "Unsupported compiler:" ${CMAKE_C_COMPILER})
