@@ -1,5 +1,12 @@
 include_directories(${CMAKE_CURRENT_BINARY_DIR} .. ../../include . ../asn1 ../evp ../modes)
 
+if (${USE_ASM})
+	add_definitions(-DAES_ASM -DVPAES_ASM)
+if (${ARCH} STREQUAL "x86_64")
+	add_definitions(-DBSAES_ASM)
+endif()
+endif()
+
 add_library(
 	evp
 

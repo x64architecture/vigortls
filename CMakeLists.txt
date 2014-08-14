@@ -27,7 +27,7 @@ if(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
 	add_definitions(-D_GNU_SOURCE)
 endif()
 
-if (USE_ASM)
+if (${USE_ASM})
 	set(ASM_C_FLAGS "
 #define OPENSSL_BN_ASM_MONT
 #define OPENSSL_IA32_SSE2"

@@ -59,11 +59,6 @@
 #include "modes_lcl.h"
 #include <openssl/rand.h>
 
-#ifndef OPENSSL_NO_ASM
-    #define VPAES_ASM
-    #define BSAES_ASM
-#endif
-
 typedef struct {
     AES_KEY ks;
     block128_f block;
