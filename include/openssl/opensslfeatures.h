@@ -20,7 +20,11 @@
 #define OPENSSL_NO_DYNAMIC_ENGINE
 #define OPENSSL_THREADS
  
-#define OPENSSL_BN_ASM_MONT
-#define OPENSSL_BN_ASM_MONT5
-#define OPENSSL_BN_ASM_GF2m
-#define OPENSSL_IA32_SSE2
+#ifndef OPENSSL_NO_ASM
+ #define OPENSSL_BN_ASM_MONT
+ #define OPENSSL_IA32_SSE2
+#if defined(__x86_64) || defined(__x86_64__)
+ #define OPENSSL_BN_ASM_MONT5
+ #define OPENSSL_BN_ASM_GF2m
+#endif
+#endif

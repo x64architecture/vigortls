@@ -53,6 +53,8 @@
  *
  */
 
+#include <openssl/opensslconf.h>
+
 #ifndef OPENSSL_NO_CMS
 
 #include <stdio.h>

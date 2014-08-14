@@ -56,9 +56,11 @@
  * [including the GNU Public Licence.]
  */
 
-#include <stdio.h>
+#include <openssl/opensslconf.h>
 
 #ifndef OPENSSL_NO_RC5
+
+#include <stdio.h>
 
 #include <openssl/err.h>
 #include <openssl/evp.h>

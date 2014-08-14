@@ -49,6 +49,8 @@
  *
  */
 
+#include <openssl/opensslconf.h>
+
 #ifndef OPENSSL_NO_CAMELLIA
 #include <openssl/camellia.h>
 #include <openssl/modes.h>

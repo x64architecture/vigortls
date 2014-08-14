@@ -105,6 +105,8 @@
  * [including the GNU Public Licence.]
  */
 
+#include <openssl/opensslconf.h>
+
 #ifndef OPENSSL_NO_CAMELLIA
 
 #include <openssl/camellia.h>

@@ -1,3 +1,5 @@
+#include <openssl/opensslfeatures.h>
+
 /* Generate 80386 code? */
 #undef I386_ONLY
 

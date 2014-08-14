@@ -81,6 +81,8 @@
  * words reasonable performance even with not so modern compilers.
  */
 
+#include <openssl/opensslconf.h>
+
 #ifndef OPENSSL_NO_CAMELLIA
 
 #include <openssl/camellia.h>
