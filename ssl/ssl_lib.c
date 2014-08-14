@@ -283,10 +283,6 @@ SSL *SSL_new(SSL_CTX *ctx)
     if (s == NULL)
         goto err;
 
-#ifndef OPENSSL_NO_KRB5
-    s->kssl_ctx = kssl_ctx_new();
-#endif /* OPENSSL_NO_KRB5 */
-
     s->options = ctx->options;
     s->mode = ctx->mode;
     s->max_cert_list = ctx->max_cert_list;
@@ -566,11 +562,6 @@ void SSL_free(SSL *s)
 
     if (s->ctx)
         SSL_CTX_free(s->ctx);
-
-#ifndef OPENSSL_NO_KRB5
-    if (s->kssl_ctx != NULL)
-        kssl_ctx_free(s->kssl_ctx);
-#endif /* OPENSSL_NO_KRB5 */
 
 #ifndef OPENSSL_NO_NEXTPROTONEG
     if (s->next_proto_negotiated)
@@ -1316,9 +1307,6 @@ int ssl_cipher_list_to_bytes(SSL *s, STACK_OF(SSL_CIPHER) * sk, unsigned char *p
     int i;
     SSL_CIPHER *c;
     unsigned char *q;
-#ifndef OPENSSL_NO_KRB5
-    int nokrb5 = !kssl_tgt_is_available(s->kssl_ctx);
-#endif /* OPENSSL_NO_KRB5 */
 
     if (sk == NULL)
         return (0);
@@ -1329,10 +1317,6 @@ int ssl_cipher_list_to_bytes(SSL *s, STACK_OF(SSL_CIPHER) * sk, unsigned char *p
         /* Skip TLS v1.2 only ciphersuites if lower than v1.2 */
         if ((c->algorithm_ssl & SSL_TLSV1_2) && (TLS1_get_client_version(s) < TLS1_2_VERSION))
             continue;
-#ifndef OPENSSL_NO_KRB5
-        if (((c->algorithm_mkey & SSL_kKRB5) || (c->algorithm_auth & SSL_aKRB5)) && nokrb5)
-            continue;
-#endif /* OPENSSL_NO_KRB5 */
 #ifndef OPENSSL_NO_PSK
         /* with PSK there must be client callback set */
         if (((c->algorithm_mkey & SSL_kPSK) || (c->algorithm_auth & SSL_aPSK)) && s->psk_client_callback == NULL)
@@ -1930,11 +1914,6 @@ void ssl_set_cert_masks(CERT *c, const SSL_CIPHER *cipher)
         mask_a |= SSL_aDSS;
 
     mask_a |= SSL_aNULL;
-
-#ifndef OPENSSL_NO_KRB5
-    mask_k |= SSL_kKRB5;
-    mask_a |= SSL_aKRB5;
-#endif
 
     /* An ECC certificate may be usable for ECDH and/or
      * ECDSA cipher suites depending on the key usage extension.

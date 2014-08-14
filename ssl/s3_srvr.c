@@ -161,9 +161,6 @@
 #include <openssl/x509.h>
 #include <openssl/dh.h>
 #include <openssl/bn.h>
-#ifndef OPENSSL_NO_KRB5
-#include <openssl/krb5_asn.h>
-#endif
 #include <openssl/md5.h>
 
 static const SSL_METHOD *ssl3_get_server_method(int ver);
@@ -430,11 +427,7 @@ int ssl3_accept(SSL *s)
 
                 /* clear this, it may get reset by
              * send_server_key_exchange */
-                if ((s->options & SSL_OP_EPHEMERAL_RSA)
-#ifndef OPENSSL_NO_KRB5
-                    && !(alg_k & SSL_kKRB5)
-#endif /* OPENSSL_NO_KRB5 */
-                        )
+                if ((s->options & SSL_OP_EPHEMERAL_RSA))
                     /* option SSL_OP_EPHEMERAL_RSA sends temporary RSA key
                  * even when forbidden by protocol specs
                  * (handshake may fail as clients are not required to
@@ -1818,9 +1811,6 @@ int ssl3_get_client_key_exchange(SSL *s)
     EVP_PKEY *pkey = NULL;
     BIGNUM *pub = NULL;
     DH *dh_srvr;
-#ifndef OPENSSL_NO_KRB5
-    KSSL_ERR kssl_err;
-#endif /* OPENSSL_NO_KRB5 */
 
 #ifndef OPENSSL_NO_ECDH
     EC_KEY *srvr_ecdh = NULL;
@@ -1972,163 +1962,6 @@ int ssl3_get_client_key_exchange(SSL *s)
                                                                                     s->session->master_key, p, i);
         vigortls_zeroize(p, i);
     } else
-#ifndef OPENSSL_NO_KRB5
-        if (alg_k & SSL_kKRB5) {
-        krb5_error_code krb5rc;
-        krb5_data enc_ticket;
-        krb5_data authenticator;
-        krb5_data enc_pms;
-        KSSL_CTX *kssl_ctx = s->kssl_ctx;
-        EVP_CIPHER_CTX ciph_ctx;
-        const EVP_CIPHER *enc = NULL;
-        unsigned char iv[EVP_MAX_IV_LENGTH];
-        unsigned char pms[SSL_MAX_MASTER_KEY_LENGTH
-                          + EVP_MAX_BLOCK_LENGTH];
-        int padl, outl;
-        krb5_timestamp authtime = 0;
-        krb5_ticket_times ttimes;
-
-        EVP_CIPHER_CTX_init(&ciph_ctx);
-
-        if (!kssl_ctx)
-            kssl_ctx = kssl_ctx_new();
-
-        n2s(p, i);
-        enc_ticket.length = i;
-
-        if (n < (long)(enc_ticket.length + 6)) {
-            SSLerr(SSL_F_SSL3_GET_CLIENT_KEY_EXCHANGE,
-                   SSL_R_DATA_LENGTH_TOO_LONG);
-            goto err;
-        }
-
-        enc_ticket.data = (char *)p;
-        p += enc_ticket.length;
-
-        n2s(p, i);
-        authenticator.length = i;
-
-        if (n < (long)(enc_ticket.length + authenticator.length + 6)) {
-            SSLerr(SSL_F_SSL3_GET_CLIENT_KEY_EXCHANGE,
-                   SSL_R_DATA_LENGTH_TOO_LONG);
-            goto err;
-        }
-
-        authenticator.data = (char *)p;
-        p += authenticator.length;
-
-        n2s(p, i);
-        enc_pms.length = i;
-        enc_pms.data = (char *)p;
-        p += enc_pms.length;
-
-        /* Note that the length is checked again below,
-        ** after decryption
-        */
-        if (enc_pms.length > sizeof pms) {
-            SSLerr(SSL_F_SSL3_GET_CLIENT_KEY_EXCHANGE,
-                   SSL_R_DATA_LENGTH_TOO_LONG);
-            goto err;
-        }
-
-        if (n != (long)(enc_ticket.length + authenticator.length + enc_pms.length + 6)) {
-            SSLerr(SSL_F_SSL3_GET_CLIENT_KEY_EXCHANGE,
-                   SSL_R_DATA_LENGTH_TOO_LONG);
-            goto err;
-        }
-
-        if ((krb5rc = kssl_sget_tkt(kssl_ctx, &enc_ticket, &ttimes,
-                                    &kssl_err)) != 0) {
-            SSLerr(SSL_F_SSL3_GET_CLIENT_KEY_EXCHANGE,
-                   kssl_err.reason);
-            goto err;
-        }
-
-        /*  Note: no authenticator is not considered an error,
-        **  but will return authtime == 0.
-        */
-        if ((krb5rc = kssl_check_authent(kssl_ctx, &authenticator,
-                                         &authtime, &kssl_err)) != 0) {
-            SSLerr(SSL_F_SSL3_GET_CLIENT_KEY_EXCHANGE,
-                   kssl_err.reason);
-            goto err;
-        }
-
-        if ((krb5rc = kssl_validate_times(authtime, &ttimes)) != 0) {
-            SSLerr(SSL_F_SSL3_GET_CLIENT_KEY_EXCHANGE, krb5rc);
-            goto err;
-        }
-
-        enc = kssl_map_enc(kssl_ctx->enctype);
-        if (enc == NULL)
-            goto err;
-
-        memset(iv, 0, sizeof iv); /* per RFC 1510 */
-
-        if (!EVP_DecryptInit_ex(&ciph_ctx, enc, NULL, kssl_ctx->key, iv)) {
-            SSLerr(SSL_F_SSL3_GET_CLIENT_KEY_EXCHANGE,
-                   SSL_R_DECRYPTION_FAILED);
-            goto err;
-        }
-        if (!EVP_DecryptUpdate(&ciph_ctx, pms, &outl,
-                               (unsigned char *)enc_pms.data, enc_pms.length)) {
-            SSLerr(SSL_F_SSL3_GET_CLIENT_KEY_EXCHANGE,
-                   SSL_R_DECRYPTION_FAILED);
-            goto err;
-        }
-        if (outl > SSL_MAX_MASTER_KEY_LENGTH) {
-            SSLerr(SSL_F_SSL3_GET_CLIENT_KEY_EXCHANGE,
-                   SSL_R_DATA_LENGTH_TOO_LONG);
-            goto err;
-        }
-        if (!EVP_DecryptFinal_ex(&ciph_ctx, &(pms[outl]), &padl)) {
-            SSLerr(SSL_F_SSL3_GET_CLIENT_KEY_EXCHANGE,
-                   SSL_R_DECRYPTION_FAILED);
-            goto err;
-        }
-        outl += padl;
-        if (outl > SSL_MAX_MASTER_KEY_LENGTH) {
-            SSLerr(SSL_F_SSL3_GET_CLIENT_KEY_EXCHANGE,
-                   SSL_R_DATA_LENGTH_TOO_LONG);
-            goto err;
-        }
-        if (!((pms[0] == (s->client_version >> 8)) && (pms[1] == (s->client_version & 0xff)))) {
-            /* The premaster secret must contain the same version number as the
-             * ClientHello to detect version rollback attacks (strangely, the
-             * protocol does not offer such protection for DH ciphersuites).
-             * However, buggy clients exist that send random bytes instead of
-             * the protocol version.
-             * If SSL_OP_TLS_ROLLBACK_BUG is set, tolerate such clients.
-             * (Perhaps we should have a separate BUG value for the Kerberos cipher)
-             */
-            if (!(s->options & SSL_OP_TLS_ROLLBACK_BUG)) {
-                SSLerr(SSL_F_SSL3_GET_CLIENT_KEY_EXCHANGE,
-                       SSL_AD_DECODE_ERROR);
-                goto err;
-            }
-        }
-
-        EVP_CIPHER_CTX_cleanup(&ciph_ctx);
-
-        s->session->master_key_length = s->method->ssl3_enc->generate_master_secret(s,
-                                                                                    s->session->master_key, pms, outl);
-
-        if (kssl_ctx->client_princ) {
-            size_t len = strlen(kssl_ctx->client_princ);
-            if (len < SSL_MAX_KRB5_PRINCIPAL_LENGTH) {
-                s->session->krb5_client_princ_len = len;
-                memcpy(s->session->krb5_client_princ, kssl_ctx->client_princ, len);
-            }
-        }
-
-        /*  Was doing kssl_ctx_free() here,
-        **  but it caused problems for apache.
-        **  kssl_ctx = kssl_ctx_free(kssl_ctx);
-        **  if (s->kssl_ctx)  s->kssl_ctx = NULL;
-        */
-    } else
-#endif /* OPENSSL_NO_KRB5 */
-
 #ifndef OPENSSL_NO_ECDH
         if (alg_k & (SSL_kEECDH | SSL_kECDHr | SSL_kECDHe)) {
         int ret = 1;

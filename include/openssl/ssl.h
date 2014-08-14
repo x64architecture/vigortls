@@ -463,10 +463,6 @@ struct ssl_session_st {
     unsigned int sid_ctx_length;
     unsigned char sid_ctx[SSL_MAX_SID_CTX_LENGTH];
 
-#ifndef OPENSSL_NO_KRB5
-    unsigned int krb5_client_princ_len;
-    unsigned char krb5_client_princ[SSL_MAX_KRB5_PRINCIPAL_LENGTH];
-#endif /* OPENSSL_NO_KRB5 */
 #ifndef OPENSSL_NO_PSK
     char *psk_identity_hint;
     char *psk_identity;
@@ -1191,10 +1187,6 @@ struct ssl_st {
 
     int error;      /* error bytes to be written */
     int error_code; /* actual code */
-
-#ifndef OPENSSL_NO_KRB5
-    KSSL_CTX *kssl_ctx; /* Kerberos 5 context */
-#endif                  /* OPENSSL_NO_KRB5 */
 
 #ifndef OPENSSL_NO_PSK
     unsigned int (*psk_client_callback)(SSL *ssl, const char *hint, char *identity,

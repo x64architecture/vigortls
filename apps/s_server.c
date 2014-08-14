@@ -1545,9 +1545,6 @@ static int sv_body(char *hostname, int s, unsigned char *context)
     unsigned long l;
     SSL *con = NULL;
     BIO *sbio;
-#ifndef OPENSSL_NO_KRB5
-    KSSL_CTX *kctx;
-#endif
     struct timeval timeout;
     struct timeval *timeoutp;
 
@@ -1577,13 +1574,6 @@ static int sv_body(char *hostname, int s, unsigned char *context)
             tlscstatp.err = bio_err;
             SSL_CTX_set_tlsext_status_arg(ctx, &tlscstatp);
         }
-#ifndef OPENSSL_NO_KRB5
-        if ((kctx = kssl_ctx_new()) != NULL) {
-            SSL_set0_kssl_ctx(con, kctx);
-            kssl_ctx_setstring(kctx, KSSL_SERVICE, KRB5SVC);
-            kssl_ctx_setstring(kctx, KSSL_KEYTAB, KRB5KEYTAB);
-        }
-#endif /* OPENSSL_NO_KRB5 */
         if (context)
             SSL_set_session_id_context(con, context,
                                        strlen((char *)context));
@@ -1895,9 +1885,6 @@ static int init_ssl_connection(SSL *con)
     X509 *peer;
     long verify_error;
     char buf[BUFSIZ];
-#ifndef OPENSSL_NO_KRB5
-    char *client_princ;
-#endif
 #ifndef OPENSSL_NO_NEXTPROTONEG
     const unsigned char *next_proto_neg;
     unsigned next_proto_neg_len;
@@ -1973,13 +1960,6 @@ static int init_ssl_connection(SSL *con)
     if (SSL_ctrl(con, SSL_CTRL_GET_FLAGS, 0, NULL) & TLS1_FLAGS_TLS_PADDING_BUG)
         BIO_printf(bio_s_out,
                    "Peer has incorrect TLSv1 block padding\n");
-#ifndef OPENSSL_NO_KRB5
-    client_princ = kssl_ctx_get0_client_princ(SSL_get0_kssl_ctx(con));
-    if (client_princ != NULL) {
-        BIO_printf(bio_s_out, "Kerberos peer principal is %s\n",
-                   client_princ);
-    }
-#endif /* OPENSSL_NO_KRB5 */
     BIO_printf(bio_s_out, "Secure Renegotiation IS%s supported\n",
                SSL_get_secure_renegotiation_support(con) ? "" : " NOT");
     if (keymatexportlabel != NULL) {
@@ -2022,9 +2002,6 @@ err:
         BIO_free(bio);
     return (ret);
 }
-#ifndef OPENSSL_NO_KRB5
-char *client_princ;
-#endif
 
 #if 0
 static int load_CA(SSL_CTX *ctx, char *file)
@@ -2055,9 +2032,6 @@ static int www_body(char *hostname, int s, unsigned char *context)
     SSL *con;
     const SSL_CIPHER *c;
     BIO *io, *ssl_bio, *sbio;
-#ifndef OPENSSL_NO_KRB5
-    KSSL_CTX *kctx;
-#endif
 
     buf = malloc(bufsize);
     if (buf == NULL)
@@ -2088,12 +2062,6 @@ static int www_body(char *hostname, int s, unsigned char *context)
         SSL_set_tlsext_debug_callback(con, tlsext_cb);
         SSL_set_tlsext_debug_arg(con, bio_s_out);
     }
-#ifndef OPENSSL_NO_KRB5
-    if ((kctx = kssl_ctx_new()) != NULL) {
-        kssl_ctx_setstring(kctx, KSSL_SERVICE, KRB5SVC);
-        kssl_ctx_setstring(kctx, KSSL_KEYTAB, KRB5KEYTAB);
-    }
-#endif /* OPENSSL_NO_KRB5 */
     if (context)
         SSL_set_session_id_context(con, context,
                                    strlen((char *)context));
