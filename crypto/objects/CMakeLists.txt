@@ -1,5 +1,12 @@
 include_directories(${CMAKE_CURRENT_BINARY_DIR} .. ../../include . ../asn1 ../evp ../modes)
 
+add_custom_target(
+	obj_dat.h 
+	ALL 
+	WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
+	COMMAND perl obj_dat.pl ../../include/openssl/obj_mac.h ${CMAKE_CURRENT_BINARY_DIR}/obj_dat.h
+)
+
 add_library(
 	objects
 
@@ -11,3 +18,5 @@ add_library(
 	obj_err.c
 	obj_xref.c
 )
+
+add_dependencies(objects obj_dat.h)

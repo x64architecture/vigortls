@@ -578,7 +578,6 @@ void ssl_load_ciphers(void)
     ssl_cipher_methods[SSL_ENC_CAMELLIA128_IDX] = EVP_get_cipherbyname(SN_camellia_128_cbc);
     ssl_cipher_methods[SSL_ENC_CAMELLIA256_IDX] = EVP_get_cipherbyname(SN_camellia_256_cbc);
     ssl_cipher_methods[SSL_ENC_GOST89_IDX] = EVP_get_cipherbyname(SN_gost89_cnt);
-    ssl_cipher_methods[SSL_ENC_SEED_IDX] = EVP_get_cipherbyname(SN_seed_cbc);
 
     ssl_cipher_methods[SSL_ENC_AES128GCM_IDX] = EVP_get_cipherbyname(SN_aes_128_gcm);
     ssl_cipher_methods[SSL_ENC_AES256GCM_IDX] = EVP_get_cipherbyname(SN_aes_256_gcm);

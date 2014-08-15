@@ -26,6 +26,13 @@ function(perlasm dest src)
 	)
 endfunction()
 
+add_custom_target(
+	obj_mac.h
+	ALL 
+	WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/objects" 
+	COMMAND perl objects.pl objects.txt obj_mac.num obj_mac.h && mv obj_mac.h ../../include/openssl/obj_mac.h
+)
+
 if (${ARCH} STREQUAL "x86_64")
 	set(
 		CRYPTO_ARCH_SOURCES
@@ -175,3 +182,5 @@ SET_SOURCE_FILES_PROPERTIES(mem_clr.c PROPERTIES COMPILE_FLAGS -O0)
 
 perlasm(x86_64cpuid.${ASM_EXT} x86_64cpuid.pl)
 perlasm(x86cpuid.${ASM_EXT} x86cpuid.pl)
+
+add_dependencies(x509v3 obj_mac.h)
