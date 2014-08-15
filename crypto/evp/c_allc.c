@@ -57,6 +57,8 @@
  */
 
 #include <stdio.h>
+
+#include <openssl/opensslconf.h>
 #include <openssl/evp.h>
 #include <openssl/pkcs12.h>
 #include <openssl/objects.h>
@@ -216,5 +218,9 @@ void OpenSSL_add_all_ciphers(void)
     EVP_add_cipher(EVP_camellia_256_ofb());
     EVP_add_cipher_alias(SN_camellia_256_cbc, "CAMELLIA256");
     EVP_add_cipher_alias(SN_camellia_256_cbc, "camellia256");
+#endif
+
+#ifndef OPENSSL_NO_CHACHA
+	EVP_add_cipher(EVP_chacha20());
 #endif
 }

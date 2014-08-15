@@ -11,21 +11,21 @@
  * This package is an SSL implementation written
  * by Eric Young (eay@cryptsoft.com).
  * The implementation was written so as to conform with Netscapes SSL.
- * 
+ *
  * This library is free for commercial and non-commercial use as long as
  * the following conditions are aheared to.  The following conditions
  * apply to all code found in this distribution, be it the RC4, RSA,
  * lhash, DES, etc., code; not just the SSL code.  The SSL documentation
  * included with this distribution is covered by the same copyright terms
  * except that the holder is Tim Hudson (tjh@cryptsoft.com).
- * 
+ *
  * Copyright remains Eric Young's, and as such any Copyright notices in
  * the code are not to be removed.
  * If this package is used in a product, Eric Young should be given attribution
  * as the author of the parts of the library used.
  * This can be in the form of a textual message at program startup or
  * in documentation (online or textual) provided with the package.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
  * are met:
@@ -40,10 +40,10 @@
  *     Eric Young (eay@cryptsoft.com)"
  *    The word 'cryptographic' can be left out if the rouines from the library
  *    being used are not cryptographic related :-).
- * 4. If you include any Windows specific code (or a derivative thereof) from 
+ * 4. If you include any Windows specific code (or a derivative thereof) from
  *    the apps directory (application code) you must include an acknowledgement:
  *    "This product includes software written by Tim Hudson (tjh@cryptsoft.com)"
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY ERIC YOUNG ``AS IS'' AND
  * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -55,7 +55,7 @@
  * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
- * 
+ *
  * The licence and distribution terms for any publically available version or
  * derivative of this code cannot be changed.  i.e. this code cannot simply be
  * copied and put under another distribution licence
@@ -175,7 +175,8 @@
 
 #define SN_X9_62_id_characteristic_two_basis "id-characteristic-two-basis"
 #define NID_X9_62_id_characteristic_two_basis 680
-#define OBJ_X9_62_id_characteristic_two_basis OBJ_X9_62_characteristic_two_field, 3L
+#define OBJ_X9_62_id_characteristic_two_basis \
+    OBJ_X9_62_characteristic_two_field, 3L
 
 #define SN_X9_62_onBasis "onBasis"
 #define NID_X9_62_onBasis 681
@@ -3673,13 +3674,16 @@
 #define NID_cryptocom 806
 #define OBJ_cryptocom OBJ_member_body, 643L, 2L, 9L
 
-#define SN_id_GostR3411_94_with_GostR3410_2001 "id-GostR3411-94-with-GostR3410-2001"
-#define LN_id_GostR3411_94_with_GostR3410_2001 "GOST R 34.11-94 with GOST R 34.10-2001"
+#define SN_id_GostR3411_94_with_GostR3410_2001 \
+    "id-GostR3411-94-with-GostR3410-2001"
+#define LN_id_GostR3411_94_with_GostR3410_2001 \
+    "GOST R 34.11-94 with GOST R 34.10-2001"
 #define NID_id_GostR3411_94_with_GostR3410_2001 807
 #define OBJ_id_GostR3411_94_with_GostR3410_2001 OBJ_cryptopro, 3L
 
 #define SN_id_GostR3411_94_with_GostR3410_94 "id-GostR3411-94-with-GostR3410-94"
-#define LN_id_GostR3411_94_with_GostR3410_94 "GOST R 34.11-94 with GOST R 34.10-94"
+#define LN_id_GostR3411_94_with_GostR3410_94 \
+    "GOST R 34.11-94 with GOST R 34.10-94"
 #define NID_id_GostR3411_94_with_GostR3410_94 808
 #define OBJ_id_GostR3411_94_with_GostR3410_94 OBJ_cryptopro, 4L
 
@@ -3731,7 +3735,8 @@
 #define NID_id_GostR3410_94DH 818
 #define OBJ_id_GostR3410_94DH OBJ_cryptopro, 99L
 
-#define SN_id_Gost28147_89_CryptoPro_KeyMeshing "id-Gost28147-89-CryptoPro-KeyMeshing"
+#define SN_id_Gost28147_89_CryptoPro_KeyMeshing \
+    "id-Gost28147-89-CryptoPro-KeyMeshing"
 #define NID_id_Gost28147_89_CryptoPro_KeyMeshing 819
 #define OBJ_id_Gost28147_89_CryptoPro_KeyMeshing OBJ_cryptopro, 14L, 1L
 
@@ -3751,31 +3756,38 @@
 #define NID_id_Gost28147_89_TestParamSet 823
 #define OBJ_id_Gost28147_89_TestParamSet OBJ_cryptopro, 31L, 0L
 
-#define SN_id_Gost28147_89_CryptoPro_A_ParamSet "id-Gost28147-89-CryptoPro-A-ParamSet"
+#define SN_id_Gost28147_89_CryptoPro_A_ParamSet \
+    "id-Gost28147-89-CryptoPro-A-ParamSet"
 #define NID_id_Gost28147_89_CryptoPro_A_ParamSet 824
 #define OBJ_id_Gost28147_89_CryptoPro_A_ParamSet OBJ_cryptopro, 31L, 1L
 
-#define SN_id_Gost28147_89_CryptoPro_B_ParamSet "id-Gost28147-89-CryptoPro-B-ParamSet"
+#define SN_id_Gost28147_89_CryptoPro_B_ParamSet \
+    "id-Gost28147-89-CryptoPro-B-ParamSet"
 #define NID_id_Gost28147_89_CryptoPro_B_ParamSet 825
 #define OBJ_id_Gost28147_89_CryptoPro_B_ParamSet OBJ_cryptopro, 31L, 2L
 
-#define SN_id_Gost28147_89_CryptoPro_C_ParamSet "id-Gost28147-89-CryptoPro-C-ParamSet"
+#define SN_id_Gost28147_89_CryptoPro_C_ParamSet \
+    "id-Gost28147-89-CryptoPro-C-ParamSet"
 #define NID_id_Gost28147_89_CryptoPro_C_ParamSet 826
 #define OBJ_id_Gost28147_89_CryptoPro_C_ParamSet OBJ_cryptopro, 31L, 3L
 
-#define SN_id_Gost28147_89_CryptoPro_D_ParamSet "id-Gost28147-89-CryptoPro-D-ParamSet"
+#define SN_id_Gost28147_89_CryptoPro_D_ParamSet \
+    "id-Gost28147-89-CryptoPro-D-ParamSet"
 #define NID_id_Gost28147_89_CryptoPro_D_ParamSet 827
 #define OBJ_id_Gost28147_89_CryptoPro_D_ParamSet OBJ_cryptopro, 31L, 4L
 
-#define SN_id_Gost28147_89_CryptoPro_Oscar_1_1_ParamSet "id-Gost28147-89-CryptoPro-Oscar-1-1-ParamSet"
+#define SN_id_Gost28147_89_CryptoPro_Oscar_1_1_ParamSet \
+    "id-Gost28147-89-CryptoPro-Oscar-1-1-ParamSet"
 #define NID_id_Gost28147_89_CryptoPro_Oscar_1_1_ParamSet 828
 #define OBJ_id_Gost28147_89_CryptoPro_Oscar_1_1_ParamSet OBJ_cryptopro, 31L, 5L
 
-#define SN_id_Gost28147_89_CryptoPro_Oscar_1_0_ParamSet "id-Gost28147-89-CryptoPro-Oscar-1-0-ParamSet"
+#define SN_id_Gost28147_89_CryptoPro_Oscar_1_0_ParamSet \
+    "id-Gost28147-89-CryptoPro-Oscar-1-0-ParamSet"
 #define NID_id_Gost28147_89_CryptoPro_Oscar_1_0_ParamSet 829
 #define OBJ_id_Gost28147_89_CryptoPro_Oscar_1_0_ParamSet OBJ_cryptopro, 31L, 6L
 
-#define SN_id_Gost28147_89_CryptoPro_RIC_1_ParamSet "id-Gost28147-89-CryptoPro-RIC-1-ParamSet"
+#define SN_id_Gost28147_89_CryptoPro_RIC_1_ParamSet \
+    "id-Gost28147-89-CryptoPro-RIC-1-ParamSet"
 #define NID_id_Gost28147_89_CryptoPro_RIC_1_ParamSet 830
 #define OBJ_id_Gost28147_89_CryptoPro_RIC_1_ParamSet OBJ_cryptopro, 31L, 7L
 
@@ -3783,31 +3795,38 @@
 #define NID_id_GostR3410_94_TestParamSet 831
 #define OBJ_id_GostR3410_94_TestParamSet OBJ_cryptopro, 32L, 0L
 
-#define SN_id_GostR3410_94_CryptoPro_A_ParamSet "id-GostR3410-94-CryptoPro-A-ParamSet"
+#define SN_id_GostR3410_94_CryptoPro_A_ParamSet \
+    "id-GostR3410-94-CryptoPro-A-ParamSet"
 #define NID_id_GostR3410_94_CryptoPro_A_ParamSet 832
 #define OBJ_id_GostR3410_94_CryptoPro_A_ParamSet OBJ_cryptopro, 32L, 2L
 
-#define SN_id_GostR3410_94_CryptoPro_B_ParamSet "id-GostR3410-94-CryptoPro-B-ParamSet"
+#define SN_id_GostR3410_94_CryptoPro_B_ParamSet \
+    "id-GostR3410-94-CryptoPro-B-ParamSet"
 #define NID_id_GostR3410_94_CryptoPro_B_ParamSet 833
 #define OBJ_id_GostR3410_94_CryptoPro_B_ParamSet OBJ_cryptopro, 32L, 3L
 
-#define SN_id_GostR3410_94_CryptoPro_C_ParamSet "id-GostR3410-94-CryptoPro-C-ParamSet"
+#define SN_id_GostR3410_94_CryptoPro_C_ParamSet \
+    "id-GostR3410-94-CryptoPro-C-ParamSet"
 #define NID_id_GostR3410_94_CryptoPro_C_ParamSet 834
 #define OBJ_id_GostR3410_94_CryptoPro_C_ParamSet OBJ_cryptopro, 32L, 4L
 
-#define SN_id_GostR3410_94_CryptoPro_D_ParamSet "id-GostR3410-94-CryptoPro-D-ParamSet"
+#define SN_id_GostR3410_94_CryptoPro_D_ParamSet \
+    "id-GostR3410-94-CryptoPro-D-ParamSet"
 #define NID_id_GostR3410_94_CryptoPro_D_ParamSet 835
 #define OBJ_id_GostR3410_94_CryptoPro_D_ParamSet OBJ_cryptopro, 32L, 5L
 
-#define SN_id_GostR3410_94_CryptoPro_XchA_ParamSet "id-GostR3410-94-CryptoPro-XchA-ParamSet"
+#define SN_id_GostR3410_94_CryptoPro_XchA_ParamSet \
+    "id-GostR3410-94-CryptoPro-XchA-ParamSet"
 #define NID_id_GostR3410_94_CryptoPro_XchA_ParamSet 836
 #define OBJ_id_GostR3410_94_CryptoPro_XchA_ParamSet OBJ_cryptopro, 33L, 1L
 
-#define SN_id_GostR3410_94_CryptoPro_XchB_ParamSet "id-GostR3410-94-CryptoPro-XchB-ParamSet"
+#define SN_id_GostR3410_94_CryptoPro_XchB_ParamSet \
+    "id-GostR3410-94-CryptoPro-XchB-ParamSet"
 #define NID_id_GostR3410_94_CryptoPro_XchB_ParamSet 837
 #define OBJ_id_GostR3410_94_CryptoPro_XchB_ParamSet OBJ_cryptopro, 33L, 2L
 
-#define SN_id_GostR3410_94_CryptoPro_XchC_ParamSet "id-GostR3410-94-CryptoPro-XchC-ParamSet"
+#define SN_id_GostR3410_94_CryptoPro_XchC_ParamSet \
+    "id-GostR3410-94-CryptoPro-XchC-ParamSet"
 #define NID_id_GostR3410_94_CryptoPro_XchC_ParamSet 838
 #define OBJ_id_GostR3410_94_CryptoPro_XchC_ParamSet OBJ_cryptopro, 33L, 3L
 
@@ -3815,23 +3834,28 @@
 #define NID_id_GostR3410_2001_TestParamSet 839
 #define OBJ_id_GostR3410_2001_TestParamSet OBJ_cryptopro, 35L, 0L
 
-#define SN_id_GostR3410_2001_CryptoPro_A_ParamSet "id-GostR3410-2001-CryptoPro-A-ParamSet"
+#define SN_id_GostR3410_2001_CryptoPro_A_ParamSet \
+    "id-GostR3410-2001-CryptoPro-A-ParamSet"
 #define NID_id_GostR3410_2001_CryptoPro_A_ParamSet 840
 #define OBJ_id_GostR3410_2001_CryptoPro_A_ParamSet OBJ_cryptopro, 35L, 1L
 
-#define SN_id_GostR3410_2001_CryptoPro_B_ParamSet "id-GostR3410-2001-CryptoPro-B-ParamSet"
+#define SN_id_GostR3410_2001_CryptoPro_B_ParamSet \
+    "id-GostR3410-2001-CryptoPro-B-ParamSet"
 #define NID_id_GostR3410_2001_CryptoPro_B_ParamSet 841
 #define OBJ_id_GostR3410_2001_CryptoPro_B_ParamSet OBJ_cryptopro, 35L, 2L
 
-#define SN_id_GostR3410_2001_CryptoPro_C_ParamSet "id-GostR3410-2001-CryptoPro-C-ParamSet"
+#define SN_id_GostR3410_2001_CryptoPro_C_ParamSet \
+    "id-GostR3410-2001-CryptoPro-C-ParamSet"
 #define NID_id_GostR3410_2001_CryptoPro_C_ParamSet 842
 #define OBJ_id_GostR3410_2001_CryptoPro_C_ParamSet OBJ_cryptopro, 35L, 3L
 
-#define SN_id_GostR3410_2001_CryptoPro_XchA_ParamSet "id-GostR3410-2001-CryptoPro-XchA-ParamSet"
+#define SN_id_GostR3410_2001_CryptoPro_XchA_ParamSet \
+    "id-GostR3410-2001-CryptoPro-XchA-ParamSet"
 #define NID_id_GostR3410_2001_CryptoPro_XchA_ParamSet 843
 #define OBJ_id_GostR3410_2001_CryptoPro_XchA_ParamSet OBJ_cryptopro, 36L, 0L
 
-#define SN_id_GostR3410_2001_CryptoPro_XchB_ParamSet "id-GostR3410-2001-CryptoPro-XchB-ParamSet"
+#define SN_id_GostR3410_2001_CryptoPro_XchB_ParamSet \
+    "id-GostR3410-2001-CryptoPro-XchB-ParamSet"
 #define NID_id_GostR3410_2001_CryptoPro_XchB_ParamSet 844
 #define OBJ_id_GostR3410_2001_CryptoPro_XchB_ParamSet OBJ_cryptopro, 36L, 1L
 
@@ -3866,18 +3890,23 @@
 #define NID_id_GostR3410_2001_cc 851
 #define OBJ_id_GostR3410_2001_cc OBJ_cryptocom, 1L, 5L, 4L
 
-#define SN_id_GostR3411_94_with_GostR3410_94_cc "id-GostR3411-94-with-GostR3410-94-cc"
-#define LN_id_GostR3411_94_with_GostR3410_94_cc "GOST R 34.11-94 with GOST R 34.10-94 Cryptocom"
+#define SN_id_GostR3411_94_with_GostR3410_94_cc \
+    "id-GostR3411-94-with-GostR3410-94-cc"
+#define LN_id_GostR3411_94_with_GostR3410_94_cc \
+    "GOST R 34.11-94 with GOST R 34.10-94 Cryptocom"
 #define NID_id_GostR3411_94_with_GostR3410_94_cc 852
 #define OBJ_id_GostR3411_94_with_GostR3410_94_cc OBJ_cryptocom, 1L, 3L, 3L
 
-#define SN_id_GostR3411_94_with_GostR3410_2001_cc "id-GostR3411-94-with-GostR3410-2001-cc"
-#define LN_id_GostR3411_94_with_GostR3410_2001_cc "GOST R 34.11-94 with GOST R 34.10-2001 Cryptocom"
+#define SN_id_GostR3411_94_with_GostR3410_2001_cc \
+    "id-GostR3411-94-with-GostR3410-2001-cc"
+#define LN_id_GostR3411_94_with_GostR3410_2001_cc \
+    "GOST R 34.11-94 with GOST R 34.10-2001 Cryptocom"
 #define NID_id_GostR3411_94_with_GostR3410_2001_cc 853
 #define OBJ_id_GostR3411_94_with_GostR3410_2001_cc OBJ_cryptocom, 1L, 3L, 4L
 
 #define SN_id_GostR3410_2001_ParamSet_cc "id-GostR3410-2001-ParamSet-cc"
-#define LN_id_GostR3410_2001_ParamSet_cc "GOST R 3410-2001 Parameter Set Cryptocom"
+#define LN_id_GostR3410_2001_ParamSet_cc \
+    "GOST R 3410-2001 Parameter Set Cryptocom"
 #define NID_id_GostR3410_2001_ParamSet_cc 854
 #define OBJ_id_GostR3410_2001_ParamSet_cc OBJ_cryptocom, 1L, 8L, 1L
 
@@ -4029,3 +4058,7 @@
 #define SN_aes_256_cbc_hmac_sha1 "AES-256-CBC-HMAC-SHA1"
 #define LN_aes_256_cbc_hmac_sha1 "aes-256-cbc-hmac-sha1"
 #define NID_aes_256_cbc_hmac_sha1 918
+
+#define SN_chacha20 "ChaCha"
+#define LN_chacha20 "chacha"
+#define NID_chacha20 920
