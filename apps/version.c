@@ -172,7 +172,7 @@ int version_main(int argc, char **argv)
     if (version)
         printf("%s\n", OPENSSL_VERSION_TEXT);
     if (date)
-        printf("Built on: %s at %s\n", __DATE__, __TIME__);
+        printf("Built on: %s at %s\n", BUILDDATE, BUILDTIME);
     if (platform)
         printf("Platform: %s\n", PLATFORM);
     if (options) {

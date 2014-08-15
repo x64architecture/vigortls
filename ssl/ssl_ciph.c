@@ -1447,8 +1447,9 @@ STACK_OF(SSL_CIPHER) * ssl_create_cipher_list(const SSL_METHOD *ssl_method,
     ssl_cipher_apply_rule(0, SSL_kEECDH, 0, 0, 0, 0, 0, CIPHER_ADD, -1, &head, &tail);
     ssl_cipher_apply_rule(0, SSL_kEECDH, 0, 0, 0, 0, 0, CIPHER_DEL, -1, &head, &tail);
 
-    /* AES is our preferred symmetric cipher */
+    /* AES is our preferred symmetric cipher CHACHA20 is our next prefered symmetric cipher */
     ssl_cipher_apply_rule(0, 0, 0, SSL_AES, 0, 0, 0, CIPHER_ADD, -1, &head, &tail);
+    ssl_cipher_apply_rule(0, 0, 0, SSL_CHACHA20POLY1305, 0, 0, 0, CIPHER_ADD, -1, &head, &tail);
 
     /* Temporarily enable everything else for sorting */
     ssl_cipher_apply_rule(0, 0, 0, 0, 0, 0, 0, CIPHER_ADD, -1, &head, &tail);
