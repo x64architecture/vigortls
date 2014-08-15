@@ -40,7 +40,7 @@ void ChaCha_set_key(ChaCha_ctx *ctx, const unsigned char *key,
 void ChaCha_set_iv(ChaCha_ctx *ctx, const unsigned char *iv,
                    const unsigned char *counter);
 void ChaCha(ChaCha_ctx *ctx, unsigned char *out, const unsigned char *in,
-            size_t len);
+            size_t inlen);
 
 void CRYPTO_chacha_20(unsigned char *out, const unsigned char *in, size_t inlen,
                       const unsigned char key[32], const unsigned char nonce[8], size_t counter);
