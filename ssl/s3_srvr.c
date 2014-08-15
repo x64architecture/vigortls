@@ -457,8 +457,8 @@ int ssl3_accept(SSL *s)
                            /* SRP: send ServerKeyExchange */
                     || (alg_k & SSL_kSRP)
 #endif
-                    || (alg_k & (SSL_kDHr | SSL_kDHd | SSL_kEDH))
-                    || (alg_k & SSL_kEECDH)
+                    || (alg_k & (SSL_kDHr | SSL_kDHd | SSL_kDHE))
+                    || (alg_k & SSL_kECDHE)
                     || ((alg_k & SSL_kRSA)
                         && (s->cert->pkeys[SSL_PKEY_RSA_ENC].privatekey == NULL))) {
                     ret = ssl3_send_server_key_exchange(s);
@@ -1389,7 +1389,7 @@ int ssl3_send_server_key_exchange(SSL *s)
             r[0] = rsa->n;
             r[1] = rsa->e;
             s->s3->tmp.use_rsa_tmp = 1;
-        } else if (type & SSL_kEDH) {
+        } else if (type & SSL_kDHE) {
             dhp = cert->dh_tmp;
             if ((dhp == NULL) && (s->cert->dh_tmp_cb != NULL))
                 dhp = s->cert->dh_tmp_cb(s, 0, 0);
@@ -1429,7 +1429,7 @@ int ssl3_send_server_key_exchange(SSL *s)
             r[2] = dh->pub_key;
         } else
 #ifndef OPENSSL_NO_ECDH
-            if (type & SSL_kEECDH) {
+            if (type & SSL_kECDHE) {
             const EC_GROUP *group;
 
             ecdhp = cert->ecdh_tmp;
@@ -1591,7 +1591,7 @@ int ssl3_send_server_key_exchange(SSL *s)
         }
 
 #ifndef OPENSSL_NO_ECDH
-        if (type & SSL_kEECDH) {
+        if (type & SSL_kECDHE) {
             /* XXX: For now, we only support named (not generic) curves.
              * In this situation, the serverKeyExchange message has:
              * [1 byte CurveType], [2 byte CurveName]
@@ -1913,7 +1913,7 @@ int ssl3_get_client_key_exchange(SSL *s)
                                                                                     s->session->master_key,
                                                                                     p, i);
         vigortls_zeroize(p, i);
-    } else if (alg_k & (SSL_kEDH | SSL_kDHr | SSL_kDHd)) {
+    } else if (alg_k & (SSL_kDHE | SSL_kDHr | SSL_kDHd)) {
         n2s(p, i);
         if (n != i + 2) {
             if (!(s->options & SSL_OP_SSLEAY_080_CLIENT_DH_BUG)) {
@@ -1962,7 +1962,7 @@ int ssl3_get_client_key_exchange(SSL *s)
         vigortls_zeroize(p, i);
     } else
 #ifndef OPENSSL_NO_ECDH
-        if (alg_k & (SSL_kEECDH | SSL_kECDHr | SSL_kECDHe)) {
+        if (alg_k & (SSL_kECDHE | SSL_kECDHr | SSL_kECDHe)) {
         int ret = 1;
         int field_size = 0;
         const EC_KEY *tkey;
@@ -2006,7 +2006,7 @@ int ssl3_get_client_key_exchange(SSL *s)
         if (n == 0L) {
             /* Client Publickey was in Client Certificate */
 
-            if (alg_k & SSL_kEECDH) {
+            if (alg_k & SSL_kECDHE) {
                 al = SSL_AD_HANDSHAKE_FAILURE;
                 SSLerr(SSL_F_SSL3_GET_CLIENT_KEY_EXCHANGE, SSL_R_MISSING_TMP_ECDH_KEY);
                 goto f_err;

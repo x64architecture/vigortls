@@ -1583,7 +1583,7 @@ int ssl_prepare_clienthello_tlsext(SSL *s)
 
         alg_k = c->algorithm_mkey;
         alg_a = c->algorithm_auth;
-        if ((alg_k & (SSL_kEECDH | SSL_kECDHr | SSL_kECDHe) || (alg_a & SSL_aECDSA))) {
+        if ((alg_k & (SSL_kECDHE | SSL_kECDHr | SSL_kECDHe) || (alg_a & SSL_aECDSA))) {
             using_ecc = 1;
             break;
         }
@@ -1661,7 +1661,7 @@ int ssl_prepare_serverhello_tlsext(SSL *s)
 
     unsigned long alg_k = s->s3->tmp.new_cipher->algorithm_mkey;
     unsigned long alg_a = s->s3->tmp.new_cipher->algorithm_auth;
-    int using_ecc = (alg_k & (SSL_kEECDH | SSL_kECDHr | SSL_kECDHe)) || (alg_a & SSL_aECDSA);
+    int using_ecc = (alg_k & (SSL_kECDHE | SSL_kECDHr | SSL_kECDHe)) || (alg_a & SSL_aECDSA);
     using_ecc = using_ecc && (s->session->tlsext_ecpointformatlist != NULL);
 
     if (using_ecc) {
@@ -1840,7 +1840,7 @@ int ssl_check_serverhello_tlsext(SSL *s)
      */
     unsigned long alg_k = s->s3->tmp.new_cipher->algorithm_mkey;
     unsigned long alg_a = s->s3->tmp.new_cipher->algorithm_auth;
-    if ((s->tlsext_ecpointformatlist != NULL) && (s->tlsext_ecpointformatlist_length > 0) && (s->session->tlsext_ecpointformatlist != NULL) && (s->session->tlsext_ecpointformatlist_length > 0) && ((alg_k & (SSL_kEECDH | SSL_kECDHr | SSL_kECDHe)) || (alg_a & SSL_aECDSA))) {
+    if ((s->tlsext_ecpointformatlist != NULL) && (s->tlsext_ecpointformatlist_length > 0) && (s->session->tlsext_ecpointformatlist != NULL) && (s->session->tlsext_ecpointformatlist_length > 0) && ((alg_k & (SSL_kECDHE | SSL_kECDHr | SSL_kECDHe)) || (alg_a & SSL_aECDSA))) {
         /* we are using an ECC cipher */
         size_t i;
         unsigned char *list;

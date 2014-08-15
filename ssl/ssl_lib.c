@@ -1899,7 +1899,7 @@ void ssl_set_cert_masks(CERT *c, const SSL_CIPHER *cipher)
         mask_k |= SSL_kRSA;
 
     if (dh_tmp)
-        mask_k |= SSL_kEDH;
+        mask_k |= SSL_kDHE;
 
     if (dh_rsa)
         mask_k |= SSL_kDHr;
@@ -1955,7 +1955,7 @@ void ssl_set_cert_masks(CERT *c, const SSL_CIPHER *cipher)
 
 #ifndef OPENSSL_NO_ECDH
     if (have_ecdh_tmp)
-        mask_k |= SSL_kEECDH;
+        mask_k |= SSL_kECDHE;
 #endif
 
 #ifndef OPENSSL_NO_PSK
@@ -2038,13 +2038,13 @@ CERT_PKEY *ssl_get_server_send_pkey(const SSL *s)
     alg_a = s->s3->tmp.new_cipher->algorithm_auth;
 
     if (alg_k & (SSL_kECDHr | SSL_kECDHe)) {
-        /* we don't need to look at SSL_kEECDH
+        /* we don't need to look at SSL_kECDHE
          * since no certificate is needed for
          * anon ECDH and for authenticated
-         * EECDH, the check for the auth
+         * ECDH, the check for the auth
          * algorithm will set i correctly
          * NOTE: For ECDH-RSA, we need an ECC
-         * not an RSA cert but for EECDH-RSA
+         * not an RSA cert but for ECDH-RSA
          * we need an RSA cert. Placing the
          * checks for SSL_kECDH before RSA
          * checks ensures the correct cert is chosen.

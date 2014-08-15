@@ -1343,7 +1343,7 @@ int ssl3_get_key_exchange(SSL *s)
         }
         s->session->sess_cert->peer_rsa_tmp = rsa;
         rsa = NULL;
-    } else if (alg_k & SSL_kEDH) {
+    } else if (alg_k & SSL_kDHE) {
         if ((dh = DH_new()) == NULL) {
             SSLerr(SSL_F_SSL3_GET_KEY_EXCHANGE, ERR_R_DH_LIB);
             goto err;
@@ -1405,7 +1405,7 @@ int ssl3_get_key_exchange(SSL *s)
     }
 
 #ifndef OPENSSL_NO_ECDH
-    else if (alg_k & SSL_kEECDH) {
+    else if (alg_k & SSL_kECDHE) {
         EC_GROUP *ngroup;
         const EC_GROUP *group;
 
@@ -2014,7 +2014,7 @@ int ssl3_send_client_key_exchange(SSL *s)
                                                                                         tmp_buf, sizeof tmp_buf);
             vigortls_zeroize(tmp_buf, sizeof tmp_buf);
         }
-        else if (alg_k & (SSL_kEDH | SSL_kDHr | SSL_kDHd)) {
+        else if (alg_k & (SSL_kDHE | SSL_kDHr | SSL_kDHd)) {
             DH *dh_srvr, *dh_clnt;
 
             if (s->session->sess_cert == NULL) {
@@ -2072,7 +2072,7 @@ int ssl3_send_client_key_exchange(SSL *s)
         }
 
 #ifndef OPENSSL_NO_ECDH
-        else if (alg_k & (SSL_kEECDH | SSL_kECDHr | SSL_kECDHe)) {
+        else if (alg_k & (SSL_kECDHE | SSL_kECDHr | SSL_kECDHe)) {
             const EC_GROUP *srvr_group = NULL;
             EC_KEY *tkey;
             int ecdh_clnt_cert = 0;
@@ -2707,7 +2707,7 @@ int ssl3_check_cert_and_algorithm(SSL *s)
         SSLerr(SSL_F_SSL3_CHECK_CERT_AND_ALGORITHM, SSL_R_MISSING_RSA_ENCRYPTING_CERT);
         goto f_err;
     }
-    if ((alg_k & SSL_kEDH) && !(has_bits(i, EVP_PK_DH | EVP_PKT_EXCH) || (dh != NULL))) {
+    if ((alg_k & SSL_kDHE) && !(has_bits(i, EVP_PK_DH | EVP_PKT_EXCH) || (dh != NULL))) {
         SSLerr(SSL_F_SSL3_CHECK_CERT_AND_ALGORITHM, SSL_R_MISSING_DH_KEY);
         goto f_err;
     } else if ((alg_k & SSL_kDHr) && !has_bits(i, EVP_PK_DH | EVP_PKS_RSA)) {

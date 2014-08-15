@@ -842,7 +842,7 @@ int dtls1_send_client_key_exchange(SSL *s)
                                                                                         s->session->master_key,
                                                                                         tmp_buf, sizeof tmp_buf);
             vigortls_zeroize(tmp_buf, sizeof tmp_buf);
-        } else if (alg_k & (SSL_kEDH | SSL_kDHr | SSL_kDHd)) {
+        } else if (alg_k & (SSL_kDHE | SSL_kDHr | SSL_kDHd)) {
             DH *dh_srvr, *dh_clnt;
 
             if (s->session->sess_cert == NULL) {
@@ -897,7 +897,7 @@ int dtls1_send_client_key_exchange(SSL *s)
             /* perhaps clean things up a bit EAY EAY EAY EAY*/
         }
 #ifndef OPENSSL_NO_ECDH
-        else if (alg_k & (SSL_kEECDH | SSL_kECDHr | SSL_kECDHe)) {
+        else if (alg_k & (SSL_kECDHE | SSL_kECDHr | SSL_kECDHe)) {
             const EC_GROUP *srvr_group = NULL;
             EC_KEY *tkey;
             int ecdh_clnt_cert = 0;
