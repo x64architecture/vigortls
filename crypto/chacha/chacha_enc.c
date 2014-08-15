@@ -42,19 +42,19 @@ void ChaCha(ChaCha_ctx *ctx, unsigned char *out, const unsigned char *in,
             size_t inlen)
 {
     unsigned char *k;
-    int i, len;
+    int i, l;
 
     /* Consume remaining keystream, if there is any left. */
     if (ctx->unused > 0) {
         k = ctx->ks + 64 - ctx->unused;
-        len = (inlen > ctx->unused) ? ctx->unused : inlen;
-        for (i = 0; i < len; i++)
+        l = (inlen > ctx->unused) ? ctx->unused : inlen;
+        for (i = 0; i < l; i++)
             *(out++) = *(in++) ^ *(k++);
-        ctx->unused -= len;
-        inlen -= len;
+        ctx->unused -= l;
+        inlen -= l;
     }
 
-    chacha_encrypt_bytes((chacha_ctx *)ctx, in, out, (uint32_t)len);
+    chacha_encrypt_bytes((chacha_ctx *)ctx, in, out, (uint32_t)inlen);
 }
 
 void CRYPTO_chacha_20(unsigned char *out, const unsigned char *in, size_t inlen,
