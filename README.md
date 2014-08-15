@@ -3,6 +3,8 @@ VigorTLS
 
 VigorTLS is a fork of OpenSSL developed by Kurt Cancemi.
 
+[![Build Status](https://secure.travis-ci.org/VigorTLS/VigorTLS.png)](http://travis-ci.org/VigorTLS/VigorTLS)
+
 Goal
 ====
 
@@ -14,10 +16,10 @@ functions/calls with secure ones, and replacing the unreadable coding style.
 Build instructions
 ==================
 
-1. mkdir build
-2. cd build
-3. cmake ..
-4. make
+1. `mkdir build`
+2. `cd build`
+3. `cmake ..`
+4. `make`
 
 Currently tested operating systems
 ==================================
