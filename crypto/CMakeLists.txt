@@ -26,11 +26,14 @@ function(perlasm dest src)
 	)
 endfunction()
 
-add_custom_target(
-	obj_mac.h
-	ALL 
-	WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/objects" 
-	COMMAND perl objects.pl objects.txt obj_mac.num obj_mac.h && mv obj_mac.h ../../include/openssl/obj_mac.h
+ADD_CUSTOM_COMMAND(OUTPUT ${PROJECT_SOURCE_DIR}/include/openssl/obj_mac.h
+  WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/objects"
+  COMMAND perl objects.pl objects.txt obj_mac.num obj_mac.h && mv obj_mac.h ${PROJECT_SOURCE_DIR}/include/openssl/obj_mac.h
+  DEPENDS ${PROJECT_SOURCE_DIR}/crypto/objects/objects.pl
+)
+
+ADD_CUSTOM_TARGET(obj_mac.h ALL
+   DEPENDS ${PROJECT_SOURCE_DIR}/include/openssl/obj_mac.h
 )
 
 if (${ARCH} STREQUAL "x86_64")
@@ -74,7 +77,6 @@ add_subdirectory(engine)
 add_subdirectory(err)
 add_subdirectory(hmac)
 add_subdirectory(idea)
-add_subdirectory(krb5)
 add_subdirectory(lhash)
 add_subdirectory(md4)
 add_subdirectory(md5)
@@ -111,7 +113,6 @@ add_library(
 
 	cpt_err.c
 	cryptlib.c
-	directory.c
 	ex_data.c
 	malloc_wrapper.c
 	mem_clr.c
@@ -148,7 +149,6 @@ add_library(
 	$<TARGET_OBJECTS:evp>
 	$<TARGET_OBJECTS:hmac>
 	$<TARGET_OBJECTS:idea>
-	$<TARGET_OBJECTS:krb5>
 	$<TARGET_OBJECTS:lhash>
 	$<TARGET_OBJECTS:md4>
 	$<TARGET_OBJECTS:md5>
@@ -183,4 +183,4 @@ SET_SOURCE_FILES_PROPERTIES(mem_clr.c PROPERTIES COMPILE_FLAGS -O0)
 perlasm(x86_64cpuid.${ASM_EXT} x86_64cpuid.pl)
 perlasm(x86cpuid.${ASM_EXT} x86cpuid.pl)
 
-add_dependencies(x509v3 obj_mac.h)
+ADD_DEPENDENCIES(x509v3 obj_mac.h)
