@@ -1431,7 +1431,7 @@ STACK_OF(SSL_CIPHER) * ssl_create_cipher_list(const SSL_METHOD *ssl_method,
      * it is used for allocation.
      */
     num_of_ciphers = ssl_method->num_ciphers();
-    co_list = (CIPHER_ORDER *)malloc(sizeof(CIPHER_ORDER) * num_of_ciphers);
+    co_list = reallocarray(NULL, num_of_ciphers, sizeof(CIPHER_ORDER));
     if (co_list == NULL) {
         SSLerr(SSL_F_SSL_CREATE_CIPHER_LIST, ERR_R_MALLOC_FAILURE);
         return (NULL); /* Failure */
@@ -1447,9 +1447,9 @@ STACK_OF(SSL_CIPHER) * ssl_create_cipher_list(const SSL_METHOD *ssl_method,
     ssl_cipher_apply_rule(0, SSL_kECDHE, 0, 0, 0, 0, 0, CIPHER_ADD, -1, &head, &tail);
     ssl_cipher_apply_rule(0, SSL_kECDHE, 0, 0, 0, 0, 0, CIPHER_DEL, -1, &head, &tail);
 
-    /* AES is our preferred symmetric cipher CHACHA20 is our next prefered symmetric cipher */
-    ssl_cipher_apply_rule(0, 0, 0, SSL_AES, 0, 0, 0, CIPHER_ADD, -1, &head, &tail);
+    /* CHACHA20 is our preferred symmetric cipher AES is our next prefered symmetric cipher */
     ssl_cipher_apply_rule(0, 0, 0, SSL_CHACHA20POLY1305, 0, 0, 0, CIPHER_ADD, -1, &head, &tail);
+    ssl_cipher_apply_rule(0, 0, 0, SSL_AES, 0, 0, 0, CIPHER_ADD, -1, &head, &tail);
 
     /* Temporarily enable everything else for sorting */
     ssl_cipher_apply_rule(0, 0, 0, 0, 0, 0, 0, CIPHER_ADD, -1, &head, &tail);
@@ -1492,7 +1492,7 @@ STACK_OF(SSL_CIPHER) * ssl_create_cipher_list(const SSL_METHOD *ssl_method,
      */
     num_of_group_aliases = sizeof(cipher_aliases) / sizeof(SSL_CIPHER);
     num_of_alias_max = num_of_ciphers + num_of_group_aliases + 1;
-    ca_list = malloc(sizeof(SSL_CIPHER *) * num_of_alias_max);
+    ca_list = reallocarray(NULL, num_of_alias_max, sizeof(SSL_CIPHER *));
     if (ca_list == NULL) {
         free(co_list);
         SSLerr(SSL_F_SSL_CREATE_CIPHER_LIST, ERR_R_MALLOC_FAILURE);
