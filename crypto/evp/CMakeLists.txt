@@ -34,6 +34,7 @@ add_library(
 	e_bf.c
 	e_camellia.c
 	e_cast.c
+	e_chacha.c
 	e_chacha20poly1305.c
 	e_des.c
 	e_des3.c

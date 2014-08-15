@@ -803,6 +803,9 @@ const EVP_CIPHER *EVP_camellia_256_cfb128(void);
 #define EVP_camellia_256_cfb EVP_camellia_256_cfb128
 const EVP_CIPHER *EVP_camellia_256_ofb(void);
 #endif
+#ifndef OPENSSL_NO_CHACHA
+const EVP_CIPHER *EVP_chacha20(void);
+#endif
 
 void OPENSSL_add_all_algorithms_noconf(void);
 void OPENSSL_add_all_algorithms_conf(void);
