@@ -404,9 +404,9 @@ int BIO_accept(int sock, char **addr)
         p = *addr;
         if (p) {
             *p = '\0';
-            p = OPENSSL_realloc(p, nl);
+            p = realloc(p, nl);
         } else {
-            p = OPENSSL_malloc(nl);
+            p = malloc(nl);
         }
         if (p == NULL) {
             BIOerr(BIO_F_BIO_ACCEPT, ERR_R_MALLOC_FAILURE);
