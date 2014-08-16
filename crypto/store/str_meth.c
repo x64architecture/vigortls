@@ -64,8 +64,8 @@ STORE_METHOD *STORE_create_method(char *name)
 {
     STORE_METHOD *store_method = calloc(1, sizeof(STORE_METHOD));
 
-    if (store_method)
-        store_method->name = BUF_strdup(name);
+    if (name && store_method)
+        store_method->name = strdup(name);
 
     return store_method;
 }

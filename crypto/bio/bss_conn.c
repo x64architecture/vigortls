@@ -151,7 +151,7 @@ static int conn_state(BIO *b, BIO_CONNECT *c)
                             }
                         if (c->param_port != NULL)
                             free(c->param_port);
-                        c->param_port = BUF_strdup(p);
+                        c->param_port = strdup(p);
                     }
                 }
 
@@ -450,11 +450,11 @@ static long conn_ctrl(BIO *b, int cmd, long num, void *ptr)
                 if (num == 0) {
                     if (data->param_hostname != NULL)
                         free(data->param_hostname);
-                    data->param_hostname = BUF_strdup(ptr);
+                    data->param_hostname = strdup(ptr);
                 } else if (num == 1) {
                     if (data->param_port != NULL)
                         free(data->param_port);
-                    data->param_port = BUF_strdup(ptr);
+                    data->param_port = strdup(ptr);
                 } else if (num == 2) {
                     char buf[16];
                     unsigned char *p = ptr;
@@ -463,7 +463,7 @@ static long conn_ctrl(BIO *b, int cmd, long num, void *ptr)
                              p[0], p[1], p[2], p[3]);
                     if (data->param_hostname != NULL)
                         free(data->param_hostname);
-                    data->param_hostname = BUF_strdup(buf);
+                    data->param_hostname = strdup(buf);
                     memcpy(&(data->ip[0]), ptr, 4);
                 } else if (num == 3) {
                     char buf[DECIMAL_SIZE(int)+1];
@@ -471,7 +471,7 @@ static long conn_ctrl(BIO *b, int cmd, long num, void *ptr)
                     snprintf(buf, sizeof buf, "%d", *(int *)ptr);
                     if (data->param_port != NULL)
                         free(data->param_port);
-                    data->param_port = BUF_strdup(buf);
+                    data->param_port = strdup(buf);
                     data->port = *(int *)ptr;
                 }
             }

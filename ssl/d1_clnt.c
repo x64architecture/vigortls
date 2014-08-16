@@ -1101,7 +1101,7 @@ int dtls1_send_client_key_exchange(SSL *s)
 
             if (s->session->psk_identity_hint != NULL)
                 free(s->session->psk_identity_hint);
-            s->session->psk_identity_hint = BUF_strdup(s->ctx->psk_identity_hint);
+            s->session->psk_identity_hint = strdup(s->ctx->psk_identity_hint);
             if (s->ctx->psk_identity_hint != NULL && s->session->psk_identity_hint == NULL) {
                 SSLerr(SSL_F_DTLS1_SEND_CLIENT_KEY_EXCHANGE,
                        ERR_R_MALLOC_FAILURE);
@@ -1110,7 +1110,7 @@ int dtls1_send_client_key_exchange(SSL *s)
 
             if (s->session->psk_identity != NULL)
                 free(s->session->psk_identity);
-            s->session->psk_identity = BUF_strdup(identity);
+            s->session->psk_identity = strdup(identity);
             if (s->session->psk_identity == NULL) {
                 SSLerr(SSL_F_DTLS1_SEND_CLIENT_KEY_EXCHANGE,
                        ERR_R_MALLOC_FAILURE);

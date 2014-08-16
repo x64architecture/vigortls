@@ -2777,7 +2777,7 @@ int SSL_CTX_use_psk_identity_hint(SSL_CTX *ctx, const char *identity_hint)
     if (ctx->psk_identity_hint != NULL)
         free(ctx->psk_identity_hint);
     if (identity_hint != NULL) {
-        ctx->psk_identity_hint = BUF_strdup(identity_hint);
+        ctx->psk_identity_hint = strdup(identity_hint);
         if (ctx->psk_identity_hint == NULL)
             return 0;
     } else
@@ -2800,7 +2800,7 @@ int SSL_use_psk_identity_hint(SSL *s, const char *identity_hint)
     if (s->session->psk_identity_hint != NULL)
         free(s->session->psk_identity_hint);
     if (identity_hint != NULL) {
-        s->session->psk_identity_hint = BUF_strdup(identity_hint);
+        s->session->psk_identity_hint = strdup(identity_hint);
         if (s->session->psk_identity_hint == NULL)
             return 0;
     } else

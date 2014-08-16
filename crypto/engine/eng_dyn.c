@@ -335,7 +335,7 @@ dynamic_ctrl(ENGINE *e, int cmd, long i, void *p, void (*f)(void))
                 p = NULL;
             free((void *)ctx->DYNAMIC_LIBNAME);
             if (p)
-                ctx->DYNAMIC_LIBNAME = BUF_strdup(p);
+                ctx->DYNAMIC_LIBNAME = strdup(p);
             else
                 ctx->DYNAMIC_LIBNAME = NULL;
             return (ctx->DYNAMIC_LIBNAME ? 1 : 0);
@@ -348,7 +348,7 @@ dynamic_ctrl(ENGINE *e, int cmd, long i, void *p, void (*f)(void))
                 p = NULL;
             free((void *)ctx->engine_id);
             if (p)
-                ctx->engine_id = BUF_strdup(p);
+                ctx->engine_id = strdup(p);
             else
                 ctx->engine_id = NULL;
             return (ctx->engine_id ? 1 : 0);
@@ -378,7 +378,7 @@ dynamic_ctrl(ENGINE *e, int cmd, long i, void *p, void (*f)(void))
                 return 0;
             }
             {
-                char *tmp_str = BUF_strdup(p);
+                char *tmp_str = strdup(p);
                 if (!tmp_str) {
                     ENGINEerr(ENGINE_F_DYNAMIC_CTRL,
                               ERR_R_MALLOC_FAILURE);

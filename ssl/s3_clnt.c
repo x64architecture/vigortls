@@ -1234,7 +1234,7 @@ int ssl3_get_key_exchange(SSL *s)
         memset(tmp_id_hint + i, 0, PSK_MAX_IDENTITY_LEN + 1 - i);
         if (s->ctx->psk_identity_hint != NULL)
             free(s->ctx->psk_identity_hint);
-        s->ctx->psk_identity_hint = BUF_strdup(tmp_id_hint);
+        s->ctx->psk_identity_hint = strdup(tmp_id_hint);
         if (s->ctx->psk_identity_hint == NULL) {
             al = SSL_AD_HANDSHAKE_FAILURE;
             SSLerr(SSL_F_SSL3_GET_KEY_EXCHANGE, ERR_R_MALLOC_FAILURE);
@@ -2439,7 +2439,7 @@ int ssl3_send_client_key_exchange(SSL *s)
             }
             if (s->session->srp_username != NULL)
                 free(s->session->srp_username);
-            s->session->srp_username = BUF_strdup(s->srp_ctx.login);
+            s->session->srp_username = strdup(s->srp_ctx.login);
             if (s->session->srp_username == NULL) {
                 SSLerr(SSL_F_SSL3_SEND_CLIENT_KEY_EXCHANGE,
                        ERR_R_MALLOC_FAILURE);
@@ -2491,7 +2491,7 @@ int ssl3_send_client_key_exchange(SSL *s)
 
             if (s->session->psk_identity_hint != NULL)
                 free(s->session->psk_identity_hint);
-            s->session->psk_identity_hint = BUF_strdup(s->ctx->psk_identity_hint);
+            s->session->psk_identity_hint = strdup(s->ctx->psk_identity_hint);
             if (s->ctx->psk_identity_hint != NULL && s->session->psk_identity_hint == NULL) {
                 SSLerr(SSL_F_SSL3_SEND_CLIENT_KEY_EXCHANGE,
                        ERR_R_MALLOC_FAILURE);
@@ -2500,7 +2500,7 @@ int ssl3_send_client_key_exchange(SSL *s)
 
             if (s->session->psk_identity != NULL)
                 free(s->session->psk_identity);
-            s->session->psk_identity = BUF_strdup(identity);
+            s->session->psk_identity = strdup(identity);
             if (s->session->psk_identity == NULL) {
                 SSLerr(SSL_F_SSL3_SEND_CLIENT_KEY_EXCHANGE,
                        ERR_R_MALLOC_FAILURE);

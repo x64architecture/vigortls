@@ -351,7 +351,7 @@ int ssl_get_new_session(SSL *s, int session)
         }
     sess_id_done:
         if (s->tlsext_hostname) {
-            ss->tlsext_hostname = BUF_strdup(s->tlsext_hostname);
+            ss->tlsext_hostname = strdup(s->tlsext_hostname);
             if (ss->tlsext_hostname == NULL) {
                 SSLerr(SSL_F_SSL_GET_NEW_SESSION, ERR_R_INTERNAL_ERROR);
                 SSL_SESSION_free(ss);

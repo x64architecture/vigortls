@@ -792,7 +792,7 @@ static MIME_HEADER *mime_hdr_new(char *name, char *value)
     char *tmpname, *tmpval, *p;
     int c;
     if (name) {
-        if (!(tmpname = BUF_strdup(name)))
+        if (!(tmpname = strdup(name)))
             return NULL;
         for (p = tmpname; *p; p++) {
             c = (unsigned char)*p;
@@ -804,7 +804,7 @@ static MIME_HEADER *mime_hdr_new(char *name, char *value)
     } else
         tmpname = NULL;
     if (value) {
-        if (!(tmpval = BUF_strdup(value)))
+        if (!(tmpval = strdup(value)))
             return NULL;
         for (p = tmpval; *p; p++) {
             c = (unsigned char)*p;
@@ -831,7 +831,7 @@ static int mime_hdr_addparam(MIME_HEADER *mhdr, char *name, char *value)
     int c;
     MIME_PARAM *mparam;
     if (name) {
-        tmpname = BUF_strdup(name);
+        tmpname = strdup(name);
         if (!tmpname)
             return 0;
         for (p = tmpname; *p; p++) {
@@ -844,7 +844,7 @@ static int mime_hdr_addparam(MIME_HEADER *mhdr, char *name, char *value)
     } else
         tmpname = NULL;
     if (value) {
-        tmpval = BUF_strdup(value);
+        tmpval = strdup(value);
         if (!tmpval)
             return 0;
     } else

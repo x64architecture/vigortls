@@ -284,14 +284,14 @@ EVP_PKEY_ASN1_METHOD *EVP_PKEY_asn1_new(int id, int flags,
     ameth->pkey_flags = flags | ASN1_PKEY_DYNAMIC;
 
     if (info) {
-        ameth->info = BUF_strdup(info);
+        ameth->info = strdup(info);
         if (!ameth->info)
             goto err;
     } else
         ameth->info = NULL;
 
     if (pem_str) {
-        ameth->pem_str = BUF_strdup(pem_str);
+        ameth->pem_str = strdup(pem_str);
         if (!ameth->pem_str)
             goto err;
     } else

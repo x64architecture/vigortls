@@ -1730,7 +1730,7 @@ static int do_body(X509 **xret, EVP_PKEY *pkey, X509 *x509, const EVP_MD *dgst,
     }
 
     if (BN_is_zero(serial))
-        row[DB_serial] = BUF_strdup("00");
+        row[DB_serial] = strdup("00");
     else
         row[DB_serial] = BN_bn2hex(serial);
     if (row[DB_serial] == NULL) {
@@ -2188,7 +2188,7 @@ static int do_revoke(X509 *x509, CA_DB *db, int type, char *value)
     if (!bn)
         goto err;
     if (BN_is_zero(bn))
-        row[DB_serial] = BUF_strdup("00");
+        row[DB_serial] = strdup("00");
     else
         row[DB_serial] = BN_bn2hex(bn);
     BN_free(bn);
@@ -2612,7 +2612,11 @@ int unpack_revinfo(ASN1_TIME **prevtm, int *preason, ASN1_OBJECT **phold, ASN1_G
     unsigned int i;
     ASN1_OBJECT *hold = NULL;
     ASN1_GENERALIZEDTIME *comp_time = NULL;
-    tmp = BUF_strdup(str);
+
+    if ((tmp = strdup(str)) == NULL) {
+        BIO_printf(bio_err, "malloc failure\n");
+        goto err;
+    }
 
     p = strchr(tmp, ',');
 

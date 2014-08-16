@@ -153,11 +153,18 @@ int SSL_SRP_CTX_init(struct ssl_st *s)
     s->srp_ctx.info = ctx->srp_ctx.info;
     s->srp_ctx.strength = ctx->srp_ctx.strength;
 
-    if (((ctx->srp_ctx.N != NULL) && ((s->srp_ctx.N = BN_dup(ctx->srp_ctx.N)) == NULL)) || ((ctx->srp_ctx.g != NULL) && ((s->srp_ctx.g = BN_dup(ctx->srp_ctx.g)) == NULL)) || ((ctx->srp_ctx.s != NULL) && ((s->srp_ctx.s = BN_dup(ctx->srp_ctx.s)) == NULL)) || ((ctx->srp_ctx.B != NULL) && ((s->srp_ctx.B = BN_dup(ctx->srp_ctx.B)) == NULL)) || ((ctx->srp_ctx.A != NULL) && ((s->srp_ctx.A = BN_dup(ctx->srp_ctx.A)) == NULL)) || ((ctx->srp_ctx.a != NULL) && ((s->srp_ctx.a = BN_dup(ctx->srp_ctx.a)) == NULL)) || ((ctx->srp_ctx.v != NULL) && ((s->srp_ctx.v = BN_dup(ctx->srp_ctx.v)) == NULL)) || ((ctx->srp_ctx.b != NULL) && ((s->srp_ctx.b = BN_dup(ctx->srp_ctx.b)) == NULL))) {
+    if (((ctx->srp_ctx.N != NULL) && ((s->srp_ctx.N = BN_dup(ctx->srp_ctx.N)) == NULL))
+        || ((ctx->srp_ctx.g != NULL) && ((s->srp_ctx.g = BN_dup(ctx->srp_ctx.g)) == NULL))
+        || ((ctx->srp_ctx.s != NULL) && ((s->srp_ctx.s = BN_dup(ctx->srp_ctx.s)) == NULL))
+        || ((ctx->srp_ctx.B != NULL) && ((s->srp_ctx.B = BN_dup(ctx->srp_ctx.B)) == NULL))
+        || ((ctx->srp_ctx.A != NULL) && ((s->srp_ctx.A = BN_dup(ctx->srp_ctx.A)) == NULL))
+        || ((ctx->srp_ctx.a != NULL) && ((s->srp_ctx.a = BN_dup(ctx->srp_ctx.a)) == NULL))
+        || ((ctx->srp_ctx.v != NULL) && ((s->srp_ctx.v = BN_dup(ctx->srp_ctx.v)) == NULL))
+        || ((ctx->srp_ctx.b != NULL) && ((s->srp_ctx.b = BN_dup(ctx->srp_ctx.b)) == NULL))) {
         SSLerr(SSL_F_SSL_SRP_CTX_INIT, ERR_R_BN_LIB);
         goto err;
     }
-    if ((ctx->srp_ctx.login != NULL) && ((s->srp_ctx.login = BUF_strdup(ctx->srp_ctx.login)) == NULL)) {
+    if ((ctx->srp_ctx.login != NULL) && ((s->srp_ctx.login = strdup(ctx->srp_ctx.login)) == NULL)) {
         SSLerr(SSL_F_SSL_SRP_CTX_INIT, ERR_R_INTERNAL_ERROR);
         goto err;
     }

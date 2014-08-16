@@ -517,11 +517,11 @@ int srp_main(int argc, char **argv)
                     errors++;
                     goto err;
                 }
-                row[DB_srpid] = BUF_strdup(user);
-                row[DB_srptype] = BUF_strdup("v");
-                row[DB_srpgN] = BUF_strdup(gNid);
+                row[DB_srpid] = strdup(user);
+                row[DB_srptype] = strdup("v");
+                row[DB_srpgN] = strdup(gNid);
 
-                if (!row[DB_srpid] || !row[DB_srpgN] || !row[DB_srptype] || !row[DB_srpverifier] || !row[DB_srpsalt] || (userinfo && (!(row[DB_srpinfo] = BUF_strdup(userinfo)))) || !update_index(db, bio_err, row)) {
+                if (!row[DB_srpid] || !row[DB_srpgN] || !row[DB_srptype] || !row[DB_srpverifier] || !row[DB_srpsalt] || (userinfo && (!(row[DB_srpinfo] = strdup(userinfo)))) || !update_index(db, bio_err, row)) {
                     if (row[DB_srpid])
                         free(row[DB_srpid]);
                     if (row[DB_srpgN])
@@ -574,9 +574,9 @@ int srp_main(int argc, char **argv)
                     }
 
                     row[DB_srptype][0] = 'v';
-                    row[DB_srpgN] = BUF_strdup(gNid);
+                    row[DB_srpgN] = strdup(gNid);
 
-                    if (!row[DB_srpid] || !row[DB_srpgN] || !row[DB_srptype] || !row[DB_srpverifier] || !row[DB_srpsalt] || (userinfo && (!(row[DB_srpinfo] = BUF_strdup(userinfo)))))
+                    if (!row[DB_srpid] || !row[DB_srpgN] || !row[DB_srptype] || !row[DB_srpverifier] || !row[DB_srpsalt] || (userinfo && (!(row[DB_srpinfo] = strdup(userinfo)))))
                         goto err;
 
                     doupdatedb = 1;

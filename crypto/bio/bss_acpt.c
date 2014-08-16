@@ -348,7 +348,7 @@ static long acpt_ctrl(BIO *b, int cmd, long num, void *ptr)
                     b->init = 1;
                     if (data->param_addr != NULL)
                         free(data->param_addr);
-                    data->param_addr = BUF_strdup(ptr);
+                    data->param_addr = strdup(ptr);
                 } else if (num == 1) {
                     data->accept_nbio = (ptr != NULL);
                 } else if (num == 2) {

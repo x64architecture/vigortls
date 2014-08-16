@@ -45,7 +45,9 @@ B<len>. Any data already in the buffer is preserved if it increases in
 size.
 
 BUF_strdup() copies a null terminated string into a block of allocated
-memory and returns a pointer to the allocated block.
+memory and returns a pointer to the allocated block. Unlike the system strdup()
+function, BUF_strdup() will accept a NULL argument and will return NULL in
+that case. B<Its use in new programs is discouraged>.
 
 The memory allocated from BUF_strdup() should be freed using the free()
 function.

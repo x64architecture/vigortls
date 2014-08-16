@@ -84,9 +84,9 @@ int X509V3_add_value(const char *name, const char *value,
 {
     CONF_VALUE *vtmp = NULL;
     char *tname = NULL, *tvalue = NULL;
-    if (name && !(tname = BUF_strdup(name)))
+    if (name && !(tname = strdup(name)))
         goto err;
-    if (value && !(tvalue = BUF_strdup(value)))
+    if (value && !(tvalue = strdup(value)))
         goto err;
     if (!(vtmp = (CONF_VALUE *)malloc(sizeof(CONF_VALUE))))
         goto err;
@@ -278,7 +278,7 @@ STACK_OF(CONF_VALUE) * X509V3_parse_list(const char *line)
     char *linebuf;
     int state;
     /* We are going to modify the line so copy it first */
-    linebuf = BUF_strdup(line);
+    linebuf = strdup(line);
     state = HDR_NAME;
     ntmp = NULL;
     /* Go through all characters */
@@ -588,7 +588,7 @@ static int append_ia5(STACK_OF(OPENSSL_STRING) * *sk, ASN1_IA5STRING * email)
     /* Don't add duplicates */
     if (sk_OPENSSL_STRING_find(*sk, (char *)email->data) != -1)
         return 1;
-    emtmp = BUF_strdup((char *)email->data);
+    emtmp = strdup((char *)email->data);
     if (!emtmp || !sk_OPENSSL_STRING_push(*sk, emtmp)) {
         X509_email_free(*sk);
         *sk = NULL;
@@ -638,7 +638,7 @@ ASN1_OCTET_STRING *a2i_IPADDRESS_NC(const char *ipasc)
     p = strchr(ipasc, '/');
     if (!p)
         return NULL;
-    iptmp = BUF_strdup(ipasc);
+    iptmp = strdup(ipasc);
     if (!iptmp)
         return NULL;
     p = iptmp + (p - ipasc);

@@ -2152,7 +2152,7 @@ int ssl3_get_client_key_exchange(SSL *s)
 
         if (s->session->psk_identity != NULL)
             free(s->session->psk_identity);
-        s->session->psk_identity = BUF_strdup((char *)p);
+        s->session->psk_identity = strdup((char *)p);
         if (s->session->psk_identity == NULL) {
             SSLerr(SSL_F_SSL3_GET_CLIENT_KEY_EXCHANGE,
                    ERR_R_MALLOC_FAILURE);
@@ -2161,7 +2161,7 @@ int ssl3_get_client_key_exchange(SSL *s)
 
         if (s->session->psk_identity_hint != NULL)
             free(s->session->psk_identity_hint);
-        s->session->psk_identity_hint = BUF_strdup(s->ctx->psk_identity_hint);
+        s->session->psk_identity_hint = strdup(s->ctx->psk_identity_hint);
         if (s->ctx->psk_identity_hint != NULL && s->session->psk_identity_hint == NULL) {
             SSLerr(SSL_F_SSL3_GET_CLIENT_KEY_EXCHANGE,
                    ERR_R_MALLOC_FAILURE);
@@ -2200,7 +2200,7 @@ int ssl3_get_client_key_exchange(SSL *s)
         }
         if (s->session->srp_username != NULL)
             free(s->session->srp_username);
-        s->session->srp_username = BUF_strdup(s->srp_ctx.login);
+        s->session->srp_username = strdup(s->srp_ctx.login);
         if (s->session->srp_username == NULL) {
             SSLerr(SSL_F_SSL3_GET_CLIENT_KEY_EXCHANGE,
                    ERR_R_MALLOC_FAILURE);

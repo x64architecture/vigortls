@@ -1491,7 +1491,7 @@ static EVP_PKEY_CTX *set_keygen_ctx(BIO *err, const char *gstr, int *pkey_type,
             return NULL;
         }
         EVP_PKEY_asn1_get0_info(NULL, NULL, NULL, NULL, &anam, ameth);
-        *palgnam = BUF_strdup(anam);
+        *palgnam = strdup(anam);
 #ifndef OPENSSL_NO_ENGINE
         if (tmpeng)
             ENGINE_finish(tmpeng);

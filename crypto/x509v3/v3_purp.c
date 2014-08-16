@@ -207,8 +207,8 @@ int X509_PURPOSE_add(int id, int trust, int flags,
         free(ptmp->sname);
     }
     /* dup supplied name */
-    ptmp->name = BUF_strdup(name);
-    ptmp->sname = BUF_strdup(sname);
+    ptmp->name = strdup(name);
+    ptmp->sname = strdup(sname);
     if (!ptmp->name || !ptmp->sname) {
         free(ptmp->name);
         free(ptmp->sname);

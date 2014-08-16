@@ -184,8 +184,7 @@ int OCSP_parse_url(char *url, char **phost, char **pport, char **ppath, int *pss
     *ppath = NULL;
 
     /* dup the buffer since we are going to mess with it */
-    buf = BUF_strdup(url);
-    if (!buf)
+    if ((buf = strdup(url)) == NULL)
         goto mem_err;
 
     /* Check for initial colon */
@@ -218,9 +217,9 @@ int OCSP_parse_url(char *url, char **phost, char **pport, char **ppath, int *pss
     p = strchr(p, '/');
 
     if (!p)
-        *ppath = BUF_strdup("/");
+        *ppath = strdup("/");
     else {
-        *ppath = BUF_strdup(p);
+        *ppath = strdup(p);
         /* Set start of path to 0 so hostname is valid */
         *p = '\0';
     }
@@ -251,11 +250,11 @@ int OCSP_parse_url(char *url, char **phost, char **pport, char **ppath, int *pss
             port = "80";
     }
 
-    *pport = BUF_strdup(port);
+    *pport = strdup(port);
     if (!*pport)
         goto mem_err;
 
-    *phost = BUF_strdup(host);
+    *phost = strdup(host);
 
     if (!*phost)
         goto mem_err;

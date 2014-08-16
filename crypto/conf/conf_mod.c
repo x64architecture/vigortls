@@ -276,6 +276,8 @@ static CONF_MODULE *module_add(DSO *dso, const char *name,
                                conf_init_func *ifunc, conf_finish_func *ffunc)
 {
     CONF_MODULE *tmod = NULL;
+    if (name == NULL)
+        return NULL;
     if (supported_modules == NULL)
         supported_modules = sk_CONF_MODULE_new_null();
     if (supported_modules == NULL)
@@ -285,7 +287,7 @@ static CONF_MODULE *module_add(DSO *dso, const char *name,
         return NULL;
 
     tmod->dso = dso;
-    tmod->name = BUF_strdup(name);
+    tmod->name = strdup(name);
     tmod->init = ifunc;
     tmod->finish = ffunc;
     tmod->links = 0;
@@ -338,8 +340,8 @@ static int module_init(CONF_MODULE *pmod, char *name, char *value,
         goto err;
 
     imod->pmod = pmod;
-    imod->name = BUF_strdup(name);
-    imod->value = BUF_strdup(value);
+    imod->name = strdup(name);
+    imod->value = strdup(value);
     imod->usr_data = NULL;
 
     if (!imod->name || !imod->value)
@@ -523,7 +525,7 @@ char *CONF_get1_default_config_file(void)
 
     file = getenv("OPENSSL_CONF");
     if (file)
-        return BUF_strdup(file);
+        return strdup(file);
 
     ret = asprintf(&file, "%s/openssl.cnf", s);
 

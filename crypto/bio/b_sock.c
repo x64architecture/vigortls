@@ -217,7 +217,7 @@ int BIO_get_accept_socket(char *host, int bind_mode)
     if (BIO_sock_init() != 1)
         return (INVALID_SOCKET);
 
-    if ((str = BUF_strdup(host)) == NULL)
+    if ((str = strdup(host)) == NULL)
         return (INVALID_SOCKET);
 
     h = p = NULL;

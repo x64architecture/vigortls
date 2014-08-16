@@ -2096,7 +2096,7 @@ long ssl3_ctrl(SSL *s, int cmd, long larg, void *parg)
                            SSL_R_SSL3_EXT_INVALID_SERVERNAME);
                     return 0;
                 }
-                if ((s->tlsext_hostname = BUF_strdup((char *)parg))
+                if ((s->tlsext_hostname = strdup((char *)parg))
                     == NULL) {
                     SSLerr(SSL_F_SSL3_CTRL,
                            ERR_R_INTERNAL_ERROR);
