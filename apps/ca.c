@@ -535,13 +535,11 @@ int ca_main(int argc, char **argv)
         configfile = getenv("OPENSSL_CONF");
     if (configfile == NULL) {
         const char *s = X509_get_default_cert_area();
-        size_t len;
-
-        len = strlen(s) + sizeof(CONFIG_FILE) + 1;
-        tofree = malloc(len);
-        BUF_strlcpy(tofree, s, len);
-        BUF_strlcat(tofree, "/", len);
-        BUF_strlcat(tofree, CONFIG_FILE, len);
+        
+        if (asprintf(&tofree, "%s/%s", s, CONFIG_FILE) == -1) {
+            BIO_printf(bio_err, "malloc failure");
+            goto err;
+        }
         configfile = tofree;
     }
 
