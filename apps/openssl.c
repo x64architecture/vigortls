@@ -325,7 +325,12 @@ static int do_cmd(LHASH_OF(FUNCTION) * prog, int argc, char *argv[])
     } else if ((strcmp(argv[0], "quit") == 0) || (strcmp(argv[0], "q") == 0) || (strcmp(argv[0], "exit") == 0) || (strcmp(argv[0], "bye") == 0)) {
         ret = -1;
         goto end;
-    } else if ((strcmp(argv[0], LIST_STANDARD_COMMANDS) == 0) || (strcmp(argv[0], LIST_MESSAGE_DIGEST_COMMANDS) == 0) || (strcmp(argv[0], LIST_MESSAGE_DIGEST_ALGORITHMS) == 0) || (strcmp(argv[0], LIST_CIPHER_COMMANDS) == 0) || (strcmp(argv[0], LIST_CIPHER_ALGORITHMS) == 0) || (strcmp(argv[0], LIST_PUBLIC_KEY_ALGORITHMS) == 0)) {
+    } else if ((strcmp(argv[0], LIST_STANDARD_COMMANDS) == 0) 
+        || (strcmp(argv[0], LIST_MESSAGE_DIGEST_COMMANDS) == 0) 
+        || (strcmp(argv[0], LIST_MESSAGE_DIGEST_ALGORITHMS) == 0) 
+        || (strcmp(argv[0], LIST_CIPHER_COMMANDS) == 0) 
+        || (strcmp(argv[0], LIST_CIPHER_ALGORITHMS) == 0) 
+        || (strcmp(argv[0], LIST_PUBLIC_KEY_ALGORITHMS) == 0)) {
         int list_type;
         BIO *bio_stdout;
 

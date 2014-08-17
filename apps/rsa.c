@@ -315,7 +315,11 @@ int rsa_main(int argc, char **argv)
         else if (r == 0) {
             unsigned long err;
 
-            while ((err = ERR_peek_error()) != 0 && ERR_GET_LIB(err) == ERR_LIB_RSA && ERR_GET_FUNC(err) == RSA_F_RSA_CHECK_KEY && ERR_GET_REASON(err) != ERR_R_MALLOC_FAILURE) {
+            while ((err = ERR_peek_error()) != 0 
+                && ERR_GET_LIB(err) == ERR_LIB_RSA 
+                && ERR_GET_FUNC(err) == RSA_F_RSA_CHECK_KEY 
+                && ERR_GET_REASON(err) != ERR_R_MALLOC_FAILURE) {
+
                 BIO_printf(out, "RSA key error: %s\n", ERR_reason_error_string(err));
                 ERR_get_error(); /* remove e from error stack */
             }

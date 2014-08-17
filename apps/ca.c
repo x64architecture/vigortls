@@ -812,8 +812,12 @@ int ca_main(int argc, char **argv)
             goto err;
         }
         while (*p) {
-            if (!(((*p >= '0') && (*p <= '9')) || ((*p >= 'A') && (*p <= 'F')) || ((*p >= 'a') && (*p <= 'f')))) {
-                BIO_printf(bio_err, "entry %d: bad serial number characters, char pos %ld, char is '%c'\n", i + 1, (long)(p - pp[DB_serial]), *p);
+            if (!(((*p >= '0') && (*p <= '9')) 
+                || ((*p >= 'A') && (*p <= 'F')) 
+                || ((*p >= 'a') && (*p <= 'f')))) {
+
+                BIO_printf(bio_err, "entry %d: bad serial number characters, char pos %ld, char is '%c'\n", 
+                    i + 1, (long)(p - pp[DB_serial]), *p);
                 goto err;
             }
             p++;
