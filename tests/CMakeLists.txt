@@ -16,6 +16,7 @@ function(
 
 endfunction(add_test_suite)
 
+add_test_suite(aes_wrap aes_wrap.c)
 add_test_suite(asn1test asn1test.c)
 add_test_suite(bftest bftest.c)
 add_test_suite(bntest bntest.c)
