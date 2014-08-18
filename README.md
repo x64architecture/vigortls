@@ -16,10 +16,10 @@ functions/calls with secure ones, and replacing the unreadable coding style.
 Build instructions
 ==================
 
-1. `mkdir build`
-2. `cd build`
-3. `cmake ..`
-4. `make`
+	$ mkdir build
+	$ cd build
+	$ cmake ..
+	$ make
 
 Currently tested operating systems
 ==================================
