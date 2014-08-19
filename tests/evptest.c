@@ -474,8 +474,9 @@ int main(int argc, char **argv)
         unsigned char *iv, *key, *plaintext, *ciphertext;
         unsigned char *aad, *tag;
         int encdec;
-        int kn, in, pn, cn
-        int an = 0, tn = 0;
+        int kn, in, pn, cn;
+        int an = 0;
+        int tn = 0;
 
         if (!fgets((char *)line, sizeof line, fp))
             break;

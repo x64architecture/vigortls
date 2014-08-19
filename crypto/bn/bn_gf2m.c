@@ -189,7 +189,6 @@ static void bn_GF2m_mul_1x1(BN_ULONG *r1, BN_ULONG *r0, const BN_ULONG a, const 
     *r1 = h;
     *r0 = l;
 #else
-{
     register BN_ULONG h, l, s;
     BN_ULONG tab[16], top3b = a >> 61;
     register BN_ULONG a1, a2, a4, a8;
