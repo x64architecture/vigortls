@@ -102,13 +102,13 @@ int SHA224_Final(unsigned char *md, SHA256_CTX *c)
             case SHA224_DIGEST_LENGTH:                              \
                 for (nn = 0; nn < SHA224_DIGEST_LENGTH / 4; nn++) { \
                     ll = (c)->h[nn];                                \
-                    (void) HOST_l2c(ll, (s));                       \
+                    HOST_l2c(ll, (s));                              \
                 }                                                   \
                 break;                                              \
             case SHA256_DIGEST_LENGTH:                              \
                 for (nn = 0; nn < SHA256_DIGEST_LENGTH / 4; nn++) { \
                     ll = (c)->h[nn];                                \
-                    (void) HOST_l2c(ll, (s));                       \
+                    HOST_l2c(ll, (s));                              \
                 }                                                   \
                 break;                                              \
             default:                                                \
@@ -116,7 +116,7 @@ int SHA224_Final(unsigned char *md, SHA256_CTX *c)
                     return 0;                                       \
                 for (nn = 0; nn < (c)->md_len / 4; nn++) {          \
                     ll = (c)->h[nn];                                \
-                    (void) HOST_l2c(ll, (s));                       \
+                    HOST_l2c(ll, (s));                              \
                 }                                                   \
                 break;                                              \
         }                                                           \
