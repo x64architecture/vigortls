@@ -155,7 +155,7 @@
 
 static inline uint32_t ROTATE(uint32_t a, unsigned int n)
 {
-    return ((a >> n) | (a << (32 - n)));
+    return ((a >> n) + (a << (32 - n)));
 }
 
 /* Don't worry about the LOAD_DATA() stuff, that is used by
