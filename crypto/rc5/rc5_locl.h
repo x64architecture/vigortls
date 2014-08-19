@@ -182,30 +182,17 @@
                    *((c)++) = (unsigned char)(((l) >> 8L) & 0xff),  \
                    *((c)++) = (unsigned char)(((l)) & 0xff))
 
-#if defined(__GNUC__) && __GNUC__ >= 2 && !defined(__STRICT_ANSI__) && !defined(OPENSSL_NO_ASM) && !defined(OPENSSL_NO_INLINE_ASM) && !defined(PEDANTIC)
-#if defined(__i386) || defined(__i386__) || defined(__x86_64) || defined(__x86_64__)
-#define ROTATE_l32(a, n) ({ register unsigned int ret;    \
-                    asm ("roll %%cl,%0"    \
-                        : "=r"(ret)    \
-                        : "c"(n),"0"((unsigned int)(a))    \
-                        : "cc");    \
-                    ret; \
-})
-#define ROTATE_r32(a, n) ({ register unsigned int ret;    \
-                    asm ("rorl %%cl,%0"    \
-                        : "=r"(ret)    \
-                        : "c"(n),"0"((unsigned int)(a))    \
-                        : "cc");    \
-                    ret; \
-})
-#endif
-#endif
-#ifndef ROTATE_l32
-#define ROTATE_l32(a, n) (((a) << (n & 0x1f)) | (((a)&0xffffffff) >> (32 - (n & 0x1f))))
-#endif
-#ifndef ROTATE_r32
-#define ROTATE_r32(a, n) (((a) << (32 - (n & 0x1f))) | (((a)&0xffffffff) >> (n & 0x1f)))
-#endif
+static inline uint32_t ROTATE_l32(uint32_t a, unsigned int n)
+{
+    uint32_t amt = n & 0x1f;
+    return ((a << amt) | (a >> (32 - amt)));
+}
+
+static inline uint32_t ROTATE_r32(uint32_t a, unsigned int n)
+{
+    uint32_t amt = n & 0x1f;
+    return (a << (32 - amt) | a >> amt);
+}
 
 #define RC5_32_MASK 0xffffffffL
 

@@ -62,6 +62,7 @@
 #include <openssl/e_os2.h>
 
 #include <stdio.h>
+#include <stdint.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <math.h>
@@ -152,20 +153,10 @@
         }                                                         \
     }
 
-#if defined(__GNUC__) && __GNUC__ >= 2 && !defined(__STRICT_ANSI__) && !defined(OPENSSL_NO_ASM) && !defined(OPENSSL_NO_INLINE_ASM) && !defined(PEDANTIC)
-#if defined(__i386) || defined(__i386__) || defined(__x86_64) || defined(__x86_64__)
-#define ROTATE(a, n) ({ register unsigned int ret;    \
-                asm ("rorl %1,%0"    \
-                    : "=r"(ret)    \
-                    : "I"(n),"0"(a)    \
-                    : "cc");    \
-               ret; \
-})
-#endif
-#endif
-#ifndef ROTATE
-#define ROTATE(a, n) (((a) >> (n)) + ((a) << (32 - (n))))
-#endif
+static inline uint32_t ROTATE(uint32_t a, unsigned int n)
+{
+    return ((a >> n) | (a << (32 - n)));
+}
 
 /* Don't worry about the LOAD_DATA() stuff, that is used by
  * fcrypt() to add it's little bit to the front */
