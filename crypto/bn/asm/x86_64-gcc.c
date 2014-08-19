@@ -195,18 +195,19 @@ BN_ULONG bn_add_words(BN_ULONG *rp, const BN_ULONG *ap, const BN_ULONG *bp, int 
     if (n <= 0)
         return 0;
 
-    asm(
-        "    subq    %2,%2        \n"
-        ".p2align 4            \n"
-        "1:    movq    (%4,%2,8),%0    \n"
-        "    adcq    (%5,%2,8),%0    \n"
-        "    movq    %0,(%3,%2,8)    \n"
-        "    leaq    1(%2),%2    \n"
-        "    loop    1b        \n"
-        "    sbbq    %0,%0        \n"
+    asm volatile(
+        "    subq    %2,%2          \n"
+        ".p2align 4                 \n"
+        "1:    movq    (%4,%2,8),%0 \n"
+        "    adcq    (%5,%2,8),%0   \n"
+        "    movq    %0,(%3,%2,8)   \n"
+        "    leaq    1(%2),%2       \n"
+        "    loop    1b             \n"
+        "    sbbq    %0,%0          \n"
         : "=&a"(ret), "+c"(n), "=&r"(i)
         : "r"(rp), "r"(ap), "r"(bp)
-        : "cc");
+        : "cc", "memory"
+    );
 
     return ret & 1;
 }
@@ -219,18 +220,18 @@ BN_ULONG bn_sub_words(BN_ULONG *rp, const BN_ULONG *ap, const BN_ULONG *bp, int 
     if (n <= 0)
         return 0;
 
-    asm(
-        "    subq    %2,%2        \n"
-        ".p2align 4            \n"
-        "1:    movq    (%4,%2,8),%0    \n"
-        "    sbbq    (%5,%2,8),%0    \n"
-        "    movq    %0,(%3,%2,8)    \n"
-        "    leaq    1(%2),%2    \n"
-        "    loop    1b        \n"
-        "    sbbq    %0,%0        \n"
+    asm volatile(
+        "    subq    %2,%2          \n"
+        ".p2align 4                 \n"
+        "1:    movq    (%4,%2,8),%0 \n"
+        "    sbbq    (%5,%2,8),%0   \n"
+        "    movq    %0,(%3,%2,8)   \n"
+        "    leaq    1(%2),%2       \n"
+        "    loop    1b             \n"
+        "    sbbq    %0,%0          \n"
         : "=&a"(ret), "+c"(n), "=&r"(i)
         : "r"(rp), "r"(ap), "r"(bp)
-        : "cc");
+        : "cc", "memory");
 
     return ret & 1;
 }
