@@ -10,7 +10,7 @@
  * are met:
  *
  * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer. 
+ *    notice, this list of conditions and the following disclaimer.
  *
  * 2. Redistributions in binary form must reproduce the above copyright
  *    notice, this list of conditions and the following disclaimer in
@@ -58,13 +58,13 @@
 /* ====================================================================
  * Copyright 2002 Sun Microsystems, Inc. ALL RIGHTS RESERVED.
  *
- * Portions of the attached software ("Contribution") are developed by 
+ * Portions of the attached software ("Contribution") are developed by
  * SUN MICROSYSTEMS, INC., and are contributed to the OpenSSL project.
  *
  * The Contribution is licensed pursuant to the OpenSSL open source
  * license provided above.
  *
- * The elliptic curve binary polynomial software is originally written by 
+ * The elliptic curve binary polynomial software is originally written by
  * Sheueling Chang Shantz and Douglas Stebila of Sun Microsystems Laboratories.
  *
  */
@@ -94,7 +94,7 @@
  * -C               - print a 'C' function creating the parameters
  * -name arg        - use the ec parameters with 'short name' name
  * -list_curves     - prints a list of all currently available curve 'short names'
- * -conv_form arg   - specifies the point conversion form 
+ * -conv_form arg   - specifies the point conversion form
  *                  - possible values: compressed
  *                                     uncompressed (default)
  *                                     hybrid

@@ -78,8 +78,6 @@ static int dgram_clear(BIO *bio);
 
 static int BIO_dgram_should_retry(int s);
 
-static void get_current_time(struct timeval *t);
-
 static BIO_METHOD methods_dgramp = {
     BIO_TYPE_DGRAM,
     "datagram socket",
@@ -192,7 +190,7 @@ static void dgram_adjust_rcv_timeout(BIO *b)
             OPENSSL_assert(sz.s <= sizeof(data->socket_timeout));
 
         /* Get current time */
-        get_current_time(&timenow);
+        gettimeofday(&timenow, NULL);
 
         /* Calculate time left until timer expires */
         memcpy(&timeleft, &(data->next_timeout), sizeof(struct timeval));
@@ -699,11 +697,6 @@ int BIO_dgram_non_fatal_error(int err)
             break;
     }
     return (0);
-}
-
-static void get_current_time(struct timeval *t)
-{
-    gettimeofday(t, NULL);
 }
 
 #endif

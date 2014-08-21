@@ -10,7 +10,7 @@
  * are met:
  *
  * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer. 
+ *    notice, this list of conditions and the following disclaimer.
  *
  * 2. Redistributions in binary form must reproduce the above copyright
  *    notice, this list of conditions and the following disclaimer in
@@ -119,8 +119,8 @@ unsigned long ASN1_tag2bit(int tag)
 /* Version to avoid compiler warning about 'c' always non-NULL */
 #define asn1_tlc_clear_nc(c) (c)->valid = 0
 
-/* Decode an ASN1 item, this currently behaves just 
- * like a standard 'd2i' function. 'in' points to 
+/* Decode an ASN1 item, this currently behaves just
+ * like a standard 'd2i' function. 'in' points to
  * a buffer to read the data from, in future we will
  * have more advanced versions that can input data
  * a piece at a time and this will simply be a special
@@ -1167,7 +1167,7 @@ static int asn1_check_tlen(long *olen, int *otag, unsigned char *oclass,
             ctx->hdrlen = p - q;
             ctx->valid = 1;
             /* If definite length, and no error, length +
-             * header can't exceed total amount of data available. 
+             * header can't exceed total amount of data available.
              */
             if (!(i & 0x81) && ((plen + ctx->hdrlen) > len)) {
                 ASN1err(ASN1_F_ASN1_CHECK_TLEN,

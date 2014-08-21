@@ -1,4 +1,3 @@
-/* evp_locl.h */
 /* Written by Dr Stephen N Henson (steve@openssl.org) for the OpenSSL
  * project 2000.
  */
@@ -10,7 +9,7 @@
  * are met:
  *
  * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer. 
+ *    notice, this list of conditions and the following disclaimer.
  *
  * 2. Redistributions in binary form must reproduce the above copyright
  *    notice, this list of conditions and the following disclaimer in
@@ -126,9 +125,9 @@
 
 #define BLOCK_CIPHER_all_funcs(cname, cprefix, cbits, kstruct, ksched) \
     BLOCK_CIPHER_func_cbc(cname, cprefix, kstruct, ksched)             \
-        BLOCK_CIPHER_func_cfb(cname, cprefix, cbits, kstruct, ksched)  \
-            BLOCK_CIPHER_func_ecb(cname, cprefix, kstruct, ksched)     \
-                BLOCK_CIPHER_func_ofb(cname, cprefix, cbits, kstruct, ksched)
+    BLOCK_CIPHER_func_cfb(cname, cprefix, cbits, kstruct, ksched)      \
+    BLOCK_CIPHER_func_ecb(cname, cprefix, kstruct, ksched)             \
+    BLOCK_CIPHER_func_ofb(cname, cprefix, cbits, kstruct, ksched)
 
 #define BLOCK_CIPHER_def1(cname, nmode, mode, MODE, kstruct, nid, block_size, key_len, iv_len, flags, init_key, cleanup, set_asn1, get_asn1, ctrl)                                                                        \
     static const EVP_CIPHER cname##_##mode = { nid##_##nmode, block_size, key_len, iv_len, flags | EVP_CIPH_##MODE##_MODE, init_key, cname##_##mode##_cipher, cleanup, sizeof(kstruct), set_asn1, get_asn1, ctrl, NULL }; \
@@ -158,12 +157,12 @@
 #define BLOCK_CIPHER_defs(cname, kstruct, nid, block_size, key_len, iv_len, cbits, flags, init_key, cleanup, set_asn1, get_asn1, ctrl) \
     BLOCK_CIPHER_def_cbc(cname, kstruct, nid, block_size, key_len, iv_len, flags,                                                      \
                          init_key, cleanup, set_asn1, get_asn1, ctrl)                                                                  \
-        BLOCK_CIPHER_def_cfb(cname, kstruct, nid, key_len, iv_len, cbits,                                                              \
-                             flags, init_key, cleanup, set_asn1, get_asn1, ctrl)                                                       \
-            BLOCK_CIPHER_def_ofb(cname, kstruct, nid, key_len, iv_len, cbits,                                                          \
-                                 flags, init_key, cleanup, set_asn1, get_asn1, ctrl)                                                   \
-                BLOCK_CIPHER_def_ecb(cname, kstruct, nid, block_size, key_len, flags,                                                  \
-                                     init_key, cleanup, set_asn1, get_asn1, ctrl)
+    BLOCK_CIPHER_def_cfb(cname, kstruct, nid, key_len, iv_len, cbits,                                                                  \
+                         flags, init_key, cleanup, set_asn1, get_asn1, ctrl)                                                           \
+    BLOCK_CIPHER_def_ofb(cname, kstruct, nid, key_len, iv_len, cbits,                                                                  \
+                         flags, init_key, cleanup, set_asn1, get_asn1, ctrl)                                                           \
+    BLOCK_CIPHER_def_ecb(cname, kstruct, nid, block_size, key_len, flags,                                                              \
+                         init_key, cleanup, set_asn1, get_asn1, ctrl)
 
 /*
 #define BLOCK_CIPHER_defs(cname, kstruct, \
@@ -225,20 +224,20 @@ const EVP_CIPHER *EVP_##cname##_ecb(void) { return &cname##_ecb; }
 
 #define IMPLEMENT_BLOCK_CIPHER(cname, ksched, cprefix, kstruct, nid, block_size, key_len, iv_len, cbits, flags, init_key, cleanup, set_asn1, get_asn1, ctrl) \
     BLOCK_CIPHER_all_funcs(cname, cprefix, cbits, kstruct, ksched)                                                                                           \
-        BLOCK_CIPHER_defs(cname, kstruct, nid, block_size, key_len, iv_len,                                                                                  \
-                          cbits, flags, init_key, cleanup, set_asn1,                                                                                         \
-                          get_asn1, ctrl)
+    BLOCK_CIPHER_defs(cname, kstruct, nid, block_size, key_len, iv_len,                                                                                      \
+                      cbits, flags, init_key, cleanup, set_asn1,                                                                                             \
+                      get_asn1, ctrl)
 
 #define EVP_C_DATA(kstruct, ctx) ((kstruct *)(ctx)->cipher_data)
 
-#define IMPLEMENT_CFBR(cipher, cprefix, kstruct, ksched, keysize, cbits, iv_len)   \
-    BLOCK_CIPHER_func_cfb(cipher##_##keysize, cprefix, cbits, kstruct, ksched)     \
-        BLOCK_CIPHER_def_cfb(cipher##_##keysize, kstruct,                          \
-                             NID_##cipher##_##keysize, keysize / 8, iv_len, cbits, \
-                             0, cipher##_init_key, NULL,                           \
-                             EVP_CIPHER_set_asn1_iv,                               \
-                             EVP_CIPHER_get_asn1_iv,                               \
-                             NULL)
+#define IMPLEMENT_CFBR(cipher, cprefix, kstruct, ksched, keysize, cbits, iv_len) \
+    BLOCK_CIPHER_func_cfb(cipher##_##keysize, cprefix, cbits, kstruct, ksched)   \
+    BLOCK_CIPHER_def_cfb(cipher##_##keysize, kstruct,                            \
+                         NID_##cipher##_##keysize, keysize / 8, iv_len, cbits,   \
+                         0, cipher##_init_key, NULL,                             \
+                         EVP_CIPHER_set_asn1_iv,                                 \
+                         EVP_CIPHER_get_asn1_iv,                                 \
+                         NULL)
 
 struct evp_pkey_ctx_st {
     /* Method associated with this operation */
@@ -297,8 +296,8 @@ struct evp_pkey_method_st {
                    EVP_MD_CTX *mctx);
 
     int (*verifyctx_init)(EVP_PKEY_CTX *ctx, EVP_MD_CTX *mctx);
-    int (*verifyctx)(EVP_PKEY_CTX *ctx, const unsigned char *sig, int siglen,
-                     EVP_MD_CTX *mctx);
+    int (*verifyctx)(EVP_PKEY_CTX *ctx, const unsigned char *sig,
+                     int siglen, EVP_MD_CTX *mctx);
 
     int (*encrypt_init)(EVP_PKEY_CTX *ctx);
     int (*encrypt)(EVP_PKEY_CTX *ctx, unsigned char *out, size_t *outlen,
@@ -313,14 +312,12 @@ struct evp_pkey_method_st {
 
     int (*ctrl)(EVP_PKEY_CTX *ctx, int type, int p1, void *p2);
     int (*ctrl_str)(EVP_PKEY_CTX *ctx, const char *type, const char *value);
-
 } /* EVP_PKEY_METHOD */;
 
 void evp_pkey_set_cb_translate(BN_GENCB *cb, EVP_PKEY_CTX *ctx);
 
 int PKCS5_v2_PBKDF2_keyivgen(EVP_CIPHER_CTX *ctx, const char *pass, int passlen,
-                             ASN1_TYPE *param,
-                             const EVP_CIPHER *c, const EVP_MD *md, int en_de);
+                             ASN1_TYPE *param, const EVP_CIPHER *c, const EVP_MD *md, int en_de);
 
 /* EVP_AEAD represents a specific AEAD algorithm. */
 struct evp_aead_st {
@@ -333,15 +330,13 @@ struct evp_aead_st {
                 size_t key_len, size_t tag_len);
     void (*cleanup)(struct evp_aead_ctx_st *);
 
-    ssize_t (*seal)(const struct evp_aead_ctx_st *ctx,
-                    unsigned char *out, size_t max_out_len,
-                    const unsigned char *nonce, size_t nonce_len,
-                    const unsigned char *in, size_t in_len,
-                    const unsigned char *ad, size_t ad_len);
+    int (*seal)(const struct evp_aead_ctx_st *ctx, unsigned char *out,
+                size_t *out_len, size_t max_out_len, const unsigned char *nonce,
+                size_t nonce_len, const unsigned char *in, size_t in_len,
+                const unsigned char *ad, size_t ad_len);
 
-    ssize_t (*open)(const struct evp_aead_ctx_st *ctx,
-                    unsigned char *out, size_t max_out_len,
-                    const unsigned char *nonce, size_t nonce_len,
-                    const unsigned char *in, size_t in_len,
-                    const unsigned char *ad, size_t ad_len);
+    int (*open)(const struct evp_aead_ctx_st *ctx, unsigned char *out,
+                size_t *out_len, size_t max_out_len, const unsigned char *nonce,
+                size_t nonce_len, const unsigned char *in, size_t in_len,
+                const unsigned char *ad, size_t ad_len);
 };

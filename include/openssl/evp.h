@@ -1,25 +1,24 @@
-/* crypto/evp/evp.h */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
  * This package is an SSL implementation written
  * by Eric Young (eay@cryptsoft.com).
  * The implementation was written so as to conform with Netscapes SSL.
- * 
+ *
  * This library is free for commercial and non-commercial use as long as
  * the following conditions are aheared to.  The following conditions
  * apply to all code found in this distribution, be it the RC4, RSA,
  * lhash, DES, etc., code; not just the SSL code.  The SSL documentation
  * included with this distribution is covered by the same copyright terms
  * except that the holder is Tim Hudson (tjh@cryptsoft.com).
- * 
+ *
  * Copyright remains Eric Young's, and as such any Copyright notices in
  * the code are not to be removed.
  * If this package is used in a product, Eric Young should be given attribution
  * as the author of the parts of the library used.
  * This can be in the form of a textual message at program startup or
  * in documentation (online or textual) provided with the package.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
  * are met:
@@ -34,10 +33,10 @@
  *     Eric Young (eay@cryptsoft.com)"
  *    The word 'cryptographic' can be left out if the rouines from the library
  *    being used are not cryptographic related :-).
- * 4. If you include any Windows specific code (or a derivative thereof) from 
+ * 4. If you include any Windows specific code (or a derivative thereof) from
  *    the apps directory (application code) you must include an acknowledgement:
  *    "This product includes software written by Tim Hudson (tjh@cryptsoft.com)"
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY ERIC YOUNG ``AS IS'' AND
  * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -49,7 +48,7 @@
  * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
- * 
+ *
  * The licence and distribution terms for any publically available version or
  * derivative of this code cannot be changed.  i.e. this code cannot simply be
  * copied and put under another distribution licence
@@ -59,13 +58,7 @@
 #ifndef HEADER_ENVELOPE_H
 #define HEADER_ENVELOPE_H
 
-#ifdef OPENSSL_ALGORITHM_DEFINES
 #include <openssl/opensslconf.h>
-#else
-#define OPENSSL_ALGORITHM_DEFINES
-#include <openssl/opensslconf.h>
-#undef OPENSSL_ALGORITHM_DEFINES
-#endif
 
 #include <openssl/ossl_typ.h>
 
@@ -131,11 +124,15 @@ struct evp_pkey_st {
     ENGINE *engine;
     union {
         char *ptr;
+#ifndef OPENSSL_NO_RSA
         struct rsa_st *rsa; /* RSA */
+#endif
 #ifndef OPENSSL_NO_DSA
         struct dsa_st *dsa; /* DSA */
 #endif
+#ifndef OPENSSL_NO_DH
         struct dh_st *dh; /* DH */
+#endif
 #ifndef OPENSSL_NO_EC
         struct ec_key_st *ec; /* ECC */
 #endif
@@ -175,19 +172,19 @@ struct env_md_st {
 } /* EVP_MD */;
 
 typedef int evp_sign_method(int type, const unsigned char *m,
-                            unsigned int m_length, unsigned char *sigret,
-                            unsigned int *siglen, void *key);
+                            unsigned int m_length, unsigned char *sigret, unsigned int *siglen,
+                            void *key);
 typedef int evp_verify_method(int type, const unsigned char *m,
-                              unsigned int m_length, const unsigned char *sigbuf,
-                              unsigned int siglen, void *key);
+                              unsigned int m_length, const unsigned char *sigbuf, unsigned int siglen,
+                              void *key);
 
 #define EVP_MD_FLAG_ONESHOT 0x0001 /* digest can only handle a single \
-                 * block */
+                                    * block */
 
-#define EVP_MD_FLAG_PKEY_DIGEST 0x0002 /* digest is a "clone" digest used \
-                 * which is a copy of an existing                         \
-                 * one for a specific public key type.                    \
-                 * EVP_dss1() etc */
+#define EVP_MD_FLAG_PKEY_DIGEST 0x0002 /* digest is a "clone" digest used     \
+                                        * which is a copy of an existing      \
+                                        * one for a specific public key type. \
+                                        * EVP_dss1() etc */
 
 /* Digest uses EVP_PKEY_METHOD for signing instead of MD specific signing */
 
@@ -208,6 +205,8 @@ typedef int evp_verify_method(int type, const unsigned char *m,
 /* Custom handling via ctrl */
 
 #define EVP_MD_FLAG_DIGALGID_CUSTOM 0x0018
+
+#define EVP_MD_FLAG_FIPS 0x0400 /* Note if suitable for use in FIPS mode */
 
 /* Digest ctrls */
 
@@ -244,6 +243,7 @@ typedef int evp_verify_method(int type, const unsigned char *m,
 #define EVP_PKEY_ECDSA_method EVP_PKEY_NULL_method
 #endif
 
+#ifndef OPENSSL_NO_RSA
 #define EVP_PKEY_RSA_method                                        \
     (evp_sign_method *) RSA_sign, (evp_verify_method *)RSA_verify, \
     {                                                              \
@@ -254,6 +254,10 @@ typedef int evp_verify_method(int type, const unsigned char *m,
     {                                                                                                  \
         EVP_PKEY_RSA, EVP_PKEY_RSA2, 0, 0                                                              \
     }
+#else
+#define EVP_PKEY_RSA_method EVP_PKEY_NULL_method
+#define EVP_PKEY_RSA_ASN1_OCTET_STRING_method EVP_PKEY_NULL_method
+#endif
 
 #endif /* !EVP_MD */
 
@@ -271,11 +275,17 @@ struct env_md_ctx_st {
 /* values for EVP_MD_CTX flags */
 
 #define EVP_MD_CTX_FLAG_ONESHOT 0x0001 /* digest update will be called \
-                 * once only */
+                                        * once only */
 #define EVP_MD_CTX_FLAG_CLEANED 0x0002 /* context has already been \
-                 * cleaned */
+                                        * cleaned */
 #define EVP_MD_CTX_FLAG_REUSE 0x0004   /* Don't free up ctx->md_data \
-                   * in EVP_MD_CTX_cleanup */
+                                        * in EVP_MD_CTX_cleanup */
+/* FIPS and pad options are ignored in 1.0.0, definitions are here
+ * so we don't accidentally reuse the values for other purposes.
+ */
+
+#define EVP_MD_CTX_FLAG_NON_FIPS_ALLOW 0x0008 /* Allow use of non FIPS digest \
+                                               * in FIPS mode */
 
 /* The following PAD options are also currently ignored in 1.0.0, digest
  * parameters are handled through EVP_DigestSign*() and EVP_DigestVerify*()
@@ -340,6 +350,10 @@ struct evp_cipher_st {
 #define EVP_CIPH_FLAG_DEFAULT_ASN1 0x1000
 /* Buffer length in bits not bytes: CFB1 mode only */
 #define EVP_CIPH_FLAG_LENGTH_BITS 0x2000
+/* Note if suitable for use in FIPS mode */
+#define EVP_CIPH_FLAG_FIPS 0x4000
+/* Allow non FIPS cipher in FIPS mode */
+#define EVP_CIPH_FLAG_NON_FIPS_ALLOW 0x8000
 /* Cipher handles any and all padding logic as well
  * as finalisation.
  */
@@ -424,19 +438,22 @@ typedef struct evp_Encode_Ctx_st {
 
 /* Password based encryption function */
 typedef int(EVP_PBE_KEYGEN)(EVP_CIPHER_CTX *ctx, const char *pass, int passlen,
-                            ASN1_TYPE *param, const EVP_CIPHER *cipher,
-                            const EVP_MD *md, int en_de);
+                            ASN1_TYPE *param, const EVP_CIPHER *cipher, const EVP_MD *md, int en_de);
 
+#ifndef OPENSSL_NO_RSA
 #define EVP_PKEY_assign_RSA(pkey, rsa) EVP_PKEY_assign((pkey), EVP_PKEY_RSA, \
                                                        (char *)(rsa))
+#endif
 
 #ifndef OPENSSL_NO_DSA
 #define EVP_PKEY_assign_DSA(pkey, dsa) EVP_PKEY_assign((pkey), EVP_PKEY_DSA, \
                                                        (char *)(dsa))
 #endif
 
+#ifndef OPENSSL_NO_DH
 #define EVP_PKEY_assign_DH(pkey, dh) EVP_PKEY_assign((pkey), EVP_PKEY_DH, \
                                                      (char *)(dh))
+#endif
 
 #ifndef OPENSSL_NO_EC
 #define EVP_PKEY_assign_EC_KEY(pkey, eckey) EVP_PKEY_assign((pkey), EVP_PKEY_EC, \
@@ -496,20 +513,14 @@ unsigned long EVP_CIPHER_CTX_flags(const EVP_CIPHER_CTX *ctx);
 #define EVP_DigestSignUpdate(a, b, c) EVP_DigestUpdate(a, b, c)
 #define EVP_DigestVerifyUpdate(a, b, c) EVP_DigestUpdate(a, b, c)
 
-#ifdef CONST_STRICT
-void BIO_set_md(BIO *, const EVP_MD *md);
-#else
 #define BIO_set_md(b, md) BIO_ctrl(b, BIO_C_SET_MD, 0, (char *)md)
-#endif
 #define BIO_get_md(b, mdp) BIO_ctrl(b, BIO_C_GET_MD, 0, (char *)mdp)
 #define BIO_get_md_ctx(b, mdcp) BIO_ctrl(b, BIO_C_GET_MD_CTX, 0, (char *)mdcp)
 #define BIO_set_md_ctx(b, mdcp) BIO_ctrl(b, BIO_C_SET_MD_CTX, 0, (char *)mdcp)
 #define BIO_get_cipher_status(b) BIO_ctrl(b, BIO_C_GET_CIPHER_STATUS, 0, NULL)
 #define BIO_get_cipher_ctx(b, c_pp) BIO_ctrl(b, BIO_C_GET_CIPHER_CTX, 0, (char *)c_pp)
 
-int EVP_Cipher(EVP_CIPHER_CTX *c,
-               unsigned char *out,
-               const unsigned char *in,
+int EVP_Cipher(EVP_CIPHER_CTX *c, unsigned char *out, const unsigned char *in,
                unsigned int inl);
 
 #define EVP_add_cipher_alias(n, alias) \
@@ -530,24 +541,24 @@ void EVP_MD_CTX_set_flags(EVP_MD_CTX *ctx, int flags);
 void EVP_MD_CTX_clear_flags(EVP_MD_CTX *ctx, int flags);
 int EVP_MD_CTX_test_flags(const EVP_MD_CTX *ctx, int flags);
 int EVP_DigestInit_ex(EVP_MD_CTX *ctx, const EVP_MD *type, ENGINE *impl);
-int EVP_DigestUpdate(EVP_MD_CTX *ctx, const void *d,
-                     size_t cnt);
+int EVP_DigestUpdate(EVP_MD_CTX *ctx, const void *d, size_t cnt);
 int EVP_DigestFinal_ex(EVP_MD_CTX *ctx, unsigned char *md, unsigned int *s);
-int EVP_Digest(const void *data, size_t count,
-               unsigned char *md, unsigned int *size, const EVP_MD *type, ENGINE *impl);
+int EVP_Digest(const void *data, size_t count, unsigned char *md,
+               unsigned int *size, const EVP_MD *type, ENGINE *impl);
 
 int EVP_MD_CTX_copy(EVP_MD_CTX *out, const EVP_MD_CTX *in);
 int EVP_DigestInit(EVP_MD_CTX *ctx, const EVP_MD *type);
 int EVP_DigestFinal(EVP_MD_CTX *ctx, unsigned char *md, unsigned int *s);
 
 int EVP_read_pw_string(char *buf, int length, const char *prompt, int verify);
-int EVP_read_pw_string_min(char *buf, int minlen, int maxlen, const char *prompt, int verify);
+int EVP_read_pw_string_min(char *buf, int minlen, int maxlen,
+                           const char *prompt, int verify);
 void EVP_set_pw_prompt(const char *prompt);
 char *EVP_get_pw_prompt(void);
 
 int EVP_BytesToKey(const EVP_CIPHER *type, const EVP_MD *md,
-                   const unsigned char *salt, const unsigned char *data,
-                   int datal, int count, unsigned char *key, unsigned char *iv);
+                   const unsigned char *salt, const unsigned char *data, int datal, int count,
+                   unsigned char *key, unsigned char *iv);
 
 void EVP_CIPHER_CTX_set_flags(EVP_CIPHER_CTX *ctx, int flags);
 void EVP_CIPHER_CTX_clear_flags(EVP_CIPHER_CTX *ctx, int flags);
@@ -555,30 +566,28 @@ int EVP_CIPHER_CTX_test_flags(const EVP_CIPHER_CTX *ctx, int flags);
 
 int EVP_EncryptInit(EVP_CIPHER_CTX *ctx, const EVP_CIPHER *cipher,
                     const unsigned char *key, const unsigned char *iv);
-int EVP_EncryptInit_ex(EVP_CIPHER_CTX *ctx, const EVP_CIPHER *cipher, ENGINE *impl,
-                       const unsigned char *key, const unsigned char *iv);
-int EVP_EncryptUpdate(EVP_CIPHER_CTX *ctx, unsigned char *out,
-                      int *outl, const unsigned char *in, int inl);
+int EVP_EncryptInit_ex(EVP_CIPHER_CTX *ctx, const EVP_CIPHER *cipher,
+                       ENGINE *impl, const unsigned char *key, const unsigned char *iv);
+int EVP_EncryptUpdate(EVP_CIPHER_CTX *ctx, unsigned char *out, int *outl,
+                      const unsigned char *in, int inl);
 int EVP_EncryptFinal_ex(EVP_CIPHER_CTX *ctx, unsigned char *out, int *outl);
 int EVP_EncryptFinal(EVP_CIPHER_CTX *ctx, unsigned char *out, int *outl);
 
 int EVP_DecryptInit(EVP_CIPHER_CTX *ctx, const EVP_CIPHER *cipher,
                     const unsigned char *key, const unsigned char *iv);
-int EVP_DecryptInit_ex(EVP_CIPHER_CTX *ctx, const EVP_CIPHER *cipher, ENGINE *impl,
-                       const unsigned char *key, const unsigned char *iv);
-int EVP_DecryptUpdate(EVP_CIPHER_CTX *ctx, unsigned char *out,
-                      int *outl, const unsigned char *in, int inl);
+int EVP_DecryptInit_ex(EVP_CIPHER_CTX *ctx, const EVP_CIPHER *cipher,
+                       ENGINE *impl, const unsigned char *key, const unsigned char *iv);
+int EVP_DecryptUpdate(EVP_CIPHER_CTX *ctx, unsigned char *out, int *outl,
+                      const unsigned char *in, int inl);
 int EVP_DecryptFinal(EVP_CIPHER_CTX *ctx, unsigned char *outm, int *outl);
 int EVP_DecryptFinal_ex(EVP_CIPHER_CTX *ctx, unsigned char *outm, int *outl);
 
 int EVP_CipherInit(EVP_CIPHER_CTX *ctx, const EVP_CIPHER *cipher,
-                   const unsigned char *key, const unsigned char *iv,
-                   int enc);
-int EVP_CipherInit_ex(EVP_CIPHER_CTX *ctx, const EVP_CIPHER *cipher, ENGINE *impl,
-                      const unsigned char *key, const unsigned char *iv,
-                      int enc);
-int EVP_CipherUpdate(EVP_CIPHER_CTX *ctx, unsigned char *out,
-                     int *outl, const unsigned char *in, int inl);
+                   const unsigned char *key, const unsigned char *iv, int enc);
+int EVP_CipherInit_ex(EVP_CIPHER_CTX *ctx, const EVP_CIPHER *cipher,
+                      ENGINE *impl, const unsigned char *key, const unsigned char *iv, int enc);
+int EVP_CipherUpdate(EVP_CIPHER_CTX *ctx, unsigned char *out, int *outl,
+                     const unsigned char *in, int inl);
 int EVP_CipherFinal(EVP_CIPHER_CTX *ctx, unsigned char *outm, int *outl);
 int EVP_CipherFinal_ex(EVP_CIPHER_CTX *ctx, unsigned char *outm, int *outl);
 
@@ -590,22 +599,19 @@ int EVP_VerifyFinal(EVP_MD_CTX *ctx, const unsigned char *sigbuf,
 
 int EVP_DigestSignInit(EVP_MD_CTX *ctx, EVP_PKEY_CTX **pctx,
                        const EVP_MD *type, ENGINE *e, EVP_PKEY *pkey);
-int EVP_DigestSignFinal(EVP_MD_CTX *ctx,
-                        unsigned char *sigret, size_t *siglen);
+int EVP_DigestSignFinal(EVP_MD_CTX *ctx, unsigned char *sigret, size_t *siglen);
 
 int EVP_DigestVerifyInit(EVP_MD_CTX *ctx, EVP_PKEY_CTX **pctx,
                          const EVP_MD *type, ENGINE *e, EVP_PKEY *pkey);
-int EVP_DigestVerifyFinal(EVP_MD_CTX *ctx,
-                          unsigned char *sig, size_t siglen);
+int EVP_DigestVerifyFinal(EVP_MD_CTX *ctx, unsigned char *sig, size_t siglen);
 
 int EVP_OpenInit(EVP_CIPHER_CTX *ctx, const EVP_CIPHER *type,
-                 const unsigned char *ek, int ekl, const unsigned char *iv,
-                 EVP_PKEY *priv);
+                 const unsigned char *ek, int ekl, const unsigned char *iv, EVP_PKEY *priv);
 int EVP_OpenFinal(EVP_CIPHER_CTX *ctx, unsigned char *out, int *outl);
 
 int EVP_SealInit(EVP_CIPHER_CTX *ctx, const EVP_CIPHER *type,
-                 unsigned char **ek, int *ekl, unsigned char *iv,
-                 EVP_PKEY **pubk, int npubk);
+                 unsigned char **ek, int *ekl, unsigned char *iv, EVP_PKEY **pubk,
+                 int npubk);
 int EVP_SealFinal(EVP_CIPHER_CTX *ctx, unsigned char *out, int *outl);
 
 void EVP_EncodeInit(EVP_ENCODE_CTX *ctx);
@@ -633,7 +639,6 @@ int EVP_CIPHER_CTX_rand_key(EVP_CIPHER_CTX *ctx, unsigned char *key);
 BIO_METHOD *BIO_f_md(void);
 BIO_METHOD *BIO_f_base64(void);
 BIO_METHOD *BIO_f_cipher(void);
-BIO_METHOD *BIO_f_reliable(void);
 void BIO_set_cipher(BIO *b, const EVP_CIPHER *c, const unsigned char *k,
                     const unsigned char *i, int enc);
 #endif
@@ -803,6 +808,7 @@ const EVP_CIPHER *EVP_camellia_256_cfb128(void);
 #define EVP_camellia_256_cfb EVP_camellia_256_cfb128
 const EVP_CIPHER *EVP_camellia_256_ofb(void);
 #endif
+
 #ifndef OPENSSL_NO_CHACHA
 const EVP_CIPHER *EVP_chacha20(void);
 #endif
@@ -811,15 +817,14 @@ void OPENSSL_add_all_algorithms_noconf(void);
 void OPENSSL_add_all_algorithms_conf(void);
 
 #ifdef OPENSSL_LOAD_CONF
-#define OpenSSL_add_all_algorithms() \
-    OPENSSL_add_all_algorithms_conf()
+#define OpenSSL_add_all_algorithms() OPENSSL_add_all_algorithms_conf()
 #else
-#define OpenSSL_add_all_algorithms() \
-    OPENSSL_add_all_algorithms_noconf()
+#define OpenSSL_add_all_algorithms() OPENSSL_add_all_algorithms_noconf()
 #endif
 
 void OpenSSL_add_all_ciphers(void);
 void OpenSSL_add_all_digests(void);
+
 #define SSLeay_add_all_algorithms() OpenSSL_add_all_algorithms()
 #define SSLeay_add_all_ciphers() OpenSSL_add_all_ciphers()
 #define SSLeay_add_all_digests() OpenSSL_add_all_digests()
@@ -831,26 +836,24 @@ const EVP_CIPHER *EVP_get_cipherbyname(const char *name);
 const EVP_MD *EVP_get_digestbyname(const char *name);
 void EVP_cleanup(void);
 
-void EVP_CIPHER_do_all(void (*fn)(const EVP_CIPHER *ciph,
-                                  const char *from, const char *to, void *x),
+void EVP_CIPHER_do_all(void (*fn)(const EVP_CIPHER *ciph, const char *from,
+                                  const char *to, void *x),
                        void *arg);
 void EVP_CIPHER_do_all_sorted(void (*fn)(const EVP_CIPHER *ciph,
                                          const char *from, const char *to, void *x),
                               void *arg);
 
-void EVP_MD_do_all(void (*fn)(const EVP_MD *ciph,
-                              const char *from, const char *to, void *x),
+void EVP_MD_do_all(void (*fn)(const EVP_MD *ciph, const char *from,
+                              const char *to, void *x),
                    void *arg);
-void EVP_MD_do_all_sorted(void (*fn)(const EVP_MD *ciph,
-                                     const char *from, const char *to, void *x),
+void EVP_MD_do_all_sorted(void (*fn)(const EVP_MD *ciph, const char *from,
+                                     const char *to, void *x),
                           void *arg);
 
-int EVP_PKEY_decrypt_old(unsigned char *dec_key,
-                         const unsigned char *enc_key, int enc_key_len,
-                         EVP_PKEY *private_key);
-int EVP_PKEY_encrypt_old(unsigned char *enc_key,
-                         const unsigned char *key, int key_len,
-                         EVP_PKEY *pub_key);
+int EVP_PKEY_decrypt_old(unsigned char *dec_key, const unsigned char *enc_key,
+                         int enc_key_len, EVP_PKEY *private_key);
+int EVP_PKEY_encrypt_old(unsigned char *enc_key, const unsigned char *key,
+                         int key_len, EVP_PKEY *pub_key);
 int EVP_PKEY_type(int type);
 int EVP_PKEY_id(const EVP_PKEY *pkey);
 int EVP_PKEY_base_id(const EVP_PKEY *pkey);
@@ -861,17 +864,21 @@ int EVP_PKEY_set_type_str(EVP_PKEY *pkey, const char *str, int len);
 int EVP_PKEY_assign(EVP_PKEY *pkey, int type, void *key);
 void *EVP_PKEY_get0(EVP_PKEY *pkey);
 
+#ifndef OPENSSL_NO_RSA
 struct rsa_st;
 int EVP_PKEY_set1_RSA(EVP_PKEY *pkey, struct rsa_st *key);
 struct rsa_st *EVP_PKEY_get1_RSA(EVP_PKEY *pkey);
+#endif
 #ifndef OPENSSL_NO_DSA
 struct dsa_st;
 int EVP_PKEY_set1_DSA(EVP_PKEY *pkey, struct dsa_st *key);
 struct dsa_st *EVP_PKEY_get1_DSA(EVP_PKEY *pkey);
 #endif
+#ifndef OPENSSL_NO_DH
 struct dh_st;
 int EVP_PKEY_set1_DH(EVP_PKEY *pkey, struct dh_st *key);
 struct dh_st *EVP_PKEY_get1_DH(EVP_PKEY *pkey);
+#endif
 #ifndef OPENSSL_NO_EC
 struct ec_key_st;
 int EVP_PKEY_set1_EC_KEY(EVP_PKEY *pkey, struct ec_key_st *key);
@@ -898,12 +905,12 @@ int EVP_PKEY_cmp_parameters(const EVP_PKEY *a, const EVP_PKEY *b);
 
 int EVP_PKEY_cmp(const EVP_PKEY *a, const EVP_PKEY *b);
 
-int EVP_PKEY_print_public(BIO *out, const EVP_PKEY *pkey,
-                          int indent, ASN1_PCTX *pctx);
-int EVP_PKEY_print_private(BIO *out, const EVP_PKEY *pkey,
-                           int indent, ASN1_PCTX *pctx);
-int EVP_PKEY_print_params(BIO *out, const EVP_PKEY *pkey,
-                          int indent, ASN1_PCTX *pctx);
+int EVP_PKEY_print_public(BIO *out, const EVP_PKEY *pkey, int indent,
+                          ASN1_PCTX *pctx);
+int EVP_PKEY_print_private(BIO *out, const EVP_PKEY *pkey, int indent,
+                           ASN1_PCTX *pctx);
+int EVP_PKEY_print_params(BIO *out, const EVP_PKEY *pkey, int indent,
+                          ASN1_PCTX *pctx);
 
 int EVP_PKEY_get_default_digest_nid(EVP_PKEY *pkey, int *pnid);
 
@@ -919,15 +926,13 @@ int EVP_CIPHER_get_asn1_iv(EVP_CIPHER_CTX *c, ASN1_TYPE *type);
 
 /* PKCS5 password based encryption */
 int PKCS5_PBE_keyivgen(EVP_CIPHER_CTX *ctx, const char *pass, int passlen,
-                       ASN1_TYPE *param, const EVP_CIPHER *cipher, const EVP_MD *md,
-                       int en_de);
+                       ASN1_TYPE *param, const EVP_CIPHER *cipher, const EVP_MD *md, int en_de);
 int PKCS5_PBKDF2_HMAC_SHA1(const char *pass, int passlen,
-                           const unsigned char *salt, int saltlen, int iter,
-                           int keylen, unsigned char *out);
-int PKCS5_PBKDF2_HMAC(const char *pass, int passlen,
-                      const unsigned char *salt, int saltlen, int iter,
-                      const EVP_MD *digest,
-                      int keylen, unsigned char *out);
+                           const unsigned char *salt, int saltlen, int iter, int keylen,
+                           unsigned char *out);
+int PKCS5_PBKDF2_HMAC(const char *pass, int passlen, const unsigned char *salt,
+                      int saltlen, int iter, const EVP_MD *digest, int keylen,
+                      unsigned char *out);
 int PKCS5_v2_PBE_keyivgen(EVP_CIPHER_CTX *ctx, const char *pass, int passlen,
                           ASN1_TYPE *param, const EVP_CIPHER *cipher, const EVP_MD *md,
                           int en_de);
@@ -948,8 +953,8 @@ int EVP_PBE_alg_add_type(int pbe_type, int pbe_nid, int cipher_nid, int md_nid,
                          EVP_PBE_KEYGEN *keygen);
 int EVP_PBE_alg_add(int nid, const EVP_CIPHER *cipher, const EVP_MD *md,
                     EVP_PBE_KEYGEN *keygen);
-int EVP_PBE_find(int type, int pbe_nid,
-                 int *pcnid, int *pmnid, EVP_PBE_KEYGEN **pkeygen);
+int EVP_PBE_find(int type, int pbe_nid, int *pcnid, int *pmnid,
+                 EVP_PBE_KEYGEN **pkeygen);
 void EVP_PBE_cleanup(void);
 
 #define ASN1_PKEY_ALIAS 0x1
@@ -974,8 +979,8 @@ int EVP_PKEY_asn1_get0_info(int *ppkey_id, int *pkey_base_id, int *ppkey_flags,
                             const EVP_PKEY_ASN1_METHOD *ameth);
 
 const EVP_PKEY_ASN1_METHOD *EVP_PKEY_get0_asn1(EVP_PKEY *pkey);
-EVP_PKEY_ASN1_METHOD *EVP_PKEY_asn1_new(int id, int flags,
-                                        const char *pem_str, const char *info);
+EVP_PKEY_ASN1_METHOD *EVP_PKEY_asn1_new(int id, int flags, const char *pem_str,
+                                        const char *info);
 void EVP_PKEY_asn1_copy(EVP_PKEY_ASN1_METHOD *dst,
                         const EVP_PKEY_ASN1_METHOD *src);
 void EVP_PKEY_asn1_free(EVP_PKEY_ASN1_METHOD *ameth);
@@ -993,8 +998,7 @@ void EVP_PKEY_asn1_set_private(EVP_PKEY_ASN1_METHOD *ameth,
                                int (*priv_print)(BIO *out, const EVP_PKEY *pkey, int indent,
                                                  ASN1_PCTX *pctx));
 void EVP_PKEY_asn1_set_param(EVP_PKEY_ASN1_METHOD *ameth,
-                             int (*param_decode)(EVP_PKEY *pkey,
-                                                 const unsigned char **pder, int derlen),
+                             int (*param_decode)(EVP_PKEY *pkey, const unsigned char **pder, int derlen),
                              int (*param_encode)(const EVP_PKEY *pkey, unsigned char **pder),
                              int (*param_missing)(const EVP_PKEY *pk),
                              int (*param_copy)(EVP_PKEY *to, const EVP_PKEY *from),
@@ -1005,8 +1009,7 @@ void EVP_PKEY_asn1_set_param(EVP_PKEY_ASN1_METHOD *ameth,
 void EVP_PKEY_asn1_set_free(EVP_PKEY_ASN1_METHOD *ameth,
                             void (*pkey_free)(EVP_PKEY *pkey));
 void EVP_PKEY_asn1_set_ctrl(EVP_PKEY_ASN1_METHOD *ameth,
-                            int (*pkey_ctrl)(EVP_PKEY *pkey, int op,
-                                             long arg1, void *arg2));
+                            int (*pkey_ctrl)(EVP_PKEY *pkey, int op, long arg1, void *arg2));
 
 #define EVP_PKEY_OP_UNDEFINED 0
 #define EVP_PKEY_OP_PARAMGEN (1 << 1)
@@ -1079,16 +1082,16 @@ EVP_PKEY_CTX *EVP_PKEY_CTX_new_id(int id, ENGINE *e);
 EVP_PKEY_CTX *EVP_PKEY_CTX_dup(EVP_PKEY_CTX *ctx);
 void EVP_PKEY_CTX_free(EVP_PKEY_CTX *ctx);
 
-int EVP_PKEY_CTX_ctrl(EVP_PKEY_CTX *ctx, int keytype, int optype,
-                      int cmd, int p1, void *p2);
+int EVP_PKEY_CTX_ctrl(EVP_PKEY_CTX *ctx, int keytype, int optype, int cmd,
+                      int p1, void *p2);
 int EVP_PKEY_CTX_ctrl_str(EVP_PKEY_CTX *ctx, const char *type,
                           const char *value);
 
 int EVP_PKEY_CTX_get_operation(EVP_PKEY_CTX *ctx);
 void EVP_PKEY_CTX_set0_keygen_info(EVP_PKEY_CTX *ctx, int *dat, int datlen);
 
-EVP_PKEY *EVP_PKEY_new_mac_key(int type, ENGINE *e,
-                               const unsigned char *key, int keylen);
+EVP_PKEY *EVP_PKEY_new_mac_key(int type, ENGINE *e, const unsigned char *key,
+                               int keylen);
 
 void EVP_PKEY_CTX_set_data(EVP_PKEY_CTX *ctx, void *data);
 void *EVP_PKEY_CTX_get_data(EVP_PKEY_CTX *ctx);
@@ -1100,24 +1103,19 @@ void EVP_PKEY_CTX_set_app_data(EVP_PKEY_CTX *ctx, void *data);
 void *EVP_PKEY_CTX_get_app_data(EVP_PKEY_CTX *ctx);
 
 int EVP_PKEY_sign_init(EVP_PKEY_CTX *ctx);
-int EVP_PKEY_sign(EVP_PKEY_CTX *ctx,
-                  unsigned char *sig, size_t *siglen,
+int EVP_PKEY_sign(EVP_PKEY_CTX *ctx, unsigned char *sig, size_t *siglen,
                   const unsigned char *tbs, size_t tbslen);
 int EVP_PKEY_verify_init(EVP_PKEY_CTX *ctx);
-int EVP_PKEY_verify(EVP_PKEY_CTX *ctx,
-                    const unsigned char *sig, size_t siglen,
+int EVP_PKEY_verify(EVP_PKEY_CTX *ctx, const unsigned char *sig, size_t siglen,
                     const unsigned char *tbs, size_t tbslen);
 int EVP_PKEY_verify_recover_init(EVP_PKEY_CTX *ctx);
-int EVP_PKEY_verify_recover(EVP_PKEY_CTX *ctx,
-                            unsigned char *rout, size_t *routlen,
-                            const unsigned char *sig, size_t siglen);
+int EVP_PKEY_verify_recover(EVP_PKEY_CTX *ctx, unsigned char *rout,
+                            size_t *routlen, const unsigned char *sig, size_t siglen);
 int EVP_PKEY_encrypt_init(EVP_PKEY_CTX *ctx);
-int EVP_PKEY_encrypt(EVP_PKEY_CTX *ctx,
-                     unsigned char *out, size_t *outlen,
+int EVP_PKEY_encrypt(EVP_PKEY_CTX *ctx, unsigned char *out, size_t *outlen,
                      const unsigned char *in, size_t inlen);
 int EVP_PKEY_decrypt_init(EVP_PKEY_CTX *ctx);
-int EVP_PKEY_decrypt(EVP_PKEY_CTX *ctx,
-                     unsigned char *out, size_t *outlen,
+int EVP_PKEY_decrypt(EVP_PKEY_CTX *ctx, unsigned char *out, size_t *outlen,
                      const unsigned char *in, size_t inlen);
 
 int EVP_PKEY_derive_init(EVP_PKEY_CTX *ctx);
@@ -1165,9 +1163,8 @@ void EVP_PKEY_meth_set_verify(EVP_PKEY_METHOD *pmeth,
 
 void EVP_PKEY_meth_set_verify_recover(EVP_PKEY_METHOD *pmeth,
                                       int (*verify_recover_init)(EVP_PKEY_CTX *ctx),
-                                      int (*verify_recover)(EVP_PKEY_CTX *ctx,
-                                                            unsigned char *sig, size_t *siglen,
-                                                            const unsigned char *tbs, size_t tbslen));
+                                      int (*verify_recover)(EVP_PKEY_CTX *ctx, unsigned char *sig,
+                                                            size_t *siglen, const unsigned char *tbs, size_t tbslen));
 
 void EVP_PKEY_meth_set_signctx(EVP_PKEY_METHOD *pmeth,
                                int (*signctx_init)(EVP_PKEY_CTX *ctx, EVP_MD_CTX *mctx),
@@ -1195,8 +1192,7 @@ void EVP_PKEY_meth_set_derive(EVP_PKEY_METHOD *pmeth,
 
 void EVP_PKEY_meth_set_ctrl(EVP_PKEY_METHOD *pmeth,
                             int (*ctrl)(EVP_PKEY_CTX *ctx, int type, int p1, void *p2),
-                            int (*ctrl_str)(EVP_PKEY_CTX *ctx,
-                                            const char *type, const char *value));
+                            int (*ctrl_str)(EVP_PKEY_CTX *ctx, const char *type, const char *value));
 
 /* Authenticated Encryption with Additional Data.
  *
@@ -1211,6 +1207,7 @@ typedef struct evp_aead_st EVP_AEAD;
 #ifndef OPENSSL_NO_AES
 /* EVP_aes_128_gcm is AES-128 in Galois Counter Mode. */
 const EVP_AEAD *EVP_aead_aes_128_gcm(void);
+/* EVP_aes_256_gcm is AES-256 in Galois Counter Mode. */
 const EVP_AEAD *EVP_aead_aes_256_gcm(void);
 #endif
 
@@ -1219,93 +1216,96 @@ const EVP_AEAD *EVP_aead_aes_256_gcm(void);
 const EVP_AEAD *EVP_aead_chacha20_poly1305(void);
 #endif
 
-/* EVP_AEAD_key_length returns the length, in bytes, of the keys used by
- * |aead|. */
+/* EVP_AEAD_key_length returns the length of the keys used. */
 size_t EVP_AEAD_key_length(const EVP_AEAD *aead);
 
-/* EVP_AEAD_nonce_length returns the length, in bytes, of the per-message nonce
- * for |aead|. */
+/* EVP_AEAD_nonce_length returns the length of the per-message nonce. */
 size_t EVP_AEAD_nonce_length(const EVP_AEAD *aead);
 
 /* EVP_AEAD_max_overhead returns the maximum number of additional bytes added
- * by the act of sealing data with |aead|. */
+ * by the act of sealing data with the AEAD. */
 size_t EVP_AEAD_max_overhead(const EVP_AEAD *aead);
 
-/* EVP_AEAD_max_tag_len returns the maximum tag length when using |aead|. This
- * is the largest value that can be passed as |tag_len| to
- * |EVP_AEAD_CTX_init|. */
+/* EVP_AEAD_max_tag_len returns the maximum tag length when using this AEAD.
+ * This * is the largest value that can be passed as a tag length to
+ * EVP_AEAD_CTX_init. */
 size_t EVP_AEAD_max_tag_len(const EVP_AEAD *aead);
 
 /* An EVP_AEAD_CTX represents an AEAD algorithm configured with a specific key
  * and message-independent IV. */
 typedef struct evp_aead_ctx_st {
     const EVP_AEAD *aead;
-    /* aead_state is an opaque pointer to whatever state the AEAD needs to
-	 * maintain. */
+    /* aead_state is an opaque pointer to the AEAD specific state. */
     void *aead_state;
 } EVP_AEAD_CTX;
 
+/* EVP_AEAD_MAX_TAG_LENGTH is the maximum tag length used by any AEAD
+ * defined in this header. */
+#define EVP_AEAD_MAX_TAG_LENGTH 16
+
+/* EVP_AEAD_DEFAULT_TAG_LENGTH is a magic value that can be passed to
+ * EVP_AEAD_CTX_init to indicate that the default tag length for an AEAD
+ * should be used. */
 #define EVP_AEAD_DEFAULT_TAG_LENGTH 0
 
-/* EVP_AEAD_init initializes |ctx| for the given AEAD algorithm from |impl|.
- * The |impl| argument may be NULL to choose the default implementation.
- * Authentication tags may be truncated by passing a size as |tag_len|. A
- * |tag_len| of zero indicates the default tag length and this is defined as
- * EVP_AEAD_DEFAULT_TAG_LENGTH for readability.
- * Returns 1 on success. Otherwise returns 0 and pushes to the error stack. */
+/* EVP_AEAD_init initializes the context for the given AEAD algorithm.
+ * The implementation argument may be NULL to choose the default implementation.
+ * Authentication tags may be truncated by passing a tag length. A tag length
+ * of zero indicates the default tag length should be used. */
 int EVP_AEAD_CTX_init(EVP_AEAD_CTX *ctx, const EVP_AEAD *aead,
-                      const unsigned char *key, size_t key_len,
-                      size_t tag_len, ENGINE *impl);
+                      const unsigned char *key, size_t key_len, size_t tag_len, ENGINE *impl);
 
-/* EVP_AEAD_CTX_cleanup frees any data allocated by |ctx|. */
+/* EVP_AEAD_CTX_cleanup frees any data allocated for this context. */
 void EVP_AEAD_CTX_cleanup(EVP_AEAD_CTX *ctx);
 
-/* EVP_AEAD_CTX_seal encrypts and authenticates |in_len| bytes from |in| and
- * authenticates |ad_len| bytes from |ad| and writes the result to |out|,
- * returning the number of bytes written, or -1 on error.
+/* EVP_AEAD_CTX_seal encrypts and authenticates the input and authenticates
+ * any additional data (AD), the result being written as output. One is
+ * returned on success, otherwise zero.
  *
  * This function may be called (with the same EVP_AEAD_CTX) concurrently with
  * itself or EVP_AEAD_CTX_open.
  *
- * At most |max_out_len| bytes are written to |out| and, in order to ensure
- * success, |max_out_len| should be |in_len| plus the result of
- * EVP_AEAD_overhead.
+ * At most max_out_len bytes are written as output and, in order to ensure
+ * success, this value should be the length of the input plus the result of
+ * EVP_AEAD_overhead. On successful return, out_len is set to the actual
+ * number of bytes written.
  *
- * The length of |nonce|, |nonce_len|, must be equal to the result of
+ * The length of the nonce is must be equal to the result of
  * EVP_AEAD_nonce_length for this AEAD.
  *
- * EVP_AEAD_CTX_seal never results in a partial output. If |max_out_len| is
- * insufficient, -1 will be returned.
+ * EVP_AEAD_CTX_seal never results in a partial output. If max_out_len is
+ * insufficient, zero will be returned and out_len will be set to zero.
  *
- * If |in| and |out| alias then |out| must be <= |in|. */
-ssize_t EVP_AEAD_CTX_seal(const EVP_AEAD_CTX *ctx,
-                          unsigned char *out, size_t max_out_len,
-                          const unsigned char *nonce, size_t nonce_len,
-                          const unsigned char *in, size_t in_len,
-                          const unsigned char *ad, size_t ad_len);
+ * If the input and output are aliased then out must be <= in. */
+int EVP_AEAD_CTX_seal(const EVP_AEAD_CTX *ctx, unsigned char *out,
+                      size_t *out_len, size_t max_out_len, const unsigned char *nonce,
+                      size_t nonce_len, const unsigned char *in, size_t in_len,
+                      const unsigned char *ad, size_t ad_len);
 
-/* EVP_AEAD_CTX_open authenticates |in_len| bytes from |in| and |ad_len| bytes
- * from |ad| and decrypts at most |in_len| bytes into |out|. It returns the
- * number of bytes written, or -1 on error.
+/* EVP_AEAD_CTX_open authenticates the input and additional data, decrypting
+ * the input and writing it as output. One is returned on success, otherwise
+ * zero.
  *
  * This function may be called (with the same EVP_AEAD_CTX) concurrently with
  * itself or EVP_AEAD_CTX_seal.
  *
- * At most |in_len| bytes are written to |out|. In order to ensure success,
- * |max_out_len| should be at least |in_len|.
+ * At most the number of input bytes are written as output. In order to ensure
+ * success, max_out_len should be at least the same as the input length. On
+ * successful return out_len is set to the actual number of bytes written.
  *
- * The length of |nonce|, |nonce_len|, must be equal to the result of
- * EVP_AEAD_nonce_length for this AEAD.
+ * The length of nonce must be equal to the result of EVP_AEAD_nonce_length
+ * for this AEAD.
  *
- * EVP_AEAD_CTX_open never results in a partial output. If |max_out_len| is
- * insufficient, -1 will be returned.
+ * EVP_AEAD_CTX_open never results in a partial output. If max_out_len is
+ * insufficient, zero will be returned and out_len will be set to zero.
  *
- * If |in| and |out| alias then |out| must be <= |in|. */
-ssize_t EVP_AEAD_CTX_open(const EVP_AEAD_CTX *ctx,
-                          unsigned char *out, size_t max_out_len,
-                          const unsigned char *nonce, size_t nonce_len,
-                          const unsigned char *in, size_t in_len,
-                          const unsigned char *ad, size_t ad_len);
+ * If the input and output are aliased then out must be <= in. */
+int EVP_AEAD_CTX_open(const EVP_AEAD_CTX *ctx, unsigned char *out,
+                      size_t *out_len, size_t max_out_len, const unsigned char *nonce,
+                      size_t nonce_len, const unsigned char *in, size_t in_len,
+                      const unsigned char *ad, size_t ad_len);
+
+void EVP_add_alg_module(void);
 
 /* BEGIN ERROR CODES */
 /* The following lines are auto generated by the script mkerr.pl. Any changes
@@ -1319,11 +1319,9 @@ void ERR_load_EVP_strings(void);
 #define EVP_F_AEAD_AES_GCM_INIT 187
 #define EVP_F_AEAD_AES_GCM_OPEN 188
 #define EVP_F_AEAD_AES_GCM_SEAL 189
-#define EVP_F_AEAD_CTX_OPEN 185
-#define EVP_F_AEAD_CTX_SEAL 186
-#define EVP_F_AEAD_CHACHA20_POLY1305_INIT 187
-#define EVP_F_AEAD_CHACHA20_POLY1305_OPEN 184
-#define EVP_F_AEAD_CHACHA20_POLY1305_SEAL 183
+#define EVP_F_AEAD_CHACHA20_POLY1305_INIT 192
+#define EVP_F_AEAD_CHACHA20_POLY1305_OPEN 193
+#define EVP_F_AEAD_CHACHA20_POLY1305_SEAL 194
 #define EVP_F_AEAD_CTX_OPEN 185
 #define EVP_F_AEAD_CTX_SEAL 186
 #define EVP_F_AESNI_INIT_KEY 165
@@ -1391,6 +1389,12 @@ void ERR_load_EVP_strings(void);
 #define EVP_F_EVP_RIJNDAEL 126
 #define EVP_F_EVP_SIGNFINAL 107
 #define EVP_F_EVP_VERIFYFINAL 108
+#define EVP_F_FIPS_CIPHERINIT 166
+#define EVP_F_FIPS_CIPHER_CTX_COPY 170
+#define EVP_F_FIPS_CIPHER_CTX_CTRL 167
+#define EVP_F_FIPS_CIPHER_CTX_SET_KEY_LENGTH 171
+#define EVP_F_FIPS_DIGESTINIT 168
+#define EVP_F_FIPS_MD_CTX_COPY 169
 #define EVP_F_HMAC_INIT_EX 174
 #define EVP_F_INT_CTX_NEW 157
 #define EVP_F_PKCS5_PBE_KEYIVGEN 117
@@ -1420,17 +1424,21 @@ void ERR_load_EVP_strings(void);
 #define EVP_R_DECODE_ERROR 114
 #define EVP_R_DIFFERENT_KEY_TYPES 101
 #define EVP_R_DIFFERENT_PARAMETERS 153
+#define EVP_R_DISABLED_FOR_FIPS 163
 #define EVP_R_ENCODE_ERROR 115
 #define EVP_R_ERROR_LOADING_SECTION 165
+#define EVP_R_ERROR_SETTING_FIPS_MODE 166
 #define EVP_R_EVP_PBE_CIPHERINIT_ERROR 119
 #define EVP_R_EXPECTING_AN_RSA_KEY 127
 #define EVP_R_EXPECTING_A_DH_KEY 128
 #define EVP_R_EXPECTING_A_DSA_KEY 129
 #define EVP_R_EXPECTING_A_ECDSA_KEY 141
 #define EVP_R_EXPECTING_A_EC_KEY 142
+#define EVP_R_FIPS_MODE_NOT_SUPPORTED 167
 #define EVP_R_INITIALIZATION_ERROR 134
 #define EVP_R_INPUT_NOT_INITIALIZED 111
 #define EVP_R_INVALID_DIGEST 152
+#define EVP_R_INVALID_FIPS_MODE 168
 #define EVP_R_INVALID_KEY_LENGTH 130
 #define EVP_R_INVALID_OPERATION 148
 #define EVP_R_IV_TOO_LARGE 102
@@ -1448,7 +1456,7 @@ void ERR_load_EVP_strings(void);
 #define EVP_R_NO_VERIFY_FUNCTION_CONFIGURED 105
 #define EVP_R_OPERATION_NOT_SUPPORTED_FOR_THIS_KEYTYPE 150
 #define EVP_R_OPERATON_NOT_INITIALIZED 151
-#define EVP_R_OUTPUT_ALIASES_INPUT 170
+#define EVP_R_OUTPUT_ALIASES_INPUT 172
 #define EVP_R_PKCS8_UNKNOWN_BROKEN_TYPE 117
 #define EVP_R_PRIVATE_KEY_DECODE_ERROR 145
 #define EVP_R_PRIVATE_KEY_ENCODE_ERROR 146

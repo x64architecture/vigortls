@@ -1,4 +1,3 @@
-/* ssl/d1_meth.h */
 /*
  * DTLS implementation written by Nagendra Modadugu
  * (nagendra@cs.stanford.edu) for the OpenSSL project 2005.
@@ -62,13 +61,6 @@
 #include "ssl_locl.h"
 
 static const SSL_METHOD *dtls1_get_method(int ver);
-static const SSL_METHOD *dtls1_get_method(int ver)
-{
-    if (ver == DTLS1_VERSION)
-        return (DTLSv1_method());
-    else
-        return (NULL);
-}
 
 const SSL_METHOD DTLSv1_method_data = {
     .version = DTLS1_VERSION,
@@ -103,4 +95,11 @@ const SSL_METHOD DTLSv1_method_data = {
 const SSL_METHOD *DTLSv1_method(void)
 {
     return &DTLSv1_method_data;
+}
+
+static const SSL_METHOD *dtls1_get_method(int ver)
+{
+    if (ver == DTLS1_VERSION)
+        return (DTLSv1_method());
+    return (NULL);
 }

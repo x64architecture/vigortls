@@ -40,13 +40,15 @@ static const EVP_CIPHER chacha20_cipher = {
     .ctx_size = sizeof(ChaCha_ctx)
 };
 
-const EVP_CIPHER *EVP_chacha20(void)
+const EVP_CIPHER *
+EVP_chacha20(void)
 {
     return (&chacha20_cipher);
 }
 
-static int chacha_init(EVP_CIPHER_CTX *ctx, const unsigned char *key,
-                       const unsigned char *iv, int enc)
+static int
+chacha_init(EVP_CIPHER_CTX *ctx, const unsigned char *key,
+            const unsigned char *iv, int enc)
 {
     ChaCha_set_key((ChaCha_ctx *)ctx->cipher_data, key,
                    EVP_CIPHER_CTX_key_length(ctx) * 8);
@@ -62,4 +64,5 @@ chacha_cipher(EVP_CIPHER_CTX *ctx, unsigned char *out, const unsigned char *in,
     ChaCha((ChaCha_ctx *)ctx->cipher_data, out, in, len);
     return 1;
 }
+
 #endif

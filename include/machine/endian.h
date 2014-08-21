@@ -4,7 +4,7 @@
 #ifdef __linux__
 #include <endian.h>
 #else
-#include_next < machine / endian.h >
+#include_next <machine/endian.h>
 #endif
 
 #endif

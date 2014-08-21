@@ -10,7 +10,7 @@
  * are met:
  *
  * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer. 
+ *    notice, this list of conditions and the following disclaimer.
  *
  * 2. Redistributions in binary form must reproduce the above copyright
  *    notice, this list of conditions and the following disclaimer in
@@ -393,7 +393,7 @@ static int is_printable(unsigned long value)
     if (value > 0x7f)
         return 0;
     ch = (int)value;
-    /* Note: we can't use 'isalnum' because certain accented 
+    /* Note: we can't use 'isalnum' because certain accented
      * characters may count as alphanumeric in some environments.
      */
     if ((ch >= 'a') && (ch <= 'z'))

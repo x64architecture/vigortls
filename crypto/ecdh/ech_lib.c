@@ -21,7 +21,7 @@
  * are met:
  *
  * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer. 
+ *    notice, this list of conditions and the following disclaimer.
  *
  * 2. Redistributions in binary form must reproduce the above copyright
  *    notice, this list of conditions and the following disclaimer in
@@ -115,7 +115,7 @@ int ECDH_set_method(EC_KEY *eckey, const ECDH_METHOD *meth)
 #endif
     ecdh->meth = meth;
 #if 0
-        if (meth->init) 
+        if (meth->init)
         meth->init(eckey);
 #endif
     return 1;

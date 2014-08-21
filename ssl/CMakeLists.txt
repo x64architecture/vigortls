@@ -42,6 +42,5 @@ add_library(
 	t1_meth.c
 	t1_reneg.c
 	t1_srvr.c
-	tls_srp.c
 )
 target_link_libraries (ssl crypto)

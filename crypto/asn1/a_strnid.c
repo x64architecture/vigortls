@@ -10,7 +10,7 @@
  * are met:
  *
  * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer. 
+ *    notice, this list of conditions and the following disclaimer.
  *
  * 2. Redistributions in binary form must reproduce the above copyright
  *    notice, this list of conditions and the following disclaimer in
@@ -120,7 +120,7 @@ int ASN1_STRING_set_default_mask_asc(const char *p)
 }
 
 /* The following function generates an ASN1_STRING based on limits in a table.
- * Frequently the types and length of an ASN1_STRING are restricted by a 
+ * Frequently the types and length of an ASN1_STRING are restricted by a
  * corresponding OID. For example certificates and certificate requests.
  */
 

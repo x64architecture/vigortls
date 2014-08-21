@@ -8,7 +8,7 @@
  * <URL: http://www.shoup.net/papers/oaep.ps.Z>
  * for problems with the security proof for the
  * original OAEP scheme, which EME-OAEP is based on.
- * 
+ *
  * A new proof can be found in E. Fujisaki, T. Okamoto,
  * D. Pointcheval, J. Stern, "RSA-OEAP is Still Alive!",
  * Dec. 2000, <URL: http://eprint.iacr.org/2000/061/>.

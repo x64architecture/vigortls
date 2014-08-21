@@ -1,4 +1,3 @@
-/* ssl/ssl_stat.c */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -118,7 +117,6 @@ const char *SSL_state_string_long(const SSL *s)
             str = "ok/accept SSL initialization";
             break;
 
-#ifndef OPENSSL_NO_SSL3
         /* SSLv3 additions */
         case SSL3_ST_CW_CLNT_HELLO_A:
             str = "SSLv3 write client hello A";
@@ -297,7 +295,6 @@ const char *SSL_state_string_long(const SSL *s)
         case SSL3_ST_SR_CERT_VRFY_B:
             str = "SSLv3 read certificate verify B";
             break;
-#endif
 
         /* DTLS */
         case DTLS1_ST_CR_HELLO_VERIFY_REQUEST_A:
@@ -359,7 +356,6 @@ const char *SSL_state_string(const SSL *s)
             str = "SSLOK ";
             break;
 
-#ifndef OPENSSL_NO_SSL3
         /* SSLv3 additions */
         case SSL3_ST_SW_FLUSH:
         case SSL3_ST_CW_FLUSH:
@@ -525,7 +521,6 @@ const char *SSL_state_string(const SSL *s)
         case SSL3_ST_SR_CERT_VRFY_B:
             str = "3RCV_B";
             break;
-#endif
 
         /* DTLS */
         case DTLS1_ST_CR_HELLO_VERIFY_REQUEST_A:

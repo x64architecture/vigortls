@@ -7,7 +7,7 @@
  * are met:
  *
  * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer. 
+ *    notice, this list of conditions and the following disclaimer.
  *
  * 2. Redistributions in binary form must reproduce the above copyright
  *    notice, this list of conditions and the following disclaimer in
@@ -133,7 +133,7 @@ static void test1(const EVP_CIPHER *c, const unsigned char *key, int kn,
                   const unsigned char *ciphertext, int cn,
                   const unsigned char *aad, int an,
                   const unsigned char *tag,int tn,
-                  int encdec) 
+                  int encdec)
 {
     EVP_CIPHER_CTX ctx;
     unsigned char out[4096];
@@ -245,8 +245,8 @@ static void test1(const EVP_CIPHER *c, const unsigned char *key, int kn,
 
         if (mode == EVP_CIPH_GCM_MODE || mode == EVP_CIPH_CCM_MODE) {
             unsigned char rtag[16];
-            /* 
-             * Note: EVP_CTRL_CCM_GET_TAG has same value as 
+            /*
+             * Note: EVP_CTRL_CCM_GET_TAG has same value as
              * EVP_CTRL_GCM_GET_TAG
              */
             if (!EVP_CIPHER_CTX_ctrl(&ctx, EVP_CTRL_GCM_GET_TAG, tn, rtag)) {

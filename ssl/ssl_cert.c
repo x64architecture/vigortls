@@ -1,4 +1,3 @@
-/*! \file ssl/ssl_cert.c */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -115,10 +114,12 @@
  */
 
 #include <sys/types.h>
-#include <dirent.h>
 
 #include <stdio.h>
+#include <unistd.h>
+#include <dirent.h>
 
+#include <openssl/opensslconf.h>
 #include <openssl/objects.h>
 #include <openssl/bio.h>
 #include <openssl/pem.h>
@@ -155,15 +156,11 @@ int SSL_get_ex_data_X509_STORE_CTX_idx(void)
 
 static void ssl_cert_set_default_md(CERT *cert)
 {
-/* Set digest values to defaults */
-#ifndef OPENSSL_NO_DSA
+    /* Set digest values to defaults */
     cert->pkeys[SSL_PKEY_DSA_SIGN].digest = EVP_sha1();
-#endif
     cert->pkeys[SSL_PKEY_RSA_SIGN].digest = EVP_sha1();
     cert->pkeys[SSL_PKEY_RSA_ENC].digest = EVP_sha1();
-#ifndef OPENSSL_NO_ECDSA
     cert->pkeys[SSL_PKEY_ECC].digest = EVP_sha1();
-#endif
 }
 
 CERT *ssl_cert_new(void)
@@ -175,7 +172,6 @@ CERT *ssl_cert_new(void)
         SSLerr(SSL_F_SSL_CERT_NEW, ERR_R_MALLOC_FAILURE);
         return (NULL);
     }
-
     ret->key = &(ret->pkeys[SSL_PKEY_RSA_ENC]);
     ret->references = 1;
     ssl_cert_set_default_md(ret);
@@ -193,9 +189,11 @@ CERT *ssl_cert_dup(CERT *cert)
         return (NULL);
     }
 
+    /*
+   * same as ret->key = ret->pkeys + (cert->key - cert->pkeys),
+   * if you find that more readable
+   */
     ret->key = &ret->pkeys[cert->key - &cert->pkeys[0]];
-    /* or ret->key = ret->pkeys + (cert->key - cert->pkeys),
-     * if you find that more readable */
 
     ret->valid = cert->valid;
     ret->mask_k = cert->mask_k;
@@ -232,7 +230,6 @@ CERT *ssl_cert_dup(CERT *cert)
     }
     ret->dh_tmp_cb = cert->dh_tmp_cb;
 
-#ifndef OPENSSL_NO_ECDH
     if (cert->ecdh_tmp) {
         ret->ecdh_tmp = EC_KEY_dup(cert->ecdh_tmp);
         if (ret->ecdh_tmp == NULL) {
@@ -241,13 +238,11 @@ CERT *ssl_cert_dup(CERT *cert)
         }
     }
     ret->ecdh_tmp_cb = cert->ecdh_tmp_cb;
-#endif
 
     for (i = 0; i < SSL_PKEY_NUM; i++) {
         if (cert->pkeys[i].x509 != NULL) {
             ret->pkeys[i].x509 = cert->pkeys[i].x509;
-            CRYPTO_add(&ret->pkeys[i].x509->references, 1,
-                       CRYPTO_LOCK_X509);
+            CRYPTO_add(&ret->pkeys[i].x509->references, 1, CRYPTO_LOCK_X509);
         }
 
         if (cert->pkeys[i].privatekey != NULL) {
@@ -256,9 +251,11 @@ CERT *ssl_cert_dup(CERT *cert)
                        CRYPTO_LOCK_EVP_PKEY);
 
             switch (i) {
-                /* If there was anything special to do for
-                 * certain types of keys, we'd do it here.
-                 * (Nothing at the moment, I think.) */
+                /*
+       * If there was anything special to do for
+       * certain types of keys, we'd do it here.
+       * (Nothing at the moment, I think.)
+       */
 
                 case SSL_PKEY_RSA_ENC:
                 case SSL_PKEY_RSA_SIGN:
@@ -285,36 +282,31 @@ CERT *ssl_cert_dup(CERT *cert)
         }
     }
 
-    /* ret->extra_certs *should* exist, but currently the own certificate
-     * chain is held inside SSL_CTX */
+    /*
+   * ret->extra_certs *should* exist, but currently the own certificate
+   * chain is held inside SSL_CTX
+   */
 
     ret->references = 1;
-    /* Set digests to defaults. NB: we don't copy existing values as they
-     * will be set during handshake.
-     */
+    /*
+   * Set digests to defaults. NB: we don't copy existing values
+   * as they will be set during handshake.
+   */
     ssl_cert_set_default_md(ret);
 
     return (ret);
 
-#if !defined(OPENSSL_NO_ECDH)
 err:
-#endif
-    if (ret->rsa_tmp != NULL)
-        RSA_free(ret->rsa_tmp);
-    if (ret->dh_tmp != NULL)
-        DH_free(ret->dh_tmp);
-#ifndef OPENSSL_NO_ECDH
-    if (ret->ecdh_tmp != NULL)
-        EC_KEY_free(ret->ecdh_tmp);
-#endif
+    RSA_free(ret->rsa_tmp);
+    DH_free(ret->dh_tmp);
+    EC_KEY_free(ret->ecdh_tmp);
 
     for (i = 0; i < SSL_PKEY_NUM; i++) {
         if (ret->pkeys[i].x509 != NULL)
             X509_free(ret->pkeys[i].x509);
-        if (ret->pkeys[i].privatekey != NULL)
-            EVP_PKEY_free(ret->pkeys[i].privatekey);
+        EVP_PKEY_free(ret->pkeys[i].privatekey);
     }
-
+    free(ret);
     return NULL;
 }
 
@@ -326,51 +318,34 @@ void ssl_cert_free(CERT *c)
         return;
 
     i = CRYPTO_add(&c->references, -1, CRYPTO_LOCK_SSL_CERT);
-#ifdef REF_PRINT
-    REF_PRINT("CERT", c);
-#endif
     if (i > 0)
         return;
-#ifdef REF_CHECK
-    if (i < 0) {
-        fprintf(stderr, "ssl_cert_free, bad reference count\n");
-        abort(); /* ok */
-    }
-#endif
 
-    if (c->rsa_tmp)
-        RSA_free(c->rsa_tmp);
-    if (c->dh_tmp)
-        DH_free(c->dh_tmp);
-#ifndef OPENSSL_NO_ECDH
-    if (c->ecdh_tmp)
-        EC_KEY_free(c->ecdh_tmp);
-#endif
+    RSA_free(c->rsa_tmp);
+    DH_free(c->dh_tmp);
+    EC_KEY_free(c->ecdh_tmp);
 
     for (i = 0; i < SSL_PKEY_NUM; i++) {
         if (c->pkeys[i].x509 != NULL)
             X509_free(c->pkeys[i].x509);
-        if (c->pkeys[i].privatekey != NULL)
-            EVP_PKEY_free(c->pkeys[i].privatekey);
-#if 0
-        if (c->pkeys[i].publickey != NULL)
-            EVP_PKEY_free(c->pkeys[i].publickey);
-#endif
+        EVP_PKEY_free(c->pkeys[i].privatekey);
     }
+
     free(c);
 }
 
 int ssl_cert_inst(CERT **o)
 {
-    /* Create a CERT if there isn't already one
-     * (which cannot really happen, as it is initially created in
-     * SSL_CTX_new; but the earlier code usually allows for that one
-     * being non-existant, so we follow that behaviour, as it might
-     * turn out that there actually is a reason for it -- but I'm
-     * not sure that *all* of the existing code could cope with
-     * s->cert being NULL, otherwise we could do without the
-     * initialization in SSL_CTX_new).
-     */
+    /*
+   * Create a CERT if there isn't already one
+   * (which cannot really happen, as it is initially created in
+   * SSL_CTX_new; but the earlier code usually allows for that one
+   * being non-existant, so we follow that behaviour, as it might
+   * turn out that there actually is a reason for it -- but I'm
+   * not sure that *all* of the existing code could cope with
+   * s->cert being NULL, otherwise we could do without the
+   * initialization in SSL_CTX_new).
+   */
 
     if (o == NULL) {
         SSLerr(SSL_F_SSL_CERT_INST, ERR_R_PASSED_NULL_PARAMETER);
@@ -394,7 +369,6 @@ SESS_CERT *ssl_sess_cert_new(void)
         SSLerr(SSL_F_SSL_SESS_CERT_NEW, ERR_R_MALLOC_FAILURE);
         return NULL;
     }
-
     ret->peer_key = &(ret->peer_pkeys[SSL_PKEY_RSA_ENC]);
     ret->references = 1;
 
@@ -409,17 +383,8 @@ void ssl_sess_cert_free(SESS_CERT *sc)
         return;
 
     i = CRYPTO_add(&sc->references, -1, CRYPTO_LOCK_SSL_SESS_CERT);
-#ifdef REF_PRINT
-    REF_PRINT("SESS_CERT", sc);
-#endif
     if (i > 0)
         return;
-#ifdef REF_CHECK
-    if (i < 0) {
-        fprintf(stderr, "ssl_sess_cert_free, bad reference count\n");
-        abort(); /* ok */
-    }
-#endif
 
     /* i == 0 */
     if (sc->cert_chain != NULL)
@@ -427,22 +392,11 @@ void ssl_sess_cert_free(SESS_CERT *sc)
     for (i = 0; i < SSL_PKEY_NUM; i++) {
         if (sc->peer_pkeys[i].x509 != NULL)
             X509_free(sc->peer_pkeys[i].x509);
-#if 0 /* We don't have the peer's private key.  These lines are just       \
-       * here as a reminder that we're still using a not-quite-appropriate \
-       * data structure. */
-        if (sc->peer_pkeys[i].privatekey != NULL)
-            EVP_PKEY_free(sc->peer_pkeys[i].privatekey);
-#endif
     }
 
-    if (sc->peer_rsa_tmp != NULL)
-        RSA_free(sc->peer_rsa_tmp);
-    if (sc->peer_dh_tmp != NULL)
-        DH_free(sc->peer_dh_tmp);
-#ifndef OPENSSL_NO_ECDH
-    if (sc->peer_ecdh_tmp != NULL)
-        EC_KEY_free(sc->peer_ecdh_tmp);
-#endif
+    RSA_free(sc->peer_rsa_tmp);
+    DH_free(sc->peer_dh_tmp);
+    EC_KEY_free(sc->peer_ecdh_tmp);
 
     free(sc);
 }
@@ -455,9 +409,9 @@ int ssl_set_peer_cert_type(SESS_CERT *sc, int type)
 
 int ssl_verify_cert_chain(SSL *s, STACK_OF(X509) * sk)
 {
-    X509 *x;
-    int i;
     X509_STORE_CTX ctx;
+    X509 *x;
+    int ret;
 
     if ((sk == NULL) || (sk_X509_num(sk) == 0))
         return (0);
@@ -467,49 +421,37 @@ int ssl_verify_cert_chain(SSL *s, STACK_OF(X509) * sk)
         SSLerr(SSL_F_SSL_VERIFY_CERT_CHAIN, ERR_R_X509_LIB);
         return (0);
     }
-#if 0
-    if (SSL_get_verify_depth(s) >= 0)
-        X509_STORE_CTX_set_depth(&ctx, SSL_get_verify_depth(s));
-#endif
     X509_STORE_CTX_set_ex_data(&ctx, SSL_get_ex_data_X509_STORE_CTX_idx(), s);
 
-    /* We need to inherit the verify parameters. These can be determined by
-     * the context: if its a server it will verify SSL client certificates
-     * or vice versa.
-     */
-
+    /*
+   * We need to inherit the verify parameters. These can be
+   * determined by the context: if its a server it will verify
+   * SSL client certificates or vice versa.
+   */
     X509_STORE_CTX_set_default(&ctx, s->server ? "ssl_client" : "ssl_server");
-    /* Anything non-default in "param" should overwrite anything in the
-     * ctx.
-     */
+
+    /*
+   * Anything non-default in "param" should overwrite anything
+   * in the ctx.
+   */
     X509_VERIFY_PARAM_set1(X509_STORE_CTX_get0_param(&ctx), s->param);
 
     if (s->verify_callback)
         X509_STORE_CTX_set_verify_cb(&ctx, s->verify_callback);
 
     if (s->ctx->app_verify_callback != NULL)
-#if 1 /* new with OpenSSL 0.9.7 */
-        i = s->ctx->app_verify_callback(&ctx, s->ctx->app_verify_arg);
-#else
-        i = s->ctx->app_verify_callback(&ctx); /* should pass app_verify_arg */
-#endif
-    else {
-#ifndef OPENSSL_NO_X509_VERIFY
-        i = X509_verify_cert(&ctx);
-#else
-        i = 0;
-        ctx.error = X509_V_ERR_APPLICATION_VERIFICATION;
-        SSLerr(SSL_F_SSL_VERIFY_CERT_CHAIN, SSL_R_NO_VERIFY_CALLBACK);
-#endif
-    }
+        ret = s->ctx->app_verify_callback(&ctx, s->ctx->app_verify_arg);
+    else
+        ret = X509_verify_cert(&ctx);
 
     s->verify_result = ctx.error;
     X509_STORE_CTX_cleanup(&ctx);
 
-    return (i);
+    return (ret);
 }
 
-static void set_client_CA_list(STACK_OF(X509_NAME) * *ca_list, STACK_OF(X509_NAME) * name_list)
+static void set_client_CA_list(STACK_OF(X509_NAME) * *ca_list,
+                               STACK_OF(X509_NAME) * name_list)
 {
     if (*ca_list != NULL)
         sk_X509_NAME_pop_free(*ca_list, X509_NAME_free);
@@ -551,7 +493,8 @@ STACK_OF(X509_NAME) * SSL_CTX_get_client_CA_list(const SSL_CTX *ctx)
 
 STACK_OF(X509_NAME) * SSL_get_client_CA_list(const SSL *s)
 {
-    if (s->type == SSL_ST_CONNECT) { /* we are in the client */
+    if (s->type == SSL_ST_CONNECT) {
+        /* We are in the client. */
         if (((s->version >> 8) == SSL3_VERSION_MAJOR) && (s->s3 != NULL))
             return (s->s3->tmp.ca_names);
         else
@@ -657,8 +600,7 @@ STACK_OF(X509_NAME) * SSL_load_client_CA_file(const char *file)
     }
     if (sk != NULL)
         sk_X509_NAME_free(sk);
-    if (in != NULL)
-        BIO_free(in);
+    BIO_free(in);
     if (x != NULL)
         X509_free(x);
     if (ret != NULL)
@@ -716,8 +658,7 @@ int SSL_add_file_cert_subjects_to_stack(STACK_OF(X509_NAME) * stack,
     err:
         ret = 0;
     }
-    if (in != NULL)
-        BIO_free(in);
+    BIO_free(in);
     if (x != NULL)
         X509_free(x);
 
@@ -731,8 +672,8 @@ int SSL_add_file_cert_subjects_to_stack(STACK_OF(X509_NAME) * stack,
  * \param stack the stack to append to.
  * \param dir the directory to append from. All files in this directory will be
  * examined as potential certs. Any that are acceptable to
- * SSL_add_dir_cert_subjects_to_stack() that are not already in the stack will be
- * included.
+ * SSL_add_dir_cert_subjects_to_stack() that are not already in the stack will
+ * be included.
  * \return 1 for success, 0 for failure. Note that in the case of failure some
  * certs may have been added to \c stack.
  */
@@ -750,17 +691,16 @@ int SSL_add_dir_cert_subjects_to_stack(STACK_OF(X509_NAME) * stack,
         struct dirent *dp;
         while ((dp = readdir(dirp)) != NULL) {
             if (asprintf(&path, "%s/%s", dir, dp->d_name) != -1) {
-                ret = SSL_add_file_cert_subjects_to_stack(
-                    stack, path);
+                ret = SSL_add_file_cert_subjects_to_stack(stack, path);
                 free(path);
             }
             if (!ret)
                 break;
         }
-        closedir(dirp);
+        (void)closedir(dirp);
     }
     if (!ret) {
-         SYSerr(SYS_F_OPENDIR, errno);
+        SYSerr(SYS_F_OPENDIR, errno);
         ERR_asprintf_error_data("opendir ('%s')", dir);
         SSLerr(SSL_F_SSL_ADD_DIR_CERT_SUBJECTS_TO_STACK, ERR_R_SYS_LIB);
     }

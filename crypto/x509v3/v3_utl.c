@@ -10,7 +10,7 @@
  * are met:
  *
  * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer. 
+ *    notice, this list of conditions and the following disclaimer.
  *
  * 2. Redistributions in binary form must reproduce the above copyright
  *    notice, this list of conditions and the following disclaimer in
@@ -602,7 +602,7 @@ void X509_email_free(STACK_OF(OPENSSL_STRING) * sk)
     sk_OPENSSL_STRING_pop_free(sk, str_free);
 }
 
-/* Convert IP addresses both IPv4 and IPv6 into an 
+/* Convert IP addresses both IPv4 and IPv6 into an
  * OCTET STRING compatible with RFC3280.
  */
 
@@ -852,7 +852,7 @@ int X509V3_NAME_from_section(X509_NAME *nm, STACK_OF(CONF_VALUE) * dn_sk,
         v = sk_CONF_VALUE_value(dn_sk, i);
         type = v->name;
         /* Skip past any leading X. X: X, etc to allow for
-         * multiple instances 
+         * multiple instances
          */
         for (p = type; *p; p++)
             if ((*p == ':') || (*p == ',') || (*p == '.')) {

@@ -1,4 +1,3 @@
-/* ssl/ssl_txt.c */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -110,20 +109,8 @@ int SSL_SESSION_print(BIO *bp, const SSL_SESSION *x)
         goto err;
     if (BIO_puts(bp, "SSL-Session:\n") <= 0)
         goto err;
-    if (x->ssl_version == SSL3_VERSION)
-        s = "SSLv3";
-    else if (x->ssl_version == TLS1_2_VERSION)
-        s = "TLSv1.2";
-    else if (x->ssl_version == TLS1_1_VERSION)
-        s = "TLSv1.1";
-    else if (x->ssl_version == TLS1_VERSION)
-        s = "TLSv1";
-    else if (x->ssl_version == DTLS1_VERSION)
-        s = "DTLSv1";
-    else if (x->ssl_version == DTLS1_BAD_VER)
-        s = "DTLSv1-bad";
-    else
-        s = "unknown";
+
+    s = ssl_version_string(x->ssl_version);
     if (BIO_printf(bp, "    Protocol  : %s\n", s) <= 0)
         goto err;
 
@@ -136,7 +123,8 @@ int SSL_SESSION_print(BIO *bp, const SSL_SESSION *x)
                 goto err;
         }
     } else {
-        if (BIO_printf(bp, "    Cipher    : %s\n", ((x->cipher == NULL) ? "unknown" : x->cipher->name)) <= 0)
+        if (BIO_printf(bp, "    Cipher    : %s\n",
+                       ((x->cipher == NULL) ? "unknown" : x->cipher->name)) <= 0)
             goto err;
     }
     if (BIO_puts(bp, "    Session-ID: ") <= 0)
@@ -157,25 +145,8 @@ int SSL_SESSION_print(BIO *bp, const SSL_SESSION *x)
         if (BIO_printf(bp, "%02X", x->master_key[i]) <= 0)
             goto err;
     }
-#ifndef OPENSSL_NO_PSK
-    if (BIO_puts(bp, "\n    PSK identity: ") <= 0)
-        goto err;
-    if (BIO_printf(bp, "%s", x->psk_identity ? x->psk_identity : "None") <= 0)
-        goto err;
-    if (BIO_puts(bp, "\n    PSK identity hint: ") <= 0)
-        goto err;
-    if (BIO_printf(bp, "%s", x->psk_identity_hint ? x->psk_identity_hint : "None") <= 0)
-        goto err;
-#endif
-#ifndef OPENSSL_NO_SRP
-    if (BIO_puts(bp, "\n    SRP username: ") <= 0)
-        goto err;
-    if (BIO_printf(bp, "%s", x->srp_username ? x->srp_username : "None") <= 0)
-        goto err;
-#endif
     if (x->tlsext_tick_lifetime_hint) {
-        if (BIO_printf(bp,
-                       "\n    TLS session ticket lifetime hint: %ld (seconds)",
+        if (BIO_printf(bp, "\n    TLS session ticket lifetime hint: %ld (seconds)",
                        x->tlsext_tick_lifetime_hint) <= 0)
             goto err;
     }
@@ -187,7 +158,7 @@ int SSL_SESSION_print(BIO *bp, const SSL_SESSION *x)
     }
 
     if (x->time != 0) {
-        if (BIO_printf(bp, "\n    Start Time: %ld", x->time) <= 0)
+        if (BIO_printf(bp, "\n    Start Time: %lld", (long long)x->time) <= 0)
             goto err;
     }
     if (x->timeout != 0L) {
@@ -199,6 +170,7 @@ int SSL_SESSION_print(BIO *bp, const SSL_SESSION *x)
 
     if (BIO_puts(bp, "    Verify return code: ") <= 0)
         goto err;
+
     if (BIO_printf(bp, "%ld (%s)\n", x->verify_result,
                    X509_verify_cert_error_string(x->verify_result)) <= 0)
         goto err;

@@ -10,7 +10,7 @@
  * are met:
  *
  * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer. 
+ *    notice, this list of conditions and the following disclaimer.
  *
  * 2. Redistributions in binary form must reproduce the above copyright
  *    notice, this list of conditions and the following disclaimer in
@@ -91,7 +91,7 @@ int asn1_set_choice_selector(ASN1_VALUE **pval, int value, const ASN1_ITEM *it)
     return ret;
 }
 
-/* Do reference counting. The value 'op' decides what to do. 
+/* Do reference counting. The value 'op' decides what to do.
  * if it is +1 then the count is incremented. If op is 0 count is
  * set to 1. If op is -1 count is decremented and the return value
  * is the current refrence count or 0 if no reference count exists.

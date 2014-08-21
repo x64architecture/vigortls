@@ -10,7 +10,7 @@
  * are met:
  *
  * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer. 
+ *    notice, this list of conditions and the following disclaimer.
  *
  * 2. Redistributions in binary form must reproduce the above copyright
  *    notice, this list of conditions and the following disclaimer in
@@ -276,13 +276,13 @@ static int ec_asn1_group2curve(const EC_GROUP *, X9_62_CURVE *);
 /* ec_asn1_parameters2group() creates a EC_GROUP object from a
  * ECPARAMETERS object */
 static EC_GROUP *ec_asn1_parameters2group(const ECPARAMETERS *);
-/* ec_asn1_group2parameters() creates a ECPARAMETERS object from a 
+/* ec_asn1_group2parameters() creates a ECPARAMETERS object from a
  * EC_GROUP object */
 static ECPARAMETERS *ec_asn1_group2parameters(const EC_GROUP *, ECPARAMETERS *);
 /* ec_asn1_pkparameters2group() creates a EC_GROUP object from a
  * ECPKPARAMETERS object */
 static EC_GROUP *ec_asn1_pkparameters2group(const ECPKPARAMETERS *);
-/* ec_asn1_group2pkparameters() creates a ECPKPARAMETERS object from a 
+/* ec_asn1_group2pkparameters() creates a ECPKPARAMETERS object from a
  * EC_GROUP object */
 static ECPKPARAMETERS *ec_asn1_group2pkparameters(const EC_GROUP *,
                                                   ECPKPARAMETERS *);

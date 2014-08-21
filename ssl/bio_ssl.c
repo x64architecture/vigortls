@@ -1,25 +1,24 @@
-/* ssl/bio_ssl.c */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
  * This package is an SSL implementation written
  * by Eric Young (eay@cryptsoft.com).
  * The implementation was written so as to conform with Netscapes SSL.
- * 
+ *
  * This library is free for commercial and non-commercial use as long as
  * the following conditions are aheared to.  The following conditions
  * apply to all code found in this distribution, be it the RC4, RSA,
  * lhash, DES, etc., code; not just the SSL code.  The SSL documentation
  * included with this distribution is covered by the same copyright terms
  * except that the holder is Tim Hudson (tjh@cryptsoft.com).
- * 
+ *
  * Copyright remains Eric Young's, and as such any Copyright notices in
  * the code are not to be removed.
  * If this package is used in a product, Eric Young should be given attribution
  * as the author of the parts of the library used.
  * This can be in the form of a textual message at program startup or
  * in documentation (online or textual) provided with the package.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
  * are met:
@@ -34,10 +33,10 @@
  *     Eric Young (eay@cryptsoft.com)"
  *    The word 'cryptographic' can be left out if the rouines from the library
  *    being used are not cryptographic related :-).
- * 4. If you include any Windows specific code (or a derivative thereof) from 
+ * 4. If you include any Windows specific code (or a derivative thereof) from
  *    the apps directory (application code) you must include an acknowledgement:
  *    "This product includes software written by Tim Hudson (tjh@cryptsoft.com)"
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY ERIC YOUNG ``AS IS'' AND
  * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -49,7 +48,7 @@
  * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
- * 
+ *
  * The licence and distribution terms for any publically available version or
  * derivative of this code cannot be changed.  i.e. this code cannot simply be
  * copied and put under another distribution licence
@@ -83,15 +82,15 @@ typedef struct bio_ssl_st {
 } BIO_SSL;
 
 static BIO_METHOD methods_sslp = {
-    BIO_TYPE_SSL, "ssl",
-    ssl_write,
-    ssl_read,
-    ssl_puts,
-    NULL, /* ssl_gets, */
-    ssl_ctrl,
-    ssl_new,
-    ssl_free,
-    ssl_callback_ctrl,
+    .type = BIO_TYPE_SSL,
+    .name = "ssl",
+    .bwrite = ssl_write,
+    .bread = ssl_read,
+    .bputs = ssl_puts,
+    .ctrl = ssl_ctrl,
+    .create = ssl_new,
+    .destroy = ssl_free,
+    .callback_ctrl = ssl_callback_ctrl,
 };
 
 BIO_METHOD *BIO_f_ssl(void)
@@ -120,21 +119,16 @@ static int ssl_free(BIO *a)
 
     if (a == NULL)
         return (0);
-
     bs = (BIO_SSL *)a->ptr;
-
     if (bs->ssl != NULL)
         SSL_shutdown(bs->ssl);
-
     if (a->shutdown) {
         if (a->init && (bs->ssl != NULL))
             SSL_free(bs->ssl);
         a->init = 0;
         a->flags = 0;
     }
-
     free(a->ptr);
-
     return (1);
 }
 
@@ -148,23 +142,11 @@ static int ssl_read(BIO *b, char *out, int outl)
 
     if (out == NULL)
         return (0);
-
     sb = (BIO_SSL *)b->ptr;
     ssl = sb->ssl;
 
     BIO_clear_retry_flags(b);
 
-#if 0
-    if (!SSL_is_init_finished(ssl)) {
-/*        ret=SSL_do_handshake(ssl); */
-        if (ret > 0) {
-            outflags=(BIO_FLAGS_READ|BIO_FLAGS_SHOULD_RETRY);
-            ret= -1;
-            goto end;
-        }
-}
-#endif
-    /*    if (ret > 0) */
     ret = SSL_read(ssl, out, outl);
 
     switch (SSL_get_error(ssl, ret)) {
@@ -173,7 +155,6 @@ static int ssl_read(BIO *b, char *out, int outl)
                 break;
             if (sb->renegotiate_count > 0) {
                 sb->byte_count += ret;
-
                 if (sb->byte_count > sb->renegotiate_count) {
                     sb->byte_count = 0;
                     sb->num_renegotiates++;
@@ -231,14 +212,13 @@ static int ssl_write(BIO *b, const char *out, int outl)
 
     if (out == NULL)
         return (0);
-
     bs = (BIO_SSL *)b->ptr;
     ssl = bs->ssl;
 
     BIO_clear_retry_flags(b);
 
     /*    ret=SSL_do_handshake(ssl);
-    if (ret > 0) */
+          if (ret > 0) */
     ret = SSL_write(ssl, out, outl);
 
     switch (SSL_get_error(ssl, ret)) {
@@ -395,8 +375,8 @@ static long ssl_ctrl(BIO *b, int cmd, long num, void *ptr)
             /* Only detach if we are the BIO explicitly being popped */
             if (b == ptr) {
                 /* Shouldn't happen in practice because the
-             * rbio and wbio are the same when pushed.
-             */
+       * rbio and wbio are the same when pushed.
+       */
                 if (ssl->rbio != ssl->wbio)
                     BIO_free_all(ssl->wbio);
                 if (b->next_bio != NULL)
@@ -413,16 +393,13 @@ static long ssl_ctrl(BIO *b, int cmd, long num, void *ptr)
 
             switch (SSL_get_error(ssl, (int)ret)) {
                 case SSL_ERROR_WANT_READ:
-                    BIO_set_flags(b,
-                                  BIO_FLAGS_READ | BIO_FLAGS_SHOULD_RETRY);
+                    BIO_set_flags(b, BIO_FLAGS_READ | BIO_FLAGS_SHOULD_RETRY);
                     break;
                 case SSL_ERROR_WANT_WRITE:
-                    BIO_set_flags(b,
-                                  BIO_FLAGS_WRITE | BIO_FLAGS_SHOULD_RETRY);
+                    BIO_set_flags(b, BIO_FLAGS_WRITE | BIO_FLAGS_SHOULD_RETRY);
                     break;
                 case SSL_ERROR_WANT_CONNECT:
-                    BIO_set_flags(b,
-                                  BIO_FLAGS_IO_SPECIAL | BIO_FLAGS_SHOULD_RETRY);
+                    BIO_set_flags(b, BIO_FLAGS_IO_SPECIAL | BIO_FLAGS_SHOULD_RETRY);
                     b->retry_reason = b->next_bio->retry_reason;
                     break;
                 default:
@@ -444,12 +421,7 @@ static long ssl_ctrl(BIO *b, int cmd, long num, void *ptr)
             ret = BIO_ctrl(ssl->rbio, cmd, num, ptr);
             break;
         case BIO_CTRL_SET_CALLBACK: {
-#if 0 /* FIXME: Should this be used?  -- Richard Levitte */
-            SSLerr(SSL_F_SSL_CTRL, ERR_R_SHOULD_NOT_HAVE_BEEN_CALLED);
-            ret = -1;
-#else
             ret = 0;
-#endif
         } break;
         case BIO_CTRL_GET_CALLBACK: {
             void (**fptr)(const SSL *xssl, int type, int val);
@@ -475,7 +447,7 @@ static long ssl_callback_ctrl(BIO *b, int cmd, bio_info_cb *fp)
     switch (cmd) {
         case BIO_CTRL_SET_CALLBACK: {
             /* FIXME: setting this via a completely different prototype
-           seems like a crap idea */
+       seems like a crap idea */
             SSL_set_info_callback(ssl, (void (*)(const SSL *, int, int))fp);
         } break;
         default:
@@ -499,17 +471,16 @@ BIO *BIO_new_buffer_ssl_connect(SSL_CTX *ctx)
     BIO *ret = NULL, *buf = NULL, *ssl = NULL;
 
     if ((buf = BIO_new(BIO_f_buffer())) == NULL)
-        return (NULL);
+        goto err;
     if ((ssl = BIO_new_ssl_connect(ctx)) == NULL)
         goto err;
     if ((ret = BIO_push(buf, ssl)) == NULL)
         goto err;
     return (ret);
+
 err:
-    if (buf != NULL)
-        BIO_free(buf);
-    if (ssl != NULL)
-        BIO_free(ssl);
+    BIO_free(buf);
+    BIO_free(ssl);
     return (NULL);
 }
 
@@ -518,15 +489,16 @@ BIO *BIO_new_ssl_connect(SSL_CTX *ctx)
     BIO *ret = NULL, *con = NULL, *ssl = NULL;
 
     if ((con = BIO_new(BIO_s_connect())) == NULL)
-        return (NULL);
+        goto err;
     if ((ssl = BIO_new_ssl(ctx, 1)) == NULL)
         goto err;
     if ((ret = BIO_push(ssl, con)) == NULL)
         goto err;
     return (ret);
+
 err:
-    if (con != NULL)
-        BIO_free(con);
+    BIO_free(con);
+    BIO_free(ssl);
     return (NULL);
 }
 
@@ -536,11 +508,10 @@ BIO *BIO_new_ssl(SSL_CTX *ctx, int client)
     SSL *ssl;
 
     if ((ret = BIO_new(BIO_f_ssl())) == NULL)
-        return (NULL);
-    if ((ssl = SSL_new(ctx)) == NULL) {
-        BIO_free(ret);
-        return (NULL);
-    }
+        goto err;
+    if ((ssl = SSL_new(ctx)) == NULL)
+        goto err;
+
     if (client)
         SSL_set_connect_state(ssl);
     else
@@ -548,6 +519,10 @@ BIO *BIO_new_ssl(SSL_CTX *ctx, int client)
 
     BIO_set_ssl(ret, ssl, BIO_CLOSE);
     return (ret);
+
+err:
+    BIO_free(ret);
+    return (NULL);
 }
 
 int BIO_ssl_copy_session_id(BIO *t, BIO *f)

@@ -154,8 +154,6 @@
 #include <openssl/md5.h>
 #include <openssl/dh.h>
 
-const char ssl3_version_str[] = "SSLv3" OPENSSL_VERSION_PTEXT;
-
 #define SSL3_NUM_CIPHERS (sizeof(ssl3_ciphers) / sizeof(SSL_CIPHER))
 
 /*
@@ -279,11 +277,13 @@ SSL_CIPHER ssl3_ciphers[] = {
       .algorithm_ssl = SSL_SSLV3,
       .algo_strength = SSL_HIGH,
       .algorithm2 = SSL_HANDSHAKE_MAC_DEFAULT | TLS1_PRF,
-      .strength_bits = 168,
+      .strength_bits = 112,
       .alg_bits = 168,
     },
 
-    /* The Ephemeral DH ciphers */
+    /*
+     * Ephemeral DH (DHE) ciphers.
+     */
 
     /* Cipher 12 */
     {
@@ -313,7 +313,7 @@ SSL_CIPHER ssl3_ciphers[] = {
       .algorithm_ssl = SSL_SSLV3,
       .algo_strength = SSL_HIGH,
       .algorithm2 = SSL_HANDSHAKE_MAC_DEFAULT | TLS1_PRF,
-      .strength_bits = 168,
+      .strength_bits = 112,
       .alg_bits = 168,
     },
 
@@ -345,7 +345,7 @@ SSL_CIPHER ssl3_ciphers[] = {
       .algorithm_ssl = SSL_SSLV3,
       .algo_strength = SSL_HIGH,
       .algorithm2 = SSL_HANDSHAKE_MAC_DEFAULT | TLS1_PRF,
-      .strength_bits = 168,
+      .strength_bits = 112,
       .alg_bits = 168,
     },
 
@@ -393,11 +393,14 @@ SSL_CIPHER ssl3_ciphers[] = {
       .algorithm_ssl = SSL_SSLV3,
       .algo_strength = SSL_HIGH,
       .algorithm2 = SSL_HANDSHAKE_MAC_DEFAULT | TLS1_PRF,
-      .strength_bits = 168,
+      .strength_bits = 112,
       .alg_bits = 168,
     },
 
-    /* New AES ciphersuites */
+    /*
+     * AES ciphersuites.
+     */
+
     /* Cipher 2F */
     {
       .valid = 1,
@@ -413,6 +416,7 @@ SSL_CIPHER ssl3_ciphers[] = {
       .strength_bits = 128,
       .alg_bits = 128,
     },
+
     /* Cipher 32 */
     {
       .valid = 1,
@@ -428,6 +432,7 @@ SSL_CIPHER ssl3_ciphers[] = {
       .strength_bits = 128,
       .alg_bits = 128,
     },
+
     /* Cipher 33 */
     {
       .valid = 1,
@@ -443,6 +448,7 @@ SSL_CIPHER ssl3_ciphers[] = {
       .strength_bits = 128,
       .alg_bits = 128,
     },
+
     /* Cipher 34 */
     {
       .valid = 1,
@@ -739,8 +745,8 @@ SSL_CIPHER ssl3_ciphers[] = {
 
     /* GOST Ciphersuites */
 
-    {
-      .valid = 1,
+    /* Cipher 80 */
+    { .valid = 1,
       .name = "GOST94-GOST89-GOST89",
       .id = 0x3000080,
       .algorithm_mkey = SSL_kGOST,
@@ -751,8 +757,9 @@ SSL_CIPHER ssl3_ciphers[] = {
       .algo_strength = SSL_HIGH,
       .algorithm2 = SSL_HANDSHAKE_MAC_GOST94 | TLS1_PRF_GOST94 | TLS1_STREAM_MAC,
       .strength_bits = 256,
-      .alg_bits = 256
-    },
+      .alg_bits = 256 },
+
+    /* Cipher 81 */
     { .valid = 1,
       .name = "GOST2001-GOST89-GOST89",
       .id = 0x3000081,
@@ -765,6 +772,8 @@ SSL_CIPHER ssl3_ciphers[] = {
       .algorithm2 = SSL_HANDSHAKE_MAC_GOST94 | TLS1_PRF_GOST94 | TLS1_STREAM_MAC,
       .strength_bits = 256,
       .alg_bits = 256 },
+
+    /* Cipher 82 */
     { .valid = 1,
       .name = "GOST94-NULL-GOST94",
       .id = 0x3000082,
@@ -777,6 +786,8 @@ SSL_CIPHER ssl3_ciphers[] = {
       .algorithm2 = SSL_HANDSHAKE_MAC_GOST94 | TLS1_PRF_GOST94,
       .strength_bits = 0,
       .alg_bits = 0 },
+
+    /* Cipher 83 */
     { .valid = 1,
       .name = "GOST2001-NULL-GOST94",
       .id = 0x3000083,
@@ -858,73 +869,9 @@ SSL_CIPHER ssl3_ciphers[] = {
     },
 #endif /* OPENSSL_NO_CAMELLIA */
 
-#ifndef OPENSSL_NO_PSK
-    /* Cipher 8A */
-    {
-      .valid = 1,
-      .name = TLS1_TXT_PSK_WITH_RC4_128_SHA,
-      .id = TLS1_CK_PSK_WITH_RC4_128_SHA,
-      .algorithm_mkey = SSL_kPSK,
-      .algorithm_auth = SSL_aPSK,
-      .algorithm_enc = SSL_RC4,
-      .algorithm_mac = SSL_SHA1,
-      .algorithm_ssl = SSL_TLSV1,
-      .algo_strength = SSL_MEDIUM,
-      .algorithm2 = SSL_HANDSHAKE_MAC_DEFAULT | TLS1_PRF,
-      .strength_bits = 128,
-      .alg_bits = 128,
-    },
-
-    /* Cipher 8B */
-    {
-      .valid = 1,
-      .name = TLS1_TXT_PSK_WITH_3DES_EDE_CBC_SHA,
-      .id = TLS1_CK_PSK_WITH_3DES_EDE_CBC_SHA,
-      .algorithm_mkey = SSL_kPSK,
-      .algorithm_auth = SSL_aPSK,
-      .algorithm_enc = SSL_3DES,
-      .algorithm_mac = SSL_SHA1,
-      .algorithm_ssl = SSL_TLSV1,
-      .algo_strength = SSL_HIGH,
-      .algorithm2 = SSL_HANDSHAKE_MAC_DEFAULT | TLS1_PRF,
-      .strength_bits = 168,
-      .alg_bits = 168,
-    },
-
-    /* Cipher 8C */
-    {
-      .valid = 1,
-      .name = TLS1_TXT_PSK_WITH_AES_128_CBC_SHA,
-      .id = TLS1_CK_PSK_WITH_AES_128_CBC_SHA,
-      .algorithm_mkey = SSL_kPSK,
-      .algorithm_auth = SSL_aPSK,
-      .algorithm_enc = SSL_AES128,
-      .algorithm_mac = SSL_SHA1,
-      .algorithm_ssl = SSL_TLSV1,
-      .algo_strength = SSL_HIGH,
-      .algorithm2 = SSL_HANDSHAKE_MAC_DEFAULT | TLS1_PRF,
-      .strength_bits = 128,
-      .alg_bits = 128,
-    },
-
-    /* Cipher 8D */
-    {
-      .valid = 1,
-      .name = TLS1_TXT_PSK_WITH_AES_256_CBC_SHA,
-      .id = TLS1_CK_PSK_WITH_AES_256_CBC_SHA,
-      .algorithm_mkey = SSL_kPSK,
-      .algorithm_auth = SSL_aPSK,
-      .algorithm_enc = SSL_AES256,
-      .algorithm_mac = SSL_SHA1,
-      .algorithm_ssl = SSL_TLSV1,
-      .algo_strength = SSL_HIGH,
-      .algorithm2 = SSL_HANDSHAKE_MAC_DEFAULT | TLS1_PRF,
-      .strength_bits = 256,
-      .alg_bits = 256,
-    },
-#endif /* OPENSSL_NO_PSK */
-
-    /* GCM ciphersuites from RFC5288 */
+    /*
+     * GCM ciphersuites from RFC5288.
+     */
 
     /* Cipher 9C */
     {
@@ -1098,7 +1045,7 @@ SSL_CIPHER ssl3_ciphers[] = {
       .algorithm_ssl = SSL_TLSV1,
       .algo_strength = SSL_HIGH,
       .algorithm2 = SSL_HANDSHAKE_MAC_DEFAULT | TLS1_PRF,
-      .strength_bits = 168,
+      .strength_bits = 112,
       .alg_bits = 168,
     },
 
@@ -1178,7 +1125,7 @@ SSL_CIPHER ssl3_ciphers[] = {
       .algorithm_ssl = SSL_TLSV1,
       .algo_strength = SSL_HIGH,
       .algorithm2 = SSL_HANDSHAKE_MAC_DEFAULT | TLS1_PRF,
-      .strength_bits = 168,
+      .strength_bits = 112,
       .alg_bits = 168,
     },
 
@@ -1258,7 +1205,7 @@ SSL_CIPHER ssl3_ciphers[] = {
       .algorithm_ssl = SSL_TLSV1,
       .algo_strength = SSL_HIGH,
       .algorithm2 = SSL_HANDSHAKE_MAC_DEFAULT | TLS1_PRF,
-      .strength_bits = 168,
+      .strength_bits = 112,
       .alg_bits = 168,
     },
 
@@ -1338,7 +1285,7 @@ SSL_CIPHER ssl3_ciphers[] = {
       .algorithm_ssl = SSL_TLSV1,
       .algo_strength = SSL_HIGH,
       .algorithm2 = SSL_HANDSHAKE_MAC_DEFAULT | TLS1_PRF,
-      .strength_bits = 168,
+      .strength_bits = 112,
       .alg_bits = 168,
     },
 
@@ -1418,7 +1365,7 @@ SSL_CIPHER ssl3_ciphers[] = {
       .algorithm_ssl = SSL_TLSV1,
       .algo_strength = SSL_HIGH,
       .algorithm2 = SSL_HANDSHAKE_MAC_DEFAULT | TLS1_PRF,
-      .strength_bits = 168,
+      .strength_bits = 112,
       .alg_bits = 168,
     },
 
@@ -1730,6 +1677,8 @@ SSL_CIPHER ssl3_ciphers[] = {
       .strength_bits = 256,
       .alg_bits = 256,
     },
+
+    /* Cipher FF01 */
     { .valid = 1,
       .name = "GOST-GOST94",
       .id = 0x0300ff01,
@@ -1742,6 +1691,8 @@ SSL_CIPHER ssl3_ciphers[] = {
       .algorithm2 = SSL_HANDSHAKE_MAC_DEFAULT | TLS1_PRF,
       .strength_bits = 256,
       .alg_bits = 256 },
+
+    /* Cipher FF02 */
     { .valid = 1,
       .name = "GOST-GOST89MAC",
       .id = 0x0300ff02,
@@ -1754,6 +1705,8 @@ SSL_CIPHER ssl3_ciphers[] = {
       .algorithm2 = SSL_HANDSHAKE_MAC_DEFAULT | TLS1_PRF,
       .strength_bits = 256,
       .alg_bits = 256 },
+
+    /* Cipher FF03 */
     { .valid = 1,
       .name = "GOST-GOST89STREAM",
       .id = 0x0300ff03,
@@ -1835,18 +1788,18 @@ SSL3_ENC_METHOD SSLv3_enc_data = {
     .server_finished_label = SSL3_MD_SERVER_FINISHED_CONST,
     .server_finished_label_len = 4,
     .alert_value = ssl3_alert_code,
-    .export_keying_material = (int (*)(SSL *, unsigned char *, size_t,
-                                       const char *, size_t, const unsigned char *, size_t,
-                                       int use_context))ssl_undefined_function,
+    .export_keying_material = (int (*)(
+        SSL *, unsigned char *, size_t, const char *, size_t,
+        const unsigned char *, size_t, int use_context))ssl_undefined_function,
     .enc_flags = 0,
 };
 
 long ssl3_default_timeout(void)
 {
     /*
-     * 2 hours, the 24 hours mentioned in the SSLv3 spec
-     * is way too long for http, the cache would over fill
-     */
+   * 2 hours, the 24 hours mentioned in the SSLv3 spec
+   * is way too long for http, the cache would over fill
+   */
     return (60 * 60 * 2);
 }
 
@@ -1863,14 +1816,24 @@ const SSL_CIPHER *ssl3_get_cipher(unsigned int u)
         return (NULL);
 }
 
+const SSL_CIPHER *ssl3_get_cipher_by_id(unsigned int id)
+{
+    const SSL_CIPHER *cp;
+    SSL_CIPHER c;
+
+    c.id = id;
+    cp = OBJ_bsearch_ssl_cipher_id(&c, ssl3_ciphers, SSL3_NUM_CIPHERS);
+    if (cp != NULL && cp->valid == 1)
+        return (cp);
+    return (NULL);
+}
+
 int ssl3_pending(const SSL *s)
 {
     if (s->rstate == SSL_ST_READ_BODY)
         return 0;
 
-    return (s->s3->rrec.type == SSL3_RT_APPLICATION_DATA) ?
-               s->s3->rrec.length :
-               0;
+    return (s->s3->rrec.type == SSL3_RT_APPLICATION_DATA) ? s->s3->rrec.length : 0;
 }
 
 int ssl3_new(SSL *s)
@@ -1899,7 +1862,6 @@ void ssl3_free(SSL *s)
     ssl3_release_read_buffer(s);
     ssl3_release_write_buffer(s);
 
-    free(s->s3->rrec.comp);
     DH_free(s->s3->tmp.dh);
     EC_KEY_free(s->s3->tmp.ecdh);
 
@@ -1921,9 +1883,6 @@ void ssl3_clear(SSL *s)
     ssl3_cleanup_key_block(s);
     if (s->s3->tmp.ca_names != NULL)
         sk_X509_NAME_pop_free(s->s3->tmp.ca_names, X509_NAME_free);
-
-    free(s->s3->rrec.comp);
-    s->s3->rrec.comp = NULL;
 
     DH_free(s->s3->tmp.dh);
     s->s3->tmp.dh = NULL;
@@ -1972,8 +1931,7 @@ long ssl3_ctrl(SSL *s, int cmd, long larg, void *parg)
 
     if (cmd == SSL_CTRL_SET_TMP_RSA || cmd == SSL_CTRL_SET_TMP_RSA_CB || cmd == SSL_CTRL_SET_TMP_DH || cmd == SSL_CTRL_SET_TMP_DH_CB) {
         if (!ssl_cert_inst(&s->cert)) {
-            SSLerr(SSL_F_SSL3_CTRL,
-                   ERR_R_MALLOC_FAILURE);
+            SSLerr(SSL_F_SSL3_CTRL, ERR_R_MALLOC_FAILURE);
             return (0);
         }
     }
@@ -1998,20 +1956,17 @@ long ssl3_ctrl(SSL *s, int cmd, long larg, void *parg)
             ret = (int)(s->s3->flags);
             break;
         case SSL_CTRL_NEED_TMP_RSA:
-            if ((s->cert != NULL) && (s->cert->rsa_tmp == NULL) && ((s->cert->pkeys[SSL_PKEY_RSA_ENC].privatekey == NULL) || (EVP_PKEY_size(s->cert->pkeys[SSL_PKEY_RSA_ENC].privatekey)
-                                                                                                                              > (512 / 8))))
+            if ((s->cert != NULL) && (s->cert->rsa_tmp == NULL) && ((s->cert->pkeys[SSL_PKEY_RSA_ENC].privatekey == NULL) || (EVP_PKEY_size(s->cert->pkeys[SSL_PKEY_RSA_ENC].privatekey) > (512 / 8))))
                 ret = 1;
             break;
         case SSL_CTRL_SET_TMP_RSA: {
             RSA *rsa = (RSA *)parg;
             if (rsa == NULL) {
-                SSLerr(SSL_F_SSL3_CTRL,
-                       ERR_R_PASSED_NULL_PARAMETER);
+                SSLerr(SSL_F_SSL3_CTRL, ERR_R_PASSED_NULL_PARAMETER);
                 return (ret);
             }
             if ((rsa = RSAPrivateKey_dup(rsa)) == NULL) {
-                SSLerr(SSL_F_SSL3_CTRL,
-                       ERR_R_RSA_LIB);
+                SSLerr(SSL_F_SSL3_CTRL, ERR_R_RSA_LIB);
                 return (ret);
             }
             RSA_free(s->cert->rsa_tmp);
@@ -2019,27 +1974,23 @@ long ssl3_ctrl(SSL *s, int cmd, long larg, void *parg)
             ret = 1;
         } break;
         case SSL_CTRL_SET_TMP_RSA_CB: {
-            SSLerr(SSL_F_SSL3_CTRL,
-                   ERR_R_SHOULD_NOT_HAVE_BEEN_CALLED);
+            SSLerr(SSL_F_SSL3_CTRL, ERR_R_SHOULD_NOT_HAVE_BEEN_CALLED);
             return (ret);
         } break;
         case SSL_CTRL_SET_TMP_DH: {
             DH *dh = (DH *)parg;
             if (dh == NULL) {
-                SSLerr(SSL_F_SSL3_CTRL,
-                       ERR_R_PASSED_NULL_PARAMETER);
+                SSLerr(SSL_F_SSL3_CTRL, ERR_R_PASSED_NULL_PARAMETER);
                 return (ret);
             }
             if ((dh = DHparams_dup(dh)) == NULL) {
-                SSLerr(SSL_F_SSL3_CTRL,
-                       ERR_R_DH_LIB);
+                SSLerr(SSL_F_SSL3_CTRL, ERR_R_DH_LIB);
                 return (ret);
             }
             if (!(s->options & SSL_OP_SINGLE_DH_USE)) {
                 if (!DH_generate_key(dh)) {
                     DH_free(dh);
-                    SSLerr(SSL_F_SSL3_CTRL,
-                           ERR_R_DH_LIB);
+                    SSLerr(SSL_F_SSL3_CTRL, ERR_R_DH_LIB);
                     return (ret);
                 }
             }
@@ -2048,29 +1999,25 @@ long ssl3_ctrl(SSL *s, int cmd, long larg, void *parg)
             ret = 1;
         } break;
         case SSL_CTRL_SET_TMP_DH_CB: {
-            SSLerr(SSL_F_SSL3_CTRL,
-                   ERR_R_SHOULD_NOT_HAVE_BEEN_CALLED);
+            SSLerr(SSL_F_SSL3_CTRL, ERR_R_SHOULD_NOT_HAVE_BEEN_CALLED);
             return (ret);
         } break;
         case SSL_CTRL_SET_TMP_ECDH: {
             EC_KEY *ecdh = NULL;
 
             if (parg == NULL) {
-                SSLerr(SSL_F_SSL3_CTRL,
-                       ERR_R_PASSED_NULL_PARAMETER);
+                SSLerr(SSL_F_SSL3_CTRL, ERR_R_PASSED_NULL_PARAMETER);
                 return (ret);
             }
             if (!EC_KEY_up_ref((EC_KEY *)parg)) {
-                SSLerr(SSL_F_SSL3_CTRL,
-                       ERR_R_ECDH_LIB);
+                SSLerr(SSL_F_SSL3_CTRL, ERR_R_ECDH_LIB);
                 return (ret);
             }
             ecdh = (EC_KEY *)parg;
             if (!(s->options & SSL_OP_SINGLE_ECDH_USE)) {
                 if (!EC_KEY_generate_key(ecdh)) {
                     EC_KEY_free(ecdh);
-                    SSLerr(SSL_F_SSL3_CTRL,
-                           ERR_R_ECDH_LIB);
+                    SSLerr(SSL_F_SSL3_CTRL, ERR_R_ECDH_LIB);
                     return (ret);
                 }
             }
@@ -2079,8 +2026,7 @@ long ssl3_ctrl(SSL *s, int cmd, long larg, void *parg)
             ret = 1;
         } break;
         case SSL_CTRL_SET_TMP_ECDH_CB: {
-            SSLerr(SSL_F_SSL3_CTRL,
-                   ERR_R_SHOULD_NOT_HAVE_BEEN_CALLED);
+            SSLerr(SSL_F_SSL3_CTRL, ERR_R_SHOULD_NOT_HAVE_BEEN_CALLED);
             return (ret);
         } break;
         case SSL_CTRL_SET_TLSEXT_HOSTNAME:
@@ -2092,19 +2038,15 @@ long ssl3_ctrl(SSL *s, int cmd, long larg, void *parg)
                 if (parg == NULL)
                     break;
                 if (strlen((char *)parg) > TLSEXT_MAXLEN_host_name) {
-                    SSLerr(SSL_F_SSL3_CTRL,
-                           SSL_R_SSL3_EXT_INVALID_SERVERNAME);
+                    SSLerr(SSL_F_SSL3_CTRL, SSL_R_SSL3_EXT_INVALID_SERVERNAME);
                     return 0;
                 }
-                if ((s->tlsext_hostname = strdup((char *)parg))
-                    == NULL) {
-                    SSLerr(SSL_F_SSL3_CTRL,
-                           ERR_R_INTERNAL_ERROR);
+                if ((s->tlsext_hostname = strdup((char *)parg)) == NULL) {
+                    SSLerr(SSL_F_SSL3_CTRL, ERR_R_INTERNAL_ERROR);
                     return 0;
                 }
             } else {
-                SSLerr(SSL_F_SSL3_CTRL,
-                       SSL_R_SSL3_EXT_INVALID_SERVERNAME_TYPE);
+                SSLerr(SSL_F_SSL3_CTRL, SSL_R_SSL3_EXT_INVALID_SERVERNAME_TYPE);
                 return 0;
             }
             break;
@@ -2161,8 +2103,7 @@ long ssl3_callback_ctrl(SSL *s, int cmd, void (*fp)(void))
 
     if (cmd == SSL_CTRL_SET_TMP_RSA_CB || cmd == SSL_CTRL_SET_TMP_DH_CB) {
         if (!ssl_cert_inst(&s->cert)) {
-            SSLerr(SSL_F_SSL3_CALLBACK_CTRL,
-                   ERR_R_MALLOC_FAILURE);
+            SSLerr(SSL_F_SSL3_CALLBACK_CTRL, ERR_R_MALLOC_FAILURE);
             return (0);
         }
     }
@@ -2178,8 +2119,7 @@ long ssl3_callback_ctrl(SSL *s, int cmd, void (*fp)(void))
             s->cert->ecdh_tmp_cb = (EC_KEY * (*)(SSL *, int, int))fp;
         } break;
         case SSL_CTRL_SET_TLSEXT_DEBUG_CB:
-            s->tlsext_debug_cb = (void (*)(SSL *, int, int,
-                                           unsigned char *, int, void *))fp;
+            s->tlsext_debug_cb = (void (*)(SSL *, int, int, unsigned char *, int, void *))fp;
             break;
         default:
             break;
@@ -2213,8 +2153,7 @@ long ssl3_ctx_ctrl(SSL_CTX *ctx, int cmd, long larg, void *parg)
                     i = 0;
             }
             if (!i) {
-                SSLerr(SSL_F_SSL3_CTX_CTRL,
-                       ERR_R_RSA_LIB);
+                SSLerr(SSL_F_SSL3_CTX_CTRL, ERR_R_RSA_LIB);
                 return (0);
             } else {
                 RSA_free(cert->rsa_tmp);
@@ -2224,8 +2163,7 @@ long ssl3_ctx_ctrl(SSL_CTX *ctx, int cmd, long larg, void *parg)
         }
         /* break; */
         case SSL_CTRL_SET_TMP_RSA_CB: {
-            SSLerr(SSL_F_SSL3_CTX_CTRL,
-                   ERR_R_SHOULD_NOT_HAVE_BEEN_CALLED);
+            SSLerr(SSL_F_SSL3_CTX_CTRL, ERR_R_SHOULD_NOT_HAVE_BEEN_CALLED);
             return (0);
         } break;
         case SSL_CTRL_SET_TMP_DH: {
@@ -2233,14 +2171,12 @@ long ssl3_ctx_ctrl(SSL_CTX *ctx, int cmd, long larg, void *parg)
 
             dh = (DH *)parg;
             if ((new = DHparams_dup(dh)) == NULL) {
-                SSLerr(SSL_F_SSL3_CTX_CTRL,
-                       ERR_R_DH_LIB);
+                SSLerr(SSL_F_SSL3_CTX_CTRL, ERR_R_DH_LIB);
                 return 0;
             }
             if (!(ctx->options & SSL_OP_SINGLE_DH_USE)) {
                 if (!DH_generate_key(new)) {
-                    SSLerr(SSL_F_SSL3_CTX_CTRL,
-                           ERR_R_DH_LIB);
+                    SSLerr(SSL_F_SSL3_CTX_CTRL, ERR_R_DH_LIB);
                     DH_free(new);
                     return 0;
                 }
@@ -2251,29 +2187,25 @@ long ssl3_ctx_ctrl(SSL_CTX *ctx, int cmd, long larg, void *parg)
         }
         /*break; */
         case SSL_CTRL_SET_TMP_DH_CB: {
-            SSLerr(SSL_F_SSL3_CTX_CTRL,
-                   ERR_R_SHOULD_NOT_HAVE_BEEN_CALLED);
+            SSLerr(SSL_F_SSL3_CTX_CTRL, ERR_R_SHOULD_NOT_HAVE_BEEN_CALLED);
             return (0);
         } break;
         case SSL_CTRL_SET_TMP_ECDH: {
             EC_KEY *ecdh = NULL;
 
             if (parg == NULL) {
-                SSLerr(SSL_F_SSL3_CTX_CTRL,
-                       ERR_R_ECDH_LIB);
+                SSLerr(SSL_F_SSL3_CTX_CTRL, ERR_R_ECDH_LIB);
                 return 0;
             }
             ecdh = EC_KEY_dup((EC_KEY *)parg);
             if (ecdh == NULL) {
-                SSLerr(SSL_F_SSL3_CTX_CTRL,
-                       ERR_R_EC_LIB);
+                SSLerr(SSL_F_SSL3_CTX_CTRL, ERR_R_EC_LIB);
                 return 0;
             }
             if (!(ctx->options & SSL_OP_SINGLE_ECDH_USE)) {
                 if (!EC_KEY_generate_key(ecdh)) {
                     EC_KEY_free(ecdh);
-                    SSLerr(SSL_F_SSL3_CTX_CTRL,
-                           ERR_R_ECDH_LIB);
+                    SSLerr(SSL_F_SSL3_CTX_CTRL, ERR_R_ECDH_LIB);
                     return 0;
                 }
             }
@@ -2284,8 +2216,7 @@ long ssl3_ctx_ctrl(SSL_CTX *ctx, int cmd, long larg, void *parg)
         }
         /* break; */
         case SSL_CTRL_SET_TMP_ECDH_CB: {
-            SSLerr(SSL_F_SSL3_CTX_CTRL,
-                   ERR_R_SHOULD_NOT_HAVE_BEEN_CALLED);
+            SSLerr(SSL_F_SSL3_CTX_CTRL, ERR_R_SHOULD_NOT_HAVE_BEEN_CALLED);
             return (0);
         } break;
         case SSL_CTRL_SET_TLSEXT_SERVERNAME_ARG:
@@ -2297,21 +2228,17 @@ long ssl3_ctx_ctrl(SSL_CTX *ctx, int cmd, long larg, void *parg)
             if (!keys)
                 return 48;
             if (larg != 48) {
-                SSLerr(SSL_F_SSL3_CTX_CTRL,
-                       SSL_R_INVALID_TICKET_KEYS_LENGTH);
+                SSLerr(SSL_F_SSL3_CTX_CTRL, SSL_R_INVALID_TICKET_KEYS_LENGTH);
                 return 0;
             }
             if (cmd == SSL_CTRL_SET_TLSEXT_TICKET_KEYS) {
                 memcpy(ctx->tlsext_tick_key_name, keys, 16);
-                memcpy(ctx->tlsext_tick_hmac_key,
-                       keys + 16, 16);
+                memcpy(ctx->tlsext_tick_hmac_key, keys + 16, 16);
                 memcpy(ctx->tlsext_tick_aes_key, keys + 32, 16);
             } else {
                 memcpy(keys, ctx->tlsext_tick_key_name, 16);
-                memcpy(keys + 16,
-                       ctx->tlsext_tick_hmac_key, 16);
-                memcpy(keys + 32,
-                       ctx->tlsext_tick_aes_key, 16);
+                memcpy(keys + 16, ctx->tlsext_tick_hmac_key, 16);
+                memcpy(keys + 32, ctx->tlsext_tick_aes_key, 16);
             }
             return 1;
         }
@@ -2372,8 +2299,8 @@ long ssl3_ctx_callback_ctrl(SSL_CTX *ctx, int cmd, void (*fp)(void))
             break;
 
         case SSL_CTRL_SET_TLSEXT_TICKET_KEY_CB:
-            ctx->tlsext_ticket_key_cb = (int (*)(SSL *, unsigned char *,
-                                                 unsigned char *, EVP_CIPHER_CTX *, HMAC_CTX *, int))fp;
+            ctx->tlsext_ticket_key_cb = (int (*)(SSL *, unsigned char *, unsigned char *, EVP_CIPHER_CTX *,
+                                                 HMAC_CTX *, int))fp;
             break;
 
         default:
@@ -2433,11 +2360,11 @@ SSL_CIPHER *ssl3_choose_cipher(SSL *s, STACK_OF(SSL_CIPHER) * clnt,
     cert = s->cert;
 
     /*
-     * Do not set the compare functions, because this may lead to a
-     * reordering by "id". We want to keep the original ordering.
-     * We may pay a price in performance during sk_SSL_CIPHER_find(),
-     * but would have to pay with the price of sk_SSL_CIPHER_dup().
-     */
+   * Do not set the compare functions, because this may lead to a
+   * reordering by "id". We want to keep the original ordering.
+   * We may pay a price in performance during sk_SSL_CIPHER_find(),
+   * but would have to pay with the price of sk_SSL_CIPHER_dup().
+   */
 
     if (s->options & SSL_OP_CIPHER_SERVER_PREFERENCE) {
         prio = srvr;
@@ -2450,15 +2377,9 @@ SSL_CIPHER *ssl3_choose_cipher(SSL *s, STACK_OF(SSL_CIPHER) * clnt,
     for (i = 0; i < sk_SSL_CIPHER_num(prio); i++) {
         c = sk_SSL_CIPHER_value(prio, i);
 
-        /* Skip TLS v1.2 only ciphersuites if not supported */
+        /* Skip TLS v1.2 only ciphersuites if not supported. */
         if ((c->algorithm_ssl & SSL_TLSV1_2) && !SSL_USE_TLS1_2_CIPHERS(s))
             continue;
-
-#ifndef VIGORTLS_RC4_TLS11
-        /* Disable RC4 for TLS 1.1+ */
-        if ((c->algorithm_enc == SSL_RC4) && (TLS1_get_version(s) > TLS1_VERSION))
-            continue;
-#endif
 
         ssl_set_cert_masks(cert, c);
         mask_k = cert->mask_k;
@@ -2466,12 +2387,6 @@ SSL_CIPHER *ssl3_choose_cipher(SSL *s, STACK_OF(SSL_CIPHER) * clnt,
 
         alg_k = c->algorithm_mkey;
         alg_a = c->algorithm_auth;
-
-#ifndef OPENSSL_NO_PSK
-        /* with PSK there must be server callback set */
-        if ((alg_k & SSL_kPSK) && s->psk_server_callback == NULL)
-            continue;
-#endif /* OPENSSL_NO_PSK */
 
         ok = (alg_k & mask_k) && (alg_a & mask_a);
 
@@ -2484,34 +2399,31 @@ SSL_CIPHER *ssl3_choose_cipher(SSL *s, STACK_OF(SSL_CIPHER) * clnt,
                 /* and we have an ECC certificate */
             && (s->cert->pkeys[SSL_PKEY_ECC].x509 != NULL)
                    /*
-         * and the client specified a Supported Point Formats
-         * extension
-         */
+             * and the client specified a Supported Point Formats
+             * extension
+             */
             && ((s->session->tlsext_ecpointformatlist_length > 0) && (s->session->tlsext_ecpointformatlist != NULL))
                    /* and our certificate's point is compressed */
-            && ((s->cert->pkeys[SSL_PKEY_ECC].x509->cert_info != NULL)
-                && (s->cert->pkeys[SSL_PKEY_ECC].x509->cert_info->key != NULL)
-                && (s->cert->pkeys[SSL_PKEY_ECC].x509->cert_info->key->public_key != NULL)
-                && (s->cert->pkeys[SSL_PKEY_ECC].x509->cert_info->key->public_key->data != NULL)
-                && ((*(s->cert->pkeys[SSL_PKEY_ECC].x509->cert_info->key->public_key->data) == POINT_CONVERSION_COMPRESSED)
-                    || (*(s->cert->pkeys[SSL_PKEY_ECC].x509->cert_info->key->public_key->data) == POINT_CONVERSION_COMPRESSED + 1)))) {
+            && ((s->cert->pkeys[SSL_PKEY_ECC].x509->cert_info != NULL) && (s->cert->pkeys[SSL_PKEY_ECC].x509->cert_info->key != NULL) && (s->cert->pkeys[SSL_PKEY_ECC].x509->cert_info->key->public_key != NULL) && (s->cert->pkeys[SSL_PKEY_ECC].x509->cert_info->key->public_key->data != NULL) && ((*(s->cert->pkeys[SSL_PKEY_ECC]
+                                                                                                                                                                                                                                                                                                             .x509->cert_info->key->public_key->data) == POINT_CONVERSION_COMPRESSED) || (*(s->cert->pkeys[SSL_PKEY_ECC]
+                                                                                                                                                                                                                                                                                                                                                                                                .x509->cert_info->key->public_key->data) == POINT_CONVERSION_COMPRESSED + 1)))) {
             ec_ok = 0;
             /*
-             * If our certificate's curve is over a field type
-             * that the client does not support then do not allow
-             * this cipher suite to be negotiated
-             */
-            if ((s->cert->pkeys[SSL_PKEY_ECC].privatekey->pkey.ec != NULL)
-                && (s->cert->pkeys[SSL_PKEY_ECC].privatekey->pkey.ec->group != NULL)
-                && (s->cert->pkeys[SSL_PKEY_ECC].privatekey->pkey.ec->group->meth != NULL)
-                && (EC_METHOD_get_field_type(s->cert->pkeys[SSL_PKEY_ECC].privatekey->pkey.ec->group->meth) == NID_X9_62_prime_field)) {
+       * If our certificate's curve is over a field type
+       * that the client does not support then do not allow
+       * this cipher suite to be negotiated
+       */
+            if ((s->cert->pkeys[SSL_PKEY_ECC].privatekey->pkey.ec != NULL) && (s->cert->pkeys[SSL_PKEY_ECC].privatekey->pkey.ec->group != NULL) && (s->cert->pkeys[SSL_PKEY_ECC].privatekey->pkey.ec->group->meth != NULL) && (EC_METHOD_get_field_type(
+                                                                                                                                                                                                                                   s->cert->pkeys[SSL_PKEY_ECC].privatekey->pkey.ec->group->meth) == NID_X9_62_prime_field)) {
                 for (j = 0; j < s->session->tlsext_ecpointformatlist_length; j++) {
                     if (s->session->tlsext_ecpointformatlist[j] == TLSEXT_ECPOINTFORMAT_ansiX962_compressed_prime) {
                         ec_ok = 1;
                         break;
                     }
                 }
-            } else if (EC_METHOD_get_field_type(s->cert->pkeys[SSL_PKEY_ECC].privatekey->pkey.ec->group->meth) == NID_X9_62_characteristic_two_field) {
+            } else if (EC_METHOD_get_field_type(
+                           s->cert->pkeys[SSL_PKEY_ECC]
+                               .privatekey->pkey.ec->group->meth) == NID_X9_62_characteristic_two_field) {
                 for (j = 0; j < s->session->tlsext_ecpointformatlist_length; j++) {
                     if (s->session->tlsext_ecpointformatlist[j] == TLSEXT_ECPOINTFORMAT_ansiX962_compressed_char2) {
                         ec_ok = 1;
@@ -2532,15 +2444,17 @@ SSL_CIPHER *ssl3_choose_cipher(SSL *s, STACK_OF(SSL_CIPHER) * clnt,
                    /* and the client specified an EllipticCurves extension */
             && ((s->session->tlsext_ellipticcurvelist_length > 0) && (s->session->tlsext_ellipticcurvelist != NULL))) {
             ec_ok = 0;
-            if ((s->cert->pkeys[SSL_PKEY_ECC].privatekey->pkey.ec != NULL)
-                && (s->cert->pkeys[SSL_PKEY_ECC].privatekey->pkey.ec->group != NULL)) {
-                ec_nid = EC_GROUP_get_curve_name(s->cert->pkeys[SSL_PKEY_ECC].privatekey->pkey.ec->group);
-                if ((ec_nid == 0)
-                    && (s->cert->pkeys[SSL_PKEY_ECC].privatekey->pkey.ec->group->meth != NULL)) {
-                    if (EC_METHOD_get_field_type(s->cert->pkeys[SSL_PKEY_ECC].privatekey->pkey.ec->group->meth) == NID_X9_62_prime_field) {
+            if ((s->cert->pkeys[SSL_PKEY_ECC].privatekey->pkey.ec != NULL) && (s->cert->pkeys[SSL_PKEY_ECC].privatekey->pkey.ec->group != NULL)) {
+                ec_nid = EC_GROUP_get_curve_name(
+                    s->cert->pkeys[SSL_PKEY_ECC].privatekey->pkey.ec->group);
+                if ((ec_nid == 0) && (s->cert->pkeys[SSL_PKEY_ECC].privatekey->pkey.ec->group->meth != NULL)) {
+                    if (EC_METHOD_get_field_type(s->cert->pkeys[SSL_PKEY_ECC]
+                                                     .privatekey->pkey.ec->group->meth) == NID_X9_62_prime_field) {
                         ec_search1 = 0xFF;
                         ec_search2 = 0x01;
-                    } else if (EC_METHOD_get_field_type(s->cert->pkeys[SSL_PKEY_ECC].privatekey->pkey.ec->group->meth) == NID_X9_62_characteristic_two_field) {
+                    } else if (EC_METHOD_get_field_type(
+                                   s->cert->pkeys[SSL_PKEY_ECC]
+                                       .privatekey->pkey.ec->group->meth) == NID_X9_62_characteristic_two_field) {
                         ec_search1 = 0xFF;
                         ec_search2 = 0x02;
                     }
@@ -2549,7 +2463,8 @@ SSL_CIPHER *ssl3_choose_cipher(SSL *s, STACK_OF(SSL_CIPHER) * clnt,
                     ec_search2 = tls1_ec_nid2curve_id(ec_nid);
                 }
                 if ((ec_search1 != 0) || (ec_search2 != 0)) {
-                    for (j = 0; j < s->session->tlsext_ellipticcurvelist_length / 2; j++) {
+                    for (j = 0; j < s->session->tlsext_ellipticcurvelist_length / 2;
+                         j++) {
                         if ((s->session->tlsext_ellipticcurvelist[2 * j] == ec_search1) && (s->session->tlsext_ellipticcurvelist[2 * j + 1] == ec_search2)) {
                             ec_ok = 1;
                             break;
@@ -2572,8 +2487,7 @@ SSL_CIPHER *ssl3_choose_cipher(SSL *s, STACK_OF(SSL_CIPHER) * clnt,
             ec_ok = 0;
             if (s->cert->ecdh_tmp->group != NULL) {
                 ec_nid = EC_GROUP_get_curve_name(s->cert->ecdh_tmp->group);
-                if ((ec_nid == 0)
-                    && (s->cert->ecdh_tmp->group->meth != NULL)) {
+                if ((ec_nid == 0) && (s->cert->ecdh_tmp->group->meth != NULL)) {
                     if (EC_METHOD_get_field_type(s->cert->ecdh_tmp->group->meth) == NID_X9_62_prime_field) {
                         ec_search1 = 0xFF;
                         ec_search2 = 0x01;
@@ -2586,7 +2500,8 @@ SSL_CIPHER *ssl3_choose_cipher(SSL *s, STACK_OF(SSL_CIPHER) * clnt,
                     ec_search2 = tls1_ec_nid2curve_id(ec_nid);
                 }
                 if ((ec_search1 != 0) || (ec_search2 != 0)) {
-                    for (j = 0; j < s->session->tlsext_ellipticcurvelist_length / 2; j++) {
+                    for (j = 0; j < s->session->tlsext_ellipticcurvelist_length / 2;
+                         j++) {
                         if ((s->session->tlsext_ellipticcurvelist[2 * j] == ec_search1) && (s->session->tlsext_ellipticcurvelist[2 * j + 1] == ec_search2)) {
                             ec_ok = 1;
                             break;
@@ -2646,9 +2561,9 @@ int ssl3_get_req_cert_type(SSL *s, unsigned char *p)
     }
 
     /*
-     * ECDSA certs can be used with RSA cipher suites as well
-     * so we don't need to check for SSL_kECDH or SSL_kECDHE
-     */
+   * ECDSA certs can be used with RSA cipher suites as well
+   * so we don't need to check for SSL_kECDH or SSL_kECDHE
+   */
     if (s->version >= TLS1_VERSION) {
         p[ret++] = TLS_CT_ECDSA_SIGN;
     }
@@ -2660,9 +2575,9 @@ int ssl3_shutdown(SSL *s)
     int ret;
 
     /*
-     * Don't do anything much if we have not done the handshake or
-     * we don't want to send messages :-)
-     */
+   * Don't do anything much if we have not done the handshake or
+   * we don't want to send messages :-)
+   */
     if ((s->quiet_shutdown) || (s->state == SSL_ST_BEFORE)) {
         s->shutdown = (SSL_SENT_SHUTDOWN | SSL_RECEIVED_SHUTDOWN);
         return (1);
@@ -2672,9 +2587,9 @@ int ssl3_shutdown(SSL *s)
         s->shutdown |= SSL_SENT_SHUTDOWN;
         ssl3_send_alert(s, SSL3_AL_WARNING, SSL_AD_CLOSE_NOTIFY);
         /*
-         * Our shutdown alert has been sent now, and if it still needs
-          * to be written, s->s3->alert_dispatch will be true
-         */
+     * Our shutdown alert has been sent now, and if it still needs
+     * to be written, s->s3->alert_dispatch will be true
+     */
         if (s->s3->alert_dispatch)
             return (-1); /* return WANT_WRITE */
     } else if (s->s3->alert_dispatch) {
@@ -2682,11 +2597,11 @@ int ssl3_shutdown(SSL *s)
         ret = s->method->ssl_dispatch_alert(s);
         if (ret == -1) {
             /*
-             * We only get to return -1 here the 2nd/Nth
-             * invocation, we must  have already signalled
-             * return 0 upon a previous invoation,
-             * return WANT_WRITE
-             */
+       * We only get to return -1 here the 2nd/Nth
+       * invocation, we must  have already signalled
+       * return 0 upon a previous invoation,
+       * return WANT_WRITE
+       */
             return (ret);
         }
     } else if (!(s->shutdown & SSL_RECEIVED_SHUTDOWN)) {
@@ -2718,17 +2633,16 @@ int ssl3_write(SSL *s, const void *buf, int len)
         ssl3_renegotiate_check(s);
 
     /*
-     * This is an experimental flag that sends the
-     * last handshake message in the same packet as the first
-     * use data - used to see if it helps the TCP protocol during
-     * session-id reuse
-     */
+   * This is an experimental flag that sends the
+   * last handshake message in the same packet as the first
+   * use data - used to see if it helps the TCP protocol during
+   * session-id reuse
+   */
     /* The second test is because the buffer may have been removed */
     if ((s->s3->flags & SSL3_FLAGS_POP_BUFFER) && (s->wbio == s->bbio)) {
         /* First time through, we write into the buffer */
         if (s->s3->delay_buf_pop_ret == 0) {
-            ret = ssl3_write_bytes(s, SSL3_RT_APPLICATION_DATA,
-                                   buf, len);
+            ret = ssl3_write_bytes(s, SSL3_RT_APPLICATION_DATA, buf, len);
             if (ret <= 0)
                 return (ret);
 
@@ -2748,8 +2662,7 @@ int ssl3_write(SSL *s, const void *buf, int len)
         ret = s->s3->delay_buf_pop_ret;
         s->s3->delay_buf_pop_ret = 0;
     } else {
-        ret = s->method->ssl_write_bytes(s, SSL3_RT_APPLICATION_DATA,
-                                         buf, len);
+        ret = s->method->ssl_write_bytes(s, SSL3_RT_APPLICATION_DATA, buf, len);
         if (ret <= 0)
             return (ret);
     }
@@ -2765,19 +2678,17 @@ static int ssl3_read_internal(SSL *s, void *buf, int len, int peek)
     if (s->s3->renegotiate)
         ssl3_renegotiate_check(s);
     s->s3->in_read_app_data = 1;
-    ret = s->method->ssl_read_bytes(s,
-                                    SSL3_RT_APPLICATION_DATA, buf, len, peek);
+    ret = s->method->ssl_read_bytes(s, SSL3_RT_APPLICATION_DATA, buf, len, peek);
     if ((ret == -1) && (s->s3->in_read_app_data == 2)) {
         /*
-         * ssl3_read_bytes decided to call s->handshake_func, which
-         * called ssl3_read_bytes to read handshake data.
-         * However, ssl3_read_bytes actually found application data
-         * and thinks that application data makes sense here; so disable
-         * handshake processing and try to read application data again.
-         */
+     * ssl3_read_bytes decided to call s->handshake_func, which
+     * called ssl3_read_bytes to read handshake data.
+     * However, ssl3_read_bytes actually found application data
+     * and thinks that application data makes sense here; so disable
+     * handshake processing and try to read application data again.
+     */
         s->in_handshake++;
-        ret = s->method->ssl_read_bytes(s,
-                                        SSL3_RT_APPLICATION_DATA, buf, len, peek);
+        ret = s->method->ssl_read_bytes(s, SSL3_RT_APPLICATION_DATA, buf, len, peek);
         s->in_handshake--;
     } else
         s->s3->in_read_app_data = 0;
@@ -2814,10 +2725,10 @@ int ssl3_renegotiate_check(SSL *s)
     if (s->s3->renegotiate) {
         if ((s->s3->rbuf.left == 0) && (s->s3->wbuf.left == 0) && !SSL_in_init(s)) {
             /*
-             * If we are the server, and we have sent
-             * a 'RENEGOTIATE' message, we need to go
-             * to SSL_ST_ACCEPT.
-             */
+       * If we are the server, and we have sent
+       * a 'RENEGOTIATE' message, we need to go
+       * to SSL_ST_ACCEPT.
+       */
             /* SSL_ST_ACCEPT */
             s->state = SSL_ST_RENEGOTIATE;
             s->s3->renegotiate = 0;

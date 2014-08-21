@@ -17,7 +17,7 @@
 #include "des_locl.h"
 
 /* Added more values to handle illegal salt values the way normal
- * crypt() implementations do.  The patch was sent by 
+ * crypt() implementations do.  The patch was sent by
  * Bjorn Gronvall <bg@sics.se>
  */
 static unsigned const char con_salt[128] = {

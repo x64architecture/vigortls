@@ -1,4 +1,3 @@
-/* ssl/s3_meth.c */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -101,6 +100,5 @@ static const SSL_METHOD *ssl3_get_method(int ver)
 {
     if (ver == SSL3_VERSION)
         return (SSLv3_method());
-    else
-        return (NULL);
+    return (NULL);
 }

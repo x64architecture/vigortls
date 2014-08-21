@@ -1,6 +1,6 @@
 /* crypto/srp/srp_vfy.c */
-/* Written by Christophe Renou (christophe.renou@edelweb.fr) with 
- * the precious help of Peter Sylvester (peter.sylvester@edelweb.fr) 
+/* Written by Christophe Renou (christophe.renou@edelweb.fr) with
+ * the precious help of Peter Sylvester (peter.sylvester@edelweb.fr)
  * for the EdelKey project and contributed to the OpenSSL project 2004.
  */
 /* ====================================================================
@@ -11,7 +11,7 @@
  * are met:
  *
  * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer. 
+ *    notice, this list of conditions and the following disclaimer.
  *
  * 2. Redistributions in binary form must reproduce the above copyright
  *    notice, this list of conditions and the following disclaimer in

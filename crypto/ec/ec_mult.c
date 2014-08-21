@@ -10,7 +10,7 @@
  * are met:
  *
  * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer. 
+ *    notice, this list of conditions and the following disclaimer.
  *
  * 2. Redistributions in binary form must reproduce the above copyright
  *    notice, this list of conditions and the following disclaimer in
@@ -673,7 +673,7 @@ err:
 /* ec_wNAF_precompute_mult()
  * creates an EC_PRE_COMP object with preprecomputed multiples of the generator
  * for use with wNAF splitting as implemented in ec_wNAF_mul().
- * 
+ *
  * 'pre_comp->points' is an array of multiples of the generator
  * of the following form:
  * points[0] =     generator;

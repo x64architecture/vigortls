@@ -10,7 +10,7 @@
  * are met:
  *
  * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer. 
+ *    notice, this list of conditions and the following disclaimer.
  *
  * 2. Redistributions in binary form must reproduce the above copyright
  *    notice, this list of conditions and the following disclaimer in
@@ -231,7 +231,7 @@ ASN1_SEQUENCE_cb(PKCS7_RECIP_INFO, ri_cb) = {
     ASN1_ITEM_TEMPLATE(PKCS7_ATTR_SIGN) = ASN1_EX_TEMPLATE_TYPE(ASN1_TFLG_SET_ORDER, 0, PKCS7_ATTRIBUTES, X509_ATTRIBUTE)
         ASN1_ITEM_TEMPLATE_END(PKCS7_ATTR_SIGN)
 
-            /* When verifying attributes we need to use the received order. So 
+            /* When verifying attributes we need to use the received order. So
  * we use SEQUENCE OF and tag it to SET OF
  */
 

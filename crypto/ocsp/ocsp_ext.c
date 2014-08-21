@@ -15,7 +15,7 @@
  * are met:
  *
  * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer. 
+ *    notice, this list of conditions and the following disclaimer.
  *
  * 2. Redistributions in binary form must reproduce the above copyright
  *    notice, this list of conditions and the following disclaimer in
@@ -312,7 +312,7 @@ err:
 
 /* Add a nonce to an extension stack. A nonce can be specificed or if NULL
  * a random nonce will be generated.
- * Note: OpenSSL 0.9.7d and later create an OCTET STRING containing the 
+ * Note: OpenSSL 0.9.7d and later create an OCTET STRING containing the
  * nonce, previous versions used the raw nonce.
  */
 
@@ -406,7 +406,7 @@ int OCSP_check_nonce(OCSP_REQUEST *req, OCSP_BASICRESP *bs)
     return 1;
 }
 
-/* Copy the nonce value (if any) from an OCSP request to 
+/* Copy the nonce value (if any) from an OCSP request to
  * a response.
  */
 

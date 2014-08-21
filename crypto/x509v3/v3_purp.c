@@ -10,7 +10,7 @@
  * are met:
  *
  * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer. 
+ *    notice, this list of conditions and the following disclaimer.
  *
  * 2. Redistributions in binary form must reproduce the above copyright
  *    notice, this list of conditions and the following disclaimer in
@@ -711,9 +711,9 @@ static int check_purpose_timestamp_sign(const X509_PURPOSE *xp, const X509 *x,
     if (ca)
         return check_ca(x);
 
-    /* 
+    /*
      * Check the optional key usage field:
-     * if Key Usage is present, it must be one of digitalSignature 
+     * if Key Usage is present, it must be one of digitalSignature
      * and/or nonRepudiation (other values are not consistent and shall
      * be rejected).
      */

@@ -10,7 +10,7 @@
  * are met:
  *
  * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer. 
+ *    notice, this list of conditions and the following disclaimer.
  *
  * 2. Redistributions in binary form must reproduce the above copyright
  *    notice, this list of conditions and the following disclaimer in
@@ -752,7 +752,7 @@ static int TS_RESP_sign(TS_RESP_CTX *ctx)
         goto err;
     }
 
-    /* Create the ESS SigningCertificate attribute which contains 
+    /* Create the ESS SigningCertificate attribute which contains
        the signer certificate id and optionally the certificate chain. */
     certs = ctx->flags & TS_ESS_CERT_ID_CHAIN ? ctx->certs : NULL;
     if (!(sc = ESS_SIGNING_CERT_new_init(ctx->signer_cert, certs)))
@@ -949,12 +949,12 @@ TS_RESP_set_genTime_with_precision(ASN1_GENERALIZEDTIME *asn1_time,
     if (!(tm = gmtime(&sec)))
         goto err;
 
-    /* 
-     * Put "genTime_str" in GeneralizedTime format.  We work around the 
-     * restrictions imposed by rfc3280 (i.e. "GeneralizedTime values MUST 
-     * NOT include fractional seconds") and OpenSSL related functions to 
-     * meet the rfc3161 requirement: "GeneralizedTime syntax can include 
-     * fraction-of-second details". 
+    /*
+     * Put "genTime_str" in GeneralizedTime format.  We work around the
+     * restrictions imposed by rfc3280 (i.e. "GeneralizedTime values MUST
+     * NOT include fractional seconds") and OpenSSL related functions to
+     * meet the rfc3161 requirement: "GeneralizedTime syntax can include
+     * fraction-of-second details".
      */
     p += snprintf(p, p_end - p,
                   "%04d%02d%02d%02d%02d%02d",
@@ -963,18 +963,18 @@ TS_RESP_set_genTime_with_precision(ASN1_GENERALIZEDTIME *asn1_time,
     if (precision > 0) {
         /* Add fraction of seconds (leave space for dot and null). */
         snprintf(p, 2 + precision, ".%ld", usec);
-        /* We cannot use the snprintf return value, 
+        /* We cannot use the snprintf return value,
            because it might have been truncated. */
         p += strlen(p);
 
         /* To make things a bit harder, X.690 | ISO/IEC 8825-1 provides
            the following restrictions for a DER-encoding, which OpenSSL
-           (specifically ASN1_GENERALIZEDTIME_check() function) doesn't 
+           (specifically ASN1_GENERALIZEDTIME_check() function) doesn't
            support:
-           "The encoding MUST terminate with a "Z" (which means "Zulu" 
-           time). The decimal point element, if present, MUST be the 
-           point option ".". The fractional-seconds elements, 
-           if present, MUST omit all trailing 0's; 
+           "The encoding MUST terminate with a "Z" (which means "Zulu"
+           time). The decimal point element, if present, MUST be the
+           point option ".". The fractional-seconds elements,
+           if present, MUST omit all trailing 0's;
            if the elements correspond to 0, they MUST be wholly
            omitted, and the decimal point element also MUST be
            omitted." */

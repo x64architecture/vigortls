@@ -1,4 +1,3 @@
-/* ssl/s23_meth.c */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -99,24 +98,13 @@ const SSL_METHOD *SSLv23_method(void)
 
 static const SSL_METHOD *ssl23_get_method(int ver)
 {
-    switch (ver) {
-#ifndef OPENSSL_NO_SSL3
-        case SSL3_VERSION:
-            return (SSLv3_method());
-            break;
-#endif
-#ifndef OPENSSL_NO_TLS1
-        case TLS1_VERSION:
-            return (TLSv1_method());
-            break;
-        case TLS1_1_VERSION:
-            return (TLSv1_1_method());
-            break;
-        case TLS1_2_VERSION:
-            return (TLSv1_2_method());
-            break;
-#endif
-        default:
-            return (NULL);
-    }
+    if (ver == SSL3_VERSION)
+        return (SSLv3_method());
+    if (ver == TLS1_VERSION)
+        return (TLSv1_method());
+    if (ver == TLS1_1_VERSION)
+        return (TLSv1_1_method());
+    if (ver == TLS1_2_VERSION)
+        return (TLSv1_2_method());
+    return (NULL);
 }

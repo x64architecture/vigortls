@@ -15,7 +15,7 @@
  * are met:
  *
  * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer. 
+ *    notice, this list of conditions and the following disclaimer.
  *
  * 2. Redistributions in binary form must reproduce the above copyright
  *    notice, this list of conditions and the following disclaimer in
@@ -75,7 +75,7 @@
  * relevant information from the response.
  */
 
-/* Add an OCSP_CERTID to an OCSP request. Return new OCSP_ONEREQ 
+/* Add an OCSP_CERTID to an OCSP request. Return new OCSP_ONEREQ
  * pointer: useful if we want to add extensions.
  */
 
@@ -254,7 +254,7 @@ int OCSP_resp_find(OCSP_BASICRESP *bs, OCSP_CERTID *id, int last)
 }
 
 /* Extract status information from an OCSP_SINGLERESP structure.
- * Note: the revtime and reason values are only set if the 
+ * Note: the revtime and reason values are only set if the
  * certificate status is revoked. Returns numerical value of
  * status.
  */

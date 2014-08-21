@@ -57,6 +57,8 @@
  *
  */
 
+#include <string.h>
+
 #include <openssl/bn.h>
 #include <pqueue.h>
 

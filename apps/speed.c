@@ -5,21 +5,21 @@
  * This package is an SSL implementation written
  * by Eric Young (eay@cryptsoft.com).
  * The implementation was written so as to conform with Netscapes SSL.
- * 
+ *
  * This library is free for commercial and non-commercial use as long as
  * the following conditions are aheared to.  The following conditions
  * apply to all code found in this distribution, be it the RC4, RSA,
  * lhash, DES, etc., code; not just the SSL code.  The SSL documentation
  * included with this distribution is covered by the same copyright terms
  * except that the holder is Tim Hudson (tjh@cryptsoft.com).
- * 
+ *
  * Copyright remains Eric Young's, and as such any Copyright notices in
  * the code are not to be removed.
  * If this package is used in a product, Eric Young should be given attribution
  * as the author of the parts of the library used.
  * This can be in the form of a textual message at program startup or
  * in documentation (online or textual) provided with the package.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
  * are met:
@@ -34,10 +34,10 @@
  *     Eric Young (eay@cryptsoft.com)"
  *    The word 'cryptographic' can be left out if the rouines from the library
  *    being used are not cryptographic related :-).
- * 4. If you include any Windows specific code (or a derivative thereof) from 
+ * 4. If you include any Windows specific code (or a derivative thereof) from
  *    the apps directory (application code) you must include an acknowledgement:
  *    "This product includes software written by Tim Hudson (tjh@cryptsoft.com)"
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY ERIC YOUNG ``AS IS'' AND
  * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -49,7 +49,7 @@
  * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
- * 
+ *
  * The licence and distribution terms for any publically available version or
  * derivative of this code cannot be changed.  i.e. this code cannot simply be
  * copied and put under another distribution licence
@@ -58,13 +58,13 @@
 /* ====================================================================
  * Copyright 2002 Sun Microsystems, Inc. ALL RIGHTS RESERVED.
  *
- * Portions of the attached software ("Contribution") are developed by 
+ * Portions of the attached software ("Contribution") are developed by
  * SUN MICROSYSTEMS, INC., and are contributed to the OpenSSL project.
  *
  * The Contribution is licensed pursuant to the OpenSSL open source
  * license provided above.
  *
- * The ECDH and ECDSA speed test software is originally written by 
+ * The ECDH and ECDSA speed test software is originally written by
  * Sumit Gupta of Sun Microsystems Laboratories.
  *
  */
@@ -179,6 +179,8 @@
 #define BUFSIZE ((long)1024 * 8 + 64)
 int run = 0;
 
+size_t n;
+
 static int mr = 0;
 static int usertime = 1;
 
@@ -207,7 +209,6 @@ static const char *names[ALGOR_NUM] = {
     "camellia-128 cbc", "camellia-192 cbc", "camellia-256 cbc",
     "evp", "sha256", "sha512", "whirlpool",
     "aes-128 ige", "aes-192 ige", "aes-256 ige", "ghash",
-    "aes-128 gcm", "aes-256 gcm", "chacha20 poly1305",
 };
 static double results[ALGOR_NUM][SIZE_NUM];
 static int lengths[SIZE_NUM] = { 16, 64, 256, 1024, 8 * 1024 };
@@ -391,9 +392,6 @@ int speed_main(int argc, char **argv)
 #define D_IGE_192_AES 27
 #define D_IGE_256_AES 28
 #define D_GHASH 29
-#define D_AES_128_GCM 30
-#define D_AES_256_GCM 31
-#define D_CHACHA20_POLY1305 32
     double d = 0.0;
     long c[ALGOR_NUM][SIZE_NUM];
 #define R_DSA_512 0
@@ -435,10 +433,10 @@ int speed_main(int argc, char **argv)
     static unsigned int dsa_bits[DSA_NUM] = { 512, 1024, 2048 };
 #endif
 #ifndef OPENSSL_NO_EC
-    /* We only test over the following curves as they are representative, 
+    /* We only test over the following curves as they are representative,
      * To add tests over more curves, simply add the curve NID
-     * and curve name to the following arrays and increase the 
-     * EC_NUM value accordingly. 
+     * and curve name to the following arrays and increase the
+     * EC_NUM value accordingly.
      */
     static unsigned int test_curves[EC_NUM] = {
         /* Prime Curves */
@@ -809,10 +807,6 @@ int speed_main(int argc, char **argv)
             doit[D_CBC_256_AES] = 1;
         } else if (strcmp(*argv, "ghash") == 0) {
             doit[D_GHASH] = 1;
-        } else if (strcmp(*argv, "aes-128-gcm") == 0) {
-            doit[D_AES_128_GCM] = 1;
-        } else if (strcmp(*argv, "aes-256-gcm") == 0) {
-            doit[D_AES_256_GCM] = 1;
         } else
 #endif
 #ifndef OPENSSL_NO_CAMELLIA
@@ -827,10 +821,6 @@ int speed_main(int argc, char **argv)
             rsa_doit[R_RSA_1024] = 1;
             rsa_doit[R_RSA_2048] = 1;
             rsa_doit[R_RSA_4096] = 1;
-        } else
-#if !defined(OPENSSL_NO_CHACHA) && !defined(OPENSSL_NO_POLY1305)
-            if (strcmp(*argv, "chacha20-poly1305") == 0) {
-            doit[D_CHACHA20_POLY1305] = 1;
         } else
 #ifndef OPENSSL_NO_DSA
             if (strcmp(*argv, "dsa") == 0) {
@@ -971,7 +961,6 @@ int speed_main(int argc, char **argv)
 #ifndef OPENSSL_NO_AES
             BIO_printf(bio_err, "aes-128-cbc aes-192-cbc aes-256-cbc ");
             BIO_printf(bio_err, "aes-128-ige aes-192-ige aes-256-ige\n");
-            BIO_printf(bio_err, "aes-128-gcm aes-256-gcm ");
 #endif
 #ifndef OPENSSL_NO_CAMELLIA
             BIO_printf(bio_err, "\n");
@@ -979,9 +968,6 @@ int speed_main(int argc, char **argv)
 #endif
 #ifndef OPENSSL_NO_RC4
             BIO_printf(bio_err, "rc4");
-#endif
-#if !defined(OPENSSL_NO_CHACHA) && !defined(OPENSSL_NO_POLY1305)
-            BIO_printf(bio_err, " chacha20-poly1305");
 #endif
             BIO_printf(bio_err, "\n");
 
@@ -1172,8 +1158,6 @@ int speed_main(int argc, char **argv)
     c[D_IGE_192_AES][0] = count;
     c[D_IGE_256_AES][0] = count;
     c[D_GHASH][0] = count;
-    c[D_AES_128_GCM][0] = count;
-    c[D_CHACHA20_POLY1305][0] = count;
 
     for (i = 1; i < SIZE_NUM; i++) {
         c[D_MD2][i] = c[D_MD2][0] * 4 * lengths[0] / lengths[i];
@@ -1596,68 +1580,6 @@ int speed_main(int argc, char **argv)
             print_result(D_GHASH, j, count, d);
         }
         CRYPTO_gcm128_release(ctx);
-    }
-
-    if (doit[D_AES_128_GCM]) {
-        const EVP_AEAD *aead = EVP_aead_aes_128_gcm();
-        static const unsigned char nonce[32] = { 0 };
-        size_t nonce_len;
-        EVP_AEAD_CTX ctx;
-
-        EVP_AEAD_CTX_init(&ctx, aead, key32, EVP_AEAD_key_length(aead), EVP_AEAD_DEFAULT_TAG_LENGTH, NULL);
-        nonce_len = EVP_AEAD_nonce_length(aead);
-
-        for (j = 0; j < SIZE_NUM; j++) {
-            print_message(names[D_AES_128_GCM], c[D_AES_128_GCM][j], lengths[j]);
-            Time_F(START);
-            for (count = 0, run = 1; COND(c[D_AES_128_GCM][j]); count++)
-                EVP_AEAD_CTX_seal(&ctx, buf, BUFSIZE, nonce, nonce_len, buf, lengths[j], NULL, 0);
-            d = Time_F(STOP);
-            print_result(D_AES_128_GCM, j, count, d);
-        }
-        EVP_AEAD_CTX_cleanup(&ctx);
-    }
-
-    if (doit[D_AES_256_GCM]) {
-        const EVP_AEAD *aead = EVP_aead_aes_256_gcm();
-        static const unsigned char nonce[32] = { 0 };
-        size_t nonce_len;
-        EVP_AEAD_CTX ctx;
-
-        EVP_AEAD_CTX_init(&ctx, aead, key32, EVP_AEAD_key_length(aead), EVP_AEAD_DEFAULT_TAG_LENGTH, NULL);
-        nonce_len = EVP_AEAD_nonce_length(aead);
-
-        for (j = 0; j < SIZE_NUM; j++) {
-            print_message(names[D_AES_256_GCM], c[D_AES_256_GCM][j], lengths[j]);
-            Time_F(START);
-            for (count = 0, run = 1; COND(c[D_AES_256_GCM][j]); count++)
-                EVP_AEAD_CTX_seal(&ctx, buf, BUFSIZE, nonce, nonce_len, buf, lengths[j], NULL, 0);
-            d = Time_F(STOP);
-            print_result(D_AES_256_GCM, j, count, d);
-        }
-        EVP_AEAD_CTX_cleanup(&ctx);
-    }
-#endif
-
-#if !defined(OPENSSL_NO_CHACHA) && !defined(OPENSSL_NO_POLY1305)
-    if (doit[D_CHACHA20_POLY1305]) {
-        const EVP_AEAD *aead = EVP_aead_chacha20_poly1305();
-        static const unsigned char nonce[32] = { 0 };
-        size_t nonce_len;
-        EVP_AEAD_CTX ctx;
-
-        EVP_AEAD_CTX_init(&ctx, aead, key32, EVP_AEAD_key_length(aead), EVP_AEAD_DEFAULT_TAG_LENGTH, NULL);
-        nonce_len = EVP_AEAD_nonce_length(aead);
-
-        for (j = 0; j < SIZE_NUM; j++) {
-            print_message(names[D_CHACHA20_POLY1305], c[D_CHACHA20_POLY1305][j], lengths[j]);
-            Time_F(START);
-            for (count = 0, run = 1; COND(c[D_CHACHA20_POLY1305][j]); count++)
-                EVP_AEAD_CTX_seal(&ctx, buf, BUFSIZE, nonce, nonce_len, buf, lengths[j], NULL, 0);
-            d = Time_F(STOP);
-            print_result(D_CHACHA20_POLY1305, j, count, d);
-        }
-        EVP_AEAD_CTX_cleanup(&ctx);
     }
 #endif
 
@@ -2542,5 +2464,4 @@ static int do_multi(int multi)
     free(fds);
     return 1;
 }
-#endif
 #endif

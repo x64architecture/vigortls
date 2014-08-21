@@ -10,7 +10,7 @@
  * are met:
  *
  * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer. 
+ *    notice, this list of conditions and the following disclaimer.
  *
  * 2. Redistributions in binary form must reproduce the above copyright
  *    notice, this list of conditions and the following disclaimer in
@@ -86,7 +86,7 @@ static void display_engine_list(void)
         h = ENGINE_get_next(h);
     }
     printf("end of list\n");
-    /* ENGINE_get_first() increases the struct_ref counter, so we 
+    /* ENGINE_get_first() increases the struct_ref counter, so we
            must call ENGINE_free() to decrease it again */
     ENGINE_free(h);
 }
@@ -173,7 +173,7 @@ int main(int argc, char *argv[])
     }
     display_engine_list();
     /* Depending on whether there's any hardware support compiled
-	 * in, this remove may be destined to fail. */
+     * in, this remove may be destined to fail. */
     ptr = ENGINE_get_first();
     if (ptr)
         if (!ENGINE_remove(ptr))

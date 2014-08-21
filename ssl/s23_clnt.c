@@ -1,4 +1,3 @@
-/* ssl/s23_clnt.c */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -110,29 +109,15 @@
  */
 
 #include <stdio.h>
-#include <openssl/buffer.h>
-#include <openssl/evp.h>
-#include <openssl/objects.h>
-#include <openssl/rand.h>
-
 #include "ssl_locl.h"
+#include <openssl/buffer.h>
+#include <openssl/rand.h>
+#include <openssl/objects.h>
+#include <openssl/evp.h>
 
 static const SSL_METHOD *ssl23_get_client_method(int ver);
 static int ssl23_client_hello(SSL *s);
 static int ssl23_get_server_hello(SSL *s);
-static const SSL_METHOD *ssl23_get_client_method(int ver)
-{
-    if (ver == SSL3_VERSION)
-        return (SSLv3_client_method());
-    else if (ver == TLS1_VERSION)
-        return (TLSv1_client_method());
-    else if (ver == TLS1_1_VERSION)
-        return (TLSv1_1_client_method());
-    else if (ver == TLS1_2_VERSION)
-        return (TLSv1_2_client_method());
-    else
-        return (NULL);
-}
 
 const SSL_METHOD SSLv23_client_method_data = {
     .version = TLS1_2_VERSION,
@@ -169,15 +154,26 @@ const SSL_METHOD *SSLv23_client_method(void)
     return &SSLv23_client_method_data;
 }
 
+static const SSL_METHOD *ssl23_get_client_method(int ver)
+{
+    if (ver == SSL3_VERSION)
+        return (SSLv3_client_method());
+    if (ver == TLS1_VERSION)
+        return (TLSv1_client_method());
+    if (ver == TLS1_1_VERSION)
+        return (TLSv1_1_client_method());
+    if (ver == TLS1_2_VERSION)
+        return (TLSv1_2_client_method());
+    return (NULL);
+}
+
 int ssl23_connect(SSL *s)
 {
     BUF_MEM *buf = NULL;
-    unsigned long Time = (unsigned long)time(NULL);
     void (*cb)(const SSL *ssl, int type, int val) = NULL;
     int ret = -1;
     int new_state, state;
 
-    RAND_add(&Time, sizeof(Time), 0);
     ERR_clear_error();
     errno = 0;
 
@@ -208,7 +204,7 @@ int ssl23_connect(SSL *s)
                 if (cb != NULL)
                     cb(s, SSL_CB_HANDSHAKE_START, 1);
 
-                /* s->version = TLS1_VERSION; */
+                /* s->version=TLS1_VERSION; */
                 s->type = SSL_ST_CONNECT;
 
                 if (s->init_buf == NULL) {
@@ -283,27 +279,6 @@ end:
     return (ret);
 }
 
-/* Fill a ClientRandom or ServerRandom field of length len. Returns <= 0
- * on failure, 1 on success. */
-int ssl_fill_hello_random(SSL *s, int server, unsigned char *result, int len)
-{
-    int send_time = 0;
-
-    if (len < 4)
-        return 0;
-    if (server)
-        send_time = (s->mode & SSL_MODE_SEND_SERVERHELLO_TIME) != 0;
-    else
-        send_time = (s->mode & SSL_MODE_SEND_CLIENTHELLO_TIME) != 0;
-    if (send_time) {
-        unsigned long Time = (unsigned long)time(NULL);
-        unsigned char *p = result;
-        l2n(Time, p);
-        return RAND_pseudo_bytes(p, len - 4);
-    } else
-        return RAND_pseudo_bytes(result, len);
-}
-
 static int ssl23_client_hello(SSL *s)
 {
     unsigned char *buf;
@@ -315,48 +290,30 @@ static int ssl23_client_hello(SSL *s)
     unsigned long mask, options = s->options;
 
     /*
-     * SSL_OP_NO_X disables all protocols above X *if* there are
-     * some protocols below X enabled. This is required in order
-     * to maintain "version capability" vector contiguous. So
-     * that if application wants to disable TLS1.0 in favor of
-     * TLS1>=1, it would be insufficient to pass SSL_NO_TLSv1, the
-     * answer is SSL_OP_NO_TLSv1|SSL_OP_NO_SSLv3|SSL_OP_NO_SSLv2.
-     */
-    mask = SSL_OP_NO_TLSv1_1 | SSL_OP_NO_TLSv1
-#if !defined(OPENSSL_NO_SSL3)
-           | SSL_OP_NO_SSLv3
-#endif
-        ;
-#if !defined(OPENSSL_NO_TLS1_2_CLIENT)
+   * SSL_OP_NO_X disables all protocols above X *if* there are
+   * some protocols below X enabled. This is required in order
+   * to maintain "version capability" vector contiguous. So
+   * that if application wants to disable TLS1.0 in favour of
+   * TLS1>=1, it would be insufficient to pass SSL_NO_TLSv1, the
+   * answer is SSL_OP_NO_TLSv1|SSL_OP_NO_SSLv3|SSL_OP_NO_SSLv2.
+   */
+    mask = SSL_OP_NO_TLSv1_1 | SSL_OP_NO_TLSv1 | SSL_OP_NO_SSLv3;
     version = TLS1_2_VERSION;
 
     if ((options & SSL_OP_NO_TLSv1_2) && (options & mask) != mask)
         version = TLS1_1_VERSION;
-#else
-    version = TLS1_1_VERSION;
-#endif
     mask &= ~SSL_OP_NO_TLSv1_1;
     if ((options & SSL_OP_NO_TLSv1_1) && (options & mask) != mask)
         version = TLS1_VERSION;
     mask &= ~SSL_OP_NO_TLSv1;
-#if !defined(OPENSSL_NO_SSL3)
     if ((options & SSL_OP_NO_TLSv1) && (options & mask) != mask)
         version = SSL3_VERSION;
     mask &= ~SSL_OP_NO_SSLv3;
-#endif
 
     buf = (unsigned char *)s->init_buf->data;
     if (s->state == SSL23_ST_CW_CLNT_HELLO_A) {
-#if 0
-        /* don't reuse session-id's */
-        if (!ssl_get_new_session(s, 0)) {
-            return (-1);
-        }
-#endif
-
         p = s->s3->client_random;
-        if (ssl_fill_hello_random(s, 0, p, SSL3_RANDOM_SIZE) <= 0)
-            return -1;
+        RAND_pseudo_bytes(p, SSL3_RANDOM_SIZE);
 
         if (version == TLS1_2_VERSION) {
             version_major = TLS1_2_VERSION_MAJOR;
@@ -379,7 +336,10 @@ static int ssl23_client_hello(SSL *s)
 
         /* create Client Hello in SSL 3.0/TLS 1.0 format */
 
-        /* do the record header (5 bytes) and handshake message header (4 bytes) last */
+        /*
+     * Do the record header (5 bytes) and handshake
+     * message header (4 bytes) last
+     */
         d = p = &(buf[9]);
 
         *(p++) = version_major;
@@ -399,27 +359,29 @@ static int ssl23_client_hello(SSL *s)
             return -1;
         }
 #ifdef OPENSSL_MAX_TLS1_2_CIPHER_LENGTH
-        /* Some servers hang if client hello > 256 bytes
-         * as hack workaround chop number of supported ciphers
-         * to keep it well below this if we use TLS v1.2
-         */
-        if (TLS1_get_version(s) >= TLS1_2_VERSION
-            && i > OPENSSL_MAX_TLS1_2_CIPHER_LENGTH)
+        /*
+     * Some servers hang if client hello > 256 bytes
+     * as hack workaround chop number of supported ciphers
+     * to keep it well below this if we use TLS v1.2
+     */
+        if (TLS1_get_version(s) >= TLS1_2_VERSION && i > OPENSSL_MAX_TLS1_2_CIPHER_LENGTH)
             i = OPENSSL_MAX_TLS1_2_CIPHER_LENGTH & ~1;
 #endif
         s2n(i, p);
         p += i;
 
-        /* COMPRESSION */
+        /* add in (no) COMPRESSION */
         *(p++) = 1;
-        *(p++) = 0; /* Add the NULL method */
+        /* Add the NULL method */
+        *(p++) = 0;
 
         /* TLS extensions*/
         if (ssl_prepare_clienthello_tlsext(s) <= 0) {
             SSLerr(SSL_F_SSL23_CLIENT_HELLO, SSL_R_CLIENTHELLO_TLSEXT);
             return -1;
         }
-        if ((p = ssl_add_clienthello_tlsext(s, p, buf + SSL3_RT_MAX_PLAIN_LENGTH)) == NULL) {
+        if ((p = ssl_add_clienthello_tlsext(
+                 s, p, buf + SSL3_RT_MAX_PLAIN_LENGTH)) == NULL) {
             SSLerr(SSL_F_SSL23_CLIENT_HELLO, ERR_R_INTERNAL_ERROR);
             return -1;
         }
@@ -442,9 +404,11 @@ static int ssl23_client_hello(SSL *s)
         d = buf;
         *(d++) = SSL3_RT_HANDSHAKE;
         *(d++) = version_major;
-        /* Some servers hang if we use long client hellos
-         * and a record number > TLS 1.0.
-         */
+
+        /*
+     * Some servers hang if we use long client hellos
+     * and a record number > TLS 1.0.
+     */
         if (TLS1_get_client_version(s) > TLS1_VERSION)
             *(d++) = 1;
         else
@@ -456,17 +420,19 @@ static int ssl23_client_hello(SSL *s)
         s->init_off = 0;
 
         ssl3_finish_mac(s, &(buf[5]), s->init_num - 5);
-    }
 
-    s->state = SSL23_ST_CW_CLNT_HELLO_B;
-    s->init_off = 0;
+        s->state = SSL23_ST_CW_CLNT_HELLO_B;
+        s->init_off = 0;
+    }
 
     /* SSL3_ST_CW_CLNT_HELLO_B */
     ret = ssl23_write_bytes(s);
 
     if ((ret >= 2) && s->msg_callback) {
         /* Client Hello has been sent; tell msg_callback */
-        s->msg_callback(1, version, SSL3_RT_HANDSHAKE, s->init_buf->data + 5, ret - 5, s, s->msg_callback_arg);
+
+        s->msg_callback(1, version, SSL3_RT_HANDSHAKE, s->init_buf->data + 5,
+                        ret - 5, s, s->msg_callback_arg);
     }
 
     return ret;
@@ -487,7 +453,7 @@ static int ssl23_get_server_hello(SSL *s)
 
     memcpy(buf, p, n);
 
-    /* Unsupported SSLV2 */
+    /* Old unsupported sslv2 handshake */
     if ((p[0] & 0x80) && (p[2] == SSL2_MT_SERVER_HELLO) && (p[5] == 0x00) && (p[6] == 0x02)) {
         SSLerr(SSL_F_SSL23_GET_SERVER_HELLO, SSL_R_UNSUPPORTED_PROTOCOL);
         goto err;
@@ -515,7 +481,6 @@ static int ssl23_get_server_hello(SSL *s)
 
         if (p[0] == SSL3_RT_ALERT && p[5] != SSL3_AL_WARNING) {
             /* fatal alert */
-
             void (*cb)(const SSL *ssl, int type, int val) = NULL;
             int j;
 
@@ -531,7 +496,8 @@ static int ssl23_get_server_hello(SSL *s)
             }
 
             if (s->msg_callback)
-                s->msg_callback(0, s->version, SSL3_RT_ALERT, p + 5, 2, s, s->msg_callback_arg);
+                s->msg_callback(0, s->version, SSL3_RT_ALERT, p + 5, 2, s,
+                                s->msg_callback_arg);
 
             s->rwstate = SSL_NOTHING;
             SSLerr(SSL_F_SSL23_GET_SERVER_HELLO, SSL_AD_REASON_OFFSET + p[6]);
@@ -545,7 +511,7 @@ static int ssl23_get_server_hello(SSL *s)
         s->state = SSL3_ST_CR_SRVR_HELLO_A;
 
         /* put the 7 bytes we have read into the input buffer
-         * for SSLv3 */
+     * for SSLv3 */
         s->rstate = SSL_ST_READ_HEADER;
         s->packet_length = n;
         if (s->s3->rbuf.buf == NULL)
@@ -563,8 +529,10 @@ static int ssl23_get_server_hello(SSL *s)
     }
     s->init_num = 0;
 
-    /* Since, if we are sending a ssl23 client hello, we are not
-     * reusing a session-id */
+    /*
+   * Since, if we are sending a ssl23 client hello, we are not
+   * reusing a session-id
+   */
     if (!ssl_get_new_session(s, 0))
         goto err;
 

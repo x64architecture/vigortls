@@ -148,9 +148,11 @@ int main()
             return 1;
         }
 
-        /* The last test has a large output. We test whether the
-		 * counter works as expected by skipping the first 64 bytes of
-		 * it. */
+        /*
+         * The last test has a large output. We test whether the
+         * counter works as expected by skipping the first 64 bytes of
+         * it.
+         */
         if (i == num_tests - 1) {
             CRYPTO_chacha_20(out, zeros, len - 64, key, nonce, 1);
             if (memcmp(out, expected + 64, len - 64) != 0) {

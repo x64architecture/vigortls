@@ -1,7 +1,6 @@
-/* crypto/pqueue/pq_test.c */
-/* 
+/*
  * DTLS implementation written by Nagendra Modadugu
- * (nagendra@cs.stanford.edu) for the OpenSSL project 2005.  
+ * (nagendra@cs.stanford.edu) for the OpenSSL project 2005.
  */
 /* ====================================================================
  * Copyright (c) 1999-2005 The OpenSSL Project.  All rights reserved.
@@ -11,7 +10,7 @@
  * are met:
  *
  * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer. 
+ *    notice, this list of conditions and the following disclaimer.
  *
  * 2. Redistributions in binary form must reproduce the above copyright
  *    notice, this list of conditions and the following disclaimer in
@@ -57,9 +56,12 @@
  *
  */
 
-#include <pqueue.h>
+#include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
+
 #include <openssl/buffer.h>
+#include <pqueue.h>
 
 /* remember to change the expected results if you change these values */
 unsigned char prio1[8] = "trutheca";

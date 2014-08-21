@@ -107,11 +107,11 @@ void RSAZ_1024_mod_exp_avx2(BN_ULONG result_norm[16],
     rsaz_1024_sqr_avx2(result, a_inv, m, k0, 1);
     rsaz_1024_scatter5_avx2(table_s, result, 2);
 #if 0
-	/* this is almost 2x smaller and less than 1% slower */
-	for (index=3; index<32; index++) {
-		rsaz_1024_mul_avx2(result, result, a_inv, m, k0);
-		rsaz_1024_scatter5_avx2(table_s,result,index);
-	}
+    /* this is almost 2x smaller and less than 1% slower */
+    for (index=3; index<32; index++) {
+        rsaz_1024_mul_avx2(result, result, a_inv, m, k0);
+        rsaz_1024_scatter5_avx2(table_s,result,index);
+    }
 #else
     /* table[4] = a_inv^4 */
     rsaz_1024_sqr_avx2(result, result, m, k0, 1);

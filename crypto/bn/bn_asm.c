@@ -960,8 +960,8 @@ bn_mul_mont(BN_ULONG *rp, const BN_ULONG *ap, const BN_ULONG *bp, const BN_ULONG
     int i = 0, j;
 
 #if 0 /* template for platform-specific implementation */
-	if (ap == bp)
-		return bn_sqr_mont(rp, ap, np, n0p, num);
+    if (ap == bp)
+        return bn_sqr_mont(rp, ap, np, n0p, num);
 #endif
     tp = reallocarray(NULL, num + 2, sizeof(BN_ULONG));
     if (tp == NULL)

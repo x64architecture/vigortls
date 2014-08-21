@@ -1,4 +1,3 @@
-/* ssl/dtls1.h */
 /*
  * DTLS implementation written by Nagendra Modadugu
  * (nagendra@cs.stanford.edu) for the OpenSSL project 2005.
@@ -61,7 +60,9 @@
 #define HEADER_DTLS1_H
 
 #include <openssl/buffer.h>
-#include <pqueue.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include <sys/time.h>
 
 #ifdef __cplusplus
@@ -70,11 +71,6 @@ extern "C" {
 
 #define DTLS1_VERSION 0xFEFF
 #define DTLS1_BAD_VER 0x0100
-
-#if 0
-/* this alert description is not specified anywhere... */
-#define DTLS1_AD_MISSING_HANDSHAKE_MESSAGE 110
-#endif
 
 /* lengths of messages */
 #define DTLS1_COOKIE_LENGTH 256
@@ -96,6 +92,10 @@ extern "C" {
 
 #ifndef OPENSSL_NO_SSL_INTERN
 
+#ifndef OPENSSL_NO_SCTP
+#define DTLS1_SCTP_AUTH_LABEL "EXPORTER_DTLS_OVER_SCTP"
+#endif
+
 typedef struct dtls1_bitmap_st {
     unsigned long map;            /* track 32 packets on 32-bit systems
                        and 64 - on 64-bit systems */
@@ -107,7 +107,6 @@ typedef struct dtls1_bitmap_st {
 struct dtls1_retransmit_state {
     EVP_CIPHER_CTX *enc_write_ctx; /* cryptographic state */
     EVP_MD_CTX *write_hash;        /* used for mac generation */
-    char *compress;
     SSL_SESSION *session;
     unsigned short epoch;
 };
@@ -138,9 +137,11 @@ struct dtls1_timeout_st {
     unsigned int num_alerts;
 };
 
+struct _pqueue;
+
 typedef struct record_pqueue_st {
     unsigned short epoch;
-    pqueue q;
+    struct _pqueue *q;
 } record_pqueue;
 
 typedef struct hm_fragment_st {
@@ -183,10 +184,10 @@ typedef struct dtls1_state_st {
     record_pqueue processed_rcds;
 
     /* Buffered handshake messages */
-    pqueue buffered_messages;
+    struct _pqueue *buffered_messages;
 
     /* Buffered (sent) handshake records */
-    pqueue sent_messages;
+    struct _pqueue *sent_messages;
 
     /* Buffered application records.
      * Only for records between CCS and Finished
@@ -221,6 +222,13 @@ typedef struct dtls1_state_st {
     unsigned int retransmitting;
     unsigned int change_cipher_spec_ok;
 
+#ifndef OPENSSL_NO_SCTP
+    /* used when SSL_ST_XX_FLUSH is entered */
+    int next_state;
+
+    int shutdown_received;
+#endif
+
 } DTLS1_STATE;
 
 typedef struct dtls1_record_data_st {
@@ -228,6 +236,9 @@ typedef struct dtls1_record_data_st {
     unsigned int packet_length;
     SSL3_BUFFER rbuf;
     SSL3_RECORD rrec;
+#ifndef OPENSSL_NO_SCTP
+    struct bio_dgram_sctp_rcvinfo recordinfo;
+#endif
 } DTLS1_RECORD_DATA;
 
 #endif

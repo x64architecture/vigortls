@@ -10,7 +10,7 @@
  * are met:
  *
  * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer. 
+ *    notice, this list of conditions and the following disclaimer.
  *
  * 2. Redistributions in binary form must reproduce the above copyright
  *    notice, this list of conditions and the following disclaimer in
@@ -287,7 +287,7 @@ int X509V3_add1_i2d(STACK_OF(X509_EXTENSION) * *x, int nid, void *value,
             return 1;
         }
     } else {
-        /* If replace existing or delete, error since 
+        /* If replace existing or delete, error since
          * extension must exist
          */
         if ((ext_op == X509V3_ADD_REPLACE_EXISTING) || (ext_op == X509V3_ADD_DELETE)) {

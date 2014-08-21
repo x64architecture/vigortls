@@ -21,7 +21,7 @@
  * are met:
  *
  * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer. 
+ *    notice, this list of conditions and the following disclaimer.
  *
  * 2. Redistributions in binary form must reproduce the above copyright
  *    notice, this list of conditions and the following disclaimer in
@@ -258,7 +258,7 @@ int ec_GF2m_simple_group_get_degree(const EC_GROUP *group)
 }
 
 /* Checks the discriminant of the curve.
- * y^2 + x*y = x^3 + a*x^2 + b is an elliptic curve <=> b != 0 (mod p) 
+ * y^2 + x*y = x^3 + a*x^2 + b is an elliptic curve <=> b != 0 (mod p)
  */
 int ec_GF2m_simple_group_check_discriminant(const EC_GROUP *group, BN_CTX *ctx)
 {
@@ -282,7 +282,7 @@ int ec_GF2m_simple_group_check_discriminant(const EC_GROUP *group, BN_CTX *ctx)
         goto err;
 
     /* check the discriminant:
-     * y^2 + x*y = x^3 + a*x^2 + b is an elliptic curve <=> b != 0 (mod p) 
+     * y^2 + x*y = x^3 + a*x^2 + b is an elliptic curve <=> b != 0 (mod p)
      */
     if (BN_is_zero(b))
         goto err;
@@ -337,7 +337,7 @@ int ec_GF2m_simple_point_copy(EC_POINT *dest, const EC_POINT *src)
     return 1;
 }
 
-/* Set an EC_POINT to the point at infinity.  
+/* Set an EC_POINT to the point at infinity.
  * A point at infinity is represented by having Z=0.
  */
 int ec_GF2m_simple_point_set_to_infinity(const EC_GROUP *group, EC_POINT *point)
@@ -347,7 +347,7 @@ int ec_GF2m_simple_point_set_to_infinity(const EC_GROUP *group, EC_POINT *point)
     return 1;
 }
 
-/* Set the coordinates of an EC_POINT using affine coordinates. 
+/* Set the coordinates of an EC_POINT using affine coordinates.
  * Note that the simple implementation only uses affine coordinates.
  */
 int ec_GF2m_simple_point_set_affine_coordinates(const EC_GROUP *group, EC_POINT *point,
@@ -375,7 +375,7 @@ err:
     return ret;
 }
 
-/* Gets the affine coordinates of an EC_POINT. 
+/* Gets the affine coordinates of an EC_POINT.
  * Note that the simple implementation only uses affine coordinates.
  */
 int ec_GF2m_simple_point_get_affine_coordinates(const EC_GROUP *group, const EC_POINT *point,

@@ -1,4 +1,3 @@
-/* ssl/t1_lib.c */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -109,11 +108,13 @@
  *
  */
 /*
-  DTLS code by Eric Rescorla <ekr@rtfm.com>
+ * DTLS code by Eric Rescorla <ekr@rtfm.com>
+ *
+ * Copyright (C) 2006, Network Resonance, Inc.
+ * Copyright (C) 2011, RTFM, Inc.
+ */
 
-  Copyright (C) 2006, Network Resonance, Inc.
-  Copyright (C) 2011, RTFM, Inc.
-*/
+#include <openssl/opensslconf.h>
 
 #include <stdio.h>
 #include <openssl/objects.h>
@@ -125,23 +126,11 @@
 
 static SRTP_PROTECTION_PROFILE srtp_known_profiles[] = {
     {
-      "SRTP_AES128_CM_SHA1_80",
-      SRTP_AES128_CM_SHA1_80,
+      "SRTP_AES128_CM_SHA1_80", SRTP_AES128_CM_SHA1_80,
     },
     {
-      "SRTP_AES128_CM_SHA1_32",
-      SRTP_AES128_CM_SHA1_32,
+      "SRTP_AES128_CM_SHA1_32", SRTP_AES128_CM_SHA1_32,
     },
-#if 0
-{
-    "SRTP_NULL_SHA1_80",
-    SRTP_NULL_SHA1_80,
-},
-{
-    "SRTP_NULL_SHA1_32",
-    SRTP_NULL_SHA1_32,
-},
-#endif
     { 0 }
 };
 
@@ -180,7 +169,8 @@ static int find_profile_by_num(unsigned profile_num,
     return 1;
 }
 
-static int ssl_ctx_make_profiles(const char *profiles_string, STACK_OF(SRTP_PROTECTION_PROFILE) * *out)
+static int ssl_ctx_make_profiles(const char *profiles_string,
+                                 STACK_OF(SRTP_PROTECTION_PROFILE) * *out)
 {
     STACK_OF(SRTP_PROTECTION_PROFILE) * profiles;
 
@@ -191,7 +181,6 @@ static int ssl_ctx_make_profiles(const char *profiles_string, STACK_OF(SRTP_PROT
 
     if (!(profiles = sk_SRTP_PROTECTION_PROFILE_new_null())) {
         SSLerr(SSL_F_SSL_CTX_MAKE_PROFILES, SSL_R_SRTP_COULD_NOT_ALLOCATE_PROFILES);
-        sk_SRTP_PROTECTION_PROFILE_free(profiles);
         return 1;
     }
 
@@ -201,7 +190,9 @@ static int ssl_ctx_make_profiles(const char *profiles_string, STACK_OF(SRTP_PROT
         if (!find_profile_by_name(ptr, &p, col ? col - ptr : (int)strlen(ptr))) {
             sk_SRTP_PROTECTION_PROFILE_push(profiles, p);
         } else {
-            SSLerr(SSL_F_SSL_CTX_MAKE_PROFILES, SSL_R_SRTP_UNKNOWN_PROTECTION_PROFILE);
+            SSLerr(SSL_F_SSL_CTX_MAKE_PROFILES,
+                   SSL_R_SRTP_UNKNOWN_PROTECTION_PROFILE);
+            sk_SRTP_PROTECTION_PROFILE_free(profiles);
             return 1;
         }
 
@@ -244,7 +235,8 @@ SRTP_PROTECTION_PROFILE *SSL_get_selected_srtp_profile(SSL *s)
 
 /* Note: this function returns 0 length if there are no
    profiles specified */
-int ssl_add_clienthello_use_srtp_ext(SSL *s, unsigned char *p, int *len, int maxlen)
+int ssl_add_clienthello_use_srtp_ext(SSL *s, unsigned char *p, int *len,
+                                     int maxlen)
 {
     int ct = 0;
     int i;
@@ -252,16 +244,19 @@ int ssl_add_clienthello_use_srtp_ext(SSL *s, unsigned char *p, int *len, int max
     SRTP_PROTECTION_PROFILE *prof;
 
     clnt = SSL_get_srtp_profiles(s);
+
     ct = sk_SRTP_PROTECTION_PROFILE_num(clnt); /* -1 if clnt == 0 */
 
     if (p) {
         if (ct == 0) {
-            SSLerr(SSL_F_SSL_ADD_CLIENTHELLO_USE_SRTP_EXT, SSL_R_EMPTY_SRTP_PROTECTION_PROFILE_LIST);
+            SSLerr(SSL_F_SSL_ADD_CLIENTHELLO_USE_SRTP_EXT,
+                   SSL_R_EMPTY_SRTP_PROTECTION_PROFILE_LIST);
             return 1;
         }
 
         if ((2 + ct * 2 + 1) > maxlen) {
-            SSLerr(SSL_F_SSL_ADD_CLIENTHELLO_USE_SRTP_EXT, SSL_R_SRTP_PROTECTION_PROFILE_LIST_TOO_LONG);
+            SSLerr(SSL_F_SSL_ADD_CLIENTHELLO_USE_SRTP_EXT,
+                   SSL_R_SRTP_PROTECTION_PROFILE_LIST_TOO_LONG);
             return 1;
         }
 
@@ -281,7 +276,8 @@ int ssl_add_clienthello_use_srtp_ext(SSL *s, unsigned char *p, int *len, int max
     return 0;
 }
 
-int ssl_parse_clienthello_use_srtp_ext(SSL *s, unsigned char *d, int len, int *al)
+int ssl_parse_clienthello_use_srtp_ext(SSL *s, unsigned char *d, int len,
+                                       int *al)
 {
     SRTP_PROTECTION_PROFILE *cprof, *sprof;
     STACK_OF(SRTP_PROTECTION_PROFILE) *clnt = 0, *srvr;
@@ -289,14 +285,14 @@ int ssl_parse_clienthello_use_srtp_ext(SSL *s, unsigned char *d, int len, int *a
     int mki_len;
     int i, j;
     int id;
-    int ret;
+    int ret = 1;
 
     /* Length value + the MKI length */
     if (len < 3) {
-        SSLerr(SSL_F_SSL_PARSE_CLIENTHELLO_USE_SRTP_EXT, SSL_R_BAD_SRTP_PROTECTION_PROFILE_LIST);
+        SSLerr(SSL_F_SSL_PARSE_CLIENTHELLO_USE_SRTP_EXT,
+               SSL_R_BAD_SRTP_PROTECTION_PROFILE_LIST);
         *al = SSL_AD_DECODE_ERROR;
-        sk_SRTP_PROTECTION_PROFILE_free(clnt);
-        return 1;
+        goto done;
     }
 
     /* Pull off the length of the cipher suite list */
@@ -305,18 +301,18 @@ int ssl_parse_clienthello_use_srtp_ext(SSL *s, unsigned char *d, int len, int *a
 
     /* Check that it is even */
     if (ct % 2) {
-        SSLerr(SSL_F_SSL_PARSE_CLIENTHELLO_USE_SRTP_EXT, SSL_R_BAD_SRTP_PROTECTION_PROFILE_LIST);
+        SSLerr(SSL_F_SSL_PARSE_CLIENTHELLO_USE_SRTP_EXT,
+               SSL_R_BAD_SRTP_PROTECTION_PROFILE_LIST);
         *al = SSL_AD_DECODE_ERROR;
-        sk_SRTP_PROTECTION_PROFILE_free(clnt);
-        return 1;
+        goto done;
     }
 
     /* Check that lengths are consistent */
     if (len < (ct + 1)) {
-        SSLerr(SSL_F_SSL_PARSE_CLIENTHELLO_USE_SRTP_EXT, SSL_R_BAD_SRTP_PROTECTION_PROFILE_LIST);
+        SSLerr(SSL_F_SSL_PARSE_CLIENTHELLO_USE_SRTP_EXT,
+               SSL_R_BAD_SRTP_PROTECTION_PROFILE_LIST);
         *al = SSL_AD_DECODE_ERROR;
-        sk_SRTP_PROTECTION_PROFILE_free(clnt);
-        return 1;
+        goto done;
     }
 
     clnt = sk_SRTP_PROTECTION_PROFILE_new_null();
@@ -333,7 +329,7 @@ int ssl_parse_clienthello_use_srtp_ext(SSL *s, unsigned char *d, int len, int *a
         }
     }
 
-    /* Now extract the MKI value as a sanity check, but discard it for now */
+    /* Extract the MKI value as a sanity check, but discard it for now. */
     mki_len = *d;
     d++;
     len--;
@@ -341,15 +337,18 @@ int ssl_parse_clienthello_use_srtp_ext(SSL *s, unsigned char *d, int len, int *a
     if (mki_len != len) {
         SSLerr(SSL_F_SSL_PARSE_CLIENTHELLO_USE_SRTP_EXT, SSL_R_BAD_SRTP_MKI_VALUE);
         *al = SSL_AD_DECODE_ERROR;
-        return 1;
+        sk_SRTP_PROTECTION_PROFILE_free(clnt);
+        goto done;
     }
 
     srvr = SSL_get_srtp_profiles(s);
 
-    /* Pick our most preferred profile. If no profiles have been
-     configured then the outer loop doesn't run
-     (sk_SRTP_PROTECTION_PROFILE_num() = -1)
-     and so we just return without doing anything */
+    /*
+   * Pick our most preferred profile. If no profiles have been
+   * configured then the outer loop doesn't run
+   * (sk_SRTP_PROTECTION_PROFILE_num() = -1)
+   * and so we just return without doing anything.
+   */
     for (i = 0; i < sk_SRTP_PROTECTION_PROFILE_num(srvr); i++) {
         sprof = sk_SRTP_PROTECTION_PROFILE_value(srvr, i);
 
@@ -374,16 +373,19 @@ done:
     return ret;
 }
 
-int ssl_add_serverhello_use_srtp_ext(SSL *s, unsigned char *p, int *len, int maxlen)
+int ssl_add_serverhello_use_srtp_ext(SSL *s, unsigned char *p, int *len,
+                                     int maxlen)
 {
     if (p) {
         if (maxlen < 5) {
-            SSLerr(SSL_F_SSL_ADD_SERVERHELLO_USE_SRTP_EXT, SSL_R_SRTP_PROTECTION_PROFILE_LIST_TOO_LONG);
+            SSLerr(SSL_F_SSL_ADD_SERVERHELLO_USE_SRTP_EXT,
+                   SSL_R_SRTP_PROTECTION_PROFILE_LIST_TOO_LONG);
             return 1;
         }
 
         if (s->srtp_profile == 0) {
-            SSLerr(SSL_F_SSL_ADD_SERVERHELLO_USE_SRTP_EXT, SSL_R_USE_SRTP_NOT_NEGOTIATED);
+            SSLerr(SSL_F_SSL_ADD_SERVERHELLO_USE_SRTP_EXT,
+                   SSL_R_USE_SRTP_NOT_NEGOTIATED);
             return 1;
         }
         s2n(2, p);
@@ -395,30 +397,33 @@ int ssl_add_serverhello_use_srtp_ext(SSL *s, unsigned char *p, int *len, int max
     return 0;
 }
 
-int ssl_parse_serverhello_use_srtp_ext(SSL *s, unsigned char *d, int len, int *al)
+int ssl_parse_serverhello_use_srtp_ext(SSL *s, unsigned char *d, int len,
+                                       int *al)
 {
+    STACK_OF(SRTP_PROTECTION_PROFILE) * clnt;
+    SRTP_PROTECTION_PROFILE *prof;
     unsigned id;
     int i;
     int ct;
 
-    STACK_OF(SRTP_PROTECTION_PROFILE) * clnt;
-    SRTP_PROTECTION_PROFILE *prof;
-
     if (len != 5) {
-        SSLerr(SSL_F_SSL_PARSE_SERVERHELLO_USE_SRTP_EXT, SSL_R_BAD_SRTP_PROTECTION_PROFILE_LIST);
+        SSLerr(SSL_F_SSL_PARSE_SERVERHELLO_USE_SRTP_EXT,
+               SSL_R_BAD_SRTP_PROTECTION_PROFILE_LIST);
         *al = SSL_AD_DECODE_ERROR;
         return 1;
     }
 
     n2s(d, ct);
     if (ct != 2) {
-        SSLerr(SSL_F_SSL_PARSE_SERVERHELLO_USE_SRTP_EXT, SSL_R_BAD_SRTP_PROTECTION_PROFILE_LIST);
+        SSLerr(SSL_F_SSL_PARSE_SERVERHELLO_USE_SRTP_EXT,
+               SSL_R_BAD_SRTP_PROTECTION_PROFILE_LIST);
         *al = SSL_AD_DECODE_ERROR;
         return 1;
     }
 
     n2s(d, id);
-    if (*d) { /* Must be no MKI, since we never offer one */
+    if (*d) {
+        /* Must be no MKI, since we never offer one. */
         SSLerr(SSL_F_SSL_PARSE_SERVERHELLO_USE_SRTP_EXT, SSL_R_BAD_SRTP_MKI_VALUE);
         *al = SSL_AD_ILLEGAL_PARAMETER;
         return 1;
@@ -426,16 +431,17 @@ int ssl_parse_serverhello_use_srtp_ext(SSL *s, unsigned char *d, int len, int *a
 
     clnt = SSL_get_srtp_profiles(s);
 
-    /* Throw an error if the server gave us an unsolicited extension */
+    /* Throw an error if the server gave us an unsolicited extension. */
     if (clnt == NULL) {
         SSLerr(SSL_F_SSL_PARSE_SERVERHELLO_USE_SRTP_EXT, SSL_R_NO_SRTP_PROFILES);
         *al = SSL_AD_DECODE_ERROR;
         return 1;
     }
 
-    /* Check to see if the server gave us something we support
-       (and presumably offered)
-    */
+    /*
+   * Check to see if the server gave us something we support
+   * (and presumably offered).
+   */
     for (i = 0; i < sk_SRTP_PROTECTION_PROFILE_num(clnt); i++) {
         prof = sk_SRTP_PROTECTION_PROFILE_value(clnt, i);
 
@@ -446,7 +452,8 @@ int ssl_parse_serverhello_use_srtp_ext(SSL *s, unsigned char *d, int len, int *a
         }
     }
 
-    SSLerr(SSL_F_SSL_PARSE_SERVERHELLO_USE_SRTP_EXT, SSL_R_BAD_SRTP_PROTECTION_PROFILE_LIST);
+    SSLerr(SSL_F_SSL_PARSE_SERVERHELLO_USE_SRTP_EXT,
+           SSL_R_BAD_SRTP_PROTECTION_PROFILE_LIST);
     *al = SSL_AD_DECODE_ERROR;
     return 1;
 }

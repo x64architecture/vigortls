@@ -1,4 +1,3 @@
-/* $OpenBSD: bn.h,v 1.23 2014/06/12 15:49:28 deraadt Exp $ */
 /* Copyright (C) 1995-1997 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -265,9 +264,9 @@ struct bn_mont_ctx_st {
     BIGNUM RR;      /* used to convert to montgomery form */
     BIGNUM N;       /* The modulus */
     BIGNUM Ni;      /* R*(1/R mod N) - N*Ni = 1
-	                * (Ni is only stored for bignum algorithm) */
+                    * (Ni is only stored for bignum algorithm) */
     BN_ULONG n0[2]; /* least significant word(s) of Ni;
-	                  (type changed with 0.9.9, was "BN_ULONG n0;" before) */
+                      (type changed with 0.9.9, was "BN_ULONG n0;" before) */
     int flags;
 };
 
@@ -320,18 +319,18 @@ int BN_GENCB_call(BN_GENCB *cb, int a, int b);
  * of Applied Cryptography [Menezes, van Oorschot, Vanstone; CRC Press 1996];
  * original paper: Damgaard, Landrock, Pomerance: Average case error estimates
  * for the strong probable prime test. -- Math. Comp. 61 (1993) 177-194) */
-#define BN_prime_checks_for_size(b) ((b) >= 1300 ? 2 :                                                                                                                                    \
-                                                   (b) >= 850 ? 3 :                                                                                                                       \
-                                                                (b) >= 650 ? 4 :                                                                                                          \
-                                                                             (b) >= 550 ? 5 :                                                                                             \
-                                                                                          (b) >= 450 ? 6 :                                                                                \
-                                                                                                       (b) >= 400 ? 7 :                                                                   \
-                                                                                                                    (b) >= 350 ? 8 :                                                      \
-                                                                                                                                 (b) >= 300 ? 9 :                                         \
-                                                                                                                                              (b) >= 250 ? 12 :                           \
-                                                                                                                                                           (b) >= 200 ? 15 :              \
-                                                                                                                                                                        (b) >= 150 ? 18 : \
-                                                                                                                                                                                     /* b >= 100 */ 27)
+#define BN_prime_checks_for_size(b) ((b) >= 1300 ?  2 : \
+                                (b) >=  850 ?  3 : \
+                                (b) >=  650 ?  4 : \
+                                (b) >=  550 ?  5 : \
+                                (b) >=  450 ?  6 : \
+                                (b) >=  400 ?  7 : \
+                                (b) >=  350 ?  8 : \
+                                (b) >=  300 ?  9 : \
+                                (b) >=  250 ? 12 : \
+                                (b) >=  200 ? 15 : \
+                                (b) >=  150 ? 18 : \
+                                /* b >= 100 */ 27)
 
 #define BN_num_bytes(a) ((BN_num_bits(a) + 7) / 8)
 

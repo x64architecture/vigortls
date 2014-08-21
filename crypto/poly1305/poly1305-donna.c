@@ -14,7 +14,7 @@
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-/* Based on a public domain implementation by Andrew Moon 
+/* Based on a public domain implementation by Andrew Moon
  * (https://github.com/floodyberry/poly1305-donna)
  */
 

@@ -42,7 +42,7 @@
  * are met:
  *
  * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer. 
+ *    notice, this list of conditions and the following disclaimer.
  *
  * 2. Redistributions in binary form must reproduce the above copyright
  *    notice, this list of conditions and the following disclaimer in
@@ -303,7 +303,7 @@ static void bn_GF2m_mul_2x2(BN_ULONG *r, const BN_ULONG a1, const BN_ULONG a0, c
 void bn_GF2m_mul_2x2(BN_ULONG *r, BN_ULONG a1, BN_ULONG a0, BN_ULONG b1, BN_ULONG b0);
 #endif
 
-/* Add polynomials a and b and store result in r; r could be a or b, a and b 
+/* Add polynomials a and b and store result in r; r could be a or b, a and b
  * could be equal; r is the bitwise XOR of a and b.
  */
 int BN_GF2m_add(BIGNUM *r, const BIGNUM *a, const BIGNUM *b)
@@ -360,7 +360,7 @@ int BN_GF2m_mod_arr(BIGNUM *r, const BIGNUM *a, const int p[])
     }
 
     /* Since the algorithm does reduction in the r value, if a != r, copy
-     * the contents of a into r so we can do reduction in r. 
+     * the contents of a into r so we can do reduction in r.
      */
     if (a != r) {
         if (!bn_wexpand(r, a->top))
@@ -439,7 +439,7 @@ int BN_GF2m_mod_arr(BIGNUM *r, const BIGNUM *a, const int p[])
 /* Performs modular reduction of a by p and store result in r.  r could be a.
  *
  * This function calls down to the BN_GF2m_mod_arr implementation; this wrapper
- * function is only provided for convenience; for best performance, use the 
+ * function is only provided for convenience; for best performance, use the
  * BN_GF2m_mod_arr function.
  */
 int BN_GF2m_mod(BIGNUM *r, const BIGNUM *a, const BIGNUM *p)
@@ -512,7 +512,7 @@ err:
  * the result in r.  r could be a or b; a could equal b.
  *
  * This function calls down to the BN_GF2m_mod_mul_arr implementation; this wrapper
- * function is only provided for convenience; for best performance, use the 
+ * function is only provided for convenience; for best performance, use the
  * BN_GF2m_mod_mul_arr function.
  */
 int BN_GF2m_mod_mul(BIGNUM *r, const BIGNUM *a, const BIGNUM *b, const BIGNUM *p, BN_CTX *ctx)
@@ -570,7 +570,7 @@ err:
 /* Square a, reduce the result mod p, and store it in a.  r could be a.
  *
  * This function calls down to the BN_GF2m_mod_sqr_arr implementation; this wrapper
- * function is only provided for convenience; for best performance, use the 
+ * function is only provided for convenience; for best performance, use the
  * BN_GF2m_mod_sqr_arr function.
  */
 int BN_GF2m_mod_sqr(BIGNUM *r, const BIGNUM *a, const BIGNUM *p, BN_CTX *ctx)
@@ -596,7 +596,7 @@ err:
     return ret;
 }
 
-/* Invert a, reduce modulo p, and store the result in r. r could be a. 
+/* Invert a, reduce modulo p, and store the result in r. r could be a.
  * Uses Modified Almost Inverse Algorithm (Algorithm 10) from
  *     Hankerson, D., Hernandez, J.L., and Menezes, A.  "Software Implementation
  *     of Elliptic Curve Cryptography Over Binary Fields".
@@ -650,7 +650,7 @@ int BN_GF2m_mod_inv(BIGNUM *r, const BIGNUM *a, const BIGNUM *p, BN_CTX *ctx)
             tmp = u; u = v; v = tmp;
             tmp = b; b = c; c = tmp;
             }
-        
+
         if (!BN_GF2m_add(u, u, v)) goto err;
         if (!BN_GF2m_add(b, b, c)) goto err;
         }
@@ -752,10 +752,10 @@ err:
     return ret;
 }
 
-/* Invert xx, reduce modulo p, and store the result in r. r could be xx. 
+/* Invert xx, reduce modulo p, and store the result in r. r could be xx.
  *
  * This function calls down to the BN_GF2m_mod_inv implementation; this wrapper
- * function is only provided for convenience; for best performance, use the 
+ * function is only provided for convenience; for best performance, use the
  * BN_GF2m_mod_inv function.
  */
 int BN_GF2m_mod_inv_arr(BIGNUM *r, const BIGNUM *xx, const int p[], BN_CTX *ctx)
@@ -779,7 +779,7 @@ err:
 }
 
 #ifndef OPENSSL_SUN_GF2M_DIV
-/* Divide y by x, reduce modulo p, and store the result in r. r could be x 
+/* Divide y by x, reduce modulo p, and store the result in r. r could be x
  * or y, x could equal y.
  */
 int BN_GF2m_mod_div(BIGNUM *r, const BIGNUM *y, const BIGNUM *x, const BIGNUM *p, BN_CTX *ctx)
@@ -808,10 +808,10 @@ err:
     return ret;
 }
 #else
-/* Divide y by x, reduce modulo p, and store the result in r. r could be x 
+/* Divide y by x, reduce modulo p, and store the result in r. r could be x
  * or y, x could equal y.
- * Uses algorithm Modular_Division_GF(2^m) from 
- *     Chang-Shantz, S.  "From Euclid's GCD to Montgomery Multiplication to 
+ * Uses algorithm Modular_Division_GF(2^m) from
+ *     Chang-Shantz, S.  "From Euclid's GCD to Montgomery Multiplication to
  *     the Great Divide".
  */
 int BN_GF2m_mod_div(BIGNUM *r, const BIGNUM *y, const BIGNUM *x, const BIGNUM *p, BN_CTX *ctx)
@@ -895,11 +895,11 @@ err:
 }
 #endif
 
-/* Divide yy by xx, reduce modulo p, and store the result in r. r could be xx 
+/* Divide yy by xx, reduce modulo p, and store the result in r. r could be xx
  * or yy, xx could equal yy.
  *
  * This function calls down to the BN_GF2m_mod_div implementation; this wrapper
- * function is only provided for convenience; for best performance, use the 
+ * function is only provided for convenience; for best performance, use the
  * BN_GF2m_mod_div function.
  */
 int BN_GF2m_mod_div_arr(BIGNUM *r, const BIGNUM *yy, const BIGNUM *xx, const int p[], BN_CTX *ctx)
@@ -971,7 +971,7 @@ err:
  * the result in r.  r could be a.
  *
  * This function calls down to the BN_GF2m_mod_exp_arr implementation; this wrapper
- * function is only provided for convenience; for best performance, use the 
+ * function is only provided for convenience; for best performance, use the
  * BN_GF2m_mod_exp_arr function.
  */
 int BN_GF2m_mod_exp(BIGNUM *r, const BIGNUM *a, const BIGNUM *b, const BIGNUM *p, BN_CTX *ctx)
@@ -1032,7 +1032,7 @@ err:
  * the result in r.  r could be a.
  *
  * This function calls down to the BN_GF2m_mod_sqrt_arr implementation; this wrapper
- * function is only provided for convenience; for best performance, use the 
+ * function is only provided for convenience; for best performance, use the
  * BN_GF2m_mod_sqrt_arr function.
  */
 int BN_GF2m_mod_sqrt(BIGNUM *r, const BIGNUM *a, const BIGNUM *p, BN_CTX *ctx)
@@ -1161,7 +1161,7 @@ err:
 /* Find r such that r^2 + r = a mod p.  r could be a. If no r exists returns 0.
  *
  * This function calls down to the BN_GF2m_mod_solve_quad_arr implementation; this wrapper
- * function is only provided for convenience; for best performance, use the 
+ * function is only provided for convenience; for best performance, use the
  * BN_GF2m_mod_solve_quad_arr function.
  */
 int BN_GF2m_mod_solve_quad(BIGNUM *r, const BIGNUM *a, const BIGNUM *p, BN_CTX *ctx)
@@ -1187,7 +1187,7 @@ err:
 }
 
 /* Convert the bit-string representation of a polynomial
- * ( \sum_{i=0}^n a_i * x^i) into an array of integers corresponding 
+ * ( \sum_{i=0}^n a_i * x^i) into an array of integers corresponding
  * to the bits with non-zero coefficient.  Array is terminated with -1.
  * Up to max elements of the array will be filled.  Return value is total
  * number of array elements that would be filled if array was large enough.
@@ -1223,7 +1223,7 @@ int BN_GF2m_poly2arr(const BIGNUM *a, int p[], int max)
     return k;
 }
 
-/* Convert the coefficient array representation of a polynomial to a 
+/* Convert the coefficient array representation of a polynomial to a
  * bit-string.  The array must be terminated by -1.
  */
 int BN_GF2m_arr2poly(const int p[], BIGNUM *a)

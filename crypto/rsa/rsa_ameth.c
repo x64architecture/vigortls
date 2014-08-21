@@ -10,7 +10,7 @@
  * are met:
  *
  * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer. 
+ *    notice, this list of conditions and the following disclaimer.
  *
  * 2. Redistributions in binary form must reproduce the above copyright
  *    notice, this list of conditions and the following disclaimer in
@@ -425,8 +425,8 @@ static int rsa_pkey_ctrl(EVP_PKEY *pkey, int op, long arg1, void *arg2)
     return 1;
 }
 
-/* Customised RSA item verification routine. This is called 
- * when a signature is encountered requiring special handling. We 
+/* Customised RSA item verification routine. This is called
+ * when a signature is encountered requiring special handling. We
  * currently only handle PSS.
  */
 

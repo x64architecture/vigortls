@@ -10,7 +10,7 @@
  * are met:
  *
  * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer. 
+ *    notice, this list of conditions and the following disclaimer.
  *
  * 2. Redistributions in binary form must reproduce the above copyright
  *    notice, this list of conditions and the following disclaimer in
@@ -163,7 +163,7 @@ static int do_esc_char(unsigned long c, unsigned char flags, char *do_quotes, ch
             return -1;
         return 3;
     }
-    /* If we get this far and do any escaping at all must escape 
+    /* If we get this far and do any escaping at all must escape
      * the escape character itself: backslash.
      */
     if (chtmp == '\\' && flags & ESC_FLAGS) {
@@ -232,8 +232,8 @@ static int do_buf(unsigned char *buf, int buflen,
             utflen = UTF8_putc(utfbuf, sizeof utfbuf, c);
             for (i = 0; i < utflen; i++) {
                 /* We don't need to worry about setting orflags correctly
-                 * because if utflen==1 its value will be correct anyway 
-                 * otherwise each character will be > 0x7f and so the 
+                 * because if utflen==1 its value will be correct anyway
+                 * otherwise each character will be > 0x7f and so the
                  * character will never be escaped on first and last.
                  */
                 len = do_esc_char(utfbuf[i], (unsigned char)(flags | orflags), quotes, io_ch, arg);

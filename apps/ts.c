@@ -10,7 +10,7 @@
  * are met:
  *
  * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer. 
+ *    notice, this list of conditions and the following disclaimer.
  *
  * 2. Redistributions in binary form must reproduce the above copyright
  *    notice, this list of conditions and the following disclaimer in
@@ -264,7 +264,7 @@ int ts_main(int argc, char **argv)
         goto cleanup;
     }
 
-    /* Check consistency of parameters and execute 
+    /* Check consistency of parameters and execute
        the appropriate function. */
     switch (mode) {
         case CMD_NONE:

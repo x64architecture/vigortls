@@ -10,7 +10,7 @@
  * are met:
  *
  * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer. 
+ *    notice, this list of conditions and the following disclaimer.
  *
  * 2. Redistributions in binary form must reproduce the above copyright
  *    notice, this list of conditions and the following disclaimer in
@@ -89,7 +89,7 @@ static int TS_find_name(STACK_OF(GENERAL_NAME) * gen_names, GENERAL_NAME * name)
 
 /*
  * Local mapping between response codes and descriptions.
- * Don't forget to change TS_STATUS_BUF_SIZE when modifying 
+ * Don't forget to change TS_STATUS_BUF_SIZE when modifying
  * the elements of this array.
  */
 static const char *TS_status_text[] = { "granted",
@@ -349,7 +349,7 @@ static int TS_issuer_serial_cmp(ESS_ISSUER_SERIAL *is, X509_CINF *cinfo)
 }
 
 /*
- * Verifies whether 'response' contains a valid response with regards 
+ * Verifies whether 'response' contains a valid response with regards
  * to the settings of the context:
  *    - Gives an error message if the TS_TST_INFO is not present.
  *    - Calls _TS_RESP_verify_token to verify the token content.
@@ -389,7 +389,7 @@ int TS_RESP_verify_token(TS_VERIFY_CTX *ctx, PKCS7 *token)
 }
 
 /*
- * Verifies whether the 'token' contains a valid time stamp token 
+ * Verifies whether the 'token' contains a valid time stamp token
  * with regards to the settings of the context. Only those checks are
  * carried out that are specified in the context:
  *    - Verifies the signature of the TS_TST_INFO.

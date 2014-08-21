@@ -1,6 +1,6 @@
 /* crypto/srp/srp_lib.c */
-/* Written by Christophe Renou (christophe.renou@edelweb.fr) with 
- * the precious help of Peter Sylvester (peter.sylvester@edelweb.fr) 
+/* Written by Christophe Renou (christophe.renou@edelweb.fr) with
+ * the precious help of Peter Sylvester (peter.sylvester@edelweb.fr)
  * for the EdelKey project and contributed to the OpenSSL project 2004.
  */
 /* ====================================================================
@@ -11,7 +11,7 @@
  * are met:
  *
  * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer. 
+ *    notice, this list of conditions and the following disclaimer.
  *
  * 2. Redistributions in binary form must reproduce the above copyright
  *    notice, this list of conditions and the following disclaimer in
@@ -308,7 +308,7 @@ int SRP_Verify_A_mod_N(BIGNUM *A, BIGNUM *N)
     return SRP_Verify_B_mod_N(A, N);
 }
 
-/* Check if G and N are kwown parameters. 
+/* Check if G and N are kwown parameters.
    The values have been generated from the ietf-tls-srp draft version 8
 */
 char *SRP_check_known_gN_param(BIGNUM *g, BIGNUM *N)

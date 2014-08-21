@@ -19,8 +19,10 @@
 #define OPENSSL_NO_HEARTBEATS
 #define OPENSSL_NO_DYNAMIC_ENGINE
 #define OPENSSL_THREADS
- 
+
 #ifndef OPENSSL_NO_ASM
+ #define AES_ASM
+ #define VPAES_ASM
  #define OPENSSL_BN_ASM_MONT
  #define OPENSSL_IA32_SSE2
 #if defined(__x86_64) || defined(__x86_64__)
