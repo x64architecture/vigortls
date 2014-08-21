@@ -1147,8 +1147,7 @@ int ca_main(int argc, char **argv)
                 goto err;
             }
 
-            strcpy(buf[2], outdir);
-            BUF_strlcat(buf[2], "/", sizeof(buf[2]));
+            snprintf(buf[2], sizeof(buf[2]), "%s/", outdir);
 
             n = (char *)&(buf[2][strlen(buf[2])]);
             if (j > 0) {
