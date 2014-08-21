@@ -353,7 +353,7 @@ static int tls1_change_cipher_state_aead(SSL *s, char is_read,
 
 /*
  * tls1_change_cipher_state_cipher performs the work needed to switch cipher
- * states when using EVP_CIPHER. The argument is_read is true iff this function
+ * states when using EVP_CIPHER. The argument is_read is true if this function
  * is being called due to reading, as opposed to writing, a ChangeCipherSpec
  * message. In order to support export ciphersuites, use_client_keys indicates
  * whether the key material provided is in the "client write" direction.
@@ -459,23 +459,23 @@ int tls1_change_cipher_state(SSL *s, int which)
     aead = s->s3->tmp.new_aead;
 
     /*
-   * is_read is true if we have just read a ChangeCipherSpec message,
-   * that is we need to update the read cipherspec. Otherwise we have
-   * just written one.
-   */
+     * is_read is true if we have just read a ChangeCipherSpec message,
+     * that is we need to update the read cipherspec. Otherwise we have
+     * just written one.
+     */
     is_read = (which & SSL3_CC_READ) != 0;
 
     /*
-   * use_client_keys is true if we wish to use the keys for the "client
-   * write" direction. This is the case if we're a client sending a
-   * ChangeCipherSpec, or a server reading a client's ChangeCipherSpec.
-   */
+     * use_client_keys is true if we wish to use the keys for the "client
+     * write" direction. This is the case if we're a client sending a
+     * ChangeCipherSpec, or a server reading a client's ChangeCipherSpec.
+     */
     use_client_keys = ((which == SSL3_CHANGE_CIPHER_CLIENT_WRITE) || (which == SSL3_CHANGE_CIPHER_SERVER_READ));
 
     /*
-   * Reset sequence number to zero - for DTLS this is handled in
-   * dtls1_reset_seq_numbers().
-   */
+     * Reset sequence number to zero - for DTLS this is handled in
+     * dtls1_reset_seq_numbers().
+     */
     if (!SSL_IS_DTLS(s)) {
         seq = is_read ? s->s3->read_sequence : s->s3->write_sequence;
         memset(seq, 0, SSL3_SEQUENCE_SIZE);
@@ -606,9 +606,9 @@ int tls1_setup_key_block(SSL *s)
 
     if (!(s->options & SSL_OP_DONT_INSERT_EMPTY_FRAGMENTS) && s->method->version <= TLS1_VERSION) {
         /*
-     * Enable vulnerability countermeasure for CBC ciphers with
-     * known-IV problem (http://www.openssl.org/~bodo/tls-cbc.txt)
-     */
+         * Enable vulnerability countermeasure for CBC ciphers with
+         * known-IV problem (http://www.openssl.org/~bodo/tls-cbc.txt)
+         */
         s->s3->need_empty_fragments = 1;
 
         if (s->session->cipher != NULL) {
@@ -639,7 +639,7 @@ err:
  *       short etc).
  *   1: if the record's padding is valid / the encryption was successful.
  *   -1: if the record's padding/AEAD-authenticator is invalid or, if sending,
- *       an internal error occured.
+ *       an internal error occurred.
  */
 int tls1_enc(SSL *s, int send)
 {
@@ -691,21 +691,21 @@ int tls1_enc(SSL *s, int send)
             out = rec->data;
 
             /*
-       * When sending we use the sequence number as the
-       * variable part of the nonce.
-       */
+             * When sending we use the sequence number as the
+             * variable part of the nonce.
+             */
             if (aead->variable_nonce_len > 8)
                 return -1;
             memcpy(nonce + nonce_used, ad, aead->variable_nonce_len);
             nonce_used += aead->variable_nonce_len;
 
             /*
-       * In do_ssl3_write, rec->input is moved forward by
-       * variable_nonce_len in order to leave space for the
-       * variable nonce. Thus we can copy the sequence number
-       * bytes into place without overwriting any of the
-       * plaintext.
-       */
+             * In do_ssl3_write, rec->input is moved forward by
+             * variable_nonce_len in order to leave space for the
+             * variable nonce. Thus we can copy the sequence number
+             * bytes into place without overwriting any of the
+             * plaintext.
+             */
             if (aead->variable_nonce_in_record) {
                 memcpy(out, ad, aead->variable_nonce_len);
                 len -= aead->variable_nonce_len;
@@ -719,7 +719,7 @@ int tls1_enc(SSL *s, int send)
                                    nonce, nonce_used, in + eivlen, len, ad,
                                    sizeof(ad)))
                 return -1;
-            if (n >= 0 && aead->variable_nonce_in_record)
+            if (aead->variable_nonce_in_record)
                 n += aead->variable_nonce_len;
         } else {
             /* receive */
