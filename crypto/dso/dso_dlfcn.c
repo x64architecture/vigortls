@@ -56,16 +56,6 @@
  *
  */
 
-/* We need to do this early, because stdio.h includes the header files
-   that handle _GNU_SOURCE and other similar macros.  Defining it later
-   is simply too late, because those headers are protected from re-
-   inclusion.  */
-#ifdef __linux
-#ifndef _GNU_SOURCE
-#define _GNU_SOURCE /* make sure dladdr is declared */
-#endif
-#endif
-
 #include <stdio.h>
 #include <openssl/dso.h>
 
@@ -77,14 +67,8 @@ DSO_METHOD *DSO_METHOD_dlfcn(void)
 #else
 
 #ifdef HAVE_DLFCN_H
-#ifdef __osf__
-#define __EXTENSIONS__
-#endif
-#include <dlfcn.h>
-#define HAVE_DLINFO 1
-#if defined(_AIX) || defined(__CYGWIN__) || defined(__SCO_VERSION__) || defined(_SCO_ELF) || (defined(__osf__) && !defined(RTLD_NEXT)) || (defined(__OpenBSD__) && !defined(RTLD_SELF)) || defined(__ANDROID__)
-#undef HAVE_DLINFO
-#endif
+ #include <dlfcn.h>
+ #define HAVE_DLINFO 1
 #endif
 
 /* Part of the hack in "dlfcn_load" ... */
@@ -147,10 +131,8 @@ static int dlfcn_load(DSO *dso)
         goto err;
     }
 
-#ifdef RTLD_GLOBAL
     if (dso->flags & DSO_FLAG_GLOBAL_SYMBOLS)
         flags |= RTLD_GLOBAL;
-#endif
     ptr = dlopen(filename, flags);
     if (ptr == NULL) {
         DSOerr(DSO_F_DLFCN_LOAD, DSO_R_LOAD_FAILED);
@@ -264,30 +246,28 @@ static char *dlfcn_merger(DSO *dso, const char *filespec1,
     /* If the first file specification is a rooted path, it rules.
        same goes if the second file specification is missing. */
     if (!filespec2 || (filespec1 != NULL && filespec1[0] == '/')) {
-        merged = malloc(strlen(filespec1) + 1);
+        merged = strdup(filespec1);
         if (!merged) {
             DSOerr(DSO_F_DLFCN_MERGER, ERR_R_MALLOC_FAILURE);
             return (NULL);
         }
-        strcpy(merged, filespec1);
     }
     /* If the first file specification is missing, the second one rules. */
     else if (!filespec1) {
-        merged = malloc(strlen(filespec2) + 1);
+        merged = strdup(filespec2);
         if (!merged) {
             DSOerr(DSO_F_DLFCN_MERGER,
                    ERR_R_MALLOC_FAILURE);
             return (NULL);
         }
-        strcpy(merged, filespec2);
     } else
     /* This part isn't as trivial as it looks.  It assumes that
-           the second file specification really is a directory, and
-           makes no checks whatsoever.  Therefore, the result becomes
-           the concatenation of filespec2 followed by a slash followed
-           by filespec1. */
+     * the second file specification really is a directory, and
+     * makes no checks whatsoever.  Therefore, the result becomes
+     * the concatenation of filespec2 followed by a slash followed
+     * by filespec1. */
     {
-        int spec2len, len;
+        size_t spec2len, len;
 
         spec2len = strlen(filespec2);
         len = spec2len + (filespec1 ? strlen(filespec1) : 0);
@@ -302,9 +282,9 @@ static char *dlfcn_merger(DSO *dso, const char *filespec1,
                    ERR_R_MALLOC_FAILURE);
             return (NULL);
         }
-        strcpy(merged, filespec2);
+        BUF_strlcpy(merged, filespec2, len + 2);
         merged[spec2len] = '/';
-        strcpy(&merged[spec2len + 1], filespec1);
+        BUF_strlcpy(&merged[spec2len + 1], filespec1, len + 1 - spec2len);
     }
     return (merged);
 }
@@ -315,36 +295,29 @@ static char *dlfcn_merger(DSO *dso, const char *filespec1,
 static char *dlfcn_name_converter(DSO *dso, const char *filename)
 {
     char *translated;
-    int len, rsize, transform;
+    int ret;
 
-    len = strlen(filename);
-    rsize = len + 1;
-    transform = (strstr(filename, "/") == NULL);
-    if (transform) {
-        /* We will convert this to "%s.so" or "lib%s.so" etc */
-        rsize += DSO_extlen; /* The length of ".so" */
+    if (strstr(filename, "/") == NULL) {
+        /* Convert to "lib%s.so" or "%s.so". */
         if ((DSO_flags(dso) & DSO_FLAG_NAME_TRANSLATION_EXT_ONLY) == 0)
-            rsize += 3; /* The length of "lib" */
+            ret = asprintf(&translated, "lib%s" DSO_ext, filename);
+        else
+            ret = asprintf(&translated, "%s" DSO_ext, filename);
+        if (ret == -1)
+            translated = NULL;
+    } else {
+        /* The filename is already set, so we just have to duplicate it. */
+        translated = strdup(filename);
     }
-    translated = malloc(rsize);
-    if (translated == NULL) {
+    if (translated == NULL)
         DSOerr(DSO_F_DLFCN_NAME_CONVERTER,
                DSO_R_NAME_TRANSLATION_FAILED);
-        return (NULL);
-    }
-    if (transform) {
-        if ((DSO_flags(dso) & DSO_FLAG_NAME_TRANSLATION_EXT_ONLY) == 0)
-            sprintf(translated, "lib%s" DSO_ext, filename);
-        else
-            sprintf(translated, "%s" DSO_ext, filename);
-    } else
-        sprintf(translated, "%s", filename);
+
     return (translated);
 }
 
 static int dlfcn_pathbyaddr(void *addr, char *path, int sz)
 {
-#ifdef HAVE_DLINFO
     Dl_info dli;
     int len;
 
@@ -368,7 +341,6 @@ static int dlfcn_pathbyaddr(void *addr, char *path, int sz)
     }
 
     ERR_asprintf_error_data("dlfcn_pathbyaddr(): %s", dlerror());
-#endif
     return -1;
 }
 
