@@ -67,8 +67,6 @@ DSO_METHOD *DSO_METHOD_openssl(void)
     return (DEF_DSO_METHOD());
 #elif defined(DSO_DLFCN)
     return (DSO_METHOD_dlfcn());
-#elif defined(DSO_DL)
-    return (DSO_METHOD_dl());
 #else
     return (DSO_METHOD_null());
 #endif

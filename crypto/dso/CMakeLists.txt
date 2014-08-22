@@ -5,7 +5,6 @@ add_library(
 
 	OBJECT
 
-	dso_dl.c
 	dso_dlfcn.c
 	dso_err.c
 	dso_lib.c
