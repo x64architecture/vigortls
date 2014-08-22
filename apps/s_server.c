@@ -413,10 +413,10 @@ static void sv_usage(void)
     BIO_printf(bio_err, " -Verify arg   - turn on peer certificate verification, must have a cert.\n");
     BIO_printf(bio_err, " -cert arg     - certificate file to use\n");
     BIO_printf(bio_err, "                 (default is %s)\n", TEST_CERT);
-    BIO_printf(bio_err, " -crl_check    - check the peer certificate has not been revoked by its CA.\n"
+    BIO_printf(bio_err, " -crl_check    - check if the peer certificate has not been revoked by its CA.\n"
                         "                 The CRL(s) are appended to the certificate file\n");
-    BIO_printf(bio_err, " -crl_check_all - check the peer certificate has not been revoked by its CA\n"
-                        "                 or any other CRL in the CA chain. CRL(s) are appened to the\n"
+    BIO_printf(bio_err, " -crl_check_all - check if the peer certificate has not been revoked by its CA\n"
+                        "                 or any other CRL in the CA chain. CRL(s) are appended to the\n"
                         "                 the certificate file.\n");
     BIO_printf(bio_err, " -certform arg - certificate format (PEM or DER) PEM default\n");
     BIO_printf(bio_err, " -key arg      - Private Key file to use, in cert file if\n");
