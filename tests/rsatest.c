@@ -186,10 +186,6 @@ int main(int argc, char *argv[])
     int num;
     int n;
 
-    CRYPTO_malloc_debug_init();
-    CRYPTO_dbg_set_options(V_CRYPTO_MDEBUG_ALL);
-    CRYPTO_mem_ctrl(CRYPTO_MEM_CHECK_ON);
-
     plen = sizeof(ptext_ex) - 1;
 
     for (v = 0; v < 6; v++) {
@@ -280,8 +276,6 @@ int main(int argc, char *argv[])
 
     CRYPTO_cleanup_all_ex_data();
     ERR_remove_thread_state(NULL);
-
-    CRYPTO_mem_leaks_fp(stderr);
 
     return err;
 }

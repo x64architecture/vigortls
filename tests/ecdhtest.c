@@ -301,10 +301,6 @@ int main(int argc, char *argv[])
     int ret = 1;
     BIO *out;
 
-    CRYPTO_malloc_debug_init();
-    CRYPTO_dbg_set_options(V_CRYPTO_MDEBUG_ALL);
-    CRYPTO_mem_ctrl(CRYPTO_MEM_CHECK_ON);
-
     out = BIO_new(BIO_s_file());
     if (out == NULL)
         exit(1);
@@ -357,7 +353,6 @@ err:
     BIO_free(out);
     CRYPTO_cleanup_all_ex_data();
     ERR_remove_thread_state(NULL);
-    CRYPTO_mem_leaks_fp(stderr);
     exit(ret);
     return (ret);
 }

@@ -343,9 +343,7 @@ static IMPLEMENT_LHASH_COMP_FN(err_string_data, ERR_STRING_DATA)
 
     CRYPTO_w_lock(CRYPTO_LOCK_ERR);
     if (!int_error_hash && create) {
-        CRYPTO_push_info("int_err_get (err.c)");
         int_error_hash = lh_ERR_STRING_DATA_new();
-        CRYPTO_pop_info();
     }
     if (int_error_hash)
         ret = int_error_hash;
@@ -433,9 +431,7 @@ static IMPLEMENT_LHASH_COMP_FN(err_state, ERR_STATE)
 
     CRYPTO_w_lock(CRYPTO_LOCK_ERR);
     if (!int_thread_hash && create) {
-        CRYPTO_push_info("int_thread_get (err.c)");
         int_thread_hash = lh_ERR_STATE_new();
-        CRYPTO_pop_info();
     }
     if (int_thread_hash) {
         int_thread_hash_references++;

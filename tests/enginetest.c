@@ -104,19 +104,15 @@ int main(int argc, char *argv[])
     ENGINE *new_h3 = NULL;
     ENGINE *new_h4 = NULL;
 
-    /* enable memory leak checking unless explicitly disabled */
-    if (!((getenv("OPENSSL_DEBUG_MEMORY") != NULL) && (0 == strcmp(getenv("OPENSSL_DEBUG_MEMORY"), "off")))) {
-        CRYPTO_malloc_debug_init();
-        CRYPTO_set_mem_debug_options(V_CRYPTO_MDEBUG_ALL);
-    } else {
-        /* OPENSSL_DEBUG_MEMORY=off */
-        CRYPTO_set_mem_debug_functions(0, 0, 0, 0, 0);
-    }
-    CRYPTO_mem_ctrl(CRYPTO_MEM_CHECK_ON);
     ERR_load_crypto_strings();
 
     memset(block, 0, 512 * sizeof(ENGINE *));
-    if (((new_h1 = ENGINE_new()) == NULL) || !ENGINE_set_id(new_h1, "test_id0") || !ENGINE_set_name(new_h1, "First test item") || ((new_h2 = ENGINE_new()) == NULL) || !ENGINE_set_id(new_h2, "test_id1") || !ENGINE_set_name(new_h2, "Second test item") || ((new_h3 = ENGINE_new()) == NULL) || !ENGINE_set_id(new_h3, "test_id2") || !ENGINE_set_name(new_h3, "Third test item") || ((new_h4 = ENGINE_new()) == NULL) || !ENGINE_set_id(new_h4, "test_id3") || !ENGINE_set_name(new_h4, "Fourth test item")) {
+    if (((new_h1 = ENGINE_new()) == NULL) || !ENGINE_set_id(new_h1, "test_id0")
+        || !ENGINE_set_name(new_h1, "First test item") || ((new_h2 = ENGINE_new()) == NULL)
+        || !ENGINE_set_id(new_h2, "test_id1") || !ENGINE_set_name(new_h2, "Second test item")
+        || ((new_h3 = ENGINE_new()) == NULL) || !ENGINE_set_id(new_h3, "test_id2")
+        || !ENGINE_set_name(new_h3, "Third test item") || ((new_h4 = ENGINE_new()) == NULL)
+        || !ENGINE_set_id(new_h4, "test_id3") || !ENGINE_set_name(new_h4, "Fourth test item")) {
         printf("Couldn't set up test ENGINE structures\n");
         goto end;
     }
@@ -244,7 +240,6 @@ end:
     CRYPTO_cleanup_all_ex_data();
     ERR_free_strings();
     ERR_remove_thread_state(NULL);
-    CRYPTO_mem_leaks_fp(stderr);
     return to_return;
 }
 #endif

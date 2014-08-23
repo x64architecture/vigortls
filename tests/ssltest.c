@@ -879,7 +879,6 @@ end:
     ERR_free_strings();
     ERR_remove_thread_state(NULL);
     EVP_cleanup();
-    CRYPTO_mem_leaks(bio_err);
     if (bio_err != NULL)
         BIO_free(bio_err);
     exit(ret);

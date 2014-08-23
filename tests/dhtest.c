@@ -85,10 +85,6 @@ int main(int argc, char *argv[])
     int i, alen, blen, aout, bout, ret = 1;
     BIO *out;
 
-    CRYPTO_malloc_debug_init();
-    CRYPTO_dbg_set_options(V_CRYPTO_MDEBUG_ALL);
-    CRYPTO_mem_ctrl(CRYPTO_MEM_CHECK_ON);
-
     out = BIO_new(BIO_s_file());
     if (out == NULL)
         exit(1);
