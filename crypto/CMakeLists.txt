@@ -96,7 +96,6 @@ add_subdirectory(rc5)
 add_subdirectory(ripemd)
 add_subdirectory(rsa)
 add_subdirectory(sha)
-add_subdirectory(srp)
 add_subdirectory(stack)
 add_subdirectory(ts)
 add_subdirectory(txt_db)
@@ -168,7 +167,6 @@ add_library(
 	$<TARGET_OBJECTS:ripemd>
 	$<TARGET_OBJECTS:rsa>
 	$<TARGET_OBJECTS:sha>
-	$<TARGET_OBJECTS:srp>
 	$<TARGET_OBJECTS:stack>
 	$<TARGET_OBJECTS:ts>
 	$<TARGET_OBJECTS:txt_db>
