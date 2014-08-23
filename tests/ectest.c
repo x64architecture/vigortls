@@ -93,11 +93,6 @@ int main(int argc, char *argv[])
 #include <openssl/bn.h>
 #include <openssl/opensslconf.h>
 
-#if defined(_MSC_VER) && defined(_MIPS_) && (_MSC_VER / 100 == 12)
-/* suppress "too big too optimize" warning */
-#pragma warning(disable : 4959)
-#endif
-
 #define ABORT                                                  \
     do {                                                       \
         fflush(stdout);                                        \

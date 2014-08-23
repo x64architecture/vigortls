@@ -68,10 +68,6 @@
 
 static const unsigned char zeroes[] = { 0, 0, 0, 0, 0, 0, 0, 0 };
 
-#if defined(_MSC_VER) && defined(_ARM_)
-#pragma optimize("g", off)
-#endif
-
 int RSA_verify_PKCS1_PSS(RSA *rsa, const unsigned char *mHash,
                          const EVP_MD *Hash, const unsigned char *EM, int sLen)
 {
@@ -281,7 +277,3 @@ err:
 
     return ret;
 }
-
-#if defined(_MSC_VER)
-#pragma optimize("", on)
-#endif

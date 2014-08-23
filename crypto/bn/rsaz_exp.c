@@ -54,8 +54,6 @@ void rsaz_1024_red2norm_avx2(void *norm, const void *red);
 
 #if defined(__GNUC__)
 #define ALIGN64 __attribute__((aligned(64)))
-#elif defined(_MSC_VER)
-#define ALIGN64 __declspec(align(64))
 #elif defined(__SUNPRO_C)
 #define ALIGN64
 #pragma align 64(one, two80)
