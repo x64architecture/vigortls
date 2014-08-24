@@ -1264,7 +1264,7 @@ char *SSL_get_shared_ciphers(const SSL *s, char *buf, int len)
     return (buf);
 }
 
-int ssl_cipher_list_to_bytes(SSL *s, STACK_OF(SSL_CIPHER) * sk,
+int ssl_cipher_list_to_bytes(SSL *s, STACK_OF(SSL_CIPHER) *sk,
                              unsigned char *p)
 {
     int i;
@@ -1281,7 +1281,7 @@ int ssl_cipher_list_to_bytes(SSL *s, STACK_OF(SSL_CIPHER) * sk,
         /* Skip TLS v1.2 only ciphersuites if lower than v1.2 */
         if ((c->algorithm_ssl & SSL_TLSV1_2) && (TLS1_get_client_version(s) < TLS1_2_VERSION))
             continue;
-        p += ssl3_put_cipher_by_char(c, p);
+        s2n(ssl3_cipher_get_value(c), p);
     }
 
     /*
@@ -1290,7 +1290,7 @@ int ssl_cipher_list_to_bytes(SSL *s, STACK_OF(SSL_CIPHER) * sk,
    */
     if (p != q && !s->renegotiate) {
         static SSL_CIPHER scsv = { 0, NULL, SSL3_CK_SCSV, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-        p += ssl3_put_cipher_by_char(&scsv, p);
+        s2n(ssl3_cipher_get_value(&scsv), p);
     }
 
     return (p - q);
@@ -1303,6 +1303,8 @@ STACK_OF(SSL_CIPHER) * ssl_bytes_to_cipher_list(SSL *s, unsigned char *p,
     const SSL_CIPHER *c;
     STACK_OF(SSL_CIPHER) * sk;
     int i;
+    unsigned int cipherid;
+    uint16_t cipher_value;
 
     if (s->s3)
         s->s3->send_connection_binding = 0;
@@ -1321,8 +1323,11 @@ STACK_OF(SSL_CIPHER) * ssl_bytes_to_cipher_list(SSL *s, unsigned char *p,
     }
 
     for (i = 0; i < num; i += SSL3_CIPHER_VALUE_SIZE) {
+        n2s(p, cipher_value);
+        cipherid = SSL3_CK_ID | cipher_value;
+
         /* Check for SCSV */
-        if (s->s3 && (p[0] == ((SSL3_CK_SCSV >> 8) & 0xff)) && (p[1] == (SSL3_CK_SCSV & 0xff))) {
+        if (s->s3 && cipherid == SSL3_CK_ID) {
             /* SCSV fatal if renegotiating */
             if (s->renegotiate) {
                 SSLerr(SSL_F_SSL_BYTES_TO_CIPHER_LIST,
@@ -1332,12 +1337,10 @@ STACK_OF(SSL_CIPHER) * ssl_bytes_to_cipher_list(SSL *s, unsigned char *p,
                 goto err;
             }
             s->s3->send_connection_binding = 1;
-            p += SSL3_CIPHER_VALUE_SIZE;
             continue;
         }
 
-        c = ssl3_get_cipher_by_char(p);
-        p += SSL3_CIPHER_VALUE_SIZE;
+        c = ssl3_get_cipher_by_id(cipherid);
         if (c != NULL) {
             if (!sk_SSL_CIPHER_push(sk, c)) {
                 SSLerr(SSL_F_SSL_BYTES_TO_CIPHER_LIST, ERR_R_MALLOC_FAILURE);

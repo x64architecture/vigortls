@@ -422,7 +422,7 @@ typedef struct ssl3_state_st {
      * and freed and MD_CTX-es for all required digests are stored in
      * this array */
     EVP_MD_CTX **handshake_dgst;
-    /* this is set whenerver we see a change_cipher_spec message
+    /* this is set whenever we see a change_cipher_spec message
      * come in when we are not looking for one */
     int change_cipher_spec;
 

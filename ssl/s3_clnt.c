@@ -766,9 +766,10 @@ ssl3_get_server_hello(SSL *s)
 {
     STACK_OF(SSL_CIPHER) * sk;
     const SSL_CIPHER *c;
-    unsigned char *p, *d;
+    unsigned char *p, *d, *q;
     int i, al, ok;
-    unsigned int j;
+    unsigned int j, cipherid;
+    uint16_t cipher_value;
     long n;
 
     n = s->method->ssl_get_message(s, SSL3_ST_CR_SRVR_HELLO_A,
@@ -833,6 +834,11 @@ ssl3_get_server_hello(SSL *s)
     if (p + j + 2 - d > n)
         goto truncated;
 
+    /* Get the cipher value */
+    q = p + j;
+    n2s(q, cipher_value);
+    cipherid = SSL3_CK_ID | cipher_value;
+
     /*
      * Check if we want to resume the session based on external
      * pre-shared secret
@@ -845,13 +851,15 @@ ssl3_get_server_hello(SSL *s)
                                      s->tls_session_secret_cb_arg)) {
             s->session->cipher = pref_cipher ?
                                  pref_cipher :
-                                 ssl3_get_cipher_by_char(p + j);
+                                 ssl3_get_cipher_by_id(cipherid);
             s->s3->flags |= SSL3_FLAGS_CCS_OK;
         }
     }
 
-    if (j != 0 && j == s->session->session_id_length && memcmp(p, s->session->session_id, j) == 0) {
-        if (s->sid_ctx_length != s->session->sid_ctx_length || memcmp(s->session->sid_ctx, s->sid_ctx, s->sid_ctx_length) != 0) {
+    if (j != 0 && j == s->session->session_id_length
+        && memcmp(p, s->session->session_id, j) == 0) {
+        if (s->sid_ctx_length != s->session->sid_ctx_length
+        || memcmp(s->session->sid_ctx, s->sid_ctx, s->sid_ctx_length) != 0) {
             /* actually a client application bug */
             al = SSL_AD_ILLEGAL_PARAMETER;
             SSLerr(SSL_F_SSL3_GET_SERVER_HELLO,
@@ -878,7 +886,7 @@ ssl3_get_server_hello(SSL *s)
         memcpy(s->session->session_id, p, j); /* j could be 0 */
     }
     p += j;
-    c = ssl3_get_cipher_by_char(p);
+    c = ssl3_get_cipher_by_id(cipherid);
     if (c == NULL) {
         /* unknown cipher */
         al = SSL_AD_ILLEGAL_PARAMETER;

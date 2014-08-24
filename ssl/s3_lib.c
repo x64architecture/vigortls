@@ -1828,6 +1828,11 @@ const SSL_CIPHER *ssl3_get_cipher_by_id(unsigned int id)
     return (NULL);
 }
 
+uint16_t ssl3_cipher_get_value(const SSL_CIPHER *cipher)
+{
+    return (cipher->id & SSL3_CK_VALUE_MASK);
+}
+
 int ssl3_pending(const SSL *s)
 {
     if (s->rstate == SSL_ST_READ_BODY)
@@ -2307,41 +2312,6 @@ long ssl3_ctx_callback_ctrl(SSL_CTX *ctx, int cmd, void (*fp)(void))
             return (0);
     }
     return (1);
-}
-
-/* This function needs to check if the ciphers required are actually
- * available */
-const SSL_CIPHER *ssl3_get_cipher_by_char(const unsigned char *p)
-{
-    SSL_CIPHER c;
-    const SSL_CIPHER *cp;
-    unsigned long id;
-
-    id = 0x03000000L | ((unsigned long)p[0] << 8L) | (unsigned long)p[1];
-    c.id = id;
-    cp = OBJ_bsearch_ssl_cipher_id(&c, ssl3_ciphers, SSL3_NUM_CIPHERS);
-#ifdef DEBUG_PRINT_UNKNOWN_CIPHERSUITES
-    if (cp == NULL)
-        fprintf(stderr, "Unknown cipher ID %x\n", (p[0] << 8) | p[1]);
-#endif
-    if (cp == NULL || cp->valid == 0)
-        return NULL;
-    else
-        return cp;
-}
-
-int ssl3_put_cipher_by_char(const SSL_CIPHER *c, unsigned char *p)
-{
-    long l;
-
-    if (p != NULL) {
-        l = c->id;
-        if ((l & 0xff000000) != 0x03000000)
-            return (0);
-        p[0] = ((unsigned char)(l >> 8L)) & 0xFF;
-        p[1] = ((unsigned char)(l)) & 0xFF;
-    }
-    return (2);
 }
 
 SSL_CIPHER *ssl3_choose_cipher(SSL *s, STACK_OF(SSL_CIPHER) * clnt,
