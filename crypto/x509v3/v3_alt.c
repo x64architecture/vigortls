@@ -153,9 +153,8 @@ STACK_OF(CONF_VALUE) * i2v_GENERAL_NAME(X509V3_EXT_METHOD *method,
                     snprintf(htmp, sizeof htmp,
                              "%X", p[0] << 8 | p[1]);
                     p += 2;
-                    strcat(oline, htmp);
-                    if (i != 7)
-                        strcat(oline, ":");
+                    snprintf(oline, sizeof oline,
+                        "%s%s", htmp, i != 7 ? ":" : "");
                 }
             } else {
                 X509V3_add_value("IP Address", "<invalid>", &ret);

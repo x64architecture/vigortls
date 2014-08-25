@@ -499,15 +499,15 @@ static int TS_check_status_info(TS_RESP *response)
             if (ASN1_BIT_STRING_get_bit(info->failure_info,
                                         TS_failure_info[i].code)) {
                 if (!first)
-                    strcpy(failure_text, ",");
+                    BUF_strlcpy(failure_text, ",", TS_STATUS_BUF_SIZE);
                 else
                     first = 0;
-                strcat(failure_text, TS_failure_info[i].text);
+                BUF_strlcat(failure_text, TS_failure_info[i].text, TS_STATUS_BUF_SIZE);
             }
         }
     }
     if (failure_text[0] == '\0')
-        strcpy(failure_text, "unspecified");
+        BUF_strlcpy(failure_text, "unspecified", TS_STATUS_BUF_SIZE);
 
     /* Making up the error string. */
     TSerr(TS_F_TS_CHECK_STATUS_INFO, TS_R_NO_TIME_STAMP_TOKEN);
