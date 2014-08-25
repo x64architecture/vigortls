@@ -511,12 +511,12 @@ int s_client_main(int argc, char **argv)
 {
     unsigned int off = 0, clr = 0;
     SSL *con = NULL;
-    int s, k, width, state = 0;
+    int s, k, width, state = 0, af = AF_UNSPEC;
     char *cbuf = NULL, *sbuf = NULL, *mbuf = NULL;
     int cbuf_len, cbuf_off;
     int sbuf_len, sbuf_off;
     fd_set readfds, writefds;
-    short port = PORT;
+    char *port = PORT_STR;
     int full_log = 1;
     char *host = SSL_HOST_NAME;
     char *cert_file = NULL, *key_file = NULL;
@@ -601,7 +601,7 @@ int s_client_main(int argc, char **argv)
         } else if (strcmp(*argv, "-port") == 0) {
             if (--argc < 1)
                 goto bad;
-            port = atoi(*(++argv));
+            port = *(++argv);
             if (port == 0)
                 goto bad;
         } else if (strcmp(*argv, "-connect") == 0) {
@@ -827,6 +827,11 @@ int s_client_main(int argc, char **argv)
             ssl_client_engine_id = *(++argv);
         }
 #endif
+        else if (strcmp(*argv, "-4") == 0) {
+            af = AF_INET;
+        } else if (strcmp(*argv, "-6") == 0) {
+            af = AF_INET6;
+        }
 #ifndef OPENSSL_NO_TLSEXT
         else if (strcmp(*argv, "-servername") == 0) {
             if (--argc < 1)
@@ -1077,7 +1082,7 @@ int s_client_main(int argc, char **argv)
 
 re_start:
 
-    if (init_client(&s, host, port, socket_type) == 0) {
+    if (init_client(&s, host, port, socket_type, af) == 0) {
         BIO_printf(bio_err, "connect:errno=%d\n", errno);
         shutdown((s), 0);
         close((s));
