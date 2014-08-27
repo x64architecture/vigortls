@@ -16,6 +16,9 @@ function(
 
 endfunction(add_test_suite)
 
+add_executable(ssltest ssltest.c)
+target_link_libraries(ssltest crypto ssl)
+
 add_test_suite(aes_wrap aes_wrap.c)
 add_test_suite(asn1test asn1test.c)
 add_test_suite(bftest bftest.c)
@@ -49,5 +52,5 @@ add_test_suite(sha1test sha1test.c)
 add_test_suite(sha256test sha256test.c)
 add_test_suite(sha512test sha512test.c)
 add_test_suite(shatest shatest.c)
-#add_test_suite(ssltest ssltest.c)
+add_test(ssltest ${CMAKE_CURRENT_SOURCE_DIR}/ssltest.sh)
 add_test_suite(wptest wptest.c)
