@@ -177,7 +177,7 @@ SSL3_ENC_METHOD TLSv1_2_enc_data = {
 long tls1_default_timeout(void)
 {
     /* 2 hours, the 24 hours mentioned in the TLSv1 spec
-   * is way too long for http, the cache would over fill */
+     * is way too long for http, the cache would over fill */
     return (60 * 60 * 2);
 }
 
@@ -325,8 +325,8 @@ int tls1_ec_nid2curve_id(int nid)
 }
 
 /*
- * List of supported signature algorithms and hashes. Should make this
- * customisable at some point, for now include everything we support.
+ * List of supported signature algorithms and hashes. We should make this
+ * customizable at some point, for now include everything we support.
  */
 
 static unsigned char tls12_sigalgs[] = {
@@ -375,12 +375,12 @@ unsigned char *ssl_add_clienthello_tlsext(SSL *s, unsigned char *p,
         size_t size_str, lenmax;
 
         /* check for enough space.
-       4 for the servername type and extension length
-       2 for servernamelist length
-       1 for the hostname type
-       2 for hostname length
-       + hostname length
-    */
+           4 for the servername type and extension length
+           2 for servernamelist length
+           1 for the hostname type
+           2 for hostname length
+           + hostname length
+        */
 
         if ((size_t)(limit - ret) < 9)
             return NULL;
@@ -494,8 +494,8 @@ unsigned char *ssl_add_clienthello_tlsext(SSL *s, unsigned char *p,
         if (ticklen == 0 && s->tlsext_session_ticket && s->tlsext_session_ticket->data == NULL)
             goto skip_ext;
         /* Check for enough room 2 for extension type, 2 for len
-     * rest for ticket
-     */
+         * rest for ticket
+         */
         if ((size_t)(limit - ret) < 4 + ticklen)
             return NULL;
         s2n(TLSEXT_TYPE_session_ticket, ret);
@@ -566,7 +566,7 @@ skip_ext:
 #ifndef OPENSSL_NO_NEXTPROTONEG
     if (s->ctx->next_proto_select_cb && !s->s3->tmp.finish_md_len) {
         /* The client advertises an emtpy extension to indicate its
-     * support for Next Protocol Negotiation */
+         * support for Next Protocol Negotiation */
         if ((size_t)(limit - ret) < 4)
             return NULL;
         s2n(TLSEXT_TYPE_next_proto_neg, ret);
@@ -596,16 +596,16 @@ skip_ext:
 
 #ifdef TLSEXT_TYPE_padding
     /* Add padding to workaround bugs in F5 terminators.
-   * See https://tools.ietf.org/html/draft-agl-tls-padding-03
-   *
-   * NB: because this code works out the length of all existing
-   * extensions it MUST always appear last.
-   */
+     * See https://tools.ietf.org/html/draft-agl-tls-padding-03
+     *
+     * NB: because this code works out the length of all existing
+     * extensions it MUST always appear last.
+     */
     {
         int hlen = ret - (unsigned char *)s->init_buf->data;
         /* The code in s23_clnt.c to build ClientHello messages includes the
-     * 5-byte record header in the buffer, while the code in s3_clnt.c does
-     * not. */
+         * 5-byte record header in the buffer, while the code in s3_clnt.c does
+         * not. */
         if (s->state == SSL23_ST_CW_CLNT_HELLO_A)
             hlen -= 5;
         if (hlen > 0xff && hlen < 0x200) {
@@ -737,10 +737,12 @@ unsigned char *ssl_add_serverhello_tlsext(SSL *s, unsigned char *p,
     }
 #endif
 
-    if (((s->s3->tmp.new_cipher->id & 0xFFFF) == 0x80 || (s->s3->tmp.new_cipher->id & 0xFFFF) == 0x81) && (SSL_get_options(s) & SSL_OP_CRYPTOPRO_TLSEXT_BUG)) {
+    if (((s->s3->tmp.new_cipher->id & 0xFFFF) == 0x80 
+        || (s->s3->tmp.new_cipher->id & 0xFFFF) == 0x81) 
+        && (SSL_get_options(s) & SSL_OP_CRYPTOPRO_TLSEXT_BUG)) {
         static const unsigned char cryptopro_ext[36] = {
-            0xfd, 0xe8, /*65000*/
-            0x00, 0x20, /*32 bytes length*/
+            0xfd, 0xe8, /* 65000 */
+            0x00, 0x20, /* 32 bytes length */
             0x30, 0x1e, 0x30, 0x08, 0x06, 0x06, 0x2a, 0x85, 0x03, 0x02, 0x02,
             0x09, 0x30, 0x08, 0x06, 0x06, 0x2a, 0x85, 0x03, 0x02, 0x02, 0x16,
             0x30, 0x08, 0x06, 0x06, 0x2a, 0x85, 0x03, 0x02, 0x02, 0x17
@@ -896,27 +898,25 @@ int ssl_parse_clienthello_tlsext(SSL *s, unsigned char **p, unsigned char *d,
             s->tlsext_debug_cb(s, 0, type, data, size, s->tlsext_debug_arg);
         /* The servername extension is treated as follows:
 
-       - Only the hostname type is supported with a maximum length of 255.
-       - The servername is rejected if too long or if it contains zeros,
-         in which case an fatal alert is generated.
-       - The servername field is maintained together with the session cache.
-       - When a session is resumed, the servername call back invoked in order
-         to allow the application to position itself to the right context.
-       - The servername is acknowledged if it is new for a session or when
-         it is identical to a previously used for the same session.
-         Applications can control the behaviour.  They can at any time
-         set a 'desirable' servername for a new SSL object. This can be the
-         case for example with HTTPS when a Host: header field is received and
-         a renegotiation is requested. In this case, a possible servername
-         presented in the new client hello is only acknowledged if it matches
-         the value of the Host: field.
-       - Applications must  use SSL_OP_NO_SESSION_RESUMPTION_ON_RENEGOTIATION
-         if they provide for changing an explicit servername context for the
-       session,
-         i.e. when the session has been established with a servername extension.
-       - On session reconnect, the servername extension may be absent.
-
-    */
+           - Only the hostname type is supported with a maximum length of 255.
+           - The servername is rejected if too long or if it contains zeros,
+             in which case an fatal alert is generated.
+           - The servername field is maintained together with the session cache.
+           - When a session is resumed, the servername call back invoked in order
+             to allow the application to position itself to the right context.
+           - The servername is acknowledged if it is new for a session or when
+             it is identical to a previously used for the same session.
+             Applications can control the behaviour.  They can at any time
+             set a 'desirable' servername for a new SSL object. This can be the
+             case for example with HTTPS when a Host: header field is received and
+             a renegotiation is requested. In this case, a possible servername
+             presented in the new client hello is only acknowledged if it matches
+             the value of the Host: field.
+           - Applications must  use SSL_OP_NO_SESSION_RESUMPTION_ON_RENEGOTIATION
+             if they provide for changing an explicit servername context for the
+             session, i.e. when the session has been established with a servername extension.
+           - On session reconnect, the servername extension may be absent.
+        */
 
         if (type == TLSEXT_TYPE_server_name) {
             unsigned char *sdata;
@@ -973,7 +973,9 @@ int ssl_parse_clienthello_tlsext(SSL *s, unsigned char **p, unsigned char *d,
                                 s->servername_done = 1;
 
                             } else {
-                                s->servername_done = s->session->tlsext_hostname && strlen(s->session->tlsext_hostname) == len && strncmp(s->session->tlsext_hostname, (char *)sdata, len) == 0;
+                                s->servername_done = s->session->tlsext_hostname 
+                                    && strlen(s->session->tlsext_hostname) == len 
+                                    && strncmp(s->session->tlsext_hostname, (char *)sdata, len) == 0;
                             }
                             break;
 
@@ -1033,7 +1035,8 @@ int ssl_parse_clienthello_tlsext(SSL *s, unsigned char **p, unsigned char *d,
                        ellipticcurvelist_length);
             }
         } else if (type == TLSEXT_TYPE_session_ticket) {
-            if (s->tls_session_ticket_ext_cb && !s->tls_session_ticket_ext_cb(s, data, size, s->tls_session_ticket_ext_cb_arg)) {
+            if (s->tls_session_ticket_ext_cb 
+                && !s->tls_session_ticket_ext_cb(s, data, size, s->tls_session_ticket_ext_cb_arg)) {
                 *al = TLS1_AD_INTERNAL_ERROR;
                 return 0;
             }
@@ -1149,20 +1152,20 @@ int ssl_parse_clienthello_tlsext(SSL *s, unsigned char **p, unsigned char *d,
 #ifndef OPENSSL_NO_NEXTPROTONEG
         else if (type == TLSEXT_TYPE_next_proto_neg && s->s3->tmp.finish_md_len == 0) {
             /* We shouldn't accept this extension on a
-       * renegotiation.
-       *
-       * s->new_session will be set on renegotiation, but we
-       * probably shouldn't rely that it couldn't be set on
-       * the initial renegotation too in certain cases (when
-       * there's some other reason to disallow resuming an
-       * earlier session -- the current code won't be doing
-       * anything like that, but this might change).
+             * renegotiation.
+             *
+             * s->new_session will be set on renegotiation, but we
+             * probably shouldn't rely that it couldn't be set on
+             * the initial renegotiation too in certain cases (when
+             * there's some other reason to disallow resuming an
+             * earlier session -- the current code won't be doing
+             * anything like that, but this might change).
 
-       * A valid sign that there's been a previous handshake
-       * in this connection is if s->s3->tmp.finish_md_len >
-       * 0.  (We are talking about a check that will happen
-       * in the Hello protocol round, well before a new
-       * Finished message could have been computed.) */
+             * A valid sign that there's been a previous handshake
+             * in this connection is if s->s3->tmp.finish_md_len >
+             * 0.  (We are talking about a check that will happen
+             * in the Hello protocol round, well before a new
+             * Finished message could have been computed.) */
             s->s3->next_proto_neg_seen = 1;
         }
 #endif
@@ -1274,7 +1277,8 @@ int ssl_parse_serverhello_tlsext(SSL *s, unsigned char **p, unsigned char *d,
                        ecpointformatlist_length);
             }
         } else if (type == TLSEXT_TYPE_session_ticket) {
-            if (s->tls_session_ticket_ext_cb && !s->tls_session_ticket_ext_cb(s, data, size, s->tls_session_ticket_ext_cb_arg)) {
+            if (s->tls_session_ticket_ext_cb 
+                && !s->tls_session_ticket_ext_cb(s, data, size, s->tls_session_ticket_ext_cb_arg)) {
                 *al = TLS1_AD_INTERNAL_ERROR;
                 return 0;
             }
@@ -1285,8 +1289,8 @@ int ssl_parse_serverhello_tlsext(SSL *s, unsigned char **p, unsigned char *d,
             s->tlsext_ticket_expected = 1;
         } else if (type == TLSEXT_TYPE_status_request && s->version != DTLS1_VERSION) {
             /* MUST be empty and only sent if we've requested
-       * a status request message.
-       */
+             * a status request message.
+             */
             if ((s->tlsext_status_type == -1) || (size > 0)) {
                 *al = TLS1_AD_UNSUPPORTED_EXTENSION;
                 return 0;
@@ -1365,12 +1369,12 @@ int ssl_parse_serverhello_tlsext(SSL *s, unsigned char **p, unsigned char *d,
 ri_check:
 
     /* Determine if we need to see RI. Strictly speaking if we want to
-   * avoid an attack we should *always* see RI even on initial server
-   * hello because the client doesn't see any renegotiation during an
-   * attack. However this would mean we could not connect to any server
-   * which doesn't support RI so for the immediate future tolerate RI
-   * absence on initial connect only.
-   */
+     * avoid an attack we should *always* see RI even on initial server
+     * hello because the client doesn't see any renegotiation during an
+     * attack. However this would mean we could not connect to any server
+     * which doesn't support RI so for the immediate future tolerate RI
+     * absence on initial connect only.
+     */
     if (!renegotiate_seen && !(s->options & SSL_OP_LEGACY_SERVER_CONNECT)) {
         *al = SSL_AD_HANDSHAKE_FAILURE;
         SSLerr(SSL_F_SSL_PARSE_SERVERHELLO_TLSEXT,
@@ -1384,9 +1388,9 @@ ri_check:
 int ssl_prepare_clienthello_tlsext(SSL *s)
 {
     /* If we are client and using an elliptic curve cryptography cipher suite,
-   * send the point formats
-   * and elliptic curves we support.
-   */
+     * send the point formats
+     * and elliptic curves we support.
+     */
     int using_ecc = 0;
     int i;
     unsigned char *j;
@@ -1436,11 +1440,10 @@ int ssl_prepare_clienthello_tlsext(SSL *s)
 int ssl_prepare_serverhello_tlsext(SSL *s)
 {
     /* If we are server and using an ECC cipher suite, send the point formats we
-   * support
-   * if the client sent us an ECPointsFormat extension.  Note that the server is
-   * not
-   * supposed to send an EllipticCurves extension.
-   */
+     * support
+     * if the client sent us an ECPointsFormat extension.  Note that the server is
+     * not supposed to send an EllipticCurves extension.
+     */
 
     unsigned long alg_k = s->s3->tmp.new_cipher->algorithm_mkey;
     unsigned long alg_a = s->s3->tmp.new_cipher->algorithm_auth;
@@ -1468,11 +1471,11 @@ int ssl_check_clienthello_tlsext_early(SSL *s)
     int al = SSL_AD_UNRECOGNIZED_NAME;
 
     /* The handling of the ECPointFormats extension is done elsewhere, namely in
-   * ssl3_choose_cipher in s3_lib.c.
-   */
+     * ssl3_choose_cipher in s3_lib.c.
+     */
     /* The handling of the EllipticCurves extension is done elsewhere, namely in
-   * ssl3_choose_cipher in s3_lib.c.
-   */
+     * ssl3_choose_cipher in s3_lib.c.
+     */
 
     if (s->ctx != NULL && s->ctx->tlsext_servername_callback != 0)
         ret = s->ctx->tlsext_servername_callback(s, &al,
@@ -1501,10 +1504,10 @@ int ssl_check_clienthello_tlsext_late(SSL *s)
     int al = 0; /* XXX gcc3 */
 
     /* If status request then ask callback what to do.
-   * Note: this must be called after servername callbacks in case
-   * the certificate has changed, and must be called after the cipher
-   * has been chosen because this may influence which certificate is sent
-   */
+     * Note: this must be called after servername callbacks in case
+     * the certificate has changed, and must be called after the cipher
+     * has been chosen because this may influence which certificate is sent
+     */
     if ((s->tlsext_status_type != -1) && s->ctx && s->ctx->tlsext_status_cb) {
         int r;
         CERT_PKEY *certpkey;
@@ -1515,8 +1518,8 @@ int ssl_check_clienthello_tlsext_late(SSL *s)
             return 1;
         }
         /* Set current certificate to one we will use so
-     * SSL_get_certificate et al can pick it up.
-     */
+         * SSL_get_certificate et al can pick it up.
+         */
         s->cert->key = certpkey;
         r = s->ctx->tlsext_status_cb(s, s->ctx->tlsext_status_arg);
         switch (r) {
@@ -1559,12 +1562,17 @@ int ssl_check_serverhello_tlsext(SSL *s)
     int al = SSL_AD_UNRECOGNIZED_NAME;
 
     /* If we are client and using an elliptic curve cryptography cipher
-   * suite, then if server returns an EC point formats lists extension
-   * it must contain uncompressed.
-   */
+     * suite, then if server returns an EC point formats lists extension
+     * it must contain uncompressed.
+     */
     unsigned long alg_k = s->s3->tmp.new_cipher->algorithm_mkey;
     unsigned long alg_a = s->s3->tmp.new_cipher->algorithm_auth;
-    if ((s->tlsext_ecpointformatlist != NULL) && (s->tlsext_ecpointformatlist_length > 0) && (s->session->tlsext_ecpointformatlist != NULL) && (s->session->tlsext_ecpointformatlist_length > 0) && ((alg_k & (SSL_kECDHE | SSL_kECDHr | SSL_kECDHe)) || (alg_a & SSL_aECDSA))) {
+    if ((s->tlsext_ecpointformatlist != NULL) 
+        && (s->tlsext_ecpointformatlist_length > 0) 
+        && (s->session->tlsext_ecpointformatlist != NULL) 
+        && (s->session->tlsext_ecpointformatlist_length > 0) 
+        && ((alg_k & (SSL_kECDHE | SSL_kECDHr | SSL_kECDHe)) 
+        || (alg_a & SSL_aECDSA))) {
         /* we are using an ECC cipher */
         size_t i;
         unsigned char *list;
@@ -1592,13 +1600,14 @@ int ssl_check_serverhello_tlsext(SSL *s)
             s, &al, s->initial_ctx->tlsext_servername_arg);
 
     /* If we've requested certificate status and we wont get one
-   * tell the callback
-   */
-    if ((s->tlsext_status_type != -1) && !(s->tlsext_status_expected) && s->ctx && s->ctx->tlsext_status_cb) {
+     * tell the callback
+     */
+    if ((s->tlsext_status_type != -1) && !(s->tlsext_status_expected) 
+        && s->ctx && s->ctx->tlsext_status_cb) {
         int r;
         /* Set resp to NULL, resplen to -1 so callback knows
-     * there is no response.
-     */
+         * there is no response.
+         */
         free(s->tlsext_ocsp_resp);
         s->tlsext_ocsp_resp = NULL;
         s->tlsext_ocsp_resplen = -1;
@@ -1673,8 +1682,8 @@ int tls1_process_ticket(SSL *s, unsigned char *session_id, int len,
     s->tlsext_ticket_expected = 0;
 
     /* If tickets disabled behave as if no ticket present
-   * to permit stateful resumption.
-   */
+     * to permit stateful resumption.
+     */
     if (SSL_get_options(s) & SSL_OP_NO_TICKET)
         return 0;
     if ((s->version <= SSL3_VERSION) || !limit)
@@ -1712,16 +1721,16 @@ int tls1_process_ticket(SSL *s, unsigned char *session_id, int len,
             int r;
             if (size == 0) {
                 /* The client will accept a ticket but doesn't
-         * currently have one. */
+                 * currently have one. */
                 s->tlsext_ticket_expected = 1;
                 return 1;
             }
             if (s->tls_session_secret_cb) {
                 /* Indicate that the ticket couldn't be
-         * decrypted rather than generating the session
-         * from ticket now, trigger abbreviated
-         * handshake based on external mechanism to
-         * calculate the master secret later. */
+                 * decrypted rather than generating the session
+                 * from ticket now, trigger abbreviated
+                 * handshake based on external mechanism to
+                 * calculate the master secret later. */
                 return 2;
             }
             r = tls_decrypt_ticket(s, p, size, session_id, len, ret);
@@ -1746,7 +1755,7 @@ int tls1_process_ticket(SSL *s, unsigned char *session_id, int len,
 /* tls_decrypt_ticket attempts to decrypt a session ticket.
  *
  *   etick: points to the body of the session ticket extension.
- *   eticklen: the length of the session tickets extenion.
+ *   eticklen: the length of the session tickets extension.
  *   sess_id: points at the session ID.
  *   sesslen: the length of the session ID.
  *   psess: (output) on return, if a ticket was decrypted, then this is set to
@@ -1798,8 +1807,8 @@ static int tls_decrypt_ticket(SSL *s, const unsigned char *etick, int eticklen,
                            etick + 16);
     }
     /* Attempt to process session ticket, first conduct sanity and
-   * integrity checks on ticket.
-   */
+     * integrity checks on ticket.
+     */
     mlen = HMAC_size(&hctx);
     if (mlen < 0) {
         EVP_CIPHER_CTX_cleanup(&ctx);
@@ -1837,10 +1846,10 @@ static int tls_decrypt_ticket(SSL *s, const unsigned char *etick, int eticklen,
     free(sdec);
     if (sess) {
         /* The session ID, if non-empty, is used by some clients to
-     * detect that the ticket has been accepted. So we copy it to
-     * the session structure. If it is empty set length to zero
-     * as required by standard.
-     */
+         * detect that the ticket has been accepted. So we copy it to
+         * the session structure. If it is empty set length to zero
+         * as required by standard.
+         */
         if (sesslen)
             memcpy(sess->session_id, sess_id, sesslen);
         sess->session_id_length = sesslen;
@@ -1852,7 +1861,7 @@ static int tls_decrypt_ticket(SSL *s, const unsigned char *etick, int eticklen,
     }
     ERR_clear_error();
     /* For session parse failure, indicate that we need to send a new
-   * ticket. */
+     * ticket. */
     return 2;
 }
 
@@ -1975,8 +1984,8 @@ int tls1_process_sigalgs(SSL *s, const unsigned char *data, int dsize)
     }
 
     /* Set any remaining keys to default values. NOTE: if alg is not
-   * supported it stays as NULL.
-   */
+     * supported it stays as NULL.
+     */
     if (!c->pkeys[SSL_PKEY_DSA_SIGN].digest)
         c->pkeys[SSL_PKEY_DSA_SIGN].digest = EVP_sha1();
     if (!c->pkeys[SSL_PKEY_RSA_SIGN].digest) {
