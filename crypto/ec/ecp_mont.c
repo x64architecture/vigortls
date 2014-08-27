@@ -215,8 +215,10 @@ int ec_GFp_mont_group_set_curve(EC_GROUP *group, const BIGNUM *p, const BIGNUM *
     one = BN_new();
     if (one == NULL)
         goto err;
-    if (!BN_to_montgomery(one, BN_value_one(), mont, ctx))
+    if (!BN_to_montgomery(one, BN_value_one(), mont, ctx)) {
+        BN_free(one);
         goto err;
+    }
 
     group->field_data1 = mont;
     mont = NULL;

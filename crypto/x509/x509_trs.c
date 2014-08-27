@@ -205,10 +205,12 @@ int X509_TRUST_add(int id, int flags, int (*ck)(X509_TRUST *, X509 *, int),
     /* If its a new entry manage the dynamic table */
     if (idx == -1) {
         if (!trtable && !(trtable = sk_X509_TRUST_new(tr_cmp))) {
+            free(trtmp);
             X509err(X509_F_X509_TRUST_ADD, ERR_R_MALLOC_FAILURE);
             return 0;
         }
         if (!sk_X509_TRUST_push(trtable, trtmp)) {
+            free(trtmp);
             X509err(X509_F_X509_TRUST_ADD, ERR_R_MALLOC_FAILURE);
             return 0;
         }

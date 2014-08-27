@@ -360,6 +360,7 @@ static int ec_bits(const EVP_PKEY *pkey)
     group = EC_KEY_get0_group(pkey->pkey.ec);
     if (!EC_GROUP_get_order(group, order, NULL)) {
         ERR_clear_error();
+        BN_free(order);
         return 0;
     }
 

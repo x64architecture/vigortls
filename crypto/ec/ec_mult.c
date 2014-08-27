@@ -482,6 +482,7 @@ int ec_wNAF_mul(const EC_GROUP *group, EC_POINT *r, const BIGNUM *scalar,
                     numblocks = (tmp_len + blocksize - 1) / blocksize;
                     if (numblocks > pre_comp->numblocks) {
                         ECerr(EC_F_EC_WNAF_MUL, ERR_R_INTERNAL_ERROR);
+                        free(tmp_wNAF);
                         goto err;
                     }
                     totalnum = num + numblocks;
@@ -646,10 +647,8 @@ err:
         BN_CTX_free(new_ctx);
     if (tmp != NULL)
         EC_POINT_free(tmp);
-    if (wsize != NULL)
-        free(wsize);
-    if (wNAF_len != NULL)
-        free(wNAF_len);
+    free(wsize);
+    free(wNAF_len);
     if (wNAF != NULL) {
         signed char **w;
 

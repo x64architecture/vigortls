@@ -95,8 +95,10 @@ X509_POLICY_DATA *policy_data_new(POLICYINFO *policy,
     } else
         id = NULL;
     ret = malloc(sizeof(X509_POLICY_DATA));
-    if (!ret)
+    if (!ret) {
+        ASN1_OBJECT_free(id);
         return NULL;
+    }
     ret->expected_policy_set = sk_ASN1_OBJECT_new_null();
     if (!ret->expected_policy_set) {
         free(ret);
