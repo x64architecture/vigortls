@@ -1,4 +1,3 @@
-/* crypto/ui/ui_openssl.c -*- mode:C; c-file-style: "eay" -*- */
 /* Written by Richard Levitte (richard@levitte.org) and others
  * for the OpenSSL project 2001.
  */
@@ -114,95 +113,27 @@
  * [including the GNU Public Licence.]
  */
 
-#include <openssl/e_os2.h>
+#include <sys/ioctl.h>
 
-/* need for #define _POSIX_C_SOURCE arises whenever you pass -ansi to gcc
- * [maybe others?], because it masks interfaces not discussed in standard,
- * sigaction and fileno included. -pedantic would be more appropriate for
- * the intended purposes, but we can't prevent users from adding -ansi.
- */
+#include <openssl/opensslconf.h>
 
+#include <errno.h>
 #include <signal.h>
 #include <stdio.h>
 #include <string.h>
-#include <errno.h>
+#include <termios.h>
 #include <unistd.h>
 
-/* If unistd.h defines _POSIX_VERSION, we conclude that we
- * are on a POSIX system and have sigaction and termios. */
-#if defined(_POSIX_VERSION)
-
-#define SIGACTION
-#if !defined(TERMIOS) && !defined(TERMIO) && !defined(SGTTY)
-#define TERMIOS
-#endif
-
-#endif
-
 #include "ui_locl.h"
-
-/* There are 3 types of terminal interface supported,
- * TERMIO, TERMIOS and SGTTY
- */
-
-#if defined(linux) && !defined(TERMIO)
-#undef TERMIOS
-#define TERMIO
-#undef SGTTY
-#endif
-
-#ifdef _LIBC
-#undef TERMIOS
-#define TERMIO
-#undef SGTTY
-#endif
-
-#if !defined(TERMIO) && !defined(TERMIOS)
-#undef TERMIOS
-#undef TERMIO
-#define SGTTY
-#endif
-
-#ifdef TERMIOS
-#include <termios.h>
-#define TTY_STRUCT struct termios
-#define TTY_FLAGS c_lflag
-#define TTY_get(tty, data) tcgetattr(tty, data)
-#define TTY_set(tty, data) tcsetattr(tty, TCSANOW, data)
-#endif
-
-#ifdef TERMIO
-#include <termio.h>
-#define TTY_STRUCT struct termio
-#define TTY_FLAGS c_lflag
-#define TTY_get(tty, data) ioctl(tty, TCGETA, data)
-#define TTY_set(tty, data) ioctl(tty, TCSETA, data)
-#endif
-
-#ifdef SGTTY
-#include <sgtty.h>
-#define TTY_STRUCT struct sgttyb
-#define TTY_FLAGS sg_flags
-#define TTY_get(tty, data) ioctl(tty, TIOCGETP, data)
-#define TTY_set(tty, data) ioctl(tty, TIOCSETP, data)
-#endif
-
-#if !defined(_LIBC)
-#include <sys/ioctl.h>
-#endif
 
 #ifndef NX509_SIG
 #define NX509_SIG 32
 #endif
 
 /* Define globals.  They are protected by a lock */
-#ifdef SIGACTION
 static struct sigaction savsig[NX509_SIG];
-#else
-static void (*savsig[NX509_SIG])(int);
-#endif
 
-static TTY_STRUCT tty_orig, tty_new;
+static struct termios tty_orig, tty_new;
 static FILE *tty_in, *tty_out;
 static int is_a_tty;
 
@@ -222,13 +153,11 @@ static int noecho_console(UI *ui);
 static int close_console(UI *ui);
 
 static UI_METHOD ui_openssl = {
-    "OpenSSL default user interface",
-    open_console,
-    write_string,
-    NULL, /* No flusher is needed for command lines */
-    read_string,
-    close_console,
-    NULL
+    .name = "OpenSSL default user interface",
+    .ui_open_session = open_console,
+    .ui_write_string = write_string,
+    .ui_read_string = read_string,
+    .ui_close_session = close_console,
 };
 
 /* The method with all the built-in thingies */
@@ -273,8 +202,8 @@ static int read_string(UI *ui, UI_STRING *uis)
             fprintf(tty_out, "Verifying - %s",
                     UI_get0_output_string(uis));
             fflush(tty_out);
-            if ((ok = read_string_inner(ui, uis,
-                                        UI_get_input_flags(uis) & UI_INPUT_FLAG_ECHO, 1)) <= 0)
+            if ((ok = read_string_inner(ui, uis, UI_get_input_flags(uis) 
+                & UI_INPUT_FLAG_ECHO, 1)) <= 0)
                 return ok;
             if (strcmp(UI_get0_result_string(uis),
                        UI_get0_test_string(uis)) != 0) {
@@ -331,7 +260,7 @@ static int read_string_inner(UI *ui, UI_STRING *uis, int echo, int strip_nl)
         goto error;
     if (ferror(tty_in))
         goto error;
-    if ((p = (char *)strchr(result, '\n')) != NULL) {
+    if ((p = strchr(result, '\n')) != NULL) {
         if (strip_nl)
             *p = '\0';
     } else if (!read_till_nl(tty_in))
@@ -360,56 +289,42 @@ static int open_console(UI *ui)
     CRYPTO_w_lock(CRYPTO_LOCK_UI);
     is_a_tty = 1;
 
-    if ((tty_in = fopen("/dev/tty", "r")) == NULL)
+#define DEV_TTY "/dev/tty"
+    if ((tty_in = fopen(DEV_TTY, "r")) == NULL)
         tty_in = stdin;
-    if ((tty_out = fopen("/dev/tty", "w")) == NULL)
+    if ((tty_out = fopen(DEV_TTY, "w")) == NULL)
         tty_out = stderr;
 
-#if defined(TTY_get)
-    if (TTY_get(fileno(tty_in), &tty_orig) == -1) {
-#ifdef ENOTTY
+    if (tcgetattr(fileno(tty_in), &tty_orig) == -1) {
         if (errno == ENOTTY)
             is_a_tty = 0;
         else
-#endif
-#ifdef EINVAL
-            /* Ariel Glenn ariel@columbia.edu reports that solaris
-         * can return EINVAL instead.  This should be ok */
-            if (errno == EINVAL)
+        /* Ariel Glenn ariel@columbia.edu reports that solaris
+         * can return EINVAL instead. This should be OK */
+        if (errno == EINVAL)
             is_a_tty = 0;
         else
-#endif
             return 0;
     }
-#endif
+
     return 1;
 }
 
 static int noecho_console(UI *ui)
 {
-#ifdef TTY_FLAGS
     memcpy(&(tty_new), &(tty_orig), sizeof(tty_orig));
-    tty_new.TTY_FLAGS &= ~ECHO;
-#endif
-
-#if defined(TTY_set)
-    if (is_a_tty && (TTY_set(fileno(tty_in), &tty_new) == -1))
+    tty_new.c_lflag &= ~ECHO;
+    if (is_a_tty && (tcsetattr(fileno(tty_in), TCSANOW, &tty_new) == -1))
         return 0;
-#endif
     return 1;
 }
 
 static int echo_console(UI *ui)
 {
-#if defined(TTY_set)
     memcpy(&(tty_new), &(tty_orig), sizeof(tty_orig));
-    tty_new.TTY_FLAGS |= ECHO;
-#endif
-
-#if defined(TTY_set)
-    if (is_a_tty && (TTY_set(fileno(tty_in), &tty_new) == -1))
+    tty_new.c_lflag |= ECHO;
+    if (is_a_tty && (tcsetattr(fileno(tty_in), TCSANOW, &tty_new) == -1))
         return 0;
-#endif
     return 1;
 }
 
@@ -428,55 +343,33 @@ static int close_console(UI *ui)
 static void pushsig(void)
 {
     int i;
-#ifdef SIGACTION
     struct sigaction sa;
 
     memset(&sa, 0, sizeof sa);
     sa.sa_handler = recsig;
-#endif
 
     for (i = 1; i < NX509_SIG; i++) {
-#ifdef SIGUSR1
         if (i == SIGUSR1)
             continue;
-#endif
-#ifdef SIGUSR2
         if (i == SIGUSR2)
             continue;
-#endif
-#ifdef SIGKILL
         if (i == SIGKILL) /* We can't make any action on that. */
             continue;
-#endif
-#ifdef SIGACTION
         sigaction(i, &sa, &savsig[i]);
-#else
-        savsig[i] = signal(i, recsig);
-#endif
     }
 
-#ifdef SIGWINCH
     signal(SIGWINCH, SIG_DFL);
-#endif
 }
 
 static void popsig(void)
 {
     int i;
     for (i = 1; i < NX509_SIG; i++) {
-#ifdef SIGUSR1
         if (i == SIGUSR1)
             continue;
-#endif
-#ifdef SIGUSR2
         if (i == SIGUSR2)
             continue;
-#endif
-#ifdef SIGACTION
         sigaction(i, &savsig[i], NULL);
-#else
-        signal(i, savsig[i]);
-#endif
     }
 }
 
