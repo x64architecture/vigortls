@@ -48,9 +48,12 @@
  *
  */
 
-#include <openssl/crypto.h>
-#include "modes_lcl.h"
+#include <machine/endian.h>
 #include <string.h>
+
+#include <openssl/crypto.h>
+
+#include "modes_lcl.h"
 
 #ifndef MODES_DEBUG
 #ifndef NDEBUG
