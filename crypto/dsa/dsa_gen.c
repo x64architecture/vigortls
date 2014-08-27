@@ -56,19 +56,6 @@
  * [including the GNU Public Licence.]
  */
 
-#undef GENUINE_DSA
-
-#ifdef GENUINE_DSA
-/* Parameter generation follows the original release of FIPS PUB 186,
- * Appendix 2.2 (i.e. use SHA as defined in FIPS PUB 180) */
-#define HASH EVP_sha()
-#else
-/* Parameter generation follows the updated Appendix 2.2 for FIPS PUB 186,
- * also Appendix 2.2 of FIPS PUB 186-1 (i.e. use SHA as defined in
- * FIPS PUB 180-1) */
-#define HASH EVP_sha1()
-#endif
-
 #include <openssl/opensslconf.h> /* To see if OPENSSL_NO_SHA is defined */
 
 #ifndef OPENSSL_NO_SHA
