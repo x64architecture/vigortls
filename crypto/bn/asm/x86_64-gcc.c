@@ -70,25 +70,25 @@
  * "g"(0)        let the compiler to decide where does it
  *            want to keep the value of zero;
  */
-#define mul_add(r, a, word, carry)                                                         \
-    do {                                                                                   \
-        register BN_ULONG high, low;                                                       \
-        asm("mulq %3" : "=a"(low), "=d"(high) : "a"(word), "m"(a) : "cc");                 \
-        asm("addq %2,%0; adcq %3,%1" : "+r"(carry), "+d"(high) : "a"(low), "g"(0) : "cc"); \
-        asm("addq %2,%0; adcq %3,%1" : "+m"(r), "+d"(high) : "r"(carry), "g"(0) : "cc");   \
-        carry = high;                                                                      \
+#define mul_add(r, a, word, carry)                                                              \
+    do {                                                                                        \
+        register BN_ULONG high, low;                                                            \
+        __asm__ ("mulq %3" : "=a"(low), "=d"(high) : "a"(word), "m"(a) : "cc");                 \
+        __asm__ ("addq %2,%0; adcq %3,%1" : "+r"(carry), "+d"(high) : "a"(low), "g"(0) : "cc"); \
+        __asm__ ("addq %2,%0; adcq %3,%1" : "+m"(r), "+d"(high) : "r"(carry), "g"(0) : "cc");   \
+        carry = high;                                                                           \
     } while (0)
 
-#define mul(r, a, word, carry)                                                             \
-    do {                                                                                   \
-        register BN_ULONG high, low;                                                       \
-        asm("mulq %3" : "=a"(low), "=d"(high) : "a"(word), "g"(a) : "cc");                 \
-        asm("addq %2,%0; adcq %3,%1" : "+r"(carry), "+d"(high) : "a"(low), "g"(0) : "cc"); \
-        (r) = carry, carry = high;                                                         \
+#define mul(r, a, word, carry)                                                                  \
+    do {                                                                                        \
+        register BN_ULONG high, low;                                                            \
+        __asm__ ("mulq %3" : "=a"(low), "=d"(high) : "a"(word), "g"(a) : "cc");                 \
+        __asm__ ("addq %2,%0; adcq %3,%1" : "+r"(carry), "+d"(high) : "a"(low), "g"(0) : "cc"); \
+        (r) = carry, carry = high;                                                              \
     } while (0)
 
 #define sqr(r0, r1, a)       \
-    asm("mulq %2"            \
+    __asm__ ("mulq %2"       \
         : "=a"(r0), "=d"(r1) \
         : "a"(a)             \
         : "cc");
@@ -180,7 +180,7 @@ BN_ULONG bn_div_words(BN_ULONG h, BN_ULONG l, BN_ULONG d)
 {
     BN_ULONG ret, waste;
 
-    asm("divq    %4"
+    __asm__ ("divq    %4"
         : "=a"(ret), "=d"(waste)
         : "a"(l), "d"(h), "g"(d)
         : "cc");
@@ -195,7 +195,7 @@ BN_ULONG bn_add_words(BN_ULONG *rp, const BN_ULONG *ap, const BN_ULONG *bp, int 
     if (n <= 0)
         return 0;
 
-    asm volatile(
+    __asm__ volatile(
         "    subq    %2,%2          \n"
         ".p2align 4                 \n"
         "1:    movq    (%4,%2,8),%0 \n"
@@ -220,7 +220,7 @@ BN_ULONG bn_sub_words(BN_ULONG *rp, const BN_ULONG *ap, const BN_ULONG *bp, int 
     if (n <= 0)
         return 0;
 
-    asm volatile(
+    __asm__ volatile(
         "    subq    %2,%2          \n"
         ".p2align 4                 \n"
         "1:    movq    (%4,%2,8),%0 \n"
@@ -320,27 +320,27 @@ BN_ULONG bn_sub_words(BN_ULONG *r, BN_ULONG *a, BN_ULONG *b, int n)
         c2 += (c1 < t2) ? 1 : 0;         \
     }
 #else
-#define mul_add_c(a, b, c0, c1, c2)                                                  \
-    do {                                                                             \
-        asm("mulq %3" : "=a"(t1), "=d"(t2) : "a"(a), "m"(b) : "cc");                 \
-        asm("addq %2,%0; adcq %3,%1" : "+r"(c0), "+d"(t2) : "a"(t1), "g"(0) : "cc"); \
-        asm("addq %2,%0; adcq %3,%1" : "+r"(c1), "+r"(c2) : "d"(t2), "g"(0) : "cc"); \
+#define mul_add_c(a, b, c0, c1, c2)                                                       \
+    do {                                                                                  \
+        __asm__ ("mulq %3" : "=a"(t1), "=d"(t2) : "a"(a), "m"(b) : "cc");                 \
+        __asm__ ("addq %2,%0; adcq %3,%1" : "+r"(c0), "+d"(t2) : "a"(t1), "g"(0) : "cc"); \
+        __asm__ ("addq %2,%0; adcq %3,%1" : "+r"(c1), "+r"(c2) : "d"(t2), "g"(0) : "cc"); \
     } while (0)
 
-#define sqr_add_c(a, i, c0, c1, c2)                                                  \
-    do {                                                                             \
-        asm("mulq %2" : "=a"(t1), "=d"(t2) : "a"(a[i]) : "cc");                      \
-        asm("addq %2,%0; adcq %3,%1" : "+r"(c0), "+d"(t2) : "a"(t1), "g"(0) : "cc"); \
-        asm("addq %2,%0; adcq %3,%1" : "+r"(c1), "+r"(c2) : "d"(t2), "g"(0) : "cc"); \
+#define sqr_add_c(a, i, c0, c1, c2)                                                       \
+    do {                                                                                  \
+        __asm__ ("mulq %2" : "=a"(t1), "=d"(t2) : "a"(a[i]) : "cc");                      \
+        __asm__ ("addq %2,%0; adcq %3,%1" : "+r"(c0), "+d"(t2) : "a"(t1), "g"(0) : "cc"); \
+        __asm__ ("addq %2,%0; adcq %3,%1" : "+r"(c1), "+r"(c2) : "d"(t2), "g"(0) : "cc"); \
     } while (0)
 
-#define mul_add_c2(a, b, c0, c1, c2)                                                 \
-    do {                                                                             \
-        asm("mulq %3" : "=a"(t1), "=d"(t2) : "a"(a), "m"(b) : "cc");                 \
-        asm("addq %0,%0; adcq %2,%1" : "+d"(t2), "+r"(c2) : "g"(0) : "cc");          \
-        asm("addq %0,%0; adcq %2,%1" : "+a"(t1), "+d"(t2) : "g"(0) : "cc");          \
-        asm("addq %2,%0; adcq %3,%1" : "+r"(c0), "+d"(t2) : "a"(t1), "g"(0) : "cc"); \
-        asm("addq %2,%0; adcq %3,%1" : "+r"(c1), "+r"(c2) : "d"(t2), "g"(0) : "cc"); \
+#define mul_add_c2(a, b, c0, c1, c2)                                                      \
+    do {                                                                                  \
+        __asm__ ("mulq %3" : "=a"(t1), "=d"(t2) : "a"(a), "m"(b) : "cc");                 \
+        __asm__ ("addq %0,%0; adcq %2,%1" : "+d"(t2), "+r"(c2) : "g"(0) : "cc");          \
+        __asm__ ("addq %0,%0; adcq %2,%1" : "+a"(t1), "+d"(t2) : "g"(0) : "cc");          \
+        __asm__ ("addq %2,%0; adcq %3,%1" : "+r"(c0), "+d"(t2) : "a"(t1), "g"(0) : "cc"); \
+        __asm__ ("addq %2,%0; adcq %3,%1" : "+r"(c1), "+r"(c2) : "d"(t2), "g"(0) : "cc"); \
     } while (0)
 #endif
 

@@ -317,37 +317,37 @@ static const SHA_LONG64 K512[80] = {
 #ifndef PEDANTIC
 #if defined(__GNUC__) && __GNUC__ >= 2 && !defined(OPENSSL_NO_ASM) && !defined(OPENSSL_NO_INLINE_ASM)
 #if defined(__x86_64) || defined(__x86_64__)
-#define ROTR(a, n) ({ SHA_LONG64 ret;        \
-                asm ("rorq %1,%0"    \
-                : "=r"(ret)        \
-                : "J"(n),"0"(a)        \
+#define ROTR(a, n) ({ SHA_LONG64 ret; \
+                __asm__ ("rorq %1,%0" \
+                : "=r"(ret)           \
+                : "J"(n),"0"(a)       \
                 : "cc"); ret; })
-#define PULL64(x) ({ SHA_LONG64 ret=*((const SHA_LONG64 *)(&(x)));    \
-                asm ("bswapq    %0"        \
-                : "=r"(ret)            \
+#define PULL64(x) ({ SHA_LONG64 ret=*((const SHA_LONG64 *)(&(x))); \
+                __asm__ ("bswapq    %0"                            \
+                : "=r"(ret)                                        \
                 : "0"(ret)); ret; })
 #elif(defined(__i386) || defined(__i386__))
 #if defined(I386_ONLY)
-#define PULL64(x) ({ const unsigned int *p=(const unsigned int *)(&(x));\
-             unsigned int hi=p[0],lo=p[1];        \
-                asm("xchgb %%ah,%%al;xchgb %%dh,%%dl;"\
-                    "roll $16,%%eax; roll $16,%%edx; "\
-                    "xchgb %%ah,%%al;xchgb %%dh,%%dl;" \
-                : "=a"(lo),"=d"(hi)        \
-                : "0"(lo),"1"(hi) : "cc");    \
+#define PULL64(x) ({ const unsigned int *p=(const unsigned int *)(&(x)); \
+             unsigned int hi=p[0],lo=p[1];                               \
+                __asm__ ("xchgb %%ah,%%al;xchgb %%dh,%%dl;"              \
+                    "roll $16,%%eax; roll $16,%%edx; "                   \
+                    "xchgb %%ah,%%al;xchgb %%dh,%%dl;"                   \
+                : "=a"(lo),"=d"(hi)                                      \
+                : "0"(lo),"1"(hi) : "cc");                               \
                 ((SHA_LONG64)hi)<<32|lo; })
 #else
-#define PULL64(x) ({ const unsigned int *p=(const unsigned int *)(&(x));\
-             unsigned int hi=p[0],lo=p[1];        \
-                asm ("bswapl %0; bswapl %1;"    \
-                : "=r"(lo),"=r"(hi)        \
-                : "0"(lo),"1"(hi));        \
+#define PULL64(x) ({ const unsigned int *p=(const unsigned int *)(&(x)); \
+             unsigned int hi=p[0],lo=p[1];                               \
+                __asm__ ("bswapl %0; bswapl %1;"                         \
+                : "=r"(lo),"=r"(hi)                                      \
+                : "0"(lo),"1"(hi));                                      \
                 ((SHA_LONG64)hi)<<32|lo; })
 #endif
 #elif(defined(_ARCH_PPC) && defined(__64BIT__)) || defined(_ARCH_PPC64)
-#define ROTR(a, n) ({ SHA_LONG64 ret;        \
-                asm ("rotrdi %0,%1,%2"    \
-                : "=r"(ret)        \
+#define ROTR(a, n) ({ SHA_LONG64 ret;      \
+                __asm__ ("rotrdi %0,%1,%2" \
+                : "=r"(ret)                \
                 : "r"(a),"K"(n)); ret; })
 #endif
 #endif

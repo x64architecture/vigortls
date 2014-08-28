@@ -160,16 +160,16 @@ static inline uint32_t ROTATE(uint32_t a, unsigned int n)
 #define HOST_c2l(c, l)                             \
 ({                                                 \
     unsigned int r = *((const unsigned int *)(c)); \
-    asm("bswapl %0" : "=r"(r) : "0"(r));           \
+    __asm__ ("bswapl %0" : "=r"(r) : "0"(r));      \
     (c) += 4;                                      \
     (l) = r;                                       \
 })
-#define HOST_l2c(l, c)                   \
-({                                       \
-    unsigned int r = (l);                \
-    asm("bswapl %0" : "=r"(r) : "0"(r)); \
-    *((unsigned int *)(c)) = r;          \
-    (c) += 4;                            \
+#define HOST_l2c(l, c)                        \
+({                                            \
+    unsigned int r = (l);                     \
+    __asm__ ("bswapl %0" : "=r"(r) : "0"(r)); \
+    *((unsigned int *)(c)) = r;               \
+    (c) += 4;                                 \
 })
 #endif
 #endif
@@ -205,13 +205,13 @@ static inline uint32_t ROTATE(uint32_t a, unsigned int n)
 #if defined(__s390x__)
 #define HOST_c2l(c, l)                  \
 ({                                      \
-    asm("lrv    %0,%1" : "=d"(l)        \
+    __asm__ ("lrv    %0,%1" : "=d"(l)   \
     : "m"(*(const unsigned int *)(c))); \
     (c) += 4;                           \
 })
 #define HOST_l2c(l, c)                      \
 ({                                          \
-    asm("strv   %1,%0"                      \
+    __asm__ ("strv   %1,%0"                 \
     : "=m"(*(unsigned int *)(c)) : "d"(l)); \
     (c) += 4;                               \
 })

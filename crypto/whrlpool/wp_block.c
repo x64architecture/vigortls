@@ -81,14 +81,14 @@ typedef unsigned long long u64;
 #undef ROTATE
 #if defined(__GNUC__) && __GNUC__ >= 2
 #if defined(__x86_64) || defined(__x86_64__)
-#define ROTATE(a, n) ({ u64 ret; asm ("rolq %1,%0"    \
+#define ROTATE(a, n) ({ u64 ret; __asm__ ("rolq %1,%0"    \
                    : "=r"(ret) : "J"(n),"0"(a) : "cc"); ret; })
 #elif defined(__ia64) || defined(__ia64__)
 #if BYTE_ORDER == LITTLE_ENDIAN
-#define ROTATE(a, n) ({ u64 ret; asm ("shrp %0=%1,%1,%2"    \
+#define ROTATE(a, n) ({ u64 ret; __asm__ ("shrp %0=%1,%1,%2"    \
                    : "=r"(ret) : "r"(a),"M"(64-(n))); ret; })
 #elif BYTE_ORDER == BIG_ENDIAN
-#define ROTATE(a, n) ({ u64 ret; asm ("shrp %0=%1,%1,%2"    \
+#define ROTATE(a, n) ({ u64 ret; __asm__ ("shrp %0=%1,%1,%2"    \
                    : "=r"(ret) : "r"(a),"M"(n)); ret; })
 #endif
 #endif

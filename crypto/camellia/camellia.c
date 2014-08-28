@@ -94,20 +94,20 @@
 #if !defined(OPENSSL_NO_ASM) && !defined(OPENSSL_NO_INLINE_ASM)
 #if defined(__GNUC__) && __GNUC__ >= 2
 #if defined(__i386) || defined(__x86_64)
-#define RightRotate(x, s) ({u32 ret; asm ("rorl %1,%0":"=r"(ret):"I"(s),"0"(x):"cc"); ret; })
-#define LeftRotate(x, s) ({u32 ret; asm ("roll %1,%0":"=r"(ret):"I"(s),"0"(x):"cc"); ret; })
+#define RightRotate(x, s) ({u32 ret; __asm__ ("rorl %1,%0":"=r"(ret):"I"(s),"0"(x):"cc"); ret; })
+#define LeftRotate(x, s) ({u32 ret; __asm__ ("roll %1,%0":"=r"(ret):"I"(s),"0"(x):"cc"); ret; })
 #if defined(B_ENDIAN) /* stratus.com does it */
 #define GETU32(p) (*(u32 *)(p))
 #define PUTU32(p, v) (*(u32 *)(p) = (v))
 #else
-#define GETU32(p) ({u32 r=*(const u32 *)(p); asm("bswapl %0":"=r"(r):"0"(r)); r; })
-#define PUTU32(p, v) ({u32 r=(v); asm("bswapl %0":"=r"(r):"0"(r)); *(u32 *)(p)=r; })
+#define GETU32(p) ({u32 r=*(const u32 *)(p); __asm__ ("bswapl %0":"=r"(r):"0"(r)); r; })
+#define PUTU32(p, v) ({u32 r=(v); __asm__ ("bswapl %0":"=r"(r):"0"(r)); *(u32 *)(p)=r; })
 #endif
 #elif defined(_ARCH_PPC) || defined(_ARCH_PPC64) || defined(__powerpc) || defined(__ppc__) || defined(__powerpc64__)
-#define LeftRotate(x, s) ({u32 ret; asm ("rlwinm %0,%1,%2,0,31":"=r"(ret):"r"(x),"I"(s)); ret; })
+#define LeftRotate(x, s) ({u32 ret; __asm__ ("rlwinm %0,%1,%2,0,31":"=r"(ret):"r"(x),"I"(s)); ret; })
 #define RightRotate(x, s) LeftRotate(x, (32 - s))
 #elif defined(__s390x__)
-#define LeftRotate(x, s) ({u32 ret; asm ("rll %0,%1,%2":"=r"(ret):"r"(x),"I"(s)); ret; })
+#define LeftRotate(x, s) ({u32 ret; __asm__ ("rll %0,%1,%2":"=r"(ret):"r"(x),"I"(s)); ret; })
 #define RightRotate(x, s) LeftRotate(x, (32 - s))
 #define GETU32(p) (*(u32 *)(p))
 #define PUTU32(p, v) (*(u32 *)(p) = (v))

@@ -32,28 +32,28 @@ typedef unsigned char u8;
 #if !defined(PEDANTIC) && !defined(OPENSSL_NO_ASM) && !defined(OPENSSL_NO_INLINE_ASM)
 #if defined(__GNUC__) && __GNUC__ >= 2
 #if defined(__x86_64) || defined(__x86_64__)
-#define BSWAP8(x) ({    u64 ret=(x);            \
-            asm ("bswapq %0"        \
+#define BSWAP8(x) ({    u64 ret=(x); \
+            __asm__ ("bswapq %0"     \
             : "+r"(ret));    ret; })
-#define BSWAP4(x) ({    u32 ret=(x);            \
-            asm ("bswapl %0"        \
+#define BSWAP4(x) ({    u32 ret=(x); \
+            __asm__ ("bswapl %0"     \
             : "+r"(ret));    ret; })
 #elif(defined(__i386) || defined(__i386__)) && !defined(I386_ONLY)
-#define BSWAP8(x) ({    u32 lo=(u64)(x)>>32,hi=(x);    \
-            asm ("bswapl %0; bswapl %1"    \
-            : "+r"(hi),"+r"(lo));        \
+#define BSWAP8(x) ({    u32 lo=(u64)(x)>>32,hi=(x); \
+            __asm__ ("bswapl %0; bswapl %1"         \
+            : "+r"(hi),"+r"(lo));                   \
             (u64)hi<<32|lo; })
-#define BSWAP4(x) ({    u32 ret=(x);            \
-            asm ("bswapl %0"        \
+#define BSWAP4(x) ({    u32 ret=(x); \
+            __asm__ ("bswapl %0"     \
             : "+r"(ret));    ret; })
 #elif(defined(__arm__) || defined(__arm)) && !defined(STRICT_ALIGNMENT)
-#define BSWAP8(x) ({    u32 lo=(u64)(x)>>32,hi=(x);    \
-            asm ("rev %0,%0; rev %1,%1"    \
-            : "+r"(hi),"+r"(lo));        \
+#define BSWAP8(x) ({    u32 lo=(u64)(x)>>32,hi=(x); \
+            __asm__ ("rev %0,%0; rev %1,%1"         \
+            : "+r"(hi),"+r"(lo));                   \
             (u64)hi<<32|lo; })
-#define BSWAP4(x) ({    u32 ret;            \
-            asm ("rev %0,%1"        \
-            : "=r"(ret) : "r"((u32)(x)));    \
+#define BSWAP4(x) ({    u32 ret;          \
+            __asm__ ("rev %0,%1"          \
+            : "=r"(ret) : "r"((u32)(x))); \
             ret; })
 #endif
 #endif

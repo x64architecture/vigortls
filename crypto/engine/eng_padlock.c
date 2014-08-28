@@ -311,7 +311,7 @@ padlock_insn_cpuid_available(void)
 
     /* We're checking if the bit #21 of EFLAGS
        can be toggled. If yes = CPUID is available. */
-    asm volatile(
+    __asm__ volatile(
         "pushf\n"
         "popl %%eax\n"
         "xorl $0x200000, %%eax\n"
@@ -346,7 +346,7 @@ padlock_available(void)
     /* Are we running on the Centaur (VIA) CPU? */
     eax = 0x00000000;
     vendor_string[12] = 0;
-    asm volatile(
+    __asm__ volatile(
         "pushl    %%ebx\n"
         "cpuid\n"
         "movl    %%ebx,(%%edi)\n"
@@ -361,7 +361,7 @@ padlock_available(void)
 
     /* Check for Centaur Extended Feature Flags presence */
     eax = 0xC0000000;
-    asm volatile("pushl %%ebx; cpuid; popl    %%ebx"
+    __asm__ volatile("pushl %%ebx; cpuid; popl    %%ebx"
                  : "+a"(eax)
                  :
                  : "ecx", "edx");
@@ -370,7 +370,7 @@ padlock_available(void)
 
     /* Read the Centaur Extended Feature Flags */
     eax = 0xC0000001;
-    asm volatile("pushl %%ebx; cpuid; popl %%ebx"
+    __asm__ volatile("pushl %%ebx; cpuid; popl %%ebx"
                  : "+a"(eax), "=d"(edx)
                  :
                  : "ecx");
@@ -391,7 +391,7 @@ padlock_bswapl(AES_KEY *ks)
     unsigned int *key = ks->rd_key;
 
     while (i--) {
-        asm volatile("bswapl %0"
+        __asm__ volatile("bswapl %0"
                      : "+r"(*key));
         key++;
     }
@@ -404,7 +404,7 @@ padlock_bswapl(AES_KEY *ks)
 static inline void
 padlock_reload_key(void)
 {
-    asm volatile("pushfl; popfl");
+    __asm__ volatile("pushfl; popfl");
 }
 
 #ifndef OPENSSL_NO_AES
@@ -420,7 +420,7 @@ padlock_reload_key(void)
 static inline void
 padlock_verify_context(struct padlock_cipher_data *cdata)
 {
-    asm volatile(
+    __asm__ volatile(
         "pushfl\n"
         "    btl    $30,(%%esp)\n"
         "    jnc    1f\n"
@@ -441,13 +441,19 @@ padlock_verify_context(struct padlock_cipher_data *cdata)
  *     describe items of the 'padlock_cipher_data'
  *     structure.
  */
-#define PADLOCK_XCRYPT_ASM(name, rep_xcrypt)                                                                                                                                                                                                           \
-    static inline void *name(size_t cnt, struct padlock_cipher_data *cdata, void *out, const void *inp)                                                                                                                                                \
-    {                                                                                                                                                                                                                                                  \
-        void *iv;                                                                                                                                                                                                                                      \
-        asm volatile("pushl    %%ebx\n" "    leal    16(%0),%%edx\n" "    leal    32(%0),%%ebx\n" rep_xcrypt "\n" "    popl    %%ebx" : "=a"(iv), "=c"(cnt), "=D"(out), "=S"(inp) : "0"(cdata), "1"(cnt), "2"(out), "3"(inp) : "edx", "cc", "memory"); \
-        return iv;                                                                                                                                                                                                                                     \
-    }
+#define PADLOCK_XCRYPT_ASM(name, rep_xcrypt)             \
+static inline void *name(size_t cnt, struct padlock_cipher_data *cdata, void *out, const void *inp) \
+    void *iv;                                            \
+        __asm__ volatile(                                \
+            "pushl    %%ebx\n"                           \
+            "    leal    16(%0),%%edx\n"                 \
+            "    leal    32(%0),%%ebx\n"                 \
+            rep_xcrypt "\n"                              \
+            "    popl    %%ebx"                          \
+            : "=a"(iv), "=c"(cnt), "=D"(out), "=S"(inp)  \
+            : "0"(cdata), "1"(cnt), "2"(out), "3"(inp)   \
+            : "edx", "cc", "memory");                    \
+        return iv;
 
 /* Generate all functions with appropriate opcodes */
 PADLOCK_XCRYPT_ASM(padlock_xcrypt_ecb, ".byte 0xf3,0x0f,0xa7,0xc8") /* rep xcryptecb */
@@ -462,7 +468,7 @@ padlock_xstore(void *addr, unsigned int edx_in)
 {
     unsigned int eax_out;
 
-    asm volatile(".byte 0x0f,0xa7,0xc0" /* xstore */
+    __asm__ volatile(".byte 0x0f,0xa7,0xc0" /* xstore */
                  : "=a"(eax_out), "=m"(*(unsigned *)addr)
                  : "D"(addr), "d"(edx_in));
 

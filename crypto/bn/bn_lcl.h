@@ -222,35 +222,35 @@ extern "C" {
 #if defined(__alpha)
 #if defined(__DECC)
 #include <c_asm.h>
-#define BN_UMULT_HIGH(a, b) (BN_ULONG) asm("umulh %a0,%a1,%v0", (a), (b))
+#define BN_UMULT_HIGH(a, b) (BN_ULONG) __asm__ ("umulh %a0,%a1,%v0", (a), (b))
 #elif defined(__GNUC__) && __GNUC__ >= 2
 #define BN_UMULT_HIGH(a, b) ({    \
     register BN_ULONG ret;        \
-    asm ("umulh    %1,%2,%0"    \
-         : "=r"(ret)        \
-         : "r"(a), "r"(b));        \
+    __asm__ ("umulh    %1,%2,%0"  \
+         : "=r"(ret)              \
+         : "r"(a), "r"(b));       \
     ret; })
 #endif /* compiler */
 #elif defined(_ARCH_PPC) && defined(_LP64)
 #if defined(__GNUC__) && __GNUC__ >= 2
 #define BN_UMULT_HIGH(a, b) ({    \
     register BN_ULONG ret;        \
-    asm ("mulhdu    %0,%1,%2"    \
-         : "=r"(ret)        \
-         : "r"(a), "r"(b));        \
+    __asm__ ("mulhdu    %0,%1,%2" \
+         : "=r"(ret)              \
+         : "r"(a), "r"(b));       \
     ret; })
 #endif /* compiler */
 #elif defined(__x86_64) || defined(__x86_64__)
 #if defined(__GNUC__) && __GNUC__ >= 2
-#define BN_UMULT_HIGH(a, b) ({    \
-    register BN_ULONG ret,discard;    \
-    asm ("mulq    %3"        \
-         : "=a"(discard),"=d"(ret)    \
-         : "a"(a), "g"(b)        \
-         : "cc");            \
+#define BN_UMULT_HIGH(a, b) ({     \
+    register BN_ULONG ret,discard; \
+    __asm__ ("mulq    %3"          \
+         : "=a"(discard),"=d"(ret) \
+         : "a"(a), "g"(b)          \
+         : "cc");                  \
     ret; })
 #define BN_UMULT_LOHI(low, high, a, b) \
-    asm("mulq    %3"                   \
+    __asm__ ("mulq    %3"              \
         : "=a"(low), "=d"(high)        \
         : "a"(a), "g"(b)               \
         : "cc");
@@ -265,12 +265,12 @@ extern "C" {
 #else
 #define BN_UMULT_HIGH(a, b) ({    \
     register BN_ULONG ret;        \
-    asm ("dmultu    %1,%2"        \
-         : "=h"(ret)        \
-         : "r"(a), "r"(b) : "l");    \
+    __asm__ ("dmultu    %1,%2"    \
+         : "=h"(ret)              \
+         : "r"(a), "r"(b) : "l"); \
     ret; })
 #define BN_UMULT_LOHI(low, high, a, b) \
-    asm("dmultu    %2,%3"              \
+    __asm__ ("dmultu    %2,%3"         \
         : "=l"(low), "=h"(high)        \
         : "r"(a), "r"(b));
 #endif

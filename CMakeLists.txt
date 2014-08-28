@@ -4,7 +4,7 @@ project(VigorTLS)
 include(CTest)
 
 if (CMAKE_COMPILER_IS_GNUCC OR "${CMAKE_C_COMPILER_ID}" STREQUAL "Clang")
-	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Werror -ggdb -std=gnu99")
+	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Werror -ggdb -std=c99")
 else()
 	message(FATAL_ERROR "Unsupported compiler:" ${CMAKE_C_COMPILER})
 endif()

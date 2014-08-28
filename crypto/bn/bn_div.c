@@ -78,13 +78,13 @@
     *                    <appro@fy.chalmers.se>
     */
 #undef bn_div_words
-#define bn_div_words(n0, n1, d0)                                                                                                                                                              \
-    ({  asm volatile (            \
-        "divl    %4"            \
+#define bn_div_words(n0, n1, d0)                                                                                                                                                        \
+    ({  __asm__ volatile (          \
+        "divl    %4"                \
         : "=a"(q), "=d"(rem)        \
-        : "a"(n1), "d"(n0), "g"(d0)    \
-        : "cc");            \
-        q; \
+        : "a"(n1), "d"(n0), "g"(d0) \
+        : "cc");                    \
+        q;                          \
     })
 #define REMAINDER_IS_ALREADY_CALCULATED
 #elif defined(__x86_64)
@@ -93,13 +93,13 @@
     *                    <appro@fy.chalmers.se>
     */
 #undef bn_div_words
-#define bn_div_words(n0, n1, d0)                                                                                                                                                              \
-    ({  asm volatile (            \
-        "divq    %4"            \
+#define bn_div_words(n0, n1, d0)                                                                                                                                                        \
+    ({  __asm__ volatile (          \
+        "divq    %4"                \
         : "=a"(q), "=d"(rem)        \
-        : "a"(n1), "d"(n0), "g"(d0)    \
-        : "cc");            \
-        q; \
+        : "a"(n1), "d"(n0), "g"(d0) \
+        : "cc");                    \
+        q;                          \
     })
 #define REMAINDER_IS_ALREADY_CALCULATED
 #endif /* __<cpu> */

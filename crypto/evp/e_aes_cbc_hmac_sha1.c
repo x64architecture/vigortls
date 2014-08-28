@@ -88,7 +88,7 @@ typedef struct
 #if !defined(OPENSSL_NO_ASM) && (defined(__x86_64) || defined(__x86_64__) || defined(_M_AMD64) || defined(_M_X64) || defined(__INTEL__))
 
 #if defined(__GNUC__) && __GNUC__ >= 2 && !defined(PEDANTIC)
-#define BSWAP(x) ({ unsigned int r=(x); asm ("bswapl %0":"=r"(r):"0"(r)); r; })
+#define BSWAP(x) ({ unsigned int r=(x); __asm__ ("bswapl %0":"=r"(r):"0"(r)); r; })
 #endif
 
 extern unsigned int OPENSSL_ia32cap_P[2];
