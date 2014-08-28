@@ -166,7 +166,7 @@ err:
 int X509_add1_reject_object(X509 *x, ASN1_OBJECT *obj)
 {
     X509_CERT_AUX *aux;
-    ASN1_OBJECT *objtmp;
+    ASN1_OBJECT *objtmp = NULL;
 
     if (obj) {
         objtmp = OBJ_dup(obj);
