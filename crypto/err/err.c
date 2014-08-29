@@ -992,7 +992,7 @@ ERR_STATE *ERR_get_state(void)
             ERR_STATE_free(ret); /* could not insert it */
             return (&fallback);
         }
-        /* If a race occured in this function and we came second, tmpp
+        /* If a race occurred in this function and we came second, tmpp
          * is the first one that we just replaced. */
         if (tmpp)
             ERR_STATE_free(tmpp);
@@ -1054,7 +1054,7 @@ void ERR_add_error_vdata(int num, va_list args)
 
     for (i = 0; i < num; i++) {
         if (BUF_strlcat(str, "%s", sizeof(str)) >= sizeof(str)) {
-            ERR_set_error_data("error trunication occured",
+            ERR_set_error_data("error truncation occurred",
                                ERR_TXT_STRING);
             return;
         }

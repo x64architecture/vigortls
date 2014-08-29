@@ -168,7 +168,7 @@ int dsaparam_main(int argc, char **argv)
         else if (strcmp(*argv, "-timebomb") == 0) {
             if (--argc < 1)
                 goto bad;
-            timebomb = strtonum(*(++argv), 0, INT_MAX, &stnerr);
+            timebomb = str2num(*(++argv), 0, INT_MAX, &stnerr);
             if (*stnerr)
                 goto bad;
         }

@@ -84,7 +84,7 @@ int prime_main(int argc, char **argv)
             if (--argc < 1)
                 goto bad;
             else
-                bits = strtonum(*(++argv), 0, INT_MAX, &stnerr);
+                bits = str2num(*(++argv), 0, INT_MAX, &stnerr);
             if (stnerr)
                 goto bad;
         } else if (!strcmp(*argv, "-safe"))
@@ -93,7 +93,7 @@ int prime_main(int argc, char **argv)
             if (--argc < 1)
                 goto bad;
             else
-                checks = strtonum(*(++argv), 0, INT_MAX, &stnerr);
+                checks = str2num(*(++argv), 0, INT_MAX, &stnerr);
             if (stnerr)
                 goto bad;
         } else {

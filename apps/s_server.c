@@ -774,7 +774,7 @@ int s_server_main(int argc, char *argv[])
             s_server_verify = SSL_VERIFY_PEER | SSL_VERIFY_CLIENT_ONCE;
             if (--argc < 1)
                 goto bad;
-            verify_depth = strtonum(*(++argv), 0, INT_MAX, &stnerr);
+            verify_depth = str2num(*(++argv), 0, INT_MAX, &stnerr);
             if (stnerr)
                 goto bad;
             BIO_printf(bio_err, "verify depth is %d\n", verify_depth);
@@ -783,7 +783,7 @@ int s_server_main(int argc, char *argv[])
                               SSL_VERIFY_CLIENT_ONCE;
             if (--argc < 1)
                 goto bad;
-            verify_depth = strtonum(*(++argv), 0, INT_MAX, &stnerr);
+            verify_depth = str2num(*(++argv), 0, INT_MAX, &stnerr);
             if (stnerr)
                 goto bad;
             BIO_printf(bio_err, "verify depth is %d, must return a certificate\n", verify_depth);
@@ -893,7 +893,7 @@ int s_server_main(int argc, char *argv[])
             s_tlsextstatus = 1;
             if (--argc < 1)
                 goto bad;
-            tlscstatp.timeout = strtonum(*(++argv), 0, INT_MAX, &stnerr);
+            tlscstatp.timeout = str2num(*(++argv), 0, INT_MAX, &stnerr);
             if (stnerr)
                 goto bad;
         } else if (!strcmp(*argv, "-status_url")) {
@@ -1001,7 +1001,7 @@ int s_server_main(int argc, char *argv[])
         else if (strcmp(*argv, "-mtu") == 0) {
             if (--argc < 1)
                 goto bad;
-            socket_mtu = strtonum(*(++argv), 0, LONG_MAX, &stnerr);
+            socket_mtu = str2num(*(++argv), 0, LONG_MAX, &stnerr);
             if (stnerr)
                 goto bad;
         } else if (strcmp(*argv, "-chain") == 0)
@@ -1055,7 +1055,7 @@ int s_server_main(int argc, char *argv[])
         } else if (strcmp(*argv, "-keymatexportlen") == 0) {
             if (--argc < 1)
                 goto bad;
-            keymatexportlen = strtonum(*(++argv), 1, LONG_MAX, &stnerr);
+            keymatexportlen = str2num(*(++argv), 1, LONG_MAX, &stnerr);
             if (stnerr)
                 goto bad;
         } else {

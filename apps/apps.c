@@ -467,7 +467,7 @@ static char *app_get_pass(BIO *err, char *arg, int keepbio)
             }
         } else if (!strncmp(arg, "fd:", 3)) {
             BIO *btmp;
-            i = strtonum(arg + 3, 1, INT_MAX, &stnerr);
+            i = str2num(arg + 3, 1, INT_MAX, &stnerr);
             if (stnerr) {
                 BIO_printf(err, "Invalid file descriptor: arg=%s, errcode=%d\n", 
                            arg, *stnerr);
@@ -1901,7 +1901,7 @@ int args_verify(char ***pargs, int *pargc,
         if (!argn)
             *badarg = 1;
         else {
-            depth = strtonum(argn, 1, INT_MAX, &stnerr);
+            depth = str2num(argn, 1, INT_MAX, &stnerr);
             if (stnerr) {
                 BIO_printf(err, "invalid depth: depth=%s, errcode=%d\n",
                            argn, *stnerr);

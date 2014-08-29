@@ -6,5 +6,5 @@ add_library(
     OBJECT
 
     reallocarray.c
-    strtonum.c
+    str2num.c
 )

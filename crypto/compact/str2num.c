@@ -23,7 +23,7 @@
 #define UNDERFLOW 3
 #define OUTOFRANGE 4
 
-long long strtonum(const char *nptr, long long minval, long long maxval, const int **stnerr)
+long long str2num(const char *nptr, long long minval, long long maxval, const int **stnerr)
 {
     long long sl = 0;
     int error = 0;

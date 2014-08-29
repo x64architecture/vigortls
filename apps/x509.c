@@ -262,7 +262,7 @@ int x509_main(int argc, char **argv)
         } else if (strcmp(*argv, "-days") == 0) {
             if (--argc < 1)
                 goto bad;
-            days = strtonum(*(++argv), 1, INT_MAX, &stnerr);
+            days = str2num(*(++argv), 1, INT_MAX, &stnerr);
             if (stnerr) {
                 BIO_printf(bio_err, "bad number of days: %s, errcode=%d\n",
                            *argv, *stnerr);
@@ -407,7 +407,7 @@ int x509_main(int argc, char **argv)
         else if (strcmp(*argv, "-checkend") == 0) {
             if (--argc < 1)
                 goto bad;
-            checkoffset = strtonum(*(++argv), 0, INT_MAX, &stnerr);
+            checkoffset = str2num(*(++argv), 0, INT_MAX, &stnerr);
             if (stnerr) {
                 BIO_printf(bio_err, "checkend unusable: %s, errcode=%d\n",
                            *argv, *stnerr);

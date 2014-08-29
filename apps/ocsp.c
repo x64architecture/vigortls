@@ -166,7 +166,7 @@ int ocsp_main(int argc, char **argv)
         } else if (!strcmp(*args, "-timeout")) {
             if (args[1]) {
                 args++;
-                req_timeout = strtonum(*args, 0, INT_MAX, &stnerr);
+                req_timeout = str2num(*args, 0, INT_MAX, &stnerr);
                 if (*stnerr) {
                     BIO_printf(bio_err,
                                "Illegal timeout value %s, errcode=%d\n",
@@ -299,7 +299,7 @@ int ocsp_main(int argc, char **argv)
         } else if (!strcmp(*args, "-validity_period")) {
             if (args[1]) {
                 args++;
-                nsec = strtonum(*args, 0, LONG_MAX, &stnerr);
+                nsec = str2num(*args, 0, LONG_MAX, &stnerr);
                 if (*stnerr) {
                     BIO_printf(bio_err,
                                "Illegal validity period %s, errcode=%d\n",
@@ -311,7 +311,7 @@ int ocsp_main(int argc, char **argv)
         } else if (!strcmp(*args, "-status_age")) {
             if (args[1]) {
                 args++;
-                maxage = strtonum(*args, 0, LONG_MAX, &stnerr);
+                maxage = str2num(*args, 0, LONG_MAX, &stnerr);
                 if (*stnerr) {
                     BIO_printf(bio_err,
                                "Illegal validity age %s, errcode=%d\n",
@@ -396,7 +396,7 @@ int ocsp_main(int argc, char **argv)
         } else if (!strcmp(*args, "-nmin")) {
             if (args[1]) {
                 args++;
-                nmin = strtonum(*args, 0, INT_MAX, &stnerr);
+                nmin = str2num(*args, 0, INT_MAX, &stnerr);
                 if (*stnerr) {
                     BIO_printf(bio_err,
                                "Illegal update period %s, errcode=%d\n",
@@ -411,7 +411,7 @@ int ocsp_main(int argc, char **argv)
         } else if (!strcmp(*args, "-nrequest")) {
             if (args[1]) {
                 args++;
-                accept_count = strtonum(*args, 0, INT_MAX, &stnerr);
+                accept_count = str2num(*args, 0, INT_MAX, &stnerr);
                 if (stnerr) {
                     BIO_printf(bio_err,
                                "Illegal accept count %s, errcode=%d\n",
@@ -423,7 +423,7 @@ int ocsp_main(int argc, char **argv)
         } else if (!strcmp(*args, "-ndays")) {
             if (args[1]) {
                 args++;
-                ndays = strtonum(*args, 0, INT_MAX, &stnerr);
+                ndays = str2num(*args, 0, INT_MAX, &stnerr);
                 if (stnerr) {
                     BIO_printf(bio_err,
                                "Illegal update period %s, errcode=%d\n",

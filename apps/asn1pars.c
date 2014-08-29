@@ -142,13 +142,13 @@ int asn1parse_main(int argc, char **argv)
         } else if (strcmp(*argv, "-offset") == 0) {
             if (--argc < 1)
                 goto bad;
-            offset = strtonum(*(++argv), 0, INT_MAX, &stnerr);
+            offset = str2num(*(++argv), 0, INT_MAX, &stnerr);
             if (stnerr)
                 goto bad;
         } else if (strcmp(*argv, "-length") == 0) {
             if (--argc < 1)
                 goto bad;
-            length = strtonum(*(++argv), 1, UINT_MAX, &stnerr);
+            length = str2num(*(++argv), 1, UINT_MAX, &stnerr);
             if (stnerr)
                 goto bad;
         } else if (strcmp(*argv, "-dump") == 0)
@@ -156,7 +156,7 @@ int asn1parse_main(int argc, char **argv)
         else if (strcmp(*argv, "-dlimit") == 0) {
             if (--argc < 1)
                 goto bad;
-            dump = strtonum(*(++argv), 1, INT_MAX, &stnerr);
+            dump = str2num(*(++argv), 1, INT_MAX, &stnerr);
             if (stnerr)
                 goto bad;
         } else if (strcmp(*argv, "-strparse") == 0) {
@@ -281,7 +281,7 @@ int asn1parse_main(int argc, char **argv)
         for (i = 0; i < sk_OPENSSL_STRING_num(osk); i++) {
             ASN1_TYPE *atmp;
             int typ;
-            j = strtonum(sk_OPENSSL_STRING_value(osk, i), 1, INT_MAX, &stnerr);
+            j = str2num(sk_OPENSSL_STRING_value(osk, i), 1, INT_MAX, &stnerr);
             if (stnerr) {
                 BIO_printf(bio_err, "'%s' is an invalid number, errcode=%d\n", 
                            sk_OPENSSL_STRING_value(osk, i), *stnerr);

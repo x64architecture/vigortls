@@ -617,7 +617,7 @@ int s_client_main(int argc, char **argv)
             verify = SSL_VERIFY_PEER;
             if (--argc < 1)
                 goto bad;
-            verify_depth = strtonum(*(++argv), 0, INT_MAX, &stnerr);
+            verify_depth = str2num(*(++argv), 0, INT_MAX, &stnerr);
             if (stnerr)
                 goto bad;
             BIO_printf(bio_err, "verify depth is %d\n", verify_depth);
@@ -712,7 +712,7 @@ int s_client_main(int argc, char **argv)
         else if (strcmp(*argv, "-mtu") == 0) {
             if (--argc < 1)
                 goto bad;
-            socket_mtu = strtonum(*(++argv), 0, LONG_MAX, &stnerr);
+            socket_mtu = str2num(*(++argv), 0, LONG_MAX, &stnerr);
             if (stnerr)
                 goto bad;
         }
@@ -838,7 +838,7 @@ int s_client_main(int argc, char **argv)
             const int *stnerr = NULL;
             if (--argc < 1)
                 goto bad;
-            keymatexportlen = strtonum(*(++argv), 1, INT_MAX, &stnerr);
+            keymatexportlen = str2num(*(++argv), 1, INT_MAX, &stnerr);
             if (stnerr)
                 goto bad;
         } else {

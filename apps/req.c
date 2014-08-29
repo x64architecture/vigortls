@@ -329,7 +329,7 @@ int req_main(int argc, char **argv)
             const int *stnerr = NULL;            
             if (--argc < 1)
                 goto bad;
-            days = strtonum(*(++argv), 1, INT_MAX, &stnerr);
+            days = str2num(*(++argv), 1, INT_MAX, &stnerr);
             if (stnerr) {
                 days = 30;
                 BIO_printf(bio_err, "bad -days argument: %s, using %d instead, errcode=%d",
@@ -1411,7 +1411,7 @@ static EVP_PKEY_CTX *set_keygen_ctx(BIO *err, const char *gstr, int *pkey_type,
         keylen = *pkeylen;
     } else if (gstr[0] >= '0' && gstr[0] <= '9') {
         *pkey_type = EVP_PKEY_RSA;
-        keylen = strtonum(gstr, 0, LONG_MAX, &stnerr);
+        keylen = str2num(gstr, 0, LONG_MAX, &stnerr);
         if (stnerr) {
             BIO_printf(err, "bad algorithm %s, errcode=%d\n", gstr, *stnerr);
             return NULL;
@@ -1448,7 +1448,7 @@ static EVP_PKEY_CTX *set_keygen_ctx(BIO *err, const char *gstr, int *pkey_type,
 #endif
         if (*pkey_type == EVP_PKEY_RSA) {
             if (p) {
-                keylen = strtonum(p + 1, 0, LONG_MAX, &stnerr);
+                keylen = str2num(p + 1, 0, LONG_MAX, &stnerr);
                 if (stnerr) {
                     BIO_printf(err, "bad algorithm %s, errcode=%d\n", p + 1, *stnerr);
                     return NULL;

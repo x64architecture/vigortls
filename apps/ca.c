@@ -369,7 +369,7 @@ int ca_main(int argc, char **argv)
         } else if (strcmp(*argv, "-days") == 0) {
             if (--argc < 1)
                 goto bad;
-            days = strtonum(*(++argv), 0, LONG_MAX, &stnerr);
+            days = str2num(*(++argv), 0, LONG_MAX, &stnerr);
             if (stnerr)
                 goto bad;
         } else if (strcmp(*argv, "-md") == 0) {
@@ -437,19 +437,19 @@ int ca_main(int argc, char **argv)
         else if (strcmp(*argv, "-crldays") == 0) {
             if (--argc < 1)
                 goto bad;
-            crldays = strtonum(*(++argv), 0, LONG_MAX, &stnerr);
+            crldays = str2num(*(++argv), 0, LONG_MAX, &stnerr);
             if (stnerr)
                 goto bad;
         } else if (strcmp(*argv, "-crlhours") == 0) {
             if (--argc < 1)
                 goto bad;
-            crlhours = strtonum(*(++argv), 0, LONG_MAX, &stnerr);
+            crlhours = str2num(*(++argv), 0, LONG_MAX, &stnerr);
             if (stnerr)
                 goto bad;
         } else if (strcmp(*argv, "-crlsec") == 0) {
             if (--argc < 1)
                 goto bad;
-            crlsec = strtonum(*(++argv), 0, LONG_MAX, &stnerr);
+            crlsec = str2num(*(++argv), 0, LONG_MAX, &stnerr);
             if (stnerr)
                 goto bad;
         } else if (strcmp(*argv, "-infiles") == 0) {

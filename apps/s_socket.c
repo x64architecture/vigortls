@@ -326,7 +326,7 @@ int extract_port(char *str, short *port_ptr)
     const int *stnerr = NULL;
     struct servent *s;
 
-    i = strtonum(str, 1, 65535, &stnerr);
+    i = str2num(str, 1, 65535, &stnerr);
     if (!stnerr)
         *port_ptr = (unsigned short)i;
     else {
