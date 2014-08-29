@@ -60,21 +60,23 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <limits.h>
 #include <string.h>
 #include <ctype.h>
 #include <sys/types.h>
 #include <unistd.h>
-#include <openssl/conf.h>
+
 #include <openssl/bio.h>
-#include <openssl/err.h>
 #include <openssl/bn.h>
-#include <openssl/txt_db.h>
+#include <openssl/conf.h>
+#include <openssl/err.h>
 #include <openssl/evp.h>
-#include <openssl/x509.h>
-#include <openssl/x509v3.h>
 #include <openssl/objects.h>
 #include <openssl/ocsp.h>
 #include <openssl/pem.h>
+#include <openssl/txt_db.h>
+#include <openssl/x509.h>
+#include <openssl/x509v3.h>
 
 #ifndef W_OK
 #include <sys/file.h>
@@ -300,6 +302,7 @@ int ca_main(int argc, char **argv)
     const char *p;
     char *const *pp;
     int i, j;
+    const int *stnerr = NULL;
     const EVP_MD *dgst = NULL;
     STACK_OF(CONF_VALUE) *attribs = NULL;
     STACK_OF(X509) *cert_sk = NULL;
@@ -366,7 +369,9 @@ int ca_main(int argc, char **argv)
         } else if (strcmp(*argv, "-days") == 0) {
             if (--argc < 1)
                 goto bad;
-            days = atoi(*(++argv));
+            days = strtonum(*(++argv), 0, LONG_MAX, &stnerr);
+            if (stnerr)
+                goto bad;
         } else if (strcmp(*argv, "-md") == 0) {
             if (--argc < 1)
                 goto bad;
@@ -432,15 +437,21 @@ int ca_main(int argc, char **argv)
         else if (strcmp(*argv, "-crldays") == 0) {
             if (--argc < 1)
                 goto bad;
-            crldays = atol(*(++argv));
+            crldays = strtonum(*(++argv), 0, LONG_MAX, &stnerr);
+            if (stnerr)
+                goto bad;
         } else if (strcmp(*argv, "-crlhours") == 0) {
             if (--argc < 1)
                 goto bad;
-            crlhours = atol(*(++argv));
+            crlhours = strtonum(*(++argv), 0, LONG_MAX, &stnerr);
+            if (stnerr)
+                goto bad;
         } else if (strcmp(*argv, "-crlsec") == 0) {
             if (--argc < 1)
                 goto bad;
-            crlsec = atol(*(++argv));
+            crlsec = strtonum(*(++argv), 0, LONG_MAX, &stnerr);
+            if (stnerr)
+                goto bad;
         } else if (strcmp(*argv, "-infiles") == 0) {
             argc--;
             argv++;
@@ -508,8 +519,12 @@ int ca_main(int argc, char **argv)
         }
 #endif
         else {
-        bad:
-            BIO_printf(bio_err, "unknown option %s\n", *argv);
+bad:
+            if (stnerr)
+                BIO_printf(bio_err, "invalid argument %s, errcode=%d",
+                           *argv, *stnerr);
+            else
+                BIO_printf(bio_err, "unknown option %s\n", *argv);
             badops = 1;
             break;
         }

@@ -65,6 +65,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <limits.h>
 #include <string.h>
 
 #define USE_SOCKETS
@@ -185,6 +186,7 @@ static void s_time_usage(void)
 static int parseArgs(int argc, char **argv)
 {
     int badop = 0;
+    const int *stnerr = NULL;
 
     verify_depth = 0;
     verify_error = X509_V_OK;
@@ -215,11 +217,13 @@ static int parseArgs(int argc, char **argv)
         else if (strcmp(*argv, "-new") == 0)
             perform = 1;
         else if (strcmp(*argv, "-verify") == 0) {
-
+            const int *stnerr = NULL;
             tm_verify = SSL_VERIFY_PEER | SSL_VERIFY_CLIENT_ONCE;
             if (--argc < 1)
                 goto bad;
-            verify_depth = atoi(*(++argv));
+            verify_depth = strtonum(*(++argv), 0, INT_MAX, &stnerr);
+            if (stnerr)
+                goto bad;
             BIO_printf(bio_err, "verify depth is %d\n", verify_depth);
 
         } else if (strcmp(*argv, "-cert") == 0) {
@@ -272,10 +276,11 @@ static int parseArgs(int argc, char **argv)
             s_time_meth = SSLv3_client_method();
 #endif
         else if (strcmp(*argv, "-time") == 0) {
-
             if (--argc < 1)
                 goto bad;
-            maxTime = atoi(*(++argv));
+            maxTime = strtonum(*(++argv), 0, INT_MAX, &stnerr);
+            if (stnerr)
+                goto bad;
         } else {
             BIO_printf(bio_err, "unknown option %s\n", *argv);
             badop = 1;

@@ -61,6 +61,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <limits.h>
 #include <string.h>
 #include <time.h>
 #include "apps.h" /* needs to be included before the openssl headers! */
@@ -143,6 +144,7 @@ int ocsp_main(int argc, char **argv)
     CA_DB *rdb = NULL;
     int nmin = 0, ndays = -1;
     const EVP_MD *cert_id_md = NULL;
+    const int *stnerr = NULL;
 
     if (bio_err == NULL)
         bio_err = BIO_new_fp(stderr, BIO_NOCLOSE);
@@ -164,11 +166,11 @@ int ocsp_main(int argc, char **argv)
         } else if (!strcmp(*args, "-timeout")) {
             if (args[1]) {
                 args++;
-                req_timeout = atol(*args);
-                if (req_timeout < 0) {
+                req_timeout = strtonum(*args, 0, INT_MAX, &stnerr);
+                if (*stnerr) {
                     BIO_printf(bio_err,
-                               "Illegal timeout value %s\n",
-                               *args);
+                               "Illegal timeout value %s, errcode=%d\n",
+                               *args, *stnerr);
                     badarg = 1;
                 }
             } else
@@ -297,11 +299,11 @@ int ocsp_main(int argc, char **argv)
         } else if (!strcmp(*args, "-validity_period")) {
             if (args[1]) {
                 args++;
-                nsec = atol(*args);
-                if (nsec < 0) {
+                nsec = strtonum(*args, 0, LONG_MAX, &stnerr);
+                if (*stnerr) {
                     BIO_printf(bio_err,
-                               "Illegal validity period %s\n",
-                               *args);
+                               "Illegal validity period %s, errcode=%d\n",
+                               *args, *stnerr);
                     badarg = 1;
                 }
             } else
@@ -309,11 +311,11 @@ int ocsp_main(int argc, char **argv)
         } else if (!strcmp(*args, "-status_age")) {
             if (args[1]) {
                 args++;
-                maxage = atol(*args);
-                if (maxage < 0) {
+                maxage = strtonum(*args, 0, LONG_MAX, &stnerr);
+                if (*stnerr) {
                     BIO_printf(bio_err,
-                               "Illegal validity age %s\n",
-                               *args);
+                               "Illegal validity age %s, errcode=%d\n",
+                               *args, *stnerr);
                     badarg = 1;
                 }
             } else
@@ -394,11 +396,11 @@ int ocsp_main(int argc, char **argv)
         } else if (!strcmp(*args, "-nmin")) {
             if (args[1]) {
                 args++;
-                nmin = atol(*args);
-                if (nmin < 0) {
+                nmin = strtonum(*args, 0, INT_MAX, &stnerr);
+                if (*stnerr) {
                     BIO_printf(bio_err,
-                               "Illegal update period %s\n",
-                               *args);
+                               "Illegal update period %s, errcode=%d\n",
+                               *args, *stnerr);
                     badarg = 1;
                 }
             }
@@ -409,11 +411,11 @@ int ocsp_main(int argc, char **argv)
         } else if (!strcmp(*args, "-nrequest")) {
             if (args[1]) {
                 args++;
-                accept_count = atol(*args);
-                if (accept_count < 0) {
+                accept_count = strtonum(*args, 0, INT_MAX, &stnerr);
+                if (stnerr) {
                     BIO_printf(bio_err,
-                               "Illegal accept count %s\n",
-                               *args);
+                               "Illegal accept count %s, errcode=%d\n",
+                               *args, *stnerr);
                     badarg = 1;
                 }
             } else
@@ -421,11 +423,11 @@ int ocsp_main(int argc, char **argv)
         } else if (!strcmp(*args, "-ndays")) {
             if (args[1]) {
                 args++;
-                ndays = atol(*args);
-                if (ndays < 0) {
+                ndays = strtonum(*args, 0, INT_MAX, &stnerr);
+                if (stnerr) {
                     BIO_printf(bio_err,
-                               "Illegal update period %s\n",
-                               *args);
+                               "Illegal update period %s, errcode=%d\n",
+                               *args, *stnerr);
                     badarg = 1;
                 }
             } else

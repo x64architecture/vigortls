@@ -48,7 +48,6 @@ add_executable(
 	spkac.c
 	s_cb.c
 	s_client.c
-	srp.c
 	s_server.c
 	s_socket.c
 	s_time.c

@@ -447,6 +447,7 @@ static char *app_get_pass(BIO *err, char *arg, int keepbio)
     char *tmp, tpass[APP_PASS_LEN];
     static BIO *pwdbio = NULL;
     int i;
+    const int *stnerr = NULL;
     if (!strncmp(arg, "pass:", 5))
         return strdup(arg + 5);
     if (!strncmp(arg, "env:", 4)) {
@@ -466,10 +467,14 @@ static char *app_get_pass(BIO *err, char *arg, int keepbio)
             }
         } else if (!strncmp(arg, "fd:", 3)) {
             BIO *btmp;
-            i = atoi(arg + 3);
-            if (i >= 0)
-                pwdbio = BIO_new_fd(i, BIO_NOCLOSE);
-            if ((i < 0) || !pwdbio) {
+            i = strtonum(arg + 3, 1, INT_MAX, &stnerr);
+            if (stnerr) {
+                BIO_printf(err, "Invalid file descriptor: arg=%s, errcode=%d\n", 
+                           arg, *stnerr);
+                return NULL;
+            }
+            pwdbio = BIO_new_fd(i, BIO_NOCLOSE);
+            if (!pwdbio) {
                 BIO_printf(err, "Can't access file descriptor %s\n", arg + 3);
                 return NULL;
             }
@@ -1860,6 +1865,7 @@ int args_verify(char ***pargs, int *pargc,
     ASN1_OBJECT *otmp = NULL;
     unsigned long flags = 0;
     int i;
+    const int *stnerr = NULL;
     int purpose = 0, depth = -1;
     char **oldargs = *pargs;
     char *arg = **pargs, *argn = (*pargs)[1];
@@ -1895,9 +1901,10 @@ int args_verify(char ***pargs, int *pargc,
         if (!argn)
             *badarg = 1;
         else {
-            depth = atoi(argn);
-            if (depth < 0) {
-                BIO_printf(err, "invalid depth\n");
+            depth = strtonum(argn, 1, INT_MAX, &stnerr);
+            if (stnerr) {
+                BIO_printf(err, "invalid depth: depth=%s, errcode=%d\n",
+                           argn, *stnerr);
                 *badarg = 1;
             }
         }

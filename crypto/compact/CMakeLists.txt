@@ -1,9 +1,10 @@
 include_directories(${CMAKE_CURRENT_BINARY_DIR} .. ../../include .)
 
 add_library(
-	compact
+    compact
 
-	OBJECT
+    OBJECT
 
-	reallocarray.c
+    reallocarray.c
+    strtonum.c
 )

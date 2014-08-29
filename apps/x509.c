@@ -59,6 +59,7 @@
 #include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <limits.h>
 #include <string.h>
 #include "apps.h"
 #include <openssl/bio.h>
@@ -201,6 +202,7 @@ int x509_main(int argc, char **argv)
 #ifndef OPENSSL_NO_ENGINE
     char *engine = NULL;
 #endif
+    const int *stnerr = NULL;
 
     reqfile = 0;
 
@@ -260,9 +262,10 @@ int x509_main(int argc, char **argv)
         } else if (strcmp(*argv, "-days") == 0) {
             if (--argc < 1)
                 goto bad;
-            days = atoi(*(++argv));
-            if (days == 0) {
-                BIO_printf(bio_err, "bad number of days\n");
+            days = strtonum(*(++argv), 1, INT_MAX, &stnerr);
+            if (stnerr) {
+                BIO_printf(bio_err, "bad number of days: %s, errcode=%d\n",
+                           *argv, *stnerr);
                 goto bad;
             }
         } else if (strcmp(*argv, "-passin") == 0) {
@@ -404,7 +407,12 @@ int x509_main(int argc, char **argv)
         else if (strcmp(*argv, "-checkend") == 0) {
             if (--argc < 1)
                 goto bad;
-            checkoffset = atoi(*(++argv));
+            checkoffset = strtonum(*(++argv), 0, INT_MAX, &stnerr);
+            if (stnerr) {
+                BIO_printf(bio_err, "checkend unusable: %s, errcode=%d\n",
+                           *argv, *stnerr);
+                goto bad;
+            }
             checkend = 1;
         } else if (strcmp(*argv, "-noout") == 0)
             noout = ++num;

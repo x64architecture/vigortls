@@ -119,6 +119,7 @@ int dsaparam_main(int argc, char **argv)
 #endif
 #ifdef GENCB_TEST
     int timebomb = 0;
+    const int *stnerr = NULL;
 #endif
 
     apps_startup();
@@ -167,7 +168,9 @@ int dsaparam_main(int argc, char **argv)
         else if (strcmp(*argv, "-timebomb") == 0) {
             if (--argc < 1)
                 goto bad;
-            timebomb = atoi(*(++argv));
+            timebomb = strtonum(*(++argv), 0, INT_MAX, &stnerr);
+            if (*stnerr)
+                goto bad;
         }
 #endif
         else if (strcmp(*argv, "-text") == 0)

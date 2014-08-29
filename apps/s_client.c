@@ -139,6 +139,7 @@
 #include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <limits.h>
 #include <string.h>
 #include <unistd.h>
 #include <openssl/e_os2.h>
@@ -539,6 +540,7 @@ int s_client_main(int argc, char **argv)
     BIO *sbio;
     int mbuf_len = 0;
     struct timeval timeout, *timeoutp;
+    const int *stnerr = NULL;
 #ifndef OPENSSL_NO_ENGINE
     char *engine_id = NULL;
     char *ssl_client_engine_id = NULL;
@@ -580,7 +582,9 @@ int s_client_main(int argc, char **argv)
     if (!load_config(bio_err, NULL))
         goto end;
 
-    if (((cbuf = malloc(BUFSIZZ)) == NULL) || ((sbuf = malloc(BUFSIZZ)) == NULL) || ((mbuf = malloc(BUFSIZZ)) == NULL)) {
+    if (((cbuf = malloc(BUFSIZZ)) == NULL) 
+        || ((sbuf = malloc(BUFSIZZ)) == NULL) 
+        || ((mbuf = malloc(BUFSIZZ)) == NULL)) {
         BIO_printf(bio_err, "out of memory\n");
         goto end;
     }
@@ -613,7 +617,9 @@ int s_client_main(int argc, char **argv)
             verify = SSL_VERIFY_PEER;
             if (--argc < 1)
                 goto bad;
-            verify_depth = atoi(*(++argv));
+            verify_depth = strtonum(*(++argv), 0, INT_MAX, &stnerr);
+            if (stnerr)
+                goto bad;
             BIO_printf(bio_err, "verify depth is %d\n", verify_depth);
         } else if (strcmp(*argv, "-cert") == 0) {
             if (--argc < 1)
@@ -685,31 +691,6 @@ int s_client_main(int argc, char **argv)
             }
         }
 #endif
-#ifndef OPENSSL_NO_SRP
-        else if (strcmp(*argv, "-srpuser") == 0) {
-            if (--argc < 1)
-                goto bad;
-            srp_arg.srplogin = *(++argv);
-            meth = TLSv1_client_method();
-        } else if (strcmp(*argv, "-srppass") == 0) {
-            if (--argc < 1)
-                goto bad;
-            srppass = *(++argv);
-            meth = TLSv1_client_method();
-        } else if (strcmp(*argv, "-srp_strength") == 0) {
-            if (--argc < 1)
-                goto bad;
-            srp_arg.strength = atoi(*(++argv));
-            BIO_printf(bio_err, "SRP minimal length for N is %d\n", srp_arg.strength);
-            meth = TLSv1_client_method();
-        } else if (strcmp(*argv, "-srp_lateuser") == 0) {
-            srp_lateuser = 1;
-            meth = TLSv1_client_method();
-        } else if (strcmp(*argv, "-srp_moregroups") == 0) {
-            srp_arg.amp = 1;
-            meth = TLSv1_client_method();
-        }
-#endif
 #ifndef OPENSSL_NO_SSL3
         else if (strcmp(*argv, "-ssl3") == 0)
             meth = SSLv3_client_method();
@@ -731,7 +712,9 @@ int s_client_main(int argc, char **argv)
         else if (strcmp(*argv, "-mtu") == 0) {
             if (--argc < 1)
                 goto bad;
-            socket_mtu = atol(*(++argv));
+            socket_mtu = strtonum(*(++argv), 0, LONG_MAX, &stnerr);
+            if (stnerr)
+                goto bad;
         }
 #endif
         else if (strcmp(*argv, "-bugs") == 0)
@@ -852,10 +835,11 @@ int s_client_main(int argc, char **argv)
                 goto bad;
             keymatexportlabel = *(++argv);
         } else if (strcmp(*argv, "-keymatexportlen") == 0) {
+            const int *stnerr = NULL;
             if (--argc < 1)
                 goto bad;
-            keymatexportlen = atoi(*(++argv));
-            if (keymatexportlen == 0)
+            keymatexportlen = strtonum(*(++argv), 1, INT_MAX, &stnerr);
+            if (stnerr)
                 goto bad;
         } else {
             BIO_printf(bio_err, "unknown option %s\n", *argv);
@@ -866,8 +850,11 @@ int s_client_main(int argc, char **argv)
         argv++;
     }
     if (badop) {
-    bad:
-        sc_usage();
+bad:
+        if (stnerr)
+            BIO_printf(bio_err, "invalid argument %s, errcode=%d\n", *argv, *stnerr);
+        else
+            sc_usage();
         goto end;
     }
 

@@ -48,9 +48,11 @@
  */
 
 #include <string.h>
+#include <limits.h>
+
+#include <openssl/bn.h>
 
 #include "apps.h"
-#include <openssl/bn.h>
 
 int prime_main(int, char **);
 
@@ -61,6 +63,7 @@ int prime_main(int argc, char **argv)
     int generate = 0;
     int bits = 0;
     int safe = 0;
+    const int *stnerr = NULL;
     BIGNUM *bn = NULL;
     BIO *bio_out;
 
@@ -77,19 +80,23 @@ int prime_main(int argc, char **argv)
             hex = 1;
         else if (!strcmp(*argv, "-generate"))
             generate = 1;
-        else if (!strcmp(*argv, "-bits"))
+        else if (!strcmp(*argv, "-bits")) {
             if (--argc < 1)
                 goto bad;
             else
-                bits = atoi(*++argv);
-        else if (!strcmp(*argv, "-safe"))
+                bits = strtonum(*(++argv), 0, INT_MAX, &stnerr);
+            if (stnerr)
+                goto bad;
+        } else if (!strcmp(*argv, "-safe"))
             safe = 1;
-        else if (!strcmp(*argv, "-checks"))
+        else if (!strcmp(*argv, "-checks")) {
             if (--argc < 1)
                 goto bad;
             else
-                checks = atoi(*++argv);
-        else {
+                checks = strtonum(*(++argv), 0, INT_MAX, &stnerr);
+            if (stnerr)
+                goto bad;
+        } else {
             BIO_printf(bio_err, "Unknown option '%s'\n", *argv);
             goto bad;
         }
@@ -135,8 +142,12 @@ int prime_main(int argc, char **argv)
     return 0;
 
 bad:
-    BIO_printf(bio_err, "options are\n");
-    BIO_printf(bio_err, "%-14s hex\n", "-hex");
-    BIO_printf(bio_err, "%-14s number of checks\n", "-checks <n>");
+    if (stnerr)
+        BIO_printf(bio_err, "invalid argument %s, errcode=%d\n", *argv, *stnerr);
+    else {
+        BIO_printf(bio_err, "options are\n");
+        BIO_printf(bio_err, "%-14s hex\n", "-hex");
+        BIO_printf(bio_err, "%-14s number of checks\n", "-checks <n>");
+    }
     return 1;
 }

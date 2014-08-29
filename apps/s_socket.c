@@ -323,10 +323,11 @@ int extract_host_port(char *str, char **host_ptr, unsigned char *ip,
 int extract_port(char *str, short *port_ptr)
 {
     int i;
+    const int *stnerr = NULL;
     struct servent *s;
 
-    i = atoi(str);
-    if (i != 0)
+    i = strtonum(str, 1, 65535, &stnerr);
+    if (!stnerr)
         *port_ptr = (unsigned short)i;
     else {
         s = getservbyname(str, "tcp");
