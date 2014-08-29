@@ -52,6 +52,15 @@ if (${ARCH} STREQUAL "x86")
 	)
 endif()
 
+if (${ARCH} STREQUAL "arm")
+	set(
+		CRYPTO_ARCH_SOURCES
+
+		armcap.c
+		armv4cpuid.S
+	)
+endif()
+
 add_subdirectory(aes)
 add_subdirectory(asn1)
 add_subdirectory(bf)

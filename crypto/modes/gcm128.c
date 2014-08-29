@@ -307,7 +307,7 @@ static void gcm_init_4bit(u128 Htable[16], u64 H[2])
     Htable[14].hi = V.hi ^ Htable[6].hi, Htable[14].lo = V.lo ^ Htable[6].lo;
     Htable[15].hi = V.hi ^ Htable[7].hi, Htable[15].lo = V.lo ^ Htable[7].lo;
 #endif
-#if !defined(OPENSSL_NO_ASM) && (defined(__arm__) || defined(__arm))
+#if defined(GHASH_ASM) && (defined(__arm__) || defined(__arm))
     /*
      * ARM assembler expects specific dword order in Htable.
      */
@@ -330,7 +330,7 @@ static void gcm_init_4bit(u128 Htable[16], u64 H[2])
 #endif
 }
 
-#ifdef OPENSSL_NO_ASM
+#ifndef GHASH_ASM
 static const size_t rem_4bit[16] = {
     PACK(0x0000), PACK(0x1C20), PACK(0x3840), PACK(0x2460),
     PACK(0x7080), PACK(0x6CA0), PACK(0x48C0), PACK(0x54E0),
@@ -585,7 +585,7 @@ void gcm_ghash_4bit(u64 Xi[2], const u128 Htable[16], const u8 *inp, size_t len)
 #endif
 
 #define GCM_MUL(ctx, Xi) gcm_gmult_4bit(ctx->Xi.u, ctx->Htable)
-#if !defined(OPENSSL_NO_ASM) || !defined(OPENSSL_SMALL_FOOTPRINT)
+#if defined(GHASH_ASM) || !defined(OPENSSL_SMALL_FOOTPRINT)
 #define GHASH(ctx, in, len) gcm_ghash_4bit((ctx)->Xi.u, (ctx)->Htable, in, len)
 /* GHASH_CHUNK is "stride parameter" missioned to mitigate cache
  * trashing effect. In other words idea is to hash data while it's
@@ -655,7 +655,7 @@ static void gcm_gmult_1bit(u64 Xi[2], const u64 H[2])
 
 #endif
 
-#if TABLE_BITS == 4 && !defined(OPENSSL_NO_ASM)
+#if TABLE_BITS == 4 && (defined(GHASH_ASM) || defined(OPENSSL_CPUID_OBJ))
 #if !defined(I386_ONLY) && (defined(__i386) || defined(__i386__) || defined(__x86_64) || defined(__x86_64__) || defined(_M_IX86) || defined(_M_AMD64) || defined(_M_X64))
 #define GHASH_ASM_X86_OR_64
 #define GCM_FUNCREF_4BIT

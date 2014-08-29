@@ -20,6 +20,14 @@ elseif (${ARCH} STREQUAL "x86")
 		aesni-x86.${ASM_EXT}
 	)
 
+elseif (${ARCH} STREQUAL "arm")
+        set(
+                AES_ARCH_SOURCES
+
+		aes_cbc.c
+                aes-armv4.${ASM_EXT}
+        )
+
 else()
 	set(
 		AES_ARCH_SOURCES
@@ -53,3 +61,4 @@ perlasm(vpaes-x86_64.${ASM_EXT} asm/vpaes-x86_64.pl)
 perlasm(aes-586.${ASM_EXT} asm/aes-586.pl)
 perlasm(vpaes-x86.${ASM_EXT} asm/vpaes-x86.pl)
 perlasm(aesni-x86.${ASM_EXT} asm/aesni-x86.pl)
+perlasm(aes-armv4.${ASM_EXT} asm/aes-armv4.pl)

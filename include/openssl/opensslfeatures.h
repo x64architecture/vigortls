@@ -24,7 +24,13 @@
  #define AES_ASM
  #define VPAES_ASM
  #define OPENSSL_BN_ASM_MONT
+#if !defined(__arm__) && !defined(__arm)
+ #define GHASH_ASM
  #define OPENSSL_IA32_SSE2
+#endif
+#if defined(__arm__) || defined(__arm)
+ #define OPENSSL_BN_ASM_GF2m
+#endif
 #if defined(__x86_64) || defined(__x86_64__)
  #define OPENSSL_BN_ASM_MONT5
  #define OPENSSL_BN_ASM_GF2m

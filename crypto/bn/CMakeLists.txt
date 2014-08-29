@@ -23,6 +23,16 @@ if (${ARCH} STREQUAL "x86")
 	)
 endif()
 
+if (${ARCH} STREQUAL "arm")
+    set(
+        BN_ARCH_SOURCES
+
+	bn_asm.c
+        armv4-mont.${ASM_EXT}
+        armv4-gf2m.${ASM_EXT}
+    )
+endif()
+
 add_library(
 	bn
 
@@ -65,3 +75,5 @@ perlasm(modexp512-x86_64.${ASM_EXT} asm/modexp512-x86_64.pl)
 perlasm(bn-586.${ASM_EXT} asm/bn-586.pl)
 perlasm(co-586.${ASM_EXT} asm/co-586.pl)
 perlasm(x86-mont.${ASM_EXT} asm/x86-mont.pl)
+perlasm(armv4-mont.${ASM_EXT} asm/armv4-mont.pl)
+perlasm(armv4-gf2m.${ASM_EXT} asm/armv4-gf2m.pl)

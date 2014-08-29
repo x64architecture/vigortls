@@ -16,6 +16,14 @@ if (${ARCH} STREQUAL "x86")
 	)
 endif()
 
+if (${ARCH} STREQUAL "asm")
+	set(
+		MODES_ARCH_SOURCES
+
+		ghash-armv4.${ASM_EXT}
+	)
+endif()
+
 add_library(
 	modes
 
@@ -35,3 +43,4 @@ add_library(
 
 perlasm(ghash-x86_64.${ASM_EXT} asm/ghash-x86_64.pl)
 perlasm(ghash-x86.${ASM_EXT} asm/ghash-x86.pl)
+perlasm(ghash-armv4.${ASM_EXT} asm/ghash-armv4.pl)

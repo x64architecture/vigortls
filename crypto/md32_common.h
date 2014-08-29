@@ -191,10 +191,10 @@ static inline uint32_t ROTATE(uint32_t a, unsigned int n)
 #ifndef HOST_l2c
 #define HOST_l2c(l, c)                                  \
     do {                                                \
-        *((c)++) = (unsigned char)(((l) >> 24) & 0xff), \
-        *((c)++) = (unsigned char)(((l) >> 16) & 0xff), \
-        *((c)++) = (unsigned char)(((l) >> 8 ) & 0xff), \
-        *((c)++) = (unsigned char)(((l)) & 0xff)        \
+        *((c)++) = (unsigned char)(((l) >> 24) & 0xff); \
+        *((c)++) = (unsigned char)(((l) >> 16) & 0xff); \
+        *((c)++) = (unsigned char)(((l) >> 8 ) & 0xff); \
+        *((c)++) = (unsigned char)(((l)) & 0xff);       \
     } while (0)
 #endif
 
@@ -224,19 +224,22 @@ static inline uint32_t ROTATE(uint32_t a, unsigned int n)
 #endif
 
 #ifndef HOST_c2l
-#define HOST_c2l(c, l)                                                           \
-    (l = (((unsigned long)(*((c)++)))), l |= (((unsigned long)(*((c)++))) << 8), \
-     l |= (((unsigned long)(*((c)++))) << 16),                                   \
-     l |= (((unsigned long)(*((c)++))) << 24), l)
+#define HOST_c2l(c, l)                            \
+    do {                                          \
+        l = (((unsigned long)(*((c)++)))       ); \
+        l |= (((unsigned long)(*((c)++))) << 8 ); \
+        l |= (((unsigned long)(*((c)++))) << 16); \
+        l |= (((unsigned long)(*((c)++))) << 24); \
+    } while (0)
 #endif
 #ifndef HOST_l2c
-#define HOST_l2c(l, c)                                  \
-    do {                                                \
-        *((c)++) = (unsigned char)(((l)) & 0xff);       \
-        *((c)++) = (unsigned char)(((l) >> 8 ) & 0xff); \
-        *((c)++) = (unsigned char)(((l) >> 16) & 0xff); \
-        *((c)++) = (unsigned char)(((l) >> 24) & 0xff); \
-    } while (0)
+#define HOST_l2c(l, c)                                     \
+    do {                                                   \
+        *((c)++) = (unsigned char)(((l)      ) & 0xff);    \
+        *((c)++) = (unsigned char)(((l) >> 8 ) & 0xff);    \
+        *((c)++) = (unsigned char)(((l) >> 16) & 0xff);    \
+        *((c)++) = (unsigned char)(((l) >> 24) & 0xff);    \
+      } while (0)
 #endif
 
 #endif
