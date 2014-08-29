@@ -15,7 +15,6 @@
  */
 
 #include <errno.h>
-#include <malloc.h>
 #include <stdint.h>
 #include <stdlib.h>
 

@@ -26,16 +26,6 @@ function(perlasm dest src)
 	)
 endfunction()
 
-ADD_CUSTOM_COMMAND(OUTPUT ${PROJECT_SOURCE_DIR}/include/openssl/obj_mac.h
-  WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/objects"
-  COMMAND perl objects.pl objects.txt obj_mac.num obj_mac.h && mv obj_mac.h ${PROJECT_SOURCE_DIR}/include/openssl/obj_mac.h
-  DEPENDS ${PROJECT_SOURCE_DIR}/crypto/objects/objects.pl
-)
-
-ADD_CUSTOM_TARGET(obj_mac.h ALL
-   DEPENDS ${PROJECT_SOURCE_DIR}/include/openssl/obj_mac.h
-)
-
 if (${ARCH} STREQUAL "x86_64")
 	set(
 		CRYPTO_ARCH_SOURCES
@@ -114,6 +104,20 @@ add_subdirectory(whrlpool)
 add_subdirectory(x509)
 add_subdirectory(x509v3)
 
+add_custom_command(OUTPUT ${PROJECT_SOURCE_DIR}/include/openssl/obj_mac.h
+  WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/objects"
+  COMMAND perl objects.pl objects.txt obj_mac.num obj_mac.h && mv obj_mac.h ${PROJECT_SOURCE_DIR}/include/openssl/obj_mac.h
+  DEPENDS ${PROJECT_SOURCE_DIR}/crypto/objects/objects.pl
+)
+
+add_custom_target(obj_mac.h ALL
+   DEPENDS ${PROJECT_SOURCE_DIR}/include/openssl/obj_mac.h
+)
+
+set_source_files_properties(${PROJECT_SOURCE_DIR}/include/openssl/obj_mac.h PROPERTIES GENERATED 1)
+
+add_dependencies(objects obj_mac.h)
+
 add_library(
 	crypto
 
@@ -185,9 +189,7 @@ add_library(
 	$<TARGET_OBJECTS:x509v3>
 )
 
-SET_SOURCE_FILES_PROPERTIES(mem_clr.c PROPERTIES COMPILE_FLAGS -O0)
+set_source_files_properties(mem_clr.c PROPERTIES COMPILE_FLAGS -O0)
 
 perlasm(x86_64cpuid.${ASM_EXT} x86_64cpuid.pl)
 perlasm(x86cpuid.${ASM_EXT} x86cpuid.pl)
-
-ADD_DEPENDENCIES(x509v3 obj_mac.h)
