@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8)
-project(VigorTLS)
+project(VigorTLS C)
 
 include(CTest)
 
