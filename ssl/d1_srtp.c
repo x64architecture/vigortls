@@ -126,12 +126,17 @@
 
 static SRTP_PROTECTION_PROFILE srtp_known_profiles[] = {
     {
-      "SRTP_AES128_CM_SHA1_80", SRTP_AES128_CM_SHA1_80,
+      .name = "SRTP_AES128_CM_SHA1_80",
+      .id = SRTP_AES128_CM_SHA1_80,
     },
     {
-      "SRTP_AES128_CM_SHA1_32", SRTP_AES128_CM_SHA1_32,
+      .name = "SRTP_AES128_CM_SHA1_32",
+      .id = SRTP_AES128_CM_SHA1_32,
     },
-    { 0 }
+    { 
+      .name = 0,
+      .id = 0,
+    },
 };
 
 static int find_profile_by_name(char *profile_name,
