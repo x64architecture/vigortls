@@ -11,13 +11,6 @@ _armv7_neon_probe:
 	.word	0xe12fff1e	@ bx	lr
 .size	_armv7_neon_probe,.-_armv7_neon_probe
 
-.global	_armv7_tick
-.type	_armv7_tick,%function
-_armv7_tick:
-	mrc	p15,0,r0,c9,c13,0
-	.word	0xe12fff1e	@ bx	lr
-.size	_armv7_tick,.-_armv7_tick
-
 .global	OPENSSL_atomic_add
 .type	OPENSSL_atomic_add,%function
 OPENSSL_atomic_add:
@@ -83,24 +76,6 @@ OPENSSL_wipe_cpu:
 	moveq	pc,lr
 	.word	0xe12fff1e	@ bx	lr
 .size	OPENSSL_wipe_cpu,.-OPENSSL_wipe_cpu
-
-.global	OPENSSL_instrument_bus
-.type	OPENSSL_instrument_bus,%function
-OPENSSL_instrument_bus:
-	eor	r0,r0,r0
-	tst	lr,#1
-	moveq	pc,lr
-	.word	0xe12fff1e	@ bx	lr
-.size	OPENSSL_instrument_bus,.-OPENSSL_instrument_bus
-
-.global	OPENSSL_instrument_bus2
-.type	OPENSSL_instrument_bus2,%function
-OPENSSL_instrument_bus2:
-	eor	r0,r0,r0
-	tst	lr,#1
-	moveq	pc,lr
-	.word	0xe12fff1e	@ bx	lr
-.size	OPENSSL_instrument_bus2,.-OPENSSL_instrument_bus2
 
 .align	5
 .LOPENSSL_armcap:
