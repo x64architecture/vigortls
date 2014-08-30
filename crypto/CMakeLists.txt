@@ -129,7 +129,6 @@ add_library(
 	malloc_wrapper.c
 	mem_clr.c
 	mem_dbg.c
-	o_str.c
 	time_support.c
 	uid.c
 

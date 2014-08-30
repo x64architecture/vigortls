@@ -378,7 +378,7 @@ int (*CRYPTO_get_add_lock_callback(void))(int *num, int mount, int type,
 void CRYPTO_set_locking_callback(void (*func)(int mode, int type,
                                               const char *file, int line))
 {
-    /* Calling this here ensures initialisation before any threads
+    /* Calling this here ensures initialization before any threads
      * are started.
      */
     locking_callback = func;
@@ -495,11 +495,7 @@ unsigned long CRYPTO_thread_id(void)
     unsigned long ret = 0;
 
     if (id_callback == NULL) {
-#if defined(GETPID_IS_MEANINGLESS)
-        ret = 1L;
-#else
         ret = (unsigned long)getpid();
-#endif
     } else
         ret = id_callback();
     return (ret);

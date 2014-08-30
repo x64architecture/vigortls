@@ -1,9 +1,11 @@
-/* crypto/o_str.c */
 /* Kurt Cancemi places this file in the public domain. */
 
 #include <ctype.h>
+#include <stddef.h>
 #include <strings.h>
-#include "o_str.h"
+
+int OPENSSL_strcasecmp(const char *str1, const char *str2);
+int OPENSSL_strncasecmp(const char *str1, const char *str2, size_t n);
 
 int OPENSSL_strncasecmp(const char *str1, const char *str2, size_t n)
 {
