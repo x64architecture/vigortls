@@ -1,71 +1,71 @@
 include_directories(${CMAKE_CURRENT_BINARY_DIR} .. ../../include . ../asn1 ../evp ../modes)
 
 if (${ARCH} STREQUAL "x86_64")
-	set(
-		BN_ARCH_SOURCES
+    set(
+        BN_ARCH_SOURCES
 
-		asm/x86_64-gcc.c
-		bn_asm.c
-		x86_64-mont.${ASM_EXT}
-		x86_64-mont5.${ASM_EXT}
-		x86_64-gf2m.${ASM_EXT}
-		modexp512-x86_64.${ASM_EXT}
-	)
+        asm/x86_64-gcc.c
+        bn_asm.c
+        x86_64-mont.${ASM_EXT}
+        x86_64-mont5.${ASM_EXT}
+        x86_64-gf2m.${ASM_EXT}
+        modexp512-x86_64.${ASM_EXT}
+    )
 endif()
 
 if (${ARCH} STREQUAL "x86")
-	set(
-		BN_ARCH_SOURCES
+    set(
+        BN_ARCH_SOURCES
 
-		bn-586.${ASM_EXT}
-		co-586.${ASM_EXT}
-		x86-mont.${ASM_EXT}
-	)
+        bn-586.${ASM_EXT}
+        co-586.${ASM_EXT}
+        x86-mont.${ASM_EXT}
+    )
 endif()
 
 if (${ARCH} STREQUAL "arm")
     set(
         BN_ARCH_SOURCES
 
-	bn_asm.c
+    bn_asm.c
         armv4-mont.${ASM_EXT}
         armv4-gf2m.${ASM_EXT}
     )
 endif()
 
 add_library(
-	bn
+    bn
 
-	OBJECT
+    OBJECT
 
-	bn_add.c
-	bn_div.c
-	bn_exp.c
-	bn_lib.c
-	bn_ctx.c
-	bn_mul.c
-	bn_mod.c
-	bn_print.c
-	bn_rand.c
-	bn_shift.c
-	bn_word.c
-	bn_blind.c
-	bn_kron.c
-	bn_sqrt.c
-	bn_gcd.c
-	bn_prime.c
-	bn_err.c
-	bn_sqr.c
-	bn_recp.c
-	bn_mont.c
-	bn_mpi.c
-	bn_exp2.c
-	bn_gf2m.c
-  	bn_nist.c
-	bn_depr.c
-	bn_const.c
+    bn_add.c
+    bn_div.c
+    bn_exp.c
+    bn_lib.c
+    bn_ctx.c
+    bn_mul.c
+    bn_mod.c
+    bn_print.c
+    bn_rand.c
+    bn_shift.c
+    bn_word.c
+    bn_blind.c
+    bn_kron.c
+    bn_sqrt.c
+    bn_gcd.c
+    bn_prime.c
+    bn_err.c
+    bn_sqr.c
+    bn_recp.c
+    bn_mont.c
+    bn_mpi.c
+    bn_exp2.c
+    bn_gf2m.c
+      bn_nist.c
+    bn_depr.c
+    bn_const.c
 
-	${BN_ARCH_SOURCES}
+    ${BN_ARCH_SOURCES}
 )
 
 perlasm(x86_64-mont.${ASM_EXT} asm/x86_64-mont.pl)

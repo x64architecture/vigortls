@@ -1,18 +1,18 @@
 include_directories(${CMAKE_CURRENT_BINARY_DIR} .. ../../include . ../asn1 ../evp ../modes)
 
 if (${ARCH} STREQUAL "x86_64")
-	set(
-		RC4_ARCH_SOURCES
+    set(
+        RC4_ARCH_SOURCES
 
-		rc4-x86_64.${ASM_EXT}
-		rc4-md5-x86_64.${ASM_EXT}
-	)
+        rc4-x86_64.${ASM_EXT}
+        rc4-md5-x86_64.${ASM_EXT}
+    )
 elseif (${ARCH} STREQUAL "x86")
-	set(
-		RC4_ARCH_SOURCES
+    set(
+        RC4_ARCH_SOURCES
 
-		rc4-586.${ASM_EXT}
-	)
+        rc4-586.${ASM_EXT}
+    )
 else()
 set(
     RC4_ARCH_SOURCES
@@ -23,11 +23,11 @@ set(
 endif()
 
 add_library(
-	rc4
+    rc4
 
-	OBJECT
+    OBJECT
 
-	${RC4_ARCH_SOURCES}
+    ${RC4_ARCH_SOURCES}
 )
 
 perlasm(rc4-x86_64.${ASM_EXT} asm/rc4-x86_64.pl)

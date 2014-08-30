@@ -1,10 +1,10 @@
 include_directories(${CMAKE_CURRENT_BINARY_DIR} .. ../../include . ../asn1 ../evp ../modes)
 
 add_library(
-	lhash
+    lhash
 
-	OBJECT
+    OBJECT
 
-	lhash.c
-	lh_stats.c
+    lhash.c
+    lh_stats.c
 )

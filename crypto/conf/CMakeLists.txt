@@ -1,15 +1,15 @@
 include_directories(${CMAKE_CURRENT_BINARY_DIR} .. ../../include . ../asn1 ../evp ../modes)
 
 add_library(
-	conf
+    conf
 
-	OBJECT
+    OBJECT
 
-	conf_err.c
-	conf_lib.c
-	conf_api.c
-	conf_def.c
-	conf_mod.c
-	conf_mall.c
-	conf_sap.c
+    conf_err.c
+    conf_lib.c
+    conf_api.c
+    conf_def.c
+    conf_mod.c
+    conf_mall.c
+    conf_sap.c
 )

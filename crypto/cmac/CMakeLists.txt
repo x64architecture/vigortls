@@ -1,11 +1,11 @@
 include_directories(${CMAKE_CURRENT_BINARY_DIR} .. ../../include . ../asn1 ../evp ../modes)
 
 add_library(
-	cmac
+    cmac
 
-	OBJECT
+    OBJECT
 
-	cm_ameth.c
-	cm_pmeth.c
-	cmac.c
+    cm_ameth.c
+    cm_pmeth.c
+    cmac.c
 )

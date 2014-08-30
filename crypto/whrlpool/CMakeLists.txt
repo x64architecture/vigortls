@@ -1,27 +1,27 @@
 include_directories( ${CMAKE_CURRENT_BINARY_DIR} .. ../../include . ../asn1 ../evp ../modes )
 
 if (${ARCH} STREQUAL "x86_64")
-	set(
-		WHRL_ARCH_SOURCES
+    set(
+        WHRL_ARCH_SOURCES
 
-		wp-x86_64.${ASM_EXT}
-	)
+        wp-x86_64.${ASM_EXT}
+    )
 endif()
 if (${ARCH} STREQUAL "x86")
-	set(
-		WHRL_ARCH_SOURCES
+    set(
+        WHRL_ARCH_SOURCES
 
-		wp-mmx.${ASM_EXT}
-	)
+        wp-mmx.${ASM_EXT}
+    )
 endif()
 
 add_library(
-	whrlpool
+    whrlpool
 
-	OBJECT
+    OBJECT
 
-	wp_dgst.c
-	wp_block.c
+    wp_dgst.c
+    wp_block.c
 
     ${WHRL_ARCH_SOURCES}
 )

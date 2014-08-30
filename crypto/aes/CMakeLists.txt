@@ -1,54 +1,54 @@
 include_directories(${CMAKE_CURRENT_BINARY_DIR} .. ../../include . ../asn1 ../evp ../modes)
 
 if (${ARCH} STREQUAL "x86_64")
-	set(
-		AES_ARCH_SOURCES
+    set(
+        AES_ARCH_SOURCES
 
-		aes-x86_64.${ASM_EXT}
-		aesni-x86_64.${ASM_EXT}
-		aesni-sha1-x86_64.${ASM_EXT}
-		bsaes-x86_64.${ASM_EXT}
-		vpaes-x86_64.${ASM_EXT}
-	)
+        aes-x86_64.${ASM_EXT}
+        aesni-x86_64.${ASM_EXT}
+        aesni-sha1-x86_64.${ASM_EXT}
+        bsaes-x86_64.${ASM_EXT}
+        vpaes-x86_64.${ASM_EXT}
+    )
 
 elseif (${ARCH} STREQUAL "x86")
-	set(
-		AES_ARCH_SOURCES
+    set(
+        AES_ARCH_SOURCES
 
-		aes-586.${ASM_EXT}
-		vpaes-x86.${ASM_EXT}
-		aesni-x86.${ASM_EXT}
-	)
+        aes-586.${ASM_EXT}
+        vpaes-x86.${ASM_EXT}
+        aesni-x86.${ASM_EXT}
+    )
 
 elseif (${ARCH} STREQUAL "arm")
-        set(
-                AES_ARCH_SOURCES
+    set(
+        AES_ARCH_SOURCES
 
-		aes_cbc.c
-                aes-armv4.${ASM_EXT}
-        )
+        aes_cbc.c
+        aes-armv4.${ASM_EXT}
+    )
 
 else()
-	set(
-		AES_ARCH_SOURCES
+    set(
+        AES_ARCH_SOURCES
 
-		aes_core.c
-		aes_cbc.c
-	)
+        aes_core.c
+        aes_cbc.c
+    )
 endif()
 
 add_library(
-	aes
+    aes
 
-	OBJECT
+    OBJECT
 
-	aes_misc.c
-	aes_ecb.c
-	aes_cfb.c
-	aes_ofb.c
-	aes_ctr.c
-	aes_ige.c
-	aes_wrap.c
+    aes_misc.c
+    aes_ecb.c
+    aes_cfb.c
+    aes_ofb.c
+    aes_ctr.c
+    aes_ige.c
+    aes_wrap.c
 
     ${AES_ARCH_SOURCES}
 )
