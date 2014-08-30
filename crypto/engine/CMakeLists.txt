@@ -15,7 +15,6 @@ add_library(
     eng_lib.c
     eng_list.c
     eng_openssl.c
-    eng_padlock.c
     eng_pkey.c
     eng_rsax.c
     eng_table.c

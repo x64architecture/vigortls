@@ -76,12 +76,5 @@ ENGINE_load_builtin_engines(void)
     ENGINE_load_rsax();
 #endif
     ENGINE_load_dynamic();
-#ifndef OPENSSL_NO_STATIC_ENGINE
-#ifndef OPENSSL_NO_HW
-#ifndef OPENSSL_NO_HW_PADLOCK
-    ENGINE_load_padlock();
-#endif
-#endif
-#endif
     ENGINE_register_all_complete();
 }

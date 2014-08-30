@@ -21,13 +21,13 @@ if (${ARCH} STREQUAL "x86")
 endif()
 
 if (${ARCH} STREQUAL "arm")
-        set(
-                SHA_ARCH_SOURCES
+    set(
+        SHA_ARCH_SOURCES
 
-                sha1-armv4-large.${ASM_EXT}
-                sha256-armv4.${ASM_EXT}
-                sha512-armv4.${ASM_EXT}
-        )
+        sha1-armv4-large.${ASM_EXT}
+        sha256-armv4.${ASM_EXT}
+        sha512-armv4.${ASM_EXT}
+    )
 endif()
 
 add_library(

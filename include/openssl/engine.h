@@ -320,9 +320,6 @@ ENGINE *ENGINE_by_id(const char *id);
 /* Add all the built-in engines. */
 void ENGINE_load_openssl(void);
 void ENGINE_load_dynamic(void);
-#ifndef OPENSSL_NO_STATIC_ENGINE
-void ENGINE_load_padlock(void);
-#endif
 void ENGINE_load_rsax(void);
 void ENGINE_load_builtin_engines(void);
 
