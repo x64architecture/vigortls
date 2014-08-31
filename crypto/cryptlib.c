@@ -600,7 +600,14 @@ const char *CRYPTO_get_lock_name(int type)
 
 #if defined(__i386) || defined(__i386__) || defined(_M_IX86) || defined(__INTEL__) || defined(__x86_64) || defined(__x86_64__) || defined(_M_AMD64) || defined(_M_X64)
 
-unsigned int OPENSSL_ia32cap_P[2];
+/* This value must be initialized to zero in order to work around a 
+ * bug in libtool or the linker on OS X.
+ *
+ * If not initialized or linked with the "-fno-common" flag the value 
+ * becomes a "common symbol". In a library, linking on OS X will fail
+ * to resolve common symbols. By initializing the value to zero, it
+ * becomes a "data symbol", which isn't affected. */
+unsigned int OPENSSL_ia32cap_P[2] = { 0 };
 unsigned long *OPENSSL_ia32cap_loc(void)
 {
     if (sizeof(long) == 4)
