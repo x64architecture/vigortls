@@ -115,7 +115,7 @@ add_custom_target(obj_mac.h ALL
 
 set_source_files_properties(${PROJECT_SOURCE_DIR}/include/openssl/obj_mac.h PROPERTIES GENERATED 1)
 
-add_dependencies(objects obj_mac.h)
+add_dependencies(cmac objects obj_mac.h)
 
 add_library(
     crypto
