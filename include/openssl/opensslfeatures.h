@@ -1,5 +1,4 @@
 #define OPENSSL_NO_CAMELLIA
-#define OPENSSL_NO_EC_NISTP_64_GCC_128
 #define OPENSSL_NO_CMS
 #define OPENSSL_NO_COMP
 #define OPENSSL_NO_GMP
@@ -19,6 +18,11 @@
 #define OPENSSL_NO_HEARTBEATS
 #define OPENSSL_NO_DYNAMIC_ENGINE
 #define OPENSSL_THREADS
+
+#if defined(__clang__) || defined(__GNUC__) && \
+(__GNUC__ < 3 || (__GNUC__ == 3 && __GNUC_MINOR__ < 1))
+ #define OPENSSL_NO_EC_NISTP_64_GCC_128
+#endif
 
 #ifndef OPENSSL_NO_ASM
  #define AES_ASM

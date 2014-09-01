@@ -11,6 +11,10 @@ add_library(
     eck_prn.c
     ecp_mont.c
     ecp_nist.c
+    ecp_nistp224.c
+    ecp_nistp256.c
+    ecp_nistp521.c
+    ecp_nistputil.c
     ecp_oct.c
     ecp_smpl.c
     ec_ameth.c
