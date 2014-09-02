@@ -171,9 +171,7 @@ extern int verify_depth;
 extern int verify_error;
 extern int verify_return_error;
 
-#ifdef FIONBIO
 static int c_nbio = 0;
-#endif
 static int c_Pause = 0;
 static int c_debug = 0;
 #ifndef OPENSSL_NO_TLSEXT
@@ -278,9 +276,7 @@ static void sc_usage(void)
     BIO_printf(bio_err, " -msg          - Show protocol messages\n");
     BIO_printf(bio_err, " -nbio_test    - more ssl protocol testing\n");
     BIO_printf(bio_err, " -state        - print the 'ssl' states\n");
-#ifdef FIONBIO
     BIO_printf(bio_err, " -nbio         - Run with non-blocking IO\n");
-#endif
     BIO_printf(bio_err, " -crlf         - convert LF from terminal into CRLF\n");
     BIO_printf(bio_err, " -quiet        - no s_client output\n");
     BIO_printf(bio_err, " -ign_eof      - ignore input eof (default when -quiet)\n");
@@ -590,9 +586,7 @@ int s_client_main(int argc, char **argv)
 
     verify_depth = 0;
     verify_error = X509_V_OK;
-#ifdef FIONBIO
     c_nbio = 0;
-#endif
 
     argc--;
     argv++;
@@ -776,12 +770,9 @@ int s_client_main(int argc, char **argv)
                 goto bad;
             cipher = *(++argv);
         }
-#ifdef FIONBIO
         else if (strcmp(*argv, "-nbio") == 0) {
             c_nbio = 1;
-        }
-#endif
-        else if (strcmp(*argv, "-starttls") == 0) {
+        } else if (strcmp(*argv, "-starttls") == 0) {
             if (--argc < 1)
                 goto bad;
             ++argv;
@@ -1076,7 +1067,6 @@ re_start:
     }
     BIO_printf(bio_c_out, "CONNECTED(%08X)\n", s);
 
-#ifdef FIONBIO
     if (c_nbio) {
         unsigned long l = 1;
         BIO_printf(bio_c_out, "turning on non blocking io\n");
@@ -1085,7 +1075,6 @@ re_start:
             goto end;
         }
     }
-#endif
     if (c_Pause & 0x01)
         SSL_set_debug(con, 1);
 
