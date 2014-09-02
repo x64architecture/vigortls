@@ -3,7 +3,7 @@ VigorTLS
 
 VigorTLS is a fork of OpenSSL developed by Kurt Cancemi.
 
-[![Build Status](https://secure.travis-ci.org/VigorTLS/VigorTLS.png)](http://travis-ci.org/VigorTLS/VigorTLS)
+[![Build Status](https://secure.travis-ci.org/vigortls/vigortls.png)](http://travis-ci.org/vigortls/vigortls)
 
 Goal
 ====
