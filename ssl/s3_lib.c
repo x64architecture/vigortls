@@ -1661,6 +1661,136 @@ SSL_CIPHER ssl3_ciphers[] = {
       .alg_bits = 256,
     },
 
+#ifndef OPENSSL_NO_CAMELLIA
+    /* Cipher C072 */    
+    {
+     .valid = 1,
+     .name = TLS1_TXT_ECDHE_ECDSA_WITH_CAMELLIA_128_CBC_SHA256,
+     .id = TLS1_CK_ECDHE_ECDSA_WITH_CAMELLIA_128_CBC_SHA256,
+     .algorithm_mkey = SSL_kECDHE,
+     .algorithm_auth = SSL_aECDSA,
+     .algorithm_enc = SSL_CAMELLIA128,
+     .algorithm_mac = SSL_SHA256,
+     .algorithm_ssl = SSL_TLSV1_2,
+     .algo_strength = SSL_HIGH,
+     .algorithm2 = SSL_HANDSHAKE_MAC_SHA256 | TLS1_PRF_SHA256,
+     .strength_bits = 128,
+     .alg_bits = 128,
+    },
+
+    /* Cipher C073 */
+    {
+     .valid = 1,
+     .name = TLS1_TXT_ECDHE_ECDSA_WITH_CAMELLIA_256_CBC_SHA384,
+     .id = TLS1_CK_ECDHE_ECDSA_WITH_CAMELLIA_256_CBC_SHA384,
+     .algorithm_mkey = SSL_kECDHE,
+     .algorithm_auth = SSL_aECDSA,
+     .algorithm_enc = SSL_CAMELLIA256,
+     .algorithm_mac = SSL_SHA384,
+     .algorithm_ssl = SSL_TLSV1_2,
+     .algo_strength = SSL_HIGH,
+     .algorithm2 = SSL_HANDSHAKE_MAC_SHA384|TLS1_PRF_SHA384,
+     .strength_bits = 256,
+     .alg_bits = 256,
+    },
+
+    /* Cipher C074 */
+    {
+     .valid = 1,
+     .name = TLS1_TXT_ECDH_ECDSA_WITH_CAMELLIA_128_CBC_SHA256,
+     .id = TLS1_CK_ECDH_ECDSA_WITH_CAMELLIA_128_CBC_SHA256,
+     .algorithm_mkey = SSL_kECDHe,
+     .algorithm_auth = SSL_aECDH,
+     .algorithm_enc = SSL_CAMELLIA128,
+     .algorithm_mac = SSL_SHA256,
+     .algorithm_ssl = SSL_TLSV1_2,
+     .algo_strength = SSL_HIGH,
+     .algorithm2 = SSL_HANDSHAKE_MAC_SHA256 | TLS1_PRF_SHA256,
+     .strength_bits = 128,
+     .alg_bits = 128,
+    },
+
+    /* Cipher C075 */
+    {
+     .valid = 1,
+     .name = TLS1_TXT_ECDH_ECDSA_WITH_CAMELLIA_256_CBC_SHA384,
+     .id = TLS1_CK_ECDH_ECDSA_WITH_CAMELLIA_256_CBC_SHA384,
+     .algorithm_mkey = SSL_kECDHe,
+     .algorithm_auth = SSL_aECDH,
+     .algorithm_enc = SSL_CAMELLIA256,
+     .algorithm_mac = SSL_SHA384,
+     .algorithm_ssl = SSL_TLSV1_2,
+     .algo_strength = SSL_HIGH,
+     .algorithm2 = SSL_HANDSHAKE_MAC_SHA384 | TLS1_PRF_SHA384,
+     .strength_bits = 256,
+     .alg_bits = 256,
+    },
+
+    /* Cipher C076 */
+    {
+     .valid = 1,
+     .name = TLS1_TXT_ECDHE_RSA_WITH_CAMELLIA_128_CBC_SHA256,
+     .id = TLS1_CK_ECDHE_RSA_WITH_CAMELLIA_128_CBC_SHA256,
+     .algorithm_mkey = SSL_kECDHE,
+     .algorithm_auth = SSL_aRSA,
+     .algorithm_enc = SSL_CAMELLIA128,
+     .algorithm_mac = SSL_SHA256,
+     .algorithm_ssl = SSL_TLSV1_2,
+     .algo_strength = SSL_HIGH,
+     .algorithm2 = SSL_HANDSHAKE_MAC_SHA256 | TLS1_PRF_SHA256,
+     .strength_bits = 128,
+     .alg_bits = 128,
+    },
+
+    /* Cipher C077 */
+    {
+     .valid = 1,
+     .name = TLS1_TXT_ECDHE_RSA_WITH_CAMELLIA_256_CBC_SHA384,
+     .id = TLS1_CK_ECDHE_RSA_WITH_CAMELLIA_256_CBC_SHA384,
+     .algorithm_mkey = SSL_kECDHE,
+     .algorithm_auth = SSL_aRSA,
+     .algorithm_enc = SSL_CAMELLIA256,
+     .algorithm_mac = SSL_SHA384,
+     .algorithm_ssl = SSL_TLSV1_2,
+     .algo_strength = SSL_HIGH,
+     .algorithm2 = SSL_HANDSHAKE_MAC_SHA384 | TLS1_PRF_SHA384,
+     .strength_bits = 256,
+     .alg_bits = 256,
+    },
+
+    /* Cipher C078 */
+    {
+     .valid = 1,
+     .name = TLS1_TXT_ECDH_RSA_WITH_CAMELLIA_128_CBC_SHA256,
+     .id = TLS1_CK_ECDH_RSA_WITH_CAMELLIA_128_CBC_SHA256,
+     .algorithm_mkey = SSL_kECDHr,
+     .algorithm_auth = SSL_aECDH,
+     .algorithm_enc = SSL_CAMELLIA128,
+     .algorithm_mac = SSL_SHA256,
+     .algorithm_ssl = SSL_TLSV1_2,
+     .algo_strength = SSL_HIGH,
+     .algorithm2 = SSL_HANDSHAKE_MAC_SHA256 | TLS1_PRF_SHA256,
+     .strength_bits = 128,
+     .alg_bits = 128,
+    },
+
+    /* Cipher C079 */
+    {
+     .valid = 1,
+     .name = TLS1_TXT_ECDH_RSA_WITH_CAMELLIA_256_CBC_SHA384,
+     .id = TLS1_CK_ECDH_RSA_WITH_CAMELLIA_256_CBC_SHA384,
+     .algorithm_mkey = SSL_kECDHr,
+     .algorithm_auth = SSL_aECDH,
+     .algorithm_enc = SSL_CAMELLIA256,
+     .algorithm_mac = SSL_SHA384,
+     .algorithm_ssl = SSL_TLSV1_2,
+     .algo_strength = SSL_HIGH,
+     .algorithm2 = SSL_HANDSHAKE_MAC_SHA384 | TLS1_PRF_SHA384,
+     .strength_bits = 256,
+     .alg_bits = 256,
+    },
+#endif  /* OPENSSL_NO_CAMELLIA */
+
 #ifdef TEMP_GOST_TLS
     /* Cipher FF00 */
     {
