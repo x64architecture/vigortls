@@ -94,8 +94,6 @@ int spkac_main(int argc, char **argv)
     char *engine = NULL;
 #endif
 
-    apps_startup();
-
     if (!bio_err)
         bio_err = BIO_new_fp(stderr, BIO_NOCLOSE);
 
@@ -287,8 +285,6 @@ end:
     BIO_free(in);
     BIO_free_all(out);
     EVP_PKEY_free(pkey);
-    if (passin)
-        free(passin);
-    apps_shutdown();
+    free(passin);
     return (ret);
 }

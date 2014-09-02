@@ -93,8 +93,6 @@ int ciphers_main(int argc, char **argv)
     meth = SSLv3_server_method();
 #endif
 
-    apps_startup();
-
     if (bio_err == NULL)
         bio_err = BIO_new_fp(stderr, BIO_NOCLOSE);
     STDout = BIO_new_fp(stdout, BIO_NOCLOSE);
@@ -196,6 +194,5 @@ end:
         SSL_free(ssl);
     if (STDout != NULL)
         BIO_free_all(STDout);
-    apps_shutdown();
     return (ret);
 }

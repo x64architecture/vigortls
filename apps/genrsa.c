@@ -108,7 +108,6 @@ int genrsa_main(int argc, char **argv)
     if (!bn)
         goto err;
 
-    apps_startup();
     BN_GENCB_set(&cb, genrsa_cb, bio_err);
 
     if (bio_err == NULL)
@@ -267,7 +266,6 @@ err:
         free(passout);
     if (ret != 0)
         ERR_print_errors(bio_err);
-    apps_shutdown();
     return (ret);
 }
 

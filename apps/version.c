@@ -139,8 +139,6 @@ int version_main(int argc, char **argv)
     int i, ret = 0;
     int cflags = 0, version = 0, date = 0, options = 0, platform = 0, dir = 0;
 
-    apps_startup();
-
     if (bio_err == NULL)
         if ((bio_err = BIO_new(BIO_s_file())) != NULL)
             BIO_set_fp(bio_err, stderr, BIO_NOCLOSE | BIO_FP_TEXT);
@@ -195,6 +193,5 @@ int version_main(int argc, char **argv)
     if (cflags)
         printf("Compiler: %s\n", CFLAGS);
 end:
-    apps_shutdown();
     return (ret);
 }

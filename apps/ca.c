@@ -322,8 +322,6 @@ int ca_main(int argc, char **argv)
     EF_ALIGNMENT = 0;
 #endif
 
-    apps_startup();
-
     conf = NULL;
     key = NULL;
     section = NULL;
@@ -1400,7 +1398,6 @@ err:
     NCONF_free(conf);
     NCONF_free(extconf);
     OBJ_cleanup();
-    apps_shutdown();
     return (ret);
 }
 

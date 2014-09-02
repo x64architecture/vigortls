@@ -127,8 +127,6 @@ int enc_main(int argc, char **argv)
 #endif
     const EVP_MD *dgst = NULL;
 
-    apps_startup();
-
     if (bio_err == NULL)
         if ((bio_err = BIO_new(BIO_s_file())) != NULL)
             BIO_set_fp(bio_err, stderr, BIO_NOCLOSE | BIO_FP_TEXT);
@@ -628,9 +626,7 @@ end:
     if (bzl != NULL)
         BIO_free(bzl);
 #endif
-    if (pass)
-        free(pass);
-    apps_shutdown();
+    free(pass);
     return (ret);
 }
 

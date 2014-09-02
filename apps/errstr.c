@@ -73,8 +73,6 @@ int errstr_main(int argc, char **argv)
     char buf[256];
     unsigned long l;
 
-    apps_startup();
-
     if (bio_err == NULL)
         if ((bio_err = BIO_new(BIO_s_file())) != NULL)
             BIO_set_fp(bio_err, stderr, BIO_NOCLOSE | BIO_FP_TEXT);
@@ -109,6 +107,5 @@ int errstr_main(int argc, char **argv)
             ret++;
         }
     }
-    apps_shutdown();
     return (ret);
 }

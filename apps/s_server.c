@@ -188,9 +188,7 @@ static int generate_session_id(const SSL *ssl, unsigned char *id,
 static DH *load_dh_param(const char *dhfile);
 static DH *get_dh512(void);
 
-#ifdef MONOLITH
 static void s_server_init(void);
-#endif
 
 static unsigned char dh512_p[] = {
     0xDA, 0x58, 0x3C, 0x16, 0xD9, 0x85, 0x22, 0x89, 0xD0, 0xE4, 0xAF, 0x75,
@@ -373,7 +371,6 @@ static int ssl_srp_server_param_cb(SSL *s, int *ad, void *arg)
 
 #endif
 
-#ifdef MONOLITH
 static void s_server_init(void)
 {
     accept_socket = -1;
@@ -402,7 +399,6 @@ static void s_server_init(void)
     engine_id = NULL;
 #endif
 }
-#endif
 
 static void sv_usage(void)
 {
@@ -744,10 +740,7 @@ int s_server_main(int argc, char *argv[])
     local_argc = argc;
     local_argv = argv;
 
-    apps_startup();
-#ifdef MONOLITH
     s_server_init();
-#endif
 
     if (bio_err == NULL)
         bio_err = BIO_new_fp(stderr, BIO_NOCLOSE);
@@ -1521,7 +1514,6 @@ end:
         BIO_free(bio_s_out);
         bio_s_out = NULL;
     }
-    apps_shutdown();
     return (ret);
 }
 
@@ -1660,8 +1652,8 @@ static int sv_body(char *hostname, int s, unsigned char *context)
 
         if (!read_from_sslcon) {
             FD_ZERO(&readfds);
-            openssl_fdset(fileno(stdin), &readfds);
-            openssl_fdset(s, &readfds);
+            FD_SET(fileno(stdin), &readfds);
+            FD_SET(s, &readfds);
             /* Note: under VMS with SOCKETSHR the second parameter is
              * currently of type (int *) whereas under other systems
              * it is (void *) if you don't have a cast it will choke

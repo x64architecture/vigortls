@@ -94,8 +94,6 @@ int gendh_main(int argc, char **argv)
 #endif
     BIO *out = NULL;
 
-    apps_startup();
-
     BN_GENCB_set(&cb, dh_cb, bio_err);
     if (bio_err == NULL)
         if ((bio_err = BIO_new(BIO_s_file())) != NULL)
@@ -179,7 +177,6 @@ end:
         BIO_free_all(out);
     if (dh != NULL)
         DH_free(dh);
-    apps_shutdown();
     return (ret);
 }
 

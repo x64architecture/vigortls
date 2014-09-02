@@ -102,8 +102,6 @@ int asn1parse_main(int argc, char **argv)
 
     informat = FORMAT_PEM;
 
-    apps_startup();
-
     if (bio_err == NULL)
         if ((bio_err = BIO_new(BIO_s_file())) != NULL)
             BIO_set_fp(bio_err, stderr, BIO_NOCLOSE | BIO_FP_TEXT);
@@ -353,7 +351,6 @@ end:
     if (osk != NULL)
         sk_OPENSSL_STRING_free(osk);
     OBJ_cleanup();
-    apps_shutdown();
     return (ret);
 }
 

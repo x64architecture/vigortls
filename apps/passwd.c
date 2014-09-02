@@ -68,8 +68,6 @@ int passwd_main(int argc, char **argv)
     int usecrypt = 0, use1 = 0, useapr1 = 0;
     size_t pw_maxlen = 0;
 
-    apps_startup();
-
     if (bio_err == NULL)
         if ((bio_err = BIO_new(BIO_s_file())) != NULL)
             BIO_set_fp(bio_err, stderr, BIO_NOCLOSE | BIO_FP_TEXT);
@@ -254,7 +252,6 @@ err:
         BIO_free(in);
     if (out)
         BIO_free_all(out);
-    apps_shutdown();
     return (ret);
 }
 

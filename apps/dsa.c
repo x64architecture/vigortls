@@ -111,8 +111,6 @@ int dsa_main(int argc, char **argv)
 
     int pvk_encr = 2;
 
-    apps_startup();
-
     if (bio_err == NULL)
         if ((bio_err = BIO_new(BIO_s_file())) != NULL)
             BIO_set_fp(bio_err, stderr, BIO_NOCLOSE | BIO_FP_TEXT);
@@ -340,7 +338,6 @@ end:
         free(passin);
     if (passout)
         free(passout);
-    apps_shutdown();
     return (ret);
 }
 #else /* !OPENSSL_NO_DSA */

@@ -122,8 +122,6 @@ int dsaparam_main(int argc, char **argv)
     const int *stnerr = NULL;
 #endif
 
-    apps_startup();
-
     if (bio_err == NULL)
         if ((bio_err = BIO_new(BIO_s_file())) != NULL)
             BIO_set_fp(bio_err, stderr, BIO_NOCLOSE | BIO_FP_TEXT);
@@ -396,7 +394,6 @@ end:
         BIO_free_all(out);
     if (dsa != NULL)
         DSA_free(dsa);
-    apps_shutdown();
     return (ret);
 }
 

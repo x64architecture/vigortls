@@ -92,8 +92,6 @@ int dh_main(int argc, char **argv)
     char *engine;
 #endif
 
-    apps_startup();
-
     if (bio_err == NULL)
         if ((bio_err = BIO_new(BIO_s_file())) != NULL)
             BIO_set_fp(bio_err, stderr, BIO_NOCLOSE | BIO_FP_TEXT);
@@ -310,6 +308,5 @@ end:
         BIO_free_all(out);
     if (dh != NULL)
         DH_free(dh);
-    apps_shutdown();
     return (ret);
 }

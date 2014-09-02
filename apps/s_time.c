@@ -329,7 +329,6 @@ int s_time_main(int argc, char **argv)
     char buf[1024 * 8];
     int ver;
 
-    apps_startup();
     s_time_init();
 
     if (bio_err == NULL)
@@ -512,7 +511,6 @@ end:
         SSL_CTX_free(tm_ctx);
         tm_ctx = NULL;
     }
-    apps_shutdown();
     return (ret);
 }
 
@@ -559,14 +557,8 @@ static SSL *doConnection(SSL *scon)
             i = SSL_get_fd(serverCon);
             width = i + 1;
             FD_ZERO(&readfds);
-            openssl_fdset(i, &readfds);
-            /* Note: under VMS with SOCKETSHR the 2nd parameter
-             * is currently of type (int *) whereas under other
-             * systems it is (void *) if you don't have a cast it
-             * will choke the compiler: if you do have a cast then
-             * you can either go for (int *) or (void *).
-             */
-            select(width, (void *)&readfds, NULL, NULL, NULL);
+            FD_SET(i, &readfds);
+            select(width, &readfds, NULL, NULL, NULL);
             continue;
         }
         break;

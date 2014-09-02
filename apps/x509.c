@@ -206,8 +206,6 @@ int x509_main(int argc, char **argv)
 
     reqfile = 0;
 
-    apps_startup();
-
     if (bio_err == NULL)
         bio_err = BIO_new_fp(stderr, BIO_NOCLOSE);
 
@@ -952,7 +950,6 @@ end:
     sk_ASN1_OBJECT_pop_free(reject, ASN1_OBJECT_free);
     if (passin)
         free(passin);
-    apps_shutdown();
     return (ret);
 }
 

@@ -124,8 +124,6 @@ int pkcs12_main(int argc, char **argv)
     char *engine = NULL;
 #endif
 
-    apps_startup();
-
     cert_pbe = NID_pbe_WithSHA1And40BitRC2_CBC;
 
     enc = EVP_des_ede3_cbc();
@@ -614,11 +612,8 @@ end:
     BIO_free_all(out);
     if (canames)
         sk_OPENSSL_STRING_free(canames);
-    if (passin)
-        free(passin);
-    if (passout)
-        free(passout);
-    apps_shutdown();
+    free(passin);
+    free(passout);
     return (ret);
 }
 

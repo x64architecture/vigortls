@@ -84,8 +84,6 @@ int rand_main(int argc, char **argv)
     char *engine = NULL;
 #endif
 
-    apps_startup();
-
     if (bio_err == NULL)
         if ((bio_err = BIO_new(BIO_s_file())) != NULL)
             BIO_set_fp(bio_err, stderr, BIO_NOCLOSE | BIO_FP_TEXT);
@@ -199,6 +197,5 @@ err:
     ERR_print_errors(bio_err);
     if (out)
         BIO_free_all(out);
-    apps_shutdown();
     return (ret);
 }

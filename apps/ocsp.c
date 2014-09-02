@@ -57,8 +57,6 @@
  */
 #ifndef OPENSSL_NO_OCSP
 
-#define USE_SOCKETS
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <limits.h>
@@ -1144,7 +1142,7 @@ static OCSP_RESPONSE *query_responder(BIO *err, BIO *cbio, char *path,
 
     if (req_timeout != -1 && rv <= 0) {
         FD_ZERO(&confds);
-        openssl_fdset(fd, &confds);
+        FD_SET(fd, &confds);
         tv.tv_usec = 0;
         tv.tv_sec = req_timeout;
         rv = select(fd + 1, NULL, (void *)&confds, NULL, &tv);
@@ -1174,7 +1172,7 @@ static OCSP_RESPONSE *query_responder(BIO *err, BIO *cbio, char *path,
         if (req_timeout == -1)
             continue;
         FD_ZERO(&confds);
-        openssl_fdset(fd, &confds);
+        FD_SET(fd, &confds);
         tv.tv_usec = 0;
         tv.tv_sec = req_timeout;
         if (BIO_should_read(cbio))

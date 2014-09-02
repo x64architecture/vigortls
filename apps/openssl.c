@@ -112,7 +112,6 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#define OPENSSL_C /* tells apps.h to use complete apps_startup() */
 #include "apps.h"
 #include <openssl/bio.h>
 #include <openssl/crypto.h>
@@ -142,11 +141,8 @@ static void list_cipher(BIO *out);
 static void list_md(BIO *out);
 char *default_config_file = NULL;
 
-/* Make sure there is only one when MONOLITH is defined */
-#ifdef MONOLITH
 CONF *config = NULL;
 BIO *bio_err = NULL;
-#endif
 
 int main(int argc, char *argv[])
 {
@@ -168,8 +164,6 @@ int main(int argc, char *argv[])
     if (bio_err == NULL)
         if ((bio_err = BIO_new(BIO_s_file())) != NULL)
             BIO_set_fp(bio_err, stderr, BIO_NOCLOSE | BIO_FP_TEXT);
-
-    apps_startup();
 
     /* Lets load up our environment a little */
     p = getenv("OPENSSL_CONF");
@@ -270,8 +264,6 @@ end:
     if (prog != NULL)
         lh_FUNCTION_free(prog);
     free(arg.data);
-
-    apps_shutdown();
 
     if (bio_err != NULL) {
         BIO_free(bio_err);
