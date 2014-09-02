@@ -487,10 +487,4 @@ end:
         BIO_free_all(bio_out);
     return (ret);
 }
-#else
-
-#if PEDANTIC
-static void *dummy = &dummy;
-#endif
-
 #endif

@@ -348,10 +348,4 @@ end:
         free(passout);
     return (ret);
 }
-#else /* !OPENSSL_NO_EC */
-
-#if PEDANTIC
-static void *dummy = &dummy;
-#endif
-
 #endif

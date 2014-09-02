@@ -196,8 +196,5 @@ static int cb(int p, int n, BN_GENCB *arg)
         c = '\n';
     BIO_write(arg->arg, &c, 1);
     (void)BIO_flush(arg->arg);
-#ifdef LINT
-    p = n;
-#endif
     return 1;
 }

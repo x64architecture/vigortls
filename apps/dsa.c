@@ -340,10 +340,4 @@ end:
         free(passout);
     return (ret);
 }
-#else /* !OPENSSL_NO_DSA */
-
-#if PEDANTIC
-static void *dummy = &dummy;
-#endif
-
 #endif

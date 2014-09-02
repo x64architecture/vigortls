@@ -356,21 +356,4 @@ err:
     exit(ret);
     return (ret);
 }
-
-#if 0
-static void cb(int p, int n, void *arg)
-    {
-    char c='*';
-
-    if (p == 0) c='.';
-    if (p == 1) c='+';
-    if (p == 2) c='*';
-    if (p == 3) c='\n';
-    BIO_write((BIO *)arg,&c,1);
-    (void)BIO_flush((BIO *)arg);
-#ifdef LINT
-    p=n;
-#endif
-    }
-#endif
 #endif
