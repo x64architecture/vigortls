@@ -210,7 +210,6 @@ static int parseArgs(int argc, char **argv)
         else if (strcmp(*argv, "-new") == 0)
             perform = 1;
         else if (strcmp(*argv, "-verify") == 0) {
-            const int *stnerr = NULL;
             tm_verify = SSL_VERIFY_PEER | SSL_VERIFY_CLIENT_ONCE;
             if (--argc < 1)
                 goto bad;

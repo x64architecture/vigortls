@@ -144,7 +144,6 @@
 #include <unistd.h>
 #include <openssl/e_os2.h>
 
-#define USE_SOCKETS
 #include "apps.h"
 #include <openssl/x509.h>
 #include <openssl/ssl.h>
@@ -825,7 +824,6 @@ int s_client_main(int argc, char **argv)
                 goto bad;
             keymatexportlabel = *(++argv);
         } else if (strcmp(*argv, "-keymatexportlen") == 0) {
-            const int *stnerr = NULL;
             if (--argc < 1)
                 goto bad;
             keymatexportlen = str2num(*(++argv), 1, INT_MAX, &stnerr);

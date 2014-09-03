@@ -179,8 +179,6 @@
 #define BUFSIZE ((long)1024 * 8 + 64)
 int run = 0;
 
-size_t n;
-
 static int mr = 0;
 static int usertime = 1;
 
