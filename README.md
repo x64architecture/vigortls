@@ -24,5 +24,6 @@ Build instructions
 Currently tested operating systems
 ==================================
 
-* Linux
-* Mac OS X
+* Linux: x86, x86_64, armv6
+* Mac OS X: x86_64
+* FreeBSD: x86_64
