@@ -217,8 +217,8 @@ static int ssl_write(BIO *b, const char *out, int outl)
 
     BIO_clear_retry_flags(b);
 
-    /*    ret=SSL_do_handshake(ssl);
-          if (ret > 0) */
+    /* ret = SSL_do_handshake(ssl);
+       if (ret > 0) */
     ret = SSL_write(ssl, out, outl);
 
     switch (SSL_get_error(ssl, ret)) {
@@ -375,8 +375,8 @@ static long ssl_ctrl(BIO *b, int cmd, long num, void *ptr)
             /* Only detach if we are the BIO explicitly being popped */
             if (b == ptr) {
                 /* Shouldn't happen in practice because the
-       * rbio and wbio are the same when pushed.
-       */
+                 * rbio and wbio are the same when pushed.
+                 */
                 if (ssl->rbio != ssl->wbio)
                     BIO_free_all(ssl->wbio);
                 if (b->next_bio != NULL)
@@ -447,7 +447,7 @@ static long ssl_callback_ctrl(BIO *b, int cmd, bio_info_cb *fp)
     switch (cmd) {
         case BIO_CTRL_SET_CALLBACK: {
             /* FIXME: setting this via a completely different prototype
-       seems like a crap idea */
+               seems like a crap idea */
             SSL_set_info_callback(ssl, (void (*)(const SSL *, int, int))fp);
         } break;
         default:

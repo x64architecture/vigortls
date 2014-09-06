@@ -82,8 +82,7 @@ static int ocsp_certid_print(BIO *bp, OCSP_CERTID *a, int indent)
     return 1;
 }
 
-typedef struct
-    {
+typedef struct {
     long t;
     const char *m;
 } OCSP_TBLSTR;

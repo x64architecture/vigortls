@@ -743,7 +743,10 @@ int dtls1_client_hello(SSL *s)
     buf = (unsigned char *)s->init_buf->data;
     if (s->state == SSL3_ST_CW_CLNT_HELLO_A) {
         SSL_SESSION *sess = s->session;
-        if ((s->session == NULL) || (s->session->ssl_version != s->version) || (!sess->session_id_length && !sess->tlsext_tick) || (s->session->not_resumable)) {
+        if ((s->session == NULL)
+            || (s->session->ssl_version != s->version)
+            || (!sess->session_id_length && !sess->tlsext_tick)
+            || (s->session->not_resumable)) {
             if (!ssl_get_new_session(s, 0))
                 goto err;
         }
@@ -974,7 +977,7 @@ int dtls1_send_client_key_exchange(SSL *s)
             }
 
             /* use the 'p' output buffer for the DH key, but
-       * make sure to clear it out afterwards */
+             * make sure to clear it out afterwards */
 
             n = DH_compute_key(p, dh_srvr->pub_key, dh_clnt);
 
@@ -984,8 +987,8 @@ int dtls1_send_client_key_exchange(SSL *s)
             }
 
             /* generate master key from the result */
-            s->session->master_key_length = s->method->ssl3_enc->generate_master_secret(s, s->session->master_key,
-                                                                                        p, n);
+            s->session->master_key_length =
+                s->method->ssl3_enc->generate_master_secret(s, s->session->master_key, p, n);
             /* clean up */
             memset(p, 0, n);
 
@@ -1005,30 +1008,30 @@ int dtls1_send_client_key_exchange(SSL *s)
             int field_size = 0;
 
             /* Did we send out the client's
-       * ECDH share for use in premaster
-       * computation as part of client certificate?
-       * If so, set ecdh_clnt_cert to 1.
-       */
+             * ECDH share for use in premaster
+             * computation as part of client certificate?
+             * If so, set ecdh_clnt_cert to 1.
+             */
             if ((alg_k & (SSL_kECDHr | SSL_kECDHe)) && (s->cert != NULL)) {
                 /* XXX: For now, we do not support client
-         * authentication using ECDH certificates.
-         * To add such support, one needs to add
-         * code that checks for appropriate
-         * conditions and sets ecdh_clnt_cert to 1.
-         * For example, the cert have an ECC
-         * key on the same curve as the server's
-         * and the key should be authorized for
-         * key agreement.
-         *
-         * One also needs to add code in ssl3_connect
-         * to skip sending the certificate verify
-         * message.
-         *
-         * if ((s->cert->key->privatekey != NULL) &&
-         *     (s->cert->key->privatekey->type ==
-         *      EVP_PKEY_EC) && ...)
-         * ecdh_clnt_cert = 1;
-         */
+                 * authentication using ECDH certificates.
+                 * To add such support, one needs to add
+                 * code that checks for appropriate
+                 * conditions and sets ecdh_clnt_cert to 1.
+                 * For example, the cert have an ECC
+                 * key on the same curve as the server's
+                 * and the key should be authorized for
+                 * key agreement.
+                 *
+                 * One also needs to add code in ssl3_connect
+                 * to skip sending the certificate verify
+                 * message.
+                 *
+                 * if ((s->cert->key->privatekey != NULL) &&
+                 *     (s->cert->key->privatekey->type ==
+                 *      EVP_PKEY_EC) && ...)
+                 * ecdh_clnt_cert = 1;
+                 */
             }
 
             if (s->session->sess_cert->peer_ecdh_tmp != NULL) {
@@ -1037,7 +1040,9 @@ int dtls1_send_client_key_exchange(SSL *s)
                 /* Get the Server Public Key from Cert */
                 srvr_pub_pkey = X509_get_pubkey(
                     s->session->sess_cert->peer_pkeys[SSL_PKEY_ECC].x509);
-                if ((srvr_pub_pkey == NULL) || (srvr_pub_pkey->type != EVP_PKEY_EC) || (srvr_pub_pkey->pkey.ec == NULL)) {
+                if ((srvr_pub_pkey == NULL)
+                    || (srvr_pub_pkey->type != EVP_PKEY_EC)
+                    || (srvr_pub_pkey->pkey.ec == NULL)) {
                     SSLerr(SSL_F_DTLS1_SEND_CLIENT_KEY_EXCHANGE, ERR_R_INTERNAL_ERROR);
                     goto err;
                 }
@@ -1064,9 +1069,9 @@ int dtls1_send_client_key_exchange(SSL *s)
             }
             if (ecdh_clnt_cert) {
                 /* Reuse key info from our certificate
-         * We only need our private key to perform
-         * the ECDH computation.
-         */
+                 * We only need our private key to perform
+                 * the ECDH computation.
+                 */
                 const BIGNUM *priv_key;
                 tkey = s->cert->key->privatekey->pkey.ec;
                 priv_key = EC_KEY_get0_private_key(tkey);
@@ -1087,8 +1092,8 @@ int dtls1_send_client_key_exchange(SSL *s)
             }
 
             /* use the 'p' output buffer for the ECDH key, but
-       * make sure to clear it out afterwards
-       */
+             * make sure to clear it out afterwards
+             */
 
             field_size = EC_GROUP_get_degree(srvr_group);
             if (field_size <= 0) {
@@ -1112,8 +1117,8 @@ int dtls1_send_client_key_exchange(SSL *s)
                 n = 0;
             } else {
                 /* First check the size of encoding and
-         * allocate memory accordingly.
-         */
+                 * allocate memory accordingly.
+                 */
                 encoded_pt_len = EC_POINT_point2oct(srvr_group, EC_KEY_get0_public_key(clnt_ecdh),
                                                     POINT_CONVERSION_UNCOMPRESSED, NULL, 0, NULL);
 
@@ -1155,11 +1160,11 @@ int dtls1_send_client_key_exchange(SSL *s)
 
         d = dtls1_set_message_header(s, d, SSL3_MT_CLIENT_KEY_EXCHANGE, n, 0, n);
         /*
-     *(d++)=SSL3_MT_CLIENT_KEY_EXCHANGE;
-     l2n3(n,d);
-     l2n(s->d1->handshake_write_seq,d);
-     s->d1->handshake_write_seq++;
-    */
+         * (d++) = SSL3_MT_CLIENT_KEY_EXCHANGE;
+         * l2n3(n, d);
+         * l2n(s->d1->handshake_write_seq,d);
+         * s->d1->handshake_write_seq++;
+         */
 
         s->state = SSL3_ST_CW_KEY_EXCH_B;
         /* number of bytes to write */
@@ -1255,7 +1260,9 @@ int dtls1_send_client_certificate(SSL *s)
     unsigned long l;
 
     if (s->state == SSL3_ST_CW_CERT_A) {
-        if ((s->cert == NULL) || (s->cert->key->x509 == NULL) || (s->cert->key->privatekey == NULL))
+        if ((s->cert == NULL)
+            || (s->cert->key->x509 == NULL)
+            || (s->cert->key->privatekey == NULL))
             s->state = SSL3_ST_CW_CERT_B;
         else
             s->state = SSL3_ST_CW_CERT_C;
@@ -1264,8 +1271,8 @@ int dtls1_send_client_certificate(SSL *s)
     /* We need to get a client cert */
     if (s->state == SSL3_ST_CW_CERT_B) {
         /* If we get an error, we need to
-     * ssl->rwstate=SSL_X509_LOOKUP; return(-1);
-     * We then get retied later */
+         * ssl->rwstate=SSL_X509_LOOKUP; return(-1);
+         * We then get retied later */
         i = 0;
         i = ssl_do_client_cert_cb(s, &x509, &pkey);
         if (i < 0) {

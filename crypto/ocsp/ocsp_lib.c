@@ -271,14 +271,10 @@ parse_err:
     OCSPerr(OCSP_F_OCSP_PARSE_URL, OCSP_R_ERROR_PARSING_URL);
 
 err:
-    if (buf)
-        free(buf);
-    if (*ppath)
-        free(*ppath);
-    if (*pport)
-        free(*pport);
-    if (*phost)
-        free(*phost);
+    free(buf);
+    free(*ppath);
+    free(*pport);
+    free(*phost);
     return 0;
 }
 
