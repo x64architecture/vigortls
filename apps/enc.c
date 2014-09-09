@@ -346,7 +346,7 @@ int enc_main(int argc, char **argv)
     }
 
     strbuf = malloc(SIZE);
-    buff = (unsigned char *)malloc(EVP_ENCODE_LENGTH(bsize));
+    buff = malloc(EVP_ENCODE_LENGTH(bsize));
     if ((buff == NULL) || (strbuf == NULL)) {
         BIO_printf(bio_err, "malloc failure %ld\n", (long)EVP_ENCODE_LENGTH(bsize));
         goto end;

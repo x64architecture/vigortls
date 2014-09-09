@@ -201,7 +201,7 @@ static int test_ecdh_curve(int nid, const char *text, BN_CTX *ctx, BIO *out)
 #endif
 
     alen = KDF1_SHA1_len;
-    abuf = (unsigned char *)malloc(alen);
+    abuf = malloc(alen);
     aout = ECDH_compute_key(abuf, alen, EC_KEY_get0_public_key(b), a, KDF1_SHA1);
 
 #ifdef NOISY
@@ -217,7 +217,7 @@ static int test_ecdh_curve(int nid, const char *text, BN_CTX *ctx, BIO *out)
 #endif
 
     blen = KDF1_SHA1_len;
-    bbuf = (unsigned char *)malloc(blen);
+    bbuf = malloc(blen);
     bout = ECDH_compute_key(bbuf, blen, EC_KEY_get0_public_key(a), b, KDF1_SHA1);
 
 #ifdef NOISY

@@ -338,7 +338,7 @@ ASN1_OBJECT *ASN1_OBJECT_new(void)
 {
     ASN1_OBJECT *ret;
 
-    ret = (ASN1_OBJECT *)malloc(sizeof(ASN1_OBJECT));
+    ret = malloc(sizeof(ASN1_OBJECT));
     if (ret == NULL) {
         ASN1err(ASN1_F_ASN1_OBJECT_NEW, ERR_R_MALLOC_FAILURE);
         return (NULL);

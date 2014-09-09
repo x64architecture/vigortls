@@ -8,8 +8,6 @@
 #include <openssl/safestack.h>
 #include <openssl/e_os2.h>
 
-#define OPENSSL_strcmp strcmp
-
 /* I use the ex_data stuff to manage the identifiers for the obj_name_types
  * that applications may define.  I only really use the free function field.
  */
@@ -77,7 +75,7 @@ int OBJ_NAME_new_index(unsigned long (*hash_func)(const char *),
             return (0);
         }
         name_funcs->hash_func = lh_strhash;
-        name_funcs->cmp_func = OPENSSL_strcmp;
+        name_funcs->cmp_func = strcmp;
         name_funcs->free_func = 0; /* NULL is often declared to
                         * ((void *)0), which according
                         * to Compaq C is not really
@@ -173,7 +171,7 @@ int OBJ_NAME_add(const char *name, int type, const char *data)
     alias = type & OBJ_NAME_ALIAS;
     type &= ~OBJ_NAME_ALIAS;
 
-    onp = (OBJ_NAME *)malloc(sizeof(OBJ_NAME));
+    onp = malloc(sizeof(OBJ_NAME));
     if (onp == NULL) {
         /* ERROR */
         return (0);

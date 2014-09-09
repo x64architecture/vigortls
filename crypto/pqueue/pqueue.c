@@ -70,7 +70,7 @@ typedef struct _pqueue {
 pitem *
 pitem_new(unsigned char *prio64be, void *data)
 {
-    pitem *item = (pitem *)malloc(sizeof(pitem));
+    pitem *item = malloc(sizeof(pitem));
     if (item == NULL)
         return NULL;
 
@@ -94,7 +94,7 @@ pitem_free(pitem *item)
 pqueue_s *
 pqueue_new()
 {
-    pqueue_s *pq = (pqueue_s *)malloc(sizeof(pqueue_s));
+    pqueue_s *pq = malloc(sizeof(pqueue_s));
     if (pq == NULL)
         return NULL;
 

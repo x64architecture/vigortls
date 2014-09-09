@@ -385,7 +385,7 @@ int password_callback(char *buf, int bufsiz, int verify,
             ok = UI_add_input_string(ui, prompt, ui_flags, buf,
                                      PW_MIN_LENGTH, bufsiz - 1);
         if (ok >= 0 && verify) {
-            buff = (char *)malloc(bufsiz);
+            buff = malloc(bufsiz);
             ok = UI_add_verify_string(ui, prompt, ui_flags, buff,
                                       PW_MIN_LENGTH, bufsiz - 1, buf);
         }

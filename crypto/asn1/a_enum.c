@@ -79,7 +79,7 @@ int ASN1_ENUMERATED_set(ASN1_ENUMERATED *a, long v)
     if (a->length < (int)(sizeof(long) + 1)) {
         if (a->data != NULL)
             free(a->data);
-        if ((a->data = (unsigned char *)malloc(sizeof(long) + 1)) != NULL)
+        if ((a->data = malloc(sizeof(long) + 1)) != NULL)
             memset((char *)a->data, 0, sizeof(long) + 1);
     }
     if (a->data == NULL) {

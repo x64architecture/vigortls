@@ -101,7 +101,7 @@ ASN1_STRING *d2i_ASN1_type_bytes(ASN1_STRING **a, const unsigned char **pp,
         ret = (*a);
 
     if (len != 0) {
-        s = (unsigned char *)malloc((int)len + 1);
+        s = malloc((int)len + 1);
         if (s == NULL) {
             i = ERR_R_MALLOC_FAILURE;
             goto err;
@@ -204,7 +204,7 @@ ASN1_STRING *d2i_ASN1_bytes(ASN1_STRING **a, const unsigned char **pp,
             if ((ret->length < len) || (ret->data == NULL)) {
                 if (ret->data != NULL)
                     free(ret->data);
-                s = (unsigned char *)malloc((int)len + 1);
+                s = malloc((int)len + 1);
                 if (s == NULL) {
                     i = ERR_R_MALLOC_FAILURE;
                     goto err;

@@ -1962,17 +1962,17 @@ static int do_body(X509 **xret, EVP_PKEY *pkey, X509 *x509, const EVP_MD *dgst,
         goto err;
 
     /* We now just add it to the database */
-    row[DB_type] = (char *)malloc(2);
+    row[DB_type] = malloc(2);
 
     tm = X509_get_notAfter(ret);
-    row[DB_exp_date] = (char *)malloc(tm->length + 1);
+    row[DB_exp_date] = malloc(tm->length + 1);
     memcpy(row[DB_exp_date], tm->data, tm->length);
     row[DB_exp_date][tm->length] = '\0';
 
     row[DB_rev_date] = NULL;
 
     /* row[DB_serial] done already */
-    row[DB_file] = (char *)malloc(8);
+    row[DB_file] = malloc(8);
     row[DB_name] = X509_NAME_oneline(X509_get_subject_name(ret), NULL, 0);
 
     if ((row[DB_type] == NULL) || (row[DB_exp_date] == NULL) || (row[DB_file] == NULL) || (row[DB_name] == NULL)) {
@@ -2217,17 +2217,17 @@ static int do_revoke(X509 *x509, CA_DB *db, int type, char *value)
         BIO_printf(bio_err, "Adding Entry with serial number %s to DB for %s\n", row[DB_serial], row[DB_name]);
 
         /* We now just add it to the database */
-        row[DB_type] = (char *)malloc(2);
+        row[DB_type] = malloc(2);
 
         tm = X509_get_notAfter(x509);
-        row[DB_exp_date] = (char *)malloc(tm->length + 1);
+        row[DB_exp_date] = malloc(tm->length + 1);
         memcpy(row[DB_exp_date], tm->data, tm->length);
         row[DB_exp_date][tm->length] = '\0';
 
         row[DB_rev_date] = NULL;
 
         /* row[DB_serial] done already */
-        row[DB_file] = (char *)malloc(8);
+        row[DB_file] = malloc(8);
 
         /* row[DB_name] done already */
 
@@ -2371,7 +2371,7 @@ static int do_updatedb(CA_DB *db)
 
     /* get actual time and make a string */
     a_tm = X509_gmtime_adj(a_tm, 0);
-    a_tm_s = (char *)malloc(a_tm->length + 1);
+    a_tm_s = malloc(a_tm->length + 1);
     if (a_tm_s == NULL) {
         cnt = -1;
         goto err;

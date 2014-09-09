@@ -149,7 +149,7 @@ char *EC_POINT_point2hex(const EC_GROUP *group,
         return NULL;
     }
 
-    ret = (char *)malloc(buf_len * 2 + 2);
+    ret = malloc(buf_len * 2 + 2);
     if (ret == NULL) {
         free(buf);
         return NULL;

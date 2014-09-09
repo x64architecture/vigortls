@@ -400,7 +400,7 @@ int dhparam_main(int argc, char **argv)
 
         len = BN_num_bytes(dh->p);
         bits = BN_num_bits(dh->p);
-        data = (unsigned char *)malloc(len);
+        data = malloc(len);
         if (data == NULL) {
             perror("malloc");
             goto end;

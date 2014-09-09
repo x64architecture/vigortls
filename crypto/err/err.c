@@ -976,7 +976,7 @@ ERR_STATE *ERR_get_state(void)
 
     /* ret == the error state, if NULL, make a new one */
     if (ret == NULL) {
-        ret = (ERR_STATE *)malloc(sizeof(ERR_STATE));
+        ret = malloc(sizeof(ERR_STATE));
         if (ret == NULL)
             return (&fallback);
         CRYPTO_THREADID_cpy(&ret->tid, &tid);

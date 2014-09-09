@@ -100,7 +100,7 @@ static int nbiof_new(BIO *bi)
 {
     NBIO_TEST *nt;
 
-    if (!(nt = (NBIO_TEST *)malloc(sizeof(NBIO_TEST))))
+    if (!(nt = malloc(sizeof(NBIO_TEST))))
         return (0);
     nt->lrn = -1;
     nt->lwn = -1;

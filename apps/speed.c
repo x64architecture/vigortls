@@ -543,11 +543,11 @@ int speed_main(int argc, char **argv)
     for (i = 0; i < RSA_NUM; i++)
         rsa_key[i] = NULL;
 
-    if ((buf = (unsigned char *)malloc((int)BUFSIZE)) == NULL) {
+    if ((buf = malloc((int)BUFSIZE)) == NULL) {
         BIO_printf(bio_err, "out of memory\n");
         goto end;
     }
-    if ((buf2 = (unsigned char *)malloc((int)BUFSIZE)) == NULL) {
+    if ((buf2 = malloc((int)BUFSIZE)) == NULL) {
         BIO_printf(bio_err, "out of memory\n");
         goto end;
     }

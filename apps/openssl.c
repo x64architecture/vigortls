@@ -112,22 +112,23 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include "apps.h"
+
 #include <openssl/bio.h>
-#include <openssl/crypto.h>
-#include <openssl/rand.h>
-#include <openssl/lhash.h>
 #include <openssl/conf.h>
-#include <openssl/x509.h>
-#include <openssl/pem.h>
-#include <openssl/ssl.h>
+#include <openssl/crypto.h>
 #ifndef OPENSSL_NO_ENGINE
 #include <openssl/engine.h>
 #endif
-#define USE_SOCKETS /* needed for the _O_BINARY defs in the MS world */
-#include "progs.h"
-#include "s_apps.h"
 #include <openssl/err.h>
+#include <openssl/lhash.h>
+#include <openssl/pem.h>
+#include <openssl/rand.h>
+#include <openssl/ssl.h>
+#include <openssl/x509.h>
+
+#include "apps.h"
+#include "s_apps.h"
+#include "progs.h"
 
 /* The LHASH callbacks ("hash" & "cmp") have been replaced by functions with the
  * base prototypes (we cast each variable inside the function to the required
@@ -313,7 +314,10 @@ static int do_cmd(LHASH_OF(FUNCTION) * prog, int argc, char *argv[])
             BIO_printf(bio_stdout, "%s\n", argv[0] + 3);
         BIO_free_all(bio_stdout);
         goto end;
-    } else if ((strcmp(argv[0], "quit") == 0) || (strcmp(argv[0], "q") == 0) || (strcmp(argv[0], "exit") == 0) || (strcmp(argv[0], "bye") == 0)) {
+    } else if ((strcmp(argv[0], "quit") == 0)
+               || (strcmp(argv[0], "q") == 0)
+               || (strcmp(argv[0], "exit") == 0)
+               || (strcmp(argv[0], "bye") == 0)) {
         ret = -1;
         goto end;
     } else if ((strcmp(argv[0], LIST_STANDARD_COMMANDS) == 0)

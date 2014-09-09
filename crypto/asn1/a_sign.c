@@ -167,9 +167,9 @@ int ASN1_sign(i2d_of_void *i2d, X509_ALGOR *algor1, X509_ALGOR *algor2,
         }
     }
     inl = i2d(data, NULL);
-    buf_in = (unsigned char *)malloc((unsigned int)inl);
+    buf_in = malloc((unsigned int)inl);
     outll = outl = EVP_PKEY_size(pkey);
-    buf_out = (unsigned char *)malloc((unsigned int)outl);
+    buf_out = malloc((unsigned int)outl);
     if ((buf_in == NULL) || (buf_out == NULL)) {
         outl = 0;
         ASN1err(ASN1_F_ASN1_SIGN, ERR_R_MALLOC_FAILURE);

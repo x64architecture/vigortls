@@ -1666,7 +1666,7 @@ const EC_METHOD *EC_GFp_nistp256_method(void)
 static NISTP256_PRE_COMP *nistp256_pre_comp_new()
 {
     NISTP256_PRE_COMP *ret = NULL;
-    ret = (NISTP256_PRE_COMP *)malloc(sizeof *ret);
+    ret = malloc(sizeof *ret);
     if (!ret) {
         ECerr(EC_F_NISTP256_PRE_COMP_NEW, ERR_R_MALLOC_FAILURE);
         return ret;
