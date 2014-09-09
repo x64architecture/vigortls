@@ -137,8 +137,8 @@ int main(int argc, char *argv[])
     } else
         printf("test 3 ok\n");
 
-    exit(err);
     EVP_MD_CTX_cleanup(&c);
+    exit(err);
     return (0);
 }
 
