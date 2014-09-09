@@ -7,11 +7,7 @@
 
 #include <openssl/modes.h>
 
-#if (defined(_WIN32) || defined(_WIN64)) && !defined(__MINGW32__)
-typedef __int64 i64;
-typedef unsigned __int64 u64;
-#define U64(C) C##UI64
-#elif defined(__arch64__)
+#if defined(__arch64__)
 typedef long i64;
 typedef unsigned long u64;
 #define U64(C) C##UL
