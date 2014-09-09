@@ -125,7 +125,7 @@
 #include <openssl/dsa.h>
 #endif
 
-#define DEFBITS 512
+#define DEFBITS 2048
 
 /* -inform arg    - input format - default PEM (DER or PEM)
  * -outform arg - output format - default PEM
@@ -235,7 +235,7 @@ int dhparam_main(int argc, char **argv)
         BIO_printf(bio_err, " -C            Output C code\n");
         BIO_printf(bio_err, " -2            generate parameters using  2 as the generator value\n");
         BIO_printf(bio_err, " -5            generate parameters using  5 as the generator value\n");
-        BIO_printf(bio_err, " numbits       number of bits in to generate (default 512)\n");
+        BIO_printf(bio_err, " numbits       number of bits in to generate (default 2048)\n");
 #ifndef OPENSSL_NO_ENGINE
         BIO_printf(bio_err, " -engine e     use engine e, possibly a hardware device.\n");
 #endif

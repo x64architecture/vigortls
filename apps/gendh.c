@@ -76,7 +76,7 @@
 #include <openssl/x509.h>
 #include <openssl/pem.h>
 
-#define DEFBITS 512
+#define DEFBITS 2048
 
 static int dh_cb(int p, int n, BN_GENCB *cb);
 

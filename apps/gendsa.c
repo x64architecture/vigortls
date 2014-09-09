@@ -70,7 +70,7 @@
 #include <openssl/x509.h>
 #include <openssl/pem.h>
 
-#define DEFBITS 512
+#define DEFBITS 2048
 
 int gendsa_main(int, char **);
 
