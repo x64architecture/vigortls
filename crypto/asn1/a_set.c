@@ -209,8 +209,6 @@ STACK_OF(OPENSSL_BLOCK) * d2i_ASN1_SET(STACK_OF(OPENSSL_BLOCK) * *a,
 
         if (M_ASN1_D2I_end_sequence())
             break;
-        /* XXX: This was called with 4 arguments, incorrectly, it seems
-           if ((s=func(NULL,&c.p,c.slen,c.max-c.p)) == NULL) */
         if ((s = d2i(NULL, &c.p, c.slen)) == NULL) {
             ASN1err(ASN1_F_D2I_ASN1_SET, ASN1_R_ERROR_PARSING_SET_ELEMENT);
             asn1_add_error(*pp, (int)(c.p - *pp));
