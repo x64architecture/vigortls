@@ -121,11 +121,6 @@ void AES_ctr128_encrypt(const unsigned char *in, unsigned char *out,
 void AES_ige_encrypt(const unsigned char *in, unsigned char *out,
                      size_t length, const AES_KEY *key,
                      unsigned char *ivec, const int enc);
-/* NB: the IV is _four_ blocks long */
-void AES_bi_ige_encrypt(const unsigned char *in, unsigned char *out,
-                        size_t length, const AES_KEY *key,
-                        const AES_KEY *key2, const unsigned char *ivec,
-                        const int enc);
 
 int AES_wrap_key(AES_KEY *key, const unsigned char *iv,
                  unsigned char *out,
