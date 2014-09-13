@@ -391,7 +391,7 @@ int dgst_main(int argc, char **argv)
     /* we use md as a filter, reading from 'in' */
     else {
         if (md == NULL)
-            md = EVP_md5();
+            md = EVP_sha256();
         if (!BIO_set_md(bmd, md)) {
             BIO_printf(bio_err, "Error setting digest %s\n", pname);
             ERR_print_errors(bio_err);
