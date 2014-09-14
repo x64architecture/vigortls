@@ -280,4 +280,24 @@ double app_tminterval(int stop, int usertime);
 
 #define OPENSSL_NO_SSL_INTERN
 
+struct OPTION {
+    const char *name;
+    const char *argname;
+    const char *desc;
+    enum {
+        OPTION_FLAG,
+        OPTION_FUNC,
+    } type;
+    union {
+        char **arg;
+        int *flag;
+        int *value;
+    } opt;
+    int (*func)(struct OPTION *opt, char *arg);
+    const int value;
+};
+
+void options_usage(struct OPTION *opts);
+int options_parse(int argc, char **argv, struct OPTION *opts, char **unnamed);
+
 #endif

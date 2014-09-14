@@ -1,121 +1,27 @@
-/* apps/version.c */
-/* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
- * All rights reserved.
+/*
+ * Copyright (c) 2014, Kurt Cancemi (kurt@x64architecture.com)
  *
- * This package is an SSL implementation written
- * by Eric Young (eay@cryptsoft.com).
- * The implementation was written so as to conform with Netscapes SSL.
+ * Permission to use, copy, modify, and/or distribute this software for any
+ * purpose with or without fee is hereby granted, provided that the above
+ * copyright notice and this permission notice appear in all copies.
  *
- * This library is free for commercial and non-commercial use as long as
- * the following conditions are aheared to.  The following conditions
- * apply to all code found in this distribution, be it the RC4, RSA,
- * lhash, DES, etc., code; not just the SSL code.  The SSL documentation
- * included with this distribution is covered by the same copyright terms
- * except that the holder is Tim Hudson (tjh@cryptsoft.com).
- *
- * Copyright remains Eric Young's, and as such any Copyright notices in
- * the code are not to be removed.
- * If this package is used in a product, Eric Young should be given attribution
- * as the author of the parts of the library used.
- * This can be in the form of a textual message at program startup or
- * in documentation (online or textual) provided with the package.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- * 1. Redistributions of source code must retain the copyright
- *    notice, this list of conditions and the following disclaimer.
- * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the distribution.
- * 3. All advertising materials mentioning features or use of this software
- *    must display the following acknowledgement:
- *    "This product includes cryptographic software written by
- *     Eric Young (eay@cryptsoft.com)"
- *    The word 'cryptographic' can be left out if the rouines from the library
- *    being used are not cryptographic related :-).
- * 4. If you include any Windows specific code (or a derivative thereof) from
- *    the apps directory (application code) you must include an acknowledgement:
- *    "This product includes software written by Tim Hudson (tjh@cryptsoft.com)"
- *
- * THIS SOFTWARE IS PROVIDED BY ERIC YOUNG ``AS IS'' AND
- * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED.  IN NO EVENT SHALL THE AUTHOR OR CONTRIBUTORS BE LIABLE
- * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
- * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
- * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
- * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
- * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
- * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
- * SUCH DAMAGE.
- *
- * The licence and distribution terms for any publically available version or
- * derivative of this code cannot be changed.  i.e. this code cannot simply be
- * copied and put under another distribution licence
- * [including the GNU Public Licence.]
- */
-/* ====================================================================
- * Copyright (c) 1998-2001 The OpenSSL Project.  All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- *
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- *
- * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in
- *    the documentation and/or other materials provided with the
- *    distribution.
- *
- * 3. All advertising materials mentioning features or use of this
- *    software must display the following acknowledgment:
- *    "This product includes software developed by the OpenSSL Project
- *    for use in the OpenSSL Toolkit. (http://www.openssl.org/)"
- *
- * 4. The names "OpenSSL Toolkit" and "OpenSSL Project" must not be used to
- *    endorse or promote products derived from this software without
- *    prior written permission. For written permission, please contact
- *    openssl-core@openssl.org.
- *
- * 5. Products derived from this software may not be called "OpenSSL"
- *    nor may "OpenSSL" appear in their names without prior written
- *    permission of the OpenSSL Project.
- *
- * 6. Redistributions of any form whatsoever must retain the following
- *    acknowledgment:
- *    "This product includes software developed by the OpenSSL Project
- *    for use in the OpenSSL Toolkit (http://www.openssl.org/)"
- *
- * THIS SOFTWARE IS PROVIDED BY THE OpenSSL PROJECT ``AS IS'' AND ANY
- * EXPRESSED OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
- * PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL THE OpenSSL PROJECT OR
- * ITS CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
- * NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
- * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
- * STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
- * OF THE POSSIBILITY OF SUCH DAMAGE.
- * ====================================================================
- *
- * This product includes cryptographic software written by Eric Young
- * (eay@cryptsoft.com).  This product includes software written by Tim
- * Hudson (tjh@cryptsoft.com).
- *
+ * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+ * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+ * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+ * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+ * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+ * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+ * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-#include <openssl/evp.h>
-#include <openssl/crypto.h>
 #include <openssl/bn.h>
+#include <openssl/crypto.h>
+#include <openssl/evp.h>
+
 #ifndef OPENSSL_NO_RC4
 #include <openssl/rc4.h>
 #endif
@@ -132,48 +38,91 @@
 #include "apps.h"
 #include "buildinf.h"
 
+static struct {
+    int cflags;
+    int date;
+    int options;
+    int platform;
+    int version;
+} version_opts;
+
+static int version_print_all_opts(struct OPTION *opt, char *arg)
+{
+    version_opts.cflags = 1;
+    version_opts.date = 1;
+    version_opts.options = 1;
+    version_opts.platform = 1;
+    version_opts.version = 1;
+
+    return (0);
+}
+
+static struct OPTION version_options[] = {
+    {
+      .name = "a",
+      .desc = "Print all the information (equivalent to setting all the other flags)",
+      .type = OPTION_FUNC,
+      .func = version_print_all_opts,
+    },
+    {
+      .name = "b",
+      .desc = "Print the date the current version of VigorTLS was built",
+      .type = OPTION_FLAG,
+      .opt.flag = &version_opts.date,
+    },
+    {
+      .name = "f",
+      .desc = "Print the compilation flags",
+      .type = OPTION_FLAG,
+      .opt.flag = &version_opts.cflags,
+    },
+    {
+      .name = "o",
+      .desc = "Print the cipher options",
+      .type = OPTION_FLAG,
+      .opt.flag = &version_opts.options,
+    },
+    {
+      .name = "p",
+      .desc = "Print the Platform",
+      .type = OPTION_FLAG,
+      .opt.flag = &version_opts.platform,
+    },
+    {
+      .name = "v",
+      .desc = "Print the current VigorTLS version",
+      .type = OPTION_FLAG,
+      .opt.flag = &version_opts.version,
+    },
+};
+
+static void version_usage(void)
+{
+    fprintf(stderr, "usage: version [-abfopv]\n");
+    options_usage(version_options);
+}
+
 int version_main(int, char **);
 
 int version_main(int argc, char **argv)
 {
-    int i, ret = 0;
-    int cflags = 0, version = 0, date = 0, options = 0, platform = 0, dir = 0;
+    memset(&version_opts, 0, sizeof(version_opts));
 
-    if (bio_err == NULL)
-        if ((bio_err = BIO_new(BIO_s_file())) != NULL)
-            BIO_set_fp(bio_err, stderr, BIO_NOCLOSE | BIO_FP_TEXT);
-
-    if (argc == 1)
-        version = 1;
-    for (i = 1; i < argc; i++) {
-        if (strcmp(argv[i], "-v") == 0)
-            version = 1;
-        else if (strcmp(argv[i], "-b") == 0)
-            date = 1;
-        else if (strcmp(argv[i], "-f") == 0)
-            cflags = 1;
-        else if (strcmp(argv[i], "-o") == 0)
-            options = 1;
-        else if (strcmp(argv[i], "-p") == 0)
-            platform = 1;
-        else if (strcmp(argv[i], "-d") == 0)
-            dir = 1;
-        else if (strcmp(argv[i], "-a") == 0)
-            date = version = cflags = options = platform = dir = 1;
-        else {
-            BIO_printf(bio_err, "usage: version -[avbofpd]\n");
-            ret = 1;
-            goto end;
-        }
+    if (options_parse(argc, argv, version_options, NULL) != 0) {
+        version_usage();
+        return (1);
     }
 
-    if (version)
+    if (argc == 1)
+        version_opts.version = 1;
+
+    if (version_opts.version)
         printf("%s\n", OPENSSL_VERSION_TEXT);
-    if (date)
+    if (version_opts.date)
         printf("Built on: %s at %s\n", BUILDDATE, BUILDTIME);
-    if (platform)
+    if (version_opts.platform)
         printf("Platform: %s\n", PLATFORM);
-    if (options) {
+    if (version_opts.options) {
         printf("Options:  ");
         printf("%s ", BN_options());
 #ifndef OPENSSL_NO_RC4
@@ -190,8 +139,8 @@ int version_main(int argc, char **argv)
 #endif
         printf("\n");
     }
-    if (cflags)
+    if (version_opts.cflags)
         printf("Compiler: %s\n", CFLAGS);
-end:
-    return (ret);
+
+    return (0);
 }
