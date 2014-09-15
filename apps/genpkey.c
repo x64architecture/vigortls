@@ -96,7 +96,6 @@ int genpkey_main(int argc, char **argv)
 
     outformat = FORMAT_PEM;
 
-    OpenSSL_add_all_algorithms();
     args = argv + 1;
     while (!badarg && *args && *args[0] == '-') {
         if (!strcmp(*args, "-outform")) {

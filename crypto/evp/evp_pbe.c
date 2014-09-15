@@ -130,7 +130,6 @@ int main(int argc, char **argv)
 {
     int i, nid_md, nid_cipher;
     EVP_PBE_CTL *tpbe, *tpbe2;
-    /*OpenSSL_add_all_algorithms();*/
 
     for (i = 0; i < sizeof(builtin_pbe) / sizeof(EVP_PBE_CTL); i++) {
         tpbe = builtin_pbe + i;

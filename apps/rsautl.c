@@ -108,7 +108,6 @@ int rsautl_main(int argc, char **argv)
 
     if (!load_config(bio_err, NULL))
         goto end;
-    OpenSSL_add_all_algorithms();
     pad = RSA_PKCS1_PADDING;
 
     while (argc >= 1) {
