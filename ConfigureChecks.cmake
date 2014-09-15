@@ -1,10 +1,15 @@
 include (CheckFunctionExists)
 
-CHECK_FUNCTION_EXISTS(strlcpy HAVE_STRLCPY)
-CHECK_FUNCTION_EXISTS(strlcat HAVE_STRLCAT)
+CHECK_FUNCTION_EXISTS(reallocarray HAVE_REALLOCARRAY)
+CHECK_FUNCTION_EXISTS(strlcpy      HAVE_STRLCPY)
+CHECK_FUNCTION_EXISTS(strlcat      HAVE_STRLCAT)
 
+if (HAVE_REALLOCARRAY)
+    add_definitions(-DHAVE_REALLOCARRAY)
+endif()
 if (HAVE_STRLCPY)
     add_definitions(-DHAVE_STRLCPY)
-elseif (HAVE_STRLCAT)
+endif()
+if (HAVE_STRLCAT)
     add_definitions(-DHAVE_STRLCAT)
 endif()
