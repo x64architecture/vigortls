@@ -15,7 +15,6 @@ add_library(
     rsa_gen.c
     rsa_lib.c
     rsa_none.c
-    rsa_null.c
     rsa_oaep.c
     rsa_pk1.c
     rsa_pmeth.c

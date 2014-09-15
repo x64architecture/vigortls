@@ -728,12 +728,10 @@ int speed_main(int argc, char **argv)
             doit[D_CBC_256_CML] = 1;
         else
 #endif
-#ifndef RSA_NULL
             if (strcmp(*argv, "openssl") == 0) {
             RSA_set_default_method(RSA_PKCS1_SSLeay());
             j--;
         } else
-#endif
             if (strcmp(*argv, "dsa512") == 0)
             dsa_doit[R_DSA_512] = 2;
         else if (strcmp(*argv, "dsa1024") == 0)

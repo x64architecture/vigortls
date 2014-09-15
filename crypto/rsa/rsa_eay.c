@@ -116,8 +116,6 @@
 #include <openssl/rand.h>
 #include <openssl/rsa.h>
 
-#ifndef RSA_NULL
-
 static int RSA_eay_public_encrypt(int flen, const unsigned char *from,
                                   unsigned char *to, RSA *rsa, int padding);
 static int RSA_eay_private_encrypt(int flen, const unsigned char *from,
@@ -859,5 +857,3 @@ static int RSA_eay_finish(RSA *rsa)
         BN_MONT_CTX_free(rsa->_method_mod_q);
     return (1);
 }
-
-#endif

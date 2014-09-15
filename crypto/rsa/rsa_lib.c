@@ -84,13 +84,8 @@ void RSA_set_default_method(const RSA_METHOD *meth)
 
 const RSA_METHOD *RSA_get_default_method(void)
 {
-    if (default_RSA_meth == NULL) {
-#ifdef RSA_NULL
-        default_RSA_meth = RSA_null_method();
-#else
+    if (default_RSA_meth == NULL)
         default_RSA_meth = RSA_PKCS1_SSLeay();
-#endif
-    }
 
     return default_RSA_meth;
 }
