@@ -88,7 +88,6 @@ static ERR_STRING_DATA RSA_str_functs[] = {
     { ERR_FUNC(RSA_F_RSA_GENERATE_KEY), "RSA_generate_key" },
     { ERR_FUNC(RSA_F_RSA_GENERATE_KEY_EX), "RSA_generate_key_ex" },
     { ERR_FUNC(RSA_F_RSA_ITEM_VERIFY), "RSA_ITEM_VERIFY" },
-    { ERR_FUNC(RSA_F_RSA_MEMORY_LOCK), "RSA_memory_lock" },
     { ERR_FUNC(RSA_F_RSA_NEW_METHOD), "RSA_new_method" },
     { ERR_FUNC(RSA_F_RSA_NULL), "RSA_NULL" },
     { ERR_FUNC(RSA_F_RSA_NULL_MOD_EXP), "RSA_NULL_MOD_EXP" },

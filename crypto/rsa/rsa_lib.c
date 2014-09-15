@@ -169,7 +169,6 @@ RSA *RSA_new_method(ENGINE *engine)
     ret->_method_mod_q = NULL;
     ret->blinding = NULL;
     ret->mt_blinding = NULL;
-    ret->bignum_data = NULL;
     if (!CRYPTO_new_ex_data(CRYPTO_EX_INDEX_RSA, ret, &ret->ex_data)) {
 #ifndef OPENSSL_NO_ENGINE
         if (ret->engine)
@@ -240,8 +239,6 @@ void RSA_free(RSA *r)
         BN_BLINDING_free(r->blinding);
     if (r->mt_blinding != NULL)
         BN_BLINDING_free(r->mt_blinding);
-    if (r->bignum_data != NULL)
-        OPENSSL_free_locked(r->bignum_data);
     free(r);
 }
 
@@ -275,48 +272,4 @@ int RSA_set_ex_data(RSA *r, int idx, void *arg)
 void *RSA_get_ex_data(const RSA *r, int idx)
 {
     return (CRYPTO_get_ex_data(&r->ex_data, idx));
-}
-
-int RSA_memory_lock(RSA *r)
-{
-    int i, j, k, off;
-    char *p;
-    BIGNUM *bn, **t[6], *b;
-    BN_ULONG *ul;
-
-    if (r->d == NULL)
-        return (1);
-    t[0] = &r->d;
-    t[1] = &r->p;
-    t[2] = &r->q;
-    t[3] = &r->dmp1;
-    t[4] = &r->dmq1;
-    t[5] = &r->iqmp;
-    k = sizeof(BIGNUM) * 6;
-    off = k / sizeof(BN_ULONG) + 1;
-    j = 1;
-    for (i = 0; i < 6; i++)
-        j += (*t[i])->top;
-    if ((p = OPENSSL_malloc_locked((off + j) * sizeof(BN_ULONG))) == NULL) {
-        RSAerr(RSA_F_RSA_MEMORY_LOCK, ERR_R_MALLOC_FAILURE);
-        return (0);
-    }
-    bn = (BIGNUM *)p;
-    ul = (BN_ULONG *)&(p[off]);
-    for (i = 0; i < 6; i++) {
-        b = *(t[i]);
-        *(t[i]) = &(bn[i]);
-        memcpy((char *)&(bn[i]), (char *)b, sizeof(BIGNUM));
-        bn[i].flags = BN_FLG_STATIC_DATA;
-        bn[i].d = ul;
-        memcpy((char *)ul, b->d, sizeof(BN_ULONG) * b->top);
-        ul += b->top;
-        BN_clear_free(b);
-    }
-
-    /* I should fix this so it can still be done */
-    r->flags &= ~(RSA_FLAG_CACHE_PRIVATE | RSA_FLAG_CACHE_PUBLIC);
-
-    r->bignum_data = p;
-    return (1);
 }
