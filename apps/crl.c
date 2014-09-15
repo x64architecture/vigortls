@@ -222,7 +222,6 @@ int crl_main(int argc, char **argv)
         goto end;
     }
 
-    ERR_load_crypto_strings();
     x = load_crl(infile, informat);
     if (x == NULL) {
         goto end;

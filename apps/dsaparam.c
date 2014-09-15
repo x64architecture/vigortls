@@ -213,8 +213,6 @@ int dsaparam_main(int argc, char **argv)
         goto end;
     }
 
-    ERR_load_crypto_strings();
-
     in = BIO_new(BIO_s_file());
     out = BIO_new(BIO_s_file());
     if ((in == NULL) || (out == NULL)) {

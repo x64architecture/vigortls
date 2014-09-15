@@ -186,7 +186,6 @@ char *argv[];
     printf("done\n");
     exit(0);
 err:
-    ERR_load_crypto_strings();
     ERR_print_errors_fp(stderr);
     exit(1);
 }

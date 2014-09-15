@@ -94,8 +94,6 @@ int verify_main(int argc, char **argv)
         goto end;
     X509_STORE_set_verify_cb(cert_ctx, cb);
 
-    ERR_load_crypto_strings();
-
     if (bio_err == NULL)
         if ((bio_err = BIO_new(BIO_s_file())) != NULL)
             BIO_set_fp(bio_err, stderr, BIO_NOCLOSE | BIO_FP_TEXT);

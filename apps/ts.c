@@ -154,8 +154,6 @@ int ts_main(int argc, char **argv)
     int token_out = 0;
     int free_bio_err = 0;
 
-    ERR_load_crypto_strings();
-
     if (bio_err == NULL && (bio_err = BIO_new(BIO_s_file())) != NULL) {
         free_bio_err = 1;
         BIO_set_fp(bio_err, stderr, BIO_NOCLOSE | BIO_FP_TEXT);

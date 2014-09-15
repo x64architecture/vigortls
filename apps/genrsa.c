@@ -202,8 +202,6 @@ int genrsa_main(int argc, char **argv)
         goto err;
     }
 
-    ERR_load_crypto_strings();
-
     if (!app_passwd(bio_err, NULL, passargout, NULL, &passout)) {
         BIO_printf(bio_err, "Error getting password\n");
         goto err;

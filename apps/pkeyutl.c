@@ -107,7 +107,6 @@ int pkeyutl_main(int argc, char **argv)
 
     if (!load_config(bio_err, NULL))
         goto end;
-    ERR_load_crypto_strings();
     OpenSSL_add_all_algorithms();
 
     while (argc >= 1) {

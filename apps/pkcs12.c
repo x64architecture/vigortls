@@ -389,8 +389,6 @@ int pkcs12_main(int argc, char **argv)
         mpass = macpass;
     }
 
-    ERR_load_crypto_strings();
-
     if (!infile)
         in = BIO_new_fp(stdin, BIO_NOCLOSE);
     else

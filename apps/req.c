@@ -400,7 +400,6 @@ int req_main(int argc, char **argv)
         goto end;
     }
 
-    ERR_load_crypto_strings();
     if (!app_passwd(bio_err, passargin, passargout, &passin, &passout)) {
         BIO_printf(bio_err, "Error getting passwords\n");
         goto end;

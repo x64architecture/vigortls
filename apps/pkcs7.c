@@ -164,8 +164,6 @@ int pkcs7_main(int argc, char **argv)
         goto end;
     }
 
-    ERR_load_crypto_strings();
-
 #ifndef OPENSSL_NO_ENGINE
     setup_engine(bio_err, engine, 0);
 #endif

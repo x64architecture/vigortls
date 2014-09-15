@@ -82,7 +82,6 @@ int pkeyparam_main(int argc, char **argv)
     if (!load_config(bio_err, NULL))
         goto end;
 
-    ERR_load_crypto_strings();
     OpenSSL_add_all_algorithms();
     args = argv + 1;
     while (!badarg && *args && *args[0] == '-') {

@@ -74,7 +74,6 @@ int main(int argc, char **argv)
     int count;
     X509_EXTENSION *ext;
     X509V3_add_standard_extensions();
-    ERR_load_crypto_strings();
     if (!argv[1]) {
         fprintf(stderr, "Usage: v3conf cert.pem [file.cnf]\n");
         exit(1);

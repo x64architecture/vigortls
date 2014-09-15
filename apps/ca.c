@@ -538,8 +538,6 @@ bad:
         goto err;
     }
 
-    ERR_load_crypto_strings();
-
     /*****************************************************************/
     tofree = NULL;
     if (configfile == NULL)

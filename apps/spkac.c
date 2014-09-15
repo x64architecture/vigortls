@@ -171,7 +171,6 @@ int spkac_main(int argc, char **argv)
         goto end;
     }
 
-    ERR_load_crypto_strings();
     if (!app_passwd(bio_err, passargin, NULL, &passin, NULL)) {
         BIO_printf(bio_err, "Error getting password\n");
         goto end;

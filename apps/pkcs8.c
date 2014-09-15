@@ -97,7 +97,6 @@ int pkcs8_main(int argc, char **argv)
     informat = FORMAT_PEM;
     outformat = FORMAT_PEM;
 
-    ERR_load_crypto_strings();
     OpenSSL_add_all_algorithms();
     args = argv + 1;
     while (!badarg && *args && *args[0] == '-') {

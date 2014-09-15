@@ -451,8 +451,6 @@ int x509_main(int argc, char **argv)
     e = setup_engine(bio_err, engine, 0);
 #endif
 
-    ERR_load_crypto_strings();
-
     if (!app_passwd(bio_err, passargin, NULL, &passin, NULL)) {
         BIO_printf(bio_err, "Error getting password\n");
         goto end;
