@@ -112,6 +112,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <signal.h>
 
 #include <openssl/bio.h>
 #include <openssl/conf.h>
@@ -145,6 +146,38 @@ char *default_config_file = NULL;
 CONF *config = NULL;
 BIO *bio_err = NULL;
 
+static void OPENSSL_startup(void)
+{
+    signal(SIGPIPE, SIG_IGN);
+    
+    CRYPTO_malloc_init();
+    ERR_load_crypto_strings();
+    OpenSSL_add_all_algorithms();
+    
+#ifndef OPENSSL_NO_ENGINE
+    ENGINE_load_builtin_engines();
+#endif
+
+    setup_ui_method();
+}
+
+static void OPENSSL_shutdown(void)
+{
+    CONF_modules_unload(1);
+    destroy_ui_method();
+    OBJ_cleanup();
+    EVP_cleanup();
+
+#ifndef OPENSSL_NO_ENGINE
+    ENGINE_cleanup();
+#endif
+
+    CRYPTO_cleanup_all_ex_data();
+    ERR_remove_thread_state(NULL);
+    RAND_cleanup();
+    ERR_free_strings();
+}
+
 int main(int argc, char *argv[])
 {
     ARGS arg;
@@ -165,6 +198,8 @@ int main(int argc, char *argv[])
     if (bio_err == NULL)
         if ((bio_err = BIO_new(BIO_s_file())) != NULL)
             BIO_set_fp(bio_err, stderr, BIO_NOCLOSE | BIO_FP_TEXT);
+
+    OPENSSL_startup();
 
     /* Lets load up our environment a little */
     p = getenv("OPENSSL_CONF");
@@ -265,6 +300,8 @@ end:
     if (prog != NULL)
         lh_FUNCTION_free(prog);
     free(arg.data);
+
+    OPENSSL_shutdown();
 
     if (bio_err != NULL) {
         BIO_free(bio_err);
