@@ -6,5 +6,7 @@ add_library(
     OBJECT
 
     reallocarray.c
+    strlcat.c
+    strlcpy.c
     str2num.c
 )

@@ -210,7 +210,7 @@ void program_name(char *in, char *out, int size)
         p++;
     else
         p = in;
-    BUF_strlcpy(out, p, size);
+    strlcpy(out, p, size);
 }
 
 int chopup_args(ARGS *arg, char *buf, int *argc, char **argv[])
@@ -1391,7 +1391,7 @@ int save_serial(char *serialfile, char *suffix, BIGNUM *serial, ASN1_INTEGER **r
     }
 
     if (suffix == NULL)
-        BUF_strlcpy(buf[0], serialfile, BSIZE);
+        strlcpy(buf[0], serialfile, BSIZE);
     else
         j = snprintf(buf[0], sizeof buf[0], "%s.%s", serialfile, suffix);
 

@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 2.8.8)
 project(VigorTLS C)
 
 include(CTest)
+include(ConfigureChecks.cmake)
 
 if (CMAKE_COMPILER_IS_GNUCC OR "${CMAKE_C_COMPILER_ID}" STREQUAL "Clang")
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Werror -ggdb -std=c99")

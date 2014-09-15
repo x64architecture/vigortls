@@ -152,11 +152,11 @@ ASN1_GENERALIZEDTIME *ASN1_TIME_to_generalizedtime(ASN1_TIME *t, ASN1_GENERALIZE
     str = (char *)ret->data;
     /* Work out the century and prepend */
     if (t->data[0] >= '5')
-        BUF_strlcpy(str, "19", newlen);
+        strlcpy(str, "19", newlen);
     else
-        BUF_strlcpy(str, "20", newlen);
+        strlcpy(str, "20", newlen);
 
-    BUF_strlcat(str, (char *)t->data, newlen);
+    strlcat(str, (char *)t->data, newlen);
 
     return ret;
 }

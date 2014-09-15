@@ -282,9 +282,9 @@ static char *dlfcn_merger(DSO *dso, const char *filespec1,
                    ERR_R_MALLOC_FAILURE);
             return (NULL);
         }
-        BUF_strlcpy(merged, filespec2, len + 2);
+        strlcpy(merged, filespec2, len + 2);
         merged[spec2len] = '/';
-        BUF_strlcpy(&merged[spec2len + 1], filespec1, len + 1 - spec2len);
+        strlcpy(&merged[spec2len + 1], filespec1, len + 1 - spec2len);
     }
     return (merged);
 }

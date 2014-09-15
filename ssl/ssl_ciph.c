@@ -1601,7 +1601,7 @@ char *SSL_CIPHER_description(const SSL_CIPHER *cipher, char *buf, int len)
         return "OPENSSL_malloc Error";
 
     if (buf != NULL) {
-        l = BUF_strlcpy(buf, ret, len);
+        l = strlcpy(buf, ret, len);
         free(ret);
         ret = buf;
         if (l >= len)

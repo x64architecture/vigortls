@@ -355,7 +355,7 @@ int DSO_set_filename(DSO *dso, const char *filename)
         DSOerr(DSO_F_DSO_SET_FILENAME, ERR_R_MALLOC_FAILURE);
         return (0);
     }
-    BUF_strlcpy(copied, filename, strlen(filename) + 1);
+    strlcpy(copied, filename, strlen(filename) + 1);
     if (dso->filename)
         free(dso->filename);
     dso->filename = copied;
@@ -407,7 +407,7 @@ char *DSO_convert_filename(DSO *dso, const char *filename)
                    ERR_R_MALLOC_FAILURE);
             return (NULL);
         }
-        BUF_strlcpy(result, filename, strlen(filename) + 1);
+        strlcpy(result, filename, strlen(filename) + 1);
     }
     return (result);
 }

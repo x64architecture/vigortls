@@ -803,7 +803,7 @@ int UI_set_result(UI *ui, UI_STRING *uis, const char *result)
                 return -1;
             }
 
-            BUF_strlcpy(uis->result_buf, result,
+            strlcpy(uis->result_buf, result,
                         uis->_.string_data.result_maxsize + 1);
             break;
         case UIT_BOOLEAN: {

@@ -531,7 +531,7 @@ int pkcs12_main(int argc, char **argv)
             goto export_end;
         }
         if (!twopass)
-            BUF_strlcpy(macpass, pass, sizeof macpass);
+            strlcpy(macpass, pass, sizeof macpass);
 
         p12 = PKCS12_create(cpass, name, key, ucert, certs,
                             key_pbe, cert_pbe, iter, -1, keytype);
@@ -578,7 +578,7 @@ export_end:
     }
 
     if (!twopass)
-        BUF_strlcpy(macpass, pass, sizeof macpass);
+        strlcpy(macpass, pass, sizeof macpass);
 
     if ((options & INFO) && p12->mac)
         BIO_printf(bio_err, "MAC Iteration %ld\n",

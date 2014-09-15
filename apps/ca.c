@@ -1977,7 +1977,7 @@ static int do_body(X509 **xret, EVP_PKEY *pkey, X509 *x509, const EVP_MD *dgst,
         BIO_printf(bio_err, "Memory allocation failure\n");
         goto err;
     }
-    BUF_strlcpy(row[DB_file], "unknown", 8);
+    strlcpy(row[DB_file], "unknown", 8);
     row[DB_type][0] = 'V';
     row[DB_type][1] = '\0';
 
@@ -2233,7 +2233,7 @@ static int do_revoke(X509 *x509, CA_DB *db, int type, char *value)
             BIO_printf(bio_err, "Memory allocation failure\n");
             goto err;
         }
-        BUF_strlcpy(row[DB_file], "unknown", 8);
+        strlcpy(row[DB_file], "unknown", 8);
         row[DB_type][0] = 'V';
         row[DB_type][1] = '\0';
 

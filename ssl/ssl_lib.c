@@ -1252,7 +1252,7 @@ char *SSL_get_shared_ciphers(const SSL *s, char *buf, int len)
     for (i = 0; i < sk_SSL_CIPHER_num(sk); i++) {
         c = sk_SSL_CIPHER_value(sk, i);
         end = buf + curlen;
-        if (BUF_strlcat(buf, c->name, len) >= len || (curlen = BUF_strlcat(buf, ":", len)) >= len) {
+        if (strlcat(buf, c->name, len) >= len || (curlen = strlcat(buf, ":", len)) >= len) {
             /* remove truncated cipher from list */
             *end = '\0';
             break;

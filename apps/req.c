@@ -1239,8 +1239,8 @@ start:
         BIO_printf(bio_err, "%s [%s]:", text, def);
     (void)BIO_flush(bio_err);
     if (value != NULL) {
-        BUF_strlcpy(buf, value, sizeof buf);
-        BUF_strlcat(buf, "\n", sizeof buf);
+        strlcpy(buf, value, sizeof buf);
+        strlcat(buf, "\n", sizeof buf);
         BIO_printf(bio_err, "%s\n", value);
     } else {
         buf[0] = '\0';
@@ -1258,8 +1258,8 @@ start:
     else if (buf[0] == '\n') {
         if ((def == NULL) || (def[0] == '\0'))
             return (1);
-        BUF_strlcpy(buf, def, sizeof buf);
-        BUF_strlcat(buf, "\n", sizeof buf);
+        strlcpy(buf, def, sizeof buf);
+        strlcat(buf, "\n", sizeof buf);
     } else if ((buf[0] == '.') && (buf[1] == '\n'))
         return (1);
 
@@ -1295,8 +1295,8 @@ start:
         BIO_printf(bio_err, "%s [%s]:", text, def);
     (void)BIO_flush(bio_err);
     if (value != NULL) {
-        BUF_strlcpy(buf, value, sizeof buf);
-        BUF_strlcat(buf, "\n", sizeof buf);
+        strlcpy(buf, value, sizeof buf);
+        strlcat(buf, "\n", sizeof buf);
         BIO_printf(bio_err, "%s\n", value);
     } else {
         buf[0] = '\0';
@@ -1314,8 +1314,8 @@ start:
     else if (buf[0] == '\n') {
         if ((def == NULL) || (def[0] == '\0'))
             return (1);
-        BUF_strlcpy(buf, def, sizeof buf);
-        BUF_strlcat(buf, "\n", sizeof buf);
+        strlcpy(buf, def, sizeof buf);
+        strlcat(buf, "\n", sizeof buf);
     } else if ((buf[0] == '.') && (buf[1] == '\n'))
         return (1);
 

@@ -107,7 +107,7 @@ static void pqueue_test(pqueue pq)
                      item->priority[6], item->priority[7]) == -1)
             exit(-1);
 
-        BUF_strlcat(buf2, buf, sizeof(buf2));
+        strlcat(buf2, buf, sizeof(buf2));
     }
 
     if (strcmp(expected, buf2) != 0) {

@@ -578,7 +578,7 @@ static void build_SYS_str_reasons(void)
             char(*dest)[LEN_SYS_STR_REASON] = &(strerror_tab[i - 1]);
             char *src = strerror(i);
             if (src != NULL) {
-                BUF_strlcpy(*dest, src, sizeof *dest);
+                strlcpy(*dest, src, sizeof *dest);
                 str->string = *dest;
             }
         }
@@ -1053,7 +1053,7 @@ void ERR_add_error_vdata(int num, va_list args)
     str[0] = '\0';
 
     for (i = 0; i < num; i++) {
-        if (BUF_strlcat(str, "%s", sizeof(str)) >= sizeof(str)) {
+        if (strlcat(str, "%s", sizeof(str)) >= sizeof(str)) {
             ERR_set_error_data("error truncation occurred",
                                ERR_TXT_STRING);
             return;
