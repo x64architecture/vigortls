@@ -1327,7 +1327,7 @@ STACK_OF(SSL_CIPHER) * ssl_bytes_to_cipher_list(SSL *s, unsigned char *p,
         cipherid = SSL3_CK_ID | cipher_value;
 
         /* Check for SCSV */
-        if (s->s3 && cipherid == SSL3_CK_ID) {
+        if (s->s3 && cipherid == SSL3_CK_SCSV) {
             /* SCSV fatal if renegotiating */
             if (s->renegotiate) {
                 SSLerr(SSL_F_SSL_BYTES_TO_CIPHER_LIST,
@@ -1353,7 +1353,7 @@ STACK_OF(SSL_CIPHER) * ssl_bytes_to_cipher_list(SSL *s, unsigned char *p,
         *skp = sk;
     return (sk);
 err:
-    if ((skp == NULL) || (*skp == NULL))
+    if (skp == NULL || *skp == NULL)
         sk_SSL_CIPHER_free(sk);
     return (NULL);
 }
