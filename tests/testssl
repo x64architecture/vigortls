@@ -3,9 +3,10 @@
 key="$1"
 cert="$2"
 CA="-CAfile $3"
-extra="$4"
+path="$4"
+extra="$5"
 
-ssltest="../../build/tests/ssltest -key $key -cert $cert -c_key $key -c_cert $cert"
+ssltest="$4/ssltest -key $key -cert $cert -c_key $key -c_cert $cert"
 
 if openssl x509 -in $cert -text -noout | fgrep 'DSA Public Key' >/dev/null; then
   dsa_cert=YES

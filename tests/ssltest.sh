@@ -1,9 +1,7 @@
 #!/bin/sh
 
 set -e
-PATH=../../build/apps:$PATH
+PATH=$1:$2:$PATH
 export PATH
 
-topdir=../../tests
-
-$topdir/testssl $topdir/data/server.pem $topdir/data/server.pem $topdir/data/ca.pem
+testssl $2/data/server.pem $2/data/server.pem $2/data/ca.pem $1/../tests

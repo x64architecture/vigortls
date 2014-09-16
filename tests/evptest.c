@@ -433,12 +433,11 @@ static int test_digest(const char *digest,
 
 int main(int argc, char **argv)
 {
-    const char *szTestFile = "../../tests/data/evptests.txt";
+    char *szTestFile = "data/evptests.txt";
     FILE *fp;
 
-    if (argc >= 2) {
-        szTestFile = "../tests/data/evptests.txt";
-    }
+    if (argc > 1)
+        szTestFile = argv[1];
 
     fp = fopen(szTestFile, "r");
     if (!fp) {

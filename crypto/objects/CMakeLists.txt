@@ -4,7 +4,7 @@ add_custom_target(
     obj_dat.h 
     ALL 
     WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
-    COMMAND perl obj_dat.pl ../../include/openssl/obj_mac.h ${CMAKE_CURRENT_BINARY_DIR}/obj_dat.h
+    COMMAND perl obj_dat.pl  ${PROJECT_SOURCE_DIR}/include/openssl/obj_mac.h ${CMAKE_CURRENT_BINARY_DIR}/obj_dat.h
 )
 
 add_library(
