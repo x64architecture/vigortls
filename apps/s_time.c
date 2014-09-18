@@ -179,7 +179,7 @@ static void s_time_usage(void)
 static int parseArgs(int argc, char **argv)
 {
     int badop = 0;
-    const int *stnerr = NULL;
+    const char *stnerr = NULL;
 
     verify_depth = 0;
     verify_error = X509_V_OK;
@@ -213,7 +213,7 @@ static int parseArgs(int argc, char **argv)
             tm_verify = SSL_VERIFY_PEER | SSL_VERIFY_CLIENT_ONCE;
             if (--argc < 1)
                 goto bad;
-            verify_depth = str2num(*(++argv), 0, INT_MAX, &stnerr);
+            verify_depth = strtonum(*(++argv), 0, INT_MAX, &stnerr);
             if (stnerr)
                 goto bad;
             BIO_printf(bio_err, "verify depth is %d\n", verify_depth);
@@ -266,7 +266,7 @@ static int parseArgs(int argc, char **argv)
         else if (strcmp(*argv, "-time") == 0) {
             if (--argc < 1)
                 goto bad;
-            maxTime = str2num(*(++argv), 0, INT_MAX, &stnerr);
+            maxTime = strtonum(*(++argv), 0, INT_MAX, &stnerr);
             if (stnerr)
                 goto bad;
         } else {

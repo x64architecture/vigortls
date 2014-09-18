@@ -202,7 +202,7 @@ int x509_main(int argc, char **argv)
 #ifndef OPENSSL_NO_ENGINE
     char *engine = NULL;
 #endif
-    const int *stnerr = NULL;
+    const char *stnerr = NULL;
 
     reqfile = 0;
 
@@ -260,10 +260,10 @@ int x509_main(int argc, char **argv)
         } else if (strcmp(*argv, "-days") == 0) {
             if (--argc < 1)
                 goto bad;
-            days = str2num(*(++argv), 1, INT_MAX, &stnerr);
+            days = strtonum(*(++argv), 1, INT_MAX, &stnerr);
             if (stnerr) {
-                BIO_printf(bio_err, "bad number of days: %s, errcode=%d\n",
-                           *argv, *stnerr);
+                BIO_printf(bio_err, "bad number of days: %s, errmsg=%s\n",
+                           *argv, stnerr);
                 goto bad;
             }
         } else if (strcmp(*argv, "-passin") == 0) {
@@ -405,10 +405,10 @@ int x509_main(int argc, char **argv)
         else if (strcmp(*argv, "-checkend") == 0) {
             if (--argc < 1)
                 goto bad;
-            checkoffset = str2num(*(++argv), 0, INT_MAX, &stnerr);
+            checkoffset = strtonum(*(++argv), 0, INT_MAX, &stnerr);
             if (stnerr) {
-                BIO_printf(bio_err, "checkend unusable: %s, errcode=%d\n",
-                           *argv, *stnerr);
+                BIO_printf(bio_err, "checkend unusable: %s, errmsg=%s\n",
+                           *argv, stnerr);
                 goto bad;
             }
             checkend = 1;

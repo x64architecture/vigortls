@@ -24,6 +24,14 @@ if (NOT HAVE_STRLCAT)
         strlcat.c
     )
 endif()
+if (NOT HAVE_STRTONUM)
+    set(
+        COMPACT_SOURCES 
+
+        ${COMPACT_SOURCES}
+        strtonum.c
+    )
+endif()
 
 add_library(
     compact
@@ -31,6 +39,4 @@ add_library(
     OBJECT
 
     ${COMPACT_SOURCES}
-
-    str2num.c
 )

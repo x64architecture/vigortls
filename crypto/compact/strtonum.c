@@ -21,34 +21,41 @@
 #define INVALID 1
 #define OVERFLOW 2
 #define UNDERFLOW 3
-#define OUTOFRANGE 4
 
-long long str2num(const char *nptr, long long minval, long long maxval, const int **stnerr)
+long long strtonum(const char *nptr, long long minval, long long maxval, const char **stnerr)
 {
     long long sl = 0;
     int error = 0;
     char *ex;
+    struct errval {
+        const char *errstr;
+        int err;
+    } ev[4] = {
+          { NULL, 0 },
+          { "invalid", EINVAL },
+          { "too large", ERANGE },
+          { "too small", ERANGE },
+    };
 
     errno = 0;
+    ev[0].err = errno;
     if (minval > maxval) {
         error = INVALID;
     } else {
         sl = strtoll(nptr, &ex, 10);
         if (*ex != '\0') {
             error = INVALID;
-        } else if ((sl == LLONG_MIN || sl == LLONG_MAX) && errno == ERANGE) {
-            error = OUTOFRANGE;
-        } else if (sl > maxval) {
+        } else if ((sl == LLONG_MAX && errno == ERANGE) || sl > maxval) {
             error = OVERFLOW;
-        } else if (sl < minval) {
+        } else if ((sl == LLONG_MIN && errno == ERANGE) || sl < minval) {
             error = UNDERFLOW;
         }
     }
     if (stnerr != NULL)
-        *stnerr = &error;
-    errno = error;
+        *stnerr = ev[error].errstr;
+    errno = ev[error].err;
     if (error)
-        return 0;
+        return (0);
 
     return (sl);
 }

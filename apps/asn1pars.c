@@ -87,7 +87,7 @@ static int do_generate(BIO *bio, char *genstr, char *genconf, BUF_MEM *buf);
 int asn1parse_main(int argc, char **argv)
 {
     int i, badops = 0, offset = 0, ret = 1, j;
-    const int *stnerr = NULL;
+    const char *stnerr = NULL;
     unsigned int length = 0;
     long num, tmplen;
     BIO *in = NULL, *out = NULL, *b64 = NULL, *derout = NULL;
@@ -140,13 +140,13 @@ int asn1parse_main(int argc, char **argv)
         } else if (strcmp(*argv, "-offset") == 0) {
             if (--argc < 1)
                 goto bad;
-            offset = str2num(*(++argv), 0, INT_MAX, &stnerr);
+            offset = strtonum(*(++argv), 0, INT_MAX, &stnerr);
             if (stnerr)
                 goto bad;
         } else if (strcmp(*argv, "-length") == 0) {
             if (--argc < 1)
                 goto bad;
-            length = str2num(*(++argv), 1, UINT_MAX, &stnerr);
+            length = strtonum(*(++argv), 1, UINT_MAX, &stnerr);
             if (stnerr)
                 goto bad;
         } else if (strcmp(*argv, "-dump") == 0)
@@ -154,7 +154,7 @@ int asn1parse_main(int argc, char **argv)
         else if (strcmp(*argv, "-dlimit") == 0) {
             if (--argc < 1)
                 goto bad;
-            dump = str2num(*(++argv), 1, INT_MAX, &stnerr);
+            dump = strtonum(*(++argv), 1, INT_MAX, &stnerr);
             if (stnerr)
                 goto bad;
         } else if (strcmp(*argv, "-strparse") == 0) {
@@ -277,10 +277,10 @@ int asn1parse_main(int argc, char **argv)
         for (i = 0; i < sk_OPENSSL_STRING_num(osk); i++) {
             ASN1_TYPE *atmp;
             int typ;
-            j = str2num(sk_OPENSSL_STRING_value(osk, i), 1, INT_MAX, &stnerr);
+            j = strtonum(sk_OPENSSL_STRING_value(osk, i), 1, INT_MAX, &stnerr);
             if (stnerr) {
-                BIO_printf(bio_err, "'%s' is an invalid number, errcode=%d\n", 
-                           sk_OPENSSL_STRING_value(osk, i), *stnerr);
+                BIO_printf(bio_err, "'%s' is an invalid number, errmsg=%s\n", 
+                           sk_OPENSSL_STRING_value(osk, i), stnerr);
                 continue;
             }
             tmpbuf += j;

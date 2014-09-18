@@ -511,7 +511,7 @@ int speed_main(int argc, char **argv)
     const EVP_MD *evp_md = NULL;
     int decrypt = 0;
     int multi = 0;
-    const int *stnerr = NULL;
+    const char *stnerr = NULL;
 
 #ifndef TIMES
     usertime = -1;
@@ -624,10 +624,10 @@ int speed_main(int argc, char **argv)
                 BIO_printf(bio_err, "no multi count given\n");
                 goto end;
             }
-            multi = str2num(argv[0], 1, INT_MAX, &stnerr);
+            multi = strtonum(argv[0], 1, INT_MAX, &stnerr);
             if (stnerr) {
-                BIO_printf(bio_err, "bad multi count %s, errcode=%d\n",
-                           argv[0], *stnerr);
+                BIO_printf(bio_err, "bad multi count %s, errmsg=%s\n",
+                           argv[0], stnerr);
                 goto end;
             }
             j--; /* Otherwise, -mr gets confused with
@@ -2283,7 +2283,7 @@ static int do_multi(int multi)
     int fd[2];
     int *fds;
     static char sep[] = ":";
-    const int *stnerr = NULL;
+    const char *stnerr = NULL;
 
     fds = reallocarray(NULL, multi, sizeof *fds);
     for (n = 0; n < multi; ++n) {
@@ -2334,7 +2334,7 @@ static int do_multi(int multi)
                 int j;
 
                 p = buf + 3;
-                alg = str2num(sstrsep(&p, sep), 0, ALGOR_NUM - 1, &stnerr);
+                alg = strtonum(sstrsep(&p, sep), 0, ALGOR_NUM - 1, &stnerr);
                 sstrsep(&p, sep);
                 for (j = 0; j < SIZE_NUM; ++j)
                     results[alg][j] += atof(sstrsep(&p, sep));
@@ -2343,7 +2343,7 @@ static int do_multi(int multi)
                 double d;
 
                 p = buf + 4;
-                k = str2num(sstrsep(&p, sep), 0, ALGOR_NUM - 1, &stnerr);
+                k = strtonum(sstrsep(&p, sep), 0, ALGOR_NUM - 1, &stnerr);
                 sstrsep(&p, sep);
 
                 d = atof(sstrsep(&p, sep));
@@ -2362,7 +2362,7 @@ static int do_multi(int multi)
                 double d;
 
                 p = buf + 4;
-                k = str2num(sstrsep(&p, sep), 0, ALGOR_NUM - 1, &stnerr);
+                k = strtonum(sstrsep(&p, sep), 0, ALGOR_NUM - 1, &stnerr);
                 sstrsep(&p, sep);
 
                 d = atof(sstrsep(&p, sep));
@@ -2383,7 +2383,7 @@ static int do_multi(int multi)
                 double d;
 
                 p = buf + 4;
-                k = str2num(sstrsep(&p, sep), 0, ALGOR_NUM - 1, &stnerr);
+                k = strtonum(sstrsep(&p, sep), 0, ALGOR_NUM - 1, &stnerr);
                 sstrsep(&p, sep);
 
                 d = atof(sstrsep(&p, sep));
@@ -2405,7 +2405,7 @@ static int do_multi(int multi)
                 double d;
 
                 p = buf + 4;
-                k = str2num(sstrsep(&p, sep), 0, ALGOR_NUM - 1, &stnerr);
+                k = strtonum(sstrsep(&p, sep), 0, ALGOR_NUM - 1, &stnerr);
                 sstrsep(&p, sep);
 
                 d = atof(sstrsep(&p, sep));
@@ -2428,7 +2428,7 @@ static int do_multi(int multi)
                 double d;
 
                 p = buf + 4;
-                k = str2num(sstrsep(&p, sep), 0, ALGOR_NUM - 1, &stnerr);
+                k = strtonum(sstrsep(&p, sep), 0, ALGOR_NUM - 1, &stnerr);
                 sstrsep(&p, sep);
 
                 d = atof(sstrsep(&p, sep));

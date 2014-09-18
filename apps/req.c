@@ -318,14 +318,14 @@ int req_main(int argc, char **argv)
         } else if (strcmp(*argv, "-multivalue-rdn") == 0)
             multirdn = 1;
         else if (strcmp(*argv, "-days") == 0) {
-            const int *stnerr = NULL;            
+            const char *stnerr = NULL;            
             if (--argc < 1)
                 goto bad;
-            days = str2num(*(++argv), 1, INT_MAX, &stnerr);
+            days = strtonum(*(++argv), 1, INT_MAX, &stnerr);
             if (stnerr) {
                 days = 30;
-                BIO_printf(bio_err, "bad -days argument: %s, using %d instead, errcode=%d",
-                           *argv, days, *stnerr);
+                BIO_printf(bio_err, "bad -days argument: %s, using %d instead, errmsg=%s",
+                           *argv, days, stnerr);
             }
         } else if (strcmp(*argv, "-set_serial") == 0) {
             if (--argc < 1)
@@ -1378,16 +1378,16 @@ static EVP_PKEY_CTX *set_keygen_ctx(BIO *err, const char *gstr, int *pkey_type,
     long keylen = -1;
     BIO *pbio = NULL;
     const char *paramfile = NULL;
-    const int *stnerr = NULL;
+    const char *stnerr = NULL;
 
     if (gstr == NULL) {
         *pkey_type = EVP_PKEY_RSA;
         keylen = *pkeylen;
     } else if (gstr[0] >= '0' && gstr[0] <= '9') {
         *pkey_type = EVP_PKEY_RSA;
-        keylen = str2num(gstr, 0, LONG_MAX, &stnerr);
+        keylen = strtonum(gstr, 0, LONG_MAX, &stnerr);
         if (stnerr) {
-            BIO_printf(err, "bad algorithm %s, errcode=%d\n", gstr, *stnerr);
+            BIO_printf(err, "bad algorithm %s, errmsg=%s\n", gstr, stnerr);
             return NULL;
         }
         *pkeylen = keylen;
@@ -1422,9 +1422,9 @@ static EVP_PKEY_CTX *set_keygen_ctx(BIO *err, const char *gstr, int *pkey_type,
 #endif
         if (*pkey_type == EVP_PKEY_RSA) {
             if (p) {
-                keylen = str2num(p + 1, 0, LONG_MAX, &stnerr);
+                keylen = strtonum(p + 1, 0, LONG_MAX, &stnerr);
                 if (stnerr) {
-                    BIO_printf(err, "bad algorithm %s, errcode=%d\n", p + 1, *stnerr);
+                    BIO_printf(err, "bad algorithm %s, errmsg=%s\n", p + 1, stnerr);
                     return NULL;
                 }
                 *pkeylen = keylen;

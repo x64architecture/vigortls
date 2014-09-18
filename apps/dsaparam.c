@@ -119,7 +119,7 @@ int dsaparam_main(int argc, char **argv)
 #endif
 #ifdef GENCB_TEST
     int timebomb = 0;
-    const int *stnerr = NULL;
+    const char *stnerr = NULL;
 #endif
 
     if (bio_err == NULL)
@@ -166,8 +166,8 @@ int dsaparam_main(int argc, char **argv)
         else if (strcmp(*argv, "-timebomb") == 0) {
             if (--argc < 1)
                 goto bad;
-            timebomb = str2num(*(++argv), 0, INT_MAX, &stnerr);
-            if (*stnerr)
+            timebomb = strtonum(*(++argv), 0, INT_MAX, &stnerr);
+            if (stnerr)
                 goto bad;
         }
 #endif

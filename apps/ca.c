@@ -302,7 +302,7 @@ int ca_main(int argc, char **argv)
     const char *p;
     char *const *pp;
     int i, j;
-    const int *stnerr = NULL;
+    const char *stnerr = NULL;
     const EVP_MD *dgst = NULL;
     STACK_OF(CONF_VALUE) *attribs = NULL;
     STACK_OF(X509) *cert_sk = NULL;
@@ -367,7 +367,7 @@ int ca_main(int argc, char **argv)
         } else if (strcmp(*argv, "-days") == 0) {
             if (--argc < 1)
                 goto bad;
-            days = str2num(*(++argv), 0, LONG_MAX, &stnerr);
+            days = strtonum(*(++argv), 0, LONG_MAX, &stnerr);
             if (stnerr)
                 goto bad;
         } else if (strcmp(*argv, "-md") == 0) {
@@ -435,19 +435,19 @@ int ca_main(int argc, char **argv)
         else if (strcmp(*argv, "-crldays") == 0) {
             if (--argc < 1)
                 goto bad;
-            crldays = str2num(*(++argv), 0, LONG_MAX, &stnerr);
+            crldays = strtonum(*(++argv), 0, LONG_MAX, &stnerr);
             if (stnerr)
                 goto bad;
         } else if (strcmp(*argv, "-crlhours") == 0) {
             if (--argc < 1)
                 goto bad;
-            crlhours = str2num(*(++argv), 0, LONG_MAX, &stnerr);
+            crlhours = strtonum(*(++argv), 0, LONG_MAX, &stnerr);
             if (stnerr)
                 goto bad;
         } else if (strcmp(*argv, "-crlsec") == 0) {
             if (--argc < 1)
                 goto bad;
-            crlsec = str2num(*(++argv), 0, LONG_MAX, &stnerr);
+            crlsec = strtonum(*(++argv), 0, LONG_MAX, &stnerr);
             if (stnerr)
                 goto bad;
         } else if (strcmp(*argv, "-infiles") == 0) {
@@ -519,8 +519,8 @@ int ca_main(int argc, char **argv)
         else {
 bad:
             if (stnerr)
-                BIO_printf(bio_err, "invalid argument %s, errcode=%d",
-                           *argv, *stnerr);
+                BIO_printf(bio_err, "invalid argument %s, errmsg=%s",
+                           *argv, stnerr);
             else
                 BIO_printf(bio_err, "unknown option %s\n", *argv);
             badops = 1;

@@ -716,7 +716,7 @@ int s_server_main(int argc, char *argv[])
     EVP_PKEY *s_key2 = NULL;
     X509 *s_cert2 = NULL;
     tlsextctx tlsextcbp = { NULL, NULL, SSL_TLSEXT_ERR_ALERT_WARNING };
-    const int *stnerr = NULL;
+    const char *stnerr = NULL;
 #ifndef OPENSSL_NO_NEXTPROTONEG
     const char *next_proto_neg_in = NULL;
     tlsextnextprotoctx next_proto;
@@ -759,7 +759,7 @@ int s_server_main(int argc, char *argv[])
             s_server_verify = SSL_VERIFY_PEER | SSL_VERIFY_CLIENT_ONCE;
             if (--argc < 1)
                 goto bad;
-            verify_depth = str2num(*(++argv), 0, INT_MAX, &stnerr);
+            verify_depth = strtonum(*(++argv), 0, INT_MAX, &stnerr);
             if (stnerr)
                 goto bad;
             BIO_printf(bio_err, "verify depth is %d\n", verify_depth);
@@ -768,7 +768,7 @@ int s_server_main(int argc, char *argv[])
                               SSL_VERIFY_CLIENT_ONCE;
             if (--argc < 1)
                 goto bad;
-            verify_depth = str2num(*(++argv), 0, INT_MAX, &stnerr);
+            verify_depth = strtonum(*(++argv), 0, INT_MAX, &stnerr);
             if (stnerr)
                 goto bad;
             BIO_printf(bio_err, "verify depth is %d, must return a certificate\n", verify_depth);
@@ -874,7 +874,7 @@ int s_server_main(int argc, char *argv[])
             s_tlsextstatus = 1;
             if (--argc < 1)
                 goto bad;
-            tlscstatp.timeout = str2num(*(++argv), 0, INT_MAX, &stnerr);
+            tlscstatp.timeout = strtonum(*(++argv), 0, INT_MAX, &stnerr);
             if (stnerr)
                 goto bad;
         } else if (!strcmp(*argv, "-status_url")) {
@@ -982,7 +982,7 @@ int s_server_main(int argc, char *argv[])
         else if (strcmp(*argv, "-mtu") == 0) {
             if (--argc < 1)
                 goto bad;
-            socket_mtu = str2num(*(++argv), 0, LONG_MAX, &stnerr);
+            socket_mtu = strtonum(*(++argv), 0, LONG_MAX, &stnerr);
             if (stnerr)
                 goto bad;
         } else if (strcmp(*argv, "-chain") == 0)
@@ -1036,7 +1036,7 @@ int s_server_main(int argc, char *argv[])
         } else if (strcmp(*argv, "-keymatexportlen") == 0) {
             if (--argc < 1)
                 goto bad;
-            keymatexportlen = str2num(*(++argv), 1, LONG_MAX, &stnerr);
+            keymatexportlen = strtonum(*(++argv), 1, LONG_MAX, &stnerr);
             if (stnerr)
                 goto bad;
         } else {
@@ -1050,7 +1050,7 @@ int s_server_main(int argc, char *argv[])
     if (badop) {
 bad:
         if (stnerr)
-            BIO_printf(bio_err, "invalid argument %s, errcode=%d\n", *argv, *stnerr);
+            BIO_printf(bio_err, "invalid argument %s, errmsg=%s\n", *argv, stnerr);
         else
             sv_usage();
         goto end;

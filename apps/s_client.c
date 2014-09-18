@@ -535,7 +535,7 @@ int s_client_main(int argc, char **argv)
     BIO *sbio;
     int mbuf_len = 0;
     struct timeval timeout, *timeoutp;
-    const int *stnerr = NULL;
+    const char *stnerr = NULL;
 #ifndef OPENSSL_NO_ENGINE
     char *engine_id = NULL;
     char *ssl_client_engine_id = NULL;
@@ -609,7 +609,7 @@ int s_client_main(int argc, char **argv)
             verify = SSL_VERIFY_PEER;
             if (--argc < 1)
                 goto bad;
-            verify_depth = str2num(*(++argv), 0, INT_MAX, &stnerr);
+            verify_depth = strtonum(*(++argv), 0, INT_MAX, &stnerr);
             if (stnerr)
                 goto bad;
             BIO_printf(bio_err, "verify depth is %d\n", verify_depth);
@@ -704,7 +704,7 @@ int s_client_main(int argc, char **argv)
         else if (strcmp(*argv, "-mtu") == 0) {
             if (--argc < 1)
                 goto bad;
-            socket_mtu = str2num(*(++argv), 0, LONG_MAX, &stnerr);
+            socket_mtu = strtonum(*(++argv), 0, LONG_MAX, &stnerr);
             if (stnerr)
                 goto bad;
         }
@@ -826,7 +826,7 @@ int s_client_main(int argc, char **argv)
         } else if (strcmp(*argv, "-keymatexportlen") == 0) {
             if (--argc < 1)
                 goto bad;
-            keymatexportlen = str2num(*(++argv), 1, INT_MAX, &stnerr);
+            keymatexportlen = strtonum(*(++argv), 1, INT_MAX, &stnerr);
             if (stnerr)
                 goto bad;
         } else {
@@ -840,7 +840,7 @@ int s_client_main(int argc, char **argv)
     if (badop) {
 bad:
         if (stnerr)
-            BIO_printf(bio_err, "invalid argument %s, errcode=%d\n", *argv, *stnerr);
+            BIO_printf(bio_err, "invalid argument %s, errmsg=%s\n", *argv, stnerr);
         else
             sc_usage();
         goto end;

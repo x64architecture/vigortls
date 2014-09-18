@@ -63,7 +63,7 @@ int prime_main(int argc, char **argv)
     int generate = 0;
     int bits = 0;
     int safe = 0;
-    const int *stnerr = NULL;
+    const char *stnerr = NULL;
     BIGNUM *bn = NULL;
     BIO *bio_out;
 
@@ -82,7 +82,7 @@ int prime_main(int argc, char **argv)
             if (--argc < 1)
                 goto bad;
             else
-                bits = str2num(*(++argv), 0, INT_MAX, &stnerr);
+                bits = strtonum(*(++argv), 0, INT_MAX, &stnerr);
             if (stnerr)
                 goto bad;
         } else if (!strcmp(*argv, "-safe"))
@@ -91,7 +91,7 @@ int prime_main(int argc, char **argv)
             if (--argc < 1)
                 goto bad;
             else
-                checks = str2num(*(++argv), 0, INT_MAX, &stnerr);
+                checks = strtonum(*(++argv), 0, INT_MAX, &stnerr);
             if (stnerr)
                 goto bad;
         } else {
@@ -141,7 +141,7 @@ int prime_main(int argc, char **argv)
 
 bad:
     if (stnerr)
-        BIO_printf(bio_err, "invalid argument %s, errcode=%d\n", *argv, *stnerr);
+        BIO_printf(bio_err, "invalid argument %s, errmsg=%s\n", *argv, stnerr);
     else {
         BIO_printf(bio_err, "options are\n");
         BIO_printf(bio_err, "%-14s hex\n", "-hex");
