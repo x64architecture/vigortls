@@ -207,7 +207,7 @@ static int test_ecdh_curve(int nid, const char *text, BN_CTX *ctx, BIO *out)
 #ifdef NOISY
     BIO_puts(out, "  key1 =");
     for (i = 0; i < aout; i++) {
-        sprintf(buf, "%02X", abuf[i]);
+        snprintf(buf, sizeof(buf), "%02X", abuf[i]);
         BIO_puts(out, buf);
     }
     BIO_puts(out, "\n");
@@ -223,7 +223,7 @@ static int test_ecdh_curve(int nid, const char *text, BN_CTX *ctx, BIO *out)
 #ifdef NOISY
     BIO_puts(out, "  key2 =");
     for (i = 0; i < bout; i++) {
-        sprintf(buf, "%02X", bbuf[i]);
+        snprintf(buf, sizeof(buf), "%02X", bbuf[i]);
         BIO_puts(out, buf);
     }
     BIO_puts(out, "\n");
@@ -254,13 +254,13 @@ static int test_ecdh_curve(int nid, const char *text, BN_CTX *ctx, BIO *out)
         BIO_printf(out, "\n");
         BIO_printf(out, "generated key a: ");
         for (i = 0; i < bout; i++) {
-            sprintf(buf, "%02X", bbuf[i]);
+            snprintf(buf, sizeof buf, "%02X", bbuf[i]);
             BIO_puts(out, buf);
         }
         BIO_printf(out, "\n");
         BIO_printf(out, "generated key b: ");
         for (i = 0; i < aout; i++) {
-            sprintf(buf, "%02X", abuf[i]);
+            snprintf(buf, sizeof buf, "%02X", abuf[i]);
             BIO_puts(out, buf);
         }
         BIO_printf(out, "\n");

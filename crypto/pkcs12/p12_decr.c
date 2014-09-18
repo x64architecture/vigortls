@@ -131,18 +131,6 @@ void *PKCS12_item_decrypt_d2i(X509_ALGOR *algor, const ASN1_ITEM *it,
         return NULL;
     }
     p = out;
-#ifdef DEBUG_DECRYPT
-    {
-        FILE *op;
-
-        char fname[30];
-        static int fnm = 1;
-        sprintf(fname, "DER%d", fnm++);
-        op = fopen(fname, "wb");
-        fwrite(p, 1, outlen, op);
-        fclose(op);
-    }
-#endif
     ret = ASN1_item_d2i(NULL, &p, outlen, it);
     if (zbuf)
         vigortls_zeroize(out, outlen);
