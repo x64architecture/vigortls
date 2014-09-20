@@ -460,12 +460,14 @@ void CRYPTO_get_mem_debug_functions(void (**m)(void *, int, const char *, int, i
                                     void (**so)(long),
                                     long (**go)(void));
 
+#ifndef VIGORTLS_INTERNAL
 void *CRYPTO_malloc_locked(int num, const char *file, int line);
 void CRYPTO_free_locked(void *ptr);
 void *CRYPTO_malloc(int num, const char *file, int line);
 char *CRYPTO_strdup(const char *str, const char *file, int line);
 void CRYPTO_free(void *ptr);
 void *CRYPTO_realloc(void *addr, int num, const char *file, int line);
+#endif
 void *CRYPTO_realloc_clean(void *addr, int old_num, int num, const char *file,
                            int line);
 void *CRYPTO_remalloc(void *addr, int num, const char *file, int line);

@@ -3,6 +3,7 @@ project(VigorTLS C)
 
 include(CTest)
 include(ConfigureChecks.cmake)
+include(GenDeps.cmake)
 
 if (CMAKE_COMPILER_IS_GNUCC OR "${CMAKE_C_COMPILER_ID}" STREQUAL "Clang")
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Werror -ggdb -std=c99")
@@ -23,6 +24,8 @@ elseif (${CMAKE_SYSTEM_PROCESSOR} STREQUAL "armv6l")
 else()
     message(FATAL_ERROR "Unsupported processor:" ${CMAKE_SYSTEM_PROCESSOR})
 endif()
+
+add_definitions(-DVIGORTLS_INTERNAL)
 
 if(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
     add_definitions(-D_GNU_SOURCE)
