@@ -1,10 +1,12 @@
-include_directories( ${CMAKE_CURRENT_BINARY_DIR} .. ../../include . ../asn1 ../evp ../modes )
+include_directories(${CMAKE_CURRENT_BINARY_DIR} .. ../../include . ../asn1 ../evp ../modes)
 
 add_library(
-    md5
+    store
 
     OBJECT
 
-    md5_dgst.c
-    md5_one.c
+    str_err.c
+    str_lib.c
+    str_mem.c
+    str_meth.c
 )
