@@ -1466,6 +1466,7 @@ ssl3_get_key_exchange(SSL *s)
 
         if (pkey->type == EVP_PKEY_RSA && !SSL_USE_SIGALGS(s)) {
             int num;
+            unsigned int size;
 
             j = 0;
             q = md_buf;
@@ -1480,10 +1481,9 @@ ssl3_get_key_exchange(SSL *s)
                                  &(s->s3->server_random[0]),
                                  SSL3_RANDOM_SIZE);
                 EVP_DigestUpdate(&md_ctx, param, param_len);
-                EVP_DigestFinal_ex(&md_ctx, q,
-                                   (unsigned int *)&i);
-                q += i;
-                j += i;
+                EVP_DigestFinal_ex(&md_ctx, q, &size);
+                q += size;
+                j += size;
             }
             i = RSA_verify(NID_md5_sha1, md_buf, j,
                            p, n, pkey->pkey.rsa);
