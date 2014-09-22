@@ -1154,10 +1154,7 @@ int STORE_delete_arbitrary(STORE *s, OPENSSL_ITEM attributes[],
 
 STORE_OBJECT *STORE_OBJECT_new(void)
 {
-    STORE_OBJECT *object = malloc(sizeof(STORE_OBJECT));
-    if (object)
-        memset(object, 0, sizeof(STORE_OBJECT));
-    return object;
+    return calloc(1, sizeof(STORE_OBJECT));
 }
 void STORE_OBJECT_free(STORE_OBJECT *data)
 {

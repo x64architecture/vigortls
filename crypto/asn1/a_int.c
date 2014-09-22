@@ -343,10 +343,8 @@ int ASN1_INTEGER_set(ASN1_INTEGER *a, long v)
     unsigned char buf[sizeof(long) + 1];
 
     if (a->length < (int)(sizeof(long) + 1)) {
-        if (a->data != NULL)
-            free(a->data);
-        if ((a->data = malloc(sizeof(long) + 1)) != NULL)
-            memset((char *)a->data, 0, sizeof(long) + 1);
+        free(a->data);
+        a->data = calloc(1, sizeof(long) + 1);
     }
     if (a->data == NULL) {
         ASN1err(ASN1_F_ASN1_INTEGER_SET, ERR_R_MALLOC_FAILURE);

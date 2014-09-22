@@ -69,12 +69,11 @@ ENGINE_new(void)
 {
     ENGINE *ret;
 
-    ret = malloc(sizeof(ENGINE));
+    ret = calloc(1, sizeof(ENGINE));
     if (ret == NULL) {
         ENGINEerr(ENGINE_F_ENGINE_NEW, ERR_R_MALLOC_FAILURE);
         return NULL;
     }
-    memset(ret, 0, sizeof(ENGINE));
     ret->struct_ref = 1;
     engine_ref_debug(ret, 0, 1)
         CRYPTO_new_ex_data(CRYPTO_EX_INDEX_ENGINE, ret, &ret->ex_data);

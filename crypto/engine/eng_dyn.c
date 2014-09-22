@@ -189,12 +189,11 @@ dynamic_set_data_ctx(ENGINE *e, dynamic_data_ctx **ctx)
 {
     dynamic_data_ctx *c;
 
-    c = malloc(sizeof(dynamic_data_ctx));
-    if (!c) {
+    c = calloc(1, sizeof(dynamic_data_ctx));
+    if (c == NULL) {
         ENGINEerr(ENGINE_F_DYNAMIC_SET_DATA_CTX, ERR_R_MALLOC_FAILURE);
         return 0;
     }
-    memset(c, 0, sizeof(dynamic_data_ctx));
     c->dynamic_dso = NULL;
     c->v_check = NULL;
     c->bind_engine = NULL;
