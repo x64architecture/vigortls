@@ -556,8 +556,7 @@ static int do_othername(GENERAL_NAME *gen, char *value, X509V3_CTX *ctx)
     objtmp = malloc(objlen + 1);
     if (objtmp == NULL)
         return 0;
-    strncpy(objtmp, value, objlen);
-    objtmp[objlen] = 0;
+    strlcpy(objtmp, value, objlen + 1);
     gen->d.otherName->type_id = OBJ_txt2obj(objtmp, 0);
     free(objtmp);
     if (!gen->d.otherName->type_id)

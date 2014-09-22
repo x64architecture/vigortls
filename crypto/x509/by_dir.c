@@ -239,8 +239,7 @@ static int add_cert_dir(BY_DIR *ctx, const char *dir, int type)
                 by_dir_entry_free(ent);
                 return 0;
             }
-            strncpy(ent->dir, ss, (unsigned int)len);
-            ent->dir[len] = '\0';
+            strlcpy(ent->dir, ss, (unsigned int)len + 1);
             if (!sk_BY_DIR_ENTRY_push(ctx->dirs, ent)) {
                 by_dir_entry_free(ent);
                 return 0;

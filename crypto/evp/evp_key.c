@@ -71,10 +71,8 @@ void EVP_set_pw_prompt(const char *prompt)
 {
     if (prompt == NULL)
         prompt_string[0] = '\0';
-    else {
-        strncpy(prompt_string, prompt, 79);
-        prompt_string[79] = '\0';
-    }
+    else
+        strlcpy(prompt_string, prompt, sizeof(prompt));
 }
 
 char *EVP_get_pw_prompt(void)
