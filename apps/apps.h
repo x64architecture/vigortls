@@ -239,9 +239,6 @@ int do_X509_REQ_sign(BIO *err, X509_REQ *x, EVP_PKEY *pkey, const EVP_MD *md,
                      STACK_OF(OPENSSL_STRING) * sigopts);
 int do_X509_CRL_sign(BIO *err, X509_CRL *x, EVP_PKEY *pkey, const EVP_MD *md,
                      STACK_OF(OPENSSL_STRING) * sigopts);
-#ifndef OPENSSL_NO_PSK
-extern char *psk_key;
-#endif
 
 #ifndef OPENSSL_NO_NEXTPROTONEG
 unsigned char *next_protos_parse(unsigned short *outlen, const char *in);
