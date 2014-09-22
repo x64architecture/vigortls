@@ -56,6 +56,7 @@
  * [including the GNU Public Licence.]
  */
 
+#include <stdint.h>
 #include <stdlib.h>
 
 #undef c2l
