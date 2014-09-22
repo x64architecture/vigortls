@@ -67,8 +67,7 @@ typedef struct _pqueue {
     int count;
 } pqueue_s;
 
-pitem *
-pitem_new(unsigned char *prio64be, void *data)
+pitem *pitem_new(unsigned char *prio64be, void *data)
 {
     pitem *item = malloc(sizeof(pitem));
     if (item == NULL)
@@ -82,37 +81,22 @@ pitem_new(unsigned char *prio64be, void *data)
     return item;
 }
 
-void
-pitem_free(pitem *item)
+void pitem_free(pitem *item)
 {
-    if (item == NULL)
-        return;
-
     free(item);
 }
 
-pqueue_s *
-pqueue_new()
+pqueue_s *pqueue_new()
 {
-    pqueue_s *pq = malloc(sizeof(pqueue_s));
-    if (pq == NULL)
-        return NULL;
-
-    memset(pq, 0x00, sizeof(pqueue_s));
-    return pq;
+    return calloc(1, sizeof(pqueue_s));
 }
 
-void
-pqueue_free(pqueue_s *pq)
+void pqueue_free(pqueue_s *pq)
 {
-    if (pq == NULL)
-        return;
-
     free(pq);
 }
 
-pitem *
-pqueue_insert(pqueue_s *pq, pitem *item)
+pitem *pqueue_insert(pqueue_s *pq, pitem *item)
 {
     pitem *curr, *next;
 
@@ -121,8 +105,7 @@ pqueue_insert(pqueue_s *pq, pitem *item)
         return item;
     }
 
-    for (curr = NULL, next = pq->items;
-         next != NULL;
+    for (curr = NULL, next = pq->items; next != NULL;
          curr = next, next = next->next) {
         /* we can compare 64-bit value in big-endian encoding
          * with memcmp:-) */
@@ -137,9 +120,7 @@ pqueue_insert(pqueue_s *pq, pitem *item)
                 curr->next = item;
 
             return item;
-        }
-
-        else if (cmp == 0) /* duplicates not allowed */
+        } else if (cmp == 0) /* duplicates not allowed */
             return NULL;
     }
 
@@ -149,14 +130,12 @@ pqueue_insert(pqueue_s *pq, pitem *item)
     return item;
 }
 
-pitem *
-pqueue_peek(pqueue_s *pq)
+pitem *pqueue_peek(pqueue_s *pq)
 {
     return pq->items;
 }
 
-pitem *
-pqueue_pop(pqueue_s *pq)
+pitem *pqueue_pop(pqueue_s *pq)
 {
     pitem *item = pq->items;
 
@@ -166,8 +145,7 @@ pqueue_pop(pqueue_s *pq)
     return item;
 }
 
-pitem *
-pqueue_find(pqueue_s *pq, unsigned char *prio64be)
+pitem *pqueue_find(pqueue_s *pq, unsigned char *prio64be)
 {
     pitem *next;
     pitem *found = NULL;
@@ -199,14 +177,12 @@ pqueue_find(pqueue_s *pq, unsigned char *prio64be)
     return found;
 }
 
-pitem *
-pqueue_iterator(pqueue_s *pq)
+pitem *pqueue_iterator(pqueue_s *pq)
 {
     return pqueue_peek(pq);
 }
 
-pitem *
-pqueue_next(pitem **item)
+pitem *pqueue_next(pitem **item)
 {
     pitem *ret;
 
@@ -220,8 +196,7 @@ pqueue_next(pitem **item)
     return ret;
 }
 
-int
-pqueue_size(pqueue_s *pq)
+int pqueue_size(pqueue_s *pq)
 {
     pitem *item = pq->items;
     int count = 0;
