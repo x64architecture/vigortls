@@ -18,10 +18,15 @@ endfunction(add_test_suite)
 
 add_executable(ssltest ssltest.c)
 add_executable(evptest evptest.c)
+add_executable(aeadtest aeadtest.c)
+target_link_libraries(aeadtest crypto ssl)
 target_link_libraries(evptest crypto)
 target_link_libraries(ssltest crypto ssl)
 
-
+set(AEADTDIR "${PROJECT_SOURCE_DIR}/tests/data/aead")
+add_test(aes-128-gcm_aead ./aeadtest aes-128-gcm ${AEADTDIR}/aes_128_gcm_tests.txt)
+add_test(aes-256-gcm_aead ./aeadtest aes-256-gcm ${AEADTDIR}/aes_256_gcm_tests.txt)
+add_test(chacha20-poly1305_aead ./aeadtest chacha20-poly1305 ${AEADTDIR}/chacha20_poly1305_tests.txt)
 add_test_suite(aes_wrap aes_wrap.c)
 add_test_suite(asn1test asn1test.c)
 add_test_suite(bftest bftest.c)

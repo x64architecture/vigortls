@@ -719,7 +719,7 @@ int tls1_enc(SSL *s, int send)
                                    nonce, nonce_used, in + eivlen, len, ad,
                                    sizeof(ad)))
                 return -1;
-            if (aead->variable_nonce_in_record)
+            if (n >= 0 && aead->variable_nonce_in_record)
                 n += aead->variable_nonce_len;
         } else {
             /* receive */
