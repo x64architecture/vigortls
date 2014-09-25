@@ -719,7 +719,7 @@ int tls1_enc(SSL *s, int send)
                                    nonce, nonce_used, in + eivlen, len, ad,
                                    sizeof(ad)))
                 return -1;
-            if (n >= 0 && aead->variable_nonce_in_record)
+            if (aead->variable_nonce_in_record)
                 n += aead->variable_nonce_len;
         } else {
             /* receive */
@@ -924,7 +924,7 @@ int tls1_final_finish_mac(SSL *s, const char *str, int slen,
             int hashsize = EVP_MD_size(md);
             EVP_MD_CTX *hdgst = s->s3->handshake_dgst[idx];
             if (!hdgst || hashsize < 0 || hashsize > (int)(sizeof buf - (size_t)(q - buf))) {
-                /* internal error: 'buf' is too small for this cipersuite! */
+                /* internal error: 'buf' is too small for this ciphersuite! */
                 err = 1;
             } else {
                 if (!EVP_MD_CTX_copy_ex(&ctx, hdgst) || !EVP_DigestFinal_ex(&ctx, q, &i) || (i != (unsigned int)hashsize))
