@@ -606,9 +606,9 @@ static int dtls1_reassemble_fragment(SSL *s, struct hm_header_st *msg_hdr,
     }
 
     /*
-   * If message is already reassembled, this must be a
-   * retransmit and can be dropped.
-   */
+     * If message is already reassembled, this must be a
+     * retransmit and can be dropped.
+     */
     if (frag->reassembly == NULL) {
         unsigned char devnull[256];
 
@@ -664,8 +664,7 @@ err:
     return i;
 }
 
-static int dtls1_process_out_of_seq_message(SSL *s,
-                                            struct hm_header_st *msg_hdr,
+static int dtls1_process_out_of_seq_message(SSL *s, struct hm_header_st *msg_hdr,
                                             int *ok)
 {
     int i = -1;
@@ -684,18 +683,18 @@ static int dtls1_process_out_of_seq_message(SSL *s,
     item = pqueue_find(s->d1->buffered_messages, seq64be);
 
     /*
-   * If we already have an entry and this one is a fragment,
-   * don't discard it and rather try to reassemble it.
-   */
+     * If we already have an entry and this one is a fragment,
+     * don't discard it and rather try to reassemble it.
+     */
     if (item != NULL && frag_len < msg_hdr->msg_len)
         item = NULL;
 
     /*
-   * Discard the message if sequence number was already there, is
-   * too far in the future, already in the queue or if we received
-   * a FINISHED before the SERVER_HELLO, which then must be a stale
-   * retransmit.
-   */
+     * Discard the message if sequence number was already there, is
+     * too far in the future, already in the queue or if we received
+     * a FINISHED before the SERVER_HELLO, which then must be a stale
+     * retransmit.
+     */
     if (msg_hdr->seq <= s->d1->handshake_read_seq
         || msg_hdr->seq > s->d1->handshake_read_seq + 10
         || item != NULL

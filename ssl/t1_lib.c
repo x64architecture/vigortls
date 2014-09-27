@@ -468,10 +468,10 @@ unsigned char *ssl_add_clienthello_tlsext(SSL *s, unsigned char *p,
         s2n(s->tlsext_ellipticcurvelist_length + 2, ret);
 
         /* NB: draft-ietf-tls-ecc-12.txt uses a one-byte prefix for
-     * elliptic_curve_list, but the examples use two bytes.
-     * http://www1.ietf.org/mail-archive/web/tls/current/msg00538.html
-     * resolves this to two bytes.
-     */
+         * elliptic_curve_list, but the examples use two bytes.
+         * http://www1.ietf.org/mail-archive/web/tls/current/msg00538.html
+         * resolves this to two bytes.
+         */
         s2n(s->tlsext_ellipticcurvelist_length, ret);
         memcpy(ret, s->tlsext_ellipticcurvelist,
                s->tlsext_ellipticcurvelist_length);
@@ -1144,8 +1144,8 @@ int ssl_parse_clienthello_tlsext(SSL *s, unsigned char **p, unsigned char *d,
                 }
             } else {
                 /* We don't know what to do with any other type
-        * so ignore it.
-        */
+                 * so ignore it.
+                 */
                 s->tlsext_status_type = -1;
             }
         }

@@ -155,7 +155,8 @@ static int ssl_read(BIO *b, char *out, int outl)
                 break;
             if (sb->renegotiate_count > 0) {
                 sb->byte_count += ret;
-                if (sb->byte_count > sb->renegotiate_count) {
+                if (sb->byte_count > sb->renegotiate_count)
+                {
                     sb->byte_count = 0;
                     sb->num_renegotiates++;
                     SSL_renegotiate(ssl);

@@ -430,7 +430,7 @@
 #define SSL_PKEY_NUM 8
 
 /* SSL_kRSA <- RSA_ENC | (RSA_TMP & RSA_SIGN) |
- *         <- (EXPORT & (RSA_ENC | RSA_TMP) & RSA_SIGN)
+ *          <- (EXPORT & (RSA_ENC | RSA_TMP) & RSA_SIGN)
  * SSL_kDH  <- DH_ENC & (RSA_ENC | RSA_SIGN | DSA_SIGN)
  * SSL_kDHE <- RSA_ENC | RSA_SIGN | DSA_SIGN
  * SSL_aRSA <- RSA_ENC | RSA_SIGN
@@ -438,9 +438,9 @@
  */
 
 /*
-#define CERT_INVALID        0
-#define CERT_PUBLIC_KEY        1
-#define CERT_PRIVATE_KEY    2
+#define CERT_INVALID 0
+#define CERT_PUBLIC_KEY 1
+#define CERT_PRIVATE_KEY 2
 */
 
 /* From ECC-TLS draft, used in encoding the curve type in
@@ -464,7 +464,7 @@ typedef struct cert_st {
                    * an index, not a pointer. */
 
     /* The following masks are for the key and auth
-   * algorithms that are supported by the certs below */
+     * algorithms that are supported by the certs below */
     int valid;
     unsigned long mask_k;
     unsigned long mask_a;

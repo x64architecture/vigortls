@@ -338,8 +338,8 @@ int dtls1_connect(SSL *s)
                     if (s->hit) {
 #ifndef OPENSSL_NO_SCTP
                         /* Add new shared key for SCTP-Auth,
-           * will be ignored if no SCTP used.
-           */
+                         * will be ignored if no SCTP used.
+                         */
                         snprintf((char *)labelbuffer, sizeof(DTLS1_SCTP_AUTH_LABEL),
                                  DTLS1_SCTP_AUTH_LABEL);
 
@@ -411,7 +411,7 @@ int dtls1_connect(SSL *s)
                 s->init_num = 0;
 
                 /* at this point we check that we have the
-       * required stuff from the server */
+                 * required stuff from the server */
                 if (!ssl3_check_cert_and_algorithm(s)) {
                     ret = -1;
                     goto end;
@@ -468,8 +468,8 @@ int dtls1_connect(SSL *s)
 
 #ifndef OPENSSL_NO_SCTP
                 /* Add new shared key for SCTP-Auth,
-       * will be ignored if no SCTP used.
-       */
+                 * will be ignored if no SCTP used.
+                 */
                 snprintf((char *)labelbuffer, sizeof(DTLS1_SCTP_AUTH_LABEL),
                          DTLS1_SCTP_AUTH_LABEL);
 
@@ -481,9 +481,9 @@ int dtls1_connect(SSL *s)
 #endif
 
                 /* EAY EAY EAY need to check for DH fix cert
-       * sent back */
+                 * sent back */
                 /* For TLS, cert_req is set to 2, so a cert chain
-       * of nothing is sent, but no verify packet is sent */
+                 * of nothing is sent, but no verify packet is sent */
                 if (s->s3->tmp.cert_req == 1) {
                     s->state = SSL3_ST_CW_CERT_VRFY_A;
                 } else {
@@ -544,8 +544,8 @@ int dtls1_connect(SSL *s)
 #ifndef OPENSSL_NO_SCTP
                 if (s->hit) {
                     /* Change to new shared key of SCTP-Auth,
-         * will be ignored if no SCTP used.
-         */
+                     * will be ignored if no SCTP used.
+                     */
                     BIO_ctrl(SSL_get_wbio(s), BIO_CTRL_DGRAM_SCTP_NEXT_AUTH_KEY, 0, NULL);
                 }
 #endif
@@ -588,8 +588,8 @@ int dtls1_connect(SSL *s)
                 } else {
 #ifndef OPENSSL_NO_SCTP
                     /* Change to new shared key of SCTP-Auth,
-         * will be ignored if no SCTP used.
-         */
+                     * will be ignored if no SCTP used.
+                     */
                     BIO_ctrl(SSL_get_wbio(s), BIO_CTRL_DGRAM_SCTP_NEXT_AUTH_KEY, 0, NULL);
 #endif
 
@@ -664,7 +664,7 @@ int dtls1_connect(SSL *s)
                 ssl3_cleanup_key_block(s);
 
                 /* If we are not 'joining' the last two packets,
-       * remove the buffering now */
+                 * remove the buffering now */
                 if (!(s->s3->flags & SSL3_FLAGS_POP_BUFFER))
                     ssl_free_wbio_buffer(s);
                 /* else do it later in ssl3_write */
@@ -719,9 +719,9 @@ end:
 
 #ifndef OPENSSL_NO_SCTP
     /* Notify SCTP BIO socket to leave handshake
-   * mode and allow stream identifier other
-   * than 0. Will be ignored if no SCTP is used.
-   */
+     * mode and allow stream identifier other
+     * than 0. Will be ignored if no SCTP is used.
+     */
     BIO_ctrl(SSL_get_wbio(s), BIO_CTRL_DGRAM_SCTP_SET_IN_HANDSHAKE,
              s->in_handshake, NULL);
 #endif
@@ -755,7 +755,7 @@ int dtls1_client_hello(SSL *s)
         p = s->s3->client_random;
 
         /* if client_random is initialized, reuse it, we are
-     * required to use same upon reply to HelloVerify */
+         * required to use same upon reply to HelloVerify */
         for (i = 0; p[i] == '\0' && i < sizeof(s->s3->client_random); i++)
             ;
         if (i == sizeof(s->s3->client_random))
@@ -950,8 +950,8 @@ int dtls1_send_client_key_exchange(SSL *s)
                 n += 2;
             }
 
-            s->session->master_key_length = s->method->ssl3_enc->generate_master_secret(s, s->session->master_key,
-                                                                                        tmp_buf, sizeof tmp_buf);
+            s->session->master_key_length =
+                s->method->ssl3_enc->generate_master_secret(s, s->session->master_key, tmp_buf, sizeof tmp_buf);
             vigortls_zeroize(tmp_buf, sizeof tmp_buf);
         } else if (alg_k & (SSL_kDHE | SSL_kDHr | SSL_kDHd)) {
             DH *dh_srvr, *dh_clnt;
@@ -1108,8 +1108,8 @@ int dtls1_send_client_key_exchange(SSL *s)
             }
 
             /* generate master key from the result */
-            s->session->master_key_length = s->method->ssl3_enc->generate_master_secret(s, s->session->master_key,
-                                                                                        p, n);
+            s->session->master_key_length =
+                s->method->ssl3_enc->generate_master_secret(s, s->session->master_key, p, n);
             memset(p, 0, n); /* clean up */
 
             if (ecdh_clnt_cert) {

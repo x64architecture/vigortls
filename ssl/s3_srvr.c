@@ -861,7 +861,9 @@ int ssl3_get_client_hello(SSL *s)
     s->client_version = (((int)p[0]) << 8) | (int)p[1];
     p += 2;
 
-    if ((s->version == DTLS1_VERSION && s->client_version > s->version) || (s->version != DTLS1_VERSION && s->client_version < s->version)) {
+    if ((s->version == DTLS1_VERSION && s->client_version > s->version)
+        || (s->version != DTLS1_VERSION && s->client_version < s->version))
+    {
         SSLerr(SSL_F_SSL3_GET_CLIENT_HELLO, SSL_R_WRONG_VERSION_NUMBER);
         if ((s->client_version >> 8) == SSL3_VERSION_MAJOR && !s->enc_write_ctx && !s->write_hash) {
             /*
@@ -1010,9 +1012,9 @@ int ssl3_get_client_hello(SSL *s)
         }
         if (j == 0) {
             /*
-       * We need to have the cipher in the cipher
-       * list if we are asked to reuse it
-       */
+             * We need to have the cipher in the cipher
+             * list if we are asked to reuse it
+             */
             al = SSL_AD_ILLEGAL_PARAMETER;
             SSLerr(SSL_F_SSL3_GET_CLIENT_HELLO, SSL_R_REQUIRED_CIPHER_MISSING);
             goto f_err;
@@ -1052,11 +1054,11 @@ int ssl3_get_client_hello(SSL *s)
     }
 
     /*
-   * Check if we want to use external pre-shared secret for this
-   * handshake for not reused session only. We need to generate
-   * server_random before calling tls_session_secret_cb in order to allow
-   * SessionTicket processing to use it in key derivation.
-   */
+     * Check if we want to use external pre-shared secret for this
+     * handshake for not reused session only. We need to generate
+     * server_random before calling tls_session_secret_cb in order to allow
+     * SessionTicket processing to use it in key derivation.
+     */
     {
         unsigned char *pos;
         pos = s->s3->server_random;
@@ -1099,9 +1101,9 @@ int ssl3_get_client_hello(SSL *s)
     }
 
     /*
-   * Given s->session->ciphers and SSL_get_ciphers, we must
-   * pick a cipher
-   */
+     * Given s->session->ciphers and SSL_get_ciphers, we must
+     * pick a cipher
+     */
 
     if (!s->hit) {
         if (s->session->ciphers != NULL)
@@ -1156,13 +1158,13 @@ int ssl3_get_client_hello(SSL *s)
     /*
      * We now have the following setup.
      * client_random
-     * cipher_list         - our preferred list of ciphers
-     * ciphers         - the clients preferred list of ciphers
+     * cipher_list        - our preferred list of ciphers
+     * ciphers            - the clients preferred list of ciphers
      * compression        - basically ignored right now
-     * ssl version is set    - sslv3
-     * s->session        - The ssl session has been setup.
-     * s->hit        - session reuse flag
-     * s->tmp.new_cipher    - the new cipher to use.
+     * ssl version is set - sslv3
+     * s->session         - The ssl session has been setup.
+     * s->hit             - session reuse flag
+     * s->tmp.new_cipher  - the new cipher to use.
      */
 
     /* Handles TLS extensions that we couldn't check earlier */
@@ -1411,14 +1413,19 @@ int ssl3_send_server_key_exchange(SSL *s)
             }
 
             s->s3->tmp.ecdh = ecdh;
-            if ((EC_KEY_get0_public_key(ecdh) == NULL) || (EC_KEY_get0_private_key(ecdh) == NULL) || (s->options & SSL_OP_SINGLE_ECDH_USE)) {
+            if ((EC_KEY_get0_public_key(ecdh) == NULL) || (EC_KEY_get0_private_key(ecdh) == NULL)
+                || (s->options & SSL_OP_SINGLE_ECDH_USE))
+            {
                 if (!EC_KEY_generate_key(ecdh)) {
                     SSLerr(SSL_F_SSL3_SEND_SERVER_KEY_EXCHANGE, ERR_R_ECDH_LIB);
                     goto err;
                 }
             }
 
-            if (((group = EC_KEY_get0_group(ecdh)) == NULL) || (EC_KEY_get0_public_key(ecdh) == NULL) || (EC_KEY_get0_private_key(ecdh) == NULL)) {
+            if (((group = EC_KEY_get0_group(ecdh)) == NULL)
+                || (EC_KEY_get0_public_key(ecdh) == NULL)
+                || (EC_KEY_get0_private_key(ecdh) == NULL))
+            {
                 SSLerr(SSL_F_SSL3_SEND_SERVER_KEY_EXCHANGE, ERR_R_ECDH_LIB);
                 goto err;
             }
@@ -1800,7 +1807,7 @@ int ssl3_get_client_key_exchange(SSL *s)
              */
             if (!((s->options & SSL_OP_TLS_ROLLBACK_BUG) && (p[0] == (s->version >> 8)) && (p[1] == (s->version & 0xff)))) {
                 al = SSL_AD_DECODE_ERROR;
-                /* SSLerr(SSL_F_SSL3_GET_CLIENT_KEY_EXCHANGE,SSL_R_BAD_PROTOCOL_VERSION_NUMBER); */
+                /* SSLerr(SSL_F_SSL3_GET_CLIENT_KEY_EXCHANGE, SSL_R_BAD_PROTOCOL_VERSION_NUMBER); */
 
                 /*
                  * The Klima-Pokorny-Rosa extension of
@@ -1832,8 +1839,8 @@ int ssl3_get_client_key_exchange(SSL *s)
             RAND_bytes(p + 2, i - 2);
         }
 
-        s->session->master_key_length = s->method->ssl3_enc->generate_master_secret(
-            s, s->session->master_key, p, i);
+        s->session->master_key_length
+            = s->method->ssl3_enc->generate_master_secret(s, s->session->master_key, p, i);
         vigortls_zeroize(p, i);
     } else if (alg_k & (SSL_kDHE | SSL_kDHr | SSL_kDHd)) {
         if (2 > n)
@@ -1841,8 +1848,7 @@ int ssl3_get_client_key_exchange(SSL *s)
         n2s(p, i);
         if (n != i + 2) {
             if (!(s->options & SSL_OP_SSLEAY_080_CLIENT_DH_BUG)) {
-                SSLerr(SSL_F_SSL3_GET_CLIENT_KEY_EXCHANGE,
-                       SSL_R_DH_PUBLIC_VALUE_LENGTH_IS_WRONG);
+                SSLerr(SSL_F_SSL3_GET_CLIENT_KEY_EXCHANGE, SSL_R_DH_PUBLIC_VALUE_LENGTH_IS_WRONG);
                 goto err;
             } else {
                 p -= 2;
@@ -1884,8 +1890,8 @@ int ssl3_get_client_key_exchange(SSL *s)
 
         BN_clear_free(pub);
         pub = NULL;
-        s->session->master_key_length = s->method->ssl3_enc->generate_master_secret(
-            s, s->session->master_key, p, i);
+        s->session->master_key_length
+            = s->method->ssl3_enc->generate_master_secret(s, s->session->master_key, p, i);
         vigortls_zeroize(p, i);
     } else
 
@@ -1950,13 +1956,11 @@ int ssl3_get_client_key_exchange(SSL *s)
                  * group.
                  */
                 al = SSL_AD_HANDSHAKE_FAILURE;
-                SSLerr(SSL_F_SSL3_GET_CLIENT_KEY_EXCHANGE,
-                       SSL_R_UNABLE_TO_DECODE_ECDH_CERTS);
+                SSLerr(SSL_F_SSL3_GET_CLIENT_KEY_EXCHANGE, SSL_R_UNABLE_TO_DECODE_ECDH_CERTS);
                 goto f_err;
             }
 
-            if (EC_POINT_copy(clnt_ecpoint,
-                              EC_KEY_get0_public_key(clnt_pub_pkey->pkey.ec)) == 0) {
+            if (EC_POINT_copy(clnt_ecpoint, EC_KEY_get0_public_key(clnt_pub_pkey->pkey.ec)) == 0) {
                 SSLerr(SSL_F_SSL3_GET_CLIENT_KEY_EXCHANGE, ERR_R_EC_LIB);
                 goto err;
             }

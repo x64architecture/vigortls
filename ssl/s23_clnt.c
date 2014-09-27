@@ -290,13 +290,13 @@ static int ssl23_client_hello(SSL *s)
     unsigned long mask, options = s->options;
 
     /*
-   * SSL_OP_NO_X disables all protocols above X *if* there are
-   * some protocols below X enabled. This is required in order
-   * to maintain "version capability" vector contiguous. So
-   * that if application wants to disable TLS1.0 in favour of
-   * TLS1>=1, it would be insufficient to pass SSL_NO_TLSv1, the
-   * answer is SSL_OP_NO_TLSv1|SSL_OP_NO_SSLv3|SSL_OP_NO_SSLv2.
-   */
+     * SSL_OP_NO_X disables all protocols above X *if* there are
+     * some protocols below X enabled. This is required in order
+     * to maintain "version capability" vector contiguous. So
+     * that if application wants to disable TLS1.0 in favour of
+     * TLS1>=1, it would be insufficient to pass SSL_NO_TLSv1, the
+     * answer is SSL_OP_NO_TLSv1|SSL_OP_NO_SSLv3|SSL_OP_NO_SSLv2.
+     */
     mask = SSL_OP_NO_TLSv1_1 | SSL_OP_NO_TLSv1 | SSL_OP_NO_SSLv3;
     version = TLS1_2_VERSION;
 
@@ -337,9 +337,9 @@ static int ssl23_client_hello(SSL *s)
         /* create Client Hello in SSL 3.0/TLS 1.0 format */
 
         /*
-     * Do the record header (5 bytes) and handshake
-     * message header (4 bytes) last
-     */
+         * Do the record header (5 bytes) and handshake
+         * message header (4 bytes) last
+         */
         d = p = &(buf[9]);
 
         *(p++) = version_major;
@@ -360,10 +360,10 @@ static int ssl23_client_hello(SSL *s)
         }
 #ifdef OPENSSL_MAX_TLS1_2_CIPHER_LENGTH
         /*
-     * Some servers hang if client hello > 256 bytes
-     * as hack workaround chop number of supported ciphers
-     * to keep it well below this if we use TLS v1.2
-     */
+         * Some servers hang if client hello > 256 bytes
+         * as hack workaround chop number of supported ciphers
+         * to keep it well below this if we use TLS v1.2
+         */
         if (TLS1_get_version(s) >= TLS1_2_VERSION && i > OPENSSL_MAX_TLS1_2_CIPHER_LENGTH)
             i = OPENSSL_MAX_TLS1_2_CIPHER_LENGTH & ~1;
 #endif
@@ -406,9 +406,9 @@ static int ssl23_client_hello(SSL *s)
         *(d++) = version_major;
 
         /*
-     * Some servers hang if we use long client hellos
-     * and a record number > TLS 1.0.
-     */
+         * Some servers hang if we use long client hellos
+         * and a record number > TLS 1.0.
+         */
         if (TLS1_get_client_version(s) > TLS1_VERSION)
             *(d++) = 1;
         else
@@ -459,7 +459,9 @@ static int ssl23_get_server_hello(SSL *s)
         goto err;
     }
 
-    if (p[1] == SSL3_VERSION_MAJOR && p[2] <= TLS1_2_VERSION_MINOR && ((p[0] == SSL3_RT_HANDSHAKE && p[5] == SSL3_MT_SERVER_HELLO) || (p[0] == SSL3_RT_ALERT && p[3] == 0 && p[4] == 2))) {
+    if (p[1] == SSL3_VERSION_MAJOR && p[2] <= TLS1_2_VERSION_MINOR
+        && ((p[0] == SSL3_RT_HANDSHAKE && p[5] == SSL3_MT_SERVER_HELLO)
+        || (p[0] == SSL3_RT_ALERT && p[3] == 0 && p[4] == 2))) {
         /* we have sslv3 or tls1 (server hello or alert) */
 
         if ((p[2] == SSL3_VERSION_MINOR) && !(s->options & SSL_OP_NO_SSLv3)) {
@@ -511,7 +513,7 @@ static int ssl23_get_server_hello(SSL *s)
         s->state = SSL3_ST_CR_SRVR_HELLO_A;
 
         /* put the 7 bytes we have read into the input buffer
-     * for SSLv3 */
+         * for SSLv3 */
         s->rstate = SSL_ST_READ_HEADER;
         s->packet_length = n;
         if (s->s3->rbuf.buf == NULL)
@@ -530,9 +532,9 @@ static int ssl23_get_server_hello(SSL *s)
     s->init_num = 0;
 
     /*
-   * Since, if we are sending a ssl23 client hello, we are not
-   * reusing a session-id
-   */
+     * Since, if we are sending a ssl23 client hello, we are not
+     * reusing a session-id
+     */
     if (!ssl_get_new_session(s, 0))
         goto err;
 

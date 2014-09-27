@@ -221,9 +221,9 @@ int SSL_clear(SSL *s)
     s->first_packet = 0;
 
     /*
-   * Check to see if we were changed into a different method, if
-   * so, revert back if we are not doing session-id reuse.
-   */
+     * Check to see if we were changed into a different method, if
+     * so, revert back if we are not doing session-id reuse.
+     */
     if (!s->in_handshake && (s->session == NULL) && (s->method != s->ctx->method)) {
         s->method->ssl_free(s);
         s->method = s->ctx->method;
@@ -274,16 +274,16 @@ SSL *SSL_new(SSL_CTX *ctx)
 
     if (ctx->cert != NULL) {
         /*
-     * Earlier library versions used to copy the pointer to
-     * the CERT, not its contents; only when setting new
-     * parameters for the per-SSL copy, ssl_cert_new would be
-     * called (and the direct reference to the per-SSL_CTX
-     * settings would be lost, but those still were indirectly
-     * accessed for various purposes, and for that reason they
-     * used to be known as s->ctx->default_cert).
-     * Now we don't look at the SSL_CTX's CERT after having
-     * duplicated it once.
-    */
+         * Earlier library versions used to copy the pointer to
+         * the CERT, not its contents; only when setting new
+         * parameters for the per-SSL copy, ssl_cert_new would be
+         * called (and the direct reference to the per-SSL_CTX
+         * settings would be lost, but those still were indirectly
+         * accessed for various purposes, and for that reason they
+         * used to be known as s->ctx->default_cert).
+         * Now we don't look at the SSL_CTX's CERT after having
+         * duplicated it once.
+         */
         s->cert = ssl_cert_dup(ctx->cert);
         if (s->cert == NULL)
             goto err;
@@ -731,13 +731,13 @@ int SSL_get_read_ahead(const SSL *s)
 int SSL_pending(const SSL *s)
 {
     /*
-   * SSL_pending cannot work properly if read-ahead is enabled
-   * (SSL_[CTX_]ctrl(..., SSL_CTRL_SET_READ_AHEAD, 1, NULL)),
-   * and it is impossible to fix since SSL_pending cannot report
-   * errors that may be observed while scanning the new data.
-   * (Note that SSL_pending() is often used as a boolean value,
-   * so we'd better not return -1.)
-   */
+     * SSL_pending cannot work properly if read-ahead is enabled
+     * (SSL_[CTX_]ctrl(..., SSL_CTRL_SET_READ_AHEAD, 1, NULL)),
+     * and it is impossible to fix since SSL_pending cannot report
+     * errors that may be observed while scanning the new data.
+     * (Note that SSL_pending() is often used as a boolean value,
+     * so we'd better not return -1.)
+     */
     return (s->method->ssl_pending(s));
 }
 
@@ -768,10 +768,10 @@ STACK_OF(X509) * SSL_get_peer_cert_chain(const SSL *s)
         r = s->session->sess_cert->cert_chain;
 
     /*
-   * If we are a client, cert_chain includes the peer's own
-   * certificate;
-   * if we are a server, it does not.
-   */
+     * If we are a client, cert_chain includes the peer's own
+     * certificate;
+     * if we are a server, it does not.
+     */
     return (r);
 }
 
@@ -787,9 +787,9 @@ void SSL_copy_session_id(SSL *t, const SSL *f)
     SSL_set_session(t, SSL_get_session(f));
 
     /*
-   * What if we are setup as SSLv2 but want to talk SSLv3 or
-   * vice-versa.
-   */
+     * What if we are setup as SSLv2 but want to talk SSLv3 or
+     * vice-versa.
+     */
     if (t->method != f->method) {
         t->method->ssl_free(t); /* cleanup current */
         t->method = f->method;  /* change method */
@@ -911,11 +911,11 @@ int SSL_write(SSL *s, const void *buf, int num)
 int SSL_shutdown(SSL *s)
 {
     /*
-   * Note that this function behaves differently from what one might
-   * expect.  Return values are 0 for no success (yet),
-   * 1 for success; but calling it once is usually not enough,
-   * even if blocking I/O is used (see ssl3_shutdown).
-   */
+     * Note that this function behaves differently from what one might
+     * expect.  Return values are 0 for no success (yet),
+     * 1 for success; but calling it once is usually not enough,
+     * even if blocking I/O is used (see ssl3_shutdown).
+     */
 
     if (s->handshake_func == 0) {
         SSLerr(SSL_F_SSL_SHUTDOWN, SSL_R_UNINITIALIZED);
@@ -951,9 +951,9 @@ int SSL_renegotiate_abbreviated(SSL *s)
 int SSL_renegotiate_pending(SSL *s)
 {
     /*
-   * Becomes true when negotiation is requested;
-   * false again once a handshake has finished.
-   */
+     * Becomes true when negotiation is requested;
+     * false again once a handshake has finished.
+     */
     return (s->renegotiate != 0);
 }
 
@@ -1285,9 +1285,9 @@ int ssl_cipher_list_to_bytes(SSL *s, STACK_OF(SSL_CIPHER) *sk,
     }
 
     /*
-   * If p == q, no ciphers and caller indicates an error. Otherwise
-   * add SCSV if not renegotiating.
-   */
+     * If p == q, no ciphers and caller indicates an error. Otherwise
+     * add SCSV if not renegotiating.
+     */
     if (p != q && !s->renegotiate) {
         static SSL_CIPHER scsv = { 0, NULL, SSL3_CK_SCSV, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
         s2n(ssl3_cipher_get_value(&scsv), p);
@@ -1394,7 +1394,7 @@ int SSL_get_servername_type(const SSL *s)
  * or have a default application level protocol.
  *
  * 2) If the server supports NPN, but advertises an empty list then the
- * client selects the first protcol in its list, but indicates via the
+ * client selects the first protocol in its list, but indicates via the
  * API that this fallback case was enacted.
  *
  * 3) Otherwise, the client finds the first protocol in the server's list
@@ -1526,7 +1526,10 @@ static unsigned long ssl_session_hash(const SSL_SESSION *a)
 {
     unsigned long l;
 
-    l = (unsigned long)((unsigned int)a->session_id[0]) | ((unsigned int)a->session_id[1] << 8L) | ((unsigned long)a->session_id[2] << 16L) | ((unsigned long)a->session_id[3] << 24L);
+    l = (unsigned long)((unsigned int)a->session_id[0])
+        | ((unsigned int)a->session_id[1] << 8L)
+        | ((unsigned long)a->session_id[2] << 16L)
+        | ((unsigned long)a->session_id[3] << 24L);
     return (l);
 }
 
@@ -1656,7 +1659,9 @@ static IMPLEMENT_LHASH_HASH_FN(
     ret->tlsext_servername_callback = 0;
     ret->tlsext_servername_arg = NULL;
     /* Setup RFC4507 ticket keys */
-    if ((RAND_pseudo_bytes(ret->tlsext_tick_key_name, 16) <= 0) || (RAND_bytes(ret->tlsext_tick_hmac_key, 16) <= 0) || (RAND_bytes(ret->tlsext_tick_aes_key, 16) <= 0))
+    if ((RAND_pseudo_bytes(ret->tlsext_tick_key_name, 16) <= 0)
+        || (RAND_bytes(ret->tlsext_tick_hmac_key, 16) <= 0)
+        || (RAND_bytes(ret->tlsext_tick_aes_key, 16) <= 0))
         ret->options |= SSL_OP_NO_TICKET;
 
     ret->tlsext_status_cb = 0;
@@ -1686,9 +1691,9 @@ static IMPLEMENT_LHASH_HASH_FN(
 #endif
 #endif
     /*
-   * Default is to connect to non-RI servers. When RI is more widely
-   * deployed might change this.
-   */
+     * Default is to connect to non-RI servers. When RI is more widely
+     * deployed might change this.
+     */
     ret->options |= SSL_OP_LEGACY_SERVER_CONNECT;
 
     return (ret);
@@ -1714,14 +1719,14 @@ void SSL_CTX_free(SSL_CTX *a)
         X509_VERIFY_PARAM_free(a->param);
 
     /*
-   * Free internal session cache. However: the remove_cb() may reference
-   * the ex_data of SSL_CTX, thus the ex_data store can only be removed
-   * after the sessions were flushed.
-   * As the ex_data handling routines might also touch the session cache,
-   * the most secure solution seems to be: empty (flush) the cache, then
-   * free ex_data, then finally free the cache.
-   * (See ticket [openssl.org #212].)
-   */
+     * Free internal session cache. However: the remove_cb() may reference
+     * the ex_data of SSL_CTX, thus the ex_data store can only be removed
+     * after the sessions were flushed.
+     * As the ex_data handling routines might also touch the session cache,
+     * the most secure solution seems to be: empty (flush) the cache, then
+     * free ex_data, then finally free the cache.
+     * (See ticket [openssl.org #212].)
+     */
     if (a->sessions != NULL)
         SSL_CTX_flush_sessions(a, 0);
 
@@ -1852,9 +1857,9 @@ void ssl_set_cert_masks(CERT *c, const SSL_CIPHER *cipher)
     mask_a |= SSL_aNULL;
 
     /*
-   * An ECC certificate may be usable for ECDH and/or
-   * ECDSA cipher suites depending on the key usage extension.
-   */
+     * An ECC certificate may be usable for ECDH and/or
+     * ECDSA cipher suites depending on the key usage extension.
+     */
     if (have_ecc_cert) {
         /* This call populates extension flags (ex_flags) */
         x = (c->pkeys[SSL_PKEY_ECC]).x509;
@@ -1961,17 +1966,17 @@ CERT_PKEY *ssl_get_server_send_pkey(const SSL *s)
 
     if (alg_k & (SSL_kECDHr | SSL_kECDHe)) {
         /*
-     * We don't need to look at SSL_kECDHE
-     * since no certificate is needed for
-     * anon ECDH and for authenticated
-     * ECDHE, the check for the auth
-     * algorithm will set i correctly
-     * NOTE: For ECDH-RSA, we need an ECC
-     * not an RSA cert but for EECDH-RSA
-     * we need an RSA cert. Placing the
-     * checks for SSL_kECDH before RSA
-     * checks ensures the correct cert is chosen.
-     */
+         * We don't need to look at SSL_kECDHE
+         * since no certificate is needed for
+         * anon ECDH and for authenticated
+         * ECDHE, the check for the auth
+         * algorithm will set i correctly
+         * NOTE: For ECDH-RSA, we need an ECC
+         * not an RSA cert but for EECDH-RSA
+         * we need an RSA cert. Placing the
+         * checks for SSL_kECDH before RSA
+         * checks ensures the correct cert is chosen.
+         */
         i = SSL_PKEY_ECC;
     } else if (alg_a & SSL_aECDSA) {
         i = SSL_PKEY_ECC;
@@ -2041,14 +2046,16 @@ void ssl_update_cache(SSL *s, int mode)
     int i;
 
     /*
-   * If the session_id_length is 0, we are not supposed to cache it,
-   * and it would be rather hard to do anyway :-)
-   */
+     * If the session_id_length is 0, we are not supposed to cache it,
+     * and it would be rather hard to do anyway :-)
+     */
     if (s->session->session_id_length == 0)
         return;
 
     i = s->session_ctx->session_cache_mode;
-    if ((i & mode) && (!s->hit) && ((i & SSL_SESS_CACHE_NO_INTERNAL_STORE) || SSL_CTX_add_session(s->session_ctx, s->session)) && (s->session_ctx->new_session_cb != NULL)) {
+    if ((i & mode) && (!s->hit) && ((i & SSL_SESS_CACHE_NO_INTERNAL_STORE)
+        || SSL_CTX_add_session(s->session_ctx, s->session)) && (s->session_ctx->new_session_cb != NULL))
+    {
         CRYPTO_add(&s->session->references, 1, CRYPTO_LOCK_SSL_SESSION);
         if (!s->session_ctx->new_session_cb(s, s->session))
             SSL_SESSION_free(s->session);
@@ -2056,7 +2063,9 @@ void ssl_update_cache(SSL *s, int mode)
 
     /* auto flush every 255 connections */
     if ((!(i & SSL_SESS_CACHE_NO_AUTO_CLEAR)) && ((i & mode) == mode)) {
-        if ((((mode & SSL_SESS_CACHE_CLIENT) ? s->session_ctx->stats.sess_connect_good : s->session_ctx->stats.sess_accept_good) & 0xff) == 0xff) {
+        if ((((mode & SSL_SESS_CACHE_CLIENT)
+            ? s->session_ctx->stats.sess_connect_good : s->session_ctx->stats.sess_accept_good) & 0xff) == 0xff)
+        {
             SSL_CTX_flush_sessions(s->session_ctx, time(NULL));
         }
     }
@@ -2102,7 +2111,7 @@ int SSL_get_error(const SSL *s, int i)
         return (SSL_ERROR_NONE);
 
     /* Make things return SSL_ERROR_SYSCALL when doing SSL_do_handshake
-   * etc, where we do encode the error */
+     * etc, where we do encode the error */
     if ((l = ERR_peek_error()) != 0) {
         if (ERR_GET_LIB(l) == ERR_LIB_SYS)
             return (SSL_ERROR_SYSCALL);
@@ -2116,15 +2125,15 @@ int SSL_get_error(const SSL *s, int i)
             return (SSL_ERROR_WANT_READ);
         } else if (BIO_should_write(bio)) {
             /*
-       * This one doesn't make too much sense...  We never
-       * try to write to the rbio, and an application
-       * program where rbio and wbio are separate couldn't
-       * even know what it should wait for.  However if we
-       * ever set s->rwstate incorrectly (so that we have
-       * SSL_want_read(s) instead of SSL_want_write(s))
-       * and rbio and wbio *are* the same, this test works
-       * around that bug; so it might be safer to keep it.
-       */
+             * This one doesn't make too much sense...  We never
+             * try to write to the rbio, and an application
+             * program where rbio and wbio are separate couldn't
+             * even know what it should wait for.  However if we
+             * ever set s->rwstate incorrectly (so that we have
+             * SSL_want_read(s) instead of SSL_want_write(s))
+             * and rbio and wbio *are* the same, this test works
+             * around that bug; so it might be safer to keep it.
+             */
             return (SSL_ERROR_WANT_WRITE);
         } else if (BIO_should_io_special(bio)) {
             reason = BIO_get_retry_reason(bio);
@@ -2143,9 +2152,9 @@ int SSL_get_error(const SSL *s, int i)
             return (SSL_ERROR_WANT_WRITE);
         } else if (BIO_should_read(bio)) {
             /*
-       * See above (SSL_want_read(s) with
-       * BIO_should_write(bio))
-       */
+             * See above (SSL_want_read(s) with
+             * BIO_should_write(bio))
+             */
             return (SSL_ERROR_WANT_READ);
         } else if (BIO_should_io_special(bio)) {
             reason = BIO_get_retry_reason(bio);
@@ -2281,11 +2290,11 @@ SSL *SSL_dup(SSL *s)
         SSL_copy_session_id(ret, s);
     } else {
         /*
-     * No session has been established yet, so we have to expect
-     * that s->cert or ret->cert will be changed later --
-     * they should not both point to the same object,
-     * and thus we can't use SSL_copy_session_id.
-     */
+         * No session has been established yet, so we have to expect
+         * that s->cert or ret->cert will be changed later --
+         * they should not both point to the same object,
+         * and thus we can't use SSL_copy_session_id.
+         */
 
         ret->method->ssl_free(ret);
         ret->method = s->method;
@@ -2346,9 +2355,9 @@ SSL *SSL_dup(SSL *s)
     ret->rstate = s->rstate;
 
     /*
-   * Would have to copy ret->init_buf, ret->init_msg, ret->init_num,
-   * ret->init_off
-   */
+     * Would have to copy ret->init_buf, ret->init_msg, ret->init_num,
+     * ret->init_off
+     */
     ret->init_num = 0;
 
     ret->hit = s->hit;

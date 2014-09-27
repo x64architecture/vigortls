@@ -134,7 +134,7 @@ int ssl3_do_write(SSL *s, int type)
         return (-1);
     if (type == SSL3_RT_HANDSHAKE)
         /* should not be done for 'Hello Request's, but in that case
-     * we'll ignore the result anyway */
+         * we'll ignore the result anyway */
         ssl3_finish_mac(s, (unsigned char *)&s->init_buf->data[s->init_off], ret);
 
     if (ret == s->init_num) {
@@ -168,8 +168,7 @@ int ssl3_send_finished(SSL *s, int a, int b, const char *sender, int slen)
         p += i;
         l = i;
 
-        /* Copy the finished so we can use it for
-       renegotiation checks */
+        /* Copy the finished so we can use it for renegotiation checks */
         if (s->type == SSL_ST_CONNECT) {
             OPENSSL_assert(i <= EVP_MAX_MD_SIZE);
             memcpy(s->s3->previous_client_finished, s->s3->tmp.finish_md, i);
@@ -200,8 +199,8 @@ static void ssl3_take_mac(SSL *s)
     const char *sender;
     int slen;
     /* If no new cipher setup return immediately: other functions will
-   * set the appropriate error.
-   */
+     * set the appropriate error.
+     */
     if (s->s3->tmp.new_cipher == NULL)
         return;
     if (s->state & SSL_ST_CONNECT) {
@@ -259,7 +258,7 @@ int ssl3_get_finished(SSL *s, int a, int b)
     }
 
     /* Copy the finished so we can use it for
-     renegotiation checks */
+       renegotiation checks */
     if (s->type == SSL_ST_ACCEPT) {
         OPENSSL_assert(i <= EVP_MAX_MD_SIZE);
         memcpy(s->s3->previous_client_finished, s->s3->tmp.peer_finish_md, i);
@@ -426,11 +425,11 @@ long ssl3_get_message(SSL *s, int st1, int stn, int mt, long max, int *ok)
             skip_message = 0;
             if (!s->server && p[0] == SSL3_MT_HELLO_REQUEST) {
                 /*
-         * The server may always send 'Hello Request'
-         * messages -- we are doing a handshake anyway
-         * now, so ignore them if their format is
-         * correct.  Does not count for 'Finished' MAC.
-         */
+                 * The server may always send 'Hello Request'
+                 * messages -- we are doing a handshake anyway
+                 * now, so ignore them if their format is
+                 * correct.  Does not count for 'Finished' MAC.
+                 */
                 if (p[1] == 0 && p[2] == 0 && p[3] == 0) {
                     s->init_num = 0;
                     skip_message = 1;
@@ -451,10 +450,10 @@ long ssl3_get_message(SSL *s, int st1, int stn, int mt, long max, int *ok)
         }
         if ((mt < 0) && (*p == SSL3_MT_CLIENT_HELLO) && (st1 == SSL3_ST_SR_CERT_A) && (stn == SSL3_ST_SR_CERT_B)) {
             /* At this point we have got an MS SGC second client
-       * hello (maybe we should always allow the client to
-       * start a new handshake?). We need to restart the mac.
-       * Don't increment {num,total}_renegotiations because
-       * we have not completed the handshake. */
+             * hello (maybe we should always allow the client to
+             * start a new handshake?). We need to restart the mac.
+             * Don't increment {num,total}_renegotiations because
+             * we have not completed the handshake. */
             ssl3_init_finished_mac(s);
         }
 
@@ -493,7 +492,7 @@ long ssl3_get_message(SSL *s, int st1, int stn, int mt, long max, int *ok)
 
 #ifndef OPENSSL_NO_NEXTPROTONEG
     /* If receiving Finished, record MAC of prior handshake messages for
-   * Finished verification. */
+     * Finished verification. */
     if (*s->init_buf->data == SSL3_MT_FINISHED)
         ssl3_take_mac(s);
 #endif

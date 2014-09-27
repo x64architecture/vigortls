@@ -1927,9 +1927,9 @@ SSL3_ENC_METHOD SSLv3_enc_data = {
 long ssl3_default_timeout(void)
 {
     /*
-   * 2 hours, the 24 hours mentioned in the SSLv3 spec
-   * is way too long for http, the cache would over fill
-   */
+     * 2 hours, the 24 hours mentioned in the SSLv3 spec
+     * is way too long for http, the cache would over fill
+     */
     return (60 * 60 * 2);
 }
 
@@ -2091,7 +2091,9 @@ long ssl3_ctrl(SSL *s, int cmd, long larg, void *parg)
             ret = (int)(s->s3->flags);
             break;
         case SSL_CTRL_NEED_TMP_RSA:
-            if ((s->cert != NULL) && (s->cert->rsa_tmp == NULL) && ((s->cert->pkeys[SSL_PKEY_RSA_ENC].privatekey == NULL) || (EVP_PKEY_size(s->cert->pkeys[SSL_PKEY_RSA_ENC].privatekey) > (512 / 8))))
+            if ((s->cert != NULL) && (s->cert->rsa_tmp == NULL)
+                && ((s->cert->pkeys[SSL_PKEY_RSA_ENC].privatekey == NULL)
+                || (EVP_PKEY_size(s->cert->pkeys[SSL_PKEY_RSA_ENC].privatekey) > (512 / 8))))
                 ret = 1;
             break;
         case SSL_CTRL_SET_TMP_RSA: {
@@ -2270,7 +2272,9 @@ long ssl3_ctx_ctrl(SSL_CTX *ctx, int cmd, long larg, void *parg)
 
     switch (cmd) {
         case SSL_CTRL_NEED_TMP_RSA:
-            if ((cert->rsa_tmp == NULL) && ((cert->pkeys[SSL_PKEY_RSA_ENC].privatekey == NULL) || (EVP_PKEY_size(cert->pkeys[SSL_PKEY_RSA_ENC].privatekey) > (512 / 8))))
+            if ((cert->rsa_tmp == NULL)
+                && ((cert->pkeys[SSL_PKEY_RSA_ENC].privatekey == NULL)
+                || (EVP_PKEY_size(cert->pkeys[SSL_PKEY_RSA_ENC].privatekey) > (512 / 8))))
                 return (1);
             else
                 return (0);
@@ -2460,11 +2464,11 @@ SSL_CIPHER *ssl3_choose_cipher(SSL *s, STACK_OF(SSL_CIPHER) * clnt,
     cert = s->cert;
 
     /*
-   * Do not set the compare functions, because this may lead to a
-   * reordering by "id". We want to keep the original ordering.
-   * We may pay a price in performance during sk_SSL_CIPHER_find(),
-   * but would have to pay with the price of sk_SSL_CIPHER_dup().
-   */
+     * Do not set the compare functions, because this may lead to a
+     * reordering by "id". We want to keep the original ordering.
+     * We may pay a price in performance during sk_SSL_CIPHER_find(),
+     * but would have to pay with the price of sk_SSL_CIPHER_dup().
+     */
 
     if (s->options & SSL_OP_CIPHER_SERVER_PREFERENCE) {
         prio = srvr;
@@ -2492,9 +2496,9 @@ SSL_CIPHER *ssl3_choose_cipher(SSL *s, STACK_OF(SSL_CIPHER) * clnt,
 
         if (
             /*
-         * if we are considering an ECC cipher suite that uses our
-         * certificate
-         */
+             * if we are considering an ECC cipher suite that uses our
+             * certificate
+             */
             (alg_a & SSL_aECDSA || alg_a & SSL_aECDH)
                 /* and we have an ECC certificate */
             && (s->cert->pkeys[SSL_PKEY_ECC].x509 != NULL)
@@ -2504,17 +2508,24 @@ SSL_CIPHER *ssl3_choose_cipher(SSL *s, STACK_OF(SSL_CIPHER) * clnt,
              */
             && ((s->session->tlsext_ecpointformatlist_length > 0) && (s->session->tlsext_ecpointformatlist != NULL))
                    /* and our certificate's point is compressed */
-            && ((s->cert->pkeys[SSL_PKEY_ECC].x509->cert_info != NULL) && (s->cert->pkeys[SSL_PKEY_ECC].x509->cert_info->key != NULL) && (s->cert->pkeys[SSL_PKEY_ECC].x509->cert_info->key->public_key != NULL) && (s->cert->pkeys[SSL_PKEY_ECC].x509->cert_info->key->public_key->data != NULL) && ((*(s->cert->pkeys[SSL_PKEY_ECC]
-                                                                                                                                                                                                                                                                                                             .x509->cert_info->key->public_key->data) == POINT_CONVERSION_COMPRESSED) || (*(s->cert->pkeys[SSL_PKEY_ECC]
-                                                                                                                                                                                                                                                                                                                                                                                                .x509->cert_info->key->public_key->data) == POINT_CONVERSION_COMPRESSED + 1)))) {
+            && ((s->cert->pkeys[SSL_PKEY_ECC].x509->cert_info != NULL)
+            && (s->cert->pkeys[SSL_PKEY_ECC].x509->cert_info->key != NULL)
+            && (s->cert->pkeys[SSL_PKEY_ECC].x509->cert_info->key->public_key != NULL)
+            && (s->cert->pkeys[SSL_PKEY_ECC].x509->cert_info->key->public_key->data != NULL)
+            && ((*(s->cert->pkeys[SSL_PKEY_ECC].x509->cert_info->key->public_key->data) == POINT_CONVERSION_COMPRESSED)
+            || (*(s->cert->pkeys[SSL_PKEY_ECC].x509->cert_info->key->public_key->data) == POINT_CONVERSION_COMPRESSED + 1))))
+        {
             ec_ok = 0;
             /*
-       * If our certificate's curve is over a field type
-       * that the client does not support then do not allow
-       * this cipher suite to be negotiated
-       */
-            if ((s->cert->pkeys[SSL_PKEY_ECC].privatekey->pkey.ec != NULL) && (s->cert->pkeys[SSL_PKEY_ECC].privatekey->pkey.ec->group != NULL) && (s->cert->pkeys[SSL_PKEY_ECC].privatekey->pkey.ec->group->meth != NULL) && (EC_METHOD_get_field_type(
-                                                                                                                                                                                                                                   s->cert->pkeys[SSL_PKEY_ECC].privatekey->pkey.ec->group->meth) == NID_X9_62_prime_field)) {
+             * If our certificate's curve is over a field type
+             * that the client does not support then do not allow
+             * this cipher suite to be negotiated
+             */
+            if ((s->cert->pkeys[SSL_PKEY_ECC].privatekey->pkey.ec != NULL)
+                && (s->cert->pkeys[SSL_PKEY_ECC].privatekey->pkey.ec->group != NULL)
+                && (s->cert->pkeys[SSL_PKEY_ECC].privatekey->pkey.ec->group->meth != NULL)
+                && (EC_METHOD_get_field_type(s->cert->pkeys[SSL_PKEY_ECC].privatekey->pkey.ec->group->meth) == NID_X9_62_prime_field))
+            {
                 for (j = 0; j < s->session->tlsext_ecpointformatlist_length; j++) {
                     if (s->session->tlsext_ecpointformatlist[j] == TLSEXT_ECPOINTFORMAT_ansiX962_compressed_prime) {
                         ec_ok = 1;
@@ -2544,7 +2555,9 @@ SSL_CIPHER *ssl3_choose_cipher(SSL *s, STACK_OF(SSL_CIPHER) * clnt,
                    /* and the client specified an EllipticCurves extension */
             && ((s->session->tlsext_ellipticcurvelist_length > 0) && (s->session->tlsext_ellipticcurvelist != NULL))) {
             ec_ok = 0;
-            if ((s->cert->pkeys[SSL_PKEY_ECC].privatekey->pkey.ec != NULL) && (s->cert->pkeys[SSL_PKEY_ECC].privatekey->pkey.ec->group != NULL)) {
+            if ((s->cert->pkeys[SSL_PKEY_ECC].privatekey->pkey.ec != NULL)
+                && (s->cert->pkeys[SSL_PKEY_ECC].privatekey->pkey.ec->group != NULL))
+            {
                 ec_nid = EC_GROUP_get_curve_name(
                     s->cert->pkeys[SSL_PKEY_ECC].privatekey->pkey.ec->group);
                 if ((ec_nid == 0) && (s->cert->pkeys[SSL_PKEY_ECC].privatekey->pkey.ec->group->meth != NULL)) {
@@ -2565,7 +2578,8 @@ SSL_CIPHER *ssl3_choose_cipher(SSL *s, STACK_OF(SSL_CIPHER) * clnt,
                 if ((ec_search1 != 0) || (ec_search2 != 0)) {
                     for (j = 0; j < s->session->tlsext_ellipticcurvelist_length / 2;
                          j++) {
-                        if ((s->session->tlsext_ellipticcurvelist[2 * j] == ec_search1) && (s->session->tlsext_ellipticcurvelist[2 * j + 1] == ec_search2)) {
+                        if ((s->session->tlsext_ellipticcurvelist[2 * j] == ec_search1)
+                            && (s->session->tlsext_ellipticcurvelist[2 * j + 1] == ec_search2)) {
                             ec_ok = 1;
                             break;
                         }
@@ -2602,7 +2616,9 @@ SSL_CIPHER *ssl3_choose_cipher(SSL *s, STACK_OF(SSL_CIPHER) * clnt,
                 if ((ec_search1 != 0) || (ec_search2 != 0)) {
                     for (j = 0; j < s->session->tlsext_ellipticcurvelist_length / 2;
                          j++) {
-                        if ((s->session->tlsext_ellipticcurvelist[2 * j] == ec_search1) && (s->session->tlsext_ellipticcurvelist[2 * j + 1] == ec_search2)) {
+                        if ((s->session->tlsext_ellipticcurvelist[2 * j] == ec_search1)
+                            && (s->session->tlsext_ellipticcurvelist[2 * j + 1] == ec_search2))
+                        {
                             ec_ok = 1;
                             break;
                         }
@@ -2675,9 +2691,9 @@ int ssl3_shutdown(SSL *s)
     int ret;
 
     /*
-   * Don't do anything much if we have not done the handshake or
-   * we don't want to send messages :-)
-   */
+     * Don't do anything much if we have not done the handshake or
+     * we don't want to send messages :-)
+     */
     if ((s->quiet_shutdown) || (s->state == SSL_ST_BEFORE)) {
         s->shutdown = (SSL_SENT_SHUTDOWN | SSL_RECEIVED_SHUTDOWN);
         return (1);
@@ -2687,9 +2703,9 @@ int ssl3_shutdown(SSL *s)
         s->shutdown |= SSL_SENT_SHUTDOWN;
         ssl3_send_alert(s, SSL3_AL_WARNING, SSL_AD_CLOSE_NOTIFY);
         /*
-     * Our shutdown alert has been sent now, and if it still needs
-     * to be written, s->s3->alert_dispatch will be true
-     */
+         * Our shutdown alert has been sent now, and if it still needs
+         * to be written, s->s3->alert_dispatch will be true
+         */
         if (s->s3->alert_dispatch)
             return (-1); /* return WANT_WRITE */
     } else if (s->s3->alert_dispatch) {
@@ -2697,11 +2713,11 @@ int ssl3_shutdown(SSL *s)
         ret = s->method->ssl_dispatch_alert(s);
         if (ret == -1) {
             /*
-       * We only get to return -1 here the 2nd/Nth
-       * invocation, we must  have already signalled
-       * return 0 upon a previous invoation,
-       * return WANT_WRITE
-       */
+             * We only get to return -1 here on the 2nd/Nth
+             * invocation, we must have already signaled
+             * return 0 upon a previous invocation,
+             * return WANT_WRITE
+             */
             return (ret);
         }
     } else if (!(s->shutdown & SSL_RECEIVED_SHUTDOWN)) {
@@ -2733,11 +2749,11 @@ int ssl3_write(SSL *s, const void *buf, int len)
         ssl3_renegotiate_check(s);
 
     /*
-   * This is an experimental flag that sends the
-   * last handshake message in the same packet as the first
-   * use data - used to see if it helps the TCP protocol during
-   * session-id reuse
-   */
+     * This is an experimental flag that sends the
+     * last handshake message in the same packet as the first
+     * use data - used to see if it helps the TCP protocol during
+     * session-id reuse
+     */
     /* The second test is because the buffer may have been removed */
     if ((s->s3->flags & SSL3_FLAGS_POP_BUFFER) && (s->wbio == s->bbio)) {
         /* First time through, we write into the buffer */
@@ -2781,12 +2797,12 @@ static int ssl3_read_internal(SSL *s, void *buf, int len, int peek)
     ret = s->method->ssl_read_bytes(s, SSL3_RT_APPLICATION_DATA, buf, len, peek);
     if ((ret == -1) && (s->s3->in_read_app_data == 2)) {
         /*
-     * ssl3_read_bytes decided to call s->handshake_func, which
-     * called ssl3_read_bytes to read handshake data.
-     * However, ssl3_read_bytes actually found application data
-     * and thinks that application data makes sense here; so disable
-     * handshake processing and try to read application data again.
-     */
+         * ssl3_read_bytes decided to call s->handshake_func, which
+         * called ssl3_read_bytes to read handshake data.
+         * However, ssl3_read_bytes actually found application data
+         * and thinks that application data makes sense here; so disable
+         * handshake processing and try to read application data again.
+         */
         s->in_handshake++;
         ret = s->method->ssl_read_bytes(s, SSL3_RT_APPLICATION_DATA, buf, len, peek);
         s->in_handshake--;
@@ -2825,10 +2841,10 @@ int ssl3_renegotiate_check(SSL *s)
     if (s->s3->renegotiate) {
         if ((s->s3->rbuf.left == 0) && (s->s3->wbuf.left == 0) && !SSL_in_init(s)) {
             /*
-       * If we are the server, and we have sent
-       * a 'RENEGOTIATE' message, we need to go
-       * to SSL_ST_ACCEPT.
-       */
+             * If we are the server, and we have sent
+             * a 'RENEGOTIATE' message, we need to go
+             * to SSL_ST_ACCEPT.
+             */
             /* SSL_ST_ACCEPT */
             s->state = SSL_ST_RENEGOTIATE;
             s->s3->renegotiate = 0;

@@ -83,7 +83,7 @@ int ssl3_cbc_remove_padding(const SSL *s, SSL3_RECORD *rec, unsigned block_size,
     const unsigned overhead = 1 /* padding length byte */ + mac_size;
 
     /* These lengths are all public so we can test them in non-constant
-   * time. */
+     * time. */
     if (overhead > rec->length)
         return 0;
 
@@ -131,11 +131,11 @@ int tls1_cbc_remove_padding(const SSL *s, SSL3_RECORD *rec, unsigned block_size,
     padding_length = rec->data[rec->length - 1];
 
     /* NB: if compression is in operation the first packet may not be of
-   * even length so the padding bug check cannot be performed. This bug
-   * workaround has been around since SSLeay so hopefully it is either
-   * fixed now or no buggy implementation supports compression [steve]
-   * (We don't support compression either, so it's not in operation.)
-   */
+     * even length so the padding bug check cannot be performed. This bug
+     * workaround has been around since SSLeay so hopefully it is either
+     * fixed now or no buggy implementation supports compression [steve]
+     * (We don't support compression either, so it's not in operation.)
+     */
     if ((s->options & SSL_OP_TLS_BLOCK_PADDING_BUG)) {
         /* First packet is even in size, so check */
         if ((memcmp(s->s3->read_sequence, "\0\0\0\0\0\0\0\0", SSL3_SEQUENCE_SIZE) == 0) && !(padding_length & 1)) {
@@ -154,14 +154,14 @@ int tls1_cbc_remove_padding(const SSL *s, SSL3_RECORD *rec, unsigned block_size,
 
     good = constant_time_ge(rec->length, overhead + padding_length);
     /* The padding consists of a length byte at the end of the record and
-   * then that many bytes of padding, all with the same value as the
-   * length byte. Thus, with the length byte included, there are i+1
-   * bytes of padding.
-   *
-   * We can't check just |padding_length+1| bytes because that leaks
-   * decrypted information. Therefore we always have to check the maximum
-   * amount of padding possible. (Again, the length of the record is
-   * public information so we can use it.) */
+     * then that many bytes of padding, all with the same value as the
+     * length byte. Thus, with the length byte included, there are i+1
+     * bytes of padding.
+     *
+     * We can't check just |padding_length+1| bytes because that leaks
+     * decrypted information. Therefore we always have to check the maximum
+     * amount of padding possible. (Again, the length of the record is
+     * public information so we can use it.) */
     to_check = 255; /* maximum amount of padding. */
     if (to_check > rec->length - 1)
         to_check = rec->length - 1;
@@ -170,7 +170,7 @@ int tls1_cbc_remove_padding(const SSL *s, SSL3_RECORD *rec, unsigned block_size,
         unsigned char mask = constant_time_ge_8(padding_length, i);
         unsigned char b = rec->data[rec->length - 1 - i];
         /* The final |padding_length+1| bytes should all have the value
-     * |padding_length|. Therefore the XOR should be zero. */
+         * |padding_length|. Therefore the XOR should be zero. */
         good &= ~(mask & (padding_length ^ b));
     }
 
@@ -217,7 +217,7 @@ void ssl3_cbc_copy_mac(unsigned char *out, const SSL3_RECORD *rec,
     unsigned mac_end = rec->length;
     unsigned mac_start = mac_end - md_size;
     /* scan_start contains the number of bytes that we can ignore because
-   * the MAC's position can only vary by 255 bytes. */
+     * the MAC's position can only vary by 255 bytes. */
     unsigned scan_start = 0;
     unsigned i, j;
     unsigned div_spoiler;

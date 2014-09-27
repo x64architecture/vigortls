@@ -180,9 +180,9 @@ static int ssl_set_pkey(CERT *c, EVP_PKEY *pkey)
         ERR_clear_error();
 
         /*
-     * Don't check the public/private key, this is mostly
-     * for smart cards.
-     */
+         * Don't check the public/private key, this is mostly
+         * for smart cards.
+         */
         if ((pkey->type == EVP_PKEY_RSA) && (RSA_flags(pkey->pkey.rsa) & RSA_METHOD_FLAG_NO_CHECK))
             ;
         else if (!X509_check_private_key(c->pkeys[i].x509, pkey)) {
@@ -364,18 +364,18 @@ static int ssl_set_cert(CERT *c, X509 *x)
         ERR_clear_error();
 
         /*
-     * Don't check the public/private key, this is mostly
-     * for smart cards.
-     */
+         * Don't check the public/private key, this is mostly
+         * for smart cards.
+         */
         if ((c->pkeys[i].privatekey->type == EVP_PKEY_RSA) && (RSA_flags(c->pkeys[i].privatekey->pkey.rsa) & RSA_METHOD_FLAG_NO_CHECK))
             ;
         else if (!X509_check_private_key(x, c->pkeys[i].privatekey)) {
             /*
-       * don't fail for a cert/key mismatch, just free
-       * current private key (when switching to a different
-       * cert & key, first this function should be used,
-       * then ssl_set_pkey
-       */
+             * don't fail for a cert/key mismatch, just free
+             * current private key (when switching to a different
+             * cert & key, first this function should be used,
+             * then ssl_set_pkey
+             */
             EVP_PKEY_free(c->pkeys[i].privatekey);
             c->pkeys[i].privatekey = NULL;
             /* clear error queue */
@@ -643,9 +643,9 @@ int SSL_CTX_use_certificate_chain_file(SSL_CTX *ctx, const char *file)
     /* Key/certificate mismatch doesn't imply ret==0 ... */
     if (ret) {
         /*
-     * If we could set up our certificate, now proceed to
-     * the CA certificates.
-     */
+         * If we could set up our certificate, now proceed to
+         * the CA certificates.
+         */
         X509 *ca;
         int r;
         unsigned long err;
@@ -664,11 +664,11 @@ int SSL_CTX_use_certificate_chain_file(SSL_CTX *ctx, const char *file)
                 goto end;
             }
             /*
-       * Note that we must not free r if it was successfully
-       * added to the chain (while we must free the main
-       * certificate, since its reference count is increased
-       * by SSL_CTX_use_certificate).
-       */
+             * Note that we must not free r if it was successfully
+             * added to the chain (while we must free the main
+             * certificate, since its reference count is increased
+             * by SSL_CTX_use_certificate).
+             */
         }
 
         /* When the while loop ends, it's usually just EOF. */

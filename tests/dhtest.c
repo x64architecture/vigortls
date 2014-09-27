@@ -169,10 +169,8 @@ int main(int argc, char *argv[])
 err:
     ERR_print_errors_fp(stderr);
 
-    if (abuf != NULL)
-        free(abuf);
-    if (bbuf != NULL)
-        free(bbuf);
+    free(abuf);
+    free(bbuf);
     if (b != NULL)
         DH_free(b);
     if (a != NULL)

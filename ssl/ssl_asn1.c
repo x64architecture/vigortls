@@ -98,12 +98,12 @@ int i2d_SSL_SESSION(SSL_SESSION *in, unsigned char **pp)
         return (0);
 
     /*
-   * Note that I cheat in the following 2 assignments.
-   * I know that if the ASN1_INTEGER passed to ASN1_INTEGER_set
-   * is > sizeof(long)+1, the buffer will not be re-malloc()ed.
-   * This is a bit evil but makes things simple, no dynamic allocation
-   * to clean up :-)
-   */
+     * Note that I cheat in the following 2 assignments.
+     * I know that if the ASN1_INTEGER passed to ASN1_INTEGER_set
+     * is > sizeof(long)+1, the buffer will not be re-malloc()ed.
+     * This is a bit evil but makes things simple, no dynamic allocation
+     * to clean up :-)
+     */
     a.version.length = LSIZE2;
     a.version.type = V_ASN1_INTEGER;
     a.version.data = ibuf1;

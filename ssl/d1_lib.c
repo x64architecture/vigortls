@@ -90,7 +90,7 @@ SSL3_ENC_METHOD DTLSv1_enc_data = {
 long dtls1_default_timeout(void)
 {
     /* 2 hours, the 24 hours mentioned in the DTLSv1 spec
-   * is way too long for http, the cache would over fill */
+     * is way too long for http, the cache would over fill */
     return (60 * 60 * 2);
 }
 
@@ -320,7 +320,9 @@ struct timeval *dtls1_get_timeout(SSL *s, struct timeval *timeleft)
     gettimeofday(&timenow, NULL);
 
     /* If timer already expired, set remaining time to 0 */
-    if (s->d1->next_timeout.tv_sec < timenow.tv_sec || (s->d1->next_timeout.tv_sec == timenow.tv_sec && s->d1->next_timeout.tv_usec <= timenow.tv_usec)) {
+    if (s->d1->next_timeout.tv_sec < timenow.tv_sec
+        || (s->d1->next_timeout.tv_sec == timenow.tv_sec && s->d1->next_timeout.tv_usec <= timenow.tv_usec))
+    {
         memset(timeleft, 0, sizeof(struct timeval));
         return timeleft;
     }
@@ -335,9 +337,9 @@ struct timeval *dtls1_get_timeout(SSL *s, struct timeval *timeleft)
     }
 
     /* If remaining time is less than 15 ms, set it to 0
-   * to prevent issues because of small devergences with
-   * socket timeouts.
-   */
+     * to prevent issues because of small devergences with
+     * socket timeouts.
+     */
     if (timeleft->tv_sec == 0 && timeleft->tv_usec < 15000) {
         memset(timeleft, 0, sizeof(struct timeval));
     }

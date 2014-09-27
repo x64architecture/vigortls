@@ -272,7 +272,7 @@ int dtls1_accept(SSL *s)
                     s->ctx->stats.sess_accept++;
                 } else {
                     /* s->state == SSL_ST_RENEGOTIATE,
-         * we will just send a HelloRequest */
+                     * we will just send a HelloRequest */
                     s->ctx->stats.sess_accept_renegotiate++;
                     s->state = SSL3_ST_SW_HELLO_REQ_A;
                 }
@@ -442,19 +442,23 @@ int dtls1_accept(SSL *s)
                 alg_k = s->s3->tmp.new_cipher->algorithm_mkey;
 
                 /* clear this, it may get reset by
-       * send_server_key_exchange */
+                 * send_server_key_exchange */
                 if ((s->options & SSL_OP_EPHEMERAL_RSA))
                     /* option SSL_OP_EPHEMERAL_RSA sends temporary RSA key
-         * even when forbidden by protocol specs
-         * (handshake may fail as clients are not required to
-         * be able to handle this) */
+                     * even when forbidden by protocol specs
+                     * (handshake may fail as clients are not required to
+                     * be able to handle this) */
                     s->s3->tmp.use_rsa_tmp = 1;
                 else
                     s->s3->tmp.use_rsa_tmp = 0;
 
                 /* only send if a DH key exchange or
-       * RSA but we have a sign only certificate */
-                if (s->s3->tmp.use_rsa_tmp || (alg_k & (SSL_kDHE | SSL_kDHr | SSL_kDHd)) || (alg_k & SSL_kECDHE) || ((alg_k & SSL_kRSA) && (s->cert->pkeys[SSL_PKEY_RSA_ENC].privatekey == NULL))) {
+                 * RSA but we have a sign only certificate */
+                if (s->s3->tmp.use_rsa_tmp
+                    || (alg_k & (SSL_kDHE | SSL_kDHr | SSL_kDHd))
+                    || (alg_k & SSL_kECDHE)
+                    || ((alg_k & SSL_kRSA) && (s->cert->pkeys[SSL_PKEY_RSA_ENC].privatekey == NULL)))
+                {
                     dtls1_start_timer(s);
                     ret = dtls1_send_server_key_exchange(s);
                     if (ret <= 0)
@@ -469,23 +473,27 @@ int dtls1_accept(SSL *s)
             case SSL3_ST_SW_CERT_REQ_A:
             case SSL3_ST_SW_CERT_REQ_B:
                 /*
-       * Determine whether or not we need to request a
-       * certificate.
-       *
-       * Do not request a certificate if:
-       *
-       * - We did not ask for it (SSL_VERIFY_PEER is unset).
-       *
-       * - SSL_VERIFY_CLIENT_ONCE is set and we are
-       *   renegotiating.
-       *
-       * - We are using an anonymous ciphersuites
-       *   (see section "Certificate request" in SSL 3 drafts
-       *   and in RFC 2246) ... except when the application
-       *   insists on verification (against the specs, but
-       *   s3_clnt.c accepts this for SSL 3).
-       */
-                if (!(s->verify_mode & SSL_VERIFY_PEER) || ((s->session->peer != NULL) && (s->verify_mode & SSL_VERIFY_CLIENT_ONCE)) || ((s->s3->tmp.new_cipher->algorithm_auth & SSL_aNULL) && !(s->verify_mode & SSL_VERIFY_FAIL_IF_NO_PEER_CERT))) {
+                 * Determine whether or not we need to request a
+                 * certificate.
+                 *
+                 * Do not request a certificate if:
+                 *
+                 * - We did not ask for it (SSL_VERIFY_PEER is unset).
+                 *
+                 * - SSL_VERIFY_CLIENT_ONCE is set and we are
+                 *   renegotiating.
+                 *
+                 * - We are using an anonymous ciphersuites
+                 *   (see section "Certificate request" in SSL 3 drafts
+                 *   and in RFC 2246) ... except when the application
+                 *   insists on verification (against the specs, but
+                 *   s3_clnt.c accepts this for SSL 3).
+                 */
+                if (!(s->verify_mode & SSL_VERIFY_PEER) || ((s->session->peer != NULL)
+                    && (s->verify_mode & SSL_VERIFY_CLIENT_ONCE))
+                    || ((s->s3->tmp.new_cipher->algorithm_auth & SSL_aNULL)
+                    && !(s->verify_mode & SSL_VERIFY_FAIL_IF_NO_PEER_CERT)))
+                {
                     /* no cert request */
                     skip = 1;
                     s->s3->tmp.cert_request = 0;
@@ -562,7 +570,7 @@ int dtls1_accept(SSL *s)
                     s->state = SSL3_ST_SR_CLNT_HELLO_C;
                 } else {
                     /* could be sent for a DH cert, even if we
-         * have not asked for it :-) */
+                     * have not asked for it :-) */
                     ret = ssl3_get_client_certificate(s);
                     if (ret <= 0)
                         goto end;
@@ -578,8 +586,8 @@ int dtls1_accept(SSL *s)
                     goto end;
 #ifndef OPENSSL_NO_SCTP
                 /* Add new shared key for SCTP-Auth,
-       * will be ignored if no SCTP used.
-       */
+                 * will be ignored if no SCTP used.
+                 */
                 snprintf((char *)labelbuffer, sizeof(DTLS1_SCTP_AUTH_LABEL),
                          DTLS1_SCTP_AUTH_LABEL);
 
@@ -595,10 +603,10 @@ int dtls1_accept(SSL *s)
 
                 if (ret == 2) {
                     /* For the ECDH ciphersuites when
-         * the client sends its ECDH pub key in
-         * a certificate, the CertificateVerify
-         * message is not sent.
-         */
+                     * the client sends its ECDH pub key in
+                     * a certificate, the CertificateVerify
+                     * message is not sent.
+                     */
                     s->state = SSL3_ST_SR_FINISHED_A;
                     s->init_num = 0;
                 } else {
@@ -606,7 +614,7 @@ int dtls1_accept(SSL *s)
                     s->init_num = 0;
 
                     /* We need to get hashes here so if there is
-         * a client cert, it can be verified */
+                     * a client cert, it can be verified */
                     s->method->ssl3_enc->cert_verify_mac(s, NID_md5,
                                                          &(s->s3->tmp.cert_verify_md[0]));
                     s->method->ssl3_enc->cert_verify_mac(
@@ -683,8 +691,8 @@ int dtls1_accept(SSL *s)
 #ifndef OPENSSL_NO_SCTP
                 if (!s->hit) {
                     /* Change to new shared key of SCTP-Auth,
-         * will be ignored if no SCTP used.
-         */
+                     * will be ignored if no SCTP used.
+                     */
                     BIO_ctrl(SSL_get_wbio(s), BIO_CTRL_DGRAM_SCTP_NEXT_AUTH_KEY, 0, NULL);
                 }
 #endif
@@ -714,8 +722,8 @@ int dtls1_accept(SSL *s)
 
 #ifndef OPENSSL_NO_SCTP
                     /* Change to new shared key of SCTP-Auth,
-         * will be ignored if no SCTP used.
-         */
+                     * will be ignored if no SCTP used.
+                     */
                     BIO_ctrl(SSL_get_wbio(s), BIO_CTRL_DGRAM_SCTP_NEXT_AUTH_KEY, 0, NULL);
 #endif
                 } else {
@@ -792,9 +800,9 @@ end:
     s->in_handshake--;
 #ifndef OPENSSL_NO_SCTP
     /* Notify SCTP BIO socket to leave handshake
-   * mode and prevent stream identifier other
-   * than 0. Will be ignored if no SCTP is used.
-   */
+     * mode and prevent stream identifier other
+     * than 0. Will be ignored if no SCTP is used.
+     */
     BIO_ctrl(SSL_get_wbio(s), BIO_CTRL_DGRAM_SCTP_SET_IN_HANDSHAKE,
              s->in_handshake, NULL);
 #endif
@@ -818,7 +826,7 @@ int dtls1_send_hello_request(SSL *s)
         s->init_off = 0;
 
         /* no need to buffer this message, since there are no retransmit
-     * requests for it */
+         * requests for it */
     }
 
     /* SSL3_ST_SW_HELLO_REQ_B */
@@ -883,13 +891,13 @@ int dtls1_send_server_hello(SSL *s)
         p += SSL3_RANDOM_SIZE;
 
         /* now in theory we have 3 options to sending back the
-     * session id.  If it is a re-use, we send back the
-     * old session-id, if it is a new session, we send
-     * back the new session-id or we send back a 0 length
-     * session-id if we want it to be single use.
-     * Currently I will not implement the '0' length session-id
-     * 12-Jan-98 - I'll now support the '0' length stuff.
-     */
+         * session id.  If it is a re-use, we send back the
+         * old session-id, if it is a new session, we send
+         * back the new session-id or we send back a 0 length
+         * session-id if we want it to be single use.
+         * Currently I will not implement the '0' length session-id
+         * 12-Jan-98 - I'll now support the '0' length stuff.
+         */
         if (!(s->ctx->session_cache_mode & SSL_SESS_CACHE_SERVER))
             s->session->session_id_length = 0;
 
@@ -1079,22 +1087,28 @@ int dtls1_send_server_key_exchange(SSL *s)
             }
 
             s->s3->tmp.ecdh = ecdh;
-            if ((EC_KEY_get0_public_key(ecdh) == NULL) || (EC_KEY_get0_private_key(ecdh) == NULL) || (s->options & SSL_OP_SINGLE_ECDH_USE)) {
+            if ((EC_KEY_get0_public_key(ecdh) == NULL)
+                || (EC_KEY_get0_private_key(ecdh) == NULL)
+                || (s->options & SSL_OP_SINGLE_ECDH_USE))
+            {
                 if (!EC_KEY_generate_key(ecdh)) {
                     SSLerr(SSL_F_DTLS1_SEND_SERVER_KEY_EXCHANGE, ERR_R_ECDH_LIB);
                     goto err;
                 }
             }
 
-            if (((group = EC_KEY_get0_group(ecdh)) == NULL) || (EC_KEY_get0_public_key(ecdh) == NULL) || (EC_KEY_get0_private_key(ecdh) == NULL)) {
+            if (((group = EC_KEY_get0_group(ecdh)) == NULL)
+                || (EC_KEY_get0_public_key(ecdh) == NULL)
+                || (EC_KEY_get0_private_key(ecdh) == NULL))
+            {
                 SSLerr(SSL_F_DTLS1_SEND_SERVER_KEY_EXCHANGE, ERR_R_ECDH_LIB);
                 goto err;
             }
 
             /* XXX: For now, we only support ephemeral ECDH
-       * keys over named (not generic) curves. For
-       * supported named curves, curve_id is non-zero.
-       */
+             * keys over named (not generic) curves. For
+             * supported named curves, curve_id is non-zero.
+             */
             if ((curve_id = tls1_ec_nid2curve_id(EC_GROUP_get_curve_name(group))) == 0) {
                 SSLerr(SSL_F_DTLS1_SEND_SERVER_KEY_EXCHANGE,
                        SSL_R_UNSUPPORTED_ELLIPTIC_CURVE);
@@ -1102,9 +1116,9 @@ int dtls1_send_server_key_exchange(SSL *s)
             }
 
             /* Encode the public key.
-       * First check the size of encoding and
-       * allocate memory accordingly.
-       */
+             * First check the size of encoding and
+             * allocate memory accordingly.
+             */
             encodedlen = EC_POINT_point2oct(group, EC_KEY_get0_public_key(ecdh),
                                             POINT_CONVERSION_UNCOMPRESSED, NULL, 0, NULL);
 
@@ -1129,16 +1143,16 @@ int dtls1_send_server_key_exchange(SSL *s)
             bn_ctx = NULL;
 
             /* XXX: For now, we only support named (not
-       * generic) curves in ECDH ephemeral key exchanges.
-       * In this situation, we need four additional bytes
-       * to encode the entire ServerECDHParams
-       * structure.
-       */
+             * generic) curves in ECDH ephemeral key exchanges.
+             * In this situation, we need four additional bytes
+             * to encode the entire ServerECDHParams
+             * structure.
+             */
             n = 4 + encodedlen;
 
             /* We'll generate the serverKeyExchange message
-       * explicitly so we can set these to NULLs
-       */
+             * explicitly so we can set these to NULLs
+             */
             r[0] = NULL;
             r[1] = NULL;
             r[2] = NULL;
@@ -1180,11 +1194,11 @@ int dtls1_send_server_key_exchange(SSL *s)
 
         if (type & SSL_kECDHE) {
             /* XXX: For now, we only support named (not generic) curves.
-       * In this situation, the serverKeyExchange message has:
-       * [1 byte CurveType], [2 byte CurveName]
-       * [1 byte length of encoded point], followed by
-       * the actual encoded point itself
-       */
+             * In this situation, the serverKeyExchange message has:
+             * [1 byte CurveType], [2 byte CurveName]
+             * [1 byte length of encoded point], followed by
+             * the actual encoded point itself
+             */
             *p = NAMED_CURVE_TYPE;
             p += 1;
             *p = 0;
@@ -1202,8 +1216,8 @@ int dtls1_send_server_key_exchange(SSL *s)
         /* not anonymous */
         if (pkey != NULL) {
             /* n is the length of the params, they start at
-       * &(d[DTLS1_HM_HEADER_LENGTH]) and p points to the space
-       * at the end. */
+             * &(d[DTLS1_HM_HEADER_LENGTH]) and p points to the space
+             * at the end. */
             if (pkey->type == EVP_PKEY_RSA) {
                 q = md_buf;
                 j = 0;
@@ -1416,17 +1430,17 @@ int dtls1_send_newsession_ticket(SSL *s)
         /* get session encoding length */
         slen = i2d_SSL_SESSION(s->session, NULL);
         /* Some length values are 16 bits, so forget it if session is
-     * too long
-     */
+         * too long
+         */
         if (slen > 0xFF00)
             return -1;
         /* Grow buffer if need be: the length calculation is as
-     * follows 12 (DTLS handshake message header) +
-     * 4 (ticket lifetime hint) + 2 (ticket length) +
-     * 16 (key name) + max_iv_len (iv length) +
-     * session_length + max_enc_block_size (max encrypted session
-     * length) + max_md_size (HMAC).
-     */
+         * follows 12 (DTLS handshake message header) +
+         * 4 (ticket lifetime hint) + 2 (ticket length) +
+         * 16 (key name) + max_iv_len (iv length) +
+         * session_length + max_enc_block_size (max encrypted session
+         * length) + max_md_size (HMAC).
+         */
         if (!BUF_MEM_grow(s->init_buf,
                           DTLS1_HM_HEADER_LENGTH + 22 + EVP_MAX_IV_LENGTH + EVP_MAX_BLOCK_LENGTH + EVP_MAX_MD_SIZE + slen))
             return -1;
@@ -1440,9 +1454,9 @@ int dtls1_send_newsession_ticket(SSL *s)
         EVP_CIPHER_CTX_init(&ctx);
         HMAC_CTX_init(&hctx);
         /* Initialize HMAC and cipher contexts. If callback present
-     * it does all the work otherwise use generated values
-     * from parent ctx.
-     */
+         * it does all the work otherwise use generated values
+         * from parent ctx.
+         */
         if (tctx->tlsext_ticket_key_cb) {
             if (tctx->tlsext_ticket_key_cb(s, key_name, iv, &ctx, &hctx, 1) < 0) {
                 free(senc);

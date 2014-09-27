@@ -159,10 +159,10 @@ SSL_SESSION *SSL_get1_session(SSL *ssl)
     SSL_SESSION *sess;
 
     /*
-   * Need to lock this all up rather than just use CRYPTO_add so that
-   * somebody doesn't free ssl->session between when we check it's
-   * non-null and when we up the reference count.
-   */
+     * Need to lock this all up rather than just use CRYPTO_add so that
+     * somebody doesn't free ssl->session between when we check it's
+     * non-null and when we up the reference count.
+     */
     CRYPTO_w_lock(CRYPTO_LOCK_SSL_SESSION);
     sess = ssl->session;
     if (sess)
@@ -260,13 +260,13 @@ static int def_generate_session_id(const SSL *ssl, unsigned char *id,
 
     /* else - woops a session_id match */
     /* XXX We should also check the external cache --
-   * but the probability of a collision is negligible, and
-   * we could not prevent the concurrent creation of sessions
-   * with identical IDs since we currently don't have means
-   * to atomically check whether a session ID already exists
-   * and make a reservation for it if it does not
-   * (this problem applies to the internal cache as well).
-   */
+     * but the probability of a collision is negligible, and
+     * we could not prevent the concurrent creation of sessions
+     * with identical IDs since we currently don't have means
+     * to atomically check whether a session ID already exists
+     * and make a reservation for it if it does not
+     * (this problem applies to the internal cache as well).
+     */
     return 0;
 }
 
@@ -333,9 +333,9 @@ int ssl_get_new_session(SSL *s, int session)
         }
 
         /*
-     * Don't allow the callback to set the session length to zero.
-     * nor set it higher than it was.
-     */
+         * Don't allow the callback to set the session length to zero.
+         * nor set it higher than it was.
+         */
         if (!tmp || (tmp > ss->session_id_length)) {
             /* The callback set an illegal length */
             SSLerr(SSL_F_SSL_GET_NEW_SESSION, SSL_R_SSL_SESSION_ID_HAS_BAD_LENGTH);
@@ -482,25 +482,25 @@ int ssl_get_prev_session(SSL *s, unsigned char *session_id, int len,
             s->session_ctx->stats.sess_cb_hit++;
 
             /*
-       * Increment reference count now if the session
-       * callback asks us to do so (note that if the session
-       * structures returned by the callback are shared
-       * between threads, it must handle the reference count
-       * itself [i.e. copy == 0], or things won't be
-       * thread-safe).
-       */
+             * Increment reference count now if the session
+             * callback asks us to do so (note that if the session
+             * structures returned by the callback are shared
+             * between threads, it must handle the reference count
+             * itself [i.e. copy == 0], or things won't be
+             * thread-safe).
+             */
             if (copy)
                 CRYPTO_add(&ret->references, 1, CRYPTO_LOCK_SSL_SESSION);
 
             /*
-       * Add the externally cached session to the internal
-       * cache as well if and only if we are supposed to.
-       */
+             * Add the externally cached session to the internal
+             * cache as well if and only if we are supposed to.
+             */
             if (!(s->session_ctx->session_cache_mode & SSL_SESS_CACHE_NO_INTERNAL_STORE))
                 /*
-         * The following should not return 1,
-         * otherwise, things are very strange.
-         */
+                 * The following should not return 1,
+                 * otherwise, things are very strange.
+                 */
                 SSL_CTX_add_session(s->session_ctx, ret);
         }
     }
@@ -518,16 +518,16 @@ int ssl_get_prev_session(SSL *s, unsigned char *session_id, int len,
 
     if ((s->verify_mode & SSL_VERIFY_PEER) && s->sid_ctx_length == 0) {
         /*
-     * We can't be sure if this session is being used out of
-     * context, which is especially important for SSL_VERIFY_PEER.
-     * The application should have used
-     * SSL[_CTX]_set_session_id_context.
-     *
-     * For this error case, we generate an error instead of treating
-     * the event like a cache miss (otherwise it would be easy for
-     * applications to effectively disable the session cache by
-     * accident without anyone noticing).
-     */
+         * We can't be sure if this session is being used out of
+         * context, which is especially important for SSL_VERIFY_PEER.
+         * The application should have used
+         * SSL[_CTX]_set_session_id_context.
+         *
+         * For this error case, we generate an error instead of treating
+         * the event like a cache miss (otherwise it would be easy for
+         * applications to effectively disable the session cache by
+         * accident without anyone noticing).
+         */
         SSLerr(SSL_F_SSL_GET_PREV_SESSION, SSL_R_SESSION_ID_CONTEXT_UNINITIALIZED);
         fatal = 1;
         goto err;
@@ -562,9 +562,9 @@ err:
         SSL_SESSION_free(ret);
         if (!try_session_cache) {
             /*
-       * The session was from a ticket, so we should
-       * issue a ticket for the new session.
-       */
+             * The session was from a ticket, so we should
+             * issue a ticket for the new session.
+             */
             s->tlsext_ticket_expected = 1;
         }
     }
@@ -580,35 +580,35 @@ int SSL_CTX_add_session(SSL_CTX *ctx, SSL_SESSION *c)
     SSL_SESSION *s;
 
     /*
-   * Add just 1 reference count for the SSL_CTX's session cache
-   * even though it has two ways of access: each session is in a
-   * doubly linked list and an lhash.
-   */
+     * Add just 1 reference count for the SSL_CTX's session cache
+     * even though it has two ways of access: each session is in a
+     * doubly linked list and an lhash.
+     */
     CRYPTO_add(&c->references, 1, CRYPTO_LOCK_SSL_SESSION);
 
     /*
-   * If session c is in already in cache, we take back the increment
-   * later.
-   */
+     * If session c is in already in cache, we take back the increment
+     * later.
+     */
     CRYPTO_w_lock(CRYPTO_LOCK_SSL_CTX);
     s = lh_SSL_SESSION_insert(ctx->sessions, c);
 
     /*
-   * s != NULL iff we already had a session with the given PID.
-   * In this case, s == c should hold (then we did not really modify
-   * ctx->sessions), or we're in trouble.
-   */
+     * s != NULL iff we already had a session with the given PID.
+     * In this case, s == c should hold (then we did not really modify
+     * ctx->sessions), or we're in trouble.
+     */
     if (s != NULL && s != c) {
         /* We *are* in trouble ... */
         SSL_SESSION_list_remove(ctx, s);
         SSL_SESSION_free(s);
         /*
-     * ... so pretend the other session did not exist in cache
-     * (we cannot handle two SSL_SESSION structures with identical
-     * session ID in the same cache, which could happen e.g. when
-     * two threads concurrently obtain the same session from an
-     * external cache).
-     */
+         * ... so pretend the other session did not exist in cache
+         * (we cannot handle two SSL_SESSION structures with identical
+         * session ID in the same cache, which could happen e.g. when
+         * two threads concurrently obtain the same session from an
+         * external cache).
+         */
         s = NULL;
     }
 
@@ -618,17 +618,17 @@ int SSL_CTX_add_session(SSL_CTX *ctx, SSL_SESSION *c)
 
     if (s != NULL) {
         /*
-     * existing cache entry -- decrement previously incremented
-     * reference count because it already takes into account the
-     * cache.
-     */
+         * existing cache entry -- decrement previously incremented
+         * reference count because it already takes into account the
+         * cache.
+         */
         SSL_SESSION_free(s); /* s == c */
         ret = 0;
     } else {
         /*
-     * New cache entry -- remove old ones if cache has become
-     * too large.
-     */
+         * New cache entry -- remove old ones if cache has become
+         * too large.
+         */
 
         ret = 1;
 

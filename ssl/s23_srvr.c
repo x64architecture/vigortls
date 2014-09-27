@@ -256,19 +256,19 @@ int ssl23_get_client_hello(SSL *s)
 {
     char buf[11];
     /*
-   * sizeof(buf) == 11, because we'll need to request this many bytes in
-   * the initial read.
-   * We can detect SSL 3.0/TLS 1.0 Client Hellos ('type == 3') correctly
-   * only when the following is in a single record, which is not
-   * guaranteed by the protocol specification:
-   * Byte  Content
-   *  0     type            \
-   *  1/2   version          > record header
-   *  3/4   length          /
-   *  5     msg_type        \
-   *  6-8   length           > Client Hello message
-   *  9/10  client_version  /
-   */
+     * sizeof(buf) == 11, because we'll need to request this many bytes in
+     * the initial read.
+     * We can detect SSL 3.0/TLS 1.0 Client Hellos ('type == 3') correctly
+     * only when the following is in a single record, which is not
+     * guaranteed by the protocol specification:
+     * Byte  Content
+     *  0     type            \
+     *  1/2   version         > record header
+     *  3/4   length          /
+     *  5     msg_type        \
+     *  6-8   length          > Client Hello message
+     *  9/10  client_version  /
+     */
     unsigned char *p, *d, *d_len, *dd;
     unsigned int i;
     unsigned int csl, sil, cl;
@@ -293,8 +293,8 @@ int ssl23_get_client_hello(SSL *s)
 
         if ((p[0] & 0x80) && (p[2] == SSL2_MT_CLIENT_HELLO)) {
             /*
-       * SSLv2 header
-       */
+             * SSLv2 header
+             */
             if ((p[3] == 0x00) && (p[4] == 0x02)) {
                 v[0] = p[3];
                 v[1] = p[4];
@@ -331,29 +331,33 @@ int ssl23_get_client_hello(SSL *s)
                 } else if (!(s->options & SSL_OP_NO_SSLv2))
                     type = 1;
             }
-        } else if ((p[0] == SSL3_RT_HANDSHAKE) && (p[1] == SSL3_VERSION_MAJOR) && (p[5] == SSL3_MT_CLIENT_HELLO) && ((p[3] == 0 && p[4] < 5 /* silly record length? */) || (p[9] >= p[1]))) {
+        } else if ((p[0] == SSL3_RT_HANDSHAKE)
+            && (p[1] == SSL3_VERSION_MAJOR)
+            && (p[5] == SSL3_MT_CLIENT_HELLO)
+            && ((p[3] == 0 && p[4] < 5 /* silly record length? */)
+            || (p[9] >= p[1]))) {
             /*
-       * SSLv3 or tls1 header
-       */
+             * SSLv3 or tls1 header
+             */
 
             v[0] = p[1]; /* major version (= SSL3_VERSION_MAJOR) */
             /* We must look at client_version inside the Client Hello message
-       * to get the correct minor version.
-       * However if we have only a pathologically small fragment of the
-       * Client Hello message, this would be difficult, and we'd have
-       * to read more records to find out.
-       * No known SSL 3.0 client fragments ClientHello like this,
-       * so we simply reject such connections to avoid
-       * protocol version downgrade attacks. */
+             * to get the correct minor version.
+             * However if we have only a pathologically small fragment of the
+             * Client Hello message, this would be difficult, and we'd have
+             * to read more records to find out.
+             * No known SSL 3.0 client fragments ClientHello like this,
+             * so we simply reject such connections to avoid
+             * protocol version downgrade attacks. */
             if (p[3] == 0 && p[4] < 6) {
                 SSLerr(SSL_F_SSL23_GET_CLIENT_HELLO, SSL_R_RECORD_TOO_SMALL);
                 return -1;
             }
             /* if major version number > 3 set minor to a value
-       * which will use the highest version 3 we support.
-       * If TLS 2.0 ever appears we will need to revise
-       * this....
-       */
+             * which will use the highest version 3 we support.
+             * If TLS 2.0 ever appears we will need to revise
+             * this....
+             */
             if (p[9] > SSL3_VERSION_MAJOR)
                 v[1] = 0xff;
             else
@@ -384,7 +388,10 @@ int ssl23_get_client_hello(SSL *s)
                     type = 3;
                 }
             }
-        } else if ((strncmp("GET ", (char *)p, 4) == 0) || (strncmp("POST ", (char *)p, 5) == 0) || (strncmp("HEAD ", (char *)p, 5) == 0) || (strncmp("PUT ", (char *)p, 4) == 0)) {
+        } else if ((strncmp("GET ", (char *)p, 4) == 0)
+            || (strncmp("POST ", (char *)p, 5) == 0)
+            || (strncmp("HEAD ", (char *)p, 5) == 0)
+            || (strncmp("PUT ", (char *)p, 4) == 0)) {
             SSLerr(SSL_F_SSL23_GET_CLIENT_HELLO, SSL_R_HTTP_REQUEST);
             return -1;
         } else if (strncmp("CONNECT", (char *)p, 7) == 0) {
@@ -395,7 +402,7 @@ int ssl23_get_client_hello(SSL *s)
 
     if (s->state == SSL23_ST_SR_CLNT_HELLO_B) {
         /* we have SSLv3/TLSv1 in an SSLv2 header
-     * (other cases skip this state) */
+         * (other cases skip this state) */
 
         type = 2;
         p = s->packet;
@@ -403,17 +410,17 @@ int ssl23_get_client_hello(SSL *s)
         v[1] = p[4];
 
         /* An SSLv3/TLSv1 backwards-compatible CLIENT-HELLO in an SSLv2
-     * header is sent directly on the wire, not wrapped as a TLS
-     * record. It's format is:
-     * Byte  Content
-     * 0-1   msg_length
-     * 2     msg_type
-     * 3-4   version
-     * 5-6   cipher_spec_length
-     * 7-8   session_id_length
-     * 9-10  challenge_length
-     * ...   ...
-     */
+         * header is sent directly on the wire, not wrapped as a TLS
+         * record. It's format is:
+         * Byte  Content
+         * 0-1   msg_length
+         * 2     msg_type
+         * 3-4   version
+         * 5-6   cipher_spec_length
+         * 7-8   session_id_length
+         * 9-10  challenge_length
+         * ...   ...
+         */
         n = ((p[0] & 0x7f) << 8) | p[1];
         if (n > (1024 * 4)) {
             SSLerr(SSL_F_SSL23_GET_CLIENT_HELLO, SSL_R_RECORD_TOO_LARGE);
@@ -441,10 +448,10 @@ int ssl23_get_client_hello(SSL *s)
         d = (unsigned char *)s->init_buf->data;
         if ((csl + sil + cl + 11) != s->packet_length) {
             /*
-       * We can't have TLS extensions in SSL 2.0 format
-       * Client Hello, can we ? Error condition should be
-       * '>' otherwise
-       */
+             * We can't have TLS extensions in SSL 2.0 format
+             * Client Hello, can we ? Error condition should be
+             * '>' otherwise
+             */
             SSLerr(SSL_F_SSL23_GET_CLIENT_HELLO, SSL_R_RECORD_LENGTH_MISMATCH);
             return -1;
         }
@@ -514,7 +521,7 @@ int ssl23_get_client_hello(SSL *s)
 
         if (type == 3) {
             /* put the 'n' bytes we have read into the input buffer
-       * for SSLv3 */
+             * for SSLv3 */
             s->rstate = SSL_ST_READ_HEADER;
             s->packet_length = n;
             if (s->s3->rbuf.buf == NULL)

@@ -224,17 +224,17 @@ int ssl3_change_cipher_state(SSL *s, int which)
     OPENSSL_assert(mac);
 
     /*
-   * is_read is true if we have just read a ChangeCipherSpec message,
-   * that is we need to update the read cipherspec. Otherwise we have
-   * just written one.
-   */
+     * is_read is true if we have just read a ChangeCipherSpec message,
+     * that is we need to update the read cipherspec. Otherwise we have
+     * just written one.
+     */
     is_read = (which & SSL3_CC_READ) != 0;
 
     /*
-   * use_client_keys is true if we wish to use the keys for the "client
-   * write" direction. This is the case if we're a client sending a
-   * ChangeCipherSpec, or a server reading a client's ChangeCipherSpec.
-   */
+     * use_client_keys is true if we wish to use the keys for the "client
+     * write" direction. This is the case if we're a client sending a
+     * ChangeCipherSpec, or a server reading a client's ChangeCipherSpec.
+     */
     use_client_keys = ((which == SSL3_CHANGE_CIPHER_CLIENT_WRITE) || (which == SSL3_CHANGE_CIPHER_SERVER_READ));
 
     if (is_read) {
@@ -348,9 +348,9 @@ int ssl3_setup_key_block(SSL *s)
 
     if (!(s->options & SSL_OP_DONT_INSERT_EMPTY_FRAGMENTS)) {
         /*
-     * Enable vulnerability countermeasure for CBC ciphers with
-     * known-IV problem (http://www.openssl.org/~bodo/tls-cbc.txt)
-     */
+         * Enable vulnerability countermeasure for CBC ciphers with
+         * known-IV problem (http://www.openssl.org/~bodo/tls-cbc.txt)
+         */
         s->s3->need_empty_fragments = 1;
 
         if (s->session->cipher != NULL) {
@@ -388,7 +388,7 @@ void ssl3_cleanup_key_block(SSL *s)
  *       short etc).
  *   1: if the record's padding is valid / the encryption was successful.
  *   -1: if the record's padding is invalid or, if sending, an internal error
- *       occured.
+ *       occurred.
  */
 int ssl3_enc(SSL *s, int send)
 {
@@ -429,7 +429,7 @@ int ssl3_enc(SSL *s, int send)
             /* we need to add 'i-1' padding bytes */
             l += i;
             /* the last of these zero bytes will be overwritten
-       * with the padding length. */
+             * with the padding length. */
             memset(&rec->input[rec->length], 0, i);
             rec->length += i;
             rec->input[l - 1] = (i - 1);
@@ -635,16 +635,16 @@ int n_ssl3_mac(SSL *ssl, unsigned char *md, int send)
 
     if (!send && EVP_CIPHER_CTX_mode(ssl->enc_read_ctx) == EVP_CIPH_CBC_MODE && ssl3_cbc_record_digest_supported(hash)) {
         /* This is a CBC-encrypted record. We must avoid leaking any
-     * timing-side channel information about how many blocks of
-     * data we are hashing because that gives an attacker a
-     * timing-oracle. */
+         * timing-side channel information about how many blocks of
+         * data we are hashing because that gives an attacker a
+         * timing-oracle. */
 
         /* npad is, at most, 48 bytes and that's with MD5:
-     *   16 + 48 + 8 (sequence bytes) + 1 + 2 = 75.
-     *
-     * With SHA-1 (the largest hash speced for SSLv3) the hash size
-     * goes up 4, but npad goes down by 8, resulting in a smaller
-     * total size. */
+         *   16 + 48 + 8 (sequence bytes) + 1 + 2 = 75.
+         *
+         * With SHA-1 (the largest hash speced for SSLv3) the hash size
+         * goes up 4, but npad goes down by 8, resulting in a smaller
+         * total size. */
         unsigned char header[75];
         unsigned j = 0;
         memcpy(header + j, mac_sec, md_size);

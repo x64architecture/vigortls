@@ -190,9 +190,9 @@ CERT *ssl_cert_dup(CERT *cert)
     }
 
     /*
-   * same as ret->key = ret->pkeys + (cert->key - cert->pkeys),
-   * if you find that more readable
-   */
+     * same as ret->key = ret->pkeys + (cert->key - cert->pkeys),
+     * if you find that more readable
+     */
     ret->key = &ret->pkeys[cert->key - &cert->pkeys[0]];
 
     ret->valid = cert->valid;
@@ -252,10 +252,10 @@ CERT *ssl_cert_dup(CERT *cert)
 
             switch (i) {
                 /*
-       * If there was anything special to do for
-       * certain types of keys, we'd do it here.
-       * (Nothing at the moment, I think.)
-       */
+                 * If there was anything special to do for
+                 * certain types of keys, we'd do it here.
+                 * (Nothing at the moment, I think.)
+                 */
 
                 case SSL_PKEY_RSA_ENC:
                 case SSL_PKEY_RSA_SIGN:
@@ -283,15 +283,15 @@ CERT *ssl_cert_dup(CERT *cert)
     }
 
     /*
-   * ret->extra_certs *should* exist, but currently the own certificate
-   * chain is held inside SSL_CTX
-   */
+     * ret->extra_certs *should* exist, but currently the own certificate
+     * chain is held inside SSL_CTX
+     */
 
     ret->references = 1;
     /*
-   * Set digests to defaults. NB: we don't copy existing values
-   * as they will be set during handshake.
-   */
+     * Set digests to defaults. NB: we don't copy existing values
+     * as they will be set during handshake.
+     */
     ssl_cert_set_default_md(ret);
 
     return (ret);
@@ -337,15 +337,15 @@ void ssl_cert_free(CERT *c)
 int ssl_cert_inst(CERT **o)
 {
     /*
-   * Create a CERT if there isn't already one
-   * (which cannot really happen, as it is initially created in
-   * SSL_CTX_new; but the earlier code usually allows for that one
-   * being non-existant, so we follow that behaviour, as it might
-   * turn out that there actually is a reason for it -- but I'm
-   * not sure that *all* of the existing code could cope with
-   * s->cert being NULL, otherwise we could do without the
-   * initialization in SSL_CTX_new).
-   */
+     * Create a CERT if there isn't already one
+     * (which cannot really happen, as it is initially created in
+     * SSL_CTX_new; but the earlier code usually allows for that one
+     * being non-existent, so we follow that behaviour, as it might
+     * turn out that there actually is a reason for it -- but I'm
+     * not sure that *all* of the existing code could cope with
+     * s->cert being NULL, otherwise we could do without the
+     * initialization in SSL_CTX_new).
+     */
 
     if (o == NULL) {
         SSLerr(SSL_F_SSL_CERT_INST, ERR_R_PASSED_NULL_PARAMETER);
@@ -424,16 +424,16 @@ int ssl_verify_cert_chain(SSL *s, STACK_OF(X509) * sk)
     X509_STORE_CTX_set_ex_data(&ctx, SSL_get_ex_data_X509_STORE_CTX_idx(), s);
 
     /*
-   * We need to inherit the verify parameters. These can be
-   * determined by the context: if its a server it will verify
-   * SSL client certificates or vice versa.
-   */
+     * We need to inherit the verify parameters. These can be
+     * determined by the context: if its a server it will verify
+     * SSL client certificates or vice versa.
+     */
     X509_STORE_CTX_set_default(&ctx, s->server ? "ssl_client" : "ssl_server");
 
     /*
-   * Anything non-default in "param" should overwrite anything
-   * in the ctx.
-   */
+     * Anything non-default in "param" should overwrite anything
+     * in the ctx.
+     */
     X509_VERIFY_PARAM_set1(X509_STORE_CTX_get0_param(&ctx), s->param);
 
     if (s->verify_callback)

@@ -397,12 +397,12 @@ static int tls1_change_cipher_state_cipher(
             s->mac_flags &= ~SSL_MAC_FLAG_WRITE_MAC_STREAM;
 
         /*
-     * DTLS fragments retain a pointer to the compression, cipher
-     * and hash contexts, so that it can restore state in order
-     * to perform retransmissions. As such, we cannot free write
-     * contexts that are used for DTLS - these are instead freed
-     * by DTLS when its frees a ChangeCipherSpec fragment.
-     */
+         * DTLS fragments retain a pointer to the compression, cipher
+         * and hash contexts, so that it can restore state in order
+         * to perform retransmissions. As such, we cannot free write
+         * contexts that are used for DTLS - these are instead freed
+         * by DTLS when its frees a ChangeCipherSpec fragment.
+         */
         if (!SSL_IS_DTLS(s)) {
             EVP_CIPHER_CTX_free(s->enc_write_ctx);
             s->enc_write_ctx = NULL;
@@ -778,10 +778,9 @@ int tls1_enc(SSL *s, int send)
             if (ivlen > 1) {
                 if (rec->data != rec->input)
                     /* we can't write into the input stream:
-           * Can this ever happen?? (steve)
-           */
-                    fprintf(stderr, "%s:%d: rec->data != rec->input\n", __FILE__,
-                            __LINE__);
+                     * Can this ever happen?? (steve)
+                     */
+                    fprintf(stderr, "%s:%d: rec->data != rec->input\n", __FILE__, __LINE__);
                 else if (RAND_bytes(rec->input, ivlen) <= 0)
                     return -1;
             }

@@ -349,11 +349,11 @@ int ssl_parse_clienthello_use_srtp_ext(SSL *s, unsigned char *d, int len,
     srvr = SSL_get_srtp_profiles(s);
 
     /*
-   * Pick our most preferred profile. If no profiles have been
-   * configured then the outer loop doesn't run
-   * (sk_SRTP_PROTECTION_PROFILE_num() = -1)
-   * and so we just return without doing anything.
-   */
+     * Pick our most preferred profile. If no profiles have been
+     * configured then the outer loop doesn't run
+     * (sk_SRTP_PROTECTION_PROFILE_num() = -1)
+     * and so we just return without doing anything.
+     */
     for (i = 0; i < sk_SRTP_PROTECTION_PROFILE_num(srvr); i++) {
         sprof = sk_SRTP_PROTECTION_PROFILE_value(srvr, i);
 
@@ -444,9 +444,9 @@ int ssl_parse_serverhello_use_srtp_ext(SSL *s, unsigned char *d, int len,
     }
 
     /*
-   * Check to see if the server gave us something we support
-   * (and presumably offered).
-   */
+     * Check to see if the server gave us something we support
+     * (and presumably offered).
+     */
     for (i = 0; i < sk_SRTP_PROTECTION_PROFILE_num(clnt); i++) {
         prof = sk_SRTP_PROTECTION_PROFILE_value(clnt, i);
 
