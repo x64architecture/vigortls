@@ -200,13 +200,12 @@ static hm_fragment *dtls1_hm_fragment_new(unsigned long frag_len,
 
     /* Initialize reassembly bitmask if necessary */
     if (reassembly) {
-        bitmask = malloc(RSMBLY_BITMASK_SIZE(frag_len));
+        bitmask = calloc(1, RSMBLY_BITMASK_SIZE(frag_len));
         if (bitmask == NULL) {
             free(buf);
             free(frag);
             return NULL;
         }
-        memset(bitmask, 0, RSMBLY_BITMASK_SIZE(frag_len));
     }
 
     frag->reassembly = bitmask;
