@@ -460,11 +460,7 @@ static long ssl_callback_ctrl(BIO *b, int cmd, bio_info_cb *fp)
 
 static int ssl_puts(BIO *bp, const char *str)
 {
-    int n, ret;
-
-    n = strlen(str);
-    ret = BIO_write(bp, str, n);
-    return (ret);
+    return (BIO_write(bp, str, strlen(str)));
 }
 
 BIO *BIO_new_buffer_ssl_connect(SSL_CTX *ctx)
