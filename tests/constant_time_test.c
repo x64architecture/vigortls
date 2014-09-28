@@ -185,6 +185,40 @@ static int test_select_int(int a, int b)
     return 0;
 }
 
+static int test_eq_int(int a, int b)
+{
+    unsigned int equal = constant_time_eq_int(a, b);
+    if (a == b && equal != CONSTTIME_TRUE) {
+        fprintf(stderr, "Test failed for constant_time_eq_int(%d, %d): "
+                        "expected %du(TRUE), got %du\n",
+                a, b, CONSTTIME_TRUE, equal);
+        return 1;
+    } else if (a != b && equal != CONSTTIME_FALSE) {
+        fprintf(stderr, "Test failed for constant_time_eq_int(%d, %d): "
+                        "expected %du(FALSE), got %du\n",
+                a, b, CONSTTIME_FALSE, equal);
+        return 1;
+    }
+    return 0;
+}
+
+static int test_eq_int_8(int a, int b)
+{
+    unsigned char equal = constant_time_eq_int_8(a, b);
+    if (a == b && equal != CONSTTIME_TRUE_8) {
+        fprintf(stderr, "Test failed for constant_time_eq_int_8(%d, %d): "
+                        "expected %u(TRUE), got %u\n",
+                a, b, CONSTTIME_TRUE_8, equal);
+        return 1;
+    } else if (a != b && equal != CONSTTIME_FALSE_8) {
+        fprintf(stderr, "Test failed for constant_time_eq_int_8(%d, %d): "
+                        "expected %u(FALSE), got %u\n",
+                a, b, CONSTTIME_FALSE_8, equal);
+        return 1;
+    }
+    return 0;
+}
+
 static unsigned int test_values[] = { 0, 1, 1024, 12345, 32000, UINT_MAX / 2 - 1,
                                       UINT_MAX / 2, UINT_MAX / 2 + 1, UINT_MAX - 1,
                                       UINT_MAX };
@@ -244,7 +278,9 @@ int main(int argc, char *argv[])
         for (j = 0; j < sizeof(signed_test_values) / sizeof(int); ++j) {
             d = signed_test_values[j];
             num_failed += test_select_int(c, d);
-            num_all += 1;
+            num_failed += test_eq_int(c, d);
+            num_failed += test_eq_int_8(c, d);
+            num_all += 3;
         }
     }
 
