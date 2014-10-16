@@ -1696,6 +1696,9 @@ static IMPLEMENT_LHASH_HASH_FN(
      */
     ret->options |= SSL_OP_LEGACY_SERVER_CONNECT;
 
+    /* Default is to disable SSLv3. */
+    ret->options |= SSL_OP_NO_SSLv3;
+
     return (ret);
 err:
     SSLerr(SSL_F_SSL_CTX_NEW, ERR_R_MALLOC_FAILURE);
