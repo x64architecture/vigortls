@@ -223,6 +223,7 @@ static void sc_usage(void)
     BIO_printf(bio_err, " -tls1_1       - just use TLSv1.1\n");
     BIO_printf(bio_err, " -tls1         - just use TLSv1\n");
     BIO_printf(bio_err, " -dtls1        - just use DTLSv1\n");
+    BIO_printf(bio_err, " -fallback_scsv - send TLS_FALLBACK_SCSV\n");
     BIO_printf(bio_err, " -mtu          - set the link layer MTU\n");
     BIO_printf(bio_err, " -no_tls1_2/-no_tls1_1/-no_tls1/-no_ssl3 - turn off that protocol\n");
     BIO_printf(bio_err, " -bugs         - Switch on all SSL implementation bug workarounds\n");
@@ -374,6 +375,7 @@ int s_client_main(int argc, char **argv)
     char *sess_out = NULL;
     struct sockaddr peer;
     int peerlen = sizeof(peer);
+    int fallback_scsv = 0;
     int enable_timeouts = 0;
     long socket_mtu = 0;
 
@@ -496,6 +498,8 @@ int s_client_main(int argc, char **argv)
         else if (strcmp(*argv, "-dtls1") == 0) {
             meth = DTLSv1_client_method();
             socket_type = SOCK_DGRAM;
+        } else if (strcmp(*argv, "-fallback_scsv") == 0) {
+            fallback_scsv = 1;      
         } else if (strcmp(*argv, "-timeout") == 0)
             enable_timeouts = 1;
         else if (strcmp(*argv, "-mtu") == 0) {
@@ -804,6 +808,9 @@ bad:
         SSL_set_session(con, sess);
         SSL_SESSION_free(sess);
     }
+
+    if (fallback_scsv)
+        SSL_set_mode(con, SSL_MODE_SEND_FALLBACK_SCSV);
 #ifndef OPENSSL_NO_TLSEXT
     if (servername != NULL) {
         if (!SSL_set_tlsext_host_name(con, servername)) {

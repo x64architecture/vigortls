@@ -2228,6 +2228,31 @@ long ssl3_ctrl(SSL *s, int cmd, long larg, void *parg)
             ret = 1;
             break;
 
+        case SSL_CTRL_CHECK_PROTO_VERSION:
+            /* For library-internal use; checks that the current protocol
+             * is the highest enabled version (according to s->ctx->method,
+             * as version negotiation may have changed s->method). */
+            if (s->version == s->ctx->method->version)
+                return 1;
+            /* Apparently we're using a version-flexible SSL_METHOD
+             * (not at its highest protocol version). */
+            if (s->ctx->method->version == SSLv23_method()->version) {
+#if TLS_MAX_VERSION != TLS1_2_VERSION
+# error Code needs to be updated for SSLv23_method() support beyond TLS1_2_VERSION.
+#endif
+                if (!(s->options & SSL_OP_NO_TLSv1_2))
+                    return s->version == TLS1_2_VERSION;
+                if (!(s->options & SSL_OP_NO_TLSv1_1))
+                    return s->version == TLS1_1_VERSION;
+                if (!(s->options & SSL_OP_NO_TLSv1))
+                    return s->version == TLS1_VERSION;
+                if (!(s->options & SSL_OP_NO_SSLv3))
+                    return s->version == SSL3_VERSION;
+                if (!(s->options & SSL_OP_NO_SSLv2))
+                    return s->version == SSL2_VERSION;
+            }
+            return 0; /* Unexpected state; fail closed. */
+
         default:
             break;
     }

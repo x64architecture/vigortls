@@ -1284,13 +1284,13 @@ int ssl_cipher_list_to_bytes(SSL *s, STACK_OF(SSL_CIPHER) *sk,
         s2n(ssl3_cipher_get_value(c), p);
     }
 
-    /*
-     * If p == q, no ciphers and caller indicates an error. Otherwise
-     * add SCSV if not renegotiating.
-     */
-    if (p != q && !s->renegotiate) {
-        static SSL_CIPHER scsv = { 0, NULL, SSL3_CK_SCSV, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-        s2n(ssl3_cipher_get_value(&scsv), p);
+    /* If p == q, no ciphers; caller indicates an error.
+     * Otherwise, add applicable SCSVs. */
+    if (p != q) {
+        if (!s->renegotiate) {
+            static SSL_CIPHER scsv = { .id = SSL3_CK_SCSV };
+            s2n(ssl3_cipher_get_value(&scsv), p);
+        }
     }
 
     return (p - q);
@@ -1326,7 +1326,7 @@ STACK_OF(SSL_CIPHER) * ssl_bytes_to_cipher_list(SSL *s, unsigned char *p,
         n2s(p, cipher_value);
         cipherid = SSL3_CK_ID | cipher_value;
 
-        /* Check for SCSV */
+        /* Check for TLS_EMPTY_RENEGOTIATION_INFO_SCSV */
         if (s->s3 && cipherid == SSL3_CK_SCSV) {
             /* SCSV fatal if renegotiating */
             if (s->renegotiate) {
@@ -1337,6 +1337,20 @@ STACK_OF(SSL_CIPHER) * ssl_bytes_to_cipher_list(SSL *s, unsigned char *p,
                 goto err;
             }
             s->s3->send_connection_binding = 1;
+            continue;
+        }
+
+        /* Check for TLS_FALLBACK_SCSV */
+        if (s->s3 && cipherid == SSL3_CK_FALLBACK_SCSV) {
+            /* The SCSV indicates that the client previously tried a higher version.
+             * Fail if the current version is an unexpected downgrade. */
+            if (!SSL_ctrl(s, SSL_CTRL_CHECK_PROTO_VERSION, 0, NULL)) {
+                SSLerr(SSL_F_SSL_BYTES_TO_CIPHER_LIST, SSL_R_INAPPROPRIATE_FALLBACK);
+                if (s->s3)
+                    ssl3_send_alert(s, SSL3_AL_FATAL, SSL_AD_INAPPROPRIATE_FALLBACK);
+                goto err;
+            }
+            p += n;
             continue;
         }
 

@@ -799,6 +799,8 @@ int ssl3_alert_code(int code)
             return (SSL3_AD_HANDSHAKE_FAILURE);
         case SSL_AD_UNKNOWN_PSK_IDENTITY:
             return (TLS1_AD_UNKNOWN_PSK_IDENTITY);
+        case SSL_AD_INAPPROPRIATE_FALLBACK:
+            return (TLS1_AD_INAPPROPRIATE_FALLBACK);
         default:
             return (-1);
     }
