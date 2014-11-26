@@ -402,18 +402,23 @@ int ec_wNAF_mul(const EC_GROUP *group, EC_POINT *r, const BIGNUM *scalar,
 
     totalnum = num + numblocks;
 
-    wsize = reallocarray(NULL, totalnum, sizeof wsize[0]);
-    wNAF_len = reallocarray(NULL, totalnum, sizeof wNAF_len[0]);
     /* includes space for pivot */
     wNAF = reallocarray(NULL, (totalnum + 1), sizeof wNAF[0]);
-    val_sub = reallocarray(NULL, totalnum, sizeof val_sub[0]);
-
-    if (!wsize || !wNAF_len || !wNAF || !val_sub) {
+    if (wNAF == NULL) {
         ECerr(EC_F_EC_WNAF_MUL, ERR_R_MALLOC_FAILURE);
         goto err;
     }
-
+    
     wNAF[0] = NULL; /* preliminary pivot */
+    
+    wsize = reallocarray(NULL, totalnum, sizeof wsize[0]);
+    wNAF_len = reallocarray(NULL, totalnum, sizeof wNAF_len[0]);
+    val_sub = reallocarray(NULL, totalnum, sizeof val_sub[0]);
+
+    if (!wsize || !wNAF_len || !val_sub) {
+        ECerr(EC_F_EC_WNAF_MUL, ERR_R_MALLOC_FAILURE);
+        goto err;
+    }
 
     /* num_val will be the total number of temporarily precomputed points */
     num_val = 0;
