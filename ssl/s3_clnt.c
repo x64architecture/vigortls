@@ -284,6 +284,9 @@ int ssl3_connect(SSL *s)
                 s->state = SSL3_ST_CW_CLNT_HELLO_A;
                 s->ctx->stats.sess_connect++;
                 s->init_num = 0;
+                s->s3->flags &= ~SSL3_FLAGS_CCS_OK;
+                /* Should have been reset by ssl3_get_finished, too. */
+                s->s3->change_cipher_spec = 0;
                 break;
 
             case SSL3_ST_CW_CLNT_HELLO_A:
@@ -425,11 +428,9 @@ int ssl3_connect(SSL *s)
                     s->state = SSL3_ST_CW_CERT_VRFY_A;
                 } else {
                     s->state = SSL3_ST_CW_CHANGE_A;
-                    s->s3->change_cipher_spec = 0;
                 }
                 if (s->s3->flags & TLS1_FLAGS_SKIP_CERT_VERIFY) {
                     s->state = SSL3_ST_CW_CHANGE_A;
-                    s->s3->change_cipher_spec = 0;
                 }
 
                 s->init_num = 0;
@@ -442,7 +443,6 @@ int ssl3_connect(SSL *s)
                     goto end;
                 s->state = SSL3_ST_CW_CHANGE_A;
                 s->init_num = 0;
-                s->s3->change_cipher_spec = 0;
                 break;
 
             case SSL3_ST_CW_CHANGE_A:
@@ -494,7 +494,6 @@ int ssl3_connect(SSL *s)
                                          s->method->ssl3_enc->client_finished_label_len);
                 if (ret <= 0)
                     goto end;
-                s->s3->flags |= SSL3_FLAGS_CCS_OK;
                 s->state = SSL3_ST_CW_FLUSH;
 
                 /* clear flags */
@@ -863,7 +862,6 @@ int ssl3_get_server_hello(SSL *s)
                    SSL_R_ATTEMPT_TO_REUSE_SESSION_IN_DIFFERENT_CONTEXT);
             goto f_err;
         }
-        s->s3->flags |= SSL3_FLAGS_CCS_OK;
         s->hit = 1;
     } else {
         /* a miss or crap from the other end */
