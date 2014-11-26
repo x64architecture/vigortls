@@ -877,6 +877,7 @@ int ssl_parse_clienthello_tlsext(SSL *s, unsigned char **p, unsigned char *d,
 #ifndef OPENSSL_NO_NEXTPROTONEG
     s->s3->next_proto_neg_seen = 0;
 #endif
+    s->tlsext_ticket_expected = 0;
 
     if (s->options & SSL_OP_SAFARI_ECDHE_ECDSA_BUG)
         ssl_check_for_safari(s, data, d, n);
