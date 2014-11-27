@@ -1305,7 +1305,7 @@ int STORE_ATTR_INFO_set_cstr(STORE_ATTR_INFO *attrs, STORE_ATTR_TYPES code,
         return 0;
     }
     if (!ATTR_IS_SET(attrs, code)) {
-        if ((attrs->values[code].cstring = BUF_strndup(cstr, cstr_size)))
+        if (cstr && (attrs->values[code].cstring = strndup(cstr, cstr_size)))
             return 1;
         STOREerr(STORE_F_STORE_ATTR_INFO_SET_CSTR,
                  ERR_R_MALLOC_FAILURE);

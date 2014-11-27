@@ -562,7 +562,7 @@ SSL_SESSION *d2i_SSL_SESSION(SSL_SESSION **a, const unsigned char **pp,
         c.slen -= (c.p - c.q);
     }
     if (os.data) {
-        ret->tlsext_hostname = BUF_strndup((char *)os.data, os.length);
+        ret->tlsext_hostname = strndup((char *)os.data, os.length);
         free(os.data);
         os.data = NULL;
         os.length = 0;

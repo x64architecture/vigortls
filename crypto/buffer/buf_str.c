@@ -64,24 +64,29 @@
 
 char *BUF_strdup(const char *str)
 {
+    char *ret = NULL;
+
     if (str == NULL)
         return (NULL);
-    return BUF_strndup(str, strlen(str));
+    
+    if ((ret = strdup(str)) == NULL) {
+        BUFerr(BUF_F_BUF_STRDUP, ERR_R_MALLOC_FAILURE);
+    }
+    
+    return (ret);
 }
 
 char *BUF_strndup(const char *str, size_t siz)
 {
-    char *ret;
+    char *ret = NULL;
 
     if (str == NULL)
         return (NULL);
-
-    ret = malloc(siz + 1);
-    if (ret == NULL) {
+    
+    if ((ret = strndup(str, siz)) == NULL) {
         BUFerr(BUF_F_BUF_STRNDUP, ERR_R_MALLOC_FAILURE);
-        return (NULL);
     }
-    strlcpy(ret, str, siz + 1);
+    
     return (ret);
 }
 
