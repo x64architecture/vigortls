@@ -569,8 +569,9 @@ again:
          * since they arrive from different connections and
          * would be dropped unnecessarily.
          */
-        if (!(s->d1->listen && rr->type == SSL3_RT_HANDSHAKE && *p == SSL3_MT_CLIENT_HELLO)
-            && !dtls1_record_replay_check(s, bitmap))
+        if (!(s->d1->listen && rr->type == SSL3_RT_HANDSHAKE &&
+            p != NULL && *p == SSL3_MT_CLIENT_HELLO) &&
+            !dtls1_record_replay_check(s, bitmap))
         {
             rr->length = 0;
             s->packet_length = 0; /* dump this record */
