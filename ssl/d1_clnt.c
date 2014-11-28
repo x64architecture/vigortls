@@ -909,6 +909,12 @@ int dtls1_send_client_key_exchange(SSL *s)
         p = &(d[DTLS1_HM_HEADER_LENGTH]);
 
         alg_k = s->s3->tmp.new_cipher->algorithm_mkey;
+        
+        if (s->session->sess_cert == NULL) {
+            ssl3_send_alert(s, SSL3_AL_FATAL, SSL_AD_HANDSHAKE_FAILURE);
+            SSLerr(SSL_F_DTLS1_SEND_CLIENT_KEY_EXCHANGE, ERR_R_INTERNAL_ERROR);
+            goto err;
+        }
 
         if (alg_k & SSL_kRSA) {
             RSA *rsa;
