@@ -817,6 +817,8 @@ int ssl3_get_server_hello(SSL *s)
     memcpy(s->s3->server_random, p, SSL3_RANDOM_SIZE);
     p += SSL3_RANDOM_SIZE;
 
+    s->hit = 0;
+
     /* get the session-id */
     j = *(p++);
 
@@ -848,11 +850,12 @@ int ssl3_get_server_hello(SSL *s)
             s->session->cipher = pref_cipher ?
                                  pref_cipher :
                                  ssl3_get_cipher_by_id(cipherid);
+            s->hit = 1;
             s->s3->flags |= SSL3_FLAGS_CCS_OK;
         }
     }
 
-    if (j != 0 && j == s->session->session_id_length
+    if (!s->hit && j != 0 && j == s->session->session_id_length
         && memcmp(p, s->session->session_id, j) == 0) {
         if (s->sid_ctx_length != s->session->sid_ctx_length
         || memcmp(s->session->sid_ctx, s->sid_ctx, s->sid_ctx_length) != 0) {
@@ -863,7 +866,8 @@ int ssl3_get_server_hello(SSL *s)
             goto f_err;
         }
         s->hit = 1;
-    } else {
+    }
+    if (!s->hit) {
         /* a miss or crap from the other end */
 
         /*
