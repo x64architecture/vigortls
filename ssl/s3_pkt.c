@@ -723,7 +723,8 @@ static int do_ssl3_write(SSL *s, int type, const unsigned char *buf,
     }
 
     /* ssl3_enc can only have an error on read */
-    s->method->ssl3_enc->enc(s, 1);
+    if (s->method->ssl3_enc->enc(s, 1) < 1)
+        goto err;
 
     /* record length after mac and block padding */
     s2n(wr->length, plen);

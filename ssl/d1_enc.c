@@ -198,7 +198,8 @@ int dtls1_enc(SSL *s, int send)
                 return 0;
         }
 
-        EVP_Cipher(ds, rec->data, rec->input, l);
+        if (EVP_Cipher(ds, rec->data, rec->input, l) < 1)
+            return -1;
 
         if ((bs != 1) && !send)
             return tls1_cbc_remove_padding(s, rec, bs, mac_size);
