@@ -1017,7 +1017,10 @@ int ssl_parse_clienthello_tlsext(SSL *s, unsigned char **p, unsigned char *d,
             int ellipticcurvelist_length = (*(sdata++) << 8);
             ellipticcurvelist_length += (*(sdata++));
 
-            if (ellipticcurvelist_length != size - 2 || ellipticcurvelist_length < 1) {
+            if (ellipticcurvelist_length != size - 2 || ellipticcurvelist_length < 1 ||
+                /* Each NamedCurve is 2 bytes. */
+                ellipticcurvelist_length & 1)
+            {
                 *al = TLS1_AD_DECODE_ERROR;
                 return 0;
             }
