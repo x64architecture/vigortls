@@ -340,12 +340,8 @@ SSL *SSL_new(SSL_CTX *ctx)
 
     return (s);
 err:
-    if (s != NULL) {
-        if (s->cert != NULL)
-            ssl_cert_free(s->cert);
-        SSL_CTX_free(s->ctx); /* decrement reference count */
+    if (s != NULL)
         free(s);
-    }
     SSLerr(SSL_F_SSL_NEW, ERR_R_MALLOC_FAILURE);
     return (NULL);
 }
