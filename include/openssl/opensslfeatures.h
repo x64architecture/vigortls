@@ -1,4 +1,3 @@
-#define OPENSSL_NO_CAMELLIA
 #define OPENSSL_NO_CMS
 #define OPENSSL_NO_COMP
 #define OPENSSL_NO_GMP
