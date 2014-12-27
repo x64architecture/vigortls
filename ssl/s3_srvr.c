@@ -1789,6 +1789,7 @@ int ssl3_get_client_key_exchange(SSL *s)
         unsigned char rand_premaster_secret[SSL_MAX_MASTER_KEY_LENGTH];
         int decrypt_len;
         unsigned char decrypt_good, version_good;
+        size_t j;
 
         /* FIX THIS UP EAY EAY EAY EAY */
         if (s->s3->tmp.use_rsa_tmp) {
@@ -1821,9 +1822,10 @@ int ssl3_get_client_key_exchange(SSL *s)
             n2s(p, i);
             if (n != i + 2) {
                 if (!(s->options & SSL_OP_TLS_D5_BUG)) {
+                    al = SSL_AD_DECODE_ERROR;
                     SSLerr(SSL_F_SSL3_GET_CLIENT_KEY_EXCHANGE,
                            SSL_R_TLS_RSA_ENCRYPTED_VALUE_LENGTH_IS_WRONG);
-                    goto err;
+                    goto f_err;
                 } else
                     p -= 2;
             } else
@@ -1832,6 +1834,19 @@ int ssl3_get_client_key_exchange(SSL *s)
 
         if (p + 2 - d > n) /* needed in the SSL3 case */
             goto truncated;
+        
+        /*
+         * Reject overly short RSA ciphertext because we want to be sure
+         * that the buffer size makes it safe to iterate over the entire
+         * size of a premaster secret (SSL_MAX_MASTER_KEY_LENGTH). The
+         * actual expected size is larger due to RSA padding, but the
+         * bound is sufficient to be safe.
+         */
+         if (n < SSL_MAX_MASTER_KEY_LENGTH) {
+             al = SSL_AD_DECRYPT_ERROR;
+             SSLerr(SSL_F_SSL3_GET_CLIENT_KEY_EXCHANGE, SSL_R_TLS_RSA_ENCRYPTED_VALUE_LENGTH_IS_WRONG);
+             goto f_err;
+         }
 
         /* We must not leak whether a decryption failure occurs because
          * of Bleichenbacher's attack on PKCS #1 v1.5 RSA padding (see
@@ -1876,15 +1891,20 @@ int ssl3_get_client_key_exchange(SSL *s)
          * to remain non-zero (0xff). */
         decrypt_good &= version_good;
 
-        /* Now copy rand_premaster_secret over p using
-         * decrypt_good_mask. */
-        for (i = 0; i < (int)sizeof(rand_premaster_secret); i++) {
-            p[i] = constant_time_select_8(decrypt_good, p[i], rand_premaster_secret[i]);
+        /*
+         * Now copy rand_premaster_secret over from p using
+         * decrypt_good_mask. If decryption failed, then p does not
+         * contain valid plaintext, however, a check above guarantees
+         * it is still sufficiently large to read from.
+         */
+        for (j = 0; j < sizeof(rand_premaster_secret); j++) {
+            p[j] = constant_time_select_8(decrypt_good, p[j], rand_premaster_secret[j]);
         }
 
         s->session->master_key_length
-            = s->method->ssl3_enc->generate_master_secret(s, s->session->master_key, p, i);
-        vigortls_zeroize(p, i);
+            = s->method->ssl3_enc->generate_master_secret(s, s->session->master_key, p,
+                                                          sizeof(rand_premaster_secret));
+        vigortls_zeroize(p, sizeof(rand_premaster_secret));
     } else if (alg_k & (SSL_kDHE | SSL_kDHr | SSL_kDHd)) {
         if (2 > n)
             goto truncated;
