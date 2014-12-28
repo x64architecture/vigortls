@@ -227,8 +227,6 @@ static int tree_init(X509_POLICY_TREE **ptree, STACK_OF(X509) * certs,
         return 0;
     }
 
-    memset(tree->levels, 0, n * sizeof(X509_POLICY_LEVEL));
-
     tree->nlevel = n;
 
     level = tree->levels;
