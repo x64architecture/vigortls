@@ -238,20 +238,7 @@ extern "C" {
 #define SSL3_RT_HEADER_LENGTH 5
 #define SSL3_CIPHER_VALUE_SIZE 2
 
-#ifndef SSL3_ALIGN_PAYLOAD
-/* Some will argue that this increases memory footprint, but it's
-  * not actually true. Point is that malloc has to return at least
-  * 64-bit aligned pointers, meaning that allocating 5 bytes wastes
-  * 3 bytes in either case. Suggested pre-gaping simply moves these
-  * wasted bytes from the end of allocated region to its front,
-  * but makes data payload aligned, which improves performance:-) */
 #define SSL3_ALIGN_PAYLOAD 8
-#else
-#if (SSL3_ALIGN_PAYLOAD & (SSL3_ALIGN_PAYLOAD - 1)) != 0
-#error "insane SSL3_ALIGN_PAYLOAD"
-#undef SSL3_ALIGN_PAYLOAD
-#endif
-#endif
 
 /* This is the maximum MAC (digest) size used by the SSL library.
  * Currently maximum of 20 is used by SHA1, but we reserve for
