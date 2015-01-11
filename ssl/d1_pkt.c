@@ -249,9 +249,11 @@ static int dtls1_buffer_record(SSL *s, record_pqueue *queue,
 
 err:
     SSLerr(SSL_F_DTLS1_BUFFER_RECORD, ERR_R_INTERNAL_ERROR);
+    if (rdata->rbuf.buf != NULL)
+        free(rdata->rbuf.buf);
     free(rdata);
     pitem_free(item);
-    return (0);
+    return (-1);
 }
 
 static int dtls1_retrieve_buffered_record(SSL *s, record_pqueue *queue)
@@ -297,7 +299,11 @@ static int dtls1_process_buffered_records(SSL *s)
             dtls1_get_unprocessed_record(s);
             if (!dtls1_process_record(s))
                 return (0);
-            dtls1_buffer_record(s, &(s->d1->processed_rcds), s->s3->rrec.seq_num);
+            if (dtls1_buffer_record(s, &(s->d1->processed_rcds),
+                                    s->s3->rrec.seq_num) < 0)
+            {
+                return -1;
+            }
         }
     }
 
@@ -430,7 +436,6 @@ static int dtls1_process_record(SSL *s)
 
     /* we have pulled in a full packet so zero things */
     s->packet_length = 0;
-    dtls1_record_bitmap_update(s, &(s->d1->bitmap)); /* Mark receipt of record. */
     return (1);
 
 f_err:
@@ -462,7 +467,8 @@ int dtls1_get_record(SSL *s)
 
     /* The epoch may have changed.  If so, process all the
      * pending records.  This is a non-blocking operation. */
-    dtls1_process_buffered_records(s);
+    if (dtls1_process_buffered_records(s) < 0)
+        return -1;
 
     /* if we're renegotiating, then there may be buffered records */
     if (dtls1_get_processed_record(s))
@@ -573,9 +579,9 @@ again:
         {
             rr->length = 0;
             s->packet_length = 0; /* dump this record */
-            goto again;
-            /* get another record */
+            goto again; /* get another record */
         }
+        dtls1_record_bitmap_update(s, bitmap); /* Mark receipt of record. */
 #ifndef OPENSSL_NO_SCTP
     }
 #endif
@@ -591,7 +597,9 @@ again:
      */
     if (is_next_epoch) {
         if ((SSL_in_init(s) || s->in_handshake) && !s->d1->listen) {
-            dtls1_buffer_record(s, &(s->d1->unprocessed_rcds), rr->seq_num);
+            if (dtls1_buffer_record(s, &(s->d1->unprocessed_rcds), rr->seq_num) < 0)
+                return -1;
+            dtls1_record_bitmap_update(s, bitmap); /* Mark receipt of record. */
         }
         rr->length = 0;
         s->packet_length = 0;
@@ -746,7 +754,10 @@ start:
          * buffer the application data for later processing rather
          * than dropping the connection.
          */
-        dtls1_buffer_record(s, &(s->d1->buffered_app_data), rr->seq_num);
+        if (dtls1_buffer_record(s, &(s->d1->buffered_app_data), rr->seq_num) < 0) {
+            SSLerr(SSL_F_DTLS1_READ_BYTES, ERR_R_INTERNAL_ERROR);
+            return -1;
+        }
         rr->length = 0;
         goto start;
     }
