@@ -1151,6 +1151,8 @@ int ssl3_get_key_exchange(SSL *s)
     EC_POINT *srvr_ecpoint = NULL;
     int curve_nid = 0;
     int encoded_pt_len = 0;
+    
+    EVP_MD_CTX_init(&md_ctx);
 
     /*
      * Use same message size as in ssl3_get_certificate_request()
@@ -1160,8 +1162,19 @@ int ssl3_get_key_exchange(SSL *s)
                                    SSL3_ST_CR_KEY_EXCH_B, -1, s->max_cert_list, &ok);
     if (!ok)
         return ((int)n);
+    
+    alg_k = s->s3->tmp.new_cipher->algorithm_mkey;
 
     if (s->s3->tmp.message_type != SSL3_MT_SERVER_KEY_EXCHANGE) {
+        /*
+         * We can't skip the server key exchange if this is a ephemeral
+         * ciphersuite.
+         */
+        if (alg_k & (SSL_kDHE | SSL_kECDHE)) {
+            SSLerr(SSL_F_SSL3_GET_KEY_EXCHANGE, SSL_R_UNEXPECTED_MESSAGE);
+            al = SSL_AD_UNEXPECTED_MESSAGE;
+            goto f_err;
+        }
         s->s3->tmp.reuse_message = 1;
         return (1);
     }
@@ -1183,9 +1196,7 @@ int ssl3_get_key_exchange(SSL *s)
     }
 
     param_len = 0;
-    alg_k = s->s3->tmp.new_cipher->algorithm_mkey;
     alg_a = s->s3->tmp.new_cipher->algorithm_auth;
-    EVP_MD_CTX_init(&md_ctx);
 
     if (alg_k & SSL_kRSA) {
         if ((rsa = RSA_new()) == NULL) {
