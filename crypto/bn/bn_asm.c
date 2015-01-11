@@ -547,13 +547,14 @@ bn_sub_words(BN_ULONG *r, const BN_ULONG *a, const BN_ULONG *b, int n)
         BN_ULONG ta = (a), tb = (b), t0; \
         BN_UMULT_LOHI(t0, t1, ta, tb);   \
         t2 = t1 + t1;                    \
-        c2 += (t2 < t1) ? 1 : 0;         \
-        t1 = t0 + t0;                    \
-        t2 += (t1 < t0) ? 1 : 0;         \
-        c0 += t1;                        \
-        t2 += (c0 < t1) ? 1 : 0;         \
+        c0 += t0;                        \
+        t2 = t1 + ((c0 < t0) ? 1 : 0);   \
         c1 += t2;                        \
         c2 += (c1 < t2) ? 1 : 0;         \
+        c0 += t0;                        \
+        t1 += (c0 < t0) ? 1 : 0;         \
+        c1 += t1;                        \
+        c2 += (c1 < t1) ? 1 : 0;         \
     }
 
 #define sqr_add_c(a, i, c0, c1, c2)    \
@@ -587,14 +588,14 @@ bn_sub_words(BN_ULONG *r, const BN_ULONG *a, const BN_ULONG *b, int n)
         BN_ULONG ta = (a), tb = (b), t0; \
         t1 = BN_UMULT_HIGH(ta, tb);      \
         t0 = ta * tb;                    \
-        t2 = t1 + t1;                    \
-        c2 += (t2 < t1) ? 1 : 0;         \
-        t1 = t0 + t0;                    \
-        t2 += (t1 < t0) ? 1 : 0;         \
-        c0 += t1;                        \
-        t2 += (c0 < t1) ? 1 : 0;         \
+        c0 += t0;                        \
+        t2 = t1 + ((c0 < t0) ? 1 : 0);   \
         c1 += t2;                        \
         c2 += (c1 < t2) ? 1 : 0;         \
+        c0 += t0;                        \
+        t1 += (c0 < t0) ? 1 : 0;         \
+        c1 += t1;                        \
+        c2 += (c1 < t1) ? 1 : 0;         \
     }
 
 #define sqr_add_c(a, i, c0, c1, c2) \
