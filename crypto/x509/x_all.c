@@ -57,6 +57,7 @@
  */
 
 #include <stdio.h>
+
 #include <openssl/stack.h>
 #include <openssl/buffer.h>
 #include <openssl/asn1.h>
