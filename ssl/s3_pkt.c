@@ -174,6 +174,8 @@ int ssl3_read_n(SSL *s, int n, int max, int extend)
      * because the read operation returns the whole packet
      * at once (as long as it fits into the buffer). */
     if (SSL_IS_DTLS(s)) {
+        if (left == 0 && extend)
+            return 0;
         if (left > 0 && n > left)
             n = left;
     }
