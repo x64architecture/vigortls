@@ -74,7 +74,7 @@ long BIO_debug_callback(BIO *bio, int cmd, const char *argp,
     if (BIO_CB_RETURN & cmd)
         r = ret;
 
-    snprintf(buf, sizeof buf, "BIO[%08lX]:", (unsigned long)bio);
+    snprintf(buf, sizeof buf, "BIO[%p]:", bio);
     p = &(buf[14]);
     p_maxlen = sizeof buf - 14;
     switch (cmd) {
