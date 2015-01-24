@@ -170,6 +170,7 @@
 #include <openssl/ocsp.h>
 #include <openssl/dh.h>
 #include <openssl/rsa.h>
+#include <openssl/vigortls.h>
 #include "s_apps.h"
 #include "timeouts.h"
 

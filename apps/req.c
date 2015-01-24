@@ -82,6 +82,7 @@
 #ifndef OPENSSL_NO_DSA
 #include <openssl/dsa.h>
 #endif
+#include <openssl/vigortls.h>
 
 #define SECTION "req"
 

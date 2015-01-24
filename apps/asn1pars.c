@@ -69,6 +69,7 @@
 #include <openssl/evp.h>
 #include <openssl/pem.h>
 #include <openssl/x509.h>
+#include <openssl/vigortls.h>
 
 #include "apps.h"
 

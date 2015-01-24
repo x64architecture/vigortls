@@ -14,7 +14,7 @@
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-#include <string.h>
+#include <openssl/vigortls.h>
 
 size_t strlcat(char *dest, const char *src, size_t size)
 {

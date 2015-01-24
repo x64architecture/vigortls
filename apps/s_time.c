@@ -73,6 +73,7 @@
 #include <openssl/x509.h>
 #include <openssl/ssl.h>
 #include <openssl/pem.h>
+#include <openssl/vigortls.h>
 #include "s_apps.h"
 #include <openssl/err.h>
 #include <unistd.h>

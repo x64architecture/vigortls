@@ -61,6 +61,7 @@
 #include <string.h>
 
 #include <openssl/buffer.h>
+#include <openssl/vigortls.h>
 #include <pqueue.h>
 
 /* remember to change the expected results if you change these values */

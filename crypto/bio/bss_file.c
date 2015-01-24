@@ -89,6 +89,7 @@
 
 #include <openssl/buffer.h>
 #include <openssl/err.h>
+#include <openssl/vigortls.h>
 
 static int file_write(BIO *h, const char *buf, int num);
 static int file_read(BIO *h, char *buf, int size);

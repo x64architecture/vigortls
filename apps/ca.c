@@ -77,6 +77,7 @@
 #include <openssl/txt_db.h>
 #include <openssl/x509.h>
 #include <openssl/x509v3.h>
+#include <openssl/vigortls.h>
 
 #ifndef W_OK
 #include <sys/file.h>

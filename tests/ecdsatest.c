@@ -83,6 +83,7 @@
 #endif
 #include <openssl/err.h>
 #include <openssl/rand.h>
+#include <openssl/vigortls.h>
 
 /* declaration of the test functions */
 int x9_62_test_internal(BIO *out, int nid, const char *r, const char *s);

@@ -30,9 +30,11 @@
 #ifndef OPENSSL_NO_EC_NISTP_64_GCC_128
 
 #include <stdint.h>
-
 #include <string.h>
+
 #include <openssl/err.h>
+#include <openssl/vigortls.h>
+
 #include "ec_lcl.h"
 
 #if defined(__GNUC__) && (__GNUC__ > 3 || (__GNUC__ == 3 && __GNUC_MINOR__ >= 1))

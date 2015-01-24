@@ -110,14 +110,17 @@
  */
 
 #include <openssl/e_os2.h>
+
 #include <stdio.h>
 #include <stdarg.h>
 #include <string.h>
+
 #include <openssl/lhash.h>
 #include <openssl/crypto.h>
 #include <openssl/buffer.h>
 #include <openssl/bio.h>
 #include <openssl/err.h>
+#include <openssl/vigortls.h>
 
 DECLARE_LHASH_OF(ERR_STRING_DATA);
 DECLARE_LHASH_OF(ERR_STATE);

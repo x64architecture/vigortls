@@ -65,6 +65,7 @@
 
 #include <openssl/bio.h>
 #include <openssl/buffer.h>
+#include <openssl/vigortls.h>
 
 #define TRUNCATE
 #define DUMP_WIDTH 16

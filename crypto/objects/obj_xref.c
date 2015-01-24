@@ -57,6 +57,8 @@
  */
 
 #include <openssl/objects.h>
+#include <openssl/vigortls.h>
+
 #include "obj_xref.h"
 
 DECLARE_STACK_OF(nid_triple)

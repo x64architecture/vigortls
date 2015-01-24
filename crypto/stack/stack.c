@@ -56,25 +56,16 @@
  * [including the GNU Public Licence.]
  */
 
-/* Code for stacks
- * Author - Eric Young v 1.0
- * 1.2 eay 12-Mar-97 -    Modified sk_find so that it _DOES_ return the
- *            lowest index for the searched item.
- *
- * 1.1 eay - Take from netdb and added to SSLeay
- *
- * 1.0 eay - First version 29/07/92
- */
+#include <errno.h>
 #include <stdio.h>
 #include <string.h>
 
 #include <openssl/objects.h>
 #include <openssl/stack.h>
+#include <openssl/vigortls.h>
 
 #undef MIN_NODES
 #define MIN_NODES 4
-
-#include <errno.h>
 
 int (*sk_set_cmp_func(_STACK *sk, int (*c)(const void *, const void *)))(const void *, const void *)
 {

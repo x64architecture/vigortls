@@ -70,6 +70,7 @@
 #include <openssl/evp.h>
 #include <openssl/bn.h>
 #include <openssl/x509v3.h>
+#include <openssl/vigortls.h>
 
 /* Maximum leeway in validity period: default 5 minutes */
 #define MAX_VALIDITY_PERIOD (5 * 60)

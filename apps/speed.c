@@ -95,6 +95,7 @@
 #include <openssl/evp.h>
 #include <openssl/objects.h>
 #include <unistd.h>
+#include <openssl/vigortls.h>
 
 #include <signal.h>
 

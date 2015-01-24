@@ -67,6 +67,7 @@
 #include <openssl/err.h>
 #include <openssl/pem.h>
 #include <openssl/pkcs12.h>
+#include <openssl/vigortls.h>
 
 const EVP_CIPHER *enc;
 

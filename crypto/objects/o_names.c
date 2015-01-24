@@ -7,6 +7,7 @@
 #include <openssl/objects.h>
 #include <openssl/safestack.h>
 #include <openssl/e_os2.h>
+#include <openssl/vigortls.h>
 
 /* I use the ex_data stuff to manage the identifiers for the obj_name_types
  * that applications may define.  I only really use the free function field.

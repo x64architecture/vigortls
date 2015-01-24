@@ -54,6 +54,8 @@
  */
 
 #include <openssl/crypto.h>
+#include <openssl/vigortls.h>
+
 #include "ec_lcl.h"
 
 BIGNUM *EC_POINT_point2bn(const EC_GROUP *group,

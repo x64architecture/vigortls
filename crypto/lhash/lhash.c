@@ -56,49 +56,13 @@
  * [including the GNU Public Licence.]
  */
 
-/* Code for dynamic hash table routines
- * Author - Eric Young v 2.0
- *
- * 2.2 eay - added #include "crypto.h" so the memory leak checking code is
- *         present. eay 18-Jun-98
- *
- * 2.1 eay - Added an 'error in last operation' flag. eay 6-May-98
- *
- * 2.0 eay - Fixed a bug that occurred when using lh_delete
- *         from inside lh_doall().  As entries were deleted,
- *         the 'table' was 'contract()ed', making some entries
- *         jump from the end of the table to the start, there by
- *         skipping the lh_doall() processing. eay - 4/12/95
- *
- * 1.9 eay - Fixed a memory leak in lh_free, the LHASH_NODEs
- *         were not being free()ed. 21/11/95
- *
- * 1.8 eay - Put the stats routines into a separate file, lh_stats.c
- *         19/09/95
- *
- * 1.7 eay - Removed the fputs() for realloc failures - the code
- *           should silently tolerate them.  I have also fixed things
- *           lint complained about 04/05/95
- *
- * 1.6 eay - Fixed an invalid pointers in contract/expand 27/07/92
- *
- * 1.5 eay - Fixed a misuse of realloc in expand 02/03/1992
- *
- * 1.4 eay - Fixed lh_doall so the function can call lh_delete 28/05/91
- *
- * 1.3 eay - Fixed a few lint problems 19/3/1991
- *
- * 1.2 eay - Fixed lh_doall problem 13/3/1991
- *
- * 1.1 eay - Added lh_doall
- *
- * 1.0 eay - First version
- */
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+
 #include <openssl/crypto.h>
 #include <openssl/lhash.h>
+#include <openssl/vigortls.h>
 
 #undef MIN_NODES
 #define MIN_NODES 16

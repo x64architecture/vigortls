@@ -59,8 +59,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
 #include <openssl/buffer.h>
 #include <openssl/txt_db.h>
+#include <openssl/vigortls.h>
 
 #undef BUFSIZE
 #define BUFSIZE 512

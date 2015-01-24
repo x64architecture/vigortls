@@ -16,6 +16,8 @@
 
 #include <string.h>
 
+#include <openssl/vigortls.h>
+
 size_t strlcpy(char *dest, const char *src, size_t size)
 {
     size_t len = 0;

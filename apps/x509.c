@@ -75,6 +75,7 @@
 #ifndef OPENSSL_NO_DSA
 #include <openssl/dsa.h>
 #endif
+#include <openssl/vigortls.h>
 
 #undef POSTFIX
 #define POSTFIX ".srl"

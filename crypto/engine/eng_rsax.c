@@ -66,6 +66,7 @@
 
 #include <stdio.h>
 #include <string.h>
+
 #include <openssl/crypto.h>
 #include <openssl/buffer.h>
 #include <openssl/engine.h>
@@ -74,6 +75,7 @@
 #endif
 #include <openssl/bn.h>
 #include <openssl/err.h>
+#include <openssl/vigortls.h>
 
 /* RSAX is available **ONLY* on x86_64 CPUs */
 #undef COMPILE_RSAX

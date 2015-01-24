@@ -64,6 +64,7 @@
 #include <openssl/objects.h>
 #include <openssl/x509.h>
 #include <openssl/buffer.h>
+#include <openssl/vigortls.h>
 
 char *X509_NAME_oneline(X509_NAME *a, char *buf, int len)
 {

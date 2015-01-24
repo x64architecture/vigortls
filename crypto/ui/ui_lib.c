@@ -61,6 +61,7 @@
 #include <openssl/buffer.h>
 #include <openssl/ui.h>
 #include <openssl/err.h>
+#include <openssl/vigortls.h>
 
 #include "cryptlib.h"
 #include "ui_locl.h"

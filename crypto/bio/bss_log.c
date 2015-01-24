@@ -72,6 +72,7 @@
 
 #include <openssl/buffer.h>
 #include <openssl/err.h>
+#include <openssl/vigortls.h>
 
 #ifndef NO_SYSLOG
 

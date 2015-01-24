@@ -83,6 +83,7 @@
 #include <openssl/ec.h>
 #include <openssl/x509.h>
 #include <openssl/pem.h>
+#include <openssl/vigortls.h>
 
 /* -inform arg      - input format - default PEM (DER or PEM)
  * -outform arg     - output format - default PEM

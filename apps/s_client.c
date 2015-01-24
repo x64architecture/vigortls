@@ -151,6 +151,7 @@
 #include <openssl/pem.h>
 #include <openssl/ocsp.h>
 #include <openssl/bn.h>
+#include <openssl/vigortls.h>
 #include "s_apps.h"
 #include "timeouts.h"
 

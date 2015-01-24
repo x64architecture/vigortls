@@ -150,6 +150,7 @@
 #ifndef OPENSSL_NO_ENGINE
 #include <openssl/engine.h>
 #endif
+#include <openssl/vigortls.h>
 
 const char *SSL_version_str = OPENSSL_VERSION_TEXT;
 

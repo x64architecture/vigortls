@@ -93,6 +93,7 @@
 #include <stdio.h>
 
 #include <openssl/err.h>
+#include <openssl/vigortls.h>
 
 #include "bn_lcl.h"
 

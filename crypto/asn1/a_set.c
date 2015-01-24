@@ -61,6 +61,7 @@
 
 #include <openssl/asn1_mac.h>
 #include <openssl/err.h>
+#include <openssl/vigortls.h>
 
 #ifndef NO_ASN1_OLD
 
