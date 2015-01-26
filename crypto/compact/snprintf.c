@@ -25,7 +25,5 @@ int snprintf(char *buf, size_t n, const char *format, ...)
     ret = vsnprintf(buf, n, format, args);
     va_end(args);
 
-    if (ret >= n || ret == -1)
-        return (-1);
     return (ret);
 }
