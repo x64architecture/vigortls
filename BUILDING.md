@@ -27,6 +27,7 @@ Building in a Windows environment
 * Visual Studio 2013+ (Might work on older versions [NOT TESTED])
 * MinGW/MSYS environment
 * ActiveState Perl
+* Yasm
 
 ----
 ## Building
