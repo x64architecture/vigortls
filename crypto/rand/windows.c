@@ -14,6 +14,11 @@
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
+/*
+ * We use RtlGenRandom here instead of CryptGenRandom due to 
+ * the overhead of having to pull in the whole CryptoAPI. 
+ */
+
 #include <openssl/rand.h>
 
 #if defined(_WIN32)
