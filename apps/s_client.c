@@ -142,6 +142,10 @@
 #include <limits.h>
 #include <string.h>
 #include <unistd.h>
+#include <sys/ioctl.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netdb.h>
 #include <openssl/e_os2.h>
 
 #include "apps.h"
@@ -154,6 +158,12 @@
 #include <openssl/vigortls.h>
 #include "s_apps.h"
 #include "timeouts.h"
+
+/* Fixes conflicts on win32 */
+# ifdef _WIN32
+#  undef OCSP_REQUEST
+#  undef OCSP_RESPONSE
+# endif
 
 /*#define SSL_HOST_NAME    "www.netscape.com" */
 /*#define SSL_HOST_NAME    "193.118.187.102" */

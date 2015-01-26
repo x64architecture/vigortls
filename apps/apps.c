@@ -146,6 +146,7 @@
 #include <openssl/x509.h>
 #include <openssl/x509v3.h>
 #include <openssl/vigortls.h>
+#include <win32compat.h>
 
 #ifndef OPENSSL_NO_ENGINE
 #include <openssl/engine.h>
@@ -2134,26 +2135,6 @@ unsigned char *next_protos_parse(unsigned short *outlen, const char *in)
     return out;
 }
 #endif /* !OPENSSL_NO_NEXTPROTONEG */
-
-double app_tminterval(int stop, int usertime)
-{
-    double ret = 0;
-    struct tms rus;
-    clock_t now = times(&rus);
-    static clock_t tmstart;
-
-    if (usertime)
-        now = rus.tms_utime;
-
-    if (stop == TM_START)
-        tmstart = now;
-    else {
-        long int tck = sysconf(_SC_CLK_TCK);
-        ret = (now - tmstart) / (double)tck;
-    }
-
-    return (ret);
-}
 
 int app_isdir(const char *name)
 {

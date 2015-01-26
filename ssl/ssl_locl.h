@@ -145,6 +145,7 @@
 #include <sys/types.h>
 
 #include <stdlib.h>
+#include <stdint.h>
 #include <time.h>
 #include <string.h>
 #include <errno.h>

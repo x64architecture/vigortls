@@ -97,7 +97,12 @@ ASN1_TIME *ASN1_TIME_adj(ASN1_TIME *s, time_t t,
     struct tm *ts;
     struct tm data;
 
-    ts = gmtime_r(&t, &data);
+
+#if defined(_WIN32)
+	ts = gmtime_s(&data, &t);
+#else
+	ts = gmtime_r(&t, &data);
+#endif
     if (ts == NULL) {
         ASN1err(ASN1_F_ASN1_TIME_ADJ, ASN1_R_ERROR_GETTING_TIME);
         return NULL;

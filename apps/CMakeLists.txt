@@ -6,6 +6,8 @@ add_executable(
     openssl
 
     apps.c
+    apps_posix.c
+    apps_windows.c
     asn1pars.c
     ca.c
     ciphers.c
@@ -57,3 +59,6 @@ add_executable(
 )
 
 target_link_libraries(openssl crypto ssl)
+if (WIN32)
+	target_link_libraries(openssl ws2_32 wsock32)
+endif()

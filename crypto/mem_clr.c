@@ -14,12 +14,20 @@
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
+#if defined(_WIN32)
+# define WIN32_LEAN_AND_MEAN
+# include <windows.h>
+#endif
 #include <string.h>
 #include <openssl/crypto.h>
 
 void vigortls_zeroize(void *ptr, size_t len)
 {
+#if defined(_WIN32)
+    SecureZeroMemory(ptr, len);
+#else
     memset(ptr, 0, len);
+#endif
 }
 
 void OPENSSL_cleanse(void *ptr, size_t len)

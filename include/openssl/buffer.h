@@ -67,7 +67,7 @@ extern "C" {
 
 #include <stddef.h>
 
-#if !defined(NO_SYS_TYPES_H)
+#if !defined(_WIN32)
 #include <sys/types.h>
 #endif
 

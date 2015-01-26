@@ -83,6 +83,11 @@
 #include <openssl/err.h>
 #include <openssl/crypto.h>
 
+#ifdef _MSC_VER
+#include <BaseTsd.h>
+typedef SSIZE_T ssize_t;
+#endif
+
 #ifndef SSIZE_MAX
 #define SSIZE_MAX INT_MAX
 #endif

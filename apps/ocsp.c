@@ -72,6 +72,12 @@
 #include <openssl/x509v3.h>
 #include <openssl/vigortls.h>
 
+/* Fixes conflicts on win32 */
+# ifdef _WIN32
+#  undef OCSP_REQUEST
+#  undef OCSP_RESPONSE
+# endif
+
 /* Maximum leeway in validity period: default 5 minutes */
 #define MAX_VALIDITY_PERIOD (5 * 60)
 

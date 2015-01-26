@@ -80,9 +80,6 @@
 #define ECDSA_SECONDS 10
 #define ECDH_SECONDS 10
 
-/* 11-Sep-92 Andrew Daviel   Support for Silicon Graphics IRIX added */
-/* 06-Apr-92 Luke Brennan    Support for VMS and add extra signal calls */
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <limits.h>
@@ -167,7 +164,9 @@
 #include "buildinf.h"
 
 #ifndef HAVE_FORK
-#define HAVE_FORK 1
+# if !defined(_WIN32)
+#  define HAVE_FORK 1
+# endif
 #endif
 
 #if HAVE_FORK

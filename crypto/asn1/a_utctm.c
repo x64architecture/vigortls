@@ -196,7 +196,11 @@ ASN1_UTCTIME *ASN1_UTCTIME_adj(ASN1_UTCTIME *s, time_t t,
     if (s == NULL)
         return (NULL);
 
-    ts = gmtime_r(&t, &data);
+#if defined(_WIN32)
+	ts = gmtime_s(&data, &t);
+#else
+	ts = gmtime_r(&t, &data);
+#endif
     if (ts == NULL)
         return (NULL);
 
@@ -246,7 +250,11 @@ int ASN1_UTCTIME_cmp_time_t(const ASN1_UTCTIME *s, time_t t)
 
     t -= offset * 60; /* FIXME: may overflow in extreme cases */
 
-    tm = gmtime_r(&t, &data);
+#if defined(_WIN32)
+    tm = gmtime_s(&data, &t);
+#else
+	tm = gmtime_r(&t, &data);
+#endif
 
 #define return_cmp(a, b) \
     if ((a) < (b))       \

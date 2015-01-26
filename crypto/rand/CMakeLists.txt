@@ -7,5 +7,6 @@ add_library(
 
     rand.c
     urandom.c
+    windows.c
     rand_err.c
 )

@@ -5,6 +5,8 @@ if (${ARCH} STREQUAL "x86_64")
         CMLL_ARCH_SOURCES
 
         cmll-x86_64.${ASM_EXT}
+        camellia.c
+        cmll_misc.c
     )
 
 elseif (${ARCH} STREQUAL "x86")
@@ -27,8 +29,6 @@ add_library(
 
     OBJECT
 
-    camellia.c
-    cmll_misc.c
     cmll_ecb.c
     cmll_ofb.c
     cmll_cfb.c

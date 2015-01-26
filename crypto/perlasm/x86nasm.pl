@@ -36,6 +36,8 @@ sub get_mem
 { my($size,$addr,$reg1,$reg2,$idx)=@_;
   my($post,$ret);
 
+    if (!defined($idx) && 1*$reg2) { $idx=$reg2; $reg2=$reg1; undef $reg1; }
+
     if ($size ne "")
     {	$ret .= "$size";
 	$ret .= " PTR" if ($::mwerks);
@@ -81,7 +83,15 @@ sub ::file
 %ifidn __OUTPUT_FORMAT__,obj
 section	code	use32 class=code align=64
 %elifidn __OUTPUT_FORMAT__,win32
+%ifdef __YASM_VERSION_ID__
+%if __YASM_VERSION_ID__ < 01010000h
+%error yasm version 1.1.0 or later needed.
+%endif
+; Yasm automatically includes @feat.00 and complains about redefining it.
+; https://www.tortall.net/projects/yasm/manual/html/objfmt-win32-safeseh.html
+%else
 \$\@feat.00 equ 1
+%endif
 section	.text	code align=64
 %else
 section	.text	code
@@ -117,7 +127,7 @@ sub ::file_end
 {   if (grep {/\b${nmdecor}OPENSSL_ia32cap_P\b/i} @out)
     {	my $comm=<<___;
 ${drdecor}segment	.bss
-${drdecor}common	${nmdecor}OPENSSL_ia32cap_P 8
+${drdecor}common	${nmdecor}OPENSSL_ia32cap_P 16
 ___
 	# comment out OPENSSL_ia32cap_P declarations
 	grep {s/(^extern\s+${nmdecor}OPENSSL_ia32cap_P)/\;$1/} @out;

@@ -54,6 +54,7 @@
  */
 
 #include <string.h>
+#include <strings.h>
 
 #include <openssl/err.h>
 

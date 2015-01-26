@@ -113,6 +113,8 @@
  * [including the GNU Public Licence.]
  */
 
+#if !defined(_WIN32)
+
 #include <sys/ioctl.h>
 
 #include <openssl/opensslconf.h>
@@ -377,3 +379,5 @@ static void recsig(int i)
 {
     intr_signal = i;
 }
+
+#endif /* !defined(_WIN32) */

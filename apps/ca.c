@@ -62,6 +62,7 @@
 #include <stdlib.h>
 #include <limits.h>
 #include <string.h>
+#include <strings.h>
 #include <ctype.h>
 #include <sys/types.h>
 #include <unistd.h>
@@ -79,9 +80,9 @@
 #include <openssl/x509v3.h>
 #include <openssl/vigortls.h>
 
-#ifndef W_OK
+/*#ifndef W_OK
 #include <sys/file.h>
-#endif
+#endif*/
 
 #include "apps.h"
 

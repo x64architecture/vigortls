@@ -69,6 +69,12 @@
 extern "C" {
 #endif
 
+# ifdef _WIN32
+/* Under Win32 these are defined in wincrypt.h */
+# undef PKCS7_ISSUER_AND_SERIAL
+# undef PKCS7_SIGNER_INFO
+# endif
+
 /*
 Encryption_ID        DES-CBC
 Digest_ID        MD5

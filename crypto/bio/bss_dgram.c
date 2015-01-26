@@ -57,12 +57,18 @@
  *
  */
 
+#include <sys/socket.h>
+#include <sys/time.h>
+
+#include <netinet/in.h>
+
 #include <errno.h>
+#include <netdb.h>
 #include <stdio.h>
 #include <string.h>
-
-#include <sys/time.h>
 #include <unistd.h>
+
+#include <openssl/opensslconf.h>
 
 #include <openssl/bio.h>
 

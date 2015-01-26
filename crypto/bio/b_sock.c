@@ -57,6 +57,7 @@
  */
 
 #include <arpa/inet.h>
+#include <netdb.h>
 #include <sys/ioctl.h>
 
 #include <errno.h>
@@ -174,15 +175,6 @@ int BIO_sock_error(int sock)
 struct hostent *BIO_gethostbyname(const char *name)
 {
     return gethostbyname(name);
-}
-
-int BIO_sock_init(void)
-{
-    return (1);
-}
-
-void BIO_sock_cleanup(void)
-{
 }
 
 int BIO_socket_ioctl(int fd, long type, void *arg)
@@ -454,17 +446,5 @@ int BIO_set_tcp_ndelay(int s, int on)
 
     ret = setsockopt(s, opt, TCP_NODELAY, (char *)&on, sizeof(on));
 #endif
-    return (ret == 0);
-}
-
-int BIO_socket_nbio(int s, int mode)
-{
-    int ret = -1;
-    int l;
-
-    l = mode;
-
-    ret = BIO_socket_ioctl(s, FIONBIO, &l);
-
     return (ret == 0);
 }

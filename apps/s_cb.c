@@ -111,6 +111,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <netinet/in.h>
 #define USE_SOCKETS
 #include "apps.h"
 #undef USE_SOCKETS

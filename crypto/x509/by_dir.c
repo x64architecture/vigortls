@@ -56,17 +56,13 @@
  * [including the GNU Public Licence.]
  */
 
+#include <sys/types.h>
+#include <sys/stat.h>
 #include <stdio.h>
 #include <string.h>
 #include <time.h>
 #include <errno.h>
-
-#ifndef NO_SYS_TYPES_H
-#include <sys/types.h>
-#endif
-#ifndef OPENSSL_NO_POSIX_IO
-#include <sys/stat.h>
-#endif
+#include <win32compat.h>
 
 #include <openssl/err.h>
 #include <openssl/lhash.h>
@@ -337,13 +333,11 @@ static int get_cert_by_subject(X509_LOOKUP *xl, int type, X509_NAME *name,
                          "%s%c%08lx.%s%d", ent->dir, c, h,
                          postfix, k);
             }
-#ifndef OPENSSL_NO_POSIX_IO
             {
                 struct stat st;
                 if (stat(b->data, &st) < 0)
                     break;
             }
-#endif
             /* found one. */
             if (type == X509_LU_X509) {
                 if ((X509_load_cert_file(xl, b->data,

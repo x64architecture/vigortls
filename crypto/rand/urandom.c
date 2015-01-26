@@ -11,6 +11,8 @@
  * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION
  * OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN
  * CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE. */
+ 
+#if !defined(_WIN32)
 
 #include <assert.h>
 #include <errno.h>
@@ -235,3 +237,5 @@ int RAND_bytes(uint8_t *out, size_t requested)
     CRYPTO_w_unlock(CRYPTO_LOCK_RAND);
     return 1;
 }
+
+#endif  /* !_WIN32 */

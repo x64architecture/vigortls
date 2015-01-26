@@ -59,8 +59,11 @@
 #include <errno.h>
 #include <time.h>
 #include <stdio.h>
-#include "des_locl.h"
+#include <unistd.h>
+
 #include <openssl/rand.h>
+
+#include "des_locl.h"
 
 /*
  * WARNINGS:

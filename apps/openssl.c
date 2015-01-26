@@ -148,7 +148,10 @@ BIO *bio_err = NULL;
 
 static void OPENSSL_startup(void)
 {
+	/* XXX: WINDOWS */
+#if !defined(_WIN32)
     signal(SIGPIPE, SIG_IGN);
+#endif
     
     CRYPTO_malloc_init();
     ERR_load_crypto_strings();

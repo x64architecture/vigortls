@@ -58,6 +58,7 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <strings.h>
 
 #include <openssl/asn1t.h>
 #include <openssl/conf.h>

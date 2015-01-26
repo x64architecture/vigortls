@@ -55,7 +55,7 @@
 #ifndef HEADER_OPENSSL_TYPES_H
 #define HEADER_OPENSSL_TYPES_H
 
-#include <openssl/e_os2.h>
+#include <openssl/opensslconf.h>
 
 #ifdef NO_ASN1_TYPEDEFS
 #define ASN1_INTEGER ASN1_STRING
@@ -98,6 +98,16 @@ typedef int ASN1_NULL;
 
 typedef struct ASN1_ITEM_st ASN1_ITEM;
 typedef struct asn1_pctx_st ASN1_PCTX;
+
+/* Fixes conflicts on win32 */
+# ifdef _WIN32
+#  undef X509_NAME
+#  undef X509_EXTENSIONS
+#  undef X509_CERT_PAIR
+#  undef PKCS7_ISSUER_AND_SERIAL
+#  undef OCSP_REQUEST
+#  undef OCSP_RESPONSE
+# endif
 
 #ifdef BIGNUM
 #undef BIGNUM

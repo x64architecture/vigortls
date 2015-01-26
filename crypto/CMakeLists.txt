@@ -4,26 +4,38 @@ if(APPLE)
     set(PERLASM_STYLE macosx)
     set(ASM_EXT S)
     enable_language(ASM)
-else(UNIX)
+elseif(UNIX)
     set(PERLASM_STYLE elf)
     set(ASM_EXT S)
     enable_language(ASM)
+else()
+    if (CMAKE_CL_64)
+        message("Using nasm")
+        set(PERLASM_STYLE nasm)
+    else()
+        message("Using win32n")
+        set(PERLASM_STYLE win32n)
+    endif()
+    # On Windows, we use the NASM output, specifically built with Yasm.
+    set(ASM_EXT asm)
+    enable_language(ASM_NASM)
 else()
     message(FATAL ERROR "Unsupported operating system")
 endif()
 
 function(perlasm dest src)
-    add_custom_command(
-        OUTPUT ${dest}
-        COMMAND perl ${CMAKE_CURRENT_SOURCE_DIR}/${src} ${PERLASM_STYLE} ${ARGN} > ${dest}
-        DEPENDS
-        ${src}
-        ${PROJECT_SOURCE_DIR}/crypto/perlasm/x86_64-xlate.pl
-        ${PROJECT_SOURCE_DIR}/crypto/perlasm/x86gas.pl
-        ${PROJECT_SOURCE_DIR}/crypto/perlasm/x86asm.pl
-        ${PROJECT_SOURCE_DIR}/crypto/perlasm/x86asm.pl
-        WORKING_DIRECTORY .
-    )
+	add_custom_command(
+		OUTPUT ${dest}
+		COMMAND perl ${CMAKE_CURRENT_SOURCE_DIR}/${src} ${PERLASM_STYLE} ${ARGN} > ${dest}
+		DEPENDS
+		${src}
+		${PROJECT_SOURCE_DIR}/crypto/perlasm/x86_64-xlate.pl
+		${PROJECT_SOURCE_DIR}/crypto/perlasm/x86asm.pl
+		${PROJECT_SOURCE_DIR}/crypto/perlasm/x86gas.pl
+		${PROJECT_SOURCE_DIR}/crypto/perlasm/x86masm.pl
+		${PROJECT_SOURCE_DIR}/crypto/perlasm/x86nasm.pl
+		WORKING_DIRECTORY .
+	)
 endfunction()
 
 if (${ARCH} STREQUAL "x86_64")
@@ -171,8 +183,13 @@ add_library(
     $<TARGET_OBJECTS:x509>
     $<TARGET_OBJECTS:x509v3>
 )
-
+if (CMAKE_COMPILER_IS_GNUCC OR ${CMAKE_C_COMPILER_ID} STREQUAL "Clang")
 set_source_files_properties(mem_clr.c PROPERTIES COMPILE_FLAGS -O0)
+endif()
+
+if (WIN32)
+	target_link_libraries(crypto Ws2_32)
+endif()
 
 perlasm(x86_64cpuid.${ASM_EXT} x86_64cpuid.pl)
 perlasm(x86cpuid.${ASM_EXT} x86cpuid.pl)

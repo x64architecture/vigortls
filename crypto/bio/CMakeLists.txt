@@ -23,4 +23,6 @@ add_library(
     b_dump.c
     b_print.c
     b_sock.c
+    b_posix.c
+    b_win.c
 )

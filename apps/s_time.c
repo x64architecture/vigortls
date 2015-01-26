@@ -67,6 +67,7 @@
 #include <stdlib.h>
 #include <limits.h>
 #include <string.h>
+#include <sys/socket.h>
 
 #define USE_SOCKETS
 #include "apps.h"
