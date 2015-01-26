@@ -24,6 +24,7 @@ Build instructions
 Currently tested operating systems
 ==================================
 
+* Windows: x86: Visual Studio 2013 with yasm
 * Linux: x86, x86_64, armv6
 * Mac OS X: x86_64
 * FreeBSD: x86_64
