@@ -154,7 +154,7 @@
 #include <string.h>
 #include <unistd.h>
 
-#include <openssl/e_os2.h>
+#include <openssl/opensslconf.h>
 
 #include <sys/ioctl.h>
 #include <sys/types.h>

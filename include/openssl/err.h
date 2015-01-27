@@ -112,7 +112,7 @@
 #ifndef HEADER_ERR_H
 #define HEADER_ERR_H
 
-#include <openssl/e_os2.h>
+#include <openssl/opensslconf.h>
 
 #include <stdio.h>
 #include <stdlib.h>

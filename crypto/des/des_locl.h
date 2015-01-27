@@ -59,7 +59,7 @@
 #ifndef HEADER_DES_LOCL_H
 #define HEADER_DES_LOCL_H
 
-#include <openssl/e_os2.h>
+#include <openssl/opensslconf.h>
 
 #include <stdio.h>
 #include <stdint.h>

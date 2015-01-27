@@ -146,7 +146,7 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netdb.h>
-#include <openssl/e_os2.h>
+#include <openssl/opensslconf.h>
 
 #include "apps.h"
 #include <openssl/x509.h>

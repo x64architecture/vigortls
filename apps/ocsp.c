@@ -55,6 +55,8 @@
  * Hudson (tjh@cryptsoft.com).
  *
  */
+#include <openssl/opensslconf.h>
+
 #ifndef OPENSSL_NO_OCSP
 
 #include <stdio.h>
@@ -63,7 +65,6 @@
 #include <string.h>
 #include <time.h>
 #include "apps.h" /* needs to be included before the openssl headers! */
-#include <openssl/e_os2.h>
 #include <openssl/crypto.h>
 #include <openssl/err.h>
 #include <openssl/ssl.h>

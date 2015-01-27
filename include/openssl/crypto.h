@@ -119,7 +119,7 @@
 
 #include <stdlib.h>
 
-#include <openssl/e_os2.h>
+#include <openssl/opensslconf.h>
 #include <stdio.h>
 
 #include <openssl/stack.h>

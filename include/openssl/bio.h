@@ -59,7 +59,7 @@
 #ifndef HEADER_BIO_H
 #define HEADER_BIO_H
 
-#include <openssl/e_os2.h>
+#include <openssl/opensslconf.h>
 
 #include <stdio.h>
 #include <stdarg.h>
