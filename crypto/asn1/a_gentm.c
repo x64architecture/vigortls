@@ -62,6 +62,7 @@
 #include <string.h>
 
 #include <time.h>
+#include <win32compat.h>
 
 #include <openssl/asn1.h>
 #include <openssl/err.h>
@@ -221,11 +222,7 @@ ASN1_GENERALIZEDTIME *ASN1_GENERALIZEDTIME_adj(ASN1_GENERALIZEDTIME *s,
 	if (s == NULL)
 		return (NULL);
 
-#if defined(_WIN32)
-	ts = gmtime_s(&data, &t);
-#else
 	ts = gmtime_r(&t, &data);
-#endif
 	if (ts == NULL)
 		return (NULL);
 

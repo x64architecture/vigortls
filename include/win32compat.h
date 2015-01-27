@@ -17,7 +17,7 @@
 #ifndef VIGORTLS_WIN32_COMPAT_H
 #define VIGORTLS_WIN32_COMPAT_H
 
-#ifdef _WIN32
+#if defined(_WIN32)
 
 #define stat _stat
 
@@ -25,6 +25,7 @@
 #define S_ISDIR(mode)  (((mode) & S_IFMT) == S_IFDIR)
 #endif
 
-#endif
+#define gmtime_r(tp, tm) ((gmtime_s((tm), (tp)) == 0) ? (tm) : NULL)
 
+#endif /* _WIN32 */
 #endif
