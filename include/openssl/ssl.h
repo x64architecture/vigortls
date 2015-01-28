@@ -876,7 +876,7 @@ struct ssl_ctx_st {
 
     /* Client list of supported protocols in wire format. */
     unsigned char *alpn_client_proto_list;
-    unsigned alpn_client_proto_list_len;
+    unsigned int alpn_client_proto_list_len;
 
     /* SRTP profiles we are willing to do from RFC 5764 */
     STACK_OF(SRTP_PROTECTION_PROFILE) * srtp_profiles;
@@ -973,7 +973,7 @@ void SSL_get0_next_proto_negotiated(const SSL *s, const unsigned char **data,
 #endif
 
 int SSL_CTX_set_alpn_protos(SSL_CTX *ctx, const unsigned char *protos,
-                            unsigned protos_len);
+                            unsigned int protos_len);
 int SSL_set_alpn_protos(SSL *ssl, const unsigned char *protos,
                         unsigned int protos_len);
 void SSL_CTX_set_alpn_select_cb(SSL_CTX *ctx,

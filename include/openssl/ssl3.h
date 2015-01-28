@@ -508,7 +508,7 @@ typedef struct ssl3_state_st {
      * processed.
      */
     unsigned char *alpn_selected;
-    unsigned alpn_selected_len;
+    unsigned int alpn_selected_len;
 
     /* This is set to true if we believe that this is a version of Safari
      * running on OS X 10.6 or newer. We wish to know this because Safari

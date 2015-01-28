@@ -1479,7 +1479,7 @@ found:
  * provided by the callback.
  */
 void SSL_get0_next_proto_negotiated(const SSL *s, const unsigned char **data,
-                                    unsigned int *len)
+                                    unsigned *len)
 {
     *data = s->next_proto_negotiated;
     if (!*data) {
@@ -1538,7 +1538,7 @@ void SSL_CTX_set_next_proto_select_cb(SSL_CTX *ctx,
  * 8-bit length-prefixed strings). Returns 0 on success.
  */
 int SSL_CTX_set_alpn_protos(SSL_CTX *ctx, const unsigned char *protos,
-                            unsigned protos_len)
+                            unsigned int protos_len)
 {
     free(ctx->alpn_client_proto_list);
     if ((ctx->alpn_client_proto_list = malloc(protos_len)) == NULL)
@@ -1555,7 +1555,7 @@ int SSL_CTX_set_alpn_protos(SSL_CTX *ctx, const unsigned char *protos,
  * 8-bit length-prefixed strings). Returns 0 on success.
  */
 int SSL_set_alpn_protos(SSL *ssl, const unsigned char *protos,
-                        unsigned protos_len)
+                        unsigned int protos_len)
 {
     free(ssl->alpn_client_proto_list);
     if ((ssl->alpn_client_proto_list = malloc(protos_len)) == NULL)
