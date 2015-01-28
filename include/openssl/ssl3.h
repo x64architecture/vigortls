@@ -496,6 +496,20 @@ typedef struct ssl3_state_st {
     int next_proto_neg_seen;
 #endif
 
+    /*
+     * ALPN information
+     * (we are in the process of transitioning from NPN to ALPN).
+     */
+
+    /*
+     * In a server these point to the selected ALPN protocol after the
+     * ClientHello has been processed. In a client these contain the
+     * protocol that the server selected once the ServerHello has been
+     * processed.
+     */
+    unsigned char *alpn_selected;
+    unsigned alpn_selected_len;
+
     /* This is set to true if we believe that this is a version of Safari
      * running on OS X 10.6 or newer. We wish to know this because Safari
      * on 10.8 .. 10.8.3 has broken ECDHE-ECDSA support. */

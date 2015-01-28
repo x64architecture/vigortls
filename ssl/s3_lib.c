@@ -2004,6 +2004,8 @@ void ssl3_free(SSL *s)
         sk_X509_NAME_pop_free(s->s3->tmp.ca_names, X509_NAME_free);
     BIO_free(s->s3->handshake_buffer);
     ssl3_free_digest_list(s);
+    free(s->s3->alpn_selected);
+
     vigortls_zeroize(s->s3, sizeof *s->s3);
     free(s->s3);
     s->s3 = NULL;
@@ -2036,6 +2038,9 @@ void ssl3_clear(SSL *s)
     s->s3->handshake_buffer = NULL;
 
     ssl3_free_digest_list(s);
+
+    free(s->s3->alpn_selected);
+    s->s3->alpn_selected = NULL;
 
     memset(s->s3, 0, sizeof *s->s3);
     s->s3->rbuf.buf = rp;

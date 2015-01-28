@@ -232,6 +232,9 @@ extern "C" {
 /* ExtensionType value from RFC5620 */
 #define TLSEXT_TYPE_heartbeat 15
 
+/* ExtensionType value from RFC 7301. */
+#define TLSEXT_TYPE_application_layer_protocol_negotiation 16
+
 /* ExtensionType value for TLS padding extension.
  * http://www.iana.org/assignments/tls-extensiontype-values/tls-extensiontype-values.xhtml
  * http://tools.ietf.org/html/draft-agl-tls-padding-03
