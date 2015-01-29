@@ -216,10 +216,10 @@ static int cb_client_npn(SSL *s, unsigned char **out, unsigned char *outlen,
                          const unsigned char *in, unsigned int inlen, void *arg)
 {
     /*
-	 * This callback only returns the protocol string, rather than a length
-	 * prefixed set. We assume that NEXT_PROTO_STRING is a one element list
-	 * and remove the first byte to chop off the length prefix.
-	 */
+     * This callback only returns the protocol string, rather than a length
+     * prefixed set. We assume that NEXT_PROTO_STRING is a one element list
+     * and remove the first byte to chop off the length prefix.
+     */
     *out = (unsigned char *)NEXT_PROTO_STRING + 1;
     *outlen = sizeof(NEXT_PROTO_STRING) - 2;
     return (SSL_TLSEXT_ERR_OK);
@@ -261,9 +261,9 @@ static int verify_npn(SSL *client, SSL *server)
     }
 
     /*
-	 * If an NPN string was returned, it must be the protocol that we
-	 * expected to negotiate.
-	 */
+     * If an NPN string was returned, it must be the protocol that we
+     * expected to negotiate.
+     */
     if (client_len && (client_len != sizeof(NEXT_PROTO_STRING) - 2 || memcmp(client_s, NEXT_PROTO_STRING + 1, client_len)))
         return (-1);
     if (server_len && (server_len != sizeof(NEXT_PROTO_STRING) - 2 || memcmp(server_s, NEXT_PROTO_STRING + 1, server_len)))
@@ -344,9 +344,9 @@ static int cb_server_alpn(SSL *s, const unsigned char **out, unsigned char *outl
     }
 
     /*
-	 * Make a copy of the selected protocol which will be freed in
-	 * verify_alpn.
-	 */
+     * Make a copy of the selected protocol which will be freed in
+     * verify_alpn.
+     */
     if ((alpn_selected = malloc(*outlen)) == NULL) {
         fprintf(stderr, "malloc failed\n");
         abort();

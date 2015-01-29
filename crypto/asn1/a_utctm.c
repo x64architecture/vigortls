@@ -197,7 +197,7 @@ ASN1_UTCTIME *ASN1_UTCTIME_adj(ASN1_UTCTIME *s, time_t t,
     if (s == NULL)
         return (NULL);
 
-	ts = gmtime_r(&t, &data);
+    ts = gmtime_r(&t, &data);
     if (ts == NULL)
         return (NULL);
 
@@ -250,7 +250,7 @@ int ASN1_UTCTIME_cmp_time_t(const ASN1_UTCTIME *s, time_t t)
 #if defined(_WIN32)
     tm = gmtime_s(&data, &t);
 #else
-	tm = gmtime_r(&t, &data);
+    tm = gmtime_r(&t, &data);
 #endif
 
 #define return_cmp(a, b) \

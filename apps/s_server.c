@@ -910,7 +910,7 @@ int s_server_main(int argc, char *argv[])
             next_proto_neg_in = *(++argv);
         }
 #endif
-        else if	(strcmp(*argv,"-alpn") == 0) {
+        else if    (strcmp(*argv,"-alpn") == 0) {
             if (--argc < 1)
                 goto bad;
             alpn_in = *(++argv);

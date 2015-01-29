@@ -148,7 +148,7 @@ BIO *bio_err = NULL;
 
 static void OPENSSL_startup(void)
 {
-	/* XXX: WINDOWS */
+    /* XXX: WINDOWS */
 #if !defined(_WIN32)
     signal(SIGPIPE, SIG_IGN);
 #endif

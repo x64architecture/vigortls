@@ -81,7 +81,7 @@ enum {
     IN,      /* hex encoded plaintext. */
     AD,      /* hex encoded additional data. */
     CT,      /* hex encoded ciphertext (not including the authenticator,
-		      * which is next. */
+              * which is next. */
     TAG,     /* hex encoded authenticator. */
     NUM_TYPES,
 };
@@ -254,9 +254,9 @@ int main(int argc, char **argv)
         }
 
         /* Each line looks like:
-		 *   TYPE: 0123abc
-		 * Where "TYPE" is the type of the data on the line,
-		 * e.g. "KEY". */
+         *   TYPE: 0123abc
+         * Where "TYPE" is the type of the data on the line,
+         * e.g. "KEY". */
         for (i = 0; line[i] != 0 && line[i] != '\n'; i++) {
             if (line[i] == ':') {
                 type_len = i;
