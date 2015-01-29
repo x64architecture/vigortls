@@ -2423,7 +2423,7 @@ long ssl3_ctx_callback_ctrl(SSL_CTX *ctx, int cmd, void (*fp)(void))
     cert = ctx->cert;
 
     switch (cmd) {
-        case SSL_CTRL_SET_TMP_RSA_CB: {
+        case SSL_CTRL_SET_TMP_RSA_CB:
             SSLerr(SSL_F_SSL3_CTX_CTRL, ERR_R_SHOULD_NOT_HAVE_BEEN_CALLED);
             return 0;
         case SSL_CTRL_SET_TMP_DH_CB:

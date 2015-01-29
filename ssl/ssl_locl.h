@@ -833,6 +833,7 @@ SSL_COMP *ssl3_comp_find(STACK_OF(SSL_COMP) * sk, int n);
 
 int tls1_ec_curve_id2nid(int curve_id);
 int tls1_ec_nid2curve_id(int nid);
+int tls1_check_curve(SSL *s, const unsigned char *p, size_t len);
 int tls1_get_shared_curve(SSL *s);
 
 unsigned char *ssl_add_clienthello_tlsext(SSL *s, unsigned char *p,
