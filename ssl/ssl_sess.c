@@ -374,28 +374,6 @@ int ssl_get_new_session(SSL *s, int session)
                 return 0;
             }
         }
-        if (s->tlsext_ecpointformatlist) {
-            free(ss->tlsext_ecpointformatlist);
-            if ((ss->tlsext_ecpointformatlist = malloc(s->tlsext_ecpointformatlist_length)) == NULL) {
-                SSLerr(SSL_F_SSL_GET_NEW_SESSION, ERR_R_MALLOC_FAILURE);
-                SSL_SESSION_free(ss);
-                return 0;
-            }
-            ss->tlsext_ecpointformatlist_length = s->tlsext_ecpointformatlist_length;
-            memcpy(ss->tlsext_ecpointformatlist, s->tlsext_ecpointformatlist,
-                   s->tlsext_ecpointformatlist_length);
-        }
-        if (s->tlsext_ellipticcurvelist) {
-            free(ss->tlsext_ellipticcurvelist);
-            if ((ss->tlsext_ellipticcurvelist = malloc(s->tlsext_ellipticcurvelist_length)) == NULL) {
-                SSLerr(SSL_F_SSL_GET_NEW_SESSION, ERR_R_MALLOC_FAILURE);
-                SSL_SESSION_free(ss);
-                return 0;
-            }
-            ss->tlsext_ellipticcurvelist_length = s->tlsext_ellipticcurvelist_length;
-            memcpy(ss->tlsext_ellipticcurvelist, s->tlsext_ellipticcurvelist,
-                   s->tlsext_ellipticcurvelist_length);
-        }
     } else {
         ss->session_id_length = 0;
     }
