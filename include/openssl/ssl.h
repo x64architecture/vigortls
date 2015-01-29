@@ -1460,6 +1460,8 @@ DECLARE_PEM_rw(SSL_SESSION, SSL_SESSION)
 
 #define SSL_CTRL_CHECK_PROTO_VERSION 119
 
+#define SSL_CTRL_SET_DH_AUTO 118
+
 #define DTLSv1_get_timeout(ssl, arg) \
     SSL_ctrl(ssl, DTLS_CTRL_GET_TIMEOUT, 0, (void *)arg)
 #define DTLSv1_handle_timeout(ssl) \
@@ -1484,6 +1486,8 @@ DECLARE_PEM_rw(SSL_SESSION, SSL_SESSION)
     SSL_CTX_ctrl(ctx, SSL_CTRL_SET_TMP_DH, 0, (char *)dh)
 #define SSL_CTX_set_tmp_ecdh(ctx, ecdh) \
     SSL_CTX_ctrl(ctx, SSL_CTRL_SET_TMP_ECDH, 0, (char *)ecdh)
+#define SSL_CTX_set_dh_auto(ctx, onoff) \
+    SSL_CTX_ctrl(ctx, SSL_CTRL_SET_DH_AUTO, onoff, NULL)
 
 #define SSL_need_tmp_RSA(ssl) \
     SSL_ctrl(ssl, SSL_CTRL_NEED_TMP_RSA, 0, NULL)
@@ -1493,6 +1497,8 @@ DECLARE_PEM_rw(SSL_SESSION, SSL_SESSION)
     SSL_ctrl(ssl, SSL_CTRL_SET_TMP_DH, 0, (char *)dh)
 #define SSL_set_tmp_ecdh(ssl, ecdh) \
     SSL_ctrl(ssl, SSL_CTRL_SET_TMP_ECDH, 0, (char *)ecdh)
+#define SSL_set_dh_auto(s, onoff) \
+    SSL_ctrl(s, SSL_CTRL_SET_DH_AUTO, onoff, NULL)
 
 #define SSL_CTX_add_extra_chain_cert(ctx, x509) \
     SSL_CTX_ctrl(ctx, SSL_CTRL_EXTRA_CHAIN_CERT, 0, (char *)x509)

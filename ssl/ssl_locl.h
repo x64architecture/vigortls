@@ -473,6 +473,8 @@ typedef struct cert_st {
     RSA *(*rsa_tmp_cb)(SSL *ssl, int is_export, int keysize);
     DH *dh_tmp;
     DH *(*dh_tmp_cb)(SSL *ssl, int is_export, int keysize);
+    int dh_tmp_auto;
+
     EC_KEY *ecdh_tmp;
     /* Callback for generating ephemeral ECDH keys */
     EC_KEY *(*ecdh_tmp_cb)(SSL *ssl, int is_export, int keysize);
@@ -618,6 +620,7 @@ int ssl_undefined_const_function(const SSL *s);
 CERT_PKEY *ssl_get_server_send_pkey(const SSL *s);
 X509 *ssl_get_server_send_cert(const SSL *);
 EVP_PKEY *ssl_get_sign_pkey(SSL *s, const SSL_CIPHER *c, const EVP_MD **pmd);
+DH *ssl_get_auto_dh(SSL *s);
 int ssl_cert_type(X509 *x, EVP_PKEY *pkey);
 void ssl_set_cert_masks(CERT *c, const SSL_CIPHER *cipher);
 STACK_OF(SSL_CIPHER) * ssl_get_ciphers_by_id(SSL *s);

@@ -1393,9 +1393,18 @@ int ssl3_send_server_key_exchange(SSL *s)
             r[1] = rsa->e;
             s->s3->tmp.use_rsa_tmp = 1;
         } else if (type & SSL_kDHE) {
-            dhp = cert->dh_tmp;
-            if ((dhp == NULL) && (s->cert->dh_tmp_cb != NULL))
+            if (s->cert->dh_tmp_auto != 0) {
+                if ((dhp = ssl_get_auto_dh(s)) == NULL) {
+                    al = SSL_AD_INTERNAL_ERROR;
+                    SSLerr(SSL_F_SSL3_SEND_SERVER_KEY_EXCHANGE, ERR_R_INTERNAL_ERROR);
+                    goto f_err;
+                }
+            } else
+                dhp = cert->dh_tmp;
+
+            if (dhp == NULL && s->cert->dh_tmp_cb != NULL)            
                 dhp = s->cert->dh_tmp_cb(s, 0, SSL_C_PKEYLENGTH(s->s3->tmp.new_cipher));
+
             if (dhp == NULL) {
                 al = SSL_AD_HANDSHAKE_FAILURE;
                 SSLerr(SSL_F_SSL3_SEND_SERVER_KEY_EXCHANGE, SSL_R_MISSING_TMP_DH_KEY);
@@ -1406,8 +1415,10 @@ int ssl3_send_server_key_exchange(SSL *s)
                 SSLerr(SSL_F_SSL3_SEND_SERVER_KEY_EXCHANGE, ERR_R_INTERNAL_ERROR);
                 goto err;
             }
-
-            if ((dh = DHparams_dup(dhp)) == NULL) {
+            
+            if (s->cert->dh_tmp_auto != 0) {
+                dh = dhp;
+            } else if ((dh = DHparams_dup(dhp)) == NULL) {
                 SSLerr(SSL_F_SSL3_SEND_SERVER_KEY_EXCHANGE, ERR_R_DH_LIB);
                 goto err;
             }

@@ -2140,10 +2140,14 @@ long ssl3_ctrl(SSL *s, int cmd, long larg, void *parg)
             s->cert->dh_tmp = dh;
             ret = 1;
         } break;
-        case SSL_CTRL_SET_TMP_DH_CB: {
+        case SSL_CTRL_SET_TMP_DH_CB:
             SSLerr(SSL_F_SSL3_CTRL, ERR_R_SHOULD_NOT_HAVE_BEEN_CALLED);
             return (ret);
-        } break;
+
+        case SSL_CTRL_SET_DH_AUTO:
+            s->cert->dh_tmp_auto = larg;
+            return 1;
+
         case SSL_CTRL_SET_TMP_ECDH: {
             EC_KEY *ecdh = NULL;
 
@@ -2355,10 +2359,14 @@ long ssl3_ctx_ctrl(SSL_CTX *ctx, int cmd, long larg, void *parg)
             return 1;
         }
         /*break; */
-        case SSL_CTRL_SET_TMP_DH_CB: {
+        case SSL_CTRL_SET_TMP_DH_CB:
             SSLerr(SSL_F_SSL3_CTX_CTRL, ERR_R_SHOULD_NOT_HAVE_BEEN_CALLED);
-            return (0);
-        } break;
+            return 0;
+
+        case SSL_CTRL_SET_DH_AUTO:
+            ctx->cert->dh_tmp_auto = larg;
+            return 1;
+
         case SSL_CTRL_SET_TMP_ECDH: {
             EC_KEY *ecdh = NULL;
 

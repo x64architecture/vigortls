@@ -229,6 +229,7 @@ CERT *ssl_cert_dup(CERT *cert)
         }
     }
     ret->dh_tmp_cb = cert->dh_tmp_cb;
+    ret->dh_tmp_auto = cert->dh_tmp_auto;
 
     if (cert->ecdh_tmp) {
         ret->ecdh_tmp = EC_KEY_dup(cert->ecdh_tmp);
