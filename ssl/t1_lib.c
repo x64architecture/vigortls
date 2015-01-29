@@ -533,6 +533,20 @@ int tls1_check_ec_tmp_key(SSL *s)
     return tls1_check_ec_key(s, curve_id, NULL);
 }
 
+static void tls1_get_formatlist(SSL *s, const unsigned char **pformats, size_t *pformatslen)
+{
+    /*
+     * If we have a custom point format list use it, otherwise use the
+     * default list.
+     */
+    *pformats = s->tlsext_ecpointformatlist;
+    *pformatslen = s->tlsext_ecpointformatlist_length;
+    if (*pformats == NULL) {
+        *pformats = ecformats_default;
+        *pformatslen = sizeof(ecformats_default);
+    }
+} 
+
 /*
  * List of supported signature algorithms and hashes. We should make this
  * customizable at some point, for now include everything we support.
@@ -665,16 +679,7 @@ unsigned char *ssl_add_clienthello_tlsext(SSL *s, unsigned char *p,
         const unsigned char *plist;
         size_t plistlen;
 
-        /*
-         * If we have a custom point format list use it; otherwise
-         * use the default list.
-         */
-        plist = s->tlsext_ecpointformatlist;
-        plistlen = s->tlsext_ecpointformatlist_length;
-        if (plist == NULL) {
-            plist = ecformats_default;
-            plistlen = sizeof(ecformats_default);
-        }
+        tls1_get_formatlist(s, &plist, &plistlen);
 
         if ((size_t)(limit - ret) < 5)
             return NULL;
@@ -696,17 +701,7 @@ unsigned char *ssl_add_clienthello_tlsext(SSL *s, unsigned char *p,
         /*
          * Add TLS extension EllipticCurves to the ClientHello message.
          */
-        plist = s->tlsext_ellipticcurvelist;
-        plistlen = s->tlsext_ellipticcurvelist_length;
-
-        /*
-         * If we have a custom curve list use it; otherwise
-         * use the default list.
-         */
-        if (plist == NULL) {
-            plist = eccurves_default;
-            plistlen = sizeof(eccurves_default);
-        }
+        tls1_get_curvelist(s, 0, &plist, &plistlen);
 
         if ((size_t)(limit - ret) < 6)
             return NULL;
@@ -897,11 +892,18 @@ skip_ext:
 unsigned char *ssl_add_serverhello_tlsext(SSL *s, unsigned char *p,
                                           unsigned char *limit)
 {
-    int extdatalen = 0;
+    int using_ecc, extdatalen = 0;
+    unsigned long alg_a, alg_k;
     unsigned char *ret = p;
 #ifndef OPENSSL_NO_NEXTPROTONEG
     int next_proto_neg_seen;
 #endif
+
+    alg_a = s->s3->tmp.new_cipher->algorithm_auth;
+    alg_k = s->s3->tmp.new_cipher->algorithm_mkey;
+    using_ecc = (alg_k & (SSL_kECDHE | SSL_kECDHr | SSL_kECDHe) ||
+        alg_a & SSL_aECDSA) &&
+        s->session->tlsext_ecpointformatlist != NULL;
 
     /* don't add extensions for SSLv3, unless doing secure renegotiation */
     if (s->version == SSL3_VERSION && !s->s3->send_connection_binding)
@@ -941,27 +943,32 @@ unsigned char *ssl_add_serverhello_tlsext(SSL *s, unsigned char *p,
         ret += el;
     }
 
-    if (s->tlsext_ecpointformatlist != NULL && s->version != DTLS1_VERSION) {
-        /* Add TLS extension ECPointFormats to the ServerHello message */
+    if (using_ecc && s->version != DTLS1_VERSION) {
+        /* 
+         * Add TLS extension ECPointFormats to the ServerHello message
+         */
+        const unsigned char *plist;
+        size_t plistlen;
         size_t lenmax;
+
+        tls1_get_formatlist(s, &plist, &plistlen);
 
         if ((size_t)(limit - ret) < 5)
             return NULL;
 
         lenmax = limit - ret - 5;
-        if (s->tlsext_ecpointformatlist_length > lenmax)
+        if (plistlen > lenmax)
             return NULL;
-        if (s->tlsext_ecpointformatlist_length > 255) {
+        if (plistlen > 255) {
             SSLerr(SSL_F_SSL_ADD_SERVERHELLO_TLSEXT, ERR_R_INTERNAL_ERROR);
             return NULL;
         }
 
         s2n(TLSEXT_TYPE_ec_point_formats, ret);
-        s2n(s->tlsext_ecpointformatlist_length + 1, ret);
-        *(ret++) = (unsigned char)s->tlsext_ecpointformatlist_length;
-        memcpy(ret, s->tlsext_ecpointformatlist,
-               s->tlsext_ecpointformatlist_length);
-        ret += s->tlsext_ecpointformatlist_length;
+        s2n(plistlen + 1, ret);
+        *(ret++) = (unsigned char)plistlen;
+        memcpy(ret, plist, plistlen);
+        ret += plistlen;
     }
     /* Currently the server should not respond with a SupportedCurves extension */
 
@@ -1795,29 +1802,6 @@ int ssl_prepare_clienthello_tlsext(SSL *s)
 
 int ssl_prepare_serverhello_tlsext(SSL *s)
 {
-    /* If we are server and using an ECC cipher suite, send the point formats we
-     * support
-     * if the client sent us an ECPointsFormat extension.  Note that the server is
-     * not supposed to send an EllipticCurves extension.
-     */
-
-    unsigned long alg_k = s->s3->tmp.new_cipher->algorithm_mkey;
-    unsigned long alg_a = s->s3->tmp.new_cipher->algorithm_auth;
-    int using_ecc = (alg_k & (SSL_kECDHE | SSL_kECDHr | SSL_kECDHe)) || (alg_a & SSL_aECDSA);
-    using_ecc = using_ecc && (s->session->tlsext_ecpointformatlist != NULL);
-
-    if (using_ecc) {
-        free(s->tlsext_ecpointformatlist);
-        if ((s->tlsext_ecpointformatlist = malloc(3)) == NULL) {
-            SSLerr(SSL_F_SSL_PREPARE_SERVERHELLO_TLSEXT, ERR_R_MALLOC_FAILURE);
-            return -1;
-        }
-        s->tlsext_ecpointformatlist_length = 3;
-        s->tlsext_ecpointformatlist[0] = TLSEXT_ECPOINTFORMAT_uncompressed;
-        s->tlsext_ecpointformatlist[1] = TLSEXT_ECPOINTFORMAT_ansiX962_compressed_prime;
-        s->tlsext_ecpointformatlist[2] = TLSEXT_ECPOINTFORMAT_ansiX962_compressed_char2;
-    }
-
     return 1;
 }
 
