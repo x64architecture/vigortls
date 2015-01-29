@@ -1383,7 +1383,7 @@ int ssl_parse_clienthello_tlsext(SSL *s, unsigned char **p, unsigned char *d,
                 *al = SSL_AD_DECODE_ERROR;
                 return 0;
             }
-            ellipticcurvelist_length = (*(sdata++) << 8)
+            ellipticcurvelist_length = (*(sdata++) << 8);
             ellipticcurvelist_length += (*(sdata++));
 
             if (ellipticcurvelist_length != size - 2 || ellipticcurvelist_length < 1 ||
