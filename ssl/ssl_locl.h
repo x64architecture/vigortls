@@ -469,8 +469,6 @@ typedef struct cert_st {
     int valid;
     unsigned long mask_k;
     unsigned long mask_a;
-    RSA *rsa_tmp;
-    RSA *(*rsa_tmp_cb)(SSL *ssl, int is_export, int keysize);
     DH *dh_tmp;
     DH *(*dh_tmp_cb)(SSL *ssl, int is_export, int keysize);
     int dh_tmp_auto;

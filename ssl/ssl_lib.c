@@ -1887,7 +1887,7 @@ void SSL_CTX_set_verify_depth(SSL_CTX *ctx, int depth)
 void ssl_set_cert_masks(CERT *c, const SSL_CIPHER *cipher)
 {
     CERT_PKEY *cpk;
-    int rsa_enc, rsa_tmp, rsa_sign, dh_tmp, dh_rsa, dh_dsa, dsa_sign;
+    int rsa_enc, rsa_sign, dh_tmp, dh_rsa, dh_dsa, dsa_sign;
     unsigned long mask_k, mask_a;
     int have_ecc_cert, ecdh_ok, ecdsa_ok;
     int have_ecdh_tmp;
@@ -1898,7 +1898,6 @@ void ssl_set_cert_masks(CERT *c, const SSL_CIPHER *cipher)
     if (c == NULL)
         return;
 
-    rsa_tmp = (c->rsa_tmp != NULL || c->rsa_tmp_cb != NULL);
     dh_tmp = (c->dh_tmp != NULL || c->dh_tmp_cb != NULL || c->dh_tmp_auto != 0);
 
     have_ecdh_tmp = (c->ecdh_tmp != NULL || c->ecdh_tmp_cb != NULL);
@@ -1929,7 +1928,7 @@ void ssl_set_cert_masks(CERT *c, const SSL_CIPHER *cipher)
         mask_a |= SSL_aGOST94;
     }
 
-    if (rsa_enc || (rsa_tmp && rsa_sign))
+    if (rsa_enc)
         mask_k |= SSL_kRSA;
 
     if (dh_tmp)
