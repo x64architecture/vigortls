@@ -1900,7 +1900,8 @@ void ssl_set_cert_masks(CERT *c, const SSL_CIPHER *cipher)
 
     dh_tmp = (c->dh_tmp != NULL || c->dh_tmp_cb != NULL || c->dh_tmp_auto != 0);
 
-    have_ecdh_tmp = (c->ecdh_tmp != NULL || c->ecdh_tmp_cb != NULL);
+    have_ecdh_tmp = (c->ecdh_tmp != NULL || c->ecdh_tmp_cb != NULL ||
+        c->ecdh_tmp_auto != 0);
     cpk = &(c->pkeys[SSL_PKEY_RSA_ENC]);
     rsa_enc = (cpk->x509 != NULL && cpk->privatekey != NULL);
     cpk = &(c->pkeys[SSL_PKEY_RSA_SIGN]);

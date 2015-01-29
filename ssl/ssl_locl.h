@@ -469,13 +469,14 @@ typedef struct cert_st {
     int valid;
     unsigned long mask_k;
     unsigned long mask_a;
+
     DH *dh_tmp;
     DH *(*dh_tmp_cb)(SSL *ssl, int is_export, int keysize);
     int dh_tmp_auto;
 
     EC_KEY *ecdh_tmp;
-    /* Callback for generating ephemeral ECDH keys */
     EC_KEY *(*ecdh_tmp_cb)(SSL *ssl, int is_export, int keysize);
+    int ecdh_tmp_auto;
 
     CERT_PKEY pkeys[SSL_PKEY_NUM];
 
@@ -832,6 +833,7 @@ SSL_COMP *ssl3_comp_find(STACK_OF(SSL_COMP) * sk, int n);
 
 int tls1_ec_curve_id2nid(int curve_id);
 int tls1_ec_nid2curve_id(int nid);
+int tls1_get_shared_curve(SSL *s);
 
 unsigned char *ssl_add_clienthello_tlsext(SSL *s, unsigned char *p,
                                           unsigned char *limit);
@@ -871,6 +873,9 @@ int ssl_parse_clienthello_renegotiate_ext(SSL *s, unsigned char *d, int len,
 long ssl_get_algorithm2(SSL *s);
 int tls1_process_sigalgs(SSL *s, const unsigned char *data, int dsize);
 int tls12_get_req_sig_algs(SSL *s, unsigned char *p);
+
+int tls1_check_ec_server_key(SSL *s);
+int tls1_check_ec_tmp_key(SSL *s);
 
 int ssl_add_clienthello_use_srtp_ext(SSL *s, unsigned char *p, int *len,
                                      int maxlen);

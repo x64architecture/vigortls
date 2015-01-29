@@ -1404,8 +1404,13 @@ int ssl3_send_server_key_exchange(SSL *s)
             const EC_GROUP *group;
 
             ecdhp = cert->ecdh_tmp;
-            if (ecdhp == NULL && s->cert->ecdh_tmp_cb != NULL)
+            if (s->cert->ecdh_tmp_auto != 0) {
+                int nid = tls1_get_shared_curve(s);
+                if (nid != NID_undef)
+                    ecdhp = EC_KEY_new_by_curve_name(nid);
+            } else if (ecdhp == NULL && s->cert->ecdh_tmp_cb != NULL) {
                 ecdhp = s->cert->ecdh_tmp_cb(s, 0, SSL_C_PKEYLENGTH(s->s3->tmp.new_cipher));
+            }
             if (ecdhp == NULL) {
                 al = SSL_AD_HANDSHAKE_FAILURE;
                 SSLerr(SSL_F_SSL3_SEND_SERVER_KEY_EXCHANGE, SSL_R_MISSING_TMP_ECDH_KEY);
@@ -1422,7 +1427,9 @@ int ssl3_send_server_key_exchange(SSL *s)
                 SSLerr(SSL_F_SSL3_SEND_SERVER_KEY_EXCHANGE, ERR_R_ECDH_LIB);
                 goto err;
             }
-            if ((ecdh = EC_KEY_dup(ecdhp)) == NULL) {
+            if (s->cert->ecdh_tmp_auto != 0) {
+                ecdh = ecdhp;
+            } else if ((ecdh = EC_KEY_dup(ecdhp)) == NULL) {
                 SSLerr(SSL_F_SSL3_SEND_SERVER_KEY_EXCHANGE, ERR_R_ECDH_LIB);
                 goto err;
             }
