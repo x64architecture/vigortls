@@ -200,18 +200,17 @@ static int general_allocate_boolean(UI *ui,
         s = general_allocate_prompt(ui, prompt, prompt_freeable,
                                     type, input_flags, result_buf);
 
-        if (!s)
-            free_string(s);
-
-        if (allocate_string_stack(ui) >= 0) {
-            s->_.boolean_data.action_desc = action_desc;
-            s->_.boolean_data.ok_chars = ok_chars;
-            s->_.boolean_data.cancel_chars = cancel_chars;
-            ret = sk_UI_STRING_push(ui->strings, s);
-            /* sk_push() returns 0 on error.
-               Let's addapt that */
-            if (ret <= 0)
-                ret--;
+        if (s) {            
+            if (allocate_string_stack(ui) >= 0) {
+                s->_.boolean_data.action_desc = action_desc;
+                s->_.boolean_data.ok_chars = ok_chars;
+                s->_.boolean_data.cancel_chars = cancel_chars;
+                ret = sk_UI_STRING_push(ui->strings, s);
+                /* sk_push() returns 0 on error. Let's addapt that */
+                if (ret <= 0)
+                    ret--;
+            } else
+                free_string(s);
         }
     }
     return ret;
