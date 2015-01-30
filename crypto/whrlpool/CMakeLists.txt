@@ -6,12 +6,18 @@ if (${ARCH} STREQUAL "x86_64")
 
         wp-x86_64.${ASM_EXT}
     )
-endif()
-if (${ARCH} STREQUAL "x86")
+elseif (${ARCH} STREQUAL "x86")
     set(
         WHRL_ARCH_SOURCES
 
+        wp_block.c
         wp-mmx.${ASM_EXT}
+    )
+else()
+    set(
+        WHRL_ARCH_SOURCES
+
+        wp_block.c
     )
 endif()
 
@@ -21,7 +27,6 @@ add_library(
     OBJECT
 
     wp_dgst.c
-    wp_block.c
 
     ${WHRL_ARCH_SOURCES}
 )
