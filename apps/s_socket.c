@@ -73,6 +73,7 @@
 #include <openssl/ssl.h>
 
 #include "s_apps.h"
+#include "socket_win.h"
 
 static int ssl_sock_init(void);
 static int init_server(int *sock, int port, int type);
@@ -81,10 +82,12 @@ static int do_accept(int acc_sock, int *sock, char **host);
 
 #define SOCKET_PROTOCOL IPPROTO_TCP
 
+#if !defined(_WIN32)
 static int ssl_sock_init(void)
 {
-    return (1);
+    return 1;
 }
+#endif
 
 int init_client(int *sock, char *host, char *port, int type, int af)
 {

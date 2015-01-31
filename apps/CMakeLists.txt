@@ -38,6 +38,7 @@ add_executable(
     pkcs7.c
     pkcs8.c
     pkcs12.c
+    poll.c
     prime.c
     rand.c
     req.c

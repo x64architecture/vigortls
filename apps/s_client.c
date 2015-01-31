@@ -142,6 +142,7 @@
 #include <limits.h>
 #include <string.h>
 #include <unistd.h>
+#include <poll.h>
 #include <sys/ioctl.h>
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -341,11 +342,10 @@ int s_client_main(int argc, char **argv)
 {
     unsigned int off = 0, clr = 0;
     SSL *con = NULL;
-    int s, k, width, state = 0, af = AF_UNSPEC;
+    int s, k, state = 0, af = AF_UNSPEC;
     char *cbuf = NULL, *sbuf = NULL, *mbuf = NULL;
     int cbuf_len, cbuf_off;
     int sbuf_len, sbuf_off;
-    fd_set readfds, writefds;
     char *port = PORT_STR;
     int full_log = 1;
     char *host = SSL_HOST_NAME;
@@ -368,7 +368,7 @@ int s_client_main(int argc, char **argv)
     int socket_type = SOCK_STREAM;
     BIO *sbio;
     int mbuf_len = 0;
-    struct timeval timeout, *timeoutp;
+    struct timeval timeout;
     const char *stnerr = NULL;
 #ifndef OPENSSL_NO_ENGINE
     char *engine_id = NULL;
@@ -949,9 +949,6 @@ SSL_set_tlsext_status_ids(con, ids);
     SSL_set_bio(con, sbio, sbio);
     SSL_set_connect_state(con);
 
-    /* ok, lets connect */
-    width = SSL_get_fd(con) + 1;
-
     read_tty = 1;
     write_tty = 0;
     tty_on = 0;
@@ -1059,13 +1056,11 @@ SSL_set_tlsext_status_ids(con, ids);
     }
 
     for (;;) {
-        FD_ZERO(&readfds);
-        FD_ZERO(&writefds);
+        struct pollfd pfd[3]; /* stdin, stdout, socket */
+        int ptimeout = -1;
 
         if ((SSL_version(con) == DTLS1_VERSION) && DTLSv1_get_timeout(con, &timeout))
-            timeoutp = &timeout;
-        else
-            timeoutp = NULL;
+            ptimeout = timeout.tv_sec * 1000 + timeout.tv_usec / 1000;
 
         if (SSL_in_init(con) && !SSL_total_renegotiations(con)) {
             in_init = 1;
@@ -1112,17 +1107,27 @@ SSL_set_tlsext_status_ids(con, ids);
 
         ssl_pending = read_ssl && SSL_pending(con);
 
+        pfd[0].fd = -1;
+        pfd[1].fd = -1;
         if (!ssl_pending) {
             if (tty_on) {
-                if (read_tty)
-                    FD_SET(fileno(stdin), &readfds);
-                if (write_tty)
-                    FD_SET(fileno(stdout), &writefds);
+                if (read_tty) {
+                    pfd[0].fd = fileno(stdin);
+                    pfd[0].events = POLLIN;
+                }
+                if (write_tty) {
+                    pfd[1].fd = fileno(stdout);
+                    pfd[1].events = POLLOUT;
+                }
             }
+            
+            pfd[2].fd = SSL_get_fd(con);
+            pfd[2].events = 0;
+            
             if (read_ssl)
-                FD_SET(SSL_get_fd(con), &readfds);
+                pfd[2].events |= POLLIN;
             if (write_ssl)
-                FD_SET(SSL_get_fd(con), &writefds);
+                pfd[2].events |= POLLOUT;
 
             /*            printf("mode tty(%d %d%d) ssl(%d%d)\n",
                 tty_on,read_tty,write_tty,read_ssl,write_ssl);*/
@@ -1133,8 +1138,7 @@ SSL_set_tlsext_status_ids(con, ids);
              * will choke the compiler: if you do have a cast then
              * you can either go for (int *) or (void *).
              */
-            i = select(width, (void *)&readfds, (void *)&writefds,
-                       NULL, timeoutp);
+            i = poll(pfd, 3, ptimeout);
             if (i < 0) {
                 BIO_printf(bio_err, "bad select %d\n", errno);
                 goto shut;
@@ -1146,7 +1150,11 @@ SSL_set_tlsext_status_ids(con, ids);
             BIO_printf(bio_err, "TIMEOUT occurred\n");
         }
 
-        if (!ssl_pending && FD_ISSET(SSL_get_fd(con), &writefds)) {
+        if (!ssl_pending && (pfd[2].revents & (POLLOUT | POLLERR | POLLNVAL))) {
+            if (pfd[2].revents & (POLLERR | POLLNVAL)) {
+                BIO_printf(bio_err, "poll error");
+                goto shut;
+            }
             k = SSL_write(con, &(cbuf[cbuf_off]),
                           (unsigned int)cbuf_len);
             switch (SSL_get_error(con, k)) {
@@ -1203,7 +1211,11 @@ SSL_set_tlsext_status_ids(con, ids);
                     ERR_print_errors(bio_err);
                     goto shut;
             }
-        } else if (!ssl_pending && FD_ISSET(fileno(stdout), &writefds)) {
+        } else if (!ssl_pending && (pfd[1].revents & (POLLOUT | POLLERR | POLLNVAL))) {
+            if (pfd[1].revents & (POLLERR | POLLNVAL)) {
+                BIO_printf(bio_err, "poll error");
+                goto shut;
+            }
             i = write(fileno(stdout), &(sbuf[sbuf_off]), sbuf_len);
 
             if (i <= 0) {
@@ -1220,7 +1232,7 @@ SSL_set_tlsext_status_ids(con, ids);
                 read_ssl = 1;
                 write_tty = 0;
             }
-        } else if (ssl_pending || FD_ISSET(SSL_get_fd(con), &readfds)) {
+        } else if (ssl_pending || (pfd[2].revents & (POLLIN | POLLHUP))) {
 #ifdef RENEG
             {
                 static int iiii;
@@ -1279,9 +1291,11 @@ SSL_set_tlsext_status_ids(con, ids);
                     goto shut;
                     /* break; */
             }
-        }
-
-        else if (FD_ISSET(fileno(stdin), &readfds)) {
+        } else if (pfd[0].revents) {
+            if (pfd[0].revents & (POLLERR | POLLNVAL)) {
+                BIO_printf(bio_err, "poll error");
+                goto shut;
+            }
             if (crlf) {
                 int j, lf_num;
 

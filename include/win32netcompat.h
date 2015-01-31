@@ -17,10 +17,10 @@
  * Based off of previous work by Brent Cook <bcook@openbsd.org>
  */
 
-#ifndef LIBCRYPTOCOMPAT_WIN32NETCOMPAT_H
-#define LIBCRYPTOCOMPAT_WIN32NETCOMPAT_H
+#ifndef VIGORTLS_WIN32NETCOMPAT_H
+#define VIGORTLS_WIN32NETCOMPAT_H
 
-#ifdef _WIN32
+#if defined(_WIN32)
 
 #ifdef _MSC_VER
 #include <BaseTsd.h>
