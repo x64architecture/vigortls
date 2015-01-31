@@ -135,6 +135,8 @@ static void *v2i_POLICY_MAPPINGS(const X509V3_EXT_METHOD *method,
             sk_POLICY_MAPPING_pop_free(pmaps, POLICY_MAPPING_free);
             X509V3err(X509V3_F_V2I_POLICY_MAPPINGS, X509V3_R_INVALID_OBJECT_IDENTIFIER);
             X509V3_conf_err(val);
+            ASN1_OBJECT_free(obj1);
+            ASN1_OBJECT_free(obj2);
             return NULL;
         }
         pmap = POLICY_MAPPING_new();

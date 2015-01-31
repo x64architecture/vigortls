@@ -194,8 +194,10 @@ static X509_EXTENSION *do_ext_i2d(const X509V3_EXT_METHOD *method, int ext_nid,
     ext_oct->length = ext_len;
 
     ext = X509_EXTENSION_create_by_NID(NULL, ext_nid, crit, ext_oct);
-    if (!ext)
+    if (!ext) {
+        M_ASN1_OCTET_STRING_free(ext_oct);
         goto merr;
+    }
     M_ASN1_OCTET_STRING_free(ext_oct);
 
     return ext;
@@ -291,8 +293,7 @@ static X509_EXTENSION *v3_generic_extension(const char *ext, char *value,
 err:
     ASN1_OBJECT_free(obj);
     M_ASN1_OCTET_STRING_free(oct);
-    if (ext_der)
-        free(ext_der);
+    free(ext_der);
     return extension;
 }
 
