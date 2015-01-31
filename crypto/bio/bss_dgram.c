@@ -165,7 +165,7 @@ static int dgram_clear(BIO *a)
         return (0);
     if (a->shutdown) {
         if (a->init) {
-            shutdown((a->num), 2);
+            shutdown((a->num), SHUT_RDWR);
             close((a->num));
         }
         a->init = 0;

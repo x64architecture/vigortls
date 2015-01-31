@@ -387,7 +387,7 @@ int s_time_main(int argc, char **argv)
 #else
         SSL_shutdown(scon);
 #endif
-        shutdown((SSL_get_fd(scon)), 2);
+        shutdown((SSL_get_fd(scon)), SHUT_RDWR);
         close((SSL_get_fd(scon)));
 
         nConn += 1;
@@ -438,7 +438,7 @@ next:
 #else
     SSL_shutdown(scon);
 #endif
-    shutdown((SSL_get_fd(scon)), 2);
+    shutdown((SSL_get_fd(scon)), SHUT_RDWR);
     close((SSL_get_fd(scon)));
 
     nConn = 0;
@@ -469,7 +469,7 @@ next:
 #else
         SSL_shutdown(scon);
 #endif
-        shutdown((SSL_get_fd(scon)), 2);
+        shutdown((SSL_get_fd(scon)), SHUT_RDWR);
         close((SSL_get_fd(scon)));
 
         nConn += 1;

@@ -158,7 +158,7 @@ int do_server(int port, int type, int *ret, int (*cb)(char *hostname, int s, uns
     for (;;) {
         if (type == SOCK_STREAM) {
             if (do_accept(accept_socket, &sock, &name) == 0) {
-                shutdown((accept_socket), 2);
+                shutdown((accept_socket), SHUT_RDWR);
                 close((accept_socket));
             }
         } else
@@ -167,11 +167,11 @@ int do_server(int port, int type, int *ret, int (*cb)(char *hostname, int s, uns
         if (name != NULL)
             free(name);
         if (type == SOCK_STREAM) {
-            shutdown((sock), 2);
+            shutdown((sock), SHUT_RDWR);
             close((sock));
         }
         if (i < 0) {
-            shutdown((accept_socket), 2);
+            shutdown((accept_socket), SHUT_RDWR);
             close((accept_socket));
             return (i);
         }
@@ -220,7 +220,7 @@ static int init_server_long(int *sock, int port, char *ip, int type)
     ret = 1;
 err:
     if ((ret == 0) && (s != -1)) {
-        shutdown((s), 0);
+        shutdown((s), SHUT_RD);
         close((s));
     }
     return (ret);

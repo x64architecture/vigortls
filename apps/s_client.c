@@ -859,7 +859,7 @@ re_start:
 
     if (init_client(&s, host, port, socket_type, af) == 0) {
         BIO_printf(bio_err, "connect:errno=%d\n", errno);
-        shutdown((s), 0);
+        shutdown((s), SHUT_RD);
         close((s));
         goto end;
     }
@@ -881,7 +881,7 @@ re_start:
         sbio = BIO_new_dgram(s, BIO_NOCLOSE);
         if (getsockname(s, &peer, (void *)&peerlen) < 0) {
             BIO_printf(bio_err, "getsockname:errno=%d\n", errno);
-            shutdown((s), 0);
+            shutdown((s), SHUT_RD);
             close((s));
             goto end;
         }
@@ -1098,7 +1098,7 @@ SSL_set_tlsext_status_ids(con, ids);
                     BIO_printf(bio_c_out, "drop connection and then reconnect\n");
                     SSL_shutdown(con);
                     SSL_set_connect_state(con);
-                    shutdown((SSL_get_fd(con)), 0);
+                    shutdown((SSL_get_fd(con)), SHUT_RD);
                     close((SSL_get_fd(con)));
                     goto re_start;
                 }
@@ -1342,7 +1342,7 @@ shut:
     if (in_init)
         print_stuff(bio_c_out, con, full_log);
     SSL_shutdown(con);
-    shutdown((SSL_get_fd(con)), 0);
+    shutdown((SSL_get_fd(con)), SHUT_RD);
     close((SSL_get_fd(con)));
 end:
     if (con != NULL) {

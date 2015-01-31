@@ -334,7 +334,7 @@ static void conn_close_socket(BIO *bio)
     if (bio->num != INVALID_SOCKET) {
         /* Only do a shutdown if things were established */
         if (c->state == BIO_CONN_S_OK)
-            shutdown(bio->num, 2);
+            shutdown(bio->num, SHUT_RDWR);
         close(bio->num);
         bio->num = INVALID_SOCKET;
     }
