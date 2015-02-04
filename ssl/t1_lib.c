@@ -413,9 +413,6 @@ static int tls1_set_ec_id(unsigned char *curve_id, unsigned char *comp_id, EC_KE
     if (ec == NULL)
         return 0;
 
-    if (EC_KEY_get0_public_key(ec) == NULL)
-        return 0;
-
     /* Determine if it is a prime field. */
     if ((grp = EC_KEY_get0_group(ec)) == NULL)
         return 0;
@@ -439,6 +436,9 @@ static int tls1_set_ec_id(unsigned char *curve_id, unsigned char *comp_id, EC_KE
 
     /* Specify the compression identifier. */
     if (comp_id != NULL) {
+        if (EC_KEY_get0_public_key(ec) == NULL)
+            return 0;
+
         if (EC_KEY_get_conv_form(ec) == POINT_CONVERSION_COMPRESSED) {
             *comp_id = is_prime ?
                 TLSEXT_ECPOINTFORMAT_ansiX962_compressed_prime :
@@ -585,7 +585,7 @@ unsigned char *ssl_add_clienthello_tlsext(SSL *s, unsigned char *p,
     int using_ecc = 0;
     unsigned char *ret = p;
 
-    /* See if we support ant ECC ciphersuites. */
+    /* See if we support any ECC ciphersuites. */
     if (s->version != DTLS1_VERSION && s->version >= TLS1_VERSION) {
         STACK_OF(SSL_CIPHER) *cipher_stack = SSL_get_ciphers(s);
         unsigned long alg_k, alg_a;
