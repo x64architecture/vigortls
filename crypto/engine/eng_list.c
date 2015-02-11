@@ -373,14 +373,7 @@ ENGINE_by_id(const char *id)
         }
     }
     CRYPTO_w_unlock(CRYPTO_LOCK_ENGINE);
-#if 0
-    if (iterator == NULL) {
-        ENGINEerr(ENGINE_F_ENGINE_BY_ID,
-            ENGINE_R_NO_SUCH_ENGINE);
-        ERR_asprintf_error_data("id=%s", id);
-    }
-    return iterator;
-#else
+
     /* EEK! Experimental code starts */
     if (iterator)
         return iterator;
@@ -389,7 +382,11 @@ ENGINE_by_id(const char *id)
         if ((load_dir = getenv("OPENSSL_ENGINES")) == 0)
             load_dir = ENGINESDIR;
         iterator = ENGINE_by_id("dynamic");
-        if (!iterator || !ENGINE_ctrl_cmd_string(iterator, "ID", id, 0) || !ENGINE_ctrl_cmd_string(iterator, "DIR_LOAD", "2", 0) || !ENGINE_ctrl_cmd_string(iterator, "DIR_ADD", load_dir, 0) || !ENGINE_ctrl_cmd_string(iterator, "LIST_ADD", "1", 0) || !ENGINE_ctrl_cmd_string(iterator, "LOAD", NULL, 0))
+        if (!iterator || !ENGINE_ctrl_cmd_string(iterator, "ID", id, 0) ||
+            !ENGINE_ctrl_cmd_string(iterator, "DIR_LOAD", "2", 0) ||
+            !ENGINE_ctrl_cmd_string(iterator, "DIR_ADD", load_dir, 0) ||
+            !ENGINE_ctrl_cmd_string(iterator, "LIST_ADD", "1", 0) ||
+            !ENGINE_ctrl_cmd_string(iterator, "LOAD", NULL, 0))
             goto notfound;
         return iterator;
     }
@@ -400,7 +397,6 @@ notfound:
     ERR_asprintf_error_data("id=%s", id);
     return NULL;
 /* EEK! Experimental code ends */
-#endif
 }
 
 int

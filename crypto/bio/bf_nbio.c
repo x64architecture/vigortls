@@ -125,10 +125,8 @@ static int nbiof_free(BIO *a)
 static int nbiof_read(BIO *b, char *out, int outl)
 {
     int ret = 0;
-#if 1
     int num;
     unsigned char n;
-#endif
 
     if (out == NULL)
         return (0);
@@ -136,7 +134,6 @@ static int nbiof_read(BIO *b, char *out, int outl)
         return (0);
 
     BIO_clear_retry_flags(b);
-#if 1
     RAND_pseudo_bytes(&n, 1);
     num = (n & 0x07);
 
@@ -146,9 +143,7 @@ static int nbiof_read(BIO *b, char *out, int outl)
     if (num == 0) {
         ret = -1;
         BIO_set_retry_read(b);
-    } else
-#endif
-    {
+    } else {
         ret = BIO_read(b->next_bio, out, outl);
         if (ret < 0)
             BIO_copy_next_retry(b);
@@ -171,7 +166,6 @@ static int nbiof_write(BIO *b, const char *in, int inl)
 
     BIO_clear_retry_flags(b);
 
-#if 1
     if (nt->lwn > 0) {
         num = nt->lwn;
         nt->lwn = 0;
@@ -186,9 +180,7 @@ static int nbiof_write(BIO *b, const char *in, int inl)
     if (num == 0) {
         ret = -1;
         BIO_set_retry_write(b);
-    } else
-#endif
-    {
+    } else {
         ret = BIO_write(b->next_bio, in, inl);
         if (ret < 0) {
             BIO_copy_next_retry(b);

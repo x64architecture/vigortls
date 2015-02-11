@@ -130,14 +130,6 @@ static ECDSA_DATA *ECDSA_DATA_new_method(ENGINE *engine)
 
     ret->flags = ret->meth->flags;
     CRYPTO_new_ex_data(CRYPTO_EX_INDEX_ECDSA, ret, &ret->ex_data);
-#if 0
-    if ((ret->meth->init != NULL) && !ret->meth->init(ret))
-    {
-        CRYPTO_free_ex_data(CRYPTO_EX_INDEX_ECDSA, ret, &ret->ex_data);
-        free(ret);
-        ret=NULL;
-    }
-#endif
     return (ret);
 }
 

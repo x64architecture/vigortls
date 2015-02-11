@@ -238,17 +238,6 @@ extern "C" {
                                                     | BN_FLG_STATIC_DATA              \
                                                     | (n)))
 
-/* Already declared in ossl_typ.h */
-#if 0
-typedef struct bignum_st BIGNUM;
-/* Used for temp variables (declaration hidden in bn_lcl.h) */
-typedef struct bignum_ctx BN_CTX;
-typedef struct bn_blinding_st BN_BLINDING;
-typedef struct bn_mont_ctx_st BN_MONT_CTX;
-typedef struct bn_recp_ctx_st BN_RECP_CTX;
-typedef struct bn_gencb_st BN_GENCB;
-#endif
-
 struct bignum_st {
     BN_ULONG *d; /* Pointer to an array of 'BN_BITS2' bit chunks. */
     int top;     /* Index of last used d +1. */

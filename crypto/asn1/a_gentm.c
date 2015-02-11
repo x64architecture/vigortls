@@ -69,42 +69,6 @@
 
 #include "time_support.h"
 
-#if 0
-
-int i2d_ASN1_GENERALIZEDTIME(ASN1_GENERALIZEDTIME *a, unsigned char **pp)
-    {
-    return (i2d_ASN1_bytes((ASN1_STRING *)a,pp,
-        V_ASN1_GENERALIZEDTIME,V_ASN1_UNIVERSAL));
-    }
-
-
-ASN1_GENERALIZEDTIME *d2i_ASN1_GENERALIZEDTIME(ASN1_GENERALIZEDTIME **a,
-         unsigned char **pp, long length)
-    {
-    ASN1_GENERALIZEDTIME *ret=NULL;
-
-    ret=(ASN1_GENERALIZEDTIME *)d2i_ASN1_bytes((ASN1_STRING **)a,pp,length,
-        V_ASN1_GENERALIZEDTIME,V_ASN1_UNIVERSAL);
-    if (ret == NULL)
-        {
-        ASN1err(ASN1_F_D2I_ASN1_GENERALIZEDTIME,ERR_R_NESTED_ASN1_ERROR);
-        return (NULL);
-        }
-    if (!ASN1_GENERALIZEDTIME_check(ret))
-        {
-        ASN1err(ASN1_F_D2I_ASN1_GENERALIZEDTIME,ASN1_R_INVALID_TIME_FORMAT);
-        goto err;
-        }
-
-    return (ret);
-err:
-    if ((ret != NULL) && ((a == NULL) || (*a != ret)))
-        M_ASN1_GENERALIZEDTIME_free(ret);
-    return (NULL);
-    }
-
-#endif
-
 int ASN1_GENERALIZEDTIME_check(ASN1_GENERALIZEDTIME *d)
 {
     static const int min[9] = { 0, 0, 1, 1, 0, 0, 0, 0, 0 };
@@ -117,10 +81,11 @@ int ASN1_GENERALIZEDTIME_check(ASN1_GENERALIZEDTIME *d)
     l = d->length;
     a = (char *)d->data;
     o = 0;
-    /* GENERALIZEDTIME is similar to UTCTIME except the year is
-         * represented as YYYY. This stuff treats everything as a two digit
-         * field so make first two fields 00 to 99
-         */
+    /*
+     * GENERALIZEDTIME is similar to UTCTIME except the year is
+     * represented as YYYY. This stuff treats everything as a two digit
+     * field so make first two fields 00 to 99
+     */
     if (l < 13)
         goto err;
     for (i = 0; i < 7; i++) {
