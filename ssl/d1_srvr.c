@@ -497,23 +497,12 @@ int dtls1_accept(SSL *s)
                     ret = dtls1_send_certificate_request(s);
                     if (ret <= 0)
                         goto end;
-#ifndef NETSCAPE_HANG_BUG
                     s->state = SSL3_ST_SW_SRVR_DONE_A;
 #ifndef OPENSSL_NO_SCTP
                     if (BIO_dgram_is_sctp(SSL_get_wbio(s))) {
                         s->d1->next_state = SSL3_ST_SW_SRVR_DONE_A;
                         s->state = DTLS1_SCTP_ST_SW_WRITE_SOCK;
                     }
-#endif
-#else
-                    s->state = SSL3_ST_SW_FLUSH;
-                    s->s3->tmp.next_state = SSL3_ST_SR_CERT_A;
-#ifndef OPENSSL_NO_SCTP
-                    if (BIO_dgram_is_sctp(SSL_get_wbio(s))) {
-                        s->d1->next_state = s->s3->tmp.next_state;
-                        s->s3->tmp.next_state = DTLS1_SCTP_ST_SW_WRITE_SOCK;
-                    }
-#endif
 #endif
                     s->init_num = 0;
                 }
@@ -1339,21 +1328,10 @@ int dtls1_send_certificate_request(SSL *s)
         s->d1->handshake_write_seq++;
 
         /* we should now have things packed up, so lets send
-     * it off */
+         * it off */
 
         s->init_num = n + DTLS1_HM_HEADER_LENGTH;
         s->init_off = 0;
-#ifdef NETSCAPE_HANG_BUG
-        /* XXX: what to do about this? */
-        p = (unsigned char *)s->init_buf->data + s->init_num;
-
-        /* do the header */
-        *(p++) = SSL3_MT_SERVER_DONE;
-        *(p++) = 0;
-        *(p++) = 0;
-        *(p++) = 0;
-        s->init_num += 4;
-#endif
 
         /* XDTLS:  set message header ? */
         msg_len = s->init_num - DTLS1_HM_HEADER_LENGTH;
