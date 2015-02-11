@@ -1001,13 +1001,12 @@ int tls1_generate_master_secret(SSL *s, unsigned char *out, unsigned char *p,
                                 int len)
 {
     unsigned char buff[SSL_MAX_MASTER_KEY_LENGTH];
-    const void *co = NULL, *so = NULL;
-    int col = 0, sol = 0;
 
-    tls1_PRF(ssl_get_algorithm2(s), TLS_MD_MASTER_SECRET_CONST,
-             TLS_MD_MASTER_SECRET_CONST_SIZE, s->s3->client_random,
-             SSL3_RANDOM_SIZE, co, col, s->s3->server_random, SSL3_RANDOM_SIZE,
-             so, sol, p, len, s->session->master_key, buff, sizeof buff);
+    tls1_PRF(ssl_get_algorithm2(s),
+             TLS_MD_MASTER_SECRET_CONST, TLS_MD_MASTER_SECRET_CONST_SIZE,
+             s->s3->client_random, SSL3_RANDOM_SIZE, NULL, 0,
+             s->s3->server_random, SSL3_RANDOM_SIZE, NULL, 0,
+             p, len, s->session->master_key, buff, sizeof buff);
 
     return (SSL3_MASTER_SECRET_SIZE);
 }
