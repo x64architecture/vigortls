@@ -12,11 +12,9 @@ add_library(
     pcy_node.c
     pcy_tree.c
     v3err.c
-    v3_addr.c
     v3_akey.c
     v3_akeya.c
     v3_alt.c
-    v3_asid.c
     v3_bcons.c
     v3_bitst.c
     v3_conf.c
