@@ -1254,9 +1254,11 @@ char *SSL_get_shared_ciphers(const SSL *s, char *buf, int len)
     int i;
 
     if ((s->session == NULL) || (s->session->ciphers == NULL) || (len < 2))
-        return (NULL);
+        return NULL;
 
     sk = s->session->ciphers;
+    if (sk_SSL_CIPHER_num(sk) == 0)
+        return NULL;
     buf[0] = '\0';
     for (i = 0; i < sk_SSL_CIPHER_num(sk); i++) {
         c = sk_SSL_CIPHER_value(sk, i);
