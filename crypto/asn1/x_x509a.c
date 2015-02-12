@@ -71,16 +71,34 @@
 static X509_CERT_AUX *aux_get(X509 *x);
 
 ASN1_SEQUENCE(X509_CERT_AUX) = {
-                                 ASN1_SEQUENCE_OF_OPT(X509_CERT_AUX, trust, ASN1_OBJECT),
-                                 ASN1_IMP_SEQUENCE_OF_OPT(X509_CERT_AUX, reject, ASN1_OBJECT, 0),
-                                 ASN1_OPT(X509_CERT_AUX, alias, ASN1_UTF8STRING),
-                                 ASN1_OPT(X509_CERT_AUX, keyid, ASN1_OCTET_STRING),
-                                 ASN1_IMP_SEQUENCE_OF_OPT(X509_CERT_AUX, other, X509_ALGOR, 1)
-                               } ASN1_SEQUENCE_END(X509_CERT_AUX)
+    ASN1_SEQUENCE_OF_OPT(X509_CERT_AUX, trust, ASN1_OBJECT),
+    ASN1_IMP_SEQUENCE_OF_OPT(X509_CERT_AUX, reject, ASN1_OBJECT, 0),
+    ASN1_OPT(X509_CERT_AUX, alias, ASN1_UTF8STRING),
+    ASN1_OPT(X509_CERT_AUX, keyid, ASN1_OCTET_STRING),
+    ASN1_IMP_SEQUENCE_OF_OPT(X509_CERT_AUX, other, X509_ALGOR, 1)
+} ASN1_SEQUENCE_END(X509_CERT_AUX)
 
-                                   IMPLEMENT_ASN1_FUNCTIONS(X509_CERT_AUX)
+X509_CERT_AUX *d2i_X509_CERT_AUX(X509_CERT_AUX **a, const unsigned char **in, long len)
+{
+    return (X509_CERT_AUX *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, &X509_CERT_AUX_it);
+}
 
-                                       static X509_CERT_AUX * aux_get(X509 * x)
+int i2d_X509_CERT_AUX(X509_CERT_AUX *a, unsigned char **out)
+{
+    return ASN1_item_i2d((ASN1_VALUE *)a, out, &X509_CERT_AUX_it);
+}
+
+X509_CERT_AUX *X509_CERT_AUX_new(void)
+{
+    return (X509_CERT_AUX *)ASN1_item_new(&X509_CERT_AUX_it);
+}
+
+void X509_CERT_AUX_free(X509_CERT_AUX *a)
+{
+    ASN1_item_free((ASN1_VALUE *)a, &X509_CERT_AUX_it);
+}
+
+static X509_CERT_AUX * aux_get(X509 * x)
 {
     if (!x)
         return NULL;
@@ -207,4 +225,22 @@ ASN1_SEQUENCE(X509_CERT_PAIR) = {
     ASN1_EXP_OPT(X509_CERT_PAIR, reverse, X509, 1)
 } ASN1_SEQUENCE_END(X509_CERT_PAIR)
 
-    IMPLEMENT_ASN1_FUNCTIONS(X509_CERT_PAIR)
+X509_CERT_PAIR *d2i_X509_CERT_PAIR(X509_CERT_PAIR **a, const unsigned char **in, long len)
+{
+    return (X509_CERT_PAIR *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, &X509_CERT_PAIR_it);
+}
+
+int i2d_X509_CERT_PAIR(X509_CERT_PAIR *a, unsigned char **out)
+{
+    return ASN1_item_i2d((ASN1_VALUE *)a, out, &X509_CERT_PAIR_it);
+}
+
+X509_CERT_PAIR *X509_CERT_PAIR_new(void)
+{
+    return (X509_CERT_PAIR *)ASN1_item_new(&X509_CERT_PAIR_it);
+}
+
+void X509_CERT_PAIR_free(X509_CERT_PAIR *a)
+{
+    ASN1_item_free((ASN1_VALUE *)a, &X509_CERT_PAIR_it);
+}

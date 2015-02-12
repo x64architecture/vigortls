@@ -64,7 +64,26 @@
 #include <openssl/cms.h>
 #include "cms_lcl.h"
 
-IMPLEMENT_ASN1_FUNCTIONS(CMS_ContentInfo)
+CMS_ContentInfo *d2i_CMS_ContentInfo(CMS_ContentInfo **a, const unsigned char **in, long len)
+{
+    return (CMS_ContentInfo *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, &CMS_ContentInfo_it);
+}
+
+int i2d_CMS_ContentInfo(CMS_ContentInfo *a, unsigned char **out)
+{
+    return ASN1_item_i2d((ASN1_VALUE *)a, out, &CMS_ContentInfo_it);
+}
+
+CMS_ContentInfo *CMS_ContentInfo_new(void)
+{
+    return (CMS_ContentInfo *)ASN1_item_new(&CMS_ContentInfo_it);
+}
+
+void CMS_ContentInfo_free(CMS_ContentInfo *a)
+{
+    ASN1_item_free((ASN1_VALUE *)a, &CMS_ContentInfo_it);
+}
+
 IMPLEMENT_ASN1_PRINT_FUNCTION(CMS_ContentInfo)
 
 DECLARE_ASN1_ITEM(CMS_CertificateChoices)

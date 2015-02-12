@@ -91,25 +91,43 @@ ASN1_SEQUENCE_cb(RSAPrivateKey, rsa_cb) = {
     ASN1_SIMPLE(RSA, iqmp, BIGNUM)
 } ASN1_SEQUENCE_END_cb(RSA, RSAPrivateKey)
 
-    ASN1_SEQUENCE_cb(RSAPublicKey, rsa_cb) = {
-        ASN1_SIMPLE(RSA, n, BIGNUM),
-        ASN1_SIMPLE(RSA, e, BIGNUM),
-    } ASN1_SEQUENCE_END_cb(RSA, RSAPublicKey)
+ASN1_SEQUENCE_cb(RSAPublicKey, rsa_cb) = {
+    ASN1_SIMPLE(RSA, n, BIGNUM),
+    ASN1_SIMPLE(RSA, e, BIGNUM),
+} ASN1_SEQUENCE_END_cb(RSA, RSAPublicKey)
 
-        ASN1_SEQUENCE(RSA_PSS_PARAMS) = {
-                                          ASN1_EXP_OPT(RSA_PSS_PARAMS, hashAlgorithm, X509_ALGOR, 0),
-                                          ASN1_EXP_OPT(RSA_PSS_PARAMS, maskGenAlgorithm, X509_ALGOR, 1),
-                                          ASN1_EXP_OPT(RSA_PSS_PARAMS, saltLength, ASN1_INTEGER, 2),
-                                          ASN1_EXP_OPT(RSA_PSS_PARAMS, trailerField, ASN1_INTEGER, 3)
-                                        } ASN1_SEQUENCE_END(RSA_PSS_PARAMS)
+ASN1_SEQUENCE(RSA_PSS_PARAMS) = {
+    ASN1_EXP_OPT(RSA_PSS_PARAMS, hashAlgorithm, X509_ALGOR, 0),
+    ASN1_EXP_OPT(RSA_PSS_PARAMS, maskGenAlgorithm, X509_ALGOR, 1),
+    ASN1_EXP_OPT(RSA_PSS_PARAMS, saltLength, ASN1_INTEGER, 2),
+    ASN1_EXP_OPT(RSA_PSS_PARAMS, trailerField, ASN1_INTEGER, 3)
+} ASN1_SEQUENCE_END(RSA_PSS_PARAMS)
 
-                                            IMPLEMENT_ASN1_FUNCTIONS(RSA_PSS_PARAMS)
+RSA_PSS_PARAMS *d2i_RSA_PSS_PARAMS(RSA_PSS_PARAMS **a, const unsigned char **in, long len)
+{
+    return (RSA_PSS_PARAMS *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, &RSA_PSS_PARAMS_it);
+}
 
-                                                IMPLEMENT_ASN1_ENCODE_FUNCTIONS_const_fname(RSA, RSAPrivateKey, RSAPrivateKey)
+int i2d_RSA_PSS_PARAMS(RSA_PSS_PARAMS *a, unsigned char **out)
+{
+    return ASN1_item_i2d((ASN1_VALUE *)a, out, &RSA_PSS_PARAMS_it);
+}
 
-                                                    IMPLEMENT_ASN1_ENCODE_FUNCTIONS_const_fname(RSA, RSAPublicKey, RSAPublicKey)
+RSA_PSS_PARAMS *RSA_PSS_PARAMS_new(void)
+{
+    return (RSA_PSS_PARAMS *)ASN1_item_new(&RSA_PSS_PARAMS_it);
+}
 
-                                                        RSA * RSAPublicKey_dup(RSA * rsa)
+void RSA_PSS_PARAMS_free(RSA_PSS_PARAMS *a)
+{
+    ASN1_item_free((ASN1_VALUE *)a, &RSA_PSS_PARAMS_it);
+}
+
+IMPLEMENT_ASN1_ENCODE_FUNCTIONS_const_fname(RSA, RSAPrivateKey, RSAPrivateKey)
+
+IMPLEMENT_ASN1_ENCODE_FUNCTIONS_const_fname(RSA, RSAPublicKey, RSAPublicKey)
+
+RSA *RSAPublicKey_dup(RSA * rsa)
 {
     return ASN1_item_dup(ASN1_ITEM_rptr(RSAPublicKey), rsa);
 }

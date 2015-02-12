@@ -71,26 +71,62 @@ ASN1_SEQUENCE(PBE2PARAM) = {
     ASN1_SIMPLE(PBE2PARAM, encryption, X509_ALGOR)
 } ASN1_SEQUENCE_END(PBE2PARAM)
 
-    IMPLEMENT_ASN1_FUNCTIONS(PBE2PARAM)
+PBE2PARAM *d2i_PBE2PARAM(PBE2PARAM **a, const unsigned char **in, long len)
+{
+    return (PBE2PARAM *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, &PBE2PARAM_it);
+}
 
-        ASN1_SEQUENCE(PBKDF2PARAM) = {
-                                       ASN1_SIMPLE(PBKDF2PARAM, salt, ASN1_ANY),
-                                       ASN1_SIMPLE(PBKDF2PARAM, iter, ASN1_INTEGER),
-                                       ASN1_OPT(PBKDF2PARAM, keylength, ASN1_INTEGER),
-                                       ASN1_OPT(PBKDF2PARAM, prf, X509_ALGOR)
-                                     } ASN1_SEQUENCE_END(PBKDF2PARAM)
+int i2d_PBE2PARAM(PBE2PARAM *a, unsigned char **out)
+{
+    return ASN1_item_i2d((ASN1_VALUE *)a, out, &PBE2PARAM_it);
+}
 
-                                         IMPLEMENT_ASN1_FUNCTIONS(PBKDF2PARAM)
+PBE2PARAM *PBE2PARAM_new(void)
+{
+    return (PBE2PARAM *)ASN1_item_new(&PBE2PARAM_it);
+}
 
-                                             /* Return an algorithm identifier for a PKCS#5 v2.0 PBE algorithm:
+void PBE2PARAM_free(PBE2PARAM *a)
+{
+    ASN1_item_free((ASN1_VALUE *)a, &PBE2PARAM_it);
+}
+
+ASN1_SEQUENCE(PBKDF2PARAM) = {
+    ASN1_SIMPLE(PBKDF2PARAM, salt, ASN1_ANY),
+    ASN1_SIMPLE(PBKDF2PARAM, iter, ASN1_INTEGER),
+    ASN1_OPT(PBKDF2PARAM, keylength, ASN1_INTEGER),
+    ASN1_OPT(PBKDF2PARAM, prf, X509_ALGOR)
+} ASN1_SEQUENCE_END(PBKDF2PARAM)
+
+PBKDF2PARAM *d2i_PBKDF2PARAM(PBKDF2PARAM **a, const unsigned char **in, long len)
+{
+    return (PBKDF2PARAM *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, &PBKDF2PARAM_it);
+}
+
+int i2d_PBKDF2PARAM(PBKDF2PARAM *a, unsigned char **out)
+{
+    return ASN1_item_i2d((ASN1_VALUE *)a, out, &PBKDF2PARAM_it);
+}
+
+PBKDF2PARAM *PBKDF2PARAM_new(void)
+{
+    return (PBKDF2PARAM *)ASN1_item_new(&PBKDF2PARAM_it);
+}
+
+void PBKDF2PARAM_free(PBKDF2PARAM *a)
+{
+    ASN1_item_free((ASN1_VALUE *)a, &PBKDF2PARAM_it);
+}
+
+/* Return an algorithm identifier for a PKCS#5 v2.0 PBE algorithm:
  * yes I know this is horrible!
  *
  * Extended version to allow application supplied PRF NID and IV.
  */
 
-                                     X509_ALGOR * PKCS5_pbe2_set_iv(const EVP_CIPHER *cipher, int iter,
-                                                                    unsigned char *salt, int saltlen,
-                                                                    unsigned char *aiv, int prf_nid)
+X509_ALGOR *PKCS5_pbe2_set_iv(const EVP_CIPHER *cipher, int iter,
+                              unsigned char *salt, int saltlen,
+                              unsigned char *aiv, int prf_nid)
 {
     X509_ALGOR *scheme = NULL, *kalg = NULL, *ret = NULL;
     int alg_nid, keylen;

@@ -93,16 +93,52 @@ ASN1_SEQUENCE(ACCESS_DESCRIPTION) = {
     ASN1_SIMPLE(ACCESS_DESCRIPTION, location, GENERAL_NAME)
 } ASN1_SEQUENCE_END(ACCESS_DESCRIPTION)
 
-    IMPLEMENT_ASN1_FUNCTIONS(ACCESS_DESCRIPTION)
+ACCESS_DESCRIPTION *d2i_ACCESS_DESCRIPTION(ACCESS_DESCRIPTION **a, const unsigned char **in, long len)
+{
+    return (ACCESS_DESCRIPTION *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, &ACCESS_DESCRIPTION_it);
+}
 
-        ASN1_ITEM_TEMPLATE(AUTHORITY_INFO_ACCESS) = ASN1_EX_TEMPLATE_TYPE(ASN1_TFLG_SEQUENCE_OF, 0, GeneralNames, ACCESS_DESCRIPTION)
-                                                        ASN1_ITEM_TEMPLATE_END(AUTHORITY_INFO_ACCESS)
+int i2d_ACCESS_DESCRIPTION(ACCESS_DESCRIPTION *a, unsigned char **out)
+{
+    return ASN1_item_i2d((ASN1_VALUE *)a, out, &ACCESS_DESCRIPTION_it);
+}
 
-                                                            IMPLEMENT_ASN1_FUNCTIONS(AUTHORITY_INFO_ACCESS)
+ACCESS_DESCRIPTION *ACCESS_DESCRIPTION_new(void)
+{
+    return (ACCESS_DESCRIPTION *)ASN1_item_new(&ACCESS_DESCRIPTION_it);
+}
 
-                                                                static STACK_OF(CONF_VALUE) * i2v_AUTHORITY_INFO_ACCESS(X509V3_EXT_METHOD * method,
-                                                                                                                        AUTHORITY_INFO_ACCESS * ainfo,
-                                                                                                                        STACK_OF(CONF_VALUE) * ret)
+void ACCESS_DESCRIPTION_free(ACCESS_DESCRIPTION *a)
+{
+    ASN1_item_free((ASN1_VALUE *)a, &ACCESS_DESCRIPTION_it);
+}
+
+ASN1_ITEM_TEMPLATE(AUTHORITY_INFO_ACCESS) = ASN1_EX_TEMPLATE_TYPE(ASN1_TFLG_SEQUENCE_OF, 0, GeneralNames, ACCESS_DESCRIPTION)
+ASN1_ITEM_TEMPLATE_END(AUTHORITY_INFO_ACCESS)
+
+AUTHORITY_INFO_ACCESS *d2i_AUTHORITY_INFO_ACCESS(AUTHORITY_INFO_ACCESS **a, const unsigned char **in, long len)
+{
+    return (AUTHORITY_INFO_ACCESS *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, &AUTHORITY_INFO_ACCESS_it);
+}
+
+int i2d_AUTHORITY_INFO_ACCESS(AUTHORITY_INFO_ACCESS *a, unsigned char **out)
+{
+    return ASN1_item_i2d((ASN1_VALUE *)a, out, &AUTHORITY_INFO_ACCESS_it);
+}
+
+AUTHORITY_INFO_ACCESS *AUTHORITY_INFO_ACCESS_new(void)
+{
+    return (AUTHORITY_INFO_ACCESS *)ASN1_item_new(&AUTHORITY_INFO_ACCESS_it);
+}
+
+void AUTHORITY_INFO_ACCESS_free(AUTHORITY_INFO_ACCESS *a)
+{
+    ASN1_item_free((ASN1_VALUE *)a, &AUTHORITY_INFO_ACCESS_it);
+}
+
+static STACK_OF(CONF_VALUE) *i2v_AUTHORITY_INFO_ACCESS(X509V3_EXT_METHOD *method,
+                                                       AUTHORITY_INFO_ACCESS * ainfo,
+                                                       STACK_OF(CONF_VALUE) * ret)
 {
     ACCESS_DESCRIPTION *desc;
     int i, nlen;

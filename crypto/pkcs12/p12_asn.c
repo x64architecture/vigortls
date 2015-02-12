@@ -68,17 +68,53 @@ ASN1_SEQUENCE(PKCS12) = {
     ASN1_OPT(PKCS12, mac, PKCS12_MAC_DATA)
 } ASN1_SEQUENCE_END(PKCS12)
 
-    IMPLEMENT_ASN1_FUNCTIONS(PKCS12)
+PKCS12 *d2i_PKCS12(PKCS12 **a, const unsigned char **in, long len)
+{
+    return (PKCS12 *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, &PKCS12_it);
+}
 
-        ASN1_SEQUENCE(PKCS12_MAC_DATA) = {
-            ASN1_SIMPLE(PKCS12_MAC_DATA, dinfo, X509_SIG),
-            ASN1_SIMPLE(PKCS12_MAC_DATA, salt, ASN1_OCTET_STRING),
-            ASN1_OPT(PKCS12_MAC_DATA, iter, ASN1_INTEGER)
-        } ASN1_SEQUENCE_END(PKCS12_MAC_DATA)
+int i2d_PKCS12(PKCS12 *a, unsigned char **out)
+{
+    return ASN1_item_i2d((ASN1_VALUE *)a, out, &PKCS12_it);
+}
 
-            IMPLEMENT_ASN1_FUNCTIONS(PKCS12_MAC_DATA)
+PKCS12 *PKCS12_new(void)
+{
+    return (PKCS12 *)ASN1_item_new(&PKCS12_it);
+}
 
-                ASN1_ADB_TEMPLATE(bag_default) = ASN1_EXP(PKCS12_BAGS, value.other, ASN1_ANY, 0);
+void PKCS12_free(PKCS12 *a)
+{
+    ASN1_item_free((ASN1_VALUE *)a, &PKCS12_it);
+}
+
+ASN1_SEQUENCE(PKCS12_MAC_DATA) = {
+    ASN1_SIMPLE(PKCS12_MAC_DATA, dinfo, X509_SIG),
+    ASN1_SIMPLE(PKCS12_MAC_DATA, salt, ASN1_OCTET_STRING),
+    ASN1_OPT(PKCS12_MAC_DATA, iter, ASN1_INTEGER)
+} ASN1_SEQUENCE_END(PKCS12_MAC_DATA)
+
+PKCS12_MAC_DATA *d2i_PKCS12_MAC_DATA(PKCS12_MAC_DATA **a, const unsigned char **in, long len)
+{
+    return (PKCS12_MAC_DATA *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, &PKCS12_MAC_DATA_it);
+}
+
+int i2d_PKCS12_MAC_DATA(PKCS12_MAC_DATA *a, unsigned char **out)
+{
+    return ASN1_item_i2d((ASN1_VALUE *)a, out, &PKCS12_MAC_DATA_it);
+}
+
+PKCS12_MAC_DATA *PKCS12_MAC_DATA_new(void)
+{
+    return (PKCS12_MAC_DATA *)ASN1_item_new(&PKCS12_MAC_DATA_it);
+}
+
+void PKCS12_MAC_DATA_free(PKCS12_MAC_DATA *a)
+{
+    ASN1_item_free((ASN1_VALUE *)a, &PKCS12_MAC_DATA_it);
+}
+
+ASN1_ADB_TEMPLATE(bag_default) = ASN1_EXP(PKCS12_BAGS, value.other, ASN1_ANY, 0);
 
 ASN1_ADB(PKCS12_BAGS) = {
     ADB_ENTRY(NID_x509Certificate, ASN1_EXP(PKCS12_BAGS, value.x509cert, ASN1_OCTET_STRING, 0)),
@@ -91,9 +127,27 @@ ASN1_SEQUENCE(PKCS12_BAGS) = {
     ASN1_ADB_OBJECT(PKCS12_BAGS),
 } ASN1_SEQUENCE_END(PKCS12_BAGS)
 
-    IMPLEMENT_ASN1_FUNCTIONS(PKCS12_BAGS)
+PKCS12_BAGS *d2i_PKCS12_BAGS(PKCS12_BAGS **a, const unsigned char **in, long len)
+{
+    return (PKCS12_BAGS *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, &PKCS12_BAGS_it);
+}
 
-        ASN1_ADB_TEMPLATE(safebag_default) = ASN1_EXP(PKCS12_SAFEBAG, value.other, ASN1_ANY, 0);
+int i2d_PKCS12_BAGS(PKCS12_BAGS *a, unsigned char **out)
+{
+    return ASN1_item_i2d((ASN1_VALUE *)a, out, &PKCS12_BAGS_it);
+}
+
+PKCS12_BAGS *PKCS12_BAGS_new(void)
+{
+    return (PKCS12_BAGS *)ASN1_item_new(&PKCS12_BAGS_it);
+}
+
+void PKCS12_BAGS_free(PKCS12_BAGS *a)
+{
+    ASN1_item_free((ASN1_VALUE *)a, &PKCS12_BAGS_it);
+}
+
+ASN1_ADB_TEMPLATE(safebag_default) = ASN1_EXP(PKCS12_SAFEBAG, value.other, ASN1_ANY, 0);
 
 ASN1_ADB(PKCS12_SAFEBAG) = {
     ADB_ENTRY(NID_keyBag, ASN1_EXP(PKCS12_SAFEBAG, value.keybag, PKCS8_PRIV_KEY_INFO, 0)),
@@ -110,12 +164,30 @@ ASN1_SEQUENCE(PKCS12_SAFEBAG) = {
     ASN1_SET_OF_OPT(PKCS12_SAFEBAG, attrib, X509_ATTRIBUTE)
 } ASN1_SEQUENCE_END(PKCS12_SAFEBAG)
 
-    IMPLEMENT_ASN1_FUNCTIONS(PKCS12_SAFEBAG)
+PKCS12_SAFEBAG *d2i_PKCS12_SAFEBAG(PKCS12_SAFEBAG **a, const unsigned char **in, long len)
+{
+    return (PKCS12_SAFEBAG *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, &PKCS12_SAFEBAG_it);
+}
 
-        /* SEQUENCE OF SafeBag */
+int i2d_PKCS12_SAFEBAG(PKCS12_SAFEBAG *a, unsigned char **out)
+{
+    return ASN1_item_i2d((ASN1_VALUE *)a, out, &PKCS12_SAFEBAG_it);
+}
+
+PKCS12_SAFEBAG *PKCS12_SAFEBAG_new(void)
+{
+    return (PKCS12_SAFEBAG *)ASN1_item_new(&PKCS12_SAFEBAG_it);
+}
+
+void PKCS12_SAFEBAG_free(PKCS12_SAFEBAG *a)
+{
+    ASN1_item_free((ASN1_VALUE *)a, &PKCS12_SAFEBAG_it);
+}
+
+    /* SEQUENCE OF SafeBag */
     ASN1_ITEM_TEMPLATE(PKCS12_SAFEBAGS) = ASN1_EX_TEMPLATE_TYPE(ASN1_TFLG_SEQUENCE_OF, 0, PKCS12_SAFEBAGS, PKCS12_SAFEBAG)
         ASN1_ITEM_TEMPLATE_END(PKCS12_SAFEBAGS)
 
-            /* Authsafes: SEQUENCE OF PKCS7 */
+    /* Authsafes: SEQUENCE OF PKCS7 */
     ASN1_ITEM_TEMPLATE(PKCS12_AUTHSAFES) = ASN1_EX_TEMPLATE_TYPE(ASN1_TFLG_SEQUENCE_OF, 0, PKCS12_AUTHSAFES, PKCS7)
         ASN1_ITEM_TEMPLATE_END(PKCS12_AUTHSAFES)

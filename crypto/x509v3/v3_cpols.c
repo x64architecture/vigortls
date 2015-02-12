@@ -92,16 +92,52 @@ const X509V3_EXT_METHOD v3_cpols = {
 ASN1_ITEM_TEMPLATE(CERTIFICATEPOLICIES) = ASN1_EX_TEMPLATE_TYPE(ASN1_TFLG_SEQUENCE_OF, 0, CERTIFICATEPOLICIES, POLICYINFO)
     ASN1_ITEM_TEMPLATE_END(CERTIFICATEPOLICIES)
 
-        IMPLEMENT_ASN1_FUNCTIONS(CERTIFICATEPOLICIES)
+CERTIFICATEPOLICIES *d2i_CERTIFICATEPOLICIES(CERTIFICATEPOLICIES **a, const unsigned char **in, long len)
+{
+    return (CERTIFICATEPOLICIES *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, &CERTIFICATEPOLICIES_it);
+}
 
-            ASN1_SEQUENCE(POLICYINFO) = {
-                ASN1_SIMPLE(POLICYINFO, policyid, ASN1_OBJECT),
-                ASN1_SEQUENCE_OF_OPT(POLICYINFO, qualifiers, POLICYQUALINFO)
-            } ASN1_SEQUENCE_END(POLICYINFO)
+int i2d_CERTIFICATEPOLICIES(CERTIFICATEPOLICIES *a, unsigned char **out)
+{
+    return ASN1_item_i2d((ASN1_VALUE *)a, out, &CERTIFICATEPOLICIES_it);
+}
 
-                IMPLEMENT_ASN1_FUNCTIONS(POLICYINFO)
+CERTIFICATEPOLICIES *CERTIFICATEPOLICIES_new(void)
+{
+    return (CERTIFICATEPOLICIES *)ASN1_item_new(&CERTIFICATEPOLICIES_it);
+}
 
-                    ASN1_ADB_TEMPLATE(policydefault) = ASN1_SIMPLE(POLICYQUALINFO, d.other, ASN1_ANY);
+void CERTIFICATEPOLICIES_free(CERTIFICATEPOLICIES *a)
+{
+    ASN1_item_free((ASN1_VALUE *)a, &CERTIFICATEPOLICIES_it);
+}
+
+ASN1_SEQUENCE(POLICYINFO) = {
+    ASN1_SIMPLE(POLICYINFO, policyid, ASN1_OBJECT),
+    ASN1_SEQUENCE_OF_OPT(POLICYINFO, qualifiers, POLICYQUALINFO)
+} ASN1_SEQUENCE_END(POLICYINFO)
+
+POLICYINFO *d2i_POLICYINFO(POLICYINFO **a, const unsigned char **in, long len)
+{
+    return (POLICYINFO *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, &POLICYINFO_it);
+}
+
+int i2d_POLICYINFO(POLICYINFO *a, unsigned char **out)
+{
+    return ASN1_item_i2d((ASN1_VALUE *)a, out, &POLICYINFO_it);
+}
+
+POLICYINFO *POLICYINFO_new(void)
+{
+    return (POLICYINFO *)ASN1_item_new(&POLICYINFO_it);
+}
+
+void POLICYINFO_free(POLICYINFO *a)
+{
+    ASN1_item_free((ASN1_VALUE *)a, &POLICYINFO_it);
+}
+
+ASN1_ADB_TEMPLATE(policydefault) = ASN1_SIMPLE(POLICYQUALINFO, d.other, ASN1_ANY);
 
 ASN1_ADB(POLICYQUALINFO) = {
     ADB_ENTRY(NID_id_qt_cps, ASN1_SIMPLE(POLICYQUALINFO, d.cpsuri, ASN1_IA5STRING)),
@@ -113,24 +149,77 @@ ASN1_SEQUENCE(POLICYQUALINFO) = {
     ASN1_ADB_OBJECT(POLICYQUALINFO)
 } ASN1_SEQUENCE_END(POLICYQUALINFO)
 
-    IMPLEMENT_ASN1_FUNCTIONS(POLICYQUALINFO)
+POLICYQUALINFO *d2i_POLICYQUALINFO(POLICYQUALINFO **a, const unsigned char **in, long len)
+{
+    return (POLICYQUALINFO *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, &POLICYQUALINFO_it);
+}
 
-        ASN1_SEQUENCE(USERNOTICE) = {
-            ASN1_OPT(USERNOTICE, noticeref, NOTICEREF),
-            ASN1_OPT(USERNOTICE, exptext, DISPLAYTEXT)
-        } ASN1_SEQUENCE_END(USERNOTICE)
+int i2d_POLICYQUALINFO(POLICYQUALINFO *a, unsigned char **out)
+{
+    return ASN1_item_i2d((ASN1_VALUE *)a, out, &POLICYQUALINFO_it);
+}
 
-            IMPLEMENT_ASN1_FUNCTIONS(USERNOTICE)
+POLICYQUALINFO *POLICYQUALINFO_new(void)
+{
+    return (POLICYQUALINFO *)ASN1_item_new(&POLICYQUALINFO_it);
+}
 
-                ASN1_SEQUENCE(NOTICEREF) = {
-                                             ASN1_SIMPLE(NOTICEREF, organization, DISPLAYTEXT),
-                                             ASN1_SEQUENCE_OF(NOTICEREF, noticenos, ASN1_INTEGER)
-                                           } ASN1_SEQUENCE_END(NOTICEREF)
+void POLICYQUALINFO_free(POLICYQUALINFO *a)
+{
+    ASN1_item_free((ASN1_VALUE *)a, &POLICYQUALINFO_it);
+}
 
-                                               IMPLEMENT_ASN1_FUNCTIONS(NOTICEREF)
+ASN1_SEQUENCE(USERNOTICE) = {
+    ASN1_OPT(USERNOTICE, noticeref, NOTICEREF),
+    ASN1_OPT(USERNOTICE, exptext, DISPLAYTEXT)
+} ASN1_SEQUENCE_END(USERNOTICE)
 
-                                                   static STACK_OF(POLICYINFO) * r2i_certpol(X509V3_EXT_METHOD * method,
-                                                                                             X509V3_CTX * ctx, char *value)
+USERNOTICE *d2i_USERNOTICE(USERNOTICE **a, const unsigned char **in, long len)
+{
+    return (USERNOTICE *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, &USERNOTICE_it);
+}
+
+int i2d_USERNOTICE(USERNOTICE *a, unsigned char **out)
+{
+    return ASN1_item_i2d((ASN1_VALUE *)a, out, &USERNOTICE_it);
+}
+
+USERNOTICE *USERNOTICE_new(void)
+{
+    return (USERNOTICE *)ASN1_item_new(&USERNOTICE_it);
+}
+
+void USERNOTICE_free(USERNOTICE *a)
+{
+    ASN1_item_free((ASN1_VALUE *)a, &USERNOTICE_it);
+}
+
+ASN1_SEQUENCE(NOTICEREF) = {
+    ASN1_SIMPLE(NOTICEREF, organization, DISPLAYTEXT),
+    ASN1_SEQUENCE_OF(NOTICEREF, noticenos, ASN1_INTEGER)
+} ASN1_SEQUENCE_END(NOTICEREF)
+
+NOTICEREF *d2i_NOTICEREF(NOTICEREF **a, const unsigned char **in, long len)
+{
+    return (NOTICEREF *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, &NOTICEREF_it);
+}
+
+int i2d_NOTICEREF(NOTICEREF *a, unsigned char **out)
+{
+    return ASN1_item_i2d((ASN1_VALUE *)a, out, &NOTICEREF_it);
+}
+
+NOTICEREF *NOTICEREF_new(void)
+{
+    return (NOTICEREF *)ASN1_item_new(&NOTICEREF_it);
+}
+
+void NOTICEREF_free(NOTICEREF *a)
+{
+    ASN1_item_free((ASN1_VALUE *)a, &NOTICEREF_it);
+}
+
+static STACK_OF(POLICYINFO) *r2i_certpol(X509V3_EXT_METHOD * method, X509V3_CTX * ctx, char *value)
 {
     STACK_OF(POLICYINFO) *pols = NULL;
     char *pstr;

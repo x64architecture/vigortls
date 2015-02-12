@@ -67,40 +67,111 @@ ASN1_SEQUENCE(OTHERNAME) = {
     ASN1_EXP(OTHERNAME, value, ASN1_ANY, 0)
 } ASN1_SEQUENCE_END(OTHERNAME)
 
-    IMPLEMENT_ASN1_FUNCTIONS(OTHERNAME)
-
-        ASN1_SEQUENCE(EDIPARTYNAME) = {
-            ASN1_IMP_OPT(EDIPARTYNAME, nameAssigner, DIRECTORYSTRING, 0),
-            ASN1_IMP_OPT(EDIPARTYNAME, partyName, DIRECTORYSTRING, 1)
-        } ASN1_SEQUENCE_END(EDIPARTYNAME)
-
-            IMPLEMENT_ASN1_FUNCTIONS(EDIPARTYNAME)
-
-                ASN1_CHOICE(GENERAL_NAME) = {
-                    ASN1_IMP(GENERAL_NAME, d.otherName, OTHERNAME, GEN_OTHERNAME),
-                    ASN1_IMP(GENERAL_NAME, d.rfc822Name, ASN1_IA5STRING, GEN_EMAIL),
-                    ASN1_IMP(GENERAL_NAME, d.dNSName, ASN1_IA5STRING, GEN_DNS),
-                    /* Don't decode this */
-                    ASN1_IMP(GENERAL_NAME, d.x400Address, ASN1_SEQUENCE, GEN_X400),
-                    /* X509_NAME is a CHOICE type so use EXPLICIT */
-                    ASN1_EXP(GENERAL_NAME, d.directoryName, X509_NAME, GEN_DIRNAME),
-                    ASN1_IMP(GENERAL_NAME, d.ediPartyName, EDIPARTYNAME, GEN_EDIPARTY),
-                    ASN1_IMP(GENERAL_NAME, d.uniformResourceIdentifier, ASN1_IA5STRING, GEN_URI),
-                    ASN1_IMP(GENERAL_NAME, d.iPAddress, ASN1_OCTET_STRING, GEN_IPADD),
-                    ASN1_IMP(GENERAL_NAME, d.registeredID, ASN1_OBJECT, GEN_RID)
-                } ASN1_CHOICE_END(GENERAL_NAME)
-
-                    IMPLEMENT_ASN1_FUNCTIONS(GENERAL_NAME)
-
-                        ASN1_ITEM_TEMPLATE(GENERAL_NAMES) = ASN1_EX_TEMPLATE_TYPE(ASN1_TFLG_SEQUENCE_OF, 0, GeneralNames, GENERAL_NAME)
-                                                                ASN1_ITEM_TEMPLATE_END(GENERAL_NAMES)
-
-                                                                    IMPLEMENT_ASN1_FUNCTIONS(GENERAL_NAMES)
-
-                                                                        GENERAL_NAME * GENERAL_NAME_dup(GENERAL_NAME * a)
+OTHERNAME *d2i_OTHERNAME(OTHERNAME **a, const unsigned char **in, long len)
 {
-    return (GENERAL_NAME *)ASN1_dup((i2d_of_void *)i2d_GENERAL_NAME,
-                                    (d2i_of_void *)d2i_GENERAL_NAME,
+    return (OTHERNAME *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, &OTHERNAME_it);
+}
+
+int i2d_OTHERNAME(OTHERNAME *a, unsigned char **out)
+{
+    return ASN1_item_i2d((ASN1_VALUE *)a, out, &OTHERNAME_it);
+}
+
+OTHERNAME *OTHERNAME_new(void)
+{
+    return (OTHERNAME *)ASN1_item_new(&OTHERNAME_it);
+}
+
+void OTHERNAME_free(OTHERNAME *a)
+{
+    ASN1_item_free((ASN1_VALUE *)a, &OTHERNAME_it);
+}
+
+ASN1_SEQUENCE(EDIPARTYNAME) = {
+    ASN1_IMP_OPT(EDIPARTYNAME, nameAssigner, DIRECTORYSTRING, 0),
+    ASN1_IMP_OPT(EDIPARTYNAME, partyName, DIRECTORYSTRING, 1)
+} ASN1_SEQUENCE_END(EDIPARTYNAME)
+
+EDIPARTYNAME *d2i_EDIPARTYNAME(EDIPARTYNAME **a, const unsigned char **in, long len)
+{
+    return (EDIPARTYNAME *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, &EDIPARTYNAME_it);
+}
+
+int i2d_EDIPARTYNAME(EDIPARTYNAME *a, unsigned char **out)
+{
+    return ASN1_item_i2d((ASN1_VALUE *)a, out, &EDIPARTYNAME_it);
+}
+
+EDIPARTYNAME *EDIPARTYNAME_new(void)
+{
+    return (EDIPARTYNAME *)ASN1_item_new(&EDIPARTYNAME_it);
+}
+
+void EDIPARTYNAME_free(EDIPARTYNAME *a)
+{
+    ASN1_item_free((ASN1_VALUE *)a, &EDIPARTYNAME_it);
+}
+
+ASN1_CHOICE(GENERAL_NAME) = {
+    ASN1_IMP(GENERAL_NAME, d.otherName, OTHERNAME, GEN_OTHERNAME),
+    ASN1_IMP(GENERAL_NAME, d.rfc822Name, ASN1_IA5STRING, GEN_EMAIL),
+    ASN1_IMP(GENERAL_NAME, d.dNSName, ASN1_IA5STRING, GEN_DNS),
+    /* Don't decode this */
+    ASN1_IMP(GENERAL_NAME, d.x400Address, ASN1_SEQUENCE, GEN_X400),
+    /* X509_NAME is a CHOICE type so use EXPLICIT */
+    ASN1_EXP(GENERAL_NAME, d.directoryName, X509_NAME, GEN_DIRNAME),
+    ASN1_IMP(GENERAL_NAME, d.ediPartyName, EDIPARTYNAME, GEN_EDIPARTY),
+    ASN1_IMP(GENERAL_NAME, d.uniformResourceIdentifier, ASN1_IA5STRING, GEN_URI),
+    ASN1_IMP(GENERAL_NAME, d.iPAddress, ASN1_OCTET_STRING, GEN_IPADD),
+    ASN1_IMP(GENERAL_NAME, d.registeredID, ASN1_OBJECT, GEN_RID)
+} ASN1_CHOICE_END(GENERAL_NAME)
+
+GENERAL_NAME *d2i_GENERAL_NAME(GENERAL_NAME **a, const unsigned char **in, long len)
+{
+    return (GENERAL_NAME *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, &GENERAL_NAME_it);
+}
+
+int i2d_GENERAL_NAME(GENERAL_NAME *a, unsigned char **out)
+{
+    return ASN1_item_i2d((ASN1_VALUE *)a, out, &GENERAL_NAME_it);
+}
+
+GENERAL_NAME *GENERAL_NAME_new(void)
+{
+    return (GENERAL_NAME *)ASN1_item_new(&GENERAL_NAME_it);
+}
+
+void GENERAL_NAME_free(GENERAL_NAME *a)
+{
+    ASN1_item_free((ASN1_VALUE *)a, &GENERAL_NAME_it);
+}
+
+ASN1_ITEM_TEMPLATE(GENERAL_NAMES) = ASN1_EX_TEMPLATE_TYPE(ASN1_TFLG_SEQUENCE_OF, 0, GeneralNames, GENERAL_NAME)
+ASN1_ITEM_TEMPLATE_END(GENERAL_NAMES)
+
+GENERAL_NAMES *d2i_GENERAL_NAMES(GENERAL_NAMES **a, const unsigned char **in, long len)
+{
+    return (GENERAL_NAMES *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, &GENERAL_NAMES_it);
+}
+
+int i2d_GENERAL_NAMES(GENERAL_NAMES *a, unsigned char **out)
+{
+    return ASN1_item_i2d((ASN1_VALUE *)a, out, &GENERAL_NAMES_it);
+}
+
+GENERAL_NAMES *GENERAL_NAMES_new(void)
+{
+    return (GENERAL_NAMES *)ASN1_item_new(&GENERAL_NAMES_it);
+}
+
+void GENERAL_NAMES_free(GENERAL_NAMES *a)
+{
+    ASN1_item_free((ASN1_VALUE *)a, &GENERAL_NAMES_it);
+}
+
+GENERAL_NAME *GENERAL_NAME_dup(GENERAL_NAME * a)
+{
+    return (GENERAL_NAME *)ASN1_dup((i2d_of_void *)i2d_GENERAL_NAME, (d2i_of_void *)d2i_GENERAL_NAME,
                                     (char *)a);
 }
 

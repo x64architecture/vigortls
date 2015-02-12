@@ -68,7 +68,25 @@
 DECLARE_ASN1_ITEM(CMS_ReceiptRequest)
 DECLARE_ASN1_ITEM(CMS_Receipt)
 
-IMPLEMENT_ASN1_FUNCTIONS(CMS_ReceiptRequest)
+CMS_ReceiptRequest *d2i_CMS_ReceiptRequest(CMS_ReceiptRequest **a, const unsigned char **in, long len)
+{
+    return (CMS_ReceiptRequest *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, &CMS_ReceiptRequest_it);
+}
+
+int i2d_CMS_ReceiptRequest(CMS_ReceiptRequest *a, unsigned char **out)
+{
+    return ASN1_item_i2d((ASN1_VALUE **)a, out, &CMS_ReceiptRequest_it);
+}
+
+CMS_ReceiptRequest *CMS_ReceiptRequest_new(void)
+{
+    return (CMS_ReceiptRequest *)ASN1_item_new(&CMS_ReceiptRequest_it);
+}
+
+void CMS_ReceiptRequest_free(CMS_ReceiptRequest *a)
+{
+    ASN1_item_free((ASN1_VALUE *)a, &CMS_ReceiptRequest_it);
+}
 
 /* ESS services: for now just Signed Receipt related */
 

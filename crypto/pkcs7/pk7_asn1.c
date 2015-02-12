@@ -108,24 +108,60 @@ ASN1_NDEF_SEQUENCE_cb(PKCS7, pk7_cb) = {
     ASN1_ADB_OBJECT(PKCS7)
 } ASN1_NDEF_SEQUENCE_END_cb(PKCS7, PKCS7)
 
-    IMPLEMENT_ASN1_FUNCTIONS(PKCS7)
-        IMPLEMENT_ASN1_NDEF_FUNCTION(PKCS7)
-            IMPLEMENT_ASN1_DUP_FUNCTION(PKCS7)
+PKCS7 *d2i_PKCS7(PKCS7 **a, const unsigned char **in, long len)
+{
+    return (PKCS7 *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, &PKCS7_it);
+}
 
-                ASN1_NDEF_SEQUENCE(PKCS7_SIGNED) = {
-                    ASN1_SIMPLE(PKCS7_SIGNED, version, ASN1_INTEGER),
-                    ASN1_SET_OF(PKCS7_SIGNED, md_algs, X509_ALGOR),
-                    ASN1_SIMPLE(PKCS7_SIGNED, contents, PKCS7),
-                    ASN1_IMP_SEQUENCE_OF_OPT(PKCS7_SIGNED, cert, X509, 0),
-                    ASN1_IMP_SET_OF_OPT(PKCS7_SIGNED, crl, X509_CRL, 1),
-                    ASN1_SET_OF(PKCS7_SIGNED, signer_info, PKCS7_SIGNER_INFO)
-                } ASN1_NDEF_SEQUENCE_END(PKCS7_SIGNED)
+int i2d_PKCS7(PKCS7 *a, unsigned char **out)
+{
+    return ASN1_item_i2d((ASN1_VALUE *)a, out, &PKCS7_it);
+}
 
-                    IMPLEMENT_ASN1_FUNCTIONS(PKCS7_SIGNED)
+PKCS7 *PKCS7_new(void)
+{
+    return (PKCS7 *)ASN1_item_new(&PKCS7_it);
+}
 
-                        /* Minor tweak to operation: free up EVP_PKEY */
-    static int si_cb(int operation, ASN1_VALUE **pval, const ASN1_ITEM *it,
-                     void *exarg)
+void PKCS7_free(PKCS7 *a)
+{
+    ASN1_item_free((ASN1_VALUE *)a, &PKCS7_it);
+}
+IMPLEMENT_ASN1_NDEF_FUNCTION(PKCS7)
+IMPLEMENT_ASN1_DUP_FUNCTION(PKCS7)
+
+ASN1_NDEF_SEQUENCE(PKCS7_SIGNED) = {
+    ASN1_SIMPLE(PKCS7_SIGNED, version, ASN1_INTEGER),
+    ASN1_SET_OF(PKCS7_SIGNED, md_algs, X509_ALGOR),
+    ASN1_SIMPLE(PKCS7_SIGNED, contents, PKCS7),
+    ASN1_IMP_SEQUENCE_OF_OPT(PKCS7_SIGNED, cert, X509, 0),
+    ASN1_IMP_SET_OF_OPT(PKCS7_SIGNED, crl, X509_CRL, 1),
+    ASN1_SET_OF(PKCS7_SIGNED, signer_info, PKCS7_SIGNER_INFO)
+} ASN1_NDEF_SEQUENCE_END(PKCS7_SIGNED)
+
+PKCS7_SIGNED *d2i_PKCS7_SIGNED(PKCS7_SIGNED **a, const unsigned char **in, long len)
+{
+    return (PKCS7_SIGNED *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, &PKCS7_SIGNED_it);
+}
+
+int i2d_PKCS7_SIGNED(PKCS7_SIGNED *a, unsigned char **out)
+{
+    return ASN1_item_i2d((ASN1_VALUE *)a, out, &PKCS7_SIGNED_it);
+}
+
+PKCS7_SIGNED *PKCS7_SIGNED_new(void)
+{
+    return (PKCS7_SIGNED *)ASN1_item_new(&PKCS7_SIGNED_it);
+}
+
+void PKCS7_SIGNED_free(PKCS7_SIGNED *a)
+{
+    ASN1_item_free((ASN1_VALUE *)a, &PKCS7_SIGNED_it);
+}
+
+/* Minor tweak to operation: free up EVP_PKEY */
+static int si_cb(int operation, ASN1_VALUE **pval, const ASN1_ITEM *it,
+                 void *exarg)
 {
     if (operation == ASN1_OP_FREE_POST) {
         PKCS7_SIGNER_INFO *si = (PKCS7_SIGNER_INFO *)*pval;
@@ -149,26 +185,80 @@ ASN1_SEQUENCE_cb(PKCS7_SIGNER_INFO, si_cb) = {
     ASN1_IMP_SET_OF_OPT(PKCS7_SIGNER_INFO, unauth_attr, X509_ATTRIBUTE, 1)
 } ASN1_SEQUENCE_END_cb(PKCS7_SIGNER_INFO, PKCS7_SIGNER_INFO)
 
-    IMPLEMENT_ASN1_FUNCTIONS(PKCS7_SIGNER_INFO)
+PKCS7_SIGNER_INFO *d2i_PKCS7_SIGNER_INFO(PKCS7_SIGNER_INFO **a, const unsigned char **in, long len)
+{
+    return (PKCS7_SIGNER_INFO *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, &PKCS7_SIGNER_INFO_it);
+}
 
-        ASN1_SEQUENCE(PKCS7_ISSUER_AND_SERIAL) = {
-            ASN1_SIMPLE(PKCS7_ISSUER_AND_SERIAL, issuer, X509_NAME),
-            ASN1_SIMPLE(PKCS7_ISSUER_AND_SERIAL, serial, ASN1_INTEGER)
-        } ASN1_SEQUENCE_END(PKCS7_ISSUER_AND_SERIAL)
+int i2d_PKCS7_SIGNER_INFO(PKCS7_SIGNER_INFO *a, unsigned char **out)
+{
+    return ASN1_item_i2d((ASN1_VALUE *)a, out, &PKCS7_SIGNER_INFO_it);
+}
 
-            IMPLEMENT_ASN1_FUNCTIONS(PKCS7_ISSUER_AND_SERIAL)
+PKCS7_SIGNER_INFO *PKCS7_SIGNER_INFO_new(void)
+{
+    return (PKCS7_SIGNER_INFO *)ASN1_item_new(&PKCS7_SIGNER_INFO_it);
+}
 
-                ASN1_NDEF_SEQUENCE(PKCS7_ENVELOPE) = {
-                    ASN1_SIMPLE(PKCS7_ENVELOPE, version, ASN1_INTEGER),
-                    ASN1_SET_OF(PKCS7_ENVELOPE, recipientinfo, PKCS7_RECIP_INFO),
-                    ASN1_SIMPLE(PKCS7_ENVELOPE, enc_data, PKCS7_ENC_CONTENT)
-                } ASN1_NDEF_SEQUENCE_END(PKCS7_ENVELOPE)
+void PKCS7_SIGNER_INFO_free(PKCS7_SIGNER_INFO *a)
+{
+    ASN1_item_free((ASN1_VALUE *)a, &PKCS7_SIGNER_INFO_it);
+}
 
-                    IMPLEMENT_ASN1_FUNCTIONS(PKCS7_ENVELOPE)
+ASN1_SEQUENCE(PKCS7_ISSUER_AND_SERIAL) = {
+    ASN1_SIMPLE(PKCS7_ISSUER_AND_SERIAL, issuer, X509_NAME),
+    ASN1_SIMPLE(PKCS7_ISSUER_AND_SERIAL, serial, ASN1_INTEGER)
+} ASN1_SEQUENCE_END(PKCS7_ISSUER_AND_SERIAL)
 
-                        /* Minor tweak to operation: free up X509 */
-    static int ri_cb(int operation, ASN1_VALUE **pval, const ASN1_ITEM *it,
-                     void *exarg)
+PKCS7_ISSUER_AND_SERIAL *d2i_PKCS7_ISSUER_AND_SERIAL(PKCS7_ISSUER_AND_SERIAL **a, const unsigned char **in, long len)
+{
+    return (PKCS7_ISSUER_AND_SERIAL *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, &PKCS7_ISSUER_AND_SERIAL_it);
+}
+
+int i2d_PKCS7_ISSUER_AND_SERIAL(PKCS7_ISSUER_AND_SERIAL *a, unsigned char **out)
+{
+    return ASN1_item_i2d((ASN1_VALUE *)a, out, &PKCS7_ISSUER_AND_SERIAL_it);
+}
+
+PKCS7_ISSUER_AND_SERIAL *PKCS7_ISSUER_AND_SERIAL_new(void)
+{
+    return (PKCS7_ISSUER_AND_SERIAL *)ASN1_item_new(&PKCS7_ISSUER_AND_SERIAL_it);
+}
+
+void PKCS7_ISSUER_AND_SERIAL_free(PKCS7_ISSUER_AND_SERIAL *a)
+{
+    ASN1_item_free((ASN1_VALUE *)a, &PKCS7_ISSUER_AND_SERIAL_it);
+}
+
+ASN1_NDEF_SEQUENCE(PKCS7_ENVELOPE) = {
+    ASN1_SIMPLE(PKCS7_ENVELOPE, version, ASN1_INTEGER),
+    ASN1_SET_OF(PKCS7_ENVELOPE, recipientinfo, PKCS7_RECIP_INFO),
+    ASN1_SIMPLE(PKCS7_ENVELOPE, enc_data, PKCS7_ENC_CONTENT)
+} ASN1_NDEF_SEQUENCE_END(PKCS7_ENVELOPE)
+
+PKCS7_ENVELOPE *d2i_PKCS7_ENVELOPE(PKCS7_ENVELOPE **a, const unsigned char **in, long len)
+{
+    return (PKCS7_ENVELOPE *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, &PKCS7_ENVELOPE_it);
+}
+
+int i2d_PKCS7_ENVELOPE(PKCS7_ENVELOPE *a, unsigned char **out)
+{
+    return ASN1_item_i2d((ASN1_VALUE *)a, out, &PKCS7_ENVELOPE_it);
+}
+
+PKCS7_ENVELOPE *PKCS7_ENVELOPE_new(void)
+{
+    return (PKCS7_ENVELOPE *)ASN1_item_new(&PKCS7_ENVELOPE_it);
+}
+
+void PKCS7_ENVELOPE_free(PKCS7_ENVELOPE *a)
+{
+    ASN1_item_free((ASN1_VALUE *)a, &PKCS7_ENVELOPE_it);
+}
+
+/* Minor tweak to operation: free up X509 */
+static int ri_cb(int operation, ASN1_VALUE **pval, const ASN1_ITEM *it,
+                 void *exarg)
 {
     if (operation == ASN1_OP_FREE_POST) {
         PKCS7_RECIP_INFO *ri = (PKCS7_RECIP_INFO *)*pval;
@@ -184,59 +274,149 @@ ASN1_SEQUENCE_cb(PKCS7_RECIP_INFO, ri_cb) = {
     ASN1_SIMPLE(PKCS7_RECIP_INFO, enc_key, ASN1_OCTET_STRING)
 } ASN1_SEQUENCE_END_cb(PKCS7_RECIP_INFO, PKCS7_RECIP_INFO)
 
-    IMPLEMENT_ASN1_FUNCTIONS(PKCS7_RECIP_INFO)
+PKCS7_RECIP_INFO *d2i_PKCS7_RECIP_INFO(PKCS7_RECIP_INFO **a, const unsigned char **in, long len)
+{
+    return (PKCS7_RECIP_INFO *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, &PKCS7_RECIP_INFO_it);
+}
 
-        ASN1_NDEF_SEQUENCE(PKCS7_ENC_CONTENT) = {
-            ASN1_SIMPLE(PKCS7_ENC_CONTENT, content_type, ASN1_OBJECT),
-            ASN1_SIMPLE(PKCS7_ENC_CONTENT, algorithm, X509_ALGOR),
-            ASN1_IMP_OPT(PKCS7_ENC_CONTENT, enc_data, ASN1_OCTET_STRING_NDEF, 0)
-        } ASN1_NDEF_SEQUENCE_END(PKCS7_ENC_CONTENT)
+int i2d_PKCS7_RECIP_INFO(PKCS7_RECIP_INFO *a, unsigned char **out)
+{
+    return ASN1_item_i2d((ASN1_VALUE *)a, out, &PKCS7_RECIP_INFO_it);
+}
 
-            IMPLEMENT_ASN1_FUNCTIONS(PKCS7_ENC_CONTENT)
+PKCS7_RECIP_INFO *PKCS7_RECIP_INFO_new(void)
+{
+    return (PKCS7_RECIP_INFO *)ASN1_item_new(&PKCS7_RECIP_INFO_it);
+}
 
-                ASN1_NDEF_SEQUENCE(PKCS7_SIGN_ENVELOPE) = {
-                    ASN1_SIMPLE(PKCS7_SIGN_ENVELOPE, version, ASN1_INTEGER),
-                    ASN1_SET_OF(PKCS7_SIGN_ENVELOPE, recipientinfo, PKCS7_RECIP_INFO),
-                    ASN1_SET_OF(PKCS7_SIGN_ENVELOPE, md_algs, X509_ALGOR),
-                    ASN1_SIMPLE(PKCS7_SIGN_ENVELOPE, enc_data, PKCS7_ENC_CONTENT),
-                    ASN1_IMP_SET_OF_OPT(PKCS7_SIGN_ENVELOPE, cert, X509, 0),
-                    ASN1_IMP_SET_OF_OPT(PKCS7_SIGN_ENVELOPE, crl, X509_CRL, 1),
-                    ASN1_SET_OF(PKCS7_SIGN_ENVELOPE, signer_info, PKCS7_SIGNER_INFO)
-                } ASN1_NDEF_SEQUENCE_END(PKCS7_SIGN_ENVELOPE)
+void PKCS7_RECIP_INFO_free(PKCS7_RECIP_INFO *a)
+{
+    ASN1_item_free((ASN1_VALUE *)a, &PKCS7_RECIP_INFO_it);
+}
 
-                    IMPLEMENT_ASN1_FUNCTIONS(PKCS7_SIGN_ENVELOPE)
+ASN1_NDEF_SEQUENCE(PKCS7_ENC_CONTENT) = {
+    ASN1_SIMPLE(PKCS7_ENC_CONTENT, content_type, ASN1_OBJECT),
+    ASN1_SIMPLE(PKCS7_ENC_CONTENT, algorithm, X509_ALGOR),
+    ASN1_IMP_OPT(PKCS7_ENC_CONTENT, enc_data, ASN1_OCTET_STRING_NDEF, 0)
+} ASN1_NDEF_SEQUENCE_END(PKCS7_ENC_CONTENT)
 
-                        ASN1_NDEF_SEQUENCE(PKCS7_ENCRYPT) = {
-                            ASN1_SIMPLE(PKCS7_ENCRYPT, version, ASN1_INTEGER),
-                            ASN1_SIMPLE(PKCS7_ENCRYPT, enc_data, PKCS7_ENC_CONTENT)
-                        } ASN1_NDEF_SEQUENCE_END(PKCS7_ENCRYPT)
+PKCS7_ENC_CONTENT *d2i_PKCS7_ENC_CONTENT(PKCS7_ENC_CONTENT **a, const unsigned char **in, long len)
+{
+    return (PKCS7_ENC_CONTENT *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, &PKCS7_ENC_CONTENT_it);
+}
 
-                            IMPLEMENT_ASN1_FUNCTIONS(PKCS7_ENCRYPT)
+int i2d_PKCS7_ENC_CONTENT(PKCS7_ENC_CONTENT *a, unsigned char **out)
+{
+    return ASN1_item_i2d((ASN1_VALUE *)a, out, &PKCS7_ENC_CONTENT_it);
+}
 
-                                ASN1_NDEF_SEQUENCE(PKCS7_DIGEST) = {
-                                    ASN1_SIMPLE(PKCS7_DIGEST, version, ASN1_INTEGER),
-                                    ASN1_SIMPLE(PKCS7_DIGEST, md, X509_ALGOR),
-                                    ASN1_SIMPLE(PKCS7_DIGEST, contents, PKCS7),
-                                    ASN1_SIMPLE(PKCS7_DIGEST, digest, ASN1_OCTET_STRING)
-                                } ASN1_NDEF_SEQUENCE_END(PKCS7_DIGEST)
+PKCS7_ENC_CONTENT *PKCS7_ENC_CONTENT_new(void)
+{
+    return (PKCS7_ENC_CONTENT *)ASN1_item_new(&PKCS7_ENC_CONTENT_it);
+}
 
-                                    IMPLEMENT_ASN1_FUNCTIONS(PKCS7_DIGEST)
+void PKCS7_ENC_CONTENT_free(PKCS7_ENC_CONTENT *a)
+{
+    ASN1_item_free((ASN1_VALUE *)a, &PKCS7_ENC_CONTENT_it);
+}
 
-                                        /* Specials for authenticated attributes */
+ASN1_NDEF_SEQUENCE(PKCS7_SIGN_ENVELOPE) = {
+    ASN1_SIMPLE(PKCS7_SIGN_ENVELOPE, version, ASN1_INTEGER),
+    ASN1_SET_OF(PKCS7_SIGN_ENVELOPE, recipientinfo, PKCS7_RECIP_INFO),
+    ASN1_SET_OF(PKCS7_SIGN_ENVELOPE, md_algs, X509_ALGOR),
+    ASN1_SIMPLE(PKCS7_SIGN_ENVELOPE, enc_data, PKCS7_ENC_CONTENT),
+    ASN1_IMP_SET_OF_OPT(PKCS7_SIGN_ENVELOPE, cert, X509, 0),
+    ASN1_IMP_SET_OF_OPT(PKCS7_SIGN_ENVELOPE, crl, X509_CRL, 1),
+    ASN1_SET_OF(PKCS7_SIGN_ENVELOPE, signer_info, PKCS7_SIGNER_INFO)
+} ASN1_NDEF_SEQUENCE_END(PKCS7_SIGN_ENVELOPE)
 
-    /* When signing attributes we want to reorder them to match the sorted
+PKCS7_SIGN_ENVELOPE *d2i_PKCS7_SIGN_ENVELOPE(PKCS7_SIGN_ENVELOPE **a, const unsigned char **in, long len)
+{
+    return (PKCS7_SIGN_ENVELOPE *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, &PKCS7_SIGN_ENVELOPE_it);
+}
+
+int i2d_PKCS7_SIGN_ENVELOPE(PKCS7_SIGN_ENVELOPE *a, unsigned char **out)
+{
+    return ASN1_item_i2d((ASN1_VALUE *)a, out, &PKCS7_SIGN_ENVELOPE_it);
+}
+
+PKCS7_SIGN_ENVELOPE *PKCS7_SIGN_ENVELOPE_new(void)
+{
+    return (PKCS7_SIGN_ENVELOPE *)ASN1_item_new(&PKCS7_SIGN_ENVELOPE_it);
+}
+
+void PKCS7_SIGN_ENVELOPE_free(PKCS7_SIGN_ENVELOPE *a)
+{
+    ASN1_item_free((ASN1_VALUE *)a, &PKCS7_SIGN_ENVELOPE_it);
+}
+
+ASN1_NDEF_SEQUENCE(PKCS7_ENCRYPT) = {
+    ASN1_SIMPLE(PKCS7_ENCRYPT, version, ASN1_INTEGER),
+    ASN1_SIMPLE(PKCS7_ENCRYPT, enc_data, PKCS7_ENC_CONTENT)
+} ASN1_NDEF_SEQUENCE_END(PKCS7_ENCRYPT)
+
+PKCS7_ENCRYPT *d2i_PKCS7_ENCRYPT(PKCS7_ENCRYPT **a, const unsigned char **in, long len)
+{
+    return (PKCS7_ENCRYPT *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, &PKCS7_ENCRYPT_it);
+}
+
+int i2d_PKCS7_ENCRYPT(PKCS7_ENCRYPT *a, unsigned char **out)
+{
+    return ASN1_item_i2d((ASN1_VALUE *)a, out, &PKCS7_ENCRYPT_it);
+}
+
+PKCS7_ENCRYPT *PKCS7_ENCRYPT_new(void)
+{
+    return (PKCS7_ENCRYPT *)ASN1_item_new(&PKCS7_ENCRYPT_it);
+}
+
+void PKCS7_ENCRYPT_free(PKCS7_ENCRYPT *a)
+{
+    ASN1_item_free((ASN1_VALUE *)a, &PKCS7_ENCRYPT_it);
+}
+
+ASN1_NDEF_SEQUENCE(PKCS7_DIGEST) = {
+    ASN1_SIMPLE(PKCS7_DIGEST, version, ASN1_INTEGER),
+    ASN1_SIMPLE(PKCS7_DIGEST, md, X509_ALGOR),
+    ASN1_SIMPLE(PKCS7_DIGEST, contents, PKCS7),
+    ASN1_SIMPLE(PKCS7_DIGEST, digest, ASN1_OCTET_STRING)
+} ASN1_NDEF_SEQUENCE_END(PKCS7_DIGEST)
+
+PKCS7_DIGEST *d2i_PKCS7_DIGEST(PKCS7_DIGEST **a, const unsigned char **in, long len)
+{
+    return (PKCS7_DIGEST *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, &PKCS7_DIGEST_it);
+}
+
+int i2d_PKCS7_DIGEST(PKCS7_DIGEST *a, unsigned char **out)
+{
+    return ASN1_item_i2d((ASN1_VALUE *)a, out, &PKCS7_DIGEST_it);
+}
+
+PKCS7_DIGEST *PKCS7_DIGEST_new(void)
+{
+    return (PKCS7_DIGEST *)ASN1_item_new(&PKCS7_DIGEST_it);
+}
+
+void PKCS7_DIGEST_free(PKCS7_DIGEST *a)
+{
+    ASN1_item_free((ASN1_VALUE *)a, &PKCS7_DIGEST_it);
+}
+
+/* Specials for authenticated attributes */
+
+/* When signing attributes we want to reorder them to match the sorted
  * encoding.
  */
 
-    ASN1_ITEM_TEMPLATE(PKCS7_ATTR_SIGN) = ASN1_EX_TEMPLATE_TYPE(ASN1_TFLG_SET_ORDER, 0, PKCS7_ATTRIBUTES, X509_ATTRIBUTE)
-        ASN1_ITEM_TEMPLATE_END(PKCS7_ATTR_SIGN)
+ASN1_ITEM_TEMPLATE(PKCS7_ATTR_SIGN) = ASN1_EX_TEMPLATE_TYPE(ASN1_TFLG_SET_ORDER, 0, PKCS7_ATTRIBUTES, X509_ATTRIBUTE)
+ASN1_ITEM_TEMPLATE_END(PKCS7_ATTR_SIGN)
 
-            /* When verifying attributes we need to use the received order. So
+/* When verifying attributes we need to use the received order. So
  * we use SEQUENCE OF and tag it to SET OF
  */
 
-    ASN1_ITEM_TEMPLATE(PKCS7_ATTR_VERIFY) = ASN1_EX_TEMPLATE_TYPE(ASN1_TFLG_SEQUENCE_OF | ASN1_TFLG_IMPTAG | ASN1_TFLG_UNIVERSAL,
-                                                                  V_ASN1_SET, PKCS7_ATTRIBUTES, X509_ATTRIBUTE)
-        ASN1_ITEM_TEMPLATE_END(PKCS7_ATTR_VERIFY)
+ASN1_ITEM_TEMPLATE(PKCS7_ATTR_VERIFY) = ASN1_EX_TEMPLATE_TYPE(ASN1_TFLG_SEQUENCE_OF | ASN1_TFLG_IMPTAG | ASN1_TFLG_UNIVERSAL,
+                                                              V_ASN1_SET, PKCS7_ATTRIBUTES, X509_ATTRIBUTE)
+ASN1_ITEM_TEMPLATE_END(PKCS7_ATTR_VERIFY)
 
-            IMPLEMENT_ASN1_PRINT_FUNCTION(PKCS7)
+IMPLEMENT_ASN1_PRINT_FUNCTION(PKCS7)

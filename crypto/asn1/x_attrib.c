@@ -86,16 +86,34 @@ ASN1_CHOICE(X509_ATTRIBUTE_SET) = {
     ASN1_SIMPLE(X509_ATTRIBUTE, value.single, ASN1_ANY)
 } ASN1_CHOICE_END_selector(X509_ATTRIBUTE, X509_ATTRIBUTE_SET, single)
 
-    ASN1_SEQUENCE(X509_ATTRIBUTE) = {
-                                      ASN1_SIMPLE(X509_ATTRIBUTE, object, ASN1_OBJECT),
-                                      /* CHOICE type merged with parent */
-                                      ASN1_EX_COMBINE(0, 0, X509_ATTRIBUTE_SET)
-                                    } ASN1_SEQUENCE_END(X509_ATTRIBUTE)
+ASN1_SEQUENCE(X509_ATTRIBUTE) = {
+    ASN1_SIMPLE(X509_ATTRIBUTE, object, ASN1_OBJECT),
+    /* CHOICE type merged with parent */
+    ASN1_EX_COMBINE(0, 0, X509_ATTRIBUTE_SET)
+} ASN1_SEQUENCE_END(X509_ATTRIBUTE)
 
-                                        IMPLEMENT_ASN1_FUNCTIONS(X509_ATTRIBUTE)
-                                            IMPLEMENT_ASN1_DUP_FUNCTION(X509_ATTRIBUTE)
+X509_ATTRIBUTE *d2i_X509_ATTRIBUTE(X509_ATTRIBUTE **a, const unsigned char **in, long len)
+{
+    return (X509_ATTRIBUTE *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, &X509_ATTRIBUTE_it);
+}
 
-                                                X509_ATTRIBUTE * X509_ATTRIBUTE_create(int nid, int atrtype, void *value)
+int i2d_X509_ATTRIBUTE(X509_ATTRIBUTE *a, unsigned char **out)
+{
+    return ASN1_item_i2d((ASN1_VALUE *)a, out, &X509_ATTRIBUTE_it);
+}
+
+X509_ATTRIBUTE *X509_ATTRIBUTE_new(void)
+{
+    return (X509_ATTRIBUTE *)ASN1_item_new(&X509_ATTRIBUTE_it);
+}
+
+void X509_ATTRIBUTE_free(X509_ATTRIBUTE *a)
+{
+    ASN1_item_free((ASN1_VALUE *)a, &X509_ATTRIBUTE_it);
+}
+IMPLEMENT_ASN1_DUP_FUNCTION(X509_ATTRIBUTE)
+
+X509_ATTRIBUTE *X509_ATTRIBUTE_create(int nid, int atrtype, void *value)
 {
     X509_ATTRIBUTE *ret = NULL;
     ASN1_TYPE *val = NULL;
