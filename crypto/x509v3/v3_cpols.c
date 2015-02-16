@@ -315,6 +315,8 @@ static POLICYINFO *policy_section(X509V3_CTX *ctx,
                 goto merr;
             qual->pqualid = OBJ_nid2obj(NID_id_qt_cps);
             qual->d.cpsuri = M_ASN1_IA5STRING_new();
+            if (qual->d.cpsuri == NULL)
+                goto merr;
             if (!ASN1_STRING_set(qual->d.cpsuri, cnf->value,
                                  strlen(cnf->value)))
                 goto merr;
@@ -379,6 +381,8 @@ static POLICYQUALINFO *notice_section(X509V3_CTX *ctx,
         cnf = sk_CONF_VALUE_value(unot, i);
         if (!strcmp(cnf->name, "explicitText")) {
             not->exptext = M_ASN1_VISIBLESTRING_new();
+            if (not->exptext == NULL)
+                goto merr;
             if (!ASN1_STRING_set(not->exptext, cnf->value,
                                  strlen(cnf->value)))
                 goto merr;
