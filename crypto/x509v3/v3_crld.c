@@ -346,7 +346,6 @@ err:
 }
 
 IMPLEMENT_STACK_OF(DIST_POINT)
-IMPLEMENT_ASN1_SET_OF(DIST_POINT)
 
 static int dpn_cb(int operation, ASN1_VALUE **pval, const ASN1_ITEM *it,
                   void *exarg)
