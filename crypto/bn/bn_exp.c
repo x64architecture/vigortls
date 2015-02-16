@@ -175,7 +175,7 @@ int BN_exp(BIGNUM *r, const BIGNUM *a, const BIGNUM *p, BN_CTX *ctx)
     }
     ret = 1;
 err:
-    if (r != rr)
+    if (r != rr && rr != NULL)
         BN_copy(r, rr);
     BN_CTX_end(ctx);
     bn_check_top(r);
