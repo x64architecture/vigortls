@@ -216,7 +216,6 @@ int ec_GFp_mont_group_set_curve(EC_GROUP *group, const BIGNUM *p, const BIGNUM *
     if (one == NULL)
         goto err;
     if (!BN_to_montgomery(one, BN_value_one(), mont, ctx)) {
-        BN_free(one);
         goto err;
     }
 
@@ -235,10 +234,9 @@ int ec_GFp_mont_group_set_curve(EC_GROUP *group, const BIGNUM *p, const BIGNUM *
     }
 
 err:
-    if (new_ctx != NULL)
-        BN_CTX_free(new_ctx);
-    if (mont != NULL)
-        BN_MONT_CTX_free(mont);
+    BN_CTX_free(new_ctx);
+    BN_MONT_CTX_free(mont);
+    BN_free(one);
     return ret;
 }
 
