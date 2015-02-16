@@ -331,6 +331,7 @@ int ec_wNAF_mul(const EC_GROUP *group, EC_POINT *r, const BIGNUM *scalar,
     int r_is_at_infinity = 1;
     size_t *wsize = NULL;      /* individual window sizes */
     signed char **wNAF = NULL; /* individual wNAFs */
+    signed char * tmp_wNAF = NULL;
     size_t *wNAF_len = NULL;
     size_t max_len = 0;
     size_t num_val;
@@ -448,7 +449,6 @@ int ec_wNAF_mul(const EC_GROUP *group, EC_POINT *r, const BIGNUM *scalar,
             }
             /* we have already generated a wNAF for 'scalar' */
         } else {
-            signed char *tmp_wNAF = NULL;
             size_t tmp_len = 0;
 
             if (num_scalar != 0) {
@@ -459,7 +459,7 @@ int ec_wNAF_mul(const EC_GROUP *group, EC_POINT *r, const BIGNUM *scalar,
             /* use the window size for which we have precomputation */
             wsize[num] = pre_comp->w;
             tmp_wNAF = compute_wNAF(scalar, wsize[num], &tmp_len);
-            if (!tmp_wNAF)
+            if (tmp_wNAF == NULL)
                 goto err;
 
             if (tmp_len <= max_len) {
@@ -470,6 +470,7 @@ int ec_wNAF_mul(const EC_GROUP *group, EC_POINT *r, const BIGNUM *scalar,
                 numblocks = 1;
                 totalnum = num + 1; /* don't use wNAF splitting */
                 wNAF[num] = tmp_wNAF;
+                tmp_wNAF = NULL;
                 wNAF[num + 1] = NULL;
                 wNAF_len[num] = tmp_len;
                 if (tmp_len > max_len)
@@ -488,7 +489,6 @@ int ec_wNAF_mul(const EC_GROUP *group, EC_POINT *r, const BIGNUM *scalar,
                     numblocks = (tmp_len + blocksize - 1) / blocksize;
                     if (numblocks > pre_comp->numblocks) {
                         ECerr(EC_F_EC_WNAF_MUL, ERR_R_INTERNAL_ERROR);
-                        free(tmp_wNAF);
                         goto err;
                     }
                     totalnum = num + numblocks;
@@ -515,7 +515,6 @@ int ec_wNAF_mul(const EC_GROUP *group, EC_POINT *r, const BIGNUM *scalar,
                     wNAF[i] = malloc(wNAF_len[i]);
                     if (wNAF[i] == NULL) {
                         ECerr(EC_F_EC_WNAF_MUL, ERR_R_MALLOC_FAILURE);
-                        free(tmp_wNAF);
                         goto err;
                     }
                     memcpy(wNAF[i], pp, wNAF_len[i]);
@@ -524,14 +523,12 @@ int ec_wNAF_mul(const EC_GROUP *group, EC_POINT *r, const BIGNUM *scalar,
 
                     if (*tmp_points == NULL) {
                         ECerr(EC_F_EC_WNAF_MUL, ERR_R_INTERNAL_ERROR);
-                        free(tmp_wNAF);
                         goto err;
                     }
                     val_sub[i] = tmp_points;
                     tmp_points += pre_points_per_block;
                     pp += blocksize;
                 }
-                free(tmp_wNAF);
             }
         }
     }
@@ -653,6 +650,7 @@ err:
         EC_POINT_free(tmp);
     free(wsize);
     free(wNAF_len);
+    free(tmp_wNAF);
     if (wNAF != NULL) {
         signed char **w;
 
