@@ -373,7 +373,7 @@ static int x509_name_canon(X509_NAME *a)
     STACK_OF(STACK_OF_X509_NAME_ENTRY) *intname = NULL;
     STACK_OF(X509_NAME_ENTRY) *entries = NULL;
     X509_NAME_ENTRY *entry, *tmpentry = NULL;
-    int i, set = -1, ret = 0;
+    int i, len, set = -1, ret = 0;
 
     if (a->canon_enc) {
         free(a->canon_enc);
@@ -410,21 +410,18 @@ static int x509_name_canon(X509_NAME *a)
 
     /* Finally generate encoding */
 
-    a->canon_enclen = i2d_name_canon(intname, NULL);
-
-    p = malloc(a->canon_enclen);
-
-    if (!p)
+    len = i2d_name_canon(intname, NULL);
+    if (len < 0)
         goto err;
-
+    p = malloc(len);
+    if (p == NULL)
+        goto err;
     a->canon_enc = p;
-
+    a->canon_enclen = len;
     i2d_name_canon(intname, &p);
-
     ret = 1;
 
 err:
-
     if (tmpentry)
         X509_NAME_ENTRY_free(tmpentry);
     if (intname)
