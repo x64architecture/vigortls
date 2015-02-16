@@ -248,7 +248,7 @@ static int read_string_inner(UI *ui, UI_STRING *uis, int echo, int strip_nl)
 
     ps = 1;
 
-    if (!echo && !noecho_console(ui))
+    if (!noecho_console(ui))
         goto error;
     ps = 2;
 
@@ -299,7 +299,7 @@ static int noecho_console(UI *ui)
 {
     DWORD mode = 0;
     HANDLE handle = GetStdHandle(STD_INPUT_HANDLE);
-    if (handle != INVALID_HANDLE_VALUE && handle != handle) {
+    if (handle != INVALID_HANDLE_VALUE) {
         return GetConsoleMode(handle, &mode) && SetConsoleMode(handle, mode & (~ENABLE_ECHO_INPUT));
     }
     return 0;
@@ -309,7 +309,7 @@ static int echo_console(UI *ui)
 {
     DWORD mode = 0;
     HANDLE handle = GetStdHandle(STD_INPUT_HANDLE);
-    if (handle != INVALID_HANDLE_VALUE && handle != handle) {
+    if (handle != INVALID_HANDLE_VALUE) {
         return GetConsoleMode(handle, &mode) && SetConsoleMode(handle, mode | ENABLE_ECHO_INPUT);
     }
     return 0;
@@ -330,9 +330,9 @@ static int close_console(UI *ui)
 static void pushsig(void)
 {
     savsig[SIGABRT] = signal(SIGABRT, recsig);
-    savsig[SIGFPE] = signal(SIGFPE, recsig);
-    savsig[SIGILL] = signal(SIGILL, recsig);
-    savsig[SIGINT] = signal(SIGINT, recsig);
+    savsig[SIGFPE]  = signal(SIGFPE,  recsig);
+    savsig[SIGILL]  = signal(SIGILL,  recsig);
+    savsig[SIGINT]  = signal(SIGINT,  recsig);
     savsig[SIGSEGV] = signal(SIGSEGV, recsig);
     savsig[SIGTERM] = signal(SIGTERM, recsig);
 }
@@ -340,9 +340,9 @@ static void pushsig(void)
 static void popsig(void)
 {
     signal(SIGABRT, savsig[SIGABRT]);
-    signal(SIGFPE, savsig[SIGFPE]);
-    signal(SIGILL, savsig[SIGILL]);
-    signal(SIGINT, savsig[SIGINT]);
+    signal(SIGFPE,  savsig[SIGFPE]);
+    signal(SIGILL,  savsig[SIGILL]);
+    signal(SIGINT,  savsig[SIGINT]);
     signal(SIGSEGV, savsig[SIGSEGV]);
     signal(SIGTERM, savsig[SIGTERM]);
 }
