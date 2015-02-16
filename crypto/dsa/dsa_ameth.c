@@ -138,6 +138,10 @@ static int dsa_pub_encode(X509_PUBKEY *pk, const EVP_PKEY *pkey)
     if (pkey->save_parameters && dsa->p && dsa->q && dsa->g) {
         ASN1_STRING *str;
         str = ASN1_STRING_new();
+        if (str == NULL) {
+            DSAerr(DSA_F_DSA_PUB_ENCODE, ERR_R_MALLOC_FAILURE);
+            goto err;
+        }
         str->length = i2d_DSAparams(dsa, &str->data);
         if (str->length <= 0) {
             DSAerr(DSA_F_DSA_PUB_ENCODE, ERR_R_MALLOC_FAILURE);
