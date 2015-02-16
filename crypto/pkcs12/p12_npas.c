@@ -130,14 +130,11 @@ static int newpass_p12(PKCS12 *p12, char *oldpass, char *newpass)
             }
         } else
             continue;
-        if (!bags) {
-            sk_PKCS7_pop_free(asafes, PKCS7_free);
-            return 0;
-        }
+        if (bags == NULL)
+            goto err;
         if (!newpass_bags(bags, oldpass, newpass)) {
             sk_PKCS12_SAFEBAG_pop_free(bags, PKCS12_SAFEBAG_free);
-            sk_PKCS7_pop_free(asafes, PKCS7_free);
-            return 0;
+            goto err;
         }
         /* Repack bag in same form with new password */
         if (bagnid == NID_pkcs7_data)
@@ -146,19 +143,20 @@ static int newpass_p12(PKCS12 *p12, char *oldpass, char *newpass)
             p7new = PKCS12_pack_p7encdata(pbe_nid, newpass, -1, NULL,
                                           pbe_saltlen, pbe_iter, bags);
         sk_PKCS12_SAFEBAG_pop_free(bags, PKCS12_SAFEBAG_free);
-        if (!p7new) {
-            sk_PKCS7_pop_free(asafes, PKCS7_free);
-            return 0;
-        }
-        sk_PKCS7_push(newsafes, p7new);
+        if (p7new == NULL)
+            goto err;
+        if (sk_PKCS7_push(newsafes, p7new) == 0)
+            goto err;
     }
     sk_PKCS7_pop_free(asafes, PKCS7_free);
 
     /* Repack safe: save old safe in case of error */
 
     p12_data_tmp = p12->authsafes->d.data;
-    if (!(p12->authsafes->d.data = ASN1_OCTET_STRING_new()))
-        goto saferr;
+    if (!(p12->authsafes->d.data = ASN1_OCTET_STRING_new())) {
+        p12->authsafes->d.data = p12_data_tmp;
+        goto err;
+    }
     if (!PKCS12_pack_authsafes(p12, newsafes))
         goto saferr;
 
@@ -179,6 +177,11 @@ saferr:
     ASN1_OCTET_STRING_free(p12->authsafes->d.data);
     ASN1_OCTET_STRING_free(macnew);
     p12->authsafes->d.data = p12_data_tmp;
+    return 0;
+
+err:
+    sk_PKCS7_pop_free(asafes, PKCS7_free);
+    sk_PKCS7_pop_free(newsafes, PKCS7_free);
     return 0;
 }
 
