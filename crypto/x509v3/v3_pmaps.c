@@ -110,11 +110,11 @@ ASN1_SEQUENCE(POLICY_MAPPING) = {
 static void *v2i_POLICY_MAPPINGS(const X509V3_EXT_METHOD *method,
                                  X509V3_CTX *ctx, STACK_OF(CONF_VALUE) * nval)
 {
-    POLICY_MAPPINGS *pmaps;
-    POLICY_MAPPING *pmap;
-    ASN1_OBJECT *obj1, *obj2;
+    POLICY_MAPPINGS *pmaps = NULL;
+    POLICY_MAPPING *pmap = NULL;
+    ASN1_OBJECT *obj1 = NULL, *obj2 = NULL;
     CONF_VALUE *val;
-    int i;
+    int i, rc;
 
     if (!(pmaps = sk_POLICY_MAPPING_new_null())) {
         X509V3err(X509V3_F_V2I_POLICY_MAPPINGS, ERR_R_MALLOC_FAILURE);
@@ -124,30 +124,32 @@ static void *v2i_POLICY_MAPPINGS(const X509V3_EXT_METHOD *method,
     for (i = 0; i < sk_CONF_VALUE_num(nval); i++) {
         val = sk_CONF_VALUE_value(nval, i);
         if (!val->value || !val->name) {
-            sk_POLICY_MAPPING_pop_free(pmaps, POLICY_MAPPING_free);
-            X509V3err(X509V3_F_V2I_POLICY_MAPPINGS, X509V3_R_INVALID_OBJECT_IDENTIFIER);
-            X509V3_conf_err(val);
-            return NULL;
+            rc = X509V3_R_INVALID_OBJECT_IDENTIFIER;
+            goto err;
         }
         obj1 = OBJ_txt2obj(val->name, 0);
         obj2 = OBJ_txt2obj(val->value, 0);
         if (!obj1 || !obj2) {
-            sk_POLICY_MAPPING_pop_free(pmaps, POLICY_MAPPING_free);
-            X509V3err(X509V3_F_V2I_POLICY_MAPPINGS, X509V3_R_INVALID_OBJECT_IDENTIFIER);
-            X509V3_conf_err(val);
-            ASN1_OBJECT_free(obj1);
-            ASN1_OBJECT_free(obj2);
-            return NULL;
+            rc = X509V3_R_INVALID_OBJECT_IDENTIFIER;
+            goto err;
         }
         pmap = POLICY_MAPPING_new();
         if (!pmap) {
-            sk_POLICY_MAPPING_pop_free(pmaps, POLICY_MAPPING_free);
-            X509V3err(X509V3_F_V2I_POLICY_MAPPINGS, ERR_R_MALLOC_FAILURE);
-            return NULL;
+            rc = ERR_R_MALLOC_FAILURE;
+            goto err;
         }
         pmap->issuerDomainPolicy = obj1;
         pmap->subjectDomainPolicy = obj2;
         sk_POLICY_MAPPING_push(pmaps, pmap);
     }
     return pmaps;
+
+err:
+    X509V3err(X509V3_F_V2I_POLICY_MAPPINGS, rc);
+    if (rc == X509V3_R_INVALID_OBJECT_IDENTIFIER)
+        X509V3_conf_err(val);
+    sk_POLICY_MAPPING_pop_free(pmaps, POLICY_MAPPING_free);
+    ASN1_OBJECT_free(obj1);
+    ASN1_OBJECT_free(obj2);
+    return NULL;
 }
