@@ -125,14 +125,17 @@ int dsa_builtin_paramgen(DSA *ret, size_t bits, size_t qbits,
 
     bits = (bits + 63) / 64 * 64;
 
-    /* NB: seed_len == 0 is special case: copy generated seed to
-      * seed_in if it is not NULL.
-      */
-    if (seed_len && (seed_len < (size_t)qsize))
+    if (seed_len < (size_t)qsize) {
         seed_in = NULL; /* seed buffer too small -- ignore */
+        seed_len = 0;
+    }
+    /*
+     * App. 2.2 of FIPS PUB 186 allows larger SEED,
+     * but our internal buffers are restricted to 160 bits
+     */
     if (seed_len > (size_t)qsize)
-        seed_len = qsize; /* App. 2.2 of FIPS PUB 186 allows larger SEED,
-                     * but our internal buffers are restricted to 160 bits*/
+        seed_len = qsize;
+
     if (seed_in != NULL)
         memcpy(seed, seed_in, seed_len);
 
@@ -164,7 +167,7 @@ int dsa_builtin_paramgen(DSA *ret, size_t bits, size_t qbits,
             if (!BN_GENCB_call(cb, 0, m++))
                 goto err;
 
-            if (!seed_len) {
+            if (seed_len == 0) {
                 RAND_pseudo_bytes(seed, qsize);
                 seed_is_random = 1;
             } else {
@@ -333,7 +336,7 @@ err:
             *counter_ret = counter;
         if (h_ret != NULL)
             *h_ret = h;
-        if (seed_out)
+        if (seed_out != NULL)
             memcpy(seed_out, seed, qsize);
     }
     if (ctx) {
