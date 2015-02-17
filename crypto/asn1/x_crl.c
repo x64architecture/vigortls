@@ -395,7 +395,7 @@ void X509_CRL_free(X509_CRL *a)
 
 X509_CRL *X509_CRL_dup(X509_CRL *x)
 {
-    return ASN1_item_dup(ASN1_ITEM_rptr(X509_CRL), x);
+    return ASN1_item_dup(&X509_CRL_it, x);
 }
 
 static int X509_REVOKED_cmp(const X509_REVOKED *const *a, const X509_REVOKED *const *b)

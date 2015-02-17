@@ -132,7 +132,7 @@ IMPLEMENT_ASN1_NDEF_FUNCTION(PKCS7)
 
 PKCS7 *PKCS7_dup(PKCS7 *x)
 {
-    return ASN1_item_dup(ASN1_ITEM_rptr(PKCS7), x);
+    return ASN1_item_dup(&PKCS7_it, x);
 }
 
 ASN1_NDEF_SEQUENCE(PKCS7_SIGNED) = {

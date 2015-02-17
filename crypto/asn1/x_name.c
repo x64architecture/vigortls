@@ -117,7 +117,7 @@ void X509_NAME_ENTRY_free(X509_NAME_ENTRY *a)
 
 X509_NAME_ENTRY *X509_NAME_ENTRY_dup(X509_NAME_ENTRY *x)
 {
-    return ASN1_item_dup(ASN1_ITEM_rptr(X509_NAME_ENTRY), x);
+    return ASN1_item_dup(&X509_NAME_ENTRY_it, x);
 }
 
 /* For the "Name" type we need a SEQUENCE OF { SET OF X509_NAME_ENTRY }
@@ -170,7 +170,7 @@ void X509_NAME_free(X509_NAME *a)
 
 X509_NAME *X509_NAME_dup(X509_NAME *x)
 {
-    return ASN1_item_dup(ASN1_ITEM_rptr(X509_NAME), x);
+    return ASN1_item_dup(&X509_NAME_it, x);
 }
 
 static int x509_name_ex_new(ASN1_VALUE **val, const ASN1_ITEM *it)

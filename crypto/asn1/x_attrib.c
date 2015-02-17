@@ -114,7 +114,7 @@ void X509_ATTRIBUTE_free(X509_ATTRIBUTE *a)
 
 X509_ATTRIBUTE *X509_ATTRIBUTE_dup(X509_ATTRIBUTE *x)
 {
-    return ASN1_item_dup(ASN1_ITEM_rptr(X509_ATTRIBUTE), x);
+    return ASN1_item_dup(&X509_ATTRIBUTE_it, x);
 }
 
 X509_ATTRIBUTE *X509_ATTRIBUTE_create(int nid, int atrtype, void *value)

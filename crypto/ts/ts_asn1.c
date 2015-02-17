@@ -86,7 +86,7 @@ void TS_MSG_IMPRINT_free(TS_MSG_IMPRINT *a)
 
 TS_MSG_IMPRINT *TS_MSG_IMPRINT_dup(TS_MSG_IMPRINT *x)
 {
-    return ASN1_item_dup(ASN1_ITEM_rptr(TS_MSG_IMPRINT), x);
+    return ASN1_item_dup(&TS_MSG_IMPRINT_it, x);
 }
 #ifndef OPENSSL_NO_BIO
 TS_MSG_IMPRINT *d2i_TS_MSG_IMPRINT_bio(BIO *bp, TS_MSG_IMPRINT **a)
@@ -140,7 +140,7 @@ void TS_REQ_free(TS_REQ *a)
 
 TS_REQ *TS_REQ_dup(TS_REQ *x)
 {
-    return ASN1_item_dup(ASN1_ITEM_rptr(TS_REQ), x);
+    return ASN1_item_dup(&TS_REQ_it, x);
 }
 #ifndef OPENSSL_NO_BIO
 TS_REQ * d2i_TS_REQ_bio(BIO *bp, TS_REQ **a)
@@ -191,7 +191,7 @@ void TS_ACCURACY_free(TS_ACCURACY *a)
 
 TS_ACCURACY *TS_ACCURACY_dup(TS_ACCURACY *x)
 {
-    return ASN1_item_dup(ASN1_ITEM_rptr(TS_ACCURACY), x);
+    return ASN1_item_dup(&TS_ACCURACY_it, x);
 }
 
 ASN1_SEQUENCE(TS_TST_INFO) = {
@@ -229,7 +229,7 @@ void TS_TST_INFO_free(TS_TST_INFO *a)
 
 TS_TST_INFO *TS_TST_INFO_dup(TS_TST_INFO *x)
 {
-    return ASN1_item_dup(ASN1_ITEM_rptr(TS_TST_INFO), x);
+    return ASN1_item_dup(&TS_TST_INFO_it, x);
 }
 #ifndef OPENSSL_NO_BIO
 TS_TST_INFO *d2i_TS_TST_INFO_bio(BIO *bp, TS_TST_INFO **a)
@@ -280,7 +280,7 @@ void TS_STATUS_INFO_free(TS_STATUS_INFO *a)
 
 TS_STATUS_INFO *TS_STATUS_INFO_dup(TS_STATUS_INFO *x)
 {
-    return ASN1_item_dup(ASN1_ITEM_rptr(TS_STATUS_INFO), x);
+    return ASN1_item_dup(&TS_STATUS_INFO_it, x);
 }
 
 static int ts_resp_set_tst_info(TS_RESP *a)
@@ -352,7 +352,7 @@ void TS_RESP_free(TS_RESP *a)
 
 TS_RESP *TS_RESP_dup(TS_RESP *x)
 {
-    return ASN1_item_dup(ASN1_ITEM_rptr(TS_RESP), x);
+    return ASN1_item_dup(&TS_RESP_it, x);
 }
 #ifndef OPENSSL_NO_BIO
 TS_RESP *d2i_TS_RESP_bio(BIO *bp, TS_RESP **a)
@@ -402,7 +402,7 @@ void ESS_ISSUER_SERIAL_free(ESS_ISSUER_SERIAL *a)
 
 ESS_ISSUER_SERIAL *ESS_ISSUER_SERIAL_dup(ESS_ISSUER_SERIAL *x)
 {
-    return ASN1_item_dup(ASN1_ITEM_rptr(ESS_ISSUER_SERIAL), x);
+    return ASN1_item_dup(&ESS_ISSUER_SERIAL_it, x);
 }
 
 ASN1_SEQUENCE(ESS_CERT_ID) = {
@@ -432,7 +432,7 @@ void ESS_CERT_ID_free(ESS_CERT_ID *a)
 
 ESS_CERT_ID *ESS_CERT_ID_dup(ESS_CERT_ID *x)
 {
-    return ASN1_item_dup(ASN1_ITEM_rptr(ESS_CERT_ID), x);
+    return ASN1_item_dup(&ESS_CERT_ID_it, x);
 }
 
 ASN1_SEQUENCE(ESS_SIGNING_CERT) = {
@@ -462,7 +462,7 @@ void ESS_SIGNING_CERT_free(ESS_SIGNING_CERT *a)
 
 ESS_SIGNING_CERT *ESS_SIGNING_CERT_dup(ESS_SIGNING_CERT *x)
 {
-    return ASN1_item_dup(ASN1_ITEM_rptr(ESS_SIGNING_CERT), x);
+    return ASN1_item_dup(&ESS_SIGNING_CERT_it, x);
 }
 
 /* Getting encapsulated TS_TST_INFO object from PKCS7. */

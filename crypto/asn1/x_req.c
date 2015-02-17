@@ -149,5 +149,5 @@ void X509_REQ_free(X509_REQ *a)
 
 X509_REQ *X509_REQ_dup(X509_REQ *x)
 {
-    return ASN1_item_dup(ASN1_ITEM_rptr(X509_REQ), x);
+    return ASN1_item_dup(&X509_REQ_it, x);
 }

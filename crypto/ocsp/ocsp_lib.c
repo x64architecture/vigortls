@@ -280,5 +280,5 @@ err:
 
 OCSP_CERTID *OCSP_CERTID_dup(OCSP_CERTID *x)
 {
-    return ASN1_item_dup(ASN1_ITEM_rptr(OCSP_CERTID), x);
+    return ASN1_item_dup(&OCSP_CERTID_it, x);
 }
