@@ -111,7 +111,11 @@ void X509_ATTRIBUTE_free(X509_ATTRIBUTE *a)
 {
     ASN1_item_free((ASN1_VALUE *)a, &X509_ATTRIBUTE_it);
 }
-IMPLEMENT_ASN1_DUP_FUNCTION(X509_ATTRIBUTE)
+
+X509_ATTRIBUTE *X509_ATTRIBUTE_dup(X509_ATTRIBUTE *x)
+{
+    return ASN1_item_dup(ASN1_ITEM_rptr(X509_ATTRIBUTE), x);
+}
 
 X509_ATTRIBUTE *X509_ATTRIBUTE_create(int nid, int atrtype, void *value)
 {

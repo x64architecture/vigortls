@@ -278,4 +278,7 @@ err:
     return 0;
 }
 
-IMPLEMENT_ASN1_DUP_FUNCTION(OCSP_CERTID)
+OCSP_CERTID *OCSP_CERTID_dup(OCSP_CERTID *x)
+{
+    return ASN1_item_dup(ASN1_ITEM_rptr(OCSP_CERTID), x);
+}

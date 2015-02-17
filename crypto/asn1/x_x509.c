@@ -167,7 +167,11 @@ void X509_free(X509 *a)
 {
     ASN1_item_free((ASN1_VALUE *)a, &X509_it);
 }
-IMPLEMENT_ASN1_DUP_FUNCTION(X509)
+
+X509 *X509_dup(X509 *x)
+{
+    return ASN1_item_dup(ASN1_ITEM_rptr(X509), x);
+}
 
 int X509_get_ex_new_index(long argl, void *argp, CRYPTO_EX_new *new_func,
                           CRYPTO_EX_dup *dup_func, CRYPTO_EX_free *free_func)
