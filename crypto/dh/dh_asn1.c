@@ -80,14 +80,23 @@ static int dh_cb(int operation, ASN1_VALUE **pval, const ASN1_ITEM *it,
 }
 
 ASN1_SEQUENCE_cb(DHparams, dh_cb) = {
-                                      ASN1_SIMPLE(DH, p, BIGNUM),
-                                      ASN1_SIMPLE(DH, g, BIGNUM),
-                                      ASN1_OPT(DH, length, ZLONG),
-                                    } ASN1_SEQUENCE_END_cb(DH, DHparams)
+    ASN1_SIMPLE(DH, p, BIGNUM),
+    ASN1_SIMPLE(DH, g, BIGNUM),
+    ASN1_OPT(DH, length, ZLONG),
+} ASN1_SEQUENCE_END_cb(DH, DHparams)
 
-                                        IMPLEMENT_ASN1_ENCODE_FUNCTIONS_const_fname(DH, DHparams, DHparams)
+DH *d2i_DHparams(DH **a, const unsigned char **in, long len)
+{
+    return (DH *)ASN1_item_d2i((ASN1_VALUE **)a, in, len,
+                               &DHparams_it);
+}
 
-                                            DH * DHparams_dup(DH * dh)
+int i2d_DHparams(const DH *a, unsigned char **out)
+{
+    return ASN1_item_i2d((ASN1_VALUE *)a, out, &DHparams_it);
+}
+
+DH *DHparams_dup(DH *dh)
 {
     return ASN1_item_dup(ASN1_ITEM_rptr(DHparams), dh);
 }

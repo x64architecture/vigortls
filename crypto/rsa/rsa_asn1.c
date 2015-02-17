@@ -123,9 +123,25 @@ void RSA_PSS_PARAMS_free(RSA_PSS_PARAMS *a)
     ASN1_item_free((ASN1_VALUE *)a, &RSA_PSS_PARAMS_it);
 }
 
-IMPLEMENT_ASN1_ENCODE_FUNCTIONS_const_fname(RSA, RSAPrivateKey, RSAPrivateKey)
+RSA *d2i_RSAPrivateKey(RSA **a, const unsigned char **in, long len)
+{
+    return (RSA *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, &RSAPrivateKey_it);
+}
 
-IMPLEMENT_ASN1_ENCODE_FUNCTIONS_const_fname(RSA, RSAPublicKey, RSAPublicKey)
+int i2d_RSAPrivateKey(const RSA *a, unsigned char **out)
+{
+    return ASN1_item_i2d((ASN1_VALUE *)a, out, &RSAPrivateKey_it);
+}
+
+RSA *d2i_RSAPublicKey(RSA **a, const unsigned char **in, long len)
+{
+    return (RSA *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, &RSAPublicKey_it);
+}
+
+int i2d_RSAPublicKey(const RSA *a, unsigned char **out)
+{
+    return ASN1_item_i2d((ASN1_VALUE *)a, out, &RSAPublicKey_it);
+}
 
 RSA *RSAPublicKey_dup(RSA * rsa)
 {
