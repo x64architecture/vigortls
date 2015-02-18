@@ -194,5 +194,6 @@ err:
     X509_NAME_free(isname);
     M_ASN1_INTEGER_free(serial);
     M_ASN1_OCTET_STRING_free(ikeyid);
+    sk_GENERAL_NAME_pop_free(gens, GENERAL_NAME_free);
     return NULL;
 }
