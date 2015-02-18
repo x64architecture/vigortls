@@ -64,10 +64,6 @@
 const ASN1_ITEM ASN1_INTEGER_it = {
     .itype = ASN1_ITYPE_PRIMITIVE,
     .utype = V_ASN1_INTEGER,
-    .templates = NULL,
-    .tcount = 0,
-    .funcs = NULL,
-    .size = 0,
     .sname = "ASN1_INTEGER",
 };
 
@@ -94,10 +90,6 @@ void ASN1_INTEGER_free(ASN1_INTEGER *a)
 const ASN1_ITEM ASN1_ENUMERATED_it = {
     .itype = ASN1_ITYPE_PRIMITIVE,
     .utype = V_ASN1_ENUMERATED,
-    .templates = NULL,
-    .tcount = 0,
-    .funcs = NULL,
-    .size = 0,
     .sname = "ASN1_ENUMERATED",
 };
 
@@ -124,10 +116,6 @@ void ASN1_ENUMERATED_free(ASN1_ENUMERATED *a)
 const ASN1_ITEM ASN1_BIT_STRING_it = {
     .itype = ASN1_ITYPE_PRIMITIVE,
     .utype = V_ASN1_BIT_STRING,
-    .templates = NULL,
-    .tcount = 0,
-    .funcs = NULL,
-    .size = 0,
     .sname = "ASN1_BIT_STRING",
 };
 
@@ -154,10 +142,6 @@ void ASN1_BIT_STRING_free(ASN1_BIT_STRING *a)
 const ASN1_ITEM ASN1_OCTET_STRING_it = {
     .itype = ASN1_ITYPE_PRIMITIVE,
     .utype = V_ASN1_OCTET_STRING,
-    .templates = NULL,
-    .tcount = 0,
-    .funcs = NULL,
-    .size = 0,
     .sname = "ASN1_OCTET_STRING",
 };
 
@@ -184,10 +168,6 @@ void ASN1_OCTET_STRING_free(ASN1_OCTET_STRING *a)
 const ASN1_ITEM ASN1_NULL_it = {
     .itype = ASN1_ITYPE_PRIMITIVE,
     .utype = V_ASN1_NULL,
-    .templates = NULL,
-    .tcount = 0,
-    .funcs = NULL,
-    .size = 0,
     .sname = "ASN1_NULL",
 };
 
@@ -214,20 +194,12 @@ void ASN1_NULL_free(ASN1_NULL *a)
 const ASN1_ITEM ASN1_OBJECT_it = {
     .itype = ASN1_ITYPE_PRIMITIVE,
     .utype = V_ASN1_OBJECT,
-    .templates = NULL,
-    .tcount = 0,
-    .funcs = NULL,
-    .size = 0,
     .sname = "ASN1_OBJECT",
 };
 
 const ASN1_ITEM ASN1_UTF8STRING_it = {
     .itype = ASN1_ITYPE_PRIMITIVE,
     .utype = V_ASN1_UTF8STRING,
-    .templates = NULL,
-    .tcount = 0,
-    .funcs = NULL,
-    .size = 0,
     .sname = "ASN1_UTF8STRING",
 };
 
@@ -254,10 +226,6 @@ void ASN1_UTF8STRING_free(ASN1_UTF8STRING *a)
 const ASN1_ITEM ASN1_PRINTABLESTRING_it = {
     .itype = ASN1_ITYPE_PRIMITIVE,
     .utype = V_ASN1_PRINTABLESTRING,
-    .templates = NULL,
-    .tcount = 0,
-    .funcs = NULL,
-    .size = 0,
     .sname = "ASN1_PRINTABLESTRING",
 };
 
@@ -284,10 +252,6 @@ void ASN1_PRINTABLESTRING_free(ASN1_PRINTABLESTRING *a)
 const ASN1_ITEM ASN1_T61STRING_it = {
     .itype = ASN1_ITYPE_PRIMITIVE,
     .utype = V_ASN1_T61STRING,
-    .templates = NULL,
-    .tcount = 0,
-    .funcs = NULL,
-    .size = 0,
     .sname = "ASN1_T61STRING",
 };
 
@@ -314,10 +278,6 @@ void ASN1_T61STRING_free(ASN1_T61STRING *a)
 const ASN1_ITEM ASN1_IA5STRING_it = {
     .itype = ASN1_ITYPE_PRIMITIVE,
     .utype = V_ASN1_IA5STRING,
-    .templates = NULL,
-    .tcount = 0,
-    .funcs = NULL,
-    .size = 0,
     .sname = "ASN1_IA5STRING",
 };
 
@@ -344,10 +304,6 @@ void ASN1_IA5STRING_free(ASN1_IA5STRING *a)
 const ASN1_ITEM ASN1_GENERALSTRING_it = {
     .itype = ASN1_ITYPE_PRIMITIVE,
     .utype = V_ASN1_GENERALSTRING,
-    .templates = NULL,
-    .tcount = 0,
-    .funcs = NULL,
-    .size = 0,
     .sname = "ASN1_GENERALSTRING",
 };
 
@@ -374,10 +330,6 @@ void ASN1_GENERALSTRING_free(ASN1_GENERALSTRING *a)
 const ASN1_ITEM ASN1_UTCTIME_it = {
     .itype = ASN1_ITYPE_PRIMITIVE,
     .utype = V_ASN1_UTCTIME,
-    .templates = NULL,
-    .tcount = 0,
-    .funcs = NULL,
-    .size = 0,
     .sname = "ASN1_UTCTIME",
 };
 
@@ -404,10 +356,6 @@ void ASN1_UTCTIME_free(ASN1_UTCTIME *a)
 const ASN1_ITEM ASN1_GENERALIZEDTIME_it = {
     .itype = ASN1_ITYPE_PRIMITIVE,
     .utype = V_ASN1_GENERALIZEDTIME,
-    .templates = NULL,
-    .tcount = 0,
-    .funcs = NULL,
-    .size = 0,
     .sname = "ASN1_GENERALIZEDTIME",
 };
 
@@ -434,10 +382,6 @@ void ASN1_GENERALIZEDTIME_free(ASN1_GENERALIZEDTIME *a)
 const ASN1_ITEM ASN1_VISIBLESTRING_it = {
     .itype = ASN1_ITYPE_PRIMITIVE,
     .utype = V_ASN1_VISIBLESTRING,
-    .templates = NULL,
-    .tcount = 0,
-    .funcs = NULL,
-    .size = 0,
     .sname = "ASN1_VISIBLESTRING",
 };
 
@@ -464,10 +408,6 @@ void ASN1_VISIBLESTRING_free(ASN1_VISIBLESTRING *a)
 const ASN1_ITEM ASN1_UNIVERSALSTRING_it = {
     .itype = ASN1_ITYPE_PRIMITIVE,
     .utype = V_ASN1_UNIVERSALSTRING,
-    .templates = NULL,
-    .tcount = 0,
-    .funcs = NULL,
-    .size = 0,
     .sname = "ASN1_UNIVERSALSTRING",
 };
 
@@ -494,10 +434,6 @@ void ASN1_UNIVERSALSTRING_free(ASN1_UNIVERSALSTRING *a)
 const ASN1_ITEM ASN1_BMPSTRING_it = {
     .itype = ASN1_ITYPE_PRIMITIVE,
     .utype = V_ASN1_BMPSTRING,
-    .templates = NULL,
-    .tcount = 0,
-    .funcs = NULL,
-    .size = 0,
     .sname = "ASN1_BMPSTRING",
 };
 
@@ -524,10 +460,6 @@ void ASN1_BMPSTRING_free(ASN1_BMPSTRING *a)
 const ASN1_ITEM ASN1_ANY_it = {
     .itype = ASN1_ITYPE_PRIMITIVE,
     .utype = V_ASN1_ANY,
-    .templates = NULL,
-    .tcount = 0,
-    .funcs = NULL,
-    .size = 0,
     .sname = "ASN1_ANY",
 };
 
@@ -535,10 +467,6 @@ const ASN1_ITEM ASN1_ANY_it = {
 const ASN1_ITEM ASN1_SEQUENCE_it = {
     .itype = ASN1_ITYPE_PRIMITIVE,
     .utype = V_ASN1_SEQUENCE,
-    .templates = NULL,
-    .tcount = 0,
-    .funcs = NULL,
-    .size = 0,
     .sname = "ASN1_SEQUENCE",
 };
 
@@ -634,9 +562,6 @@ void DIRECTORYSTRING_free(ASN1_STRING *a)
 const ASN1_ITEM ASN1_BOOLEAN_it = {
     .itype = ASN1_ITYPE_PRIMITIVE,
     .utype = V_ASN1_BOOLEAN,
-    .templates = NULL,
-    .tcount = 0,
-    .funcs = NULL,
     .size = -1,
     .sname = "ASN1_BOOLEAN",
 };
@@ -644,9 +569,6 @@ const ASN1_ITEM ASN1_BOOLEAN_it = {
 const ASN1_ITEM ASN1_TBOOLEAN_it = {
     .itype = ASN1_ITYPE_PRIMITIVE,
     .utype = V_ASN1_BOOLEAN,
-    .templates = NULL,
-    .tcount = 0,
-    .funcs = NULL,
     .size = 1,
     .sname = "ASN1_TBOOLEAN",
 };
@@ -654,10 +576,6 @@ const ASN1_ITEM ASN1_TBOOLEAN_it = {
 const ASN1_ITEM ASN1_FBOOLEAN_it = {
     .itype = ASN1_ITYPE_PRIMITIVE,
     .utype = V_ASN1_BOOLEAN,
-    .templates = NULL,
-    .tcount = 0,
-    .funcs = NULL,
-    .size = 0,
     .sname = "ASN1_FBOOLEAN",
 };
 
@@ -666,9 +584,6 @@ const ASN1_ITEM ASN1_FBOOLEAN_it = {
 const ASN1_ITEM ASN1_OCTET_STRING_NDEF_it = {
     .itype = ASN1_ITYPE_PRIMITIVE,
     .utype = V_ASN1_OCTET_STRING,
-    .templates = NULL,
-    .tcount = 0,
-    .funcs = NULL,
     .size = ASN1_TFLG_NDEF,
     .sname = "ASN1_OCTET_STRING_NDEF",
 };
