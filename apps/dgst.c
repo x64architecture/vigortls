@@ -260,6 +260,11 @@ int dgst_main(int argc, char **argv)
     }
 
     in = BIO_new(BIO_s_file());
+    if (!in) {
+        BIO_printf(bio_err, "Error opening input file\n");
+        ERR_print_errors(bio_err);
+        goto end;
+    }
     bmd = BIO_new(BIO_f_md());
     if (debug) {
         BIO_set_callback(in, BIO_debug_callback);

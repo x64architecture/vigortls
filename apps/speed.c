@@ -2286,6 +2286,10 @@ static int do_multi(int multi)
     const char *stnerr = NULL;
 
     fds = reallocarray(NULL, multi, sizeof *fds);
+    if (fds == NULL) {
+        fprintf(stderr, "reallocarray failure\n");
+        exit(1);
+    }
     for (n = 0; n < multi; ++n) {
         if (pipe(fd) == -1) {
             fprintf(stderr, "pipe failure\n");
