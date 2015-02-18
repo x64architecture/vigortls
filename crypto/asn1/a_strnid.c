@@ -270,8 +270,6 @@ static void st_free(ASN1_STRING_TABLE *tbl)
         free(tbl);
 }
 
-IMPLEMENT_STACK_OF(ASN1_STRING_TABLE)
-
 #ifdef STRING_TABLE_TEST
 
 main()

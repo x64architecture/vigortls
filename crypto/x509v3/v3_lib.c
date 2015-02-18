@@ -328,5 +328,3 @@ err:
         X509V3err(X509V3_F_X509V3_ADD1_I2D, errcode);
     return 0;
 }
-
-IMPLEMENT_STACK_OF(X509V3_EXT_METHOD)

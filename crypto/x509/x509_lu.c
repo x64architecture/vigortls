@@ -671,6 +671,3 @@ void X509_STORE_set_verify_cb(X509_STORE *ctx,
 {
     ctx->verify_cb = verify_cb;
 }
-
-IMPLEMENT_STACK_OF(X509_LOOKUP)
-IMPLEMENT_STACK_OF(X509_OBJECT)

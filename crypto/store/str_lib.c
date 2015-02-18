@@ -1181,8 +1181,6 @@ void STORE_OBJECT_free(STORE_OBJECT *data)
     free(data);
 }
 
-IMPLEMENT_STACK_OF(STORE_OBJECT *)
-
 struct STORE_attr_info_st {
     unsigned char set[(STORE_ATTR_TYPE_NUM + 8) / 8];
     union {

@@ -114,5 +114,3 @@ void X509_INFO_free(X509_INFO *x)
         free(x->enc_data);
     free(x);
 }
-
-IMPLEMENT_STACK_OF(X509_INFO)

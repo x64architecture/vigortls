@@ -104,8 +104,6 @@ X509_ALGOR *X509_ALGOR_dup(X509_ALGOR *x)
     return ASN1_item_dup(&X509_ALGOR_it, x);
 }
 
-IMPLEMENT_STACK_OF(X509_ALGOR)
-
 int X509_ALGOR_set0(X509_ALGOR * alg, ASN1_OBJECT * aobj, int ptype, void *pval)
 {
     if (!alg)

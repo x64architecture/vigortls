@@ -22,9 +22,8 @@ typedef struct name_funcs_st {
 } NAME_FUNCS;
 
 DECLARE_STACK_OF(NAME_FUNCS)
-IMPLEMENT_STACK_OF(NAME_FUNCS)
 
-static STACK_OF(NAME_FUNCS) * name_funcs_stack;
+static STACK_OF(NAME_FUNCS) *name_funcs_stack;
 
 /* The LHASH callbacks now use the raw "void *" prototypes and do per-variable
  * casting in the functions. This prevents function pointer casting without the

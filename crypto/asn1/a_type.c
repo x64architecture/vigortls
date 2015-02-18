@@ -102,8 +102,6 @@ int ASN1_TYPE_set1(ASN1_TYPE *a, int type, const void *value)
     return 1;
 }
 
-IMPLEMENT_STACK_OF(ASN1_TYPE)
-
 /* Returns 0 if they are equal, != 0 otherwise. */
 int ASN1_TYPE_cmp(const ASN1_TYPE *a, ASN1_TYPE *b)
 {

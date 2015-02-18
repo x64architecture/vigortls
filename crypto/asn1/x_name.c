@@ -555,5 +555,3 @@ int X509_NAME_set(X509_NAME **xn, X509_NAME *name)
     }
     return (*xn != NULL);
 }
-
-IMPLEMENT_STACK_OF(X509_NAME_ENTRY)

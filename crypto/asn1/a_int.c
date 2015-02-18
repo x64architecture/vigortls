@@ -448,5 +448,3 @@ BIGNUM *ASN1_INTEGER_to_BN(const ASN1_INTEGER *ai, BIGNUM *bn)
         BN_set_negative(ret, 1);
     return (ret);
 }
-
-IMPLEMENT_STACK_OF(ASN1_INTEGER)

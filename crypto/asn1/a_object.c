@@ -388,5 +388,3 @@ ASN1_OBJECT *ASN1_OBJECT_create(int nid, unsigned char *data, int len,
     o.flags = ASN1_OBJECT_FLAG_DYNAMIC | ASN1_OBJECT_FLAG_DYNAMIC_STRINGS | ASN1_OBJECT_FLAG_DYNAMIC_DATA;
     return (OBJ_dup(&o));
 }
-
-IMPLEMENT_STACK_OF(ASN1_OBJECT)

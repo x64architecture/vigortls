@@ -550,6 +550,3 @@ void *X509_CRL_get_meth_data(X509_CRL *crl)
 {
     return crl->meth_data;
 }
-
-IMPLEMENT_STACK_OF(X509_REVOKED)
-IMPLEMENT_STACK_OF(X509_CRL)

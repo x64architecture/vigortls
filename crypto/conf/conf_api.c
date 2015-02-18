@@ -271,5 +271,3 @@ err:
     }
     return (v);
 }
-
-IMPLEMENT_STACK_OF(CONF_VALUE)
