@@ -97,18 +97,33 @@ ASN1_SEQUENCE(GENERAL_SUBTREE) = {
     ASN1_IMP_OPT(GENERAL_SUBTREE, maximum, ASN1_INTEGER, 1)
 } ASN1_SEQUENCE_END(GENERAL_SUBTREE)
 
-    ASN1_SEQUENCE(NAME_CONSTRAINTS) = {
-                                        ASN1_IMP_SEQUENCE_OF_OPT(NAME_CONSTRAINTS, permittedSubtrees,
-                                                                 GENERAL_SUBTREE, 0),
-                                        ASN1_IMP_SEQUENCE_OF_OPT(NAME_CONSTRAINTS, excludedSubtrees,
-                                                                 GENERAL_SUBTREE, 1),
-                                      } ASN1_SEQUENCE_END(NAME_CONSTRAINTS)
+ASN1_SEQUENCE(NAME_CONSTRAINTS) = {
+    ASN1_IMP_SEQUENCE_OF_OPT(NAME_CONSTRAINTS, permittedSubtrees, GENERAL_SUBTREE, 0),
+    ASN1_IMP_SEQUENCE_OF_OPT(NAME_CONSTRAINTS, excludedSubtrees, GENERAL_SUBTREE, 1),
+} ASN1_SEQUENCE_END(NAME_CONSTRAINTS)
 
-                                          IMPLEMENT_ASN1_ALLOC_FUNCTIONS(GENERAL_SUBTREE)
-                                              IMPLEMENT_ASN1_ALLOC_FUNCTIONS(NAME_CONSTRAINTS)
+GENERAL_SUBTREE *GENERAL_SUBTREE_new(void)
+{
+    return (GENERAL_SUBTREE*)ASN1_item_new(&GENERAL_SUBTREE_it);
+}
 
-                                                  static void * v2i_NAME_CONSTRAINTS(const X509V3_EXT_METHOD *method,
-                                                                                     X509V3_CTX *ctx, STACK_OF(CONF_VALUE) * nval)
+void GENERAL_SUBTREE_free(GENERAL_SUBTREE *a)
+{
+    ASN1_item_free((ASN1_VALUE *)a, &GENERAL_SUBTREE_it);
+}
+
+NAME_CONSTRAINTS *NAME_CONSTRAINTS_new(void)
+{
+    return (NAME_CONSTRAINTS*)ASN1_item_new(&NAME_CONSTRAINTS_it);
+}
+
+void NAME_CONSTRAINTS_free(NAME_CONSTRAINTS *a)
+{
+    ASN1_item_free((ASN1_VALUE *)a, &NAME_CONSTRAINTS_it);
+}
+
+static void *v2i_NAME_CONSTRAINTS(const X509V3_EXT_METHOD *method, X509V3_CTX *ctx,
+                                  STACK_OF(CONF_VALUE) *nval)
 {
     int i;
     CONF_VALUE tval, *val;

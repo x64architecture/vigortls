@@ -65,8 +65,8 @@
 #include <openssl/err.h>
 #include <openssl/x509v3.h>
 
-static STACK_OF(CONF_VALUE) * i2v_POLICY_CONSTRAINTS(const X509V3_EXT_METHOD *method, void *bcons,
-                                                     STACK_OF(CONF_VALUE) * extlist);
+static STACK_OF(CONF_VALUE) *i2v_POLICY_CONSTRAINTS(const X509V3_EXT_METHOD *method, void *bcons,
+                                                    STACK_OF(CONF_VALUE) * extlist);
 static void *v2i_POLICY_CONSTRAINTS(const X509V3_EXT_METHOD *method,
                                     X509V3_CTX *ctx,
                                     STACK_OF(CONF_VALUE) * values);
@@ -83,14 +83,22 @@ const X509V3_EXT_METHOD v3_policy_constraints = {
 };
 
 ASN1_SEQUENCE(POLICY_CONSTRAINTS) = {
-                                      ASN1_IMP_OPT(POLICY_CONSTRAINTS, requireExplicitPolicy, ASN1_INTEGER, 0),
-                                      ASN1_IMP_OPT(POLICY_CONSTRAINTS, inhibitPolicyMapping, ASN1_INTEGER, 1)
-                                    } ASN1_SEQUENCE_END(POLICY_CONSTRAINTS)
+    ASN1_IMP_OPT(POLICY_CONSTRAINTS, requireExplicitPolicy, ASN1_INTEGER, 0),
+    ASN1_IMP_OPT(POLICY_CONSTRAINTS, inhibitPolicyMapping, ASN1_INTEGER, 1)
+} ASN1_SEQUENCE_END(POLICY_CONSTRAINTS)
 
-                                        IMPLEMENT_ASN1_ALLOC_FUNCTIONS(POLICY_CONSTRAINTS)
+POLICY_CONSTRAINTS *POLICY_CONSTRAINTS_new(void)
+{
+    return (POLICY_CONSTRAINTS*)ASN1_item_new(&POLICY_CONSTRAINTS_it);
+}
 
-                                            static STACK_OF(CONF_VALUE) * i2v_POLICY_CONSTRAINTS(const X509V3_EXT_METHOD *method, void *a,
-                                                                                                 STACK_OF(CONF_VALUE) * extlist)
+void POLICY_CONSTRAINTS_free(POLICY_CONSTRAINTS *a)
+{
+    ASN1_item_free((ASN1_VALUE *)a, &POLICY_CONSTRAINTS_it);
+}
+
+static STACK_OF(CONF_VALUE) *i2v_POLICY_CONSTRAINTS(const X509V3_EXT_METHOD *method, void *a,
+                                                    STACK_OF(CONF_VALUE) * extlist)
 {
     POLICY_CONSTRAINTS *pcons = a;
     X509V3_add_value_int("Require Explicit Policy",

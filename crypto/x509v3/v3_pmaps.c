@@ -84,14 +84,22 @@ ASN1_SEQUENCE(POLICY_MAPPING) = {
     ASN1_SIMPLE(POLICY_MAPPING, subjectDomainPolicy, ASN1_OBJECT)
 } ASN1_SEQUENCE_END(POLICY_MAPPING)
 
-    ASN1_ITEM_TEMPLATE(POLICY_MAPPINGS) = ASN1_EX_TEMPLATE_TYPE(ASN1_TFLG_SEQUENCE_OF, 0, POLICY_MAPPINGS,
-                                                                POLICY_MAPPING)
-                                              ASN1_ITEM_TEMPLATE_END(POLICY_MAPPINGS)
+ASN1_ITEM_TEMPLATE(POLICY_MAPPINGS) = ASN1_EX_TEMPLATE_TYPE(ASN1_TFLG_SEQUENCE_OF, 0, POLICY_MAPPINGS,
+                                                            POLICY_MAPPING)
+ASN1_ITEM_TEMPLATE_END(POLICY_MAPPINGS)
 
-                                                  IMPLEMENT_ASN1_ALLOC_FUNCTIONS(POLICY_MAPPING)
+POLICY_MAPPING *POLICY_MAPPING_new(void)
+{
+    return (POLICY_MAPPING*)ASN1_item_new(&POLICY_MAPPING_it);
+}
 
-                                                      static STACK_OF(CONF_VALUE) * i2v_POLICY_MAPPINGS(const X509V3_EXT_METHOD *method, void *a,
-                                                                                                        STACK_OF(CONF_VALUE) * ext_list)
+void POLICY_MAPPING_free(POLICY_MAPPING *a)
+{
+    ASN1_item_free((ASN1_VALUE *)a, &POLICY_MAPPING_it);
+}
+
+static STACK_OF(CONF_VALUE) *i2v_POLICY_MAPPINGS(const X509V3_EXT_METHOD *method, void *a,
+                                                 STACK_OF(CONF_VALUE) * ext_list)
 {
     POLICY_MAPPINGS *pmaps = a;
     POLICY_MAPPING *pmap;
