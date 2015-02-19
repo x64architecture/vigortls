@@ -130,7 +130,7 @@ ASN1_STRING *ASN1_pack_string(void *obj, i2d_of_void *i2d, ASN1_STRING **oct)
     if (!oct || !*oct) {
         if (!(octmp = ASN1_STRING_new())) {
             ASN1err(ASN1_F_ASN1_PACK_STRING, ERR_R_MALLOC_FAILURE);
-            return NULL;
+            goto err;
         }
         if (oct)
             *oct = octmp;
@@ -139,15 +139,19 @@ ASN1_STRING *ASN1_pack_string(void *obj, i2d_of_void *i2d, ASN1_STRING **oct)
 
     if (!(octmp->length = i2d(obj, NULL))) {
         ASN1err(ASN1_F_ASN1_PACK_STRING, ASN1_R_ENCODE_ERROR);
-        return NULL;
+        goto err;
     }
     if (!(p = malloc(octmp->length))) {
         ASN1err(ASN1_F_ASN1_PACK_STRING, ERR_R_MALLOC_FAILURE);
-        return NULL;
+        goto err;
     }
     octmp->data = p;
     i2d(obj, &p);
     return octmp;
+
+err:
+    ASN1_STRING_free(octmp);
+    return NULL;
 }
 
 #endif

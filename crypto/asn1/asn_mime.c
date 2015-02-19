@@ -433,10 +433,8 @@ ASN1_VALUE *SMIME_read_ASN1(BIO *bio, BIO **bcont, const ASN1_ITEM *it)
     }
 
     if (!(hdr = mime_hdr_find(headers, "content-type")) || !hdr->value) {
-        sk_MIME_HEADER_pop_free(headers, mime_hdr_free);
-        sk_BIO_pop_free(parts, BIO_vfree);
         ASN1err(ASN1_F_SMIME_READ_ASN1, ASN1_R_NO_CONTENT_TYPE);
-        return NULL;
+        goto err;
     }
 
     /* Handle multipart/signed */
@@ -445,16 +443,14 @@ ASN1_VALUE *SMIME_read_ASN1(BIO *bio, BIO **bcont, const ASN1_ITEM *it)
         /* Split into two parts */
         prm = mime_param_find(hdr, "boundary");
         if (!prm || !prm->param_value) {
-            sk_MIME_HEADER_pop_free(headers, mime_hdr_free);
             ASN1err(ASN1_F_SMIME_READ_ASN1, ASN1_R_NO_MULTIPART_BOUNDARY);
-            return NULL;
+            goto err;
         }
         ret = multi_split(bio, prm->param_value, &parts);
         sk_MIME_HEADER_pop_free(headers, mime_hdr_free);
         if (!ret || (sk_BIO_num(parts) != 2)) {
             ASN1err(ASN1_F_SMIME_READ_ASN1, ASN1_R_NO_MULTIPART_BODY_FAILURE);
-            sk_BIO_pop_free(parts, BIO_vfree);
-            return NULL;
+            goto err;
         }
 
         /* Parse the signature piece */
@@ -462,32 +458,27 @@ ASN1_VALUE *SMIME_read_ASN1(BIO *bio, BIO **bcont, const ASN1_ITEM *it)
 
         if (!(headers = mime_parse_hdr(asnin))) {
             ASN1err(ASN1_F_SMIME_READ_ASN1, ASN1_R_MIME_SIG_PARSE_ERROR);
-            sk_BIO_pop_free(parts, BIO_vfree);
-            return NULL;
+            goto err;
         }
 
         /* Get content type */
 
         if (!(hdr = mime_hdr_find(headers, "content-type")) || !hdr->value) {
-            sk_MIME_HEADER_pop_free(headers, mime_hdr_free);
             ASN1err(ASN1_F_SMIME_READ_ASN1, ASN1_R_NO_SIG_CONTENT_TYPE);
-            return NULL;
+            goto err;
         }
 
         if (strcmp(hdr->value, "application/x-pkcs7-signature") &&
             strcmp(hdr->value, "application/pkcs7-signature")) {
             ASN1err(ASN1_F_SMIME_READ_ASN1, ASN1_R_SIG_INVALID_MIME_TYPE);
             ERR_asprintf_error_data("type: %s", hdr->value);
-            sk_MIME_HEADER_pop_free(headers, mime_hdr_free);
-            sk_BIO_pop_free(parts, BIO_vfree);
-            return NULL;
+            goto err;
         }
         sk_MIME_HEADER_pop_free(headers, mime_hdr_free);
         /* Read in ASN1 */
         if (!(val = b64_read_asn1(asnin, it))) {
             ASN1err(ASN1_F_SMIME_READ_ASN1, ASN1_R_ASN1_SIG_PARSE_ERROR);
-            sk_BIO_pop_free(parts, BIO_vfree);
-            return NULL;
+            goto err;
         }
 
         if (bcont) {
@@ -504,8 +495,7 @@ ASN1_VALUE *SMIME_read_ASN1(BIO *bio, BIO **bcont, const ASN1_ITEM *it)
     if (strcmp(hdr->value, "application/x-pkcs7-mime") && strcmp(hdr->value, "application/pkcs7-mime")) {
         ASN1err(ASN1_F_SMIME_READ_ASN1, ASN1_R_INVALID_MIME_TYPE);
         ERR_asprintf_error_data("type: %s", hdr->value);
-        sk_MIME_HEADER_pop_free(headers, mime_hdr_free);
-        return NULL;
+        goto err;
     }
 
     sk_MIME_HEADER_pop_free(headers, mime_hdr_free);
@@ -515,6 +505,11 @@ ASN1_VALUE *SMIME_read_ASN1(BIO *bio, BIO **bcont, const ASN1_ITEM *it)
         return NULL;
     }
     return val;
+
+err:
+    sk_MIME_HEADER_pop_free(headers, mime_hdr_free);
+    sk_BIO_pop_free(parts, BIO_vfree);
+    return NULL;
 }
 
 /* Copy text from one BIO to another making the output CRLF at EOL */
@@ -593,7 +588,7 @@ static int multi_split(BIO *bio, char *bound, STACK_OF(BIO) * *ret)
     int len, blen;
     int eol = 0, next_eol = 0;
     BIO *bpart = NULL;
-    STACK_OF(BIO) * parts;
+    STACK_OF(BIO) *parts;
     char state, part, first;
 
     blen = strlen(bound);
@@ -647,7 +642,7 @@ static int multi_split(BIO *bio, char *bound, STACK_OF(BIO) * *ret)
 #define MIME_QUOTE 5
 #define MIME_COMMENT 6
 
-static STACK_OF(MIME_HEADER) * mime_parse_hdr(BIO *bio)
+static STACK_OF(MIME_HEADER) *mime_parse_hdr(BIO *bio)
 {
     char *p, *q, c;
     char *ntmp;
@@ -754,8 +749,7 @@ static STACK_OF(MIME_HEADER) * mime_parse_hdr(BIO *bio)
     return headers;
 
 merr:
-    if (mhdr != NULL)
-        mime_hdr_free(mhdr);
+    mime_hdr_free(mhdr);
     sk_MIME_HEADER_pop_free(headers, mime_hdr_free);
     return NULL;
 }
@@ -809,8 +803,8 @@ static char *strip_end(char *name)
 
 static MIME_HEADER *mime_hdr_new(char *name, char *value)
 {
-    MIME_HEADER *mhdr;
-    char *tmpname, *tmpval, *p;
+    MIME_HEADER *mhdr = NULL;
+    char *tmpname = NULL, *tmpval = NULL, *p;
     int c;
     if (name) {
         if (!(tmpname = strdup(name)))
@@ -822,11 +816,10 @@ static MIME_HEADER *mime_hdr_new(char *name, char *value)
                 *p = c;
             }
         }
-    } else
-        tmpname = NULL;
+    }
     if (value) {
         if (!(tmpval = strdup(value)))
-            return NULL;
+            goto err;
         for (p = tmpval; *p; p++) {
             c = (unsigned char)*p;
             if (isupper(c)) {
@@ -834,16 +827,21 @@ static MIME_HEADER *mime_hdr_new(char *name, char *value)
                 *p = c;
             }
         }
-    } else
-        tmpval = NULL;
+    }
     mhdr = malloc(sizeof(MIME_HEADER));
     if (!mhdr)
-        return NULL;
+        goto err;
     mhdr->name = tmpname;
     mhdr->value = tmpval;
     if (!(mhdr->params = sk_MIME_PARAM_new(mime_param_cmp)))
-        return NULL;
+        goto err;
     return mhdr;
+
+err:
+    mime_hdr_free(mhdr);
+    free(tmpname);
+    free(tmpval);
+    return NULL;
 }
 
 static int mime_hdr_addparam(MIME_HEADER *mhdr, char *name, char *value)
@@ -923,21 +921,16 @@ static MIME_PARAM *mime_param_find(MIME_HEADER *hdr, char *name)
 
 static void mime_hdr_free(MIME_HEADER *hdr)
 {
-    if (hdr->name)
-        free(hdr->name);
-    if (hdr->value)
-        free(hdr->value);
-    if (hdr->params)
-        sk_MIME_PARAM_pop_free(hdr->params, mime_param_free);
+    free(hdr->name);
+    free(hdr->value);
+    sk_MIME_PARAM_pop_free(hdr->params, mime_param_free);
     free(hdr);
 }
 
 static void mime_param_free(MIME_PARAM *param)
 {
-    if (param->param_name)
-        free(param->param_name);
-    if (param->param_value)
-        free(param->param_value);
+    free(param->param_name);
+    free(param->param_value);
     free(param);
 }
 

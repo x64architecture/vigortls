@@ -116,7 +116,7 @@ static X509_EXTENSION *do_ext_nconf(CONF *conf, X509V3_CTX *ctx, int ext_nid,
 {
     const X509V3_EXT_METHOD *method;
     X509_EXTENSION *ext;
-    STACK_OF(CONF_VALUE) * nval;
+    STACK_OF(CONF_VALUE) *nval;
     void *ext_struc;
     if (ext_nid == NID_undef) {
         X509V3err(X509V3_F_DO_EXT_NCONF, X509V3_R_UNKNOWN_EXTENSION_NAME);
@@ -135,12 +135,12 @@ static X509_EXTENSION *do_ext_nconf(CONF *conf, X509V3_CTX *ctx, int ext_nid,
         if (sk_CONF_VALUE_num(nval) <= 0) {
             X509V3err(X509V3_F_DO_EXT_NCONF, X509V3_R_INVALID_EXTENSION_STRING);
             ERR_asprintf_error_data("name=%s,section=%s", OBJ_nid2sn(ext_nid), value);
+            sk_CONF_VALUE_pop_free(nval, X509V3_conf_free);
             return NULL;
         }
         ext_struc = method->v2i(method, ctx, nval);
         if (*value != '@')
-            sk_CONF_VALUE_pop_free(nval,
-                                   X509V3_conf_free);
+            sk_CONF_VALUE_pop_free(nval, X509V3_conf_free);
         if (!ext_struc)
             return NULL;
     } else if (method->s2i) {
@@ -317,7 +317,7 @@ int X509V3_EXT_add_nconf_sk(CONF *conf, X509V3_CTX *ctx, char *section,
                             STACK_OF(X509_EXTENSION) * *sk)
 {
     X509_EXTENSION *ext;
-    STACK_OF(CONF_VALUE) * nval;
+    STACK_OF(CONF_VALUE) *nval;
     CONF_VALUE *val;
     int i;
     if (!(nval = NCONF_get_section(conf, section)))

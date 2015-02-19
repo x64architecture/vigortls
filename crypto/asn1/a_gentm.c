@@ -175,7 +175,7 @@ ASN1_GENERALIZEDTIME *ASN1_GENERALIZEDTIME_set(ASN1_GENERALIZEDTIME *s,
 }
 
 ASN1_GENERALIZEDTIME *ASN1_GENERALIZEDTIME_adj(ASN1_GENERALIZEDTIME *s,
-    time_t t, int offset_day, long offset_sec)
+                                               time_t t, int offset_day, long offset_sec)
 {
     char *p;
     struct tm *ts;
@@ -185,27 +185,25 @@ ASN1_GENERALIZEDTIME *ASN1_GENERALIZEDTIME_adj(ASN1_GENERALIZEDTIME *s,
     if (s == NULL)
         s = M_ASN1_GENERALIZEDTIME_new();
     if (s == NULL)
-        return (NULL);
+        return NULL;
 
     ts = gmtime_r(&t, &data);
     if (ts == NULL)
-        return (NULL);
+        goto err;
 
     if (offset_day || offset_sec) {
         if (!gmtime_r_adj(ts, offset_day, offset_sec))
-            return NULL;
+            goto err;
     }
 
     p = (char *)s->data;
     if ((p == NULL) || ((size_t)s->length < len)) {
         p = malloc(len);
         if (p == NULL) {
-            ASN1err(ASN1_F_ASN1_GENERALIZEDTIME_ADJ,
-                ERR_R_MALLOC_FAILURE);
-            return (NULL);
+            ASN1err(ASN1_F_ASN1_GENERALIZEDTIME_ADJ, ERR_R_MALLOC_FAILURE);
+            goto err;
         }
-        if (s->data != NULL)
-            free(s->data);
+        free(s->data);
         s->data = (unsigned char *)p;
     }
 
@@ -213,5 +211,9 @@ ASN1_GENERALIZEDTIME *ASN1_GENERALIZEDTIME_adj(ASN1_GENERALIZEDTIME *s,
         ts->tm_mon + 1, ts->tm_mday, ts->tm_hour, ts->tm_min, ts->tm_sec);
     s->length = strlen(p);
     s->type = V_ASN1_GENERALIZEDTIME;
-    return (s);
+    return s;
+
+err:
+    ASN1_GENERALIZEDTIME_free(s);
+    return NULL;
 }

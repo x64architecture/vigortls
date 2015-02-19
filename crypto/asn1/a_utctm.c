@@ -195,29 +195,28 @@ ASN1_UTCTIME *ASN1_UTCTIME_adj(ASN1_UTCTIME *s, time_t t,
     if (s == NULL)
         s = M_ASN1_UTCTIME_new();
     if (s == NULL)
-        return (NULL);
+        return NULL;
 
     ts = gmtime_r(&t, &data);
     if (ts == NULL)
-        return (NULL);
+        goto err;
 
     if (offset_day || offset_sec) {
         if (!gmtime_r_adj(ts, offset_day, offset_sec))
-            return NULL;
+            goto err;
     }
 
     if ((ts->tm_year < 50) || (ts->tm_year >= 150))
-        return NULL;
+        goto err;
 
     p = (char *)s->data;
     if ((p == NULL) || ((size_t)s->length < len)) {
         p = malloc(len);
         if (p == NULL) {
             ASN1err(ASN1_F_ASN1_UTCTIME_ADJ, ERR_R_MALLOC_FAILURE);
-            return (NULL);
+            goto err;
         }
-        if (s->data != NULL)
-            free(s->data);
+        free(s->data);
         s->data = (unsigned char *)p;
     }
 
@@ -226,6 +225,10 @@ ASN1_UTCTIME *ASN1_UTCTIME_adj(ASN1_UTCTIME *s, time_t t,
     s->length = strlen(p);
     s->type = V_ASN1_UTCTIME;
     return (s);
+
+err:
+    ASN1_UTCTIME_free(s);
+    return NULL;
 }
 
 int ASN1_UTCTIME_cmp_time_t(const ASN1_UTCTIME *s, time_t t)

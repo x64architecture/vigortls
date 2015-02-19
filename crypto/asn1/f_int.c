@@ -104,7 +104,7 @@ int a2i_ASN1_INTEGER(BIO *bp, ASN1_INTEGER *bs, char *buf, int size)
 {
     int ret = 0;
     int i, j, k, m, n, again, bufsize;
-    unsigned char *s = NULL, *sp;
+    unsigned char *s = NULL, *sp = NULL;
     unsigned char *bufp;
     int num = 0, slen = 0, first = 1;
 
@@ -159,8 +159,6 @@ int a2i_ASN1_INTEGER(BIO *bp, ASN1_INTEGER *bs, char *buf, int size)
                 sp = OPENSSL_realloc_clean(s, slen, num + i * 2);
             if (sp == NULL) {
                 ASN1err(ASN1_F_A2I_ASN1_INTEGER, ERR_R_MALLOC_FAILURE);
-                if (s != NULL)
-                    free(s);
                 goto err;
             }
             s = sp;
@@ -198,5 +196,7 @@ err:
     err_sl:
         ASN1err(ASN1_F_A2I_ASN1_INTEGER, ASN1_R_SHORT_LINE);
     }
+    free(s);
+    free(sp);
     return (ret);
 }

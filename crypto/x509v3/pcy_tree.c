@@ -659,8 +659,7 @@ void X509_policy_tree_free(X509_POLICY_TREE *tree)
  */
 
 int X509_policy_check(X509_POLICY_TREE **ptree, int *pexplicit_policy,
-                      STACK_OF(X509) * certs,
-                      STACK_OF(ASN1_OBJECT) * policy_oids,
+                      STACK_OF(X509) *certs, STACK_OF(ASN1_OBJECT) *policy_oids,
                       unsigned int flags)
 {
     int ret;
@@ -701,13 +700,13 @@ int X509_policy_check(X509_POLICY_TREE **ptree, int *pexplicit_policy,
         case 1:
             if (!tree)
                 /*
-             * tree_init() returns success and a null tree
-             * if it's just looking at a trust anchor.
-             * I'm not sure that returning success here is
-             * correct, but I'm sure that reporting this
-             * as an internal error which our caller
-             * interprets as a malloc failure is wrong.
-             */
+                 * tree_init() returns success and a null tree
+                 * if it's just looking at a trust anchor.
+                 * I'm not sure that returning success here is
+                 * correct, but I'm sure that reporting this
+                 * as an internal error which our caller
+                 * interprets as a malloc failure is wrong.
+                 */
                 return 1;
             break;
     }
@@ -755,8 +754,8 @@ int X509_policy_check(X509_POLICY_TREE **ptree, int *pexplicit_policy,
     return 1;
 
 error:
-
     X509_policy_tree_free(tree);
+    sk_X509_POLICY_NODE_free(auth_nodes);
 
     return 0;
 }
