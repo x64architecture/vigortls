@@ -175,7 +175,6 @@ int a2i_ASN1_INTEGER(BIO *bp, ASN1_INTEGER *bs, char *buf, int size)
                     m = m - 'A' + 10;
                 else {
                     ASN1err(ASN1_F_A2I_ASN1_INTEGER, ASN1_R_NON_HEX_CHARACTERS);
-                    free(s);
                     goto err;
                 }
                 s[num + j] <<= 4;
@@ -197,6 +196,5 @@ err:
         ASN1err(ASN1_F_A2I_ASN1_INTEGER, ASN1_R_SHORT_LINE);
     }
     free(s);
-    free(sp);
     return (ret);
 }

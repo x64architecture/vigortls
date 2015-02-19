@@ -803,7 +803,7 @@ static char *strip_end(char *name)
 
 static MIME_HEADER *mime_hdr_new(char *name, char *value)
 {
-    MIME_HEADER *mhdr = NULL;
+    MIME_HEADER *mhdr;
     char *tmpname = NULL, *tmpval = NULL, *p;
     int c;
     if (name) {
@@ -838,7 +838,6 @@ static MIME_HEADER *mime_hdr_new(char *name, char *value)
     return mhdr;
 
 err:
-    mime_hdr_free(mhdr);
     free(tmpname);
     free(tmpval);
     return NULL;

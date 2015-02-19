@@ -188,6 +188,5 @@ err:
         ASN1err(ASN1_F_A2I_ASN1_STRING, ASN1_R_SHORT_LINE);
     }
     free(s);
-    free(sp);
     return (ret);
 }
