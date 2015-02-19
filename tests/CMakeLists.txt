@@ -1,4 +1,4 @@
-include_directories (../crypto .. ../include)
+include_directories (../crypto/bytestring ../crypto .. ../include)
 
 function(
     add_test_suite
@@ -31,6 +31,7 @@ add_test_suite(aes_wrap aes_wrap.c)
 add_test_suite(asn1test asn1test.c)
 add_test_suite(bftest bftest.c)
 add_test_suite(bntest bntest.c)
+add_test_suite(bytestringtest bytestringtest.c)
 add_test_suite(casttest casttest.c)
 add_test_suite(chachatest chachatest.c)
 add_test_suite(consttimetest constant_time_test.c)

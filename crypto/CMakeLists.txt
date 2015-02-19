@@ -69,6 +69,7 @@ add_subdirectory(bf)
 add_subdirectory(bio)
 add_subdirectory(bn)
 add_subdirectory(buffer)
+add_subdirectory(bytestring)
 add_subdirectory(camellia)
 add_subdirectory(cast)
 add_subdirectory(chacha)
@@ -137,6 +138,7 @@ add_library(
     $<TARGET_OBJECTS:bio>
     $<TARGET_OBJECTS:bn>
     $<TARGET_OBJECTS:buffer>
+    $<TARGET_OBJECTS:bytestring>
     $<TARGET_OBJECTS:camellia>
     $<TARGET_OBJECTS:cast>
     $<TARGET_OBJECTS:chacha>
