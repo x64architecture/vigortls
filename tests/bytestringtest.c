@@ -513,8 +513,9 @@ static int do_ber_convert(const char *name,
     if (out == NULL) {
         if (ber_len != der_len || memcmp(der_expected, ber, ber_len) != 0) {
             fprintf(stderr, "%s: incorrect unconverted result.\n", name);
-            goto end;
         }
+
+        return 1;
     }
 
     if (out_len != der_len || memcmp(out, der_expected, der_len) != 0) {
