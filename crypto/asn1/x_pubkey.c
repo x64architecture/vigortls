@@ -104,11 +104,11 @@ void X509_PUBKEY_free(X509_PUBKEY *a)
     ASN1_item_free((ASN1_VALUE *)a, &X509_PUBKEY_it);
 }
 
-int X509_PUBKEY_set(X509_PUBKEY * *x, EVP_PKEY * pkey)
+int X509_PUBKEY_set(X509_PUBKEY * *x, EVP_PKEY *pkey)
 {
     X509_PUBKEY *pk = NULL;
 
-    if (x == NULL)
+    if (x == NULL || pkey == NULL)
         return (0);
 
     if ((pk = X509_PUBKEY_new()) == NULL)
