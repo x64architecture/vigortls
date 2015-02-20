@@ -39,5 +39,6 @@
  #define OPENSSL_BN_ASM_MONT5
  #define OPENSSL_BN_ASM_GF2m
  #define BSAES_ASM
+ #define ECP_NISTZ256_ASM
 #endif
 #endif
