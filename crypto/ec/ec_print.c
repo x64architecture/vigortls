@@ -178,7 +178,10 @@ EC_POINT *EC_POINT_hex2point(const EC_GROUP *group,
     EC_POINT *ret = NULL;
     BIGNUM *tmp_bn = NULL;
 
-    if (!BN_hex2bn(&tmp_bn, buf))
+    if ((tmp_bn = BN_new()) == NULL)
+        return NULL;
+    
+    if (BN_hex2bn(&tmp_bn, buf) == 0)
         return NULL;
 
     ret = EC_POINT_bn2point(group, tmp_bn, point, ctx);

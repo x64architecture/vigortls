@@ -122,6 +122,11 @@ static int bnrand(int pseudorand, BIGNUM *rnd, int bits, int top, int bottom)
     unsigned char *buf = NULL;
     int ret = 0, bit, bytes, mask;
 
+    if (rnd == NULL) {
+        BNerr(BN_F_BNRAND, ERR_R_PASSED_NULL_PARAMETER);
+        return 0;
+    }
+
     if (bits == 0) {
         BN_zero(rnd);
         return 1;
@@ -181,7 +186,7 @@ static int bnrand(int pseudorand, BIGNUM *rnd, int bits, int top, int bottom)
     buf[0] &= ~mask;
     if (bottom) /* set bottom bit if requested */
         buf[bytes - 1] |= 1;
-    if (!BN_bin2bn(buf, bytes, rnd))
+    if (BN_bin2bn(buf, bytes, rnd) == NULL)
         goto err;
     ret = 1;
 err:

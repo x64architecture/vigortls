@@ -340,7 +340,12 @@ int ec_GF2m_simple_oct2point(const EC_GROUP *group, EC_POINT *point,
     if (yxi == NULL)
         goto err;
 
-    if (!BN_bin2bn(buf + 1, field_len, x))
+    if (x == NULL) {
+        ECerr(EC_F_EC_GF2M_SIMPLE_OCT2POINT, ERR_R_PASSED_NULL_PARAMETER);
+        goto err;
+    }
+
+    if (BN_bin2bn(buf + 1, field_len, x) == NULL)
         goto err;
     if (BN_ucmp(x, &group->field) >= 0) {
         ECerr(EC_F_EC_GF2M_SIMPLE_OCT2POINT, EC_R_INVALID_ENCODING);
@@ -351,7 +356,11 @@ int ec_GF2m_simple_oct2point(const EC_GROUP *group, EC_POINT *point,
         if (!EC_POINT_set_compressed_coordinates_GF2m(group, point, x, y_bit, ctx))
             goto err;
     } else {
-        if (!BN_bin2bn(buf + 1 + field_len, field_len, y))
+        if (y == NULL) {
+            ECerr(EC_F_EC_GF2M_SIMPLE_OCT2POINT, ERR_R_PASSED_NULL_PARAMETER);
+            goto err;
+        }
+        if (BN_bin2bn(buf + 1 + field_len, field_len, y) == NULL)
             goto err;
         if (BN_ucmp(y, &group->field) >= 0) {
             ECerr(EC_F_EC_GF2M_SIMPLE_OCT2POINT, EC_R_INVALID_ENCODING);

@@ -342,7 +342,7 @@ static int ecdsa_do_verify(const unsigned char *dgst, int dgst_len,
     u2 = BN_CTX_get(ctx);
     m = BN_CTX_get(ctx);
     X = BN_CTX_get(ctx);
-    if (!X) {
+    if (order == NULL || u1 == NULL || u2 == NULL || m == NULL || X == NULL) {
         ECDSAerr(ECDSA_F_ECDSA_DO_VERIFY, ERR_R_BN_LIB);
         goto err;
     }
