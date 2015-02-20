@@ -18,6 +18,25 @@
 #include <stdint.h>
 #include <stdlib.h>
 
+#ifndef __has_builtin
+  #define __has_builtin(x) 0
+#endif
+
+#if __has_builtin(__builtin_umull_overflow)
+
+void *reallocarray(void *ptr, size_t newmem, size_t size)
+{
+    size_t prod;
+    if (__builtin_umull_overflow(size, newmem, &prod)) {
+        errno = ENOMEM;
+        return NULL;
+    }
+
+    return realloc(ptr, prod);
+}
+
+#else
+
 #define SQRT_SIZE_MAX ((1UL << (sizeof(size_t) * 8 / 2)) - 1)
 
 void *reallocarray(void *ptr, size_t newmem, size_t size)
@@ -30,3 +49,5 @@ void *reallocarray(void *ptr, size_t newmem, size_t size)
 
     return realloc(ptr, size * newmem);
 }
+
+#endif
