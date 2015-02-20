@@ -1049,6 +1049,7 @@ static int ecp_nistz256_points_mul(const EC_GROUP *group, EC_POINT *r,
                                    const BIGNUM *scalars[], BN_CTX *ctx)
 {
     int i = 0, ret = 0, no_precomp_for_generator = 0, p_is_infinity = 0;
+    size_t j;
     unsigned char p_str[33] = { 0 };
     const PRECOMP256_ROW *preComputedTable = NULL;
     const EC_PRE_COMP *pre_comp = NULL;
@@ -1070,8 +1071,8 @@ static int ecp_nistz256_points_mul(const EC_GROUP *group, EC_POINT *r,
     if ((scalar == NULL) && (num == 0))
         return EC_POINT_set_to_infinity(group, r);
 
-    for (i = 0; i < num; i++) {
-        if (group->meth != points[i]->meth) {
+    for (j = 0; j < num; j++) {
+        if (group->meth != points[j]->meth) {
             ECerr(EC_F_NISTZ256_POINTS_MUL, EC_R_INCOMPATIBLE_OBJECTS);
             return 0;
         }
