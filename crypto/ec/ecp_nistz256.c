@@ -31,6 +31,7 @@
 #include <openssl/bn.h>
 #include <openssl/err.h>
 #include <openssl/ec.h>
+#include <openssl/vigortls.h>
 
 #include "cryptlib.h"
 #include "ec_lcl.h"
@@ -552,14 +553,22 @@ static void ecp_nistz256_windowed_mul(const EC_GROUP *group, P256_POINT *r,
     P256_POINT(*table)[16] = NULL;
     void *table_storage = NULL;
 
-    if ((table_storage = malloc(num * 16 * sizeof(P256_POINT) + 64)) == NULL
-        || (p_str = malloc(num * 33 * sizeof(unsigned char))) == NULL
-        || (scalars = malloc(num * sizeof(BIGNUM *))) == NULL) {
+    table_storage = reallocarray(NULL, (num * 16 + 64), sizeof(P256_POINT));
+    if (table_storage == NULL) {
         ECerr(EC_F_NISTZ256_POINTS_MUL_W, ERR_R_MALLOC_FAILURE);
         goto err;
-    } else {
-        table = (void *)ALIGNPTR(table_storage, 64);
     }
+    p_str = reallocarray(NULL, (num * 33), sizeof(unsigned char));
+    if (p_str == NULL) {
+        ECerr(EC_F_NISTZ256_POINTS_MUL_W, ERR_R_MALLOC_FAILURE);
+        goto err;
+    }
+    scalars = reallocarray(NULL, num, sizeof(BIGNUM *));
+    if (scalars == NULL) {
+        ECerr(EC_F_NISTZ256_POINTS_MUL_W, ERR_R_MALLOC_FAILURE);
+        goto err;
+    }
+    table = (void *)ALIGNPTR(table_storage, 64);
 
     for (i = 0; i < num; i++) {
         P256_POINT *row = table[i];
@@ -1190,14 +1199,14 @@ static int ecp_nistz256_points_mul(const EC_GROUP *group, EC_POINT *r,
         const BIGNUM **new_scalars;
         const EC_POINT **new_points;
 
-        new_scalars = malloc((num + 1) * sizeof(BIGNUM *));
-        if (!new_scalars) {
+        new_scalars = reallocarray(NULL, (num + 1), sizeof(BIGNUM *));
+        if (new_scalars == NULL) {
             ECerr(EC_F_NISTZ256_POINTS_MUL, ERR_R_MALLOC_FAILURE);
             return 0;
         }
 
-        new_points = malloc((num + 1) * sizeof(EC_POINT *));
-        if (!new_points) {
+        new_points = reallocarray(NULL, (num + 1), sizeof(EC_POINT *));
+        if (new_points == NULL) {
             free(new_scalars);
             ECerr(EC_F_NISTZ256_POINTS_MUL, ERR_R_MALLOC_FAILURE);
             return 0;
@@ -1290,12 +1299,12 @@ static EC_PRE_COMP *ec_pre_comp_new(const EC_GROUP *group)
 {
     EC_PRE_COMP *ret = NULL;
 
-    if (!group)
+    if (group == NULL)
         return NULL;
 
     ret = malloc(sizeof(EC_PRE_COMP));
 
-    if (!ret) {
+    if (ret == NULL) {
         ECerr(EC_F_NISTZ256_PRE_COMP_NEW, ERR_R_MALLOC_FAILURE);
         return ret;
     }
