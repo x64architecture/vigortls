@@ -775,10 +775,12 @@ static int ecp_nistz256_mult_precompute(EC_GROUP *group, BN_CTX *ctx)
 
     /* The zero entry is implicitly infinity, and we skip it,
      * storing other values with -1 offset. */
-    EC_POINT_copy(T, generator);
+    if (EC_POINT_copy(T, generator) == 0)
+        goto err;
 
     for (k = 0; k < 64; k++) {
-        EC_POINT_copy(P, T);
+        if (EC_POINT_copy(P, T) == 0)
+            goto err;
         for (j = 0; j < 37; j++) {
             /* It would be faster to use
              * ec_GFp_simple_points_make_affine and make multiple
@@ -809,8 +811,8 @@ static int ecp_nistz256_mult_precompute(EC_GROUP *group, BN_CTX *ctx)
     ret = 1;
 
 err:
-    if (ctx != NULL)
-        BN_CTX_end(ctx);
+    BN_CTX_end(ctx);
+    BN_CTX_free(ctx);
     ec_pre_comp_free(pre_comp);
     free(precomp_storage);
     EC_POINT_free(P);
