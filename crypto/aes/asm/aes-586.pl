@@ -103,11 +103,12 @@
 # byte for 128-bit key.
 #
 #		ECB encrypt	ECB decrypt	CBC large chunk
-# P4		56[60]		84[100]		23
-# AMD K8	48[44]		70[79]		18
-# PIII		41[50]		61[91]		24
-# Core 2	32[38]		45[70]		18.5
-# Pentium	120		160		77
+# P4		52[54]		83[95]		23
+# AMD K8	46[41]		66[70]		18
+# PIII		41[50]		60[77]		24
+# Core 2	31[36]		45[64]		18.5
+# Atom		76[100]		96[138]		60
+# Pentium	115		150		77
 #
 # Version 4.1 switches to compact S-box even in key schedule setup.
 #
@@ -115,7 +116,7 @@
 # words every cache-line is *guaranteed* to be accessed within ~50
 # cycles window. Why just SSE? Because it's needed on hyper-threading
 # CPU! Which is also why it's prefetched with 64 byte stride. Best
-# part is that it has no negative effect on performance:-)
+# part is that it has no negative effect on performance:-)  
 #
 # Version 4.3 implements switch between compact and non-compact block
 # functions in AES_cbc_encrypt depending on how much data was asked
@@ -242,7 +243,7 @@ $vertical_spin=0;	# shift "verticaly" defaults to 0, because of
 
 sub encvert()
 { my ($te,@s) = @_;
-  my $v0 = $acc, $v1 = $key;
+  my ($v0,$v1) = ($acc,$key);
 
 	&mov	($v0,$s[3]);				# copy s3
 	&mov	(&DWP(4,"esp"),$s[2]);			# save s2
@@ -299,7 +300,7 @@ sub encvert()
 # Another experimental routine, which features "horizontal spin," but
 # eliminates one reference to stack. Strangely enough runs slower...
 sub enchoriz()
-{ my $v0 = $key, $v1 = $acc;
+{ my ($v0,$v1) = ($key,$acc);
 
 	&movz	($v0,&LB($s0));			#  3, 2, 1, 0*
 	&rotr	($s2,8);			#  8,11,10, 9
@@ -427,7 +428,7 @@ sub sse_encbody()
 ######################################################################
 
 sub enccompact()
-{ my $Fn = mov;
+{ my $Fn = \&mov;
   while ($#_>5) { pop(@_); $Fn=sub{}; }
   my ($i,$te,@s)=@_;
   my $tmp = $key;
@@ -476,24 +477,25 @@ sub enctransform()
   my $tmp = $tbl;
   my $r2  = $key ;
 
-	&mov	($acc,$s[$i]);
-	&and	($acc,0x80808080);
-	&mov	($tmp,$acc);
-	&shr	($tmp,7);
+	&and	($tmp,$s[$i]);
 	&lea	($r2,&DWP(0,$s[$i],$s[$i]));
-	&sub	($acc,$tmp);
+	&mov	($acc,$tmp);
+	&shr	($tmp,7);
 	&and	($r2,0xfefefefe);
-	&and	($acc,0x1b1b1b1b);
+	&sub	($acc,$tmp);
 	&mov	($tmp,$s[$i]);
+	&and	($acc,0x1b1b1b1b);
+	&rotr	($tmp,16);
 	&xor	($acc,$r2);	# r2
+	&mov	($r2,$s[$i]);
 
 	&xor	($s[$i],$acc);	# r0 ^ r2
+	&rotr	($r2,16+8);
+	&xor	($acc,$tmp);
 	&rotl	($s[$i],24);
-	&xor	($s[$i],$acc)	# ROTATE(r2^r0,24) ^ r2
-	&rotr	($tmp,16);
-	&xor	($s[$i],$tmp);
-	&rotr	($tmp,8);
-	&xor	($s[$i],$tmp);
+	&xor	($acc,$r2);
+	&mov	($tmp,0x80808080)	if ($i!=1);
+	&xor	($s[$i],$acc);	# ROTATE(r2^r0,24) ^ r2
 }
 
 &function_begin_B("_x86_AES_encrypt_compact");
@@ -526,6 +528,7 @@ sub enctransform()
 		&enccompact(1,$tbl,$s1,$s2,$s3,$s0,1);
 		&enccompact(2,$tbl,$s2,$s3,$s0,$s1,1);
 		&enccompact(3,$tbl,$s3,$s0,$s1,$s2,1);
+		&mov	($tbl,0x80808080);
 		&enctransform(2);
 		&enctransform(3);
 		&enctransform(0);
@@ -571,7 +574,7 @@ sub enctransform()
 # +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
 # |          mm4          |          mm0          |
 # +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
-# |     s3    |     s2    |     s1    |     s0    |
+# |     s3    |     s2    |     s1    |     s0    |    
 # +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
 # |15|14|13|12|11|10| 9| 8| 7| 6| 5| 4| 3| 2| 1| 0|
 # +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
@@ -607,82 +610,84 @@ sub sse_enccompact()
 	&pshufw	("mm5","mm4",0x0d);		# 15,14,11,10
 	&movd	("eax","mm1");			#  5, 4, 1, 0
 	&movd	("ebx","mm5");			# 15,14,11,10
+	&mov	($__key,$key);
 
 	&movz	($acc,&LB("eax"));		#  0
-	&movz	("ecx",&BP(-128,$tbl,$acc,1));	#  0
-	&pshufw	("mm2","mm0",0x0d);		#  7, 6, 3, 2
 	&movz	("edx",&HB("eax"));		#  1
+	&pshufw	("mm2","mm0",0x0d);		#  7, 6, 3, 2
+	&movz	("ecx",&BP(-128,$tbl,$acc,1));	#  0
+	&movz	($key,&LB("ebx"));		# 10
 	&movz	("edx",&BP(-128,$tbl,"edx",1));	#  1
-	&shl	("edx",8);			#  1
 	&shr	("eax",16);			#  5, 4
+	&shl	("edx",8);			#  1
 
-	&movz	($acc,&LB("ebx"));		# 10
-	&movz	($acc,&BP(-128,$tbl,$acc,1));	# 10
+	&movz	($acc,&BP(-128,$tbl,$key,1));	# 10
+	&movz	($key,&HB("ebx"));		# 11
 	&shl	($acc,16);			# 10
-	&or	("ecx",$acc);			# 10
 	&pshufw	("mm6","mm4",0x08);		# 13,12, 9, 8
-	&movz	($acc,&HB("ebx"));		# 11
-	&movz	($acc,&BP(-128,$tbl,$acc,1));	# 11
+	&or	("ecx",$acc);			# 10
+	&movz	($acc,&BP(-128,$tbl,$key,1));	# 11
+	&movz	($key,&HB("eax"));		#  5
 	&shl	($acc,24);			# 11
-	&or	("edx",$acc);			# 11
 	&shr	("ebx",16);			# 15,14
+	&or	("edx",$acc);			# 11
 
-	&movz	($acc,&HB("eax"));		#  5
-	&movz	($acc,&BP(-128,$tbl,$acc,1));	#  5
+	&movz	($acc,&BP(-128,$tbl,$key,1));	#  5
+	&movz	($key,&HB("ebx"));		# 15
 	&shl	($acc,8);			#  5
 	&or	("ecx",$acc);			#  5
-	&movz	($acc,&HB("ebx"));		# 15
-	&movz	($acc,&BP(-128,$tbl,$acc,1));	# 15
+	&movz	($acc,&BP(-128,$tbl,$key,1));	# 15
+	&movz	($key,&LB("eax"));		#  4
 	&shl	($acc,24);			# 15
 	&or	("ecx",$acc);			# 15
-	&movd	("mm0","ecx");			# t[0] collected
 
-	&movz	($acc,&LB("eax"));		#  4
-	&movz	("ecx",&BP(-128,$tbl,$acc,1));	#  4
+	&movz	($acc,&BP(-128,$tbl,$key,1));	#  4
+	&movz	($key,&LB("ebx"));		# 14
 	&movd	("eax","mm2");			#  7, 6, 3, 2
-	&movz	($acc,&LB("ebx"));		# 14
-	&movz	($acc,&BP(-128,$tbl,$acc,1));	# 14
-	&shl	($acc,16);			# 14
+	&movd	("mm0","ecx");			# t[0] collected
+	&movz	("ecx",&BP(-128,$tbl,$key,1));	# 14
+	&movz	($key,&HB("eax"));		#  3
+	&shl	("ecx",16);			# 14
+	&movd	("ebx","mm6");			# 13,12, 9, 8
 	&or	("ecx",$acc);			# 14
 
-	&movd	("ebx","mm6");			# 13,12, 9, 8
-	&movz	($acc,&HB("eax"));		#  3
-	&movz	($acc,&BP(-128,$tbl,$acc,1));	#  3
+	&movz	($acc,&BP(-128,$tbl,$key,1));	#  3
+	&movz	($key,&HB("ebx"));		#  9
 	&shl	($acc,24);			#  3
 	&or	("ecx",$acc);			#  3
-	&movz	($acc,&HB("ebx"));		#  9
-	&movz	($acc,&BP(-128,$tbl,$acc,1));	#  9
+	&movz	($acc,&BP(-128,$tbl,$key,1));	#  9
+	&movz	($key,&LB("ebx"));		#  8
 	&shl	($acc,8);			#  9
-	&or	("ecx",$acc);			#  9
-	&movd	("mm1","ecx");			# t[1] collected
-
-	&movz	($acc,&LB("ebx"));		#  8
-	&movz	("ecx",&BP(-128,$tbl,$acc,1));	#  8
 	&shr	("ebx",16);			# 13,12
-	&movz	($acc,&LB("eax"));		#  2
-	&movz	($acc,&BP(-128,$tbl,$acc,1));	#  2
-	&shl	($acc,16);			#  2
-	&or	("ecx",$acc);			#  2
+	&or	("ecx",$acc);			#  9
+
+	&movz	($acc,&BP(-128,$tbl,$key,1));	#  8
+	&movz	($key,&LB("eax"));		#  2
 	&shr	("eax",16);			#  7, 6
+	&movd	("mm1","ecx");			# t[1] collected
+	&movz	("ecx",&BP(-128,$tbl,$key,1));	#  2
+	&movz	($key,&HB("eax"));		#  7
+	&shl	("ecx",16);			#  2
+	&and	("eax",0xff);			#  6
+	&or	("ecx",$acc);			#  2
 
 	&punpckldq	("mm0","mm1");		# t[0,1] collected
 
-	&movz	($acc,&HB("eax"));		#  7
-	&movz	($acc,&BP(-128,$tbl,$acc,1));	#  7
+	&movz	($acc,&BP(-128,$tbl,$key,1));	#  7
+	&movz	($key,&HB("ebx"));		# 13
 	&shl	($acc,24);			#  7
-	&or	("ecx",$acc);			#  7
-	&and	("eax",0xff);			#  6
-	&movz	("eax",&BP(-128,$tbl,"eax",1));	#  6
-	&shl	("eax",16);			#  6
-	&or	("edx","eax");			#  6
-	&movz	($acc,&HB("ebx"));		# 13
-	&movz	($acc,&BP(-128,$tbl,$acc,1));	# 13
-	&shl	($acc,8);			# 13
-	&or	("ecx",$acc);			# 13
-	&movd	("mm4","ecx");			# t[2] collected
 	&and	("ebx",0xff);			# 12
+	&movz	("eax",&BP(-128,$tbl,"eax",1));	#  6
+	&or	("ecx",$acc);			#  7
+	&shl	("eax",16);			#  6
+	&movz	($acc,&BP(-128,$tbl,$key,1));	# 13
+	&or	("edx","eax");			#  6
+	&shl	($acc,8);			# 13
 	&movz	("ebx",&BP(-128,$tbl,"ebx",1));	# 12
+	&or	("ecx",$acc);			# 13
 	&or	("edx","ebx");			# 12
+	&mov	($key,$__key);
+	&movd	("mm4","ecx");			# t[2] collected
 	&movd	("mm5","edx");			# t[3] collected
 
 	&punpckldq	("mm4","mm5");		# t[2,3] collected
@@ -789,7 +794,7 @@ sub encstep()
 
 	if ($i==3)  {	$tmp=$s[3]; &mov ($s[2],$__s1);		}##%ecx
 	elsif($i==2){	&movz	($tmp,&HB($s[3]));		}#%ebx[2]
-	else        {	&mov	($tmp,$s[3]);
+	else        {	&mov	($tmp,$s[3]); 
 			&shr	($tmp,24)			}
 			&xor	($out,&DWP(1,$te,$tmp,8));
 	if ($i<2)   {	&mov	(&DWP(4+4*$i,"esp"),$out);	}
@@ -1222,7 +1227,7 @@ sub enclast()
 ######################################################################
 
 sub deccompact()
-{ my $Fn = mov;
+{ my $Fn = \&mov;
   while ($#_>5) { pop(@_); $Fn=sub{}; }
   my ($i,$td,@s)=@_;
   my $tmp = $key;
@@ -1270,30 +1275,30 @@ sub dectransform()
   my $tp4 = @s[($i+3)%4]; $tp4 = @s[3] if ($i==1);
   my $tp8 = $tbl;
 
-	&mov	($acc,$s[$i]);
-	&and	($acc,0x80808080);
-	&mov	($tmp,$acc);
+	&mov	($tmp,0x80808080);
+	&and	($tmp,$s[$i]);
+	&mov	($acc,$tmp);
 	&shr	($tmp,7);
 	&lea	($tp2,&DWP(0,$s[$i],$s[$i]));
 	&sub	($acc,$tmp);
 	&and	($tp2,0xfefefefe);
 	&and	($acc,0x1b1b1b1b);
-	&xor	($acc,$tp2);
-	&mov	($tp2,$acc);
+	&xor	($tp2,$acc);
+	&mov	($tmp,0x80808080);
 
-	&and	($acc,0x80808080);
-	&mov	($tmp,$acc);
+	&and	($tmp,$tp2);
+	&mov	($acc,$tmp);
 	&shr	($tmp,7);
 	&lea	($tp4,&DWP(0,$tp2,$tp2));
 	&sub	($acc,$tmp);
 	&and	($tp4,0xfefefefe);
 	&and	($acc,0x1b1b1b1b);
 	 &xor	($tp2,$s[$i]);	# tp2^tp1
-	&xor	($acc,$tp4);
-	&mov	($tp4,$acc);
+	&xor	($tp4,$acc);
+	&mov	($tmp,0x80808080);
 
-	&and	($acc,0x80808080);
-	&mov	($tmp,$acc);
+	&and	($tmp,$tp4);
+	&mov	($acc,$tmp);
 	&shr	($tmp,7);
 	&lea	($tp8,&DWP(0,$tp4,$tp4));
 	&sub	($acc,$tmp);
@@ -1305,13 +1310,13 @@ sub dectransform()
 
 	&xor	($s[$i],$tp2);
 	&xor	($tp2,$tp8);
-	&rotl	($tp2,24);
 	&xor	($s[$i],$tp4);
 	&xor	($tp4,$tp8);
-	&rotl	($tp4,16);
+	&rotl	($tp2,24);
 	&xor	($s[$i],$tp8);	# ^= tp8^(tp4^tp1)^(tp2^tp1)
-	&rotl	($tp8,8);
+	&rotl	($tp4,16);
 	&xor	($s[$i],$tp2);	# ^= ROTATE(tp8^tp2^tp1,24)
+	&rotl	($tp8,8);
 	&xor	($s[$i],$tp4);	# ^= ROTATE(tp8^tp4^tp1,16)
 	 &mov	($s[0],$__s0)			if($i==2); #prefetch $s0
 	 &mov	($s[1],$__s1)			if($i==3); #prefetch $s1
@@ -1389,85 +1394,87 @@ sub dectransform()
 sub sse_deccompact()
 {
 	&pshufw	("mm1","mm0",0x0c);		#  7, 6, 1, 0
-	&movd	("eax","mm1");			#  7, 6, 1, 0
-
 	&pshufw	("mm5","mm4",0x09);		# 13,12,11,10
-	&movz	($acc,&LB("eax"));		#  0
-	&movz	("ecx",&BP(-128,$tbl,$acc,1));	#  0
+	&movd	("eax","mm1");			#  7, 6, 1, 0
 	&movd	("ebx","mm5");			# 13,12,11,10
+	&mov	($__key,$key);
+
+	&movz	($acc,&LB("eax"));		#  0
 	&movz	("edx",&HB("eax"));		#  1
+	&pshufw	("mm2","mm0",0x06);		#  3, 2, 5, 4
+	&movz	("ecx",&BP(-128,$tbl,$acc,1));	#  0
+	&movz	($key,&LB("ebx"));		# 10
 	&movz	("edx",&BP(-128,$tbl,"edx",1));	#  1
+	&shr	("eax",16);			#  7, 6
 	&shl	("edx",8);			#  1
 
-	&pshufw	("mm2","mm0",0x06);		#  3, 2, 5, 4
-	&movz	($acc,&LB("ebx"));		# 10
-	&movz	($acc,&BP(-128,$tbl,$acc,1));	# 10
+	&movz	($acc,&BP(-128,$tbl,$key,1));	# 10
+	&movz	($key,&HB("ebx"));		# 11
 	&shl	($acc,16);			# 10
-	&or	("ecx",$acc);			# 10
-	&shr	("eax",16);			#  7, 6
-	&movz	($acc,&HB("ebx"));		# 11
-	&movz	($acc,&BP(-128,$tbl,$acc,1));	# 11
-	&shl	($acc,24);			# 11
-	&or	("edx",$acc);			# 11
-	&shr	("ebx",16);			# 13,12
-
 	&pshufw	("mm6","mm4",0x03);		# 9, 8,15,14
-	&movz	($acc,&HB("eax"));		#  7
-	&movz	($acc,&BP(-128,$tbl,$acc,1));	#  7
+	&or	("ecx",$acc);			# 10
+	&movz	($acc,&BP(-128,$tbl,$key,1));	# 11
+	&movz	($key,&HB("eax"));		#  7
+	&shl	($acc,24);			# 11
+	&shr	("ebx",16);			# 13,12
+	&or	("edx",$acc);			# 11
+
+	&movz	($acc,&BP(-128,$tbl,$key,1));	#  7
+	&movz	($key,&HB("ebx"));		# 13
 	&shl	($acc,24);			#  7
 	&or	("ecx",$acc);			#  7
-	&movz	($acc,&HB("ebx"));		# 13
-	&movz	($acc,&BP(-128,$tbl,$acc,1));	# 13
+	&movz	($acc,&BP(-128,$tbl,$key,1));	# 13
+	&movz	($key,&LB("eax"));		#  6
 	&shl	($acc,8);			# 13
-	&or	("ecx",$acc);			# 13
-	&movd	("mm0","ecx");			# t[0] collected
-
-	&movz	($acc,&LB("eax"));		#  6
 	&movd	("eax","mm2");			#  3, 2, 5, 4
-	&movz	("ecx",&BP(-128,$tbl,$acc,1));	#  6
-	&shl	("ecx",16);			#  6
-	&movz	($acc,&LB("ebx"));		# 12
+	&or	("ecx",$acc);			# 13
+
+	&movz	($acc,&BP(-128,$tbl,$key,1));	#  6
+	&movz	($key,&LB("ebx"));		# 12
+	&shl	($acc,16);			#  6
 	&movd	("ebx","mm6");			#  9, 8,15,14
-	&movz	($acc,&BP(-128,$tbl,$acc,1));	# 12
+	&movd	("mm0","ecx");			# t[0] collected
+	&movz	("ecx",&BP(-128,$tbl,$key,1));	# 12
+	&movz	($key,&LB("eax"));		#  4
 	&or	("ecx",$acc);			# 12
 
-	&movz	($acc,&LB("eax"));		#  4
-	&movz	($acc,&BP(-128,$tbl,$acc,1));	#  4
+	&movz	($acc,&BP(-128,$tbl,$key,1));	#  4
+	&movz	($key,&LB("ebx"));		# 14
 	&or	("edx",$acc);			#  4
-	&movz	($acc,&LB("ebx"));		# 14
-	&movz	($acc,&BP(-128,$tbl,$acc,1));	# 14
+	&movz	($acc,&BP(-128,$tbl,$key,1));	# 14
+	&movz	($key,&HB("eax"));		#  5
 	&shl	($acc,16);			# 14
-	&or	("edx",$acc);			# 14
-	&movd	("mm1","edx");			# t[1] collected
-
-	&movz	($acc,&HB("eax"));		#  5
-	&movz	("edx",&BP(-128,$tbl,$acc,1));	#  5
-	&shl	("edx",8);			#  5
-	&movz	($acc,&HB("ebx"));		# 15
 	&shr	("eax",16);			#  3, 2
-	&movz	($acc,&BP(-128,$tbl,$acc,1));	# 15
-	&shl	($acc,24);			# 15
-	&or	("edx",$acc);			# 15
+	&or	("edx",$acc);			# 14
+
+	&movz	($acc,&BP(-128,$tbl,$key,1));	#  5
+	&movz	($key,&HB("ebx"));		# 15
 	&shr	("ebx",16);			#  9, 8
+	&shl	($acc,8);			#  5
+	&movd	("mm1","edx");			# t[1] collected
+	&movz	("edx",&BP(-128,$tbl,$key,1));	# 15
+	&movz	($key,&HB("ebx"));		#  9
+	&shl	("edx",24);			# 15
+	&and	("ebx",0xff);			#  8
+	&or	("edx",$acc);			# 15
 
 	&punpckldq	("mm0","mm1");		# t[0,1] collected
 
-	&movz	($acc,&HB("ebx"));		#  9
-	&movz	($acc,&BP(-128,$tbl,$acc,1));	#  9
+	&movz	($acc,&BP(-128,$tbl,$key,1));	#  9
+	&movz	($key,&LB("eax"));		#  2
 	&shl	($acc,8);			#  9
-	&or	("ecx",$acc);			#  9
-	&and	("ebx",0xff);			#  8
-	&movz	("ebx",&BP(-128,$tbl,"ebx",1));	#  8
-	&or	("edx","ebx");			#  8
-	&movz	($acc,&LB("eax"));		#  2
-	&movz	($acc,&BP(-128,$tbl,$acc,1));	#  2
-	&shl	($acc,16);			#  2
-	&or	("edx",$acc);			#  2
-	&movd	("mm4","edx");			# t[2] collected
 	&movz	("eax",&HB("eax"));		#  3
+	&movz	("ebx",&BP(-128,$tbl,"ebx",1));	#  8
+	&or	("ecx",$acc);			#  9
+	&movz	($acc,&BP(-128,$tbl,$key,1));	#  2
+	&or	("edx","ebx");			#  8
+	&shl	($acc,16);			#  2
 	&movz	("eax",&BP(-128,$tbl,"eax",1));	#  3
+	&or	("edx",$acc);			#  2
 	&shl	("eax",24);			#  3
 	&or	("ecx","eax");			#  3
+	&mov	($key,$__key);
+	&movd	("mm4","edx");			# t[2] collected
 	&movd	("mm5","ecx");			# t[3] collected
 
 	&punpckldq	("mm4","mm5");		# t[2,3] collected
@@ -1540,7 +1547,7 @@ sub sse_deccompact()
 		&pxor	("mm1","mm3");		&pxor	("mm5","mm7");	# tp4
 		&pshufw	("mm3","mm1",0xb1);	&pshufw	("mm7","mm5",0xb1);
 		&pxor	("mm0","mm1");		&pxor	("mm4","mm5");	# ^= tp4
-		&pxor	("mm0","mm3");		&pxor	("mm4","mm7");	# ^= ROTATE(tp4,16)
+		&pxor	("mm0","mm3");		&pxor	("mm4","mm7");	# ^= ROTATE(tp4,16)	
 
 		&pxor	("mm3","mm3");		&pxor	("mm7","mm7");
 		&pcmpgtb("mm3","mm1");		&pcmpgtb("mm7","mm5");
@@ -2010,7 +2017,7 @@ sub declast()
 {
 # stack frame layout
 #             -4(%esp)		# return address	 0(%esp)
-#              0(%esp)		# s0 backing store	 4(%esp)
+#              0(%esp)		# s0 backing store	 4(%esp)	
 #              4(%esp)		# s1 backing store	 8(%esp)
 #              8(%esp)		# s2 backing store	12(%esp)
 #             12(%esp)		# s3 backing store	16(%esp)
@@ -2181,8 +2188,8 @@ my $mark=&DWP(76+240,"esp");	# copy of aes_key->rounds
 	&mov	("ecx",240/4);
 	&xor	("eax","eax");
 	&align	(4);
-	&data_word(0xABF3F689);	# rep stosd
-	&set_label("skip_ezero")
+	&data_word(0xABF3F689);		# rep stosd
+	&set_label("skip_ezero");
 	&mov	("esp",$_esp);
 	&popf	();
     &set_label("drop_out");
@@ -2301,8 +2308,8 @@ my $mark=&DWP(76+240,"esp");	# copy of aes_key->rounds
 	&mov	("ecx",240/4);
 	&xor	("eax","eax");
 	&align	(4);
-	&data_word(0xABF3F689);	# rep stosd
-	&set_label("skip_dzero")
+	&data_word(0xABF3F689);		# rep stosd
+	&set_label("skip_dzero");
 	&mov	("esp",$_esp);
 	&popf	();
 	&function_end_A();
@@ -2720,7 +2727,7 @@ sub enckey()
 	&mov	(&DWP(80,"edi"),10);		# setup number of rounds
 	&xor	("eax","eax");
 	&jmp	(&label("exit"));
-
+		
     &set_label("12rounds");
 	&mov	("eax",&DWP(0,"esi"));		# copy first 6 dwords
 	&mov	("ebx",&DWP(4,"esi"));
@@ -2865,32 +2872,32 @@ sub deckey()
 { my ($i,$key,$tp1,$tp2,$tp4,$tp8) = @_;
   my $tmp = $tbl;
 
-	&mov	($acc,$tp1);
-	&and	($acc,0x80808080);
-	&mov	($tmp,$acc);
-	&shr	($tmp,7);
+	&mov	($tmp,0x80808080);
+	&and	($tmp,$tp1);
 	&lea	($tp2,&DWP(0,$tp1,$tp1));
+	&mov	($acc,$tmp);
+	&shr	($tmp,7);
 	&sub	($acc,$tmp);
 	&and	($tp2,0xfefefefe);
 	&and	($acc,0x1b1b1b1b);
-	&xor	($acc,$tp2);
-	&mov	($tp2,$acc);
+	&xor	($tp2,$acc);
+	&mov	($tmp,0x80808080);
 
-	&and	($acc,0x80808080);
-	&mov	($tmp,$acc);
-	&shr	($tmp,7);
+	&and	($tmp,$tp2);
 	&lea	($tp4,&DWP(0,$tp2,$tp2));
+	&mov	($acc,$tmp);
+	&shr	($tmp,7);
 	&sub	($acc,$tmp);
 	&and	($tp4,0xfefefefe);
 	&and	($acc,0x1b1b1b1b);
 	 &xor	($tp2,$tp1);	# tp2^tp1
-	&xor	($acc,$tp4);
-	&mov	($tp4,$acc);
+	&xor	($tp4,$acc);
+	&mov	($tmp,0x80808080);
 
-	&and	($acc,0x80808080);
-	&mov	($tmp,$acc);
-	&shr	($tmp,7);
+	&and	($tmp,$tp4);
 	&lea	($tp8,&DWP(0,$tp4,$tp4));
+	&mov	($acc,$tmp);
+	&shr	($tmp,7);
 	 &xor	($tp4,$tp1);	# tp4^tp1
 	&sub	($acc,$tmp);
 	&and	($tp8,0xfefefefe);

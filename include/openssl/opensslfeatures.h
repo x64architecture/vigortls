@@ -38,5 +38,6 @@
 #if defined(__x86_64) || defined(__x86_64__)
  #define OPENSSL_BN_ASM_MONT5
  #define OPENSSL_BN_ASM_GF2m
+ #define BSAES_ASM
 #endif
 #endif

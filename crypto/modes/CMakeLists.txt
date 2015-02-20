@@ -16,7 +16,7 @@ if (${ARCH} STREQUAL "x86")
     )
 endif()
 
-if (${ARCH} STREQUAL "asm")
+if (${ARCH} STREQUAL "arm")
     set(
         MODES_ARCH_SOURCES
 
