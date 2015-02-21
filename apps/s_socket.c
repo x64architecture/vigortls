@@ -143,7 +143,7 @@ int init_client(int *sock, char *host, char *port, int type, int af)
 
 int do_server(int port, int type, int *ret, int (*cb)(char *hostname, int s, unsigned char *context), unsigned char *context)
 {
-    int sock;
+    int sock = 0;
     char *name = NULL;
     int accept_socket = 0;
     int i;

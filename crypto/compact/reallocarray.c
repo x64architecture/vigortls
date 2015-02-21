@@ -22,7 +22,7 @@
   #define __has_builtin(x) 0
 #endif
 
-#if __has_builtin(__builtin_umull_overflow)
+#if __has_builtin(__builtin_umull_overflow) || (defined(__GNUC__) && __GNUC__ >= 5)
 
 void *reallocarray(void *ptr, size_t newmem, size_t size)
 {

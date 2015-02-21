@@ -184,8 +184,14 @@ int main(int argc, char *argv[])
         printf("Successfully added and removed to an empty list!\n");
     printf("About to beef up the engine-type list\n");
     for (loop = 0; loop < 512; loop++) {
-        asprintf(&id, "id%i", loop);
-        asprintf(&name, "Fake engine type %i", loop);
+        if (asprintf(&id, "id%i", loop) == -1) {
+            printf("asprintf failed, test inconclusive\n");
+            goto end;
+        }
+        if (asprintf(&name, "Fake engine type %i", loop) == -1) {
+            printf("asprintf failed, test inconclusive\n");
+            goto end;
+        }
         if (((block[loop] = ENGINE_new()) == NULL) || !ENGINE_set_id(block[loop], id) || !ENGINE_set_name(block[loop], name)) {
             printf("Couldn't create block of ENGINE structures.\n"
                    "I'll probably also core-dump now, damn.\n");
