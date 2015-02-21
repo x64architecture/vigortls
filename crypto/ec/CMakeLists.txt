@@ -5,13 +5,6 @@ if (${ARCH} STREQUAL "x86_64")
         EC_ARCH_SOURCES
 
         ecp_nistz256-x86_64.${ASM_EXT}
-        ecp_nistz256-avx2.${ASM_EXT}
-    )
-elseif(${ARCH} STREQUAL "x86")
-    set(
-        EC_ARCH_SOURCES
-
-        ecp_nistz256-avx2.${ASM_EXT}
     )
 endif()
 

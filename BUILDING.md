@@ -25,13 +25,13 @@ Building in a Windows environment
 ## Requirements
 * CMake 2.8.8+
 * Visual Studio 2013+ (Might work on older versions [NOT TESTED])
-* MinGW/MSYS environment
 * ActiveState Perl
 * Yasm
 
 ----
 ## Building
-	Launch MSYS shell with vcvarsall.bat
+	Launch VS2013 x86 Native Tools Command Prompt
 	$ mkdir build
+	$ cd build
 	$ cmake -G"NMake Makefiles" ..
 	$ nmake -f Makefile
