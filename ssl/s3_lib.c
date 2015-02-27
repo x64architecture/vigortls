@@ -2457,7 +2457,7 @@ SSL_CIPHER *ssl3_choose_cipher(SSL *s, STACK_OF(SSL_CIPHER) * clnt,
     unsigned long alg_k, alg_a, mask_k, mask_a;
     STACK_OF(SSL_CIPHER) *prio, *allow;
     SSL_CIPHER *c, *ret = NULL;
-    int i, ii, ok;
+    int i, ii, ok, use_chacha = 0;
     CERT *cert;
 
     /* Let's see which ciphers we can support */
@@ -2473,9 +2473,16 @@ SSL_CIPHER *ssl3_choose_cipher(SSL *s, STACK_OF(SSL_CIPHER) * clnt,
     if (s->options & SSL_OP_CIPHER_SERVER_PREFERENCE) {
         prio = srvr;
         allow = clnt;
+        /* Use ChaCha20+Poly1305 if it's the client's most preferred cipher suite */
+        if (sk_SSL_CIPHER_num(clnt) > 0) {
+            c = sk_SSL_CIPHER_value(clnt, 0);
+            if (c->algorithm_enc == SSL_CHACHA20POLY1305)
+                use_chacha = 1;
+        }
     } else {
         prio = clnt;
         allow = srvr;
+        use_chacha = 1;
     }
 
     for (i = 0; i < sk_SSL_CIPHER_num(prio); i++) {
@@ -2483,6 +2490,9 @@ SSL_CIPHER *ssl3_choose_cipher(SSL *s, STACK_OF(SSL_CIPHER) * clnt,
 
         /* Skip TLS v1.2 only ciphersuites if not supported. */
         if ((c->algorithm_ssl & SSL_TLSV1_2) && !SSL_USE_TLS1_2_CIPHERS(s))
+            continue;
+
+        if ((c->algorithm_enc == SSL_CHACHA20POLY1305) && !use_chacha)
             continue;
 
         ssl_set_cert_masks(cert, c);
