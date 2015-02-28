@@ -402,12 +402,12 @@ int dtls1_do_write(SSL *s, int type)
 }
 
 /*
- * Obtain handshake message of message type 'mt' (any if mt == -1),
+ * Obtain handshake message of message type 'msg_type' (any if msg_type == -1),
  * maximum acceptable body length 'max'.
  * Read an entire handshake message.  Handshake messages arrive in
  * fragments.
  */
-long dtls1_get_message(SSL *s, int st1, int stn, int mt, long max, int *ok)
+long dtls1_get_message(SSL *s, int st1, int stn, int msg_type, long max, int *ok)
 {
     int i, al;
     struct hm_header_st *msg_hdr;
@@ -420,7 +420,7 @@ long dtls1_get_message(SSL *s, int st1, int stn, int mt, long max, int *ok)
      */
     if (s->s3->tmp.reuse_message) {
         s->s3->tmp.reuse_message = 0;
-        if ((mt >= 0) && (s->s3->tmp.message_type != mt)) {
+        if (msg_type >= 0 && s->s3->tmp.message_type != msg_type) {
             al = SSL_AD_UNEXPECTED_MESSAGE;
             SSLerr(SSL_F_DTLS1_GET_MESSAGE, SSL_R_UNEXPECTED_MESSAGE);
             goto f_err;
@@ -440,6 +440,12 @@ again:
         goto again;
     else if (i <= 0 && !*ok)
         return i;
+
+    if (msg_type >= 0 && msg_hdr->type != msg_type) {
+        al = SSL_AD_UNEXPECTED_MESSAGE;
+        SSLerr(SSL_F_DTLS1_GET_MESSAGE, SSL_R_UNEXPECTED_MESSAGE);
+        goto f_err;
+    }
 
     p = (unsigned char *)s->init_buf->data;
     msg_len = msg_hdr->msg_len;
