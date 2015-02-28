@@ -1060,8 +1060,8 @@ start:
         goto start;
     }
     if (s->s3->alert_fragment_len >= 2) {
-        int alert_level = s->s3->alert_fragment[0];
-        int alert_descr = s->s3->alert_fragment[1];
+        const uint8_t alert_level = s->s3->alert_fragment[0];
+        const uint8_t alert_descr = s->s3->alert_fragment[1];
 
         s->s3->alert_fragment_len = 0;
 
@@ -1079,8 +1079,7 @@ start:
             cb(s, SSL_CB_READ_ALERT, j);
         }
 
-        if (alert_level == 1) {
-            /* warning */
+        if (alert_level == SSL3_AL_WARNING) {
             s->s3->warn_alert = alert_descr;
             if (alert_descr == SSL_AD_CLOSE_NOTIFY) {
                 s->shutdown |= SSL_RECEIVED_SHUTDOWN;
@@ -1100,8 +1099,7 @@ start:
                 SSLerr(SSL_F_SSL3_READ_BYTES, SSL_R_NO_RENEGOTIATION);
                 goto f_err;
             }
-        } else if (alert_level == 2) {
-            /* fatal */
+        } else if (alert_level == SSL3_AL_FATAL) {
             s->rwstate = SSL_NOTHING;
             s->s3->fatal_alert = alert_descr;
             SSLerr(SSL_F_SSL3_READ_BYTES, SSL_AD_REASON_OFFSET + alert_descr);
