@@ -647,10 +647,28 @@ int ssl3_client_hello(SSL *s)
         /* else use the pre-loaded session */
 
         p = s->s3->client_random;
-        RAND_pseudo_bytes(p, SSL3_RANDOM_SIZE);
+
+        /*
+         * for DTLS if client_random is initialized, reuse it, we are
+         * required to use same upon reply to HelloVerify
+         */
+        if (SSL_IS_DTLS(s)) {
+            size_t idx;
+            i = 1;
+            for (idx = 0; idx < sizeof(s->s3->client_random); idx++) {
+                if (p[idx]) {
+                    i = 0;
+                    break;
+                }
+            }
+        } else
+            i = 1;
+
+        if (i)
+            RAND_pseudo_bytes(p, sizeof(s->s3->client_random) - 4);
 
         /* Do the message type and length last */
-        d = p = &(buf[4]);
+        d = p = ssl_handshake_start(s);
 
         /*
          * Version indicates the negotiated version: for example from
@@ -705,6 +723,17 @@ int ssl3_client_hello(SSL *s)
             p += i;
         }
 
+        /* cookie stuff for DTLS */
+        if (SSL_IS_DTLS(s)) {
+            if (s->d1->cookie_len > sizeof(s->d1->cookie)) {
+                SSLerr(SSL_F_SSL3_CLIENT_HELLO, ERR_R_INTERNAL_ERROR);
+                goto err;
+            }
+            *(p++) = s->d1->cookie_len;
+            memcpy(p, s->d1->cookie, s->d1->cookie_len);
+            p += s->d1->cookie_len;
+        }
+
         /* Ciphers supported */
         i = ssl_cipher_list_to_bytes(s, SSL_get_ciphers(s), &p[2]);
         if (i == 0) {
@@ -741,19 +770,13 @@ int ssl3_client_hello(SSL *s)
             goto err;
         }
 
-        l = (p - d);
-        d = buf;
-        *(d++) = SSL3_MT_CLIENT_HELLO;
-        l2n3(l, d);
-
+        l = p - d;
+        ssl_set_handshake_header(s, SSL3_MT_CLIENT_HELLO, l);
         s->state = SSL3_ST_CW_CLNT_HELLO_B;
-        /* number of bytes to write */
-        s->init_num = p - buf;
-        s->init_off = 0;
     }
 
     /* SSL3_ST_CW_CLNT_HELLO_B */
-    return (ssl3_do_write(s, SSL3_RT_HANDSHAKE));
+    return ssl_do_write(s);
 err:
     return (-1);
 }
@@ -1898,8 +1921,7 @@ f_err:
     return (-1);
 }
 
-int
-ssl3_get_server_done(SSL *s)
+int ssl3_get_server_done(SSL *s)
 {
     int ok, ret = 0;
     long n;
@@ -1922,7 +1944,7 @@ ssl3_get_server_done(SSL *s)
 
 int ssl3_send_client_key_exchange(SSL *s)
 {
-    unsigned char *p, *d;
+    unsigned char *p;
     int n;
     unsigned long alg_k;
     unsigned char *q;
@@ -1935,8 +1957,7 @@ int ssl3_send_client_key_exchange(SSL *s)
     BN_CTX *bn_ctx = NULL;
 
     if (s->state == SSL3_ST_CW_KEY_EXCH_A) {
-        d = (unsigned char *)s->init_buf->data;
-        p = &(d[4]);
+        p = ssl_handshake_start(s);
 
         alg_k = s->s3->tmp.new_cipher->algorithm_mkey;
 
@@ -2341,17 +2362,12 @@ int ssl3_send_client_key_exchange(SSL *s)
             goto err;
         }
 
-        *(d++) = SSL3_MT_CLIENT_KEY_EXCHANGE;
-        l2n3(n, d);
-
+        ssl_set_handshake_header(s, SSL3_MT_CLIENT_KEY_EXCHANGE, n);
         s->state = SSL3_ST_CW_KEY_EXCH_B;
-        /* number of bytes to write */
-        s->init_num = n + 4;
-        s->init_off = 0;
     }
 
     /* SSL3_ST_CW_KEY_EXCH_B */
-    return (ssl3_do_write(s, SSL3_RT_HANDSHAKE));
+    return ssl_do_write(s);
 
 err:
     BN_CTX_free(bn_ctx);
@@ -2363,7 +2379,7 @@ err:
 
 int ssl3_send_client_verify(SSL *s)
 {
-    unsigned char *p, *d;
+    unsigned char *p;
     unsigned char data[MD5_DIGEST_LENGTH + SHA_DIGEST_LENGTH];
     EVP_PKEY *pkey;
     EVP_PKEY_CTX *pctx = NULL;
@@ -2375,8 +2391,7 @@ int ssl3_send_client_verify(SSL *s)
     EVP_MD_CTX_init(&mctx);
 
     if (s->state == SSL3_ST_CW_CERT_VRFY_A) {
-        d = (unsigned char *)s->init_buf->data;
-        p = &(d[4]);
+        p = ssl_handshake_start(s);
         pkey = s->cert->key->privatekey;
         /*
          * Create context from key and test if sha1 is allowed as
@@ -2471,16 +2486,13 @@ int ssl3_send_client_verify(SSL *s)
                    ERR_R_INTERNAL_ERROR);
             goto err;
         }
-        *(d++) = SSL3_MT_CERTIFICATE_VERIFY;
-        l2n3(n, d);
 
+        ssl_set_handshake_header(s, SSL3_MT_CERTIFICATE_VERIFY, n);
         s->state = SSL3_ST_CW_CERT_VRFY_B;
-        s->init_num = (int)n + 4;
-        s->init_off = 0;
     }
     EVP_MD_CTX_cleanup(&mctx);
     EVP_PKEY_CTX_free(pctx);
-    return (ssl3_do_write(s, SSL3_RT_HANDSHAKE));
+    return ssl_do_write(s);
 err:
     EVP_MD_CTX_cleanup(&mctx);
     EVP_PKEY_CTX_free(pctx);
@@ -2492,7 +2504,6 @@ int ssl3_send_client_certificate(SSL *s)
     X509 *x509 = NULL;
     EVP_PKEY *pkey = NULL;
     int i;
-    unsigned long l;
 
     if (s->state == SSL3_ST_CW_CERT_A) {
         if ((s->cert == NULL) || (s->cert->key->x509 == NULL) || (s->cert->key->privatekey == NULL))
@@ -2544,18 +2555,10 @@ int ssl3_send_client_certificate(SSL *s)
 
     if (s->state == SSL3_ST_CW_CERT_C) {
         s->state = SSL3_ST_CW_CERT_D;
-        l = ssl3_output_cert_chain(s,
-                                   (s->s3->tmp.cert_req == 2) ? NULL : s->cert->key->x509);
-        if (!l) {
-            SSLerr(SSL_F_SSL3_SEND_CLIENT_CERTIFICATE, ERR_R_INTERNAL_ERROR);
-            ssl3_send_alert(s, SSL3_AL_FATAL, SSL_AD_INTERNAL_ERROR);
-            return 0;
-        }
-        s->init_num = (int)l;
-        s->init_off = 0;
+        ssl3_output_cert_chain(s, (s->s3->tmp.cert_req == 2) ? NULL : s->cert->key->x509);
     }
     /* SSL3_ST_CW_CERT_D */
-    return (ssl3_do_write(s, SSL3_RT_HANDSHAKE));
+    return ssl_do_write(s);
 }
 
 #define has_bits(i, m) (((i) & (m)) == (m))

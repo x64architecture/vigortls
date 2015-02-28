@@ -526,7 +526,20 @@ typedef struct ssl3_enc_method {
                                   int use_context);
     /* Flags indicating protocol version requirements. */
     unsigned int enc_flags;
+    /* Handshake header length */
+    unsigned int hhlen;
+    /* Set the handshake header */
+    void (*set_handshake_header)(SSL *s, int type, unsigned long len);
+    /* Write out handshake message */
+    int (*do_write)(SSL *s);
 } SSL3_ENC_METHOD;
+
+#define SSL_HM_HEADER_LENGTH(s) s->method->ssl3_enc->hhlen
+#define ssl_handshake_start(s) \
+    (((unsigned char *)s->init_buf->data) + s->method->ssl3_enc->hhlen)
+#define ssl_set_handshake_header(s, htype, len) \
+    s->method->ssl3_enc->set_handshake_header(s, htype, len)
+#define ssl_do_write(s) s->method->ssl3_enc->do_write(s)
 
 /*
  * Flag values for enc_flags.
@@ -613,6 +626,7 @@ int ssl_cipher_get_evp_aead(const SSL_SESSION *s, const EVP_AEAD **aead);
 int ssl_get_handshake_digest(int i, long *mask, const EVP_MD **md);
 
 int ssl_verify_cert_chain(SSL *s, STACK_OF(X509) * sk);
+int ssl_add_cert_chain(SSL *s, X509 *x, unsigned long *l);
 int ssl_undefined_function(SSL *s);
 int ssl_undefined_void_function(void);
 int ssl_undefined_const_function(const SSL *s);
@@ -688,6 +702,9 @@ void ssl3_record_sequence_increment(unsigned char *seq);
 int ssl3_do_change_cipher_spec(SSL *ssl);
 long ssl3_default_timeout(void);
 
+void ssl3_set_handshake_header(SSL *s, int htype, unsigned long len);
+int ssl3_handshake_write(SSL *s);
+
 int ssl23_read(SSL *s, void *buf, int len);
 int ssl23_peek(SSL *s, void *buf, int len);
 int ssl23_write(SSL *s, const void *buf, int len);
@@ -756,9 +773,6 @@ int ssl3_send_next_proto(SSL *s);
 #endif
 
 int dtls1_client_hello(SSL *s);
-int dtls1_send_client_certificate(SSL *s);
-int dtls1_send_client_key_exchange(SSL *s);
-int dtls1_send_client_verify(SSL *s);
 
 /* some server-only functions */
 int ssl3_get_client_hello(SSL *s);
@@ -774,13 +788,6 @@ int ssl3_get_cert_verify(SSL *s);
 #ifndef OPENSSL_NO_NEXTPROTONEG
 int ssl3_get_next_proto(SSL *s);
 #endif
-
-int dtls1_send_hello_request(SSL *s);
-int dtls1_send_server_hello(SSL *s);
-int dtls1_send_server_certificate(SSL *s);
-int dtls1_send_server_key_exchange(SSL *s);
-int dtls1_send_certificate_request(SSL *s);
-int dtls1_send_server_done(SSL *s);
 
 int ssl23_accept(SSL *s);
 int ssl23_connect(SSL *s);

@@ -1923,6 +1923,9 @@ SSL3_ENC_METHOD SSLv3_enc_data = {
         SSL *, unsigned char *, size_t, const char *, size_t,
         const unsigned char *, size_t, int use_context))ssl_undefined_function,
     .enc_flags = 0,
+    .hhlen = SSL3_HM_HEADER_LENGTH,
+    .set_handshake_header = ssl3_set_handshake_header,
+    .do_write = ssl3_handshake_write,
 };
 
 long ssl3_default_timeout(void)
@@ -1970,6 +1973,20 @@ int ssl3_pending(const SSL *s)
         return 0;
 
     return (s->s3->rrec.type == SSL3_RT_APPLICATION_DATA) ? s->s3->rrec.length : 0;
+}
+
+void ssl3_set_handshake_header(SSL *s, int htype, unsigned long len)
+{
+    unsigned char *p = (unsigned char *)s->init_buf->data;
+    *(p++) = htype;
+    l2n3(len, p);
+    s->init_num = (int)len + SSL3_HM_HEADER_LENGTH;
+    s->init_off = 0;
+}
+
+int ssl3_handshake_write(SSL *s)
+{
+    return ssl3_do_write(s, SSL3_RT_HANDSHAKE);
 }
 
 int ssl3_new(SSL *s)

@@ -138,6 +138,9 @@ SSL3_ENC_METHOD TLSv1_enc_data = {
     .alert_value = tls1_alert_code,
     .export_keying_material = tls1_export_keying_material,
     .enc_flags = 0,
+    .hhlen = SSL3_HM_HEADER_LENGTH,
+    .set_handshake_header = ssl3_set_handshake_header,
+    .do_write = ssl3_handshake_write,
 };
 
 SSL3_ENC_METHOD TLSv1_1_enc_data = {
@@ -156,6 +159,9 @@ SSL3_ENC_METHOD TLSv1_1_enc_data = {
     .alert_value = tls1_alert_code,
     .export_keying_material = tls1_export_keying_material,
     .enc_flags = SSL_ENC_FLAG_EXPLICIT_IV,
+    .hhlen = SSL3_HM_HEADER_LENGTH,
+    .set_handshake_header = ssl3_set_handshake_header,
+    .do_write = ssl3_handshake_write,
 };
 
 SSL3_ENC_METHOD TLSv1_2_enc_data = {
@@ -173,7 +179,11 @@ SSL3_ENC_METHOD TLSv1_2_enc_data = {
     .server_finished_label_len = TLS_MD_SERVER_FINISH_CONST_SIZE,
     .alert_value = tls1_alert_code,
     .export_keying_material = tls1_export_keying_material,
-    .enc_flags = SSL_ENC_FLAG_EXPLICIT_IV | SSL_ENC_FLAG_SIGALGS | SSL_ENC_FLAG_SHA256_PRF | SSL_ENC_FLAG_TLS1_2_CIPHERS,
+    .enc_flags = SSL_ENC_FLAG_EXPLICIT_IV | SSL_ENC_FLAG_SIGALGS |
+        SSL_ENC_FLAG_SHA256_PRF | SSL_ENC_FLAG_TLS1_2_CIPHERS,
+    .hhlen = SSL3_HM_HEADER_LENGTH,
+    .set_handshake_header = ssl3_set_handshake_header,
+    .do_write = ssl3_handshake_write,
 };
 
 long tls1_default_timeout(void)

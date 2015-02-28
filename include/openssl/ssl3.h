@@ -238,6 +238,8 @@ extern "C" {
 #define SSL3_RT_HEADER_LENGTH 5
 #define SSL3_CIPHER_VALUE_SIZE 2
 
+#define SSL3_HM_HEADER_LENGTH 4
+
 #define SSL3_ALIGN_PAYLOAD 8
 
 /* This is the maximum MAC (digest) size used by the SSL library.

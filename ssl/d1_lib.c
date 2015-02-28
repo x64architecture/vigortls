@@ -67,6 +67,8 @@
 #include "pqueue.h"
 #include "ssl_locl.h"
 
+static void dtls1_set_handshake_header(SSL *s, int type, unsigned long len);
+static int dtls1_handshake_write(SSL *s);
 int dtls1_listen(SSL *s, struct sockaddr *client);
 
 SSL3_ENC_METHOD DTLSv1_enc_data = {
@@ -85,6 +87,9 @@ SSL3_ENC_METHOD DTLSv1_enc_data = {
     .alert_value = tls1_alert_code,
     .export_keying_material = tls1_export_keying_material,
     .enc_flags = SSL_ENC_FLAG_DTLS | SSL_ENC_FLAG_EXPLICIT_IV,
+    .hhlen = DTLS1_HM_HEADER_LENGTH,
+    .set_handshake_header = dtls1_set_handshake_header,
+    .do_write = dtls1_handshake_write,
 };
 
 long dtls1_default_timeout(void)
@@ -450,4 +455,20 @@ void dtls1_build_sequence_number(unsigned char *dst, unsigned char *seq,
     s2n(epoch, p);
     memcpy(p, &seq[2], SSL3_SEQUENCE_SIZE - 2);
     memcpy(dst, dtlsseq, SSL3_SEQUENCE_SIZE);
+}
+
+static void dtls1_set_handshake_header(SSL *s, int htype, unsigned long len)
+{
+    unsigned char *p = (unsigned char *)s->init_buf->data;
+    dtls1_set_message_header(s, p, htype, len, 0, len);
+    s->init_num = (int)len + DTLS1_HM_HEADER_LENGTH;
+    s->init_off = 0;
+    /* Buffer the message to handle re-xmits */
+    dtls1_buffer_message(s, 0);
+
+}
+
+static int dtls1_handshake_write(SSL *s)
+{
+    return dtls1_do_write(s, SSL3_RT_HANDSHAKE);
 }
