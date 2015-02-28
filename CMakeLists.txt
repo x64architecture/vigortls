@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 2.8.8)
 project(VigorTLS C)
 
+find_package(Perl REQUIRED)
+
 include(CTest)
 include(ConfigureChecks.cmake)
 include(GenDeps.cmake)
