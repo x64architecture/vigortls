@@ -63,7 +63,7 @@
 #include <openssl/evp.h>
 #include <openssl/pkcs12.h>
 #include <openssl/x509.h>
-#include <openssl/vigortls.h>
+#include <stdcompat.h>
 
 #include "evp_locl.h"
 

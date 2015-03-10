@@ -59,6 +59,7 @@
 /* GENERALIZEDTIME implementation, written by Steve Henson. Based on UTCTIME */
 
 #include <stdio.h>
+#include <stdcompat.h>
 #include <string.h>
 
 #include <time.h>

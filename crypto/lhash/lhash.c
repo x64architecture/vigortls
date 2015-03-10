@@ -62,7 +62,7 @@
 
 #include <openssl/crypto.h>
 #include <openssl/lhash.h>
-#include <openssl/vigortls.h>
+#include <stdcompat.h>
 
 #undef MIN_NODES
 #define MIN_NODES 16

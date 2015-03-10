@@ -145,7 +145,7 @@
 #include <openssl/ui.h>
 #include <openssl/x509.h>
 #include <openssl/x509v3.h>
-#include <openssl/vigortls.h>
+#include <stdcompat.h>
 #include <win32compat.h>
 
 #ifndef OPENSSL_NO_ENGINE

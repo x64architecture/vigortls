@@ -1,71 +1,73 @@
 include_directories(${CMAKE_CURRENT_BINARY_DIR} .. ../../include .)
 
-if (NOT HAVE_ASPRINTF)
+if (NOT HAVE_VASPRINTF OR NOT HAVE_ASPRINTF)
     set(
-        COMPACT_SOURCES 
+        COMPAT_SOURCES
 
-        asprintf.c
+        vasprintf.c
     )
 endif()
 
 if (NOT HAVE_REALLOCARRAY)
     set(
-        COMPACT_SOURCES 
+        COMPAT_SOURCES 
 
-        ${COMPACT_SOURCES}
+        ${COMPAT_SOURCES}
         reallocarray.c
     )
 endif()
 
 if (NOT HAVE_SNPRINTF)
     set(
-        COMPACT_SOURCES 
+        COMPAT_SOURCES 
 
-        ${COMPACT_SOURCES}
+        ${COMPAT_SOURCES}
         snprintf.c
     )
 endif()
 
 if (NOT HAVE_STRNDUP)
     set(
-        COMPACT_SOURCES 
+        COMPAT_SOURCES 
 
-        ${COMPACT_SOURCES}
+        ${COMPAT_SOURCES}
         strndup.c
     )
 endif()
 
 if (NOT HAVE_STRLCPY)
     set(
-        COMPACT_SOURCES
+        COMPAT_SOURCES
 
-        ${COMPACT_SOURCES}
+        ${COMPAT_SOURCES}
         strlcpy.c
     )
 endif()
+
 if (NOT HAVE_STRLCAT)
     set(
-        COMPACT_SOURCES 
+        COMPAT_SOURCES 
 
-        ${COMPACT_SOURCES}
+        ${COMPAT_SOURCES}
         strlcat.c
     )
 endif()
+
 if (NOT HAVE_STRTONUM)
     set(
-        COMPACT_SOURCES 
+        COMPAT_SOURCES 
 
-        ${COMPACT_SOURCES}
+        ${COMPAT_SOURCES}
         strtonum.c
     )
 endif()
 
 add_library(
-    compact
+    compat
 
     OBJECT
 
-    ${COMPACT_SOURCES}
+    ${COMPAT_SOURCES}
     gettimeofday_windows.c
     dirent_windows.c
 )

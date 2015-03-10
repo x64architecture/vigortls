@@ -62,7 +62,7 @@
 
 #include <openssl/buffer.h>
 #include <openssl/txt_db.h>
-#include <openssl/vigortls.h>
+#include <stdcompat.h>
 
 #undef BUFSIZE
 #define BUFSIZE 512

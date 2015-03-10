@@ -13,6 +13,7 @@
  * CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE. */
 
 #include <assert.h>
+#include <stdcompat.h>
 #include <stdlib.h>
 #include <string.h>
 

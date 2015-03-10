@@ -31,7 +31,7 @@
 #include <openssl/bn.h>
 #include <openssl/err.h>
 #include <openssl/ec.h>
-#include <openssl/vigortls.h>
+#include <stdcompat.h>
 
 #include "cryptlib.h"
 #include "ec_lcl.h"

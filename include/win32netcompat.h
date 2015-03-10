@@ -105,6 +105,9 @@ static inline int posix_connect(int sockfd, const struct sockaddr *addr, socklen
 }
 
 #define connect(sockfd, addr, addrlen) posix_connect(sockfd, addr, addrlen)
+#define close(fd) posix_close(fd)
+#define read(fd, buf, count) posix_read(fd, buf, count)
+#define write(fd, buf, count) posix_write(fd, buf, count)
 
 static inline int posix_close(int fd)
 {
@@ -116,8 +119,6 @@ static inline int posix_close(int fd)
     }
     return 0;
 }
-
-#define close(fd) posix_close(fd)
 
 static inline ssize_t posix_read(int fd, void *buf, size_t count)
 {
@@ -131,8 +132,6 @@ static inline ssize_t posix_read(int fd, void *buf, size_t count)
     return rc;
 }
 
-#define read(fd, buf, count) posix_read(fd, buf, count)
-
 static inline ssize_t posix_write(int fd, const void *buf, size_t count)
 {
     ssize_t rc = send(fd, buf, count, 0);
@@ -144,8 +143,6 @@ static inline ssize_t posix_write(int fd, const void *buf, size_t count)
     }
     return rc;
 }
-
-#define write(fd, buf, count) posix_write(fd, buf, count)
 
 static inline int posix_getsockopt(int sockfd, int level, int optname,
                                    void *optval, socklen_t *optlen)

@@ -63,7 +63,7 @@
 #include <openssl/crypto.h>
 #include <openssl/dso.h>
 #include <openssl/err.h>
-#include <openssl/vigortls.h>
+#include <stdcompat.h>
 
 static DSO_METHOD *default_DSO_meth = NULL;
 

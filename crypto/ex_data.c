@@ -140,7 +140,7 @@
 
 #include <openssl/err.h>
 #include <openssl/lhash.h>
-#include <openssl/vigortls.h>
+#include <stdcompat.h>
 
 /* What an "implementation of ex_data functionality" looks like */
 struct st_CRYPTO_EX_DATA_IMPL {

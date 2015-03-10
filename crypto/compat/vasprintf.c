@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 - 2015, Kurt Cancemi (kurt@x64architecture.com)
+ * Copyright (c) 2015, Kurt Cancemi (kurt@x64architecture.com)
  *
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -14,21 +14,27 @@
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-#include <string.h>
+#include <stdcompat.h>
+#include <stdio.h>
+#include <stdlib.h>
 
-#include <openssl/vigortls.h>
-
-size_t strlcpy(char *dest, const char *src, size_t size)
+int vasprintf(char **buf, const char *format, va_list args)
 {
-    size_t len = 0;
-    while (size > 1 && *src) {
-        size--;
-        *dest++ = *src++;
-        len++;
-    }
+    int wanted = vsnprintf(*buf = NULL, 0, format, args);
+    if ((wanted < 0) || ((*buf = malloc(wanted + 1)) == NULL))
+        return -1;
+    return vsprintf(*buf, format, args);
+}
 
-    if (size)
-        *dest = '\0';
+int asprintf(char **buf, const char *format, ...)
+{
+    va_list args;
+    int ret;
 
-    return len + strlen(src);
+    *buf = NULL;
+    va_start(args, format);
+    ret = vasprintf(buf, format, args);
+    va_end(args);
+
+    return ret;
 }

@@ -142,6 +142,8 @@
 
 #define _BSD_SOURCE 1 /* Or gethostname won't be declared properly \
                          on Linux and GNU platforms. */
+                         
+#include <stdcompat.h>
 #include <sys/types.h>
 #include <sys/socket.h>
 

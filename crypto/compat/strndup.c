@@ -14,16 +14,19 @@
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-#include <openssl/vigortls.h>
+#include <stdlib.h>
+#include <string.h>
 
-int snprintf(char *buf, size_t n, const char *format, ...)
+#include <stdcompat.h>
+
+char *strndup(const char *buf, size_t size)
 {
-    va_list args;
-    int ret;
+    size_t len = strnlen(buf, size);
+    char *result = malloc(len + 1);
 
-    va_start(args, format);
-    ret = vsnprintf(buf, n, format, args);
-    va_end(args);
+    if (result == NULL)
+        return NULL;
 
-    return (ret);
+    result[len] = '\0';
+    return memcpy(result, buf, len);
 }

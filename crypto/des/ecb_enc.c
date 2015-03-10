@@ -56,8 +56,9 @@
  * [including the GNU Public Licence.]
  */
 
-#include "des_locl.h"
+#include <stdcompat.h>
 #include <openssl/bio.h>
+#include "des_locl.h"
 
 const char *DES_options(void)
 {

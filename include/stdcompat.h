@@ -14,20 +14,42 @@
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-#ifndef _WIN32
-#include_next <unistd.h>
+#ifndef VIGORTLS_STDCOMPAT_H
+#define VIGORTLS_STDCOMPAT_H
+
+#include <stddef.h>
+#include <stdarg.h>
+
+#ifndef HAVE_ASPRINTF
+int asprintf(char **buf, const char *format, ...);
 #endif
 
-#ifndef VIGORTLS_UNISTD_H
-#define VIGORTLS_UNISTD_H
+#ifndef HAVE_VASPRINTF
+int vasprintf(char **buf, const char *format, va_list args);
+#endif
 
-#include <io.h>
-#define WIN32_LEAN_AND_MEAN
-#include <windows.h>
+#ifndef HAVE_REALLOCARRAY
+void *reallocarray(void *ptr, size_t newmem, size_t size);
+#endif
 
-#define sleep(x) Sleep(1000 * x)
-#define getpid() GetCurrentThreadId()
+#ifndef HAVE_SNPRINTF
+int snprintf(char *buf, size_t n, const char *format, ...);
+#endif
 
-int issetugid(void);
+#ifndef HAVE_STRNDUP
+char *strndup(const char *buf, size_t size);
+#endif
+
+#ifndef HAVE_STRTONUM
+long long strtonum(const char *nptr, long long minval, long long maxval, const char **stnerr);
+#endif
+
+#ifndef HAVE_STRLCPY
+size_t strlcpy(char *dest, const char *src, size_t size);
+#endif
+
+#ifndef HAVE_STRLCAT
+size_t strlcat(char *dest, const char *src, size_t size);
+#endif
 
 #endif

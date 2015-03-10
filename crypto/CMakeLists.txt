@@ -76,7 +76,7 @@ add_subdirectory(chacha)
 add_subdirectory(cmac)
 add_subdirectory(cms)
 add_subdirectory(conf)
-add_subdirectory(compact)
+add_subdirectory(compat)
 add_subdirectory(des)
 add_subdirectory(dh)
 add_subdirectory(dsa)
@@ -145,7 +145,7 @@ add_library(
     $<TARGET_OBJECTS:cmac>
     $<TARGET_OBJECTS:cms>
     $<TARGET_OBJECTS:conf>
-    $<TARGET_OBJECTS:compact>
+    $<TARGET_OBJECTS:compat>
     $<TARGET_OBJECTS:des>
     $<TARGET_OBJECTS:dh>
     $<TARGET_OBJECTS:dsa>

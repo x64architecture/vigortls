@@ -63,7 +63,7 @@
  */
 
 #include <openssl/err.h>
-#include <openssl/vigortls.h>
+#include <stdcompat.h>
 
 #include "ec_lcl.h"
 

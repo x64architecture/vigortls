@@ -144,7 +144,7 @@
 #ifndef OPENSSL_NO_ENGINE
 #include <openssl/engine.h>
 #endif
-#include <openssl/vigortls.h>
+#include <stdcompat.h>
 
 #include "ssl_locl.h"
 

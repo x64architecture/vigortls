@@ -53,6 +53,7 @@
  *
  */
 
+#include <stdcompat.h>
 #include <string.h>
 
 #include "eng_int.h"

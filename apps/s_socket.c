@@ -66,7 +66,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-#include <openssl/vigortls.h>
+#include <stdcompat.h>
 
 #include "apps.h"
 

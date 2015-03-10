@@ -58,6 +58,7 @@
 
 #include <ctype.h>
 #include <stdio.h>
+#include <stdcompat.h>
 #include <string.h>
 
 #include <openssl/conf.h>

@@ -67,7 +67,7 @@
 #include <openssl/err.h>
 #include <openssl/lhash.h>
 #include <openssl/x509.h>
-#include <openssl/vigortls.h>
+#include <stdcompat.h>
 
 typedef struct lookup_dir_hashes_st {
     unsigned long hash;

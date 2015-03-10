@@ -57,6 +57,7 @@
  */
 
 #include <stdio.h>
+#include <stdcompat.h>
 #include <string.h>
 #include <time.h>
 #include <win32compat.h>

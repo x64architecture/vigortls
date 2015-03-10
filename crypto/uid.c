@@ -19,6 +19,8 @@
 
 #include <openssl/crypto.h>
 
+#if !defined(_WIN32)
+
 int OPENSSL_issetugid(void)
 {
     if (getuid() != geteuid())
@@ -27,3 +29,10 @@ int OPENSSL_issetugid(void)
         return 1;
     return 0;
 }
+
+#else
+int OPENSSL_issetugid(void)
+{
+    return 1;
+}
+#endif

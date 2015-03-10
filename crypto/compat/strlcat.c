@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, Kurt Cancemi (kurt@x64architecture.com)
+ * Copyright (c) 2014 - 2015, Kurt Cancemi (kurt@x64architecture.com)
  *
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -14,19 +14,16 @@
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-#include <stdlib.h>
-#include <string.h>
+#include <stdcompat.h>
 
-#include <openssl/vigortls.h>
-
-char *strndup(const char *buf, size_t size)
+size_t strlcat(char *dest, const char *src, size_t size)
 {
-    size_t len = strnlen(buf, size);
-    char *result = malloc(len + 1);
+    size_t len = 0;
 
-    if (result == NULL)
-        return NULL;
-
-    result[len] = '\0';
-    return memcpy(result, buf, len);
+    while (size > 0 && *dest) {
+        size--;
+        dest++;
+        len++;
+    }
+    return len + strlcpy(dest, src, size);
 }

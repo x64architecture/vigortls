@@ -55,6 +55,7 @@
  * [including the GNU Public Licence.]
  */
 
+#include <stdcompat.h>
 #include <stdio.h>
 #include <stdlib.h>
 

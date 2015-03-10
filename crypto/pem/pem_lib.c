@@ -73,7 +73,7 @@
 #include <openssl/pkcs12.h>
 #include <openssl/rand.h>
 #include <openssl/x509.h>
-#include <openssl/vigortls.h>
+#include <stdcompat.h>
 
 #include "asn1_locl.h"
 

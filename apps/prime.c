@@ -51,7 +51,7 @@
 #include <limits.h>
 
 #include <openssl/bn.h>
-#include <openssl/vigortls.h>
+#include <stdcompat.h>
 
 #include "apps.h"
 

@@ -57,7 +57,7 @@
  */
 
 #include <openssl/objects.h>
-#include <openssl/vigortls.h>
+#include <stdcompat.h>
 
 #include "obj_xref.h"
 

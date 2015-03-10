@@ -14,25 +14,17 @@
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-#include <openssl/vigortls.h>
+#include <stdcompat.h>
+#include <stdio.h>
 
-int vasprintf(char **buf, const char *format, va_list args)
-{
-    int wanted = vsnprintf(*buf = NULL, 0, format, args);
-    if ((wanted < 0) || ((*buf = malloc(wanted + 1)) == NULL))
-        return -1;
-    return vsprintf(*buf, format, args);
-}
-
-int asprintf(char **buf, const char *format, ...)
+int snprintf(char *buf, size_t n, const char *format, ...)
 {
     va_list args;
     int ret;
 
-    *buf = NULL;
     va_start(args, format);
-    ret = vasprintf(buf, format, args);
+    ret = vsnprintf(buf, n, format, args);
     va_end(args);
 
-    return ret;
+    return (ret);
 }

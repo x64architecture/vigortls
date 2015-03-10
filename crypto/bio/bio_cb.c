@@ -57,8 +57,10 @@
  */
 
 #include <stdio.h>
+#include <stdcompat.h>
 #include <string.h>
 #include <stdlib.h>
+
 #include <openssl/bio.h>
 #include <openssl/err.h>
 

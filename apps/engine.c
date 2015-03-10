@@ -64,7 +64,7 @@
 #ifndef OPENSSL_NO_ENGINE
 #include <openssl/engine.h>
 #include <openssl/ssl.h>
-#include <openssl/vigortls.h>
+#include <stdcompat.h>
 
 static const char *engine_usage[] = {
     "usage: engine opts [engine ...]\n",

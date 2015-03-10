@@ -119,7 +119,7 @@
 #include <openssl/bio.h>
 #include <openssl/err.h>
 #include <openssl/opensslconf.h>
-#include <openssl/vigortls.h>
+#include <stdcompat.h>
 
 DECLARE_LHASH_OF(ERR_STRING_DATA);
 DECLARE_LHASH_OF(ERR_STATE);

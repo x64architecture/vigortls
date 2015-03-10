@@ -61,7 +61,7 @@
 
 #include <openssl/err.h>
 #include <openssl/x509.h>
-#include <openssl/vigortls.h>
+#include <stdcompat.h>
 
 int NETSCAPE_SPKI_set_pubkey(NETSCAPE_SPKI *x, EVP_PKEY *pkey)
 {

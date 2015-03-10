@@ -66,7 +66,7 @@
 #include <openssl/err.h>
 #include <openssl/lhash.h>
 #include <openssl/objects.h>
-#include <openssl/vigortls.h>
+#include <stdcompat.h>
 
 #include "cryptlib.h"
 

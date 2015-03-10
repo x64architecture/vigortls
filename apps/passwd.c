@@ -21,7 +21,7 @@
 #ifndef NO_MD5CRYPT_1
 #include <openssl/md5.h>
 #endif
-#include <openssl/vigortls.h>
+#include <stdcompat.h>
 
 static unsigned const char cov_2char[64] = {
     /* from crypto/des/fcrypt.c */

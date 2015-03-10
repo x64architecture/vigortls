@@ -67,7 +67,7 @@
 #include <openssl/err.h>
 #include <openssl/lhash.h>
 #include <openssl/stack.h>
-#include <openssl/vigortls.h>
+#include <stdcompat.h>
 
 #include "conf_def.h"
 #include "cryptlib.h"
@@ -117,11 +117,11 @@ static CONF_METHOD WIN32_method = {
     def_load
 };
 
-CONF_METHOD *NCONF_default()
+CONF_METHOD *NCONF_default(void)
 {
     return &default_method;
 }
-CONF_METHOD *NCONF_WIN32()
+CONF_METHOD *NCONF_WIN32(void)
 {
     return &WIN32_method;
 }

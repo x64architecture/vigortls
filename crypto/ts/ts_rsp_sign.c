@@ -56,6 +56,7 @@
  *
  */
 
+#include <stdcompat.h>
 #include <string.h>
 #include <sys/time.h>
 

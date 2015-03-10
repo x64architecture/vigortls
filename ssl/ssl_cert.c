@@ -115,6 +115,7 @@
 
 #include <sys/types.h>
 
+#include <stdcompat.h>
 #include <stdio.h>
 #include <unistd.h>
 #include <dirent.h>

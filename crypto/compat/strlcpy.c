@@ -14,16 +14,21 @@
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-#include <openssl/vigortls.h>
+#include <string.h>
 
-size_t strlcat(char *dest, const char *src, size_t size)
+#include <stdcompat.h>
+
+size_t strlcpy(char *dest, const char *src, size_t size)
 {
     size_t len = 0;
-
-    while (size > 0 && *dest) {
+    while (size > 1 && *src) {
         size--;
-        dest++;
+        *dest++ = *src++;
         len++;
     }
-    return len + strlcpy(dest, src, size);
+
+    if (size)
+        *dest = '\0';
+
+    return len + strlen(src);
 }

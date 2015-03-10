@@ -57,9 +57,13 @@
  */
 
 #include <errno.h>
+
 #include <stdio.h>
+#include <stdcompat.h>
 #include <string.h>
+
 #include <sys/socket.h>
+#include <win32netcompat.h>
 #include <netinet/in.h>
 #include <unistd.h>
 

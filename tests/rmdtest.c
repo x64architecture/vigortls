@@ -55,7 +55,8 @@
  * copied and put under another distribution licence
  * [including the GNU Public Licence.]
  */
-
+ 
+#include <stdcompat.h>
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>

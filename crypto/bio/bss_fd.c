@@ -61,6 +61,8 @@
 
 #include <unistd.h>
 
+#include <win32netcompat.h>
+
 #include <openssl/bio.h>
 
 #if defined(OPENSSL_NO_POSIX_IO)

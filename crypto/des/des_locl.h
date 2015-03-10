@@ -64,13 +64,10 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <stdlib.h>
+#include <string.h>
 #include <math.h>
 
 #include <openssl/des.h>
-
-#if defined(__STDC__)
-#include <string.h>
-#endif
 
 #define ITERATIONS 16
 #define HALF_ITERATIONS 8

@@ -68,7 +68,7 @@
 #include <openssl/asn1t.h>
 #include <openssl/buffer.h>
 #include <openssl/err.h>
-#include <openssl/vigortls.h>
+#include <stdcompat.h>
 
 #include "time_support.h"
 
