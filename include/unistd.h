@@ -14,9 +14,9 @@
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-#ifndef _WIN32
+#if !defined(_WIN32)
 #include_next <unistd.h>
-#endif
+#else
 
 #ifndef VIGORTLS_UNISTD_H
 #define VIGORTLS_UNISTD_H
@@ -30,4 +30,6 @@
 
 int issetugid(void);
 
-#endif
+#endif /* VIGORTLS_UNISTD_H */
+
+#endif /* !defined(_WIN32) */
