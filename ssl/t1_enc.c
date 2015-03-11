@@ -918,8 +918,9 @@ int tls1_final_finish_mac(SSL *s, const char *str, int slen,
                   NULL, 0, NULL, 0, s->session->master_key,
                   s->session->master_key_length, out, buf2, sizeof buf2))
         return 0;
-
-    return sizeof buf2;
+    vigortls_zeroize(hash, hashlen);
+    vigortls_zeroize(buf2, sizeof buf2);
+    return (sizeof buf2);
 }
 
 int tls1_mac(SSL *ssl, unsigned char *md, int send)
@@ -1008,6 +1009,8 @@ int tls1_generate_master_secret(SSL *s, unsigned char *out, unsigned char *p,
              s->s3->server_random, SSL3_RANDOM_SIZE, NULL, 0,
              p, len, s->session->master_key, buff, sizeof buff);
 
+    vigortls_zeroize(buff, sizeof buff);
+
     return (SSL3_MASTER_SECRET_SIZE);
 }
 
@@ -1077,6 +1080,8 @@ int tls1_export_keying_material(SSL *s, unsigned char *out, size_t olen,
     rv = tls1_PRF(ssl_get_algorithm2(s), val, vallen, NULL, 0, NULL, 0, NULL, 0,
                   NULL, 0, s->session->master_key, s->session->master_key_length,
                   out, buff, olen);
+    vigortls_zeroize(val, vallen);
+    vigortls_zeroize(buff, olen);
 
     goto ret;
 err1:
