@@ -286,8 +286,7 @@ err:
     return NULL;
 }
 
-static POLICYINFO *policy_section(X509V3_CTX *ctx,
-                                  STACK_OF(CONF_VALUE) * polstrs, int ia5org)
+static POLICYINFO *policy_section(X509V3_CTX *ctx, STACK_OF(CONF_VALUE) *polstrs, int ia5org)
 {
     int i;
     CONF_VALUE *cnf;
@@ -313,7 +312,10 @@ static POLICYINFO *policy_section(X509V3_CTX *ctx,
                 goto merr;
             if (!sk_POLICYQUALINFO_push(pol->qualifiers, qual))
                 goto merr;
-            qual->pqualid = OBJ_nid2obj(NID_id_qt_cps);
+            if (!(qual->pqualid = OBJ_nid2obj(NID_id_qt_cps))) {
+                X509V3err(X509V3_F_POLICY_SECTION, ERR_R_INTERNAL_ERROR);
+                goto err;
+            }
             qual->d.cpsuri = M_ASN1_IA5STRING_new();
             if (qual->d.cpsuri == NULL)
                 goto merr;
@@ -364,8 +366,7 @@ err:
     return NULL;
 }
 
-static POLICYQUALINFO *notice_section(X509V3_CTX *ctx,
-                                      STACK_OF(CONF_VALUE) * unot, int ia5org)
+static POLICYQUALINFO *notice_section(X509V3_CTX *ctx, STACK_OF(CONF_VALUE) *unot, int ia5org)
 {
     int i, ret;
     CONF_VALUE *cnf;
@@ -373,7 +374,10 @@ static POLICYQUALINFO *notice_section(X509V3_CTX *ctx,
     POLICYQUALINFO *qual;
     if (!(qual = POLICYQUALINFO_new()))
         goto merr;
-    qual->pqualid = OBJ_nid2obj(NID_id_qt_unotice);
+    if (!(qual->pqualid = OBJ_nid2obj(NID_id_qt_unotice))) {
+        X509V3err(X509V3_F_NOTICE_SECTION, ERR_R_INTERNAL_ERROR);
+        goto err;
+    }    
     if (!(not = USERNOTICE_new()))
         goto merr;
     qual->d.usernotice = not;
