@@ -160,14 +160,12 @@ static int dh_pub_encode(X509_PUBKEY *pk, const EVP_PKEY *pkey)
     }
 
     if (X509_PUBKEY_set0_param(pk, OBJ_nid2obj(EVP_PKEY_DH),
-                               ptype, (void *)str, penc, penclen))
+                               ptype, str, penc, penclen))
         return 1;
 
 err:
-    if (penc)
-        free(penc);
-    if (str)
-        ASN1_STRING_free(str);
+    free(penc);
+    ASN1_STRING_free(str);
 
     return 0;
 }
