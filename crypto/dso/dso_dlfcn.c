@@ -142,10 +142,8 @@ static int dlfcn_load(DSO *dso)
     return (1);
 err:
     /* Cleanup! */
-    if (filename != NULL)
-        free(filename);
-    if (ptr != NULL)
-        dlclose(ptr);
+    free(filename);
+    dlclose(ptr);
     return (0);
 }
 

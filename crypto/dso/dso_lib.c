@@ -161,10 +161,8 @@ int DSO_free(DSO *dso)
     }
 
     sk_void_free(dso->meth_data);
-    if (dso->filename != NULL)
-        free(dso->filename);
-    if (dso->loaded_filename != NULL)
-        free(dso->loaded_filename);
+    free(dso->filename);
+    free(dso->loaded_filename);
 
     free(dso);
     return (1);
