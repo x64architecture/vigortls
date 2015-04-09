@@ -247,8 +247,7 @@ int int_rsa_verify(int dtype, const unsigned char *m,
             ret = 1;
     }
 err:
-    if (sig != NULL)
-        X509_SIG_free(sig);
+    X509_SIG_free(sig);
     if (s != NULL) {
         vigortls_zeroize(s, (unsigned int)siglen);
         free(s);

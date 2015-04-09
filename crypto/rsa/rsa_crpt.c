@@ -102,10 +102,8 @@ int RSA_flags(const RSA *r)
 
 void RSA_blinding_off(RSA *rsa)
 {
-    if (rsa->blinding != NULL) {
-        BN_BLINDING_free(rsa->blinding);
-        rsa->blinding = NULL;
-    }
+    BN_BLINDING_free(rsa->blinding);
+    rsa->blinding = NULL;
     rsa->flags &= ~RSA_FLAG_BLINDING;
     rsa->flags |= RSA_FLAG_NO_BLINDING;
 }

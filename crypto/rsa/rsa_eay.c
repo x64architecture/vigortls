@@ -235,10 +235,8 @@ static int RSA_eay_public_encrypt(int flen, const unsigned char *from,
 
     r = num;
 err:
-    if (ctx != NULL) {
-        BN_CTX_end(ctx);
-        BN_CTX_free(ctx);
-    }
+    BN_CTX_end(ctx);
+    BN_CTX_free(ctx);
     if (buf != NULL) {
         vigortls_zeroize(buf, num);
         free(buf);
@@ -449,10 +447,8 @@ static int RSA_eay_private_encrypt(int flen, const unsigned char *from,
 
     r = num;
 err:
-    if (ctx != NULL) {
-        BN_CTX_end(ctx);
-        BN_CTX_free(ctx);
-    }
+    BN_CTX_end(ctx);
+    BN_CTX_free(ctx);
     if (buf != NULL) {
         vigortls_zeroize(buf, num);
         free(buf);
@@ -572,10 +568,8 @@ static int RSA_eay_private_decrypt(int flen, const unsigned char *from,
         RSAerr(RSA_F_RSA_EAY_PRIVATE_DECRYPT, RSA_R_PADDING_CHECK_FAILED);
 
 err:
-    if (ctx != NULL) {
-        BN_CTX_end(ctx);
-        BN_CTX_free(ctx);
-    }
+    BN_CTX_end(ctx);
+    BN_CTX_free(ctx);
     if (buf != NULL) {
         vigortls_zeroize(buf, num);
         free(buf);
@@ -671,10 +665,8 @@ static int RSA_eay_public_decrypt(int flen, const unsigned char *from,
         RSAerr(RSA_F_RSA_EAY_PUBLIC_DECRYPT, RSA_R_PADDING_CHECK_FAILED);
 
 err:
-    if (ctx != NULL) {
-        BN_CTX_end(ctx);
-        BN_CTX_free(ctx);
-    }
+    BN_CTX_end(ctx);
+    BN_CTX_free(ctx);
     if (buf != NULL) {
         vigortls_zeroize(buf, num);
         free(buf);
@@ -849,11 +841,8 @@ static int RSA_eay_init(RSA *rsa)
 
 static int RSA_eay_finish(RSA *rsa)
 {
-    if (rsa->_method_mod_n != NULL)
-        BN_MONT_CTX_free(rsa->_method_mod_n);
-    if (rsa->_method_mod_p != NULL)
-        BN_MONT_CTX_free(rsa->_method_mod_p);
-    if (rsa->_method_mod_q != NULL)
-        BN_MONT_CTX_free(rsa->_method_mod_q);
+    BN_MONT_CTX_free(rsa->_method_mod_n);
+    BN_MONT_CTX_free(rsa->_method_mod_p);
+    BN_MONT_CTX_free(rsa->_method_mod_q);
     return (1);
 }

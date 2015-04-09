@@ -241,8 +241,7 @@ static int do_rsa_print(BIO *bp, const RSA *x, int off, int priv)
     }
     ret = 1;
 err:
-    if (m != NULL)
-        free(m);
+    free(m);
     return (ret);
 }
 

@@ -136,8 +136,7 @@ int RSA_verify_ASN1_OCTET_STRING(int dtype,
     } else
         ret = 1;
 err:
-    if (sig != NULL)
-        M_ASN1_OCTET_STRING_free(sig);
+    M_ASN1_OCTET_STRING_free(sig);
     if (s != NULL) {
         vigortls_zeroize(s, (unsigned int)siglen);
         free(s);

@@ -163,8 +163,7 @@ int RSA_check_key(const RSA *key)
 
         if (BN_cmp(j, key->dmp1) != 0) {
             ret = 0;
-            RSAerr(RSA_F_RSA_CHECK_KEY,
-                   RSA_R_DMP1_NOT_CONGRUENT_TO_D);
+            RSAerr(RSA_F_RSA_CHECK_KEY, RSA_R_DMP1_NOT_CONGRUENT_TO_D);
         }
 
         /* dmq1 = d mod (q-1)? */
@@ -182,8 +181,7 @@ int RSA_check_key(const RSA *key)
 
         if (BN_cmp(j, key->dmq1) != 0) {
             ret = 0;
-            RSAerr(RSA_F_RSA_CHECK_KEY,
-                   RSA_R_DMQ1_NOT_CONGRUENT_TO_D);
+            RSAerr(RSA_F_RSA_CHECK_KEY, RSA_R_DMQ1_NOT_CONGRUENT_TO_D);
         }
 
         /* iqmp = q^-1 mod p? */
@@ -194,23 +192,16 @@ int RSA_check_key(const RSA *key)
 
         if (BN_cmp(i, key->iqmp) != 0) {
             ret = 0;
-            RSAerr(RSA_F_RSA_CHECK_KEY,
-                   RSA_R_IQMP_NOT_INVERSE_OF_Q);
+            RSAerr(RSA_F_RSA_CHECK_KEY, RSA_R_IQMP_NOT_INVERSE_OF_Q);
         }
     }
 
 err:
-    if (i != NULL)
-        BN_free(i);
-    if (j != NULL)
-        BN_free(j);
-    if (k != NULL)
-        BN_free(k);
-    if (l != NULL)
-        BN_free(l);
-    if (m != NULL)
-        BN_free(m);
-    if (ctx != NULL)
-        BN_CTX_free(ctx);
+    BN_free(i);
+    BN_free(j);
+    BN_free(k);
+    BN_free(l);
+    BN_free(m);
+    BN_CTX_free(ctx);
     return (ret);
 }
