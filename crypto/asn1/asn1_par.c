@@ -269,10 +269,8 @@ static int asn1_parse2(BIO *bp, const unsigned char **pp, long length, int offse
                         nl = 1;
                     }
                 }
-                if (os != NULL) {
-                    M_ASN1_OCTET_STRING_free(os);
-                    os = NULL;
-                }
+                M_ASN1_OCTET_STRING_free(os);
+                os = NULL;
             } else if (tag == V_ASN1_INTEGER) {
                 ASN1_INTEGER *bs;
                 int i;
@@ -351,10 +349,8 @@ static int asn1_parse2(BIO *bp, const unsigned char **pp, long length, int offse
     }
     ret = 1;
 end:
-    if (o != NULL)
-        ASN1_OBJECT_free(o);
-    if (os != NULL)
-        M_ASN1_OCTET_STRING_free(os);
+    ASN1_OBJECT_free(o);
+    M_ASN1_OCTET_STRING_free(os);
     *pp = p;
     return (ret);
 }

@@ -131,15 +131,13 @@ int X509_PUBKEY_set(X509_PUBKEY * *x, EVP_PKEY *pkey)
         goto error;
     }
 
-    if (*x != NULL)
-        X509_PUBKEY_free(*x);
+    X509_PUBKEY_free(*x);
 
     *x = pk;
 
     return 1;
 error:
-    if (pk != NULL)
-        X509_PUBKEY_free(pk);
+    X509_PUBKEY_free(pk);
     return 0;
 }
 
@@ -194,8 +192,7 @@ EVP_PKEY *X509_PUBKEY_get(X509_PUBKEY *key)
     return ret;
 
 error:
-    if (ret != NULL)
-        EVP_PKEY_free(ret);
+    EVP_PKEY_free(ret);
     return (NULL);
 }
 

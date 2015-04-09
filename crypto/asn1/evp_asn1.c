@@ -188,9 +188,7 @@ int ASN1_TYPE_get_int_octetstring(ASN1_TYPE *a, long *num, unsigned char *data,
     err:
         ASN1err(ASN1_F_ASN1_TYPE_GET_INT_OCTETSTRING, ASN1_R_DATA_IS_WRONG);
     }
-    if (os != NULL)
-        M_ASN1_OCTET_STRING_free(os);
-    if (ai != NULL)
-        M_ASN1_INTEGER_free(ai);
+    M_ASN1_OCTET_STRING_free(os);
+    M_ASN1_INTEGER_free(ai);
     return (ret);
 }

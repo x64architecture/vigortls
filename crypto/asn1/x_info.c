@@ -104,13 +104,9 @@ void X509_INFO_free(X509_INFO *x)
     }
 #endif
 
-    if (x->x509 != NULL)
-        X509_free(x->x509);
-    if (x->crl != NULL)
-        X509_CRL_free(x->crl);
-    if (x->x_pkey != NULL)
-        X509_PKEY_free(x->x_pkey);
-    if (x->enc_data != NULL)
-        free(x->enc_data);
+    X509_free(x->x509);
+    X509_CRL_free(x->crl);
+    X509_PKEY_free(x->x_pkey);
+    free(x->enc_data);
     free(x);
 }

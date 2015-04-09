@@ -119,8 +119,7 @@ static int x509_cb(int operation, ASN1_VALUE **pval, const ASN1_ITEM *it,
             break;
 
         case ASN1_OP_D2I_POST:
-            if (ret->name != NULL)
-                free(ret->name);
+            free(ret->name);
             ret->name = X509_NAME_oneline(ret->cert_info->subject, NULL, 0);
             break;
 
@@ -133,9 +132,7 @@ static int x509_cb(int operation, ASN1_VALUE **pval, const ASN1_ITEM *it,
             policy_cache_free(ret->policy_cache);
             GENERAL_NAMES_free(ret->altname);
             NAME_CONSTRAINTS_free(ret->nc);
-
-            if (ret->name != NULL)
-                free(ret->name);
+            free(ret->name);
             break;
     }
 

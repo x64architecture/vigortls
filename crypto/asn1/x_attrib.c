@@ -136,9 +136,7 @@ X509_ATTRIBUTE *X509_ATTRIBUTE_create(int nid, int atrtype, void *value)
     ASN1_TYPE_set(val, atrtype, value);
     return (ret);
 err:
-    if (ret != NULL)
-        X509_ATTRIBUTE_free(ret);
-    if (val != NULL)
-        ASN1_TYPE_free(val);
+    X509_ATTRIBUTE_free(ret);
+    ASN1_TYPE_free(val);
     return (NULL);
 }

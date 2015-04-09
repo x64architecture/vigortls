@@ -255,8 +255,7 @@ ASN1_INTEGER *c2i_ASN1_INTEGER(ASN1_INTEGER **a, const unsigned char **pp,
         memcpy(s, p, (int)len);
     }
 
-    if (ret->data != NULL)
-        free(ret->data);
+    free(ret->data);
     ret->data = s;
     ret->length = (int)len;
     if (a != NULL)
@@ -321,8 +320,7 @@ ASN1_INTEGER *d2i_ASN1_UINTEGER(ASN1_INTEGER **a, const unsigned char **pp,
         p += len;
     }
 
-    if (ret->data != NULL)
-        free(ret->data);
+    free(ret->data);
     ret->data = s;
     ret->length = (int)len;
     if (a != NULL)
