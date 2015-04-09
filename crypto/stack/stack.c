@@ -269,8 +269,7 @@ void sk_free(_STACK *st)
 {
     if (st == NULL)
         return;
-    if (st->data != NULL)
-        free(st->data);
+    free(st->data);
     free(st);
 }
 
