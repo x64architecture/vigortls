@@ -114,12 +114,10 @@ int _CONF_add_string(CONF *conf, CONF_VALUE *section, CONF_VALUE *value)
     }
 
     v = lh_CONF_VALUE_insert(conf->data, value);
-    if (v != NULL) {
-        (void)sk_CONF_VALUE_delete_ptr(ts, v);
-        free(v->name);
-        free(v->value);
-        free(v);
-    }
+    (void)sk_CONF_VALUE_delete_ptr(ts, v);
+    free(v->name);
+    free(v->value);
+    free(v);
     return 1;
 }
 
@@ -233,8 +231,7 @@ static void value_free_stack_doall(CONF_VALUE *a)
         free(vv->name);
         free(vv);
     }
-    if (sk != NULL)
-        sk_CONF_VALUE_free(sk);
+    sk_CONF_VALUE_free(sk);
     free(a->section);
     free(a);
 }
@@ -263,10 +260,8 @@ CONF_VALUE *_CONF_new_section(CONF *conf, const char *section)
     ok = 1;
 err:
     if (!ok) {
-        if (sk != NULL)
-            sk_CONF_VALUE_free(sk);
-        if (v != NULL)
-            free(v);
+        sk_CONF_VALUE_free(sk);
+        free(v);
         v = NULL;
     }
     return (v);

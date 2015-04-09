@@ -157,10 +157,13 @@ void *sk_delete_ptr(_STACK *st, void *p)
 {
     int i;
 
+    if (p == NULL)
+        return NULL;
+
     for (i = 0; i < st->num; i++)
         if (st->data[i] == p)
             return (sk_delete(st, i));
-    return (NULL);
+    return NULL;
 }
 
 void *sk_delete(_STACK *st, int loc)
