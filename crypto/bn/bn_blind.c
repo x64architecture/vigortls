@@ -165,8 +165,7 @@ BN_BLINDING *BN_BLINDING_new(const BIGNUM *A, const BIGNUM *Ai, BIGNUM *mod)
     CRYPTO_THREADID_current(&ret->tid);
     return (ret);
 err:
-    if (ret != NULL)
-        BN_BLINDING_free(ret);
+    BN_BLINDING_free(ret);
     return (NULL);
 }
 
@@ -175,14 +174,10 @@ void BN_BLINDING_free(BN_BLINDING *r)
     if (r == NULL)
         return;
 
-    if (r->A != NULL)
-        BN_free(r->A);
-    if (r->Ai != NULL)
-        BN_free(r->Ai);
-    if (r->e != NULL)
-        BN_free(r->e);
-    if (r->mod != NULL)
-        BN_free(r->mod);
+    BN_free(r->A);
+    BN_free(r->Ai);
+    BN_free(r->e);
+    BN_free(r->mod);
     free(r);
 }
 
@@ -323,8 +318,7 @@ BN_BLINDING *BN_BLINDING_create_param(BN_BLINDING *b,
         goto err;
 
     if (e != NULL) {
-        if (ret->e != NULL)
-            BN_free(ret->e);
+        BN_free(ret->e);
         ret->e = BN_dup(e);
     }
     if (ret->e == NULL)

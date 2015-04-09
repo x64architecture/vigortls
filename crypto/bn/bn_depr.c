@@ -61,8 +61,6 @@
 #include "bn_lcl.h"
 #include <openssl/rand.h>
 
-static void *dummy = &dummy;
-
 #ifndef OPENSSL_NO_DEPRECATED
 BIGNUM *BN_generate_prime(BIGNUM *ret, int bits, int safe,
                           const BIGNUM *add, const BIGNUM *rem,

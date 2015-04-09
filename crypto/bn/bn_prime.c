@@ -336,8 +336,7 @@ err:
         if (ctx_passed == NULL)
             BN_CTX_free(ctx);
     }
-    if (mont != NULL)
-        BN_MONT_CTX_free(mont);
+    BN_MONT_CTX_free(mont);
 
     return (ret);
 }
