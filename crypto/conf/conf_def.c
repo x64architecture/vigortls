@@ -404,9 +404,11 @@ err:
         CONF_free(conf->data);
         conf->data = NULL;
     }
-    free(v->name);
-    free(v->value);
-    free(v);
+    if (v != NULL) {
+        free(v->name);
+        free(v->value);
+        free(v);
+    }
     return (0);
 }
 
