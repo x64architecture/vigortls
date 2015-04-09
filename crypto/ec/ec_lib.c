@@ -124,9 +124,7 @@ void EC_GROUP_free(EC_GROUP *group)
     EC_EX_DATA_free_all_data(&group->extra_data);
 
     BN_MONT_CTX_free(group->mont_data);
-
-    if (group->generator != NULL)
-        EC_POINT_free(group->generator);
+    EC_POINT_free(group->generator);
     BN_free(&group->order);
     BN_free(&group->cofactor);
 
@@ -150,8 +148,7 @@ void EC_GROUP_clear_free(EC_GROUP *group)
 
     BN_MONT_CTX_free(group->mont_data);
 
-    if (group->generator != NULL)
-        EC_POINT_clear_free(group->generator);
+    EC_POINT_clear_free(group->generator);
     BN_clear_free(&group->order);
     BN_clear_free(&group->cofactor);
 
@@ -200,10 +197,8 @@ int EC_GROUP_copy(EC_GROUP *dest, const EC_GROUP *src)
             return 0;
     } else {
         /* src->generator == NULL */
-        if (dest->mont_data != NULL) {
-            BN_MONT_CTX_free(dest->mont_data);
-            dest->mont_data = NULL;
-        }
+        BN_MONT_CTX_free(dest->mont_data);
+        dest->mont_data = NULL;
     }
 
     if (src->generator != NULL) {
@@ -216,10 +211,8 @@ int EC_GROUP_copy(EC_GROUP *dest, const EC_GROUP *src)
             return 0;
     } else {
         /* src->generator == NULL */
-        if (dest->generator != NULL) {
-            EC_POINT_clear_free(dest->generator);
-            dest->generator = NULL;
-        }
+        EC_POINT_clear_free(dest->generator);
+        dest->generator = NULL;
     }
 
     if (!BN_copy(&dest->order, &src->order))
