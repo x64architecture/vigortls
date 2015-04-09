@@ -149,12 +149,9 @@ static void BIO_ACCEPT_free(BIO_ACCEPT *a)
     if (a == NULL)
         return;
 
-    if (a->param_addr != NULL)
-        free(a->param_addr);
-    if (a->addr != NULL)
-        free(a->addr);
-    if (a->bio_chain != NULL)
-        BIO_free(a->bio_chain);
+    free(a->param_addr);
+    free(a->addr);
+    BIO_free(a->bio_chain);
     free(a);
 }
 
@@ -266,9 +263,8 @@ again:
             c->state = ACPT_S_OK;
             return (1);
         err:
-            if (bio != NULL)
-                BIO_free(bio);
-            else if (s >= 0)
+            BIO_free(bio);
+            if (s >= 0)
                 close(s);
             return (0);
         /* break; */
@@ -347,14 +343,12 @@ static long acpt_ctrl(BIO *b, int cmd, long num, void *ptr)
             if (ptr != NULL) {
                 if (num == 0) {
                     b->init = 1;
-                    if (data->param_addr != NULL)
-                        free(data->param_addr);
+                    free(data->param_addr);
                     data->param_addr = strdup(ptr);
                 } else if (num == 1) {
                     data->accept_nbio = (ptr != NULL);
                 } else if (num == 2) {
-                    if (data->bio_chain != NULL)
-                        BIO_free(data->bio_chain);
+                    BIO_free(data->bio_chain);
                     data->bio_chain = (BIO *)ptr;
                 }
             }

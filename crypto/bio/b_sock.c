@@ -345,8 +345,7 @@ again:
     }
     ret = 1;
 err:
-    if (str != NULL)
-        free(str);
+    free(str);
     if ((ret == 0) && (s != INVALID_SOCKET)) {
         close(s);
         s = INVALID_SOCKET;

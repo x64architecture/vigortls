@@ -127,8 +127,7 @@ static int linebuffer_free(BIO *a)
     if (a == NULL)
         return (0);
     b = (BIO_LINEBUFFER_CTX *)a->ptr;
-    if (b->obuf != NULL)
-        free(b->obuf);
+    free(b->obuf);
     free(a->ptr);
     a->ptr = NULL;
     a->init = 0;

@@ -155,8 +155,7 @@ static int conn_state(BIO *b, BIO_CONNECT *c)
                                 *q = '\0';
                                 break;
                             }
-                        if (c->param_port != NULL)
-                            free(c->param_port);
+                        free(c->param_port);
                         c->param_port = strdup(p);
                     }
                 }
@@ -307,10 +306,8 @@ void BIO_CONNECT_free(BIO_CONNECT *a)
     if (a == NULL)
         return;
 
-    if (a->param_hostname != NULL)
-        free(a->param_hostname);
-    if (a->param_port != NULL)
-        free(a->param_port);
+    free(a->param_hostname);
+    free(a->param_port);
     free(a);
 }
 
@@ -454,12 +451,10 @@ static long conn_ctrl(BIO *b, int cmd, long num, void *ptr)
             if (ptr != NULL) {
                 b->init = 1;
                 if (num == 0) {
-                    if (data->param_hostname != NULL)
-                        free(data->param_hostname);
+                    free(data->param_hostname);
                     data->param_hostname = strdup(ptr);
                 } else if (num == 1) {
-                    if (data->param_port != NULL)
-                        free(data->param_port);
+                    free(data->param_port);
                     data->param_port = strdup(ptr);
                 } else if (num == 2) {
                     char buf[16];
@@ -467,16 +462,14 @@ static long conn_ctrl(BIO *b, int cmd, long num, void *ptr)
 
                     snprintf(buf, sizeof buf, "%d.%d.%d.%d",
                              p[0], p[1], p[2], p[3]);
-                    if (data->param_hostname != NULL)
-                        free(data->param_hostname);
+                    free(data->param_hostname);
                     data->param_hostname = strdup(buf);
                     memcpy(&(data->ip[0]), ptr, 4);
                 } else if (num == 3) {
                     char buf[DECIMAL_SIZE(int)+1];
 
                     snprintf(buf, sizeof buf, "%d", *(int *)ptr);
-                    if (data->param_port != NULL)
-                        free(data->param_port);
+                    free(data->param_port);
                     data->param_port = strdup(buf);
                     data->port = *(int *)ptr;
                 }
