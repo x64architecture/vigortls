@@ -383,8 +383,7 @@ static int def_load_bio(CONF *conf, BIO *in, long *line)
                 tv = sv;
 
             if (_CONF_add_string(conf, tv, v) == 0) {
-                CONFerr(CONF_F_DEF_LOAD_BIO,
-                        ERR_R_MALLOC_FAILURE);
+                CONFerr(CONF_F_DEF_LOAD_BIO, ERR_R_MALLOC_FAILURE);
                 goto err;
             }
             v = NULL;

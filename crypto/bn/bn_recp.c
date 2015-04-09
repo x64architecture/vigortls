@@ -198,7 +198,6 @@ int BN_div_recp(BIGNUM *dv, BIGNUM *rem, const BIGNUM *m,
         goto err;
     r->neg = 0;
 
-#if 1
     j = 0;
     while (BN_ucmp(r, &(recp->N)) >= 0) {
         if (j++ > 2) {
@@ -210,7 +209,6 @@ int BN_div_recp(BIGNUM *dv, BIGNUM *rem, const BIGNUM *m,
         if (!BN_add_word(d, 1))
             goto err;
     }
-#endif
 
     r->neg = BN_is_zero(r) ? 0 : m->neg;
     d->neg = m->neg ^ recp->N.neg;

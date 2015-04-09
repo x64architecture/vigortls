@@ -91,10 +91,6 @@ int main(int argc, char *argv[])
 #include <openssl/ec.h>
 #include <openssl/ecdh.h>
 
-#if 0
-static void cb(int p, int n, void *arg);
-#endif
-
 static const int KDF1_SHA1_len = 20;
 static void *KDF1_SHA1(const void *in, size_t inlen, void *out, size_t *outlen)
 {

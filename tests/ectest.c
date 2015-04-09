@@ -105,86 +105,6 @@ int main(int argc, char *argv[])
 #define TIMING_RAND_PT 1
 #define TIMING_SIMUL 2
 
-#if 0
-static void timings(EC_GROUP *group, int type, BN_CTX *ctx)
-    {
-    clock_t clck;
-    int i, j;
-    BIGNUM *s;
-    BIGNUM *r[10], *r0[10];
-    EC_POINT *P;
-
-    s = BN_new();
-    if (s == NULL) ABORT;
-
-    fprintf(stdout, "Timings for %d-bit field, ", EC_GROUP_get_degree(group));
-    if (!EC_GROUP_get_order(group, s, ctx)) ABORT;
-    fprintf(stdout, "%d-bit scalars ", (int)BN_num_bits(s));
-    fflush(stdout);
-
-    P = EC_POINT_new(group);
-    if (P == NULL) ABORT;
-    EC_POINT_copy(P, EC_GROUP_get0_generator(group));
-
-    for (i = 0; i < 10; i++)
-        {
-        if ((r[i] = BN_new()) == NULL) ABORT;
-        if (!BN_pseudo_rand(r[i], BN_num_bits(s), 0, 0)) ABORT;
-        if (type != TIMING_BASE_PT)
-            {
-            if ((r0[i] = BN_new()) == NULL) ABORT;
-            if (!BN_pseudo_rand(r0[i], BN_num_bits(s), 0, 0)) ABORT;
-            }
-        }
-
-    clck = clock();
-    for (i = 0; i < 10; i++)
-        {
-        for (j = 0; j < 10; j++)
-            {
-            if (!EC_POINT_mul(group, P, (type != TIMING_RAND_PT) ? r[i] : NULL,
-                (type != TIMING_BASE_PT) ? P : NULL, (type != TIMING_BASE_PT) ? r0[i] : NULL, ctx)) ABORT;
-            }
-        }
-    clck = clock() - clck;
-
-    fprintf(stdout, "\n");
-
-#ifdef CLOCKS_PER_SEC
-    /* "To determine the time in seconds, the value returned
-     * by the clock function should be divided by the value
-     * of the macro CLOCKS_PER_SEC."
-     *                                       -- ISO/IEC 9899 */
-#define UNIT "s"
-#else
-    /* "`CLOCKS_PER_SEC' undeclared (first use this function)"
-     *                            -- cc on NeXTstep/OpenStep */
-#define UNIT "units"
-#define CLOCKS_PER_SEC 1
-#endif
-
-    if (type == TIMING_BASE_PT) {
-        fprintf(stdout, "%i %s in %.2f " UNIT "\n", i*j,
-            "base point multiplications", (double)clck/CLOCKS_PER_SEC);
-    } else if (type == TIMING_RAND_PT) {
-        fprintf(stdout, "%i %s in %.2f " UNIT "\n", i*j,
-            "random point multiplications", (double)clck/CLOCKS_PER_SEC);
-    } else if (type == TIMING_SIMUL) {
-        fprintf(stdout, "%i %s in %.2f " UNIT "\n", i*j,
-            "s*P+t*Q operations", (double)clck/CLOCKS_PER_SEC);
-    }
-    fprintf(stdout, "average: %.4f " UNIT "\n", (double)clck/(CLOCKS_PER_SEC*i*j));
-
-    EC_POINT_free(P);
-    BN_free(s);
-    for (i = 0; i < 10; i++)
-        {
-        BN_free(r[i]);
-        if (type != TIMING_BASE_PT) BN_free(r0[i]);
-        }
-    }
-#endif
-
 /* test multiplication with group order, long and negative scalars */
 static void group_order_tests(EC_GROUP *group)
 {
@@ -307,11 +227,9 @@ static void prime_field_tests(void)
     size_t i, len;
     int k;
 
-#if 1 /* optional */
     ctx = BN_CTX_new();
     if (!ctx)
         ABORT;
-#endif
 
     p = BN_new();
     a = BN_new();
@@ -420,17 +338,6 @@ static void prime_field_tests(void)
             ABORT;
         if (!EC_POINT_add(group, P, P, Q, ctx))
             ABORT;
-
-#if 0 /* optional */
-        {
-            EC_POINT *points[3];
-
-            points[0] = R;
-            points[1] = Q;
-            points[2] = P;
-            if (!EC_POINTs_make_affine(group, 2, points, ctx)) ABORT;
-        }
-#endif
 
     } while (!EC_POINT_is_at_infinity(group, P));
 
@@ -901,27 +808,6 @@ static void prime_field_tests(void)
         BN_free(&scalar3);
     }
 
-#if 0
-    timings(P_160, TIMING_BASE_PT, ctx);
-    timings(P_160, TIMING_RAND_PT, ctx);
-    timings(P_160, TIMING_SIMUL, ctx);
-    timings(P_192, TIMING_BASE_PT, ctx);
-    timings(P_192, TIMING_RAND_PT, ctx);
-    timings(P_192, TIMING_SIMUL, ctx);
-    timings(P_224, TIMING_BASE_PT, ctx);
-    timings(P_224, TIMING_RAND_PT, ctx);
-    timings(P_224, TIMING_SIMUL, ctx);
-    timings(P_256, TIMING_BASE_PT, ctx);
-    timings(P_256, TIMING_RAND_PT, ctx);
-    timings(P_256, TIMING_SIMUL, ctx);
-    timings(P_384, TIMING_BASE_PT, ctx);
-    timings(P_384, TIMING_RAND_PT, ctx);
-    timings(P_384, TIMING_SIMUL, ctx);
-    timings(P_521, TIMING_BASE_PT, ctx);
-    timings(P_521, TIMING_RAND_PT, ctx);
-    timings(P_521, TIMING_SIMUL, ctx);
-#endif
-
     if (ctx)
         BN_CTX_free(ctx);
     BN_free(p);
@@ -935,18 +821,12 @@ static void prime_field_tests(void)
     BN_free(y);
     BN_free(z);
 
-    if (P_160)
-        EC_GROUP_free(P_160);
-    if (P_192)
-        EC_GROUP_free(P_192);
-    if (P_224)
-        EC_GROUP_free(P_224);
-    if (P_256)
-        EC_GROUP_free(P_256);
-    if (P_384)
-        EC_GROUP_free(P_384);
-    if (P_521)
-        EC_GROUP_free(P_521);
+    EC_GROUP_free(P_160);
+    EC_GROUP_free(P_192);
+    EC_GROUP_free(P_224);
+    EC_GROUP_free(P_256);
+    EC_GROUP_free(P_384);
+    EC_GROUP_free(P_521);
 }
 
 /* Change test based on whether binary point compression is enabled or not. */
@@ -1034,11 +914,9 @@ static void char2_field_tests(void)
     size_t i, len;
     int k;
 
-#if 1 /* optional */
     ctx = BN_CTX_new();
     if (!ctx)
         ABORT;
-#endif
 
     p = BN_new();
     a = BN_new();
@@ -1439,41 +1317,7 @@ static void char2_field_tests(void)
         fprintf(stdout, " ok\n\n");
     }
 
-#if 0
-    timings(C2_K163, TIMING_BASE_PT, ctx);
-    timings(C2_K163, TIMING_RAND_PT, ctx);
-    timings(C2_K163, TIMING_SIMUL, ctx);
-    timings(C2_B163, TIMING_BASE_PT, ctx);
-    timings(C2_B163, TIMING_RAND_PT, ctx);
-    timings(C2_B163, TIMING_SIMUL, ctx);
-    timings(C2_K233, TIMING_BASE_PT, ctx);
-    timings(C2_K233, TIMING_RAND_PT, ctx);
-    timings(C2_K233, TIMING_SIMUL, ctx);
-    timings(C2_B233, TIMING_BASE_PT, ctx);
-    timings(C2_B233, TIMING_RAND_PT, ctx);
-    timings(C2_B233, TIMING_SIMUL, ctx);
-    timings(C2_K283, TIMING_BASE_PT, ctx);
-    timings(C2_K283, TIMING_RAND_PT, ctx);
-    timings(C2_K283, TIMING_SIMUL, ctx);
-    timings(C2_B283, TIMING_BASE_PT, ctx);
-    timings(C2_B283, TIMING_RAND_PT, ctx);
-    timings(C2_B283, TIMING_SIMUL, ctx);
-    timings(C2_K409, TIMING_BASE_PT, ctx);
-    timings(C2_K409, TIMING_RAND_PT, ctx);
-    timings(C2_K409, TIMING_SIMUL, ctx);
-    timings(C2_B409, TIMING_BASE_PT, ctx);
-    timings(C2_B409, TIMING_RAND_PT, ctx);
-    timings(C2_B409, TIMING_SIMUL, ctx);
-    timings(C2_K571, TIMING_BASE_PT, ctx);
-    timings(C2_K571, TIMING_RAND_PT, ctx);
-    timings(C2_K571, TIMING_SIMUL, ctx);
-    timings(C2_B571, TIMING_BASE_PT, ctx);
-    timings(C2_B571, TIMING_RAND_PT, ctx);
-    timings(C2_B571, TIMING_SIMUL, ctx);
-#endif
-
-    if (ctx)
-        BN_CTX_free(ctx);
+    BN_CTX_free(ctx);
     BN_free(p);
     BN_free(a);
     BN_free(b);
@@ -1486,26 +1330,16 @@ static void char2_field_tests(void)
     BN_free(z);
     BN_free(cof);
 
-    if (C2_K163)
-        EC_GROUP_free(C2_K163);
-    if (C2_B163)
-        EC_GROUP_free(C2_B163);
-    if (C2_K233)
-        EC_GROUP_free(C2_K233);
-    if (C2_B233)
-        EC_GROUP_free(C2_B233);
-    if (C2_K283)
-        EC_GROUP_free(C2_K283);
-    if (C2_B283)
-        EC_GROUP_free(C2_B283);
-    if (C2_K409)
-        EC_GROUP_free(C2_K409);
-    if (C2_B409)
-        EC_GROUP_free(C2_B409);
-    if (C2_K571)
-        EC_GROUP_free(C2_K571);
-    if (C2_B571)
-        EC_GROUP_free(C2_B571);
+    EC_GROUP_free(C2_K163);
+    EC_GROUP_free(C2_B163);
+    EC_GROUP_free(C2_K233);
+    EC_GROUP_free(C2_B233);
+    EC_GROUP_free(C2_K283);
+    EC_GROUP_free(C2_B283);
+    EC_GROUP_free(C2_K409);
+    EC_GROUP_free(C2_B409);
+    EC_GROUP_free(C2_K571);
+    EC_GROUP_free(C2_B571);
 }
 #endif
 
@@ -1732,10 +1566,6 @@ void nistp_single_test(const struct nistp_test_params *test)
 
     fprintf(stdout, "ok\n");
     group_order_tests(NISTP);
-#if 0
-    timings(NISTP, TIMING_BASE_PT, ctx);
-    timings(NISTP, TIMING_RAND_PT, ctx);
-#endif
     EC_GROUP_free(NISTP);
     EC_POINT_free(G);
     EC_POINT_free(P);

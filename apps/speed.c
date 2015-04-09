@@ -1770,7 +1770,6 @@ int speed_main(int argc, char **argv)
             rsa_count = count;
         }
 
-#if 1
         ret = RSA_verify(NID_md5_sha1, buf, 36, buf2, rsa_num, rsa_key[j]);
         if (ret <= 0) {
             BIO_printf(bio_err, "RSA verify failure.  No RSA verify will be done.\n");
@@ -1797,7 +1796,6 @@ int speed_main(int argc, char **argv)
                        count, rsa_bits[j], d);
             rsa_results[j][1] = d / (double)count;
         }
-#endif
 
         if (rsa_count <= 1) {
             /* if longer than 10s, don't do any more */
@@ -1893,9 +1891,7 @@ int speed_main(int argc, char **argv)
             ERR_print_errors(bio_err);
             rsa_count = 1;
         } else {
-#if 1
             EC_KEY_precompute_mult(ecdsa[j], NULL);
-#endif
             /* Perform ECDSA signature test */
             EC_KEY_generate_key(ecdsa[j]);
             ret = ECDSA_sign(0, buf, 20, ecdsasig,

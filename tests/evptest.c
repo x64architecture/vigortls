@@ -452,9 +452,6 @@ int main(int argc, char **argv)
     /* Load all compiled-in ENGINEs */
     ENGINE_load_builtin_engines();
 #endif
-#if 0
-    OPENSSL_config();
-#endif
 #ifndef OPENSSL_NO_ENGINE
     /* Register all available ENGINE implementations of ciphers and digests.
      * This could perhaps be changed to "ENGINE_register_all_complete()"? */

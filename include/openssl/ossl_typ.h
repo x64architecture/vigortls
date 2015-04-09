@@ -103,7 +103,6 @@ typedef struct asn1_pctx_st ASN1_PCTX;
 # ifdef _WIN32
 #  undef X509_NAME
 #  undef X509_EXTENSIONS
-#  undef X509_CERT_PAIR
 #  undef PKCS7_ISSUER_AND_SERIAL
 #  undef OCSP_REQUEST
 #  undef OCSP_RESPONSE

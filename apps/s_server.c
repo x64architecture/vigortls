@@ -460,11 +460,7 @@ static int cert_status_cb(SSL *s, void *arg)
     STACK_OF(X509_EXTENSION) * exts;
     int ret = SSL_TLSEXT_ERR_NOACK;
     int i;
-#if 0
-STACK_OF(OCSP_RESPID) *ids;
-SSL_get_tlsext_status_ids(s, &ids);
-BIO_printf(err, "cert_status: received %d ids\n", sk_OCSP_RESPID_num(ids));
-#endif
+
     if (srctx->verbose)
         BIO_puts(err, "cert_status: callback called\n");
     /* Build up OCSP query from server certificate */
@@ -1097,23 +1093,6 @@ bad:
     else
         SSL_CTX_sess_set_cache_size(ctx, 128);
 
-#ifndef OPENSSL_NO_SRTP
-    if (srtp_profiles != NULL)
-        SSL_CTX_set_tlsext_use_srtp(ctx, srtp_profiles);
-#endif
-
-#if 0
-    if (cipher == NULL) cipher=getenv("SSL_CIPHER");
-#endif
-
-#if 0
-    if (s_cert_file == NULL)
-        {
-        BIO_printf(bio_err,"You must specify a certificate file for the server to use\n");
-        goto end;
-        }
-#endif
-
     if ((!SSL_CTX_load_verify_locations(ctx, CAfile, CApath)) || (!SSL_CTX_set_default_verify_paths(ctx))) {
         /* BIO_printf(bio_err,"X509_load_verify_locations\n"); */
         ERR_print_errors(bio_err);
@@ -1257,35 +1236,11 @@ bad:
             goto end;
     }
 
-#if 1
     if (!no_tmp_rsa) {
         SSL_CTX_set_tmp_rsa_callback(ctx, tmp_rsa_cb);
         if (ctx2)
             SSL_CTX_set_tmp_rsa_callback(ctx2, tmp_rsa_cb);
     }
-#else
-    if (!no_tmp_rsa && SSL_CTX_need_tmp_RSA(ctx)) {
-        RSA *rsa;
-
-        BIO_printf(bio_s_out, "Generating temp (512 bit) RSA key...");
-        BIO_flush(bio_s_out);
-
-        rsa = RSA_generate_key(512, RSA_F4, NULL);
-
-        if (!SSL_CTX_set_tmp_rsa(ctx, rsa)) {
-            ERR_print_errors(bio_err);
-            goto end;
-        }
-        if (ctx2) {
-            if (!SSL_CTX_set_tmp_rsa(ctx2, rsa)) {
-                ERR_print_errors(bio_err);
-                goto end;
-            }
-        }
-        RSA_free(rsa);
-        BIO_printf(bio_s_out, "\n");
-    }
-#endif
 
     if (cipher != NULL) {
         if (!SSL_CTX_set_cipher_list(ctx, cipher)) {
@@ -1436,11 +1391,6 @@ static int sv_body(char *hostname, int s, unsigned char *context)
                                        strlen((char *)context));
     }
     SSL_clear(con);
-#if 0
-#ifdef TLSEXT_TYPE_opaque_prf_input
-    SSL_set_tlsext_opaque_prf_input(con, "Test server", 11);
-#endif
-#endif
 
     if (SSL_version(con) == DTLS1_VERSION) {
 
@@ -1690,11 +1640,7 @@ static int sv_body(char *hostname, int s, unsigned char *context)
 err:
     if (con != NULL) {
         BIO_printf(bio_s_out, "shutting down SSL\n");
-#if 1
         SSL_set_shutdown(con, SSL_SENT_SHUTDOWN | SSL_RECEIVED_SHUTDOWN);
-#else
-        SSL_shutdown(con);
-#endif
         SSL_free(con);
     }
     BIO_printf(bio_s_out, "CONNECTION CLOSED\n");
@@ -1829,27 +1775,6 @@ err:
         BIO_free(bio);
     return (ret);
 }
-
-#if 0
-static int load_CA(SSL_CTX *ctx, char *file)
-    {
-    FILE *in;
-    X509 *x=NULL;
-
-    if ((in=fopen(file,"r")) == NULL)
-        return (0);
-
-    for (;;)
-        {
-        if (PEM_read_X509(in,&x,NULL) == NULL)
-            break;
-        SSL_CTX_add_client_CA(ctx,x);
-        }
-    if (x != NULL) X509_free(x);
-    fclose(in);
-    return (1);
-    }
-#endif
 
 static int www_body(char *hostname, int s, unsigned char *context)
 {
@@ -2078,21 +2003,11 @@ static int www_body(char *hostname, int s, unsigned char *context)
                 break;
             }
 
-#if 0
-            /* append if a directory lookup */
-            if (e[-1] == '/')
-                strcat(p,"index.html");
-#endif
-
             /* if a directory, do the index thang */
             if (app_isdir(p) > 0) {
-#if 0 /* must check buffer size */
-                strcat(p,"/index.html");
-#else
                 BIO_puts(io, text);
                 BIO_printf(io, "'%s' is a directory\r\n", p);
                 break;
-#endif
             }
 
             if ((file = BIO_new_file(p, "r")) == NULL) {
@@ -2164,14 +2079,8 @@ static int www_body(char *hostname, int s, unsigned char *context)
             break;
     }
 end:
-#if 1
     /* make sure we re-use sessions */
     SSL_set_shutdown(con, SSL_SENT_SHUTDOWN | SSL_RECEIVED_SHUTDOWN);
-#else
-/* This kills performance */
-/*    SSL_shutdown(con); A shutdown gets sent in the
- *    BIO_free_all(io) procession */
-#endif
 
 err:
 

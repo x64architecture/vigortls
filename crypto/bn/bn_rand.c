@@ -152,7 +152,6 @@ static int bnrand(int pseudorand, BIGNUM *rnd, int bits, int top, int bottom)
             goto err;
     }
 
-#if 1
     if (pseudorand == 2) {
         /* generate patterns that are more likely to trigger BN
            library bugs */
@@ -169,7 +168,6 @@ static int bnrand(int pseudorand, BIGNUM *rnd, int bits, int top, int bottom)
                 buf[i] = 255;
         }
     }
-#endif
 
     if (top != -1) {
         if (top) {
@@ -208,12 +206,10 @@ int BN_pseudo_rand(BIGNUM *rnd, int bits, int top, int bottom)
     return bnrand(1, rnd, bits, top, bottom);
 }
 
-#if 1
 int BN_bntest_rand(BIGNUM *rnd, int bits, int top, int bottom)
 {
     return bnrand(2, rnd, bits, top, bottom);
 }
-#endif
 
 /* random number r:  0 <= r < range */
 static int bn_rand_range(int pseudo, BIGNUM *r, const BIGNUM *range)

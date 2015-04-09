@@ -249,7 +249,7 @@ again:
             }
 
             /* If the accept BIO has an bio_chain, we dup it and
-         * put the new socket at the end. */
+             * put the new socket at the end. */
             if (c->bio_chain != NULL) {
                 if ((dbio = BIO_dup_chain(c->bio_chain)) == NULL)
                     goto err;

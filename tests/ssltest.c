@@ -1649,9 +1649,6 @@ static int verify_callback(int ok, X509_STORE_CTX *ctx)
 
     if (ok == 1) {
         X509 *xs = ctx->current_cert;
-#if 0
-        X509 *xi = ctx->current_issuer;
-#endif
 
         if (xs->ex_flags & EXFLAG_PROXY) {
             unsigned int *letters = X509_STORE_CTX_get_ex_data(ctx,

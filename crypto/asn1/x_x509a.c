@@ -219,28 +219,3 @@ void X509_reject_clear(X509 *x)
         x->aux->reject = NULL;
     }
 }
-
-ASN1_SEQUENCE(X509_CERT_PAIR) = {
-    ASN1_EXP_OPT(X509_CERT_PAIR, forward, X509, 0),
-    ASN1_EXP_OPT(X509_CERT_PAIR, reverse, X509, 1)
-} ASN1_SEQUENCE_END(X509_CERT_PAIR)
-
-X509_CERT_PAIR *d2i_X509_CERT_PAIR(X509_CERT_PAIR **a, const unsigned char **in, long len)
-{
-    return (X509_CERT_PAIR *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, &X509_CERT_PAIR_it);
-}
-
-int i2d_X509_CERT_PAIR(X509_CERT_PAIR *a, unsigned char **out)
-{
-    return ASN1_item_i2d((ASN1_VALUE *)a, out, &X509_CERT_PAIR_it);
-}
-
-X509_CERT_PAIR *X509_CERT_PAIR_new(void)
-{
-    return (X509_CERT_PAIR *)ASN1_item_new(&X509_CERT_PAIR_it);
-}
-
-void X509_CERT_PAIR_free(X509_CERT_PAIR *a)
-{
-    ASN1_item_free((ASN1_VALUE *)a, &X509_CERT_PAIR_it);
-}

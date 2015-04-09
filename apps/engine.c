@@ -183,11 +183,8 @@ static int util_verbose(ENGINE *e, int verbose, BIO *bio_out, const char *indent
     int flags;
     int xpos = 0;
     STACK_OF(OPENSSL_STRING) *cmds = NULL;
-    if (!ENGINE_ctrl(e, ENGINE_CTRL_HAS_CTRL_FUNCTION, 0, NULL, NULL) || ((num = ENGINE_ctrl(e, ENGINE_CTRL_GET_FIRST_CMD_TYPE,
-                                                                                             0, NULL, NULL)) <= 0)) {
-#if 0
-        BIO_printf(bio_out, "%s<no control commands>\n", indent);
-#endif
+    if (!ENGINE_ctrl(e, ENGINE_CTRL_HAS_CTRL_FUNCTION, 0, NULL, NULL) ||
+        ((num = ENGINE_ctrl(e, ENGINE_CTRL_GET_FIRST_CMD_TYPE,  0, NULL, NULL)) <= 0)) {
         return 1;
     }
 

@@ -90,11 +90,6 @@ static DSO_METHOD dso_meth_dlfcn = {
     dlfcn_unload,
     dlfcn_bind_var,
     dlfcn_bind_func,
-/* For now, "unbind" doesn't exist */
-#if 0
-    NULL, /* unbind_var */
-    NULL, /* unbind_func */
-#endif
     NULL, /* ctrl */
     dlfcn_name_converter,
     dlfcn_merger,

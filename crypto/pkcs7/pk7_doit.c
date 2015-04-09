@@ -1041,14 +1041,6 @@ int PKCS7_signatureVerify(BIO *bio, PKCS7 *p7, PKCS7_SIGNER_INFO *si,
             goto err;
         }
         if ((message_digest->length != (int)md_len) || (memcmp(message_digest->data, md_dat, md_len))) {
-#if 0
-{
-int ii;
-for (ii=0; ii<message_digest->length; ii++)
-    printf("%02X",message_digest->data[ii]); printf(" sent\n");
-for (ii=0; ii<md_len; ii++) printf("%02X",md_dat[ii]); printf(" calc\n");
-}
-#endif
             PKCS7err(PKCS7_F_PKCS7_SIGNATUREVERIFY,
                      PKCS7_R_DIGEST_FAILURE);
             ret = -1;

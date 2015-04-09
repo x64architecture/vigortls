@@ -113,8 +113,7 @@ int verify_main(int argc, char **argv)
                 if (argc-- < 1)
                     goto end;
                 CAfile = *(++argv);
-            } else if (args_verify(&argv, &argc, &badarg, bio_err,
-                                   &vpm)) {
+            } else if (args_verify(&argv, &argc, &badarg, bio_err, &vpm)) {
                 if (badarg)
                     goto end;
                 continue;

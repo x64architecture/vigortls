@@ -23,13 +23,6 @@
 
 #include <WinSock2.h>
 
-#ifdef _WIN32
-/* Under Win32 these are defined in wincrypt.h */
-#undef X509_NAME
-#undef X509_CERT_PAIR
-#undef X509_EXTENSIONS
-#endif
-
 struct timezone
 {
     int tz_minuteswest; /* minutes W of Greenwich */
