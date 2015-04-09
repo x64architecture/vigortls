@@ -201,29 +201,22 @@ static int ecdsa_sign_setup(EC_KEY *eckey, BN_CTX *ctx_in, BIGNUM **kinvp,
     }
 
     /* clear old values if necessary */
-    if (*rp != NULL)
-        BN_clear_free(*rp);
-    if (*kinvp != NULL)
-        BN_clear_free(*kinvp);
+    BN_clear_free(*rp);
+    BN_clear_free(*kinvp);
     /* save the pre-computed values  */
     *rp = r;
     *kinvp = k;
     ret = 1;
 err:
     if (!ret) {
-        if (k != NULL)
-            BN_clear_free(k);
-        if (r != NULL)
-            BN_clear_free(r);
+        BN_clear_free(k);
+        BN_clear_free(r);
     }
     if (ctx_in == NULL)
         BN_CTX_free(ctx);
-    if (order != NULL)
-        BN_free(order);
-    if (tmp_point != NULL)
-        EC_POINT_free(tmp_point);
-    if (X)
-        BN_clear_free(X);
+    BN_free(order);
+    EC_POINT_free(tmp_point);
+    BN_clear_free(X);
     return (ret);
 }
 
