@@ -287,10 +287,8 @@ int ssl_get_new_session(SSL *s, int session)
     else
         ss->timeout = s->session_ctx->session_timeout;
 
-    if (s->session != NULL) {
-        SSL_SESSION_free(s->session);
-        s->session = NULL;
-    }
+    SSL_SESSION_free(s->session);
+    s->session = NULL;
 
     if (session) {
         switch (s->version) {
@@ -543,8 +541,7 @@ int ssl_get_prev_session(SSL *s, unsigned char *session_id, int len,
 
     s->session_ctx->stats.sess_hit++;
 
-    if (s->session != NULL)
-        SSL_SESSION_free(s->session);
+    SSL_SESSION_free(s->session);
     s->session = ret;
     s->verify_result = s->session->verify_result;
     return 1;
@@ -684,12 +681,9 @@ void SSL_SESSION_free(SSL_SESSION *ss)
 
     vigortls_zeroize(ss->master_key, sizeof ss->master_key);
     vigortls_zeroize(ss->session_id, sizeof ss->session_id);
-    if (ss->sess_cert != NULL)
-        ssl_sess_cert_free(ss->sess_cert);
-    if (ss->peer != NULL)
-        X509_free(ss->peer);
-    if (ss->ciphers != NULL)
-        sk_SSL_CIPHER_free(ss->ciphers);
+    ssl_sess_cert_free(ss->sess_cert);
+    X509_free(ss->peer);
+    sk_SSL_CIPHER_free(ss->ciphers);
     free(ss->tlsext_hostname);
     free(ss->tlsext_tick);
     ss->tlsext_ecpointformatlist_length = 0;
@@ -721,17 +715,14 @@ int SSL_set_session(SSL *s, SSL_SESSION *session)
 
         /* CRYPTO_w_lock(CRYPTO_LOCK_SSL);*/
         CRYPTO_add(&session->references, 1, CRYPTO_LOCK_SSL_SESSION);
-        if (s->session != NULL)
-            SSL_SESSION_free(s->session);
+        SSL_SESSION_free(s->session);
         s->session = session;
         s->verify_result = s->session->verify_result;
         /* CRYPTO_w_unlock(CRYPTO_LOCK_SSL);*/
         ret = 1;
     } else {
-        if (s->session != NULL) {
-            SSL_SESSION_free(s->session);
-            s->session = NULL;
-        }
+        SSL_SESSION_free(s->session);
+        s->session = NULL;
 
         meth = s->ctx->method;
         if (meth != s->method) {
@@ -885,7 +876,7 @@ static void timeout_doall_arg(SSL_SESSION *s, TIMEOUT_PARAM *p)
 static IMPLEMENT_LHASH_DOALL_ARG_FN(timeout, SSL_SESSION, TIMEOUT_PARAM)
 
     /* XXX 2038 */
-    void SSL_CTX_flush_sessions(SSL_CTX *s, long t)
+void SSL_CTX_flush_sessions(SSL_CTX *s, long t)
 {
     unsigned long i;
     TIMEOUT_PARAM tp;

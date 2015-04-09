@@ -1116,8 +1116,7 @@ int ssl3_get_client_hello(SSL *s)
      */
 
     if (!s->hit) {
-        if (s->session->ciphers != NULL)
-            sk_SSL_CIPHER_free(s->session->ciphers);
+        sk_SSL_CIPHER_free(s->session->ciphers);
         s->session->ciphers = ciphers;
         if (ciphers == NULL) {
             al = SSL_AD_ILLEGAL_PARAMETER;
@@ -1195,8 +1194,7 @@ int ssl3_get_client_hello(SSL *s)
         ssl3_send_alert(s, SSL3_AL_FATAL, al);
     }
 err:
-    if (ciphers != NULL)
-        sk_SSL_CIPHER_free(ciphers);
+    sk_SSL_CIPHER_free(ciphers);
     return (ret);
 }
 
@@ -2400,8 +2398,7 @@ int ssl3_get_client_certificate(SSL *s)
             goto err;
         }
     }
-    if (s->session->sess_cert->cert_chain != NULL)
-        sk_X509_pop_free(s->session->sess_cert->cert_chain, X509_free);
+    sk_X509_pop_free(s->session->sess_cert->cert_chain, X509_free);
     s->session->sess_cert->cert_chain = sk;
 
     /*
@@ -2420,10 +2417,8 @@ int ssl3_get_client_certificate(SSL *s)
         ssl3_send_alert(s, SSL3_AL_FATAL, al);
     }
 err:
-    if (x != NULL)
-        X509_free(x);
-    if (sk != NULL)
-        sk_X509_pop_free(sk, X509_free);
+    X509_free(x);
+    sk_X509_pop_free(sk, X509_free);
     return (ret);
 }
 

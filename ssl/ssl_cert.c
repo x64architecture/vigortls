@@ -268,8 +268,7 @@ err:
     EC_KEY_free(ret->ecdh_tmp);
 
     for (i = 0; i < SSL_PKEY_NUM; i++) {
-        if (ret->pkeys[i].x509 != NULL)
-            X509_free(ret->pkeys[i].x509);
+        X509_free(ret->pkeys[i].x509);
         EVP_PKEY_free(ret->pkeys[i].privatekey);
     }
     free(ret);
@@ -291,8 +290,7 @@ void ssl_cert_free(CERT *c)
     EC_KEY_free(c->ecdh_tmp);
 
     for (i = 0; i < SSL_PKEY_NUM; i++) {
-        if (c->pkeys[i].x509 != NULL)
-            X509_free(c->pkeys[i].x509);
+        X509_free(c->pkeys[i].x509);
         EVP_PKEY_free(c->pkeys[i].privatekey);
     }
 
@@ -352,12 +350,9 @@ void ssl_sess_cert_free(SESS_CERT *sc)
         return;
 
     /* i == 0 */
-    if (sc->cert_chain != NULL)
-        sk_X509_pop_free(sc->cert_chain, X509_free);
-    for (i = 0; i < SSL_PKEY_NUM; i++) {
-        if (sc->peer_pkeys[i].x509 != NULL)
-            X509_free(sc->peer_pkeys[i].x509);
-    }
+    sk_X509_pop_free(sc->cert_chain, X509_free);
+    for (i = 0; i < SSL_PKEY_NUM; i++)
+        X509_free(sc->peer_pkeys[i].x509);
 
     RSA_free(sc->peer_rsa_tmp);
     DH_free(sc->peer_dh_tmp);
@@ -418,8 +413,7 @@ int ssl_verify_cert_chain(SSL *s, STACK_OF(X509) * sk)
 static void set_client_CA_list(STACK_OF(X509_NAME) * *ca_list,
                                STACK_OF(X509_NAME) * name_list)
 {
-    if (*ca_list != NULL)
-        sk_X509_NAME_pop_free(*ca_list, X509_NAME_free);
+    sk_X509_NAME_pop_free(*ca_list, X509_NAME_free);
 
     *ca_list = name_list;
 }
@@ -559,15 +553,12 @@ STACK_OF(X509_NAME) * SSL_load_client_CA_file(const char *file)
 
     if (0) {
     err:
-        if (ret != NULL)
-            sk_X509_NAME_pop_free(ret, X509_NAME_free);
+        sk_X509_NAME_pop_free(ret, X509_NAME_free);
         ret = NULL;
     }
-    if (sk != NULL)
-        sk_X509_NAME_free(sk);
+    sk_X509_NAME_free(sk);
     BIO_free(in);
-    if (x != NULL)
-        X509_free(x);
+    X509_free(x);
     if (ret != NULL)
         ERR_clear_error();
     return (ret);
@@ -624,8 +615,7 @@ int SSL_add_file_cert_subjects_to_stack(STACK_OF(X509_NAME) * stack,
         ret = 0;
     }
     BIO_free(in);
-    if (x != NULL)
-        X509_free(x);
+    X509_free(x);
 
     (void)sk_X509_NAME_set_cmp_func(stack, oldcmp);
 

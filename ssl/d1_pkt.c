@@ -242,8 +242,7 @@ static int dtls1_buffer_record(SSL *s, record_pqueue *queue,
 
 err:
     SSLerr(SSL_F_DTLS1_BUFFER_RECORD, ERR_R_INTERNAL_ERROR);
-    if (rdata->rbuf.buf != NULL)
-        free(rdata->rbuf.buf);
+    free(rdata->rbuf.buf);
     free(rdata);
     pitem_free(item);
     return (-1);

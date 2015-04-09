@@ -2018,8 +2018,7 @@ void ssl3_free(SSL *s)
     DH_free(s->s3->tmp.dh);
     EC_KEY_free(s->s3->tmp.ecdh);
 
-    if (s->s3->tmp.ca_names != NULL)
-        sk_X509_NAME_pop_free(s->s3->tmp.ca_names, X509_NAME_free);
+    sk_X509_NAME_pop_free(s->s3->tmp.ca_names, X509_NAME_free);
     BIO_free(s->s3->handshake_buffer);
     ssl3_free_digest_list(s);
     free(s->s3->alpn_selected);
@@ -2036,9 +2035,7 @@ void ssl3_clear(SSL *s)
     int init_extra;
 
     ssl3_cleanup_key_block(s);
-    if (s->s3->tmp.ca_names != NULL)
-        sk_X509_NAME_pop_free(s->s3->tmp.ca_names, X509_NAME_free);
-
+    sk_X509_NAME_pop_free(s->s3->tmp.ca_names, X509_NAME_free);
     DH_free(s->s3->tmp.dh);
     s->s3->tmp.dh = NULL;
     EC_KEY_free(s->s3->tmp.ecdh);

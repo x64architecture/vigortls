@@ -114,8 +114,7 @@ int SSL_use_certificate_file(SSL *ssl, const char *file, int type)
 
     ret = SSL_use_certificate(ssl, x);
 end:
-    if (x != NULL)
-        X509_free(x);
+    X509_free(x);
     BIO_free(in);
     return (ret);
 }
@@ -384,9 +383,7 @@ static int ssl_set_cert(CERT *c, X509 *x)
     }
 
     EVP_PKEY_free(pkey);
-
-    if (c->pkeys[i].x509 != NULL)
-        X509_free(c->pkeys[i].x509);
+    X509_free(c->pkeys[i].x509);
     CRYPTO_add(&x->references, 1, CRYPTO_LOCK_X509);
     c->pkeys[i].x509 = x;
     c->key = &(c->pkeys[i]);
@@ -431,8 +428,7 @@ int SSL_CTX_use_certificate_file(SSL_CTX *ctx, const char *file, int type)
 
     ret = SSL_CTX_use_certificate(ctx, x);
 end:
-    if (x != NULL)
-        X509_free(x);
+    X509_free(x);
     BIO_free(in);
     return (ret);
 }
@@ -650,10 +646,8 @@ int SSL_CTX_use_certificate_chain_file(SSL_CTX *ctx, const char *file)
         int r;
         unsigned long err;
 
-        if (ctx->extra_certs != NULL) {
-            sk_X509_pop_free(ctx->extra_certs, X509_free);
-            ctx->extra_certs = NULL;
-        }
+        sk_X509_pop_free(ctx->extra_certs, X509_free);
+        ctx->extra_certs = NULL;
 
         while ((ca = PEM_read_bio_X509(in, NULL, ctx->default_passwd_callback,
                                        ctx->default_passwd_callback_userdata)) != NULL) {
@@ -680,8 +674,7 @@ int SSL_CTX_use_certificate_chain_file(SSL_CTX *ctx, const char *file)
     }
 
 end:
-    if (x != NULL)
-        X509_free(x);
+    X509_free(x);
     BIO_free(in);
     return (ret);
 }

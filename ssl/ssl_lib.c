@@ -811,8 +811,7 @@ void SSL_copy_session_id(SSL *t, const SSL *f)
         t->cert = f->cert;
     } else
         t->cert = NULL;
-    if (tmp != NULL)
-        ssl_cert_free(tmp);
+    ssl_cert_free(tmp);
     SSL_set_session_id_context(t, f->sid_ctx, f->sid_ctx_length);
 }
 
@@ -1825,26 +1824,14 @@ void SSL_CTX_free(SSL_CTX *a)
 
     CRYPTO_free_ex_data(CRYPTO_EX_INDEX_SSL_CTX, a, &a->ex_data);
 
-    if (a->sessions != NULL)
-        lh_SSL_SESSION_free(a->sessions);
+    lh_SSL_SESSION_free(a->sessions);
 
-    if (a->cert_store != NULL)
-        X509_STORE_free(a->cert_store);
-    if (a->cipher_list != NULL)
-        sk_SSL_CIPHER_free(a->cipher_list);
-    if (a->cipher_list_by_id != NULL)
-        sk_SSL_CIPHER_free(a->cipher_list_by_id);
-    if (a->cert != NULL)
-        ssl_cert_free(a->cert);
-    if (a->client_CA != NULL)
-        sk_X509_NAME_pop_free(a->client_CA, X509_NAME_free);
-    if (a->extra_certs != NULL)
-        sk_X509_pop_free(a->extra_certs, X509_free);
-
-#ifndef OPENSSL_NO_SRTP
-    if (a->srtp_profiles)
-        sk_SRTP_PROTECTION_PROFILE_free(a->srtp_profiles);
-#endif
+    X509_STORE_free(a->cert_store);
+    sk_SSL_CIPHER_free(a->cipher_list);
+    sk_SSL_CIPHER_free(a->cipher_list_by_id);
+    ssl_cert_free(a->cert);
+    sk_X509_NAME_pop_free(a->client_CA, X509_NAME_free);
+    sk_X509_pop_free(a->extra_certs, X509_free);
 
 #ifndef OPENSSL_NO_ENGINE
     if (a->client_cert_engine)
@@ -1852,7 +1839,6 @@ void SSL_CTX_free(SSL_CTX *a)
 #endif
 
     free(a->alpn_client_proto_list);
-
     free(a);
 }
 
@@ -2443,9 +2429,7 @@ SSL *SSL_dup(SSL *s)
         ret->method->ssl_new(ret);
 
         if (s->cert != NULL) {
-            if (ret->cert != NULL) {
-                ssl_cert_free(ret->cert);
-            }
+            ssl_cert_free(ret->cert);
             ret->cert = ssl_cert_dup(s->cert);
             if (ret->cert == NULL)
                 goto err;
@@ -2532,8 +2516,7 @@ SSL *SSL_dup(SSL *s)
 
     if (0) {
     err:
-        if (ret != NULL)
-            SSL_free(ret);
+        SSL_free(ret);
         ret = NULL;
     }
     return (ret);
@@ -2714,8 +2697,7 @@ SSL_CTX *SSL_set_SSL_CTX(SSL *ssl, SSL_CTX *ctx)
     }
     
     CRYPTO_add(&ctx->references, 1, CRYPTO_LOCK_SSL_CTX);
-    if (ssl->ctx != NULL)
-        SSL_CTX_free(ssl->ctx); /* decrement reference count */
+    SSL_CTX_free(ssl->ctx); /* decrement reference count */
     ssl->ctx = ctx;
     
     return (ssl->ctx);
@@ -2811,8 +2793,7 @@ X509_STORE *SSL_CTX_get_cert_store(const SSL_CTX *ctx)
 
 void SSL_CTX_set_cert_store(SSL_CTX *ctx, X509_STORE *store)
 {
-    if (ctx->cert_store != NULL)
-        X509_STORE_free(ctx->cert_store);
+    X509_STORE_free(ctx->cert_store);
     ctx->cert_store = store;
 }
 
