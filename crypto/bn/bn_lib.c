@@ -454,6 +454,8 @@ void BN_swap(BIGNUM *a, BIGNUM *b)
 
 void BN_clear(BIGNUM *a)
 {
+    if (a == NULL)
+        return;
     bn_check_top(a);
     if (a->d != NULL)
         memset(a->d, 0, a->dmax * sizeof(a->d[0]));

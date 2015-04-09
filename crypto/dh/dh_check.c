@@ -105,10 +105,8 @@ int DH_check(const DH *dh, int *ret)
     }
     ok = 1;
 err:
-    if (ctx != NULL)
-        BN_CTX_free(ctx);
-    if (q != NULL)
-        BN_free(q);
+    BN_CTX_free(ctx);
+    BN_free(q);
     return (ok);
 }
 
@@ -131,7 +129,6 @@ int DH_check_pub_key(const DH *dh, const BIGNUM *pub_key, int *ret)
 
     ok = 1;
 err:
-    if (q != NULL)
-        BN_free(q);
+    BN_free(q);
     return (ok);
 }

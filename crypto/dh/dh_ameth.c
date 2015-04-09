@@ -265,12 +265,9 @@ static int dh_priv_encode(PKCS8_PRIV_KEY_INFO *p8, const EVP_PKEY *pkey)
     return 1;
 
 err:
-    if (dp != NULL)
-        free(dp);
-    if (params != NULL)
-        ASN1_STRING_free(params);
-    if (prkey != NULL)
-        ASN1_INTEGER_free(prkey);
+    free(dp);
+    ASN1_STRING_free(params);
+    ASN1_INTEGER_free(prkey);
     return 0;
 }
 
@@ -371,8 +368,7 @@ static int do_dh_print(BIO *bp, const DH *x, int indent,
     err:
         DHerr(DH_F_DO_DH_PRINT, reason);
     }
-    if (m != NULL)
-        free(m);
+    free(m);
     return (ret);
 }
 
@@ -400,14 +396,12 @@ static int dh_copy_parameters(EVP_PKEY *to, const EVP_PKEY *from)
 
     if ((a = BN_dup(from->pkey.dh->p)) == NULL)
         return 0;
-    if (to->pkey.dh->p != NULL)
-        BN_free(to->pkey.dh->p);
+    BN_free(to->pkey.dh->p);
     to->pkey.dh->p = a;
 
     if ((a = BN_dup(from->pkey.dh->g)) == NULL)
         return 0;
-    if (to->pkey.dh->g != NULL)
-        BN_free(to->pkey.dh->g);
+    BN_free(to->pkey.dh->g);
     to->pkey.dh->g = a;
 
     return 1;
