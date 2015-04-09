@@ -104,7 +104,7 @@ STACK_OF(CONF_VALUE) * _CONF_get_section_values(const CONF *conf,
 int _CONF_add_string(CONF *conf, CONF_VALUE *section, CONF_VALUE *value)
 {
     CONF_VALUE *v = NULL;
-    STACK_OF(CONF_VALUE) * ts;
+    STACK_OF(CONF_VALUE) *ts;
 
     ts = (STACK_OF(CONF_VALUE) *)section->value;
 
@@ -114,10 +114,12 @@ int _CONF_add_string(CONF *conf, CONF_VALUE *section, CONF_VALUE *value)
     }
 
     v = lh_CONF_VALUE_insert(conf->data, value);
-    (void)sk_CONF_VALUE_delete_ptr(ts, v);
-    free(v->name);
-    free(v->value);
-    free(v);
+    if (v != NULL) {
+        (void)sk_CONF_VALUE_delete_ptr(ts, v);
+        free(v->name);
+        free(v->value);
+        free(v);
+    }
     return 1;
 }
 
