@@ -122,8 +122,7 @@ err:
         BN_free(pub_key);
     if ((priv_key != NULL) && (dsa->priv_key == NULL))
         BN_free(priv_key);
-    if (ctx != NULL)
-        BN_CTX_free(ctx);
+    BN_CTX_free(ctx);
     return (ok);
 }
 #endif

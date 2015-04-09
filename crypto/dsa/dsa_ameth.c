@@ -323,12 +323,9 @@ static int dsa_priv_encode(PKCS8_PRIV_KEY_INFO *p8, const EVP_PKEY *pkey)
     return 1;
 
 err:
-    if (dp != NULL)
-        free(dp);
-    if (params != NULL)
-        ASN1_STRING_free(params);
-    if (prkey != NULL)
-        ASN1_INTEGER_free(prkey);
+    free(dp);
+    ASN1_STRING_free(params);
+    ASN1_INTEGER_free(prkey);
     return 0;
 }
 
@@ -357,20 +354,17 @@ static int dsa_copy_parameters(EVP_PKEY *to, const EVP_PKEY *from)
 
     if ((a = BN_dup(from->pkey.dsa->p)) == NULL)
         return 0;
-    if (to->pkey.dsa->p != NULL)
-        BN_free(to->pkey.dsa->p);
+    BN_free(to->pkey.dsa->p);
     to->pkey.dsa->p = a;
 
     if ((a = BN_dup(from->pkey.dsa->q)) == NULL)
         return 0;
-    if (to->pkey.dsa->q != NULL)
-        BN_free(to->pkey.dsa->q);
+    BN_free(to->pkey.dsa->q);
     to->pkey.dsa->q = a;
 
     if ((a = BN_dup(from->pkey.dsa->g)) == NULL)
         return 0;
-    if (to->pkey.dsa->g != NULL)
-        BN_free(to->pkey.dsa->g);
+    BN_free(to->pkey.dsa->g);
     to->pkey.dsa->g = a;
     return 1;
 }
@@ -463,8 +457,7 @@ static int do_dsa_print(BIO *bp, const DSA *x, int off, int ptype)
         goto err;
     ret = 1;
 err:
-    if (m != NULL)
-        free(m);
+    free(m);
     return (ret);
 }
 

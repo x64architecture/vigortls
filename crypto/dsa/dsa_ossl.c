@@ -205,12 +205,10 @@ err:
         BN_free(r);
         BN_free(s);
     }
-    if (ctx != NULL)
-        BN_CTX_free(ctx);
+    BN_CTX_free(ctx);
     BN_clear_free(&m);
     BN_clear_free(&xr);
-    if (kinv != NULL) /* dsa->kinv is NULL now if we used it */
-        BN_clear_free(kinv);
+    BN_clear_free(kinv);
     return (ret);
 }
 
@@ -285,19 +283,16 @@ static int dsa_sign_setup(DSA *dsa, BN_CTX *ctx_in, BIGNUM **kinvp, BIGNUM **rp)
     if ((kinv = BN_mod_inverse(NULL, &k, dsa->q, ctx)) == NULL)
         goto err;
 
-    if (*kinvp != NULL)
-        BN_clear_free(*kinvp);
+    BN_clear_free(*kinvp);
     *kinvp = kinv;
     kinv = NULL;
-    if (*rp != NULL)
-        BN_clear_free(*rp);
+    BN_clear_free(*rp);
     *rp = r;
     ret = 1;
 err:
     if (!ret) {
         DSAerr(DSA_F_DSA_SIGN_SETUP, ERR_R_BN_LIB);
-        if (r != NULL)
-            BN_clear_free(r);
+        BN_clear_free(r);
     }
     if (ctx_in == NULL)
         BN_CTX_free(ctx);
@@ -387,8 +382,7 @@ static int dsa_do_verify(const unsigned char *dgst, int dgst_len, DSA_SIG *sig,
 err:
     if (ret < 0)
         DSAerr(DSA_F_DSA_DO_VERIFY, ERR_R_BN_LIB);
-    if (ctx != NULL)
-        BN_CTX_free(ctx);
+    BN_CTX_free(ctx);
     BN_free(&u1);
     BN_free(&u2);
     BN_free(&t1);

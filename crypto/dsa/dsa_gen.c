@@ -319,12 +319,9 @@ end:
     ok = 1;
 err:
     if (ok) {
-        if (ret->p)
-            BN_free(ret->p);
-        if (ret->q)
-            BN_free(ret->q);
-        if (ret->g)
-            BN_free(ret->g);
+        BN_free(ret->p);
+        BN_free(ret->q);
+        BN_free(ret->g);
         ret->p = BN_dup(p);
         ret->q = BN_dup(q);
         ret->g = BN_dup(g);
@@ -343,8 +340,7 @@ err:
         BN_CTX_end(ctx);
         BN_CTX_free(ctx);
     }
-    if (mont != NULL)
-        BN_MONT_CTX_free(mont);
+    BN_MONT_CTX_free(mont);
     return ok;
 }
 #endif
