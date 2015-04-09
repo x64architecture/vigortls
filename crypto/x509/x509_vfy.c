@@ -370,10 +370,8 @@ int X509_verify_cert(X509_STORE_CTX *ctx)
     end:
         X509_get_pubkey_parameters(NULL, ctx->chain);
     }
-    if (sktmp != NULL)
-        sk_X509_free(sktmp);
-    if (chain_ss != NULL)
-        X509_free(chain_ss);
+    sk_X509_free(sktmp);
+    X509_free(chain_ss);
     return ok;
 }
 
