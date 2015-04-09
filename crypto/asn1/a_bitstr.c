@@ -162,7 +162,7 @@ ASN1_BIT_STRING *c2i_ASN1_BIT_STRING(ASN1_BIT_STRING **a,
             i = ERR_R_MALLOC_FAILURE;
             goto err;
         }
-        memcpy(s, p, (int)len);
+        memcpy(s, p, len);
         s[len - 1] &= (0xff << i);
         p += len;
     } else

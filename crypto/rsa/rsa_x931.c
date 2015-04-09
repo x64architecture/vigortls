@@ -95,7 +95,7 @@ int RSA_padding_add_X931(unsigned char *to, int tlen,
         }
         *p++ = 0xBA;
     }
-    memcpy(p, from, (unsigned int)flen);
+    memcpy(p, from, flen);
     p += flen;
     *p = 0xCC;
     return (1);
@@ -141,7 +141,7 @@ int RSA_padding_check_X931(unsigned char *to, int tlen,
         return -1;
     }
 
-    memcpy(to, p, (unsigned int)j);
+    memcpy(to, p, j);
 
     return (j);
 }

@@ -199,16 +199,6 @@ struct rsa_st {
                                          * operations and results in faster RSA      \
                                          * private key operations.                   \
                                          */
-#ifndef OPENSSL_NO_DEPRECATED
-#define RSA_FLAG_NO_EXP_CONSTTIME RSA_FLAG_NO_CONSTTIME /* deprecated name for the flag*/
-                                                        /* new with 0.9.7h; the built-in RSA
-                                                * implementation now uses constant time
-                                                * modular exponentiation for secret exponents
-                                                * by default. This flag causes the
-                                                * faster variable sliding window method to
-                                                * be used for all exponents.
-                                                */
-#endif
 
 #define EVP_PKEY_CTX_set_rsa_padding(ctx, pad)                          \
     EVP_PKEY_CTX_ctrl(ctx, EVP_PKEY_RSA, -1, EVP_PKEY_CTRL_RSA_PADDING, \

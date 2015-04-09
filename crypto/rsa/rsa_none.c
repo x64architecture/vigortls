@@ -77,7 +77,7 @@ int RSA_padding_add_none(unsigned char *to, int tlen,
         return (0);
     }
 
-    memcpy(to, from, (unsigned int)flen);
+    memcpy(to, from, flen);
     return (1);
 }
 

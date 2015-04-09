@@ -101,12 +101,12 @@ ASN1_STRING *d2i_ASN1_type_bytes(ASN1_STRING **a, const unsigned char **pp,
         ret = (*a);
 
     if (len != 0) {
-        s = malloc((int)len + 1);
+        s = malloc(len + 1);
         if (s == NULL) {
             i = ERR_R_MALLOC_FAILURE;
             goto err;
         }
-        memcpy(s, p, (int)len);
+        memcpy(s, p, len);
         s[len] = '\0';
         p += len;
     } else
@@ -209,7 +209,7 @@ ASN1_STRING *d2i_ASN1_bytes(ASN1_STRING **a, const unsigned char **pp,
                 }
             } else
                 s = ret->data;
-            memcpy(s, p, (int)len);
+            memcpy(s, p, len);
             s[len] = '\0';
             p += len;
         } else {

@@ -87,7 +87,7 @@ int RSA_padding_add_PKCS1_type_1(unsigned char *to, int tlen,
     memset(p, 0xff, j);
     p += j;
     *(p++) = '\0';
-    memcpy(p, from, (unsigned int)flen);
+    memcpy(p, from, flen);
     return (1);
 }
 
@@ -134,7 +134,7 @@ int RSA_padding_check_PKCS1_type_1(unsigned char *to, int tlen,
         RSAerr(RSA_F_RSA_PADDING_CHECK_PKCS1_TYPE_1, RSA_R_DATA_TOO_LARGE);
         return (-1);
     }
-    memcpy(to, p, (unsigned int)j);
+    memcpy(to, p, j);
 
     return (j);
 }

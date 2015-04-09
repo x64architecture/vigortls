@@ -79,21 +79,7 @@ extern "C" {
  * !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
  */
 
-#if defined(__LP32__)
-#define BF_LONG unsigned long
-#elif defined(__ILP64__)
-#define BF_LONG unsigned long
-#define BF_LONG_LOG2 3
-/*
- * _CRAY note. I could declare short, but I have no idea what impact
- * does it have on performance on none-T3E machines. I could declare
- * int, but at least on C90 sizeof(int) can be chosen at compile time.
- * So I've chosen long...
- *                    <appro@fy.chalmers.se>
- */
-#else
 #define BF_LONG unsigned int
-#endif
 
 #define BF_ROUNDS 16
 #define BF_BLOCK 8

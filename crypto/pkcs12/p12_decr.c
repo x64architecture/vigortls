@@ -61,9 +61,6 @@
 #include <openssl/err.h>
 #include <openssl/pkcs12.h>
 
-/* Define this to dump decrypted output to files called DERnnn */
-/*#define DEBUG_DECRYPT*/
-
 /* Encrypt/Decrypt a buffer based on password and algor, result in a
  * malloc'ed buffer
  */

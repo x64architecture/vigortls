@@ -157,7 +157,7 @@ int i2c_ASN1_INTEGER(ASN1_INTEGER *a, unsigned char **pp)
     if (a->length == 0)
         *(p++) = 0;
     else if (!neg)
-        memcpy(p, a->data, (unsigned int)a->length);
+        memcpy(p, a->data, a->length);
     else {
         /* Begin at the end of the encoding */
         n = a->data + a->length - 1;
@@ -203,7 +203,7 @@ ASN1_INTEGER *c2i_ASN1_INTEGER(ASN1_INTEGER **a, const unsigned char **pp,
 
     /* We must malloc stuff, even for 0 bytes otherwise it
      * signifies a missing NULL parameter. */
-    s = malloc((int)len + 1);
+    s = malloc(len + 1);
     if (s == NULL) {
         i = ERR_R_MALLOC_FAILURE;
         goto err;
@@ -252,7 +252,7 @@ ASN1_INTEGER *c2i_ASN1_INTEGER(ASN1_INTEGER **a, const unsigned char **pp,
             p++;
             len--;
         }
-        memcpy(s, p, (int)len);
+        memcpy(s, p, len);
     }
 
     free(ret->data);
@@ -316,7 +316,7 @@ ASN1_INTEGER *d2i_ASN1_UINTEGER(ASN1_INTEGER **a, const unsigned char **pp,
             p++;
             len--;
         }
-        memcpy(s, p, (int)len);
+        memcpy(s, p, len);
         p += len;
     }
 

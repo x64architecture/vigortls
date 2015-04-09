@@ -77,14 +77,7 @@ extern "C" {
  * !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
  */
 
-#if defined(__LP32__)
-#define SHA_LONG unsigned long
-#elif defined(__ILP64__)
-#define SHA_LONG unsigned long
-#define SHA_LONG_LOG2 3
-#else
 #define SHA_LONG unsigned int
-#endif
 
 #define SHA_LBLOCK 16
 #define SHA_CBLOCK (SHA_LBLOCK * 4) /* SHA treats input data as a \
