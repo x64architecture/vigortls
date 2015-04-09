@@ -87,7 +87,6 @@ PKCS12 *PKCS12_init(int mode)
 
     return pkcs12;
 err:
-    if (pkcs12 != NULL)
-        PKCS12_free(pkcs12);
+    PKCS12_free(pkcs12);
     return NULL;
 }
