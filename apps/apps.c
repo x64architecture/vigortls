@@ -1399,9 +1399,6 @@ int save_serial(char *serialfile, char *suffix, BIGNUM *serial, ASN1_INTEGER **r
     else
         j = snprintf(buf[0], sizeof buf[0], "%s.%s", serialfile, suffix);
 
-#ifdef RL_DEBUG
-    BIO_printf(bio_err, "DEBUG: writing \"%s\"\n", buf[0]);
-#endif
     out = BIO_new(BIO_s_file());
     if (out == NULL) {
         ERR_print_errors(bio_err);
@@ -1449,10 +1446,7 @@ int rotate_serial(char *serialfile, char *new_suffix, char *old_suffix)
                  serialfile, new_suffix);
     j = snprintf(buf[1], sizeof buf[1], "%s.%s",
                  serialfile, old_suffix);
-#ifdef RL_DEBUG
-    BIO_printf(bio_err, "DEBUG: renaming \"%s\" to \"%s\"\n",
-               serialfile, buf[1]);
-#endif
+
     if (rename(serialfile, buf[1]) < 0 && errno != ENOENT
         && errno != ENOTDIR) {
 
@@ -1461,10 +1455,6 @@ int rotate_serial(char *serialfile, char *new_suffix, char *old_suffix)
         perror("reason");
         goto err;
     }
-#ifdef RL_DEBUG
-    BIO_printf(bio_err, "DEBUG: renaming \"%s\" to \"%s\"\n",
-               bufserialfile);
-#endif
     if (rename(buf[0], serialfile) < 0) {
         BIO_printf(bio_err, "unable to rename %s to %s\n",
                    buf[0], serialfile);
@@ -1553,12 +1543,8 @@ CA_DB *load_index(char *dbfile, DB_ATTR *db_attr)
 
     if (dbattr_conf) {
         char *p = NCONF_get_string(dbattr_conf, NULL, "unique_subject");
-        if (p) {
-#ifdef RL_DEBUG
-            BIO_printf(bio_err, "DEBUG[load_index]: unique_subject = \"%s\"\n", p);
-#endif
+        if (p)
             retdb->attributes.unique_subject = parse_yesno(p, 1);
-        }
     }
 
 err:
@@ -1615,9 +1601,7 @@ int save_index(const char *dbfile, const char *suffix, CA_DB *db)
     j = snprintf(buf[2], sizeof buf[2], "%s.attr", dbfile);
     j = snprintf(buf[1], sizeof buf[1], "%s.attr.%s", dbfile, suffix);
     j = snprintf(buf[0], sizeof buf[0], "%s.%s", dbfile, suffix);
-#ifdef RL_DEBUG
-    BIO_printf(bio_err, "DEBUG: writing \"%s\"\n", buf[0]);
-#endif
+
     if (BIO_write_filename(out, buf[0]) <= 0) {
         perror(dbfile);
         BIO_printf(bio_err, "unable to open '%s'\n", dbfile);
@@ -1630,9 +1614,6 @@ int save_index(const char *dbfile, const char *suffix, CA_DB *db)
     BIO_free(out);
 
     out = BIO_new(BIO_s_file());
-#ifdef RL_DEBUG
-    BIO_printf(bio_err, "DEBUG: writing \"%s\"\n", buf[1]);
-#endif
     if (BIO_write_filename(out, buf[1]) <= 0) {
         perror(buf[2]);
         BIO_printf(bio_err, "unable to open '%s'\n", buf[2]);
@@ -1670,10 +1651,6 @@ int rotate_index(const char *dbfile, const char *new_suffix, const char *old_suf
                  dbfile, old_suffix);
     j = snprintf(buf[3], sizeof buf[3], "%s.attr.%s",
                  dbfile, old_suffix);
-#ifdef RL_DEBUG
-    BIO_printf(bio_err, "DEBUG: renaming \"%s\" to \"%s\"\n",
-               dbfile, buf[1]);
-#endif
     if (rename(dbfile, buf[1]) < 0 && errno != ENOENT
         && errno != ENOTDIR) {
 
@@ -1682,10 +1659,6 @@ int rotate_index(const char *dbfile, const char *new_suffix, const char *old_suf
         perror("reason");
         goto err;
     }
-#ifdef RL_DEBUG
-    BIO_printf(bio_err, "DEBUG: renaming \"%s\" to \"%s\"\n",
-               buf[0], dbfile);
-#endif
     if (rename(buf[0], dbfile) < 0) {
         BIO_printf(bio_err, "unable to rename %s to %s\n",
                    buf[0], dbfile);
@@ -1693,10 +1666,6 @@ int rotate_index(const char *dbfile, const char *new_suffix, const char *old_suf
         rename(buf[1], dbfile);
         goto err;
     }
-#ifdef RL_DEBUG
-    BIO_printf(bio_err, "DEBUG: renaming \"%s\" to \"%s\"\n",
-               buf[4], buf[3]);
-#endif
     if (rename(buf[4], buf[3]) < 0 && errno != ENOENT
         && errno != ENOTDIR) {
         BIO_printf(bio_err, "unable to rename %s to %s\n",
@@ -1706,10 +1675,6 @@ int rotate_index(const char *dbfile, const char *new_suffix, const char *old_suf
         rename(buf[1], dbfile);
         goto err;
     }
-#ifdef RL_DEBUG
-    BIO_printf(bio_err, "DEBUG: renaming \"%s\" to \"%s\"\n",
-               buf[2], buf[4]);
-#endif
     if (rename(buf[2], buf[4]) < 0) {
         BIO_printf(bio_err, "unable to rename %s to %s\n",
                    buf[2], buf[4]);
