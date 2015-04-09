@@ -1134,11 +1134,13 @@ int ssl3_get_client_hello(SSL *s)
         }
         s->s3->tmp.new_cipher = c;
     } else {
-/* Session-id reuse */
+/* 
+ * Session-id reuse
+ * FIXME: Once SSL3 is removed (its broken) remove this code
+ */
 #ifdef REUSE_CIPHER_BUG
         STACK_OF(SSL_CIPHER) * sk;
         SSL_CIPHER *nc = NULL;
-        SSL_CIPHER *ec = NULL;
 
         if (s->options & SSL_OP_NETSCAPE_DEMO_CIPHER_CHANGE_BUG) {
             sk = s->session->ciphers;
@@ -1149,8 +1151,6 @@ int ssl3_get_client_hello(SSL *s)
             }
             if (nc != NULL)
                 s->s3->tmp.new_cipher = nc;
-            else if (ec != NULL)
-                s->s3->tmp.new_cipher = ec;
             else
                 s->s3->tmp.new_cipher = s->session->cipher;
         } else

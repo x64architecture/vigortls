@@ -2051,7 +2051,6 @@ static int certify_spkac(X509 **xret, char *infile, EVP_PKEY *pkey, X509 *x509,
     char *type, *buf;
     EVP_PKEY *pktmp = NULL;
     X509_NAME *n = NULL;
-    X509_NAME_ENTRY *ne = NULL;
     int ok = -1, i, j;
     long errline;
     int nid;
@@ -2164,8 +2163,6 @@ err:
         CONF_free(parms);
     if (spki != NULL)
         NETSCAPE_SPKI_free(spki);
-    if (ne != NULL)
-        X509_NAME_ENTRY_free(ne);
 
     return (ok);
 }
@@ -2515,7 +2512,6 @@ char *make_revocation_str(int rev_type, char *rev_arg)
 
 int make_revoked(X509_REVOKED *rev, const char *str)
 {
-    char *tmp = NULL;
     int reason_code = -1;
     int i, ret = 0;
     ASN1_OBJECT *hold = NULL;
@@ -2555,9 +2551,6 @@ int make_revoked(X509_REVOKED *rev, const char *str)
         ret = 1;
 
 err:
-
-    if (tmp)
-        free(tmp);
     ASN1_OBJECT_free(hold);
     ASN1_GENERALIZEDTIME_free(comp_time);
     ASN1_ENUMERATED_free(rtmp);

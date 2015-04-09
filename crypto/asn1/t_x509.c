@@ -103,7 +103,7 @@ int X509_print_ex(BIO *bp, X509 *x, unsigned long nmflags, unsigned long cflag)
 {
     long l;
     int ret = 0, i;
-    char *m = NULL, mlch = ' ';
+    char mlch = ' ';
     int nmindent = 0;
     X509_CINF *ci;
     ASN1_INTEGER *bs;
@@ -227,7 +227,6 @@ int X509_print_ex(BIO *bp, X509 *x, unsigned long nmflags, unsigned long cflag)
     }
     ret = 1;
 err:
-    free(m);
     return (ret);
 }
 
