@@ -143,7 +143,6 @@ static int dsa_pub_encode(X509_PUBKEY *pk, const EVP_PKEY *pkey)
         }
         str->length = i2d_DSAparams(dsa, &str->data);
         if (str->length <= 0) {
-            ASN1_STRING_free(str);
             DSAerr(DSA_F_DSA_PUB_ENCODE, ERR_R_MALLOC_FAILURE);
             goto err;
         }
@@ -167,7 +166,6 @@ static int dsa_pub_encode(X509_PUBKEY *pk, const EVP_PKEY *pkey)
 err:
     free(penc);
     ASN1_STRING_free(str);
-
     return 0;
 }
 
