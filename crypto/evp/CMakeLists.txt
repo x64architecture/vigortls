@@ -15,7 +15,6 @@ add_library(
     bio_b64.c
     bio_enc.c
     bio_md.c
-    bio_ok.c
     c_all.c
     c_allc.c
     c_alld.c
