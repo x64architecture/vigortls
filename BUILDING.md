@@ -30,7 +30,7 @@ Building in a Windows environment
 
 ----
 ## Building
-	Launch VS2013 x86 Native Tools Command Prompt
+	Launch VS2013 x86/x64 Native Tools Command Prompt
 	$ mkdir build
 	$ cd build
 	$ cmake -G"NMake Makefiles" ..

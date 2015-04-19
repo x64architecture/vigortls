@@ -16,7 +16,7 @@ functions/calls with secure ones, and replacing the unreadable coding style.
 Currently tested operating systems
 ==================================
 
-* Windows: x86
+* Windows: x86, x86_64
 * Linux: x86, x86_64, armv6
 * Mac OS X: x86_64
 * FreeBSD: x86_64
