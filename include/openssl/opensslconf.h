@@ -54,15 +54,20 @@
 
 #if defined(HEADER_BN_H) && !defined(CONFIG_HEADER_BN_H)
 #define CONFIG_HEADER_BN_H
-#undef BN_LLONG
+
+#if defined(__x86_64) || defined(_M_AMD64) || defined(_M_X64)
+# define VIGORTLS_64_BIT
+#elif defined(__x86) || defined(__i386) || defined(__i386__) || defined(_M_IX86)
+# define VIGORTLS_32_BIT
+#elif defined(__arm) || defined(__arm__) || defined(_M_ARM)
+# define VIGORTLS_32_BIT
+#else
+# error "Unknown target CPU"
+#endif
+
+#endif
 
 /* Should we define BN_DIV2W here? */
-
-/* Only one for the following should be defined */
-#define SIXTY_FOUR_BIT_LONG
-#undef SIXTY_FOUR_BIT
-#undef THIRTY_TWO_BIT
-#endif
 
 #if defined(HEADER_RC4_LOCL_H) && !defined(CONFIG_HEADER_RC4_LOCL_H)
 #define CONFIG_HEADER_RC4_LOCL_H

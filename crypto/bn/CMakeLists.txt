@@ -4,6 +4,17 @@ if (${ARCH} STREQUAL "x86_64")
     set(
         BN_ARCH_SOURCES
 
+        bn_asm.c
+        x86_64-mont.${ASM_EXT}
+        x86_64-mont5.${ASM_EXT}
+        x86_64-gf2m.${ASM_EXT}
+        modexp512-x86_64.${ASM_EXT}
+    )
+endif()
+if (${ARCH} STREQUAL "x86_64" AND CMAKE_COMPILER_IS_GNUCC OR ${CMAKE_C_COMPILER_ID} STREQUAL "Clang")
+    set(
+        BN_ARCH_SOURCES
+
         asm/x86_64-gcc.c
         bn_asm.c
         x86_64-mont.${ASM_EXT}
@@ -27,7 +38,7 @@ if (${ARCH} STREQUAL "arm")
     set(
         BN_ARCH_SOURCES
 
-    bn_asm.c
+        bn_asm.c
         armv4-mont.${ASM_EXT}
         armv4-gf2m.${ASM_EXT}
     )
@@ -61,7 +72,7 @@ add_library(
     bn_mpi.c
     bn_exp2.c
     bn_gf2m.c
-      bn_nist.c
+    bn_nist.c
     bn_depr.c
     bn_const.c
 

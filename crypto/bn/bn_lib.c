@@ -100,7 +100,7 @@ int BN_num_bits_word(BN_ULONG l)
         8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,
     };
 
-#ifdef _LP64
+#if defined(VIGORTLS_64_BIT)
     if (l & 0xffffffff00000000L) {
         if (l & 0xffff000000000000L) {
             if (l & 0xff00000000000000L) {

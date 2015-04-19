@@ -105,7 +105,7 @@
 static const BN_ULONG SQR_tb[16] = { 0, 1, 4, 5, 16, 17, 20, 21,
                                      64, 65, 68, 69, 80, 81, 84, 85 };
 /* Platform-specific macros to accelerate squaring. */
-#ifdef _LP64
+#ifdef VIGORTLS_64_BIT
 #define SQR1(w) \
     SQR_tb[(w) >> 60 & 0xF] << 56 | SQR_tb[(w) >> 56 & 0xF] << 48 | SQR_tb[(w) >> 52 & 0xF] << 40 | SQR_tb[(w) >> 48 & 0xF] << 32 | SQR_tb[(w) >> 44 & 0xF] << 24 | SQR_tb[(w) >> 40 & 0xF] << 16 | SQR_tb[(w) >> 36 & 0xF] << 8 | SQR_tb[(w) >> 32 & 0xF]
 #define SQR0(w) \
@@ -125,7 +125,7 @@ static const BN_ULONG SQR_tb[16] = { 0, 1, 4, 5, 16, 17, 20, 21,
  */
 static void bn_GF2m_mul_1x1(BN_ULONG *r1, BN_ULONG *r0, const BN_ULONG a, const BN_ULONG b)
 {
-#ifndef _LP64
+#ifdef VIGORTLS_32_BIT
     register BN_ULONG h, l, s;
     BN_ULONG tab[8], top2b = a >> 30;
     register BN_ULONG a1, a2, a4;
