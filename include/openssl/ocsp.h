@@ -73,12 +73,6 @@
 extern "C" {
 #endif
 
-/* Fixes conflicts on win32 */
-# ifdef _WIN32
-#  undef OCSP_REQUEST
-#  undef OCSP_RESPONSE
-# endif
-
 /* Various flags and values */
 
 #define OCSP_DEFAULT_NONCE_LENGTH 16

@@ -160,12 +160,6 @@
 #include "s_apps.h"
 #include "timeouts.h"
 
-/* Fixes conflicts on win32 */
-# ifdef _WIN32
-#  undef OCSP_REQUEST
-#  undef OCSP_RESPONSE
-# endif
-
 /*#define SSL_HOST_NAME    "www.netscape.com" */
 /*#define SSL_HOST_NAME    "193.118.187.102" */
 #define SSL_HOST_NAME "localhost"

@@ -59,11 +59,20 @@
 #ifndef HEADER_DTLS1_H
 #define HEADER_DTLS1_H
 
-#include <openssl/buffer.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <sys/time.h>
+
+#include <openssl/buffer.h>
+
+/* Fixes conflicts on win32 */
+# ifdef _WIN32
+# undef X509_NAME
+# undef X509_EXTENSIONS
+# undef OCSP_REQUEST
+# undef OCSP_RESPONSE
+# endif
 
 #ifdef __cplusplus
 extern "C" {

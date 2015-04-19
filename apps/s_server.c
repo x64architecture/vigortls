@@ -177,12 +177,6 @@
 #include "s_apps.h"
 #include "timeouts.h"
 
-/* Fixes conflicts on win32 */
-# ifdef _WIN32
-#  undef OCSP_REQUEST
-#  undef OCSP_RESPONSE
-# endif
-
 static RSA *tmp_rsa_cb(SSL *s, int is_export, int keylength);
 static int sv_body(char *hostname, int s, unsigned char *context);
 static int www_body(char *hostname, int s, unsigned char *context);
