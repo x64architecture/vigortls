@@ -1361,7 +1361,7 @@ static void ecp_nistz256_pre_comp_clear_free(void *pre_)
 
     if (pre->precomp_storage) {
         vigortls_zeroize(pre->precomp,
-                         32 * sizeof(unsigned char) * (1 << pre->w) * 2 * 37);
+                         32 * sizeof(unsigned char) * ((size_t)1 << pre->w) * 2 * 37);
         free(pre->precomp_storage);
     }
     vigortls_zeroize(pre, sizeof *pre);
