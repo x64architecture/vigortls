@@ -1,7 +1,5 @@
-#include "../bn_lcl.h"
-#if !(defined(__GNUC__) && __GNUC__ >= 2)
-#include "../bn_asm.c" /* kind of dirty hack for Sun Studio */
-#else
+#include <openssl/bn.h>
+
 /*
  * x86_64 BIGNUM accelerator version 0.1, December 2002.
  *
@@ -54,12 +52,6 @@
  *    very much like 64-bit code compiled with no-asm on the same
  *    machine.
  */
-
-#ifdef _WIN64
-#define BN_ULONG unsigned long long
-#else
-#define BN_ULONG unsigned long
-#endif
 
 #undef mul
 #undef mul_add
@@ -609,4 +601,3 @@ void bn_sqr_comba4(BN_ULONG *r, const BN_ULONG *a)
     r[6] = c1;
     r[7] = c2;
 }
-#endif
