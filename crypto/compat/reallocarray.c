@@ -37,7 +37,7 @@ void *reallocarray(void *ptr, size_t newmem, size_t size)
 
 #else
 
-#define SQRT_SIZE_MAX ((1UL << (sizeof(size_t) * 8 / 2)) - 1)
+#define SQRT_SIZE_MAX (((size_t)1 << (sizeof(size_t) * 8 / 2)) - 1)
 
 void *reallocarray(void *ptr, size_t newmem, size_t size)
 {
