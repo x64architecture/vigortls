@@ -5,7 +5,6 @@ if (${ARCH} STREQUAL "x86_64")
         CMLL_ARCH_SOURCES
 
         cmll-x86_64.${ASM_EXT}
-        camellia.c
         cmll_misc.c
     )
 
