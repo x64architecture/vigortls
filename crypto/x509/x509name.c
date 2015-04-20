@@ -66,6 +66,8 @@
 #include <openssl/evp.h>
 #include <openssl/x509.h>
 
+#include "internal/x509_int.h"
+
 int X509_NAME_get_text_by_NID(X509_NAME *name, int nid, char *buf, int len)
 {
     ASN1_OBJECT *obj;
@@ -385,4 +387,9 @@ ASN1_STRING *X509_NAME_ENTRY_get_data(X509_NAME_ENTRY *ne)
     if (ne == NULL)
         return (NULL);
     return (ne->value);
+}
+
+int X509_NAME_ENTRY_set(const X509_NAME_ENTRY *ne)
+{
+    return ne->set;
 }

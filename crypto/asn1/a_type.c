@@ -60,6 +60,8 @@
 #include <openssl/asn1t.h>
 #include <openssl/objects.h>
 
+#include "asn1_locl.h"
+
 int ASN1_TYPE_get(ASN1_TYPE *a)
 {
     if ((a->value.ptr != NULL) || (a->type == V_ASN1_NULL))
@@ -72,7 +74,7 @@ void ASN1_TYPE_set(ASN1_TYPE *a, int type, void *value)
 {
     if (a->value.ptr != NULL) {
         ASN1_TYPE **tmp_a = &a;
-        ASN1_primitive_free((ASN1_VALUE **)tmp_a, NULL);
+        asn1_primitive_free((ASN1_VALUE **)tmp_a, NULL);
     }
     a->type = type;
     if (type == V_ASN1_BOOLEAN)
@@ -149,4 +151,35 @@ int ASN1_TYPE_cmp(const ASN1_TYPE *a, ASN1_TYPE *b)
     }
 
     return result;
+}
+
+ASN1_TYPE *ASN1_TYPE_pack_sequence(const ASN1_ITEM *it, void *s, ASN1_TYPE **t)
+{
+    ASN1_OCTET_STRING *oct;
+    ASN1_TYPE *rt;
+
+    oct = ASN1_item_pack(s, it, NULL);
+    if (oct == NULL)
+        return NULL;
+
+    if (t && *t) {
+        rt = *t;
+    } else {
+        rt = ASN1_TYPE_new();
+        if (rt == NULL) {
+            ASN1_OCTET_STRING_free(oct);
+            return NULL;
+        }
+        if (t)
+            *t = rt;
+    }
+    ASN1_TYPE_set(rt, V_ASN1_SEQUENCE, oct);
+    return rt;
+}
+
+void *ASN1_TYPE_unpack_sequence(const ASN1_ITEM *it, const ASN1_TYPE *t)
+{
+    if (t->type != V_ASN1_SEQUENCE || t->value.sequence == NULL)
+        return NULL;
+    return ASN1_item_unpack(t->value.sequence, it);
 }

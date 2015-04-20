@@ -53,7 +53,7 @@
 #include <stdio.h>
 #include <openssl/evp.h>
 #include <openssl/cmac.h>
-#include "asn1_locl.h"
+#include "internal/asn1_int.h"
 
 /* CMAC "ASN1" method. This is just here to indicate the
  * maximum CMAC output length and to free up a CMAC

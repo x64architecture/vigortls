@@ -63,9 +63,12 @@
 #include <openssl/asn1t.h>
 #include <string.h>
 
-static int asn1_item_ex_combine_new(ASN1_VALUE **pval, const ASN1_ITEM *it,
-                                    int combine);
+#include "asn1_locl.h"
+
+static int asn1_item_ex_combine_new(ASN1_VALUE **pval, const ASN1_ITEM *it, int combine);
+static int asn1_primitive_new(ASN1_VALUE **pval, const ASN1_ITEM *it);
 static void asn1_item_clear(ASN1_VALUE **pval, const ASN1_ITEM *it);
+static int asn1_template_new(ASN1_VALUE **pval, const ASN1_TEMPLATE *tt);
 static void asn1_template_clear(ASN1_VALUE **pval, const ASN1_TEMPLATE *tt);
 static void asn1_primitive_clear(ASN1_VALUE **pval, const ASN1_ITEM *it);
 
@@ -88,7 +91,6 @@ static int asn1_item_ex_combine_new(ASN1_VALUE **pval, const ASN1_ITEM *it,
                                     int combine)
 {
     const ASN1_TEMPLATE *tt = NULL;
-    const ASN1_COMPAT_FUNCS *cf;
     const ASN1_EXTERN_FUNCS *ef;
     const ASN1_AUX *aux = it->funcs;
     ASN1_aux_cb *asn1_cb;
@@ -112,25 +114,16 @@ static int asn1_item_ex_combine_new(ASN1_VALUE **pval, const ASN1_ITEM *it,
             }
             break;
 
-        case ASN1_ITYPE_COMPAT:
-            cf = it->funcs;
-            if (cf && cf->asn1_new) {
-                *pval = cf->asn1_new();
-                if (!*pval)
-                    goto memerr;
-            }
-            break;
-
         case ASN1_ITYPE_PRIMITIVE:
             if (it->templates) {
-                if (!ASN1_template_new(pval, it->templates))
+                if (!asn1_template_new(pval, it->templates))
                     goto memerr;
-            } else if (!ASN1_primitive_new(pval, it))
+            } else if (!asn1_primitive_new(pval, it))
                 goto memerr;
             break;
 
         case ASN1_ITYPE_MSTRING:
-            if (!ASN1_primitive_new(pval, it))
+            if (!asn1_primitive_new(pval, it))
                 goto memerr;
             break;
 
@@ -172,7 +165,7 @@ static int asn1_item_ex_combine_new(ASN1_VALUE **pval, const ASN1_ITEM *it,
             }
             for (i = 0, tt = it->templates; i < it->tcount; tt++, i++) {
                 pseqval = asn1_get_field_ptr(pval, tt);
-                if (!ASN1_template_new(pseqval, tt))
+                if (!asn1_template_new(pseqval, tt))
                     goto memerr;
             }
             if (asn1_cb && !asn1_cb(ASN1_OP_NEW_POST, pval, it, NULL))
@@ -216,7 +209,6 @@ static void asn1_item_clear(ASN1_VALUE **pval, const ASN1_ITEM *it)
             asn1_primitive_clear(pval, it);
             break;
 
-        case ASN1_ITYPE_COMPAT:
         case ASN1_ITYPE_CHOICE:
         case ASN1_ITYPE_SEQUENCE:
         case ASN1_ITYPE_NDEF_SEQUENCE:
@@ -225,7 +217,7 @@ static void asn1_item_clear(ASN1_VALUE **pval, const ASN1_ITEM *it)
     }
 }
 
-int ASN1_template_new(ASN1_VALUE **pval, const ASN1_TEMPLATE *tt)
+int asn1_template_new(ASN1_VALUE **pval, const ASN1_TEMPLATE *tt)
 {
     const ASN1_ITEM *it = ASN1_ITEM_ptr(tt->item);
     int ret;
@@ -271,7 +263,7 @@ static void asn1_template_clear(ASN1_VALUE **pval, const ASN1_TEMPLATE *tt)
  * all the old functions.
  */
 
-int ASN1_primitive_new(ASN1_VALUE **pval, const ASN1_ITEM *it)
+int asn1_primitive_new(ASN1_VALUE **pval, const ASN1_ITEM *it)
 {
     ASN1_TYPE *typ;
     ASN1_STRING *str;

@@ -69,6 +69,7 @@
 #include <stdcompat.h>
 
 #include "cryptlib.h"
+#include "internal/asn1_int.h"
 
 /* obj_dat.h is generated from objects.h by obj_dat.pl */
 #ifndef OPENSSL_NO_OBJECT
@@ -764,4 +765,18 @@ err:
     ASN1_OBJECT_free(op);
     free(buf);
     return (ok);
+}
+
+size_t OBJ_length(const ASN1_OBJECT *obj)
+{
+    if (obj == NULL)
+        return 0;
+    return obj->length;
+}
+
+const unsigned char *OBJ_get0_data(const ASN1_OBJECT *obj)
+{
+    if (obj == NULL)
+        return NULL;
+    return obj->data;
 }

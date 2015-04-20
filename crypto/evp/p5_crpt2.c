@@ -190,21 +190,13 @@ int PKCS5_v2_PBE_keyivgen(EVP_CIPHER_CTX *ctx, const char *pass, int passlen,
                           ASN1_TYPE *param, const EVP_CIPHER *c, const EVP_MD *md,
                           int en_de)
 {
-    const unsigned char *pbuf;
-    int plen;
     PBE2PARAM *pbe2 = NULL;
     const EVP_CIPHER *cipher;
 
     int rv = 0;
 
-    if (param == NULL || param->type != V_ASN1_SEQUENCE || param->value.sequence == NULL) {
-        EVPerr(EVP_F_PKCS5_V2_PBE_KEYIVGEN, EVP_R_DECODE_ERROR);
-        goto err;
-    }
-
-    pbuf = param->value.sequence->data;
-    plen = param->value.sequence->length;
-    if (!(pbe2 = d2i_PBE2PARAM(NULL, &pbuf, plen))) {
+    pbe2 = ASN1_TYPE_unpack_sequence(ASN1_ITEM_rptr(PBE2PARAM), param);
+    if (pbe2 == NULL) {
         EVPerr(EVP_F_PKCS5_V2_PBE_KEYIVGEN, EVP_R_DECODE_ERROR);
         goto err;
     }
@@ -248,8 +240,7 @@ int PKCS5_v2_PBKDF2_keyivgen(EVP_CIPHER_CTX *ctx, const char *pass, int passlen,
                              const EVP_CIPHER *c, const EVP_MD *md, int en_de)
 {
     unsigned char *salt, key[EVP_MAX_KEY_LENGTH];
-    const unsigned char *pbuf;
-    int saltlen, iter, plen;
+    int saltlen, iter;
     int rv = 0;
     unsigned int keylen = 0;
     int prf_nid, hmac_md_nid;
@@ -265,24 +256,17 @@ int PKCS5_v2_PBKDF2_keyivgen(EVP_CIPHER_CTX *ctx, const char *pass, int passlen,
 
     /* Decode parameter */
 
-    if (!param || (param->type != V_ASN1_SEQUENCE)) {
-        EVPerr(EVP_F_PKCS5_V2_PBKDF2_KEYIVGEN, EVP_R_DECODE_ERROR);
-        return 0;
-    }
+    kdf = ASN1_TYPE_unpack_sequence(ASN1_ITEM_rptr(PBKDF2PARAM), param);
 
-    pbuf = param->value.sequence->data;
-    plen = param->value.sequence->length;
-
-    if (!(kdf = d2i_PBKDF2PARAM(NULL, &pbuf, plen))) {
+    if (kdf == NULL) {
         EVPerr(EVP_F_PKCS5_V2_PBKDF2_KEYIVGEN, EVP_R_DECODE_ERROR);
-        return 0;
+        goto err;
     }
 
     /* Now check the parameters of the kdf */
 
     if (kdf->keylength && (ASN1_INTEGER_get(kdf->keylength) != (int)keylen)) {
-        EVPerr(EVP_F_PKCS5_V2_PBKDF2_KEYIVGEN,
-               EVP_R_UNSUPPORTED_KEYLENGTH);
+        EVPerr(EVP_F_PKCS5_V2_PBKDF2_KEYIVGEN, EVP_R_UNSUPPORTED_KEYLENGTH);
         goto err;
     }
 

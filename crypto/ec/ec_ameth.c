@@ -64,7 +64,8 @@
 #include <openssl/ec.h>
 #include <openssl/err.h>
 #include <openssl/x509.h>
-#include "asn1_locl.h"
+
+#include "internal/asn1_int.h"
 
 static int eckey_param2type(int *pptype, void **ppval, EC_KEY *ec_key)
 {

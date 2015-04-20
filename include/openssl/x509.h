@@ -159,29 +159,10 @@ typedef struct X509_sig_st {
     ASN1_OCTET_STRING *digest;
 } X509_SIG;
 
-typedef struct X509_name_entry_st {
-    ASN1_OBJECT *object;
-    ASN1_STRING *value;
-    int set;
-    int size; /* temp variable */
-} X509_NAME_ENTRY;
+typedef struct X509_name_entry_st X509_NAME_ENTRY;
 
 DECLARE_STACK_OF(X509_NAME_ENTRY)
 DECLARE_ASN1_SET_OF(X509_NAME_ENTRY)
-
-/* we always keep X509_NAMEs in 2 forms. */
-struct X509_name_st {
-    STACK_OF(X509_NAME_ENTRY) * entries;
-    int modified; /* true if 'bytes' needs to be built */
-#ifndef OPENSSL_NO_BUFFER
-    BUF_MEM *bytes;
-#else
-    char *bytes;
-#endif
-    /*    unsigned long hash; Keep the hash around for lookups */
-    unsigned char *canon_enc;
-    int canon_enclen;
-} /* X509_NAME */;
 
 DECLARE_STACK_OF(X509_NAME)
 
@@ -198,16 +179,7 @@ typedef STACK_OF(X509_EXTENSION) X509_EXTENSIONS;
 DECLARE_STACK_OF(X509_EXTENSION)
 DECLARE_ASN1_SET_OF(X509_EXTENSION)
 
-/* a sequence of these are used */
-typedef struct x509_attributes_st {
-    ASN1_OBJECT *object;
-    int single; /* 0 for a set, 1 for a single item (which is wrong) */
-    union {
-        char *ptr;
-        /* 0 */ STACK_OF(ASN1_TYPE) * set;
-        /* 1 */ ASN1_TYPE *single;
-    } value;
-} X509_ATTRIBUTE;
+typedef struct x509_attributes_st X509_ATTRIBUTE;
 
 DECLARE_STACK_OF(X509_ATTRIBUTE)
 DECLARE_ASN1_SET_OF(X509_ATTRIBUTE)
@@ -970,6 +942,7 @@ int X509_NAME_ENTRY_set_data(X509_NAME_ENTRY *ne, int type,
                              const unsigned char *bytes, int len);
 ASN1_OBJECT *X509_NAME_ENTRY_get_object(X509_NAME_ENTRY *ne);
 ASN1_STRING *X509_NAME_ENTRY_get_data(X509_NAME_ENTRY *ne);
+int X509_NAME_ENTRY_set(const X509_NAME_ENTRY *ne);
 
 int X509v3_get_ext_count(const STACK_OF(X509_EXTENSION) * x);
 int X509v3_get_ext_by_NID(const STACK_OF(X509_EXTENSION) * x,

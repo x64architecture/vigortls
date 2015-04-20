@@ -63,6 +63,9 @@
 #include <openssl/objects.h>
 #include <stdcompat.h>
 
+#include "internal/asn1_int.h"
+#include "asn1_locl.h"
+
 static int asn1_i2d_ex_primitive(ASN1_VALUE **pval, unsigned char **out,
                                  const ASN1_ITEM *it,
                                  int tag, int aclass);
@@ -74,6 +77,8 @@ static int asn1_template_ex_i2d(ASN1_VALUE **pval, unsigned char **out,
                                 int tag, int aclass);
 static int asn1_item_flags_i2d(ASN1_VALUE *val, unsigned char **out,
                                const ASN1_ITEM *it, int flags);
+static int asn1_ex_i2c(ASN1_VALUE **pval, unsigned char *cont, int *putype,
+                       const ASN1_ITEM *it);
 
 /* Top level i2d equivalents: the 'ndef' variant instructs the encoder
  * to use indefinite length constructed encoding, where appropriate
@@ -129,9 +134,7 @@ int ASN1_item_ex_i2d(ASN1_VALUE **pval, unsigned char **out,
                      const ASN1_ITEM *it, int tag, int aclass)
 {
     const ASN1_TEMPLATE *tt = NULL;
-    unsigned char *p = NULL;
     int i, seqcontlen, seqlen, ndef = 1;
-    const ASN1_COMPAT_FUNCS *cf;
     const ASN1_EXTERN_FUNCS *ef;
     const ASN1_AUX *aux = it->funcs;
     ASN1_aux_cb *asn1_cb = 0;
@@ -175,19 +178,6 @@ int ASN1_item_ex_i2d(ASN1_VALUE **pval, unsigned char **out,
             /* If new style i2d it does all the work */
             ef = it->funcs;
             return ef->asn1_ex_i2d(pval, out, it, tag, aclass);
-
-        case ASN1_ITYPE_COMPAT:
-            /* old style hackery... */
-            cf = it->funcs;
-            if (out)
-                p = *out;
-            i = cf->asn1_i2d(*pval, out);
-            /* Fixup for IMPLICIT tag: note this messes up for tags > 30,
-         * but so did the old code. Tags > 30 are very rare anyway.
-         */
-            if (out && (tag != -1))
-                *p = aclass | tag | (*p & V_ASN1_CONSTRUCTED);
-            return i;
 
         case ASN1_ITYPE_NDEF_SEQUENCE:
             /* Use indefinite length constructed if requested */
@@ -252,12 +242,6 @@ int ASN1_item_ex_i2d(ASN1_VALUE **pval, unsigned char **out,
             return 0;
     }
     return 0;
-}
-
-int ASN1_template_i2d(ASN1_VALUE **pval, unsigned char **out,
-                      const ASN1_TEMPLATE *tt)
-{
-    return asn1_template_ex_i2d(pval, out, tt, -1, 0);
 }
 
 static int asn1_template_ex_i2d(ASN1_VALUE **pval, unsigned char **out,
@@ -538,8 +522,8 @@ static int asn1_i2d_ex_primitive(ASN1_VALUE **pval, unsigned char **out,
 
 /* Produce content octets from a structure */
 
-int asn1_ex_i2c(ASN1_VALUE **pval, unsigned char *cout, int *putype,
-                const ASN1_ITEM *it)
+static int asn1_ex_i2c(ASN1_VALUE **pval, unsigned char *cout, int *putype,
+                       const ASN1_ITEM *it)
 {
     ASN1_BOOLEAN *tbool = NULL;
     ASN1_STRING *strtmp;

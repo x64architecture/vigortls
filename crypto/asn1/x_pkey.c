@@ -59,7 +59,6 @@
 #include <stdio.h>
 #include <string.h>
 
-#include <openssl/asn1_mac.h>
 #include <openssl/err.h>
 #include <openssl/evp.h>
 #include <openssl/objects.h>
@@ -69,21 +68,15 @@ X509_PKEY *X509_PKEY_new(void)
 {
     X509_PKEY *ret = NULL;
 
+    if ((ret = malloc(sizeof(X509_PKEY))) == NULL)
+        goto err;
+    memset(ret, 0, sizeof(X509_PKEY));
+
     ret->version = 0;
-    if ((ret = malloc(sizeof(X509))) == NULL) {
-        ASN1_MAC_H_err(ASN1_F_X509_PKEY_NEW, ERR_R_MALLOC_FAILURE,
-                       __LINE__);
-        return NULL;
-    }
-    if ((ret->enc_algor = X509_ALGOR_new()) == NULL) {
-        free(ret);
-        return NULL;
-    }
-    if ((ret->enc_pkey = ASN1_OCTET_STRING_new()) == NULL) {
-        X509_ALGOR_free(ret->enc_algor);
-        free(ret);
-        return NULL;
-    }
+    ret->enc_algor = X509_ALGOR_new();
+    ret->enc_pkey = ASN1_OCTET_STRING_new();
+    if (!ret->enc_algor || !ret->enc_pkey)
+        goto err;
     ret->dec_pkey = NULL;
     ret->key_length = 0;
     ret->key_data = NULL;
@@ -91,7 +84,12 @@ X509_PKEY *X509_PKEY_new(void)
     ret->cipher.cipher = NULL;
     memset(ret->cipher.iv, 0, EVP_MAX_IV_LENGTH);
     ret->references = 1;
-    return (ret);
+    return ret;
+
+err:
+    X509_PKEY_free(ret);
+    ASN1err(ASN1_F_X509_PKEY_NEW, ERR_R_MALLOC_FAILURE);
+    return NULL;
 }
 
 void X509_PKEY_free(X509_PKEY *x)

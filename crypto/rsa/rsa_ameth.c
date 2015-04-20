@@ -66,7 +66,7 @@
 #ifndef OPENSSL_NO_CMS
 #include <openssl/cms.h>
 #endif
-#include "asn1_locl.h"
+#include "internal/asn1_int.h"
 
 static int rsa_pub_encode(X509_PUBKEY *pk, const EVP_PKEY *pkey)
 {
@@ -257,33 +257,28 @@ static int rsa_priv_print(BIO *bp, const EVP_PKEY *pkey, int indent,
     return do_rsa_print(bp, pkey->pkey.rsa, indent, 1);
 }
 
-static RSA_PSS_PARAMS *rsa_pss_decode(const X509_ALGOR *alg,
-                                      X509_ALGOR **pmaskHash)
+/* Given an MGF1 Algorithm ID decode to an Algorithm Identifier */
+static X509_ALGOR *rsa_mgf1_decode(X509_ALGOR *alg)
 {
-    const unsigned char *p;
-    int plen;
+    if (alg == NULL)
+        return NULL;
+    if (OBJ_obj2nid(alg->algorithm) != NID_mgf1)
+        return NULL;
+    return ASN1_TYPE_unpack_sequence(ASN1_ITEM_rptr(X509_ALGOR), alg->parameter);
+}
+
+static RSA_PSS_PARAMS *rsa_pss_decode(const X509_ALGOR *alg, X509_ALGOR **pmaskHash)
+{
     RSA_PSS_PARAMS *pss;
 
     *pmaskHash = NULL;
 
-    if (!alg->parameter || alg->parameter->type != V_ASN1_SEQUENCE)
-        return NULL;
-    p = alg->parameter->value.sequence->data;
-    plen = alg->parameter->value.sequence->length;
-    pss = d2i_RSA_PSS_PARAMS(NULL, &p, plen);
+    pss = ASN1_TYPE_unpack_sequence(ASN1_ITEM_rptr(RSA_PSS_PARAMS), alg->parameter);
 
     if (!pss)
         return NULL;
 
-    if (pss->maskGenAlgorithm) {
-        ASN1_TYPE *param = pss->maskGenAlgorithm->parameter;
-        if (OBJ_obj2nid(pss->maskGenAlgorithm->algorithm) == NID_mgf1
-            && param->type == V_ASN1_SEQUENCE) {
-            p = param->value.sequence->data;
-            plen = param->value.sequence->length;
-            *pmaskHash = d2i_X509_ALGOR(NULL, &p, plen);
-        }
-    }
+    *pmaskHash = rsa_mgf1_decode(pss->maskGenAlgorithm);
 
     return pss;
 }

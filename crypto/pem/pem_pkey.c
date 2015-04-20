@@ -71,7 +71,7 @@
 #include <openssl/rand.h>
 #include <openssl/x509.h>
 
-#include "asn1_locl.h"
+#include "internal/asn1_int.h"
 
 int pem_check_suffix(const char *pem_str, const char *suffix);
 

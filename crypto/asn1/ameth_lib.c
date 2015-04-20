@@ -65,7 +65,7 @@
 #include <openssl/engine.h>
 #endif
 
-#include "asn1_locl.h"
+#include "internal/asn1_int.h"
 
 extern const EVP_PKEY_ASN1_METHOD rsa_asn1_meths[];
 extern const EVP_PKEY_ASN1_METHOD dsa_asn1_meths[];

@@ -14,7 +14,6 @@ add_library(
     asn_moid.c
     asn_pack.c
     a_bitstr.c
-    a_bool.c
     a_d2i_fp.c
     a_digest.c
     a_dup.c
@@ -64,19 +63,17 @@ add_library(
     t_x509.c
     t_x509a.c
     x_algor.c
-    x_attrib.c
     x_bignum.c
     x_crl.c
     x_exten.c
     x_info.c
     x_long.c
-    x_name.c
     x_nx509.c
     x_pkey.c
     x_pubkey.c
     x_req.c
     x_sig.c
-      x_spki.c
+    x_spki.c
     x_val.c
     x_x509.c
     x_x509a.c

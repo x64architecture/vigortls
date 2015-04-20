@@ -61,7 +61,6 @@
 #include <openssl/err.h>
 #include <openssl/objects.h>
 #include <openssl/evp.h>
-#include <openssl/asn1_mac.h>
 #include <openssl/x509.h>
 #include <openssl/rsa.h>
 #ifndef OPENSSL_NO_DSA
@@ -73,7 +72,7 @@
 #include <openssl/engine.h>
 #endif
 
-#include "asn1_locl.h"
+#include "internal/asn1_int.h"
 
 static void EVP_PKEY_free_it(EVP_PKEY *x);
 

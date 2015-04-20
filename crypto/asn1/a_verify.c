@@ -59,9 +59,7 @@
 #include <stdio.h>
 #include <time.h>
 
-#ifndef NO_SYS_TYPES_H
 #include <sys/types.h>
-#endif
 
 #include <openssl/bn.h>
 #include <openssl/buffer.h>
@@ -70,7 +68,7 @@
 #include <openssl/objects.h>
 #include <openssl/x509.h>
 
-#include "asn1_locl.h"
+#include "internal/asn1_int.h"
 
 #ifndef NO_ASN1_OLD
 

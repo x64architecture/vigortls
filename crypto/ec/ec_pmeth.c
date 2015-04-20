@@ -65,7 +65,7 @@
 #include <openssl/evp.h>
 #include <openssl/x509.h>
 
-#include "evp_locl.h"
+#include "internal/evp_int.h"
 
 /* EC pkey context structure */
 

@@ -61,7 +61,7 @@
 #include <openssl/err.h>
 #include <openssl/objects.h>
 #include <openssl/x509.h>
-#include "asn1_locl.h"
+#include "internal/asn1_int.h"
 
 long PKCS7_ctrl(PKCS7 *p7, int cmd, long larg, char *parg)
 {

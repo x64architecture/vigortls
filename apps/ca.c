@@ -1572,7 +1572,7 @@ static int do_body(X509 **xret, EVP_PKEY *pkey, X509 *x509, const EVP_MD *dgst,
 
         if (msie_hack) {
             /* assume all type should be strings */
-            nid = OBJ_obj2nid(ne->object);
+            nid = OBJ_obj2nid(X509_NAME_ENTRY_get_object(ne));
 
             if (str->type == V_ASN1_UNIVERSALSTRING)
                 ASN1_UNIVERSALSTRING_to_string(str);

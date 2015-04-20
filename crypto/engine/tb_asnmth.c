@@ -58,7 +58,7 @@
 
 #include <openssl/err.h>
 
-#include "asn1_locl.h"
+#include "internal/asn1_int.h"
 #include "eng_int.h"
 
 /* If this symbol is defined then ENGINE_get_pkey_asn1_meth_engine(), the

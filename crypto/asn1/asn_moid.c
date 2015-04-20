@@ -66,6 +66,8 @@
 #include <openssl/err.h>
 #include <openssl/x509.h>
 
+#include "internal/asn1_int.h"
+
 /* Simple ASN1 OID module: add all objects in a given section */
 
 static int do_create(char *value, char *name);

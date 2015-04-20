@@ -64,6 +64,8 @@
 #include <openssl/lhash.h>
 #include <openssl/objects.h>
 
+#include "internal/asn1_int.h"
+
 ASN1_OBJECT *OBJ_dup(const ASN1_OBJECT *o)
 {
     ASN1_OBJECT *r;

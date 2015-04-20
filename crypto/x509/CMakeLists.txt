@@ -29,4 +29,6 @@ add_library(
     x509_vfy.c
     x509_vpm.c
     x_all.c
+    x_attrib.c
+    x_name.c
 )

@@ -1,4 +1,4 @@
-/* crypto/asn1/a_bool.c */
+/* crypto/asn1/x_attrib.c */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -57,56 +57,69 @@
  */
 
 #include <stdio.h>
-
+#include <openssl/objects.h>
 #include <openssl/asn1t.h>
-#include <openssl/err.h>
+#include <openssl/x509.h>
 
-int i2d_ASN1_BOOLEAN(int a, unsigned char **pp)
+#include "x509_lcl.h"
+
+/* X509_ATTRIBUTE: this has the following form:
+ *
+ * typedef struct x509_attributes_st
+ *    {
+ *    ASN1_OBJECT *object;
+ *    STACK_OF(ASN1_TYPE) *set;
+ *    } X509_ATTRIBUTE;
+ *
+ */
+
+ASN1_SEQUENCE(X509_ATTRIBUTE) = {
+    ASN1_SIMPLE(X509_ATTRIBUTE, object, ASN1_OBJECT),
+    ASN1_SET_OF(X509_ATTRIBUTE, set, ASN1_ANY)
+} ASN1_SEQUENCE_END(X509_ATTRIBUTE)
+
+X509_ATTRIBUTE *d2i_X509_ATTRIBUTE(X509_ATTRIBUTE **a, const unsigned char **in, long len)
 {
-    int r;
-    unsigned char *p;
-
-    r = ASN1_object_size(0, 1, V_ASN1_BOOLEAN);
-    if (pp == NULL)
-        return (r);
-    p = *pp;
-
-    ASN1_put_object(&p, 0, 1, V_ASN1_BOOLEAN, V_ASN1_UNIVERSAL);
-    *(p++) = (unsigned char)a;
-    *pp = p;
-    return (r);
+    return (X509_ATTRIBUTE *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, &X509_ATTRIBUTE_it);
 }
 
-int d2i_ASN1_BOOLEAN(int *a, const unsigned char **pp, long length)
+int i2d_X509_ATTRIBUTE(X509_ATTRIBUTE *a, unsigned char **out)
 {
-    int ret = -1;
-    const unsigned char *p;
-    long len;
-    int inf, tag, xclass;
-    int i = 0;
+    return ASN1_item_i2d((ASN1_VALUE *)a, out, &X509_ATTRIBUTE_it);
+}
 
-    p = *pp;
-    inf = ASN1_get_object(&p, &len, &tag, &xclass, length);
-    if (inf & 0x80) {
-        i = ASN1_R_BAD_OBJECT_HEADER;
-        goto err;
-    }
+X509_ATTRIBUTE *X509_ATTRIBUTE_new(void)
+{
+    return (X509_ATTRIBUTE *)ASN1_item_new(&X509_ATTRIBUTE_it);
+}
 
-    if (tag != V_ASN1_BOOLEAN) {
-        i = ASN1_R_EXPECTING_A_BOOLEAN;
-        goto err;
-    }
+void X509_ATTRIBUTE_free(X509_ATTRIBUTE *a)
+{
+    ASN1_item_free((ASN1_VALUE *)a, &X509_ATTRIBUTE_it);
+}
 
-    if (len != 1) {
-        i = ASN1_R_BOOLEAN_IS_WRONG_LENGTH;
+X509_ATTRIBUTE *X509_ATTRIBUTE_dup(X509_ATTRIBUTE *x)
+{
+    return ASN1_item_dup(&X509_ATTRIBUTE_it, x);
+}
+
+X509_ATTRIBUTE *X509_ATTRIBUTE_create(int nid, int atrtype, void *value)
+{
+    X509_ATTRIBUTE *ret = NULL;
+    ASN1_TYPE *val = NULL;
+
+    if ((ret = X509_ATTRIBUTE_new()) == NULL)
+        return (NULL);
+    ret->object = OBJ_nid2obj(nid);
+    if ((val = ASN1_TYPE_new()) == NULL)
         goto err;
-    }
-    ret = (int)*(p++);
-    if (a != NULL)
-        (*a) = ret;
-    *pp = p;
+    if (!sk_ASN1_TYPE_push(ret->set, val))
+        goto err;
+
+    ASN1_TYPE_set(val, atrtype, value);
     return (ret);
 err:
-    ASN1err(ASN1_F_D2I_ASN1_BOOLEAN, i);
-    return (ret);
+    X509_ATTRIBUTE_free(ret);
+    ASN1_TYPE_free(val);
+    return (NULL);
 }

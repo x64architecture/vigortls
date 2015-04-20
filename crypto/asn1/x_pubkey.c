@@ -66,7 +66,7 @@
 #include <openssl/rsa.h>
 #include <openssl/x509.h>
 
-#include "asn1_locl.h"
+#include "internal/asn1_int.h"
 
 /* Minor tweak to operation: free up EVP_PKEY */
 static int pubkey_cb(int operation, ASN1_VALUE **pval, const ASN1_ITEM *it,

@@ -63,6 +63,8 @@
 #include <openssl/objects.h>
 #include <openssl/err.h>
 
+#include "asn1_locl.h"
+
 /* Utility functions for manipulating fields and offsets */
 
 /* Add 'offset' to 'addr' */

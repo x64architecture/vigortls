@@ -60,7 +60,6 @@
 #include <string.h>
 
 #include <openssl/asn1t.h>
-#include <openssl/asn1_mac.h>
 #include <openssl/err.h>
 #include <openssl/evp.h>
 #include <openssl/objects.h>

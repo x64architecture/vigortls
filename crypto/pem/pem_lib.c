@@ -75,7 +75,7 @@
 #include <openssl/x509.h>
 #include <stdcompat.h>
 
-#include "asn1_locl.h"
+#include "internal/asn1_int.h"
 
 #define MIN_LENGTH 4
 

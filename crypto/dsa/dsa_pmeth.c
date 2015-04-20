@@ -65,7 +65,7 @@
 #include <openssl/x509.h>
 
 #include "dsa_locl.h"
-#include "evp_locl.h"
+#include "internal/evp_int.h"
 
 /* DSA pkey context structure */
 

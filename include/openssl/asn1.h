@@ -192,20 +192,6 @@ typedef struct asn1_const_ctx_st {
     int line;                 /* used in error processing */
 } ASN1_const_CTX;
 
-/* These are used internally in the ASN1_OBJECT to keep track of
- * whether the names and data need to be free()ed */
-#define ASN1_OBJECT_FLAG_DYNAMIC 0x01         /* internal use */
-#define ASN1_OBJECT_FLAG_CRITICAL 0x02        /* critical x509v3 object id */
-#define ASN1_OBJECT_FLAG_DYNAMIC_STRINGS 0x04 /* internal use */
-#define ASN1_OBJECT_FLAG_DYNAMIC_DATA 0x08    /* internal use */
-typedef struct asn1_object_st {
-    const char *sn, *ln;
-    int nid;
-    int length;
-    const unsigned char *data; /* data remains const after init */
-    int flags;                 /* Should we free this one */
-} ASN1_OBJECT;
-
 #define ASN1_STRING_FLAG_BITS_LEFT 0x08 /* Set if 0x07 has bits left value */
 /* This indicates that the ASN1_STRING is not a real value but just a place
  * holder for the location where indefinite length constructed data should
@@ -544,11 +530,12 @@ void ASN1_TYPE_set(ASN1_TYPE *a, int type, void *value);
 int ASN1_TYPE_set1(ASN1_TYPE *a, int type, const void *value);
 int ASN1_TYPE_cmp(const ASN1_TYPE *a, ASN1_TYPE *b);
 
+ASN1_TYPE *ASN1_TYPE_pack_sequence(const ASN1_ITEM *it, void *s, ASN1_TYPE **t);
+void *ASN1_TYPE_unpack_sequence(const ASN1_ITEM *it, const ASN1_TYPE *t);
+
 ASN1_OBJECT *ASN1_OBJECT_new(void);
 void ASN1_OBJECT_free(ASN1_OBJECT *a);
 int i2d_ASN1_OBJECT(ASN1_OBJECT *a, unsigned char **pp);
-ASN1_OBJECT *c2i_ASN1_OBJECT(ASN1_OBJECT **a, const unsigned char **pp,
-                             long length);
 ASN1_OBJECT *d2i_ASN1_OBJECT(ASN1_OBJECT **a, const unsigned char **pp,
                              long length);
 
@@ -573,9 +560,6 @@ int ASN1_STRING_type(ASN1_STRING *x);
 unsigned char *ASN1_STRING_data(ASN1_STRING *x);
 
 DECLARE_ASN1_FUNCTIONS(ASN1_BIT_STRING)
-int i2c_ASN1_BIT_STRING(ASN1_BIT_STRING *a, unsigned char **pp);
-ASN1_BIT_STRING *c2i_ASN1_BIT_STRING(ASN1_BIT_STRING **a, const unsigned char **pp,
-                                     long length);
 int ASN1_BIT_STRING_set(ASN1_BIT_STRING *a, unsigned char *d,
                         int length);
 int ASN1_BIT_STRING_set_bit(ASN1_BIT_STRING *a, int n, int value);
@@ -591,13 +575,7 @@ int ASN1_BIT_STRING_num_asc(char *name, BIT_STRING_BITNAME *tbl);
 int ASN1_BIT_STRING_set_asc(ASN1_BIT_STRING *bs, char *name, int value,
                             BIT_STRING_BITNAME *tbl);
 
-int i2d_ASN1_BOOLEAN(int a, unsigned char **pp);
-int d2i_ASN1_BOOLEAN(int *a, const unsigned char **pp, long length);
-
 DECLARE_ASN1_FUNCTIONS(ASN1_INTEGER)
-int i2c_ASN1_INTEGER(ASN1_INTEGER *a, unsigned char **pp);
-ASN1_INTEGER *c2i_ASN1_INTEGER(ASN1_INTEGER **a, const unsigned char **pp,
-                               long length);
 ASN1_INTEGER *d2i_ASN1_UINTEGER(ASN1_INTEGER **a, const unsigned char **pp,
                                 long length);
 ASN1_INTEGER *ASN1_INTEGER_dup(const ASN1_INTEGER *x);
@@ -682,14 +660,7 @@ BIGNUM *ASN1_ENUMERATED_to_BN(ASN1_ENUMERATED *ai, BIGNUM *bn);
 /* given a string, return the correct type, max is the maximum length */
 int ASN1_PRINTABLE_type(const unsigned char *s, int max);
 
-int i2d_ASN1_bytes(ASN1_STRING *a, unsigned char **pp, int tag, int xclass);
-ASN1_STRING *d2i_ASN1_bytes(ASN1_STRING **a, const unsigned char **pp,
-                            long length, int Ptag, int Pclass);
 unsigned long ASN1_tag2bit(int tag);
-/* type is one or more of the B_ASN1_ values. */
-ASN1_STRING *d2i_ASN1_type_bytes(ASN1_STRING **a, const unsigned char **pp,
-                                 long length, int type);
-
 /* PARSING */
 int asn1_Finish(ASN1_CTX *c);
 int asn1_const_Finish(ASN1_const_CTX *c);
@@ -801,19 +772,7 @@ int ASN1_TYPE_set_int_octetstring(ASN1_TYPE *a, long num,
 int ASN1_TYPE_get_int_octetstring(ASN1_TYPE *a, long *num,
                                   unsigned char *data, int max_len);
 
-STACK_OF(OPENSSL_BLOCK) * ASN1_seq_unpack(const unsigned char *buf, int len,
-                                          d2i_of_void *d2i, void (*free_func)(OPENSSL_BLOCK));
-unsigned char *ASN1_seq_pack(STACK_OF(OPENSSL_BLOCK) * safes, i2d_of_void * i2d,
-                             unsigned char **buf, int *len);
-void *ASN1_unpack_string(ASN1_STRING *oct, d2i_of_void *d2i);
 void *ASN1_item_unpack(ASN1_STRING *oct, const ASN1_ITEM *it);
-ASN1_STRING *ASN1_pack_string(void *obj, i2d_of_void *i2d,
-                              ASN1_OCTET_STRING **oct);
-
-#define ASN1_pack_string_of(type, obj, i2d, oct) \
-    (ASN1_pack_string(CHECKED_PTR_OF(type, obj), \
-                      CHECKED_I2D_OF(type, i2d), \
-                      oct))
 
 ASN1_STRING *ASN1_item_pack(void *obj, const ASN1_ITEM *it, ASN1_OCTET_STRING **oct);
 

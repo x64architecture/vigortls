@@ -63,6 +63,8 @@
 #include <openssl/bn.h>
 #include <openssl/err.h>
 
+#include "asn1_locl.h"
+
 ASN1_INTEGER *ASN1_INTEGER_dup(const ASN1_INTEGER *x)
 {
     return ASN1_INTEGER_dup(x);

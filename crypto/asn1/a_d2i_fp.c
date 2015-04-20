@@ -59,7 +59,7 @@
 #include <stdio.h>
 #include <limits.h>
 
-#include <openssl/asn1_mac.h>
+#include <openssl/asn1.h>
 #include <openssl/buffer.h>
 #include <openssl/err.h>
 
