@@ -501,6 +501,7 @@ struct ssl_session_st {
     unsigned char *tlsext_tick;     /* Session ticket */
     size_t tlsext_ticklen;          /* Session ticket length */
     long tlsext_tick_lifetime_hint; /* Session lifetime hint in seconds */
+    long flags;
 };
 
 #endif

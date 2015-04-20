@@ -59,605 +59,271 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "ssl_locl.h"
-
-#include <openssl/objects.h>
+#include <openssl/asn1t.h>
 #include <openssl/x509.h>
 
-/* XXX - these are here to avoid including asn1_mac.h */
-int asn1_GetSequence(ASN1_const_CTX *c, long *length);
-void asn1_add_error(const unsigned char *address, int offset);
+#include "ssl_locl.h"
 
-typedef struct ssl_session_asn1_st {
-    ASN1_INTEGER version;
-    ASN1_INTEGER ssl_version;
-    ASN1_OCTET_STRING cipher;
-    ASN1_OCTET_STRING master_key;
-    ASN1_OCTET_STRING session_id;
-    ASN1_OCTET_STRING session_id_context;
-    ASN1_INTEGER time;
-    ASN1_INTEGER timeout;
-    ASN1_INTEGER verify_result;
-    ASN1_OCTET_STRING tlsext_hostname;
-    ASN1_INTEGER tlsext_tick_lifetime;
-    ASN1_OCTET_STRING tlsext_tick;
+typedef struct {
+    long version;
+    long ssl_version;
+    ASN1_OCTET_STRING *cipher;
+    ASN1_OCTET_STRING *comp_id;
+    ASN1_OCTET_STRING *master_key;
+    ASN1_OCTET_STRING *session_id;
+    ASN1_OCTET_STRING *key_arg;
+    long time;
+    long timeout;
+    X509 *peer;
+    ASN1_OCTET_STRING *session_id_context;
+    long verify_result;
+    ASN1_OCTET_STRING *tlsext_hostname;
+    long tlsext_tick_lifetime_hint;
+    ASN1_OCTET_STRING *tlsext_tick;
+    long flags;
 } SSL_SESSION_ASN1;
+
+ASN1_SEQUENCE(SSL_SESSION_ASN1) = {
+    ASN1_SIMPLE(SSL_SESSION_ASN1, version, LONG),
+    ASN1_SIMPLE(SSL_SESSION_ASN1, ssl_version, LONG),
+    ASN1_SIMPLE(SSL_SESSION_ASN1, cipher, ASN1_OCTET_STRING),
+    ASN1_SIMPLE(SSL_SESSION_ASN1, session_id, ASN1_OCTET_STRING),
+    ASN1_SIMPLE(SSL_SESSION_ASN1, master_key, ASN1_OCTET_STRING),
+    ASN1_IMP_OPT(SSL_SESSION_ASN1, key_arg, ASN1_OCTET_STRING, 0),
+    ASN1_EXP_OPT(SSL_SESSION_ASN1, time, ZLONG, 1),
+    ASN1_EXP_OPT(SSL_SESSION_ASN1, timeout, ZLONG, 2),
+    ASN1_EXP_OPT(SSL_SESSION_ASN1, peer, X509, 3),
+    ASN1_EXP_OPT(SSL_SESSION_ASN1, session_id_context, ASN1_OCTET_STRING, 4),
+    ASN1_EXP_OPT(SSL_SESSION_ASN1, verify_result, ZLONG, 5),
+    ASN1_EXP_OPT(SSL_SESSION_ASN1, tlsext_tick_lifetime_hint, ZLONG, 9),
+    ASN1_EXP_OPT(SSL_SESSION_ASN1, tlsext_tick, ASN1_OCTET_STRING, 10),
+    ASN1_EXP_OPT(SSL_SESSION_ASN1, comp_id, ASN1_OCTET_STRING, 11),
+    ASN1_EXP_OPT(SSL_SESSION_ASN1, flags, ZLONG, 13)
+} ASN1_SEQUENCE_END(SSL_SESSION_ASN1)
+
+IMPLEMENT_STATIC_ASN1_ENCODE_FUNCTIONS(SSL_SESSION_ASN1)
+
+/* Utility functions for i2d_SSL_SESSION */
+
+/* Initialise OCTET STRING from buffer and length */
+
+static void ssl_session_oinit(ASN1_OCTET_STRING **dest, ASN1_OCTET_STRING *os,
+                              unsigned char *data, size_t len)
+{
+    os->data = data;
+    os->length = len;
+    os->flags = 0;
+    *dest = os;
+}
+
+/* Initialise OCTET STRING from string */
+static void ssl_session_sinit(ASN1_OCTET_STRING **dest, ASN1_OCTET_STRING *os,
+                              char *data)
+{
+    if (data != NULL)
+        ssl_session_oinit(dest, os, (unsigned char *)data, strlen(data));
+    else
+        *dest = NULL;
+}
 
 int i2d_SSL_SESSION(SSL_SESSION *in, unsigned char **pp)
 {
-#define LSIZE2 (sizeof(long) * 2)
-    int v1 = 0, v2 = 0, v3 = 0, v4 = 0, v5 = 0, v6 = 0, v9 = 0, v10 = 0;
-    unsigned char buf[4], ibuf1[LSIZE2], ibuf2[LSIZE2];
-    unsigned char ibuf3[LSIZE2], ibuf4[LSIZE2], ibuf5[LSIZE2];
-    unsigned char ibuf6[LSIZE2];
-    SSL_SESSION_ASN1 a;
-    unsigned char *p;
-    int len = 0, ret;
+
+    SSL_SESSION_ASN1 as;
+
+    ASN1_OCTET_STRING cipher;
+    unsigned char cipher_data[2];
+    ASN1_OCTET_STRING master_key, session_id, sid_ctx;
+    ASN1_OCTET_STRING tlsext_hostname, tlsext_tick;
     long l;
 
     if ((in == NULL) || ((in->cipher == NULL) && (in->cipher_id == 0)))
-        return (0);
+        return 0;
 
-    /*
-     * Note that I cheat in the following 2 assignments.
-     * I know that if the ASN1_INTEGER passed to ASN1_INTEGER_set
-     * is > sizeof(long)+1, the buffer will not be re-malloc()ed.
-     * This is a bit evil but makes things simple, no dynamic allocation
-     * to clean up :-)
-     */
-    a.version.length = LSIZE2;
-    a.version.type = V_ASN1_INTEGER;
-    a.version.data = ibuf1;
-    ASN1_INTEGER_set(&(a.version), SSL_SESSION_ASN1_VERSION);
-    len += i2d_ASN1_INTEGER(&(a.version), NULL);
+    memset(&as, 0, sizeof(as));
 
-    a.ssl_version.length = LSIZE2;
-    a.ssl_version.type = V_ASN1_INTEGER;
-    a.ssl_version.data = ibuf2;
-    ASN1_INTEGER_set(&(a.ssl_version), in->ssl_version);
-    len += i2d_ASN1_INTEGER(&(a.ssl_version), NULL);
+    as.version = SSL_SESSION_ASN1_VERSION;
+    as.ssl_version = in->ssl_version;
 
-    a.cipher.length = 2;
-    a.cipher.type = V_ASN1_OCTET_STRING;
-    l = (in->cipher == NULL) ? in->cipher_id : in->cipher->id;
-    buf[0] = ((unsigned char)(l >> 8L)) & 0xff;
-    buf[1] = ((unsigned char)(l)) & 0xff;
-    a.cipher.data = buf;
-    len += i2d_ASN1_OCTET_STRING(&(a.cipher), NULL);
+    if (in->cipher == NULL)
+        l = in->cipher_id;
+    else
+        l = in->cipher->id;
+    cipher_data[0] = ((unsigned char)(l >> 8L)) & 0xff;
+    cipher_data[1] = ((unsigned char)(l)) & 0xff;
 
-    a.master_key.length = in->master_key_length;
-    a.master_key.type = V_ASN1_OCTET_STRING;
-    a.master_key.data = in->master_key;
-    len += i2d_ASN1_OCTET_STRING(&(a.master_key), NULL);
+    ssl_session_oinit(&as.cipher, &cipher, cipher_data, 2);
 
-    a.session_id.length = in->session_id_length;
-    a.session_id.type = V_ASN1_OCTET_STRING;
-    a.session_id.data = in->session_id;
-    len += i2d_ASN1_OCTET_STRING(&(a.session_id), NULL);
+    ssl_session_oinit(&as.master_key, &master_key,
+                      in->master_key, in->master_key_length);
 
-    if (in->time != 0L) {
-        a.time.length = LSIZE2;
-        a.time.type = V_ASN1_INTEGER;
-        a.time.data = ibuf3;
-        ASN1_INTEGER_set(&(a.time), in->time); /* XXX 2038 */
-        v1 = i2d_ASN1_INTEGER(&(a.time), NULL);
-        len += ASN1_object_size(1, v1, 1);
-    }
+    ssl_session_oinit(&as.session_id, &session_id,
+                      in->session_id, in->session_id_length);
 
-    if (in->timeout != 0L) {
-        a.timeout.length = LSIZE2;
-        a.timeout.type = V_ASN1_INTEGER;
-        a.timeout.data = ibuf4;
-        ASN1_INTEGER_set(&(a.timeout), in->timeout);
-        v2 = i2d_ASN1_INTEGER(&(a.timeout), NULL);
-        len += ASN1_object_size(1, v2, 2);
-    }
+    ssl_session_oinit(&as.session_id_context, &sid_ctx,
+                      in->sid_ctx, in->sid_ctx_length);
 
-    if (in->peer != NULL) {
-        v3 = i2d_X509(in->peer, NULL);
-        len += ASN1_object_size(1, v3, 3);
-    }
+    as.time = in->time;
+    as.timeout = in->timeout;
+    as.verify_result = in->verify_result;
 
-    a.session_id_context.length = in->sid_ctx_length;
-    a.session_id_context.type = V_ASN1_OCTET_STRING;
-    a.session_id_context.data = in->sid_ctx;
-    v4 = i2d_ASN1_OCTET_STRING(&(a.session_id_context), NULL);
-    len += ASN1_object_size(1, v4, 4);
+    as.peer = in->peer;
 
-    if (in->verify_result != X509_V_OK) {
-        a.verify_result.length = LSIZE2;
-        a.verify_result.type = V_ASN1_INTEGER;
-        a.verify_result.data = ibuf5;
-        ASN1_INTEGER_set(&a.verify_result, in->verify_result);
-        v5 = i2d_ASN1_INTEGER(&(a.verify_result), NULL);
-        len += ASN1_object_size(1, v5, 5);
-    }
-
-    if (in->tlsext_hostname) {
-        a.tlsext_hostname.length = strlen(in->tlsext_hostname);
-        a.tlsext_hostname.type = V_ASN1_OCTET_STRING;
-        a.tlsext_hostname.data = (unsigned char *)in->tlsext_hostname;
-        v6 = i2d_ASN1_OCTET_STRING(&(a.tlsext_hostname), NULL);
-        len += ASN1_object_size(1, v6, 6);
-    }
-
-    /* 7 - PSK identity hint. */
-    /* 8 - PSK identity. */
-
-    if (in->tlsext_tick_lifetime_hint > 0) {
-        a.tlsext_tick_lifetime.length = LSIZE2;
-        a.tlsext_tick_lifetime.type = V_ASN1_INTEGER;
-        a.tlsext_tick_lifetime.data = ibuf6;
-        ASN1_INTEGER_set(&a.tlsext_tick_lifetime, in->tlsext_tick_lifetime_hint);
-        v9 = i2d_ASN1_INTEGER(&(a.tlsext_tick_lifetime), NULL);
-        len += ASN1_object_size(1, v9, 9);
-    }
-
+    ssl_session_sinit(&as.tlsext_hostname, &tlsext_hostname,
+                      in->tlsext_hostname);
     if (in->tlsext_tick) {
-        a.tlsext_tick.length = in->tlsext_ticklen;
-        a.tlsext_tick.type = V_ASN1_OCTET_STRING;
-        a.tlsext_tick.data = (unsigned char *)in->tlsext_tick;
-        v10 = i2d_ASN1_OCTET_STRING(&(a.tlsext_tick), NULL);
-        len += ASN1_object_size(1, v10, 10);
+        ssl_session_oinit(&as.tlsext_tick, &tlsext_tick,
+                          in->tlsext_tick, in->tlsext_ticklen);
     }
+    if (in->tlsext_tick_lifetime_hint > 0)
+        as.tlsext_tick_lifetime_hint = in->tlsext_tick_lifetime_hint;
 
-    /* 11 - Compression method. */
-    /* 12 - SRP username. */
+    as.flags = in->flags;
 
-    /* If given a NULL pointer, return the length only. */
-    ret = (ASN1_object_size(1, len, V_ASN1_SEQUENCE));
-    if (pp == NULL)
-        return (ret);
+    return i2d_SSL_SESSION_ASN1(&as, pp);
 
-    /* Burp out the ASN1. */
-    p = *pp;
-    ASN1_put_object(&p, 1, len, V_ASN1_SEQUENCE, V_ASN1_UNIVERSAL);
-    i2d_ASN1_INTEGER(&(a.version), &p);
-    i2d_ASN1_INTEGER(&(a.ssl_version), &p);
-    i2d_ASN1_OCTET_STRING(&(a.cipher), &p);
-    i2d_ASN1_OCTET_STRING(&(a.session_id), &p);
-    i2d_ASN1_OCTET_STRING(&(a.master_key), &p);
-    if (in->time != 0L) {
-        ASN1_put_object(&p, 1, v1, 1, V_ASN1_CONTEXT_SPECIFIC);
-        i2d_ASN1_INTEGER(&(a.time), &p);
-    }
-    if (in->timeout != 0L) {
-        ASN1_put_object(&p, 1, v2, 2, V_ASN1_CONTEXT_SPECIFIC);
-        i2d_ASN1_INTEGER(&(a.timeout), &p);
-    }
-    if (in->peer != NULL) {
-        ASN1_put_object(&p, 1, v3, 3, V_ASN1_CONTEXT_SPECIFIC);
-        i2d_X509(in->peer, &p);
-    }
-    ASN1_put_object(&p, 1, v4, 4, V_ASN1_CONTEXT_SPECIFIC);
-    i2d_ASN1_OCTET_STRING(&(a.session_id_context), &p);
-    if (in->verify_result != X509_V_OK) {
-        ASN1_put_object(&p, 1, v5, 5, V_ASN1_CONTEXT_SPECIFIC);
-        i2d_ASN1_INTEGER(&(a.verify_result), &p);
-    }
-    if (in->tlsext_hostname) {
-        ASN1_put_object(&p, 1, v6, 6, V_ASN1_CONTEXT_SPECIFIC);
-        i2d_ASN1_OCTET_STRING(&(a.tlsext_hostname), &p);
-    }
-    /* 7 - PSK identity hint. */
-    /* 8 - PSK identity. */
-    if (in->tlsext_tick_lifetime_hint > 0) {
-        ASN1_put_object(&p, 1, v9, 9, V_ASN1_CONTEXT_SPECIFIC);
-        i2d_ASN1_INTEGER(&(a.tlsext_tick_lifetime), &p);
-    }
-    if (in->tlsext_tick) {
-        ASN1_put_object(&p, 1, v10, 10, V_ASN1_CONTEXT_SPECIFIC);
-        i2d_ASN1_OCTET_STRING(&(a.tlsext_tick), &p);
-    }
-    /* 11 - Compression method. */
-    /* 12 - SRP username. */
+}
 
-    *pp = p;
-    return (ret);
+/* Utility functions for d2i_SSL_SESSION */
+
+/* BUF_strndup an OCTET STRING */
+
+static int ssl_session_strndup(char **pdst, ASN1_OCTET_STRING *src)
+{
+    if (*pdst) {
+        free(*pdst);
+        *pdst = NULL;
+    }
+    if (src == NULL)
+        return 1;
+    *pdst = strndup((char *)src->data, src->length);
+    if (*pdst == NULL)
+        return 0;
+    return 1;
+}
+
+/* Copy an OCTET STRING, return error if it exceeds maximum length */
+
+static int ssl_session_memcpy(unsigned char *dst, unsigned int *pdstlen,
+                              ASN1_OCTET_STRING *src, int maxlen)
+{
+    if (src == NULL) {
+        *pdstlen = 0;
+        return 1;
+    }
+    if (src->length > maxlen)
+        return 0;
+    memcpy(dst, src->data, src->length);
+    *pdstlen = src->length;
+    return 1;
 }
 
 SSL_SESSION *d2i_SSL_SESSION(SSL_SESSION **a, const unsigned char **pp,
                              long length)
 {
-    SSL_SESSION *ret = NULL;
-    ASN1_const_CTX c;
-    ASN1_INTEGER ai, *aip;
-    ASN1_OCTET_STRING os, *osp;
-    int ssl_version = 0, i;
-    int Tinf, Ttag, Tclass;
-    long Tlen;
     long id;
+    unsigned int tmpl;
+    const unsigned char *p = *pp;
+    SSL_SESSION_ASN1 *as = NULL;
+    SSL_SESSION *ret = NULL;
 
-    c.pp = pp;
-    c.p = *pp;
-    c.q = *pp;
-    c.max = (length == 0) ? 0 : (c.p + length);
-    c.slen = length;
+    as = d2i_SSL_SESSION_ASN1(NULL, &p, length);
+    /* ASN.1 code returns suitable error */
+    if (as == NULL)
+        goto err;
 
-    if (a == NULL || *a == NULL) {
-        if ((ret = SSL_SESSION_new()) == NULL) {
-            SSLerr(SSL_F_D2I_SSL_SESSION, ERR_R_NESTED_ASN1_ERROR);
+    if (0) {
+        i2d_SSL_SESSION_ASN1(NULL, NULL);
+    }
+
+    if (!a || !*a) {
+        ret = SSL_SESSION_new();
+        if (ret == NULL)
             goto err;
-        }
-    } else
-        ret = *a;
-
-    aip = &ai;
-    osp = &os;
-
-    if (!asn1_GetSequence(&c, &length)) {
-        SSLerr(SSL_F_D2I_SSL_SESSION, ERR_R_NESTED_ASN1_ERROR);
-        goto err;
-    }
-
-    ai.data = NULL;
-    ai.length = 0;
-    c.q = c.p;
-    if (d2i_ASN1_INTEGER(&aip, &c.p, c.slen) == NULL) {
-        SSLerr(SSL_F_D2I_SSL_SESSION, ERR_R_NESTED_ASN1_ERROR);
-        goto err;
-    }
-    c.slen -= (c.p - c.q);
-
-    if (ai.data != NULL) {
-        free(ai.data);
-        ai.data = NULL;
-        ai.length = 0;
-    }
-
-    /* we don't care about the version right now :-) */
-    c.q = c.p;
-    if (d2i_ASN1_INTEGER(&aip, &c.p, c.slen) == NULL) {
-        SSLerr(SSL_F_D2I_SSL_SESSION, ERR_R_NESTED_ASN1_ERROR);
-        goto err;
-    }
-    c.slen -= (c.p - c.q);
-    ssl_version = (int)ASN1_INTEGER_get(aip);
-    ret->ssl_version = ssl_version;
-    if (ai.data != NULL) {
-        free(ai.data);
-        ai.data = NULL;
-        ai.length = 0;
-    }
-
-    os.data = NULL;
-    os.length = 0;
-    c.q = c.p;
-    if (d2i_ASN1_OCTET_STRING(&osp, &c.p, c.slen) == NULL) {
-        SSLerr(SSL_F_D2I_SSL_SESSION, ERR_R_NESTED_ASN1_ERROR);
-        goto err;
-    }
-    c.slen -= (c.p - c.q);
-    if ((ssl_version >> 8) >= SSL3_VERSION_MAJOR) {
-        if (os.length != 2) {
-            SSLerr(SSL_F_D2I_SSL_SESSION, SSL_R_CIPHER_CODE_WRONG_LENGTH);
-            goto err;
-        }
-        id = 0x03000000L | ((unsigned long)os.data[0] << 8L) | (unsigned long)os.data[1];
     } else {
+        ret = *a;
+    }
+
+    if (as->version != SSL_SESSION_ASN1_VERSION) {
         SSLerr(SSL_F_D2I_SSL_SESSION, SSL_R_UNKNOWN_SSL_VERSION);
         goto err;
     }
 
+    if ((as->ssl_version >> 8) != SSL3_VERSION_MAJOR
+        && (as->ssl_version >> 8) != DTLS1_VERSION_MAJOR
+        && as->ssl_version != DTLS1_BAD_VER) {
+        SSLerr(SSL_F_D2I_SSL_SESSION, SSL_R_UNSUPPORTED_SSL_VERSION);
+        goto err;
+    }
+
+    ret->ssl_version = (int)as->ssl_version;
+
+    if (as->cipher->length != 2) {
+        SSLerr(SSL_F_D2I_SSL_SESSION, SSL_R_CIPHER_CODE_WRONG_LENGTH);
+        goto err;
+    }
+
+    p = as->cipher->data;
+    id = 0x03000000L | ((unsigned long)p[0] << 8L) | (unsigned long)p[1];
+
     ret->cipher = NULL;
     ret->cipher_id = id;
 
-    c.q = c.p;
-    if (d2i_ASN1_OCTET_STRING(&osp, &c.p, c.slen) == NULL) {
-        SSLerr(SSL_F_D2I_SSL_SESSION, ERR_R_NESTED_ASN1_ERROR);
+    if (!ssl_session_memcpy(ret->session_id, &ret->session_id_length,
+                            as->session_id, SSL3_MAX_SSL_SESSION_ID_LENGTH))
         goto err;
-    }
-    c.slen -= (c.p - c.q);
 
-    i = SSL3_MAX_SSL_SESSION_ID_LENGTH;
-    if (os.length > i)
-        os.length = i;
-    if (os.length > (int)sizeof(ret->session_id)) /* can't happen */
-        os.length = sizeof(ret->session_id);
-
-    ret->session_id_length = os.length;
-    OPENSSL_assert(os.length <= (int)sizeof(ret->session_id));
-    memcpy(ret->session_id, os.data, os.length);
-
-    c.q = c.p;
-    if (d2i_ASN1_OCTET_STRING(&osp, &c.p, c.slen) == NULL) {
-        SSLerr(SSL_F_D2I_SSL_SESSION, ERR_R_NESTED_ASN1_ERROR);
+    if (!ssl_session_memcpy(ret->master_key, &tmpl,
+                            as->master_key, SSL_MAX_MASTER_KEY_LENGTH))
         goto err;
-    }
-    c.slen -= (c.p - c.q);
-    if (os.length > SSL_MAX_MASTER_KEY_LENGTH)
-        ret->master_key_length = SSL_MAX_MASTER_KEY_LENGTH;
+
+    ret->master_key_length = tmpl;
+
+    if (as->time != 0)
+        ret->time = as->time;
     else
-        ret->master_key_length = os.length;
-    memcpy(ret->master_key, os.data, ret->master_key_length);
+        ret->time = (unsigned long)time(NULL);
 
-    os.length = 0;
-
-    /* 1 - Time (INTEGER). */
-    /* XXX 2038 */
-    ai.length = 0;
-    if (c.slen != 0L && *c.p == (V_ASN1_CONSTRUCTED | V_ASN1_CONTEXT_SPECIFIC | 1)) {
-        c.q = c.p;
-        Tinf = ASN1_get_object(&c.p, &Tlen, &Ttag, &Tclass, c.slen);
-        if (Tinf & 0x80) {
-            SSLerr(SSL_F_D2I_SSL_SESSION, ERR_R_BAD_ASN1_OBJECT_HEADER);
-            goto err;
-        }
-        if (Tinf == (V_ASN1_CONSTRUCTED + 1))
-            Tlen = c.slen - (c.p - c.q) - 2;
-        if (d2i_ASN1_INTEGER(&aip, &c.p, Tlen) == NULL) {
-            SSLerr(SSL_F_D2I_SSL_SESSION, ERR_R_NESTED_ASN1_ERROR);
-            goto err;
-        }
-        if (Tinf == (V_ASN1_CONSTRUCTED + 1)) {
-            Tlen = c.slen - (c.p - c.q);
-            if (!ASN1_const_check_infinite_end(&c.p, Tlen)) {
-                SSLerr(SSL_F_D2I_SSL_SESSION, ERR_R_MISSING_ASN1_EOS);
-                goto err;
-            }
-        }
-        c.slen -= (c.p - c.q);
-    }
-    if (ai.data != NULL) {
-        ret->time = ASN1_INTEGER_get(aip);
-        free(ai.data);
-        ai.data = NULL;
-        ai.length = 0;
-    } else
-        ret->time = time(NULL);
-
-    /* 2 - Timeout (INTEGER). */
-    ai.length = 0;
-    if (c.slen != 0L && *c.p == (V_ASN1_CONSTRUCTED | V_ASN1_CONTEXT_SPECIFIC | 2)) {
-        c.q = c.p;
-        Tinf = ASN1_get_object(&c.p, &Tlen, &Ttag, &Tclass, c.slen);
-        if (Tinf & 0x80) {
-            SSLerr(SSL_F_D2I_SSL_SESSION, ERR_R_BAD_ASN1_OBJECT_HEADER);
-            goto err;
-        }
-        if (Tinf == (V_ASN1_CONSTRUCTED + 1))
-            Tlen = c.slen - (c.p - c.q) - 2;
-        if (d2i_ASN1_INTEGER(&aip, &c.p, Tlen) == NULL) {
-            SSLerr(SSL_F_D2I_SSL_SESSION, ERR_R_NESTED_ASN1_ERROR);
-            goto err;
-        }
-        if (Tinf == (V_ASN1_CONSTRUCTED + 1)) {
-            Tlen = c.slen - (c.p - c.q);
-            if (!ASN1_const_check_infinite_end(&c.p, Tlen)) {
-                SSLerr(SSL_F_D2I_SSL_SESSION, ERR_R_MISSING_ASN1_EOS);
-                goto err;
-            }
-        }
-        c.slen -= (c.p - c.q);
-    }
-    if (ai.data != NULL) {
-        ret->timeout = ASN1_INTEGER_get(aip);
-        free(ai.data);
-        ai.data = NULL;
-        ai.length = 0;
-    } else
+    if (as->timeout != 0)
+        ret->timeout = as->timeout;
+    else
         ret->timeout = 3;
 
-    /* 3 - Peer (X509). */
-    if (ret->peer != NULL) {
-        X509_free(ret->peer);
-        ret->peer = NULL;
-    }
-    if (c.slen != 0L && *c.p == (V_ASN1_CONSTRUCTED | V_ASN1_CONTEXT_SPECIFIC | 3)) {
-        c.q = c.p;
-        Tinf = ASN1_get_object(&c.p, &Tlen, &Ttag, &Tclass, c.slen);
-        if (Tinf & 0x80) {
-            SSLerr(SSL_F_D2I_SSL_SESSION, ERR_R_BAD_ASN1_OBJECT_HEADER);
-            goto err;
-        }
-        if (Tinf == (V_ASN1_CONSTRUCTED + 1))
-            Tlen = c.slen - (c.p - c.q) - 2;
-        if (d2i_X509(&ret->peer, &c.p, Tlen) == NULL) {
-            SSLerr(SSL_F_D2I_SSL_SESSION, ERR_R_NESTED_ASN1_ERROR);
-            goto err;
-        }
-        if (Tinf == (V_ASN1_CONSTRUCTED + 1)) {
-            Tlen = c.slen - (c.p - c.q);
-            if (!ASN1_const_check_infinite_end(&c.p, Tlen)) {
-                SSLerr(SSL_F_D2I_SSL_SESSION, ERR_R_MISSING_ASN1_EOS);
-                goto err;
-            }
-        }
-        c.slen -= (c.p - c.q);
-    }
+    X509_free(ret->peer);
+    ret->peer = as->peer;
+    as->peer = NULL;
 
-    /* 4 - Session ID (OCTET STRING). */
-    os.length = 0;
-    os.data = NULL;
-    if (c.slen != 0L && *c.p == (V_ASN1_CONSTRUCTED | V_ASN1_CONTEXT_SPECIFIC | 4)) {
-        c.q = c.p;
-        Tinf = ASN1_get_object(&c.p, &Tlen, &Ttag, &Tclass, c.slen);
-        if (Tinf & 0x80) {
-            SSLerr(SSL_F_D2I_SSL_SESSION, ERR_R_BAD_ASN1_OBJECT_HEADER);
-            goto err;
-        }
-        if (Tinf == (V_ASN1_CONSTRUCTED + 1))
-            Tlen = c.slen - (c.p - c.q) - 2;
-        if (d2i_ASN1_OCTET_STRING(&osp, &c.p, Tlen) == NULL) {
-            SSLerr(SSL_F_D2I_SSL_SESSION, ERR_R_NESTED_ASN1_ERROR);
-            goto err;
-        }
-        if (Tinf == (V_ASN1_CONSTRUCTED + 1)) {
-            Tlen = c.slen - (c.p - c.q);
-            if (!ASN1_const_check_infinite_end(&c.p, Tlen)) {
-                SSLerr(SSL_F_D2I_SSL_SESSION, ERR_R_MISSING_ASN1_EOS);
-                goto err;
-            }
-        }
-        c.slen -= (c.p - c.q);
-    }
-    if (os.data != NULL) {
-        if (os.length > SSL_MAX_SID_CTX_LENGTH) {
-            SSLerr(SSL_F_D2I_SSL_SESSION, SSL_R_BAD_LENGTH);
-            goto err;
-        } else {
-            ret->sid_ctx_length = os.length;
-            memcpy(ret->sid_ctx, os.data, os.length);
-        }
-        free(os.data);
-        os.data = NULL;
-        os.length = 0;
-    } else
-        ret->sid_ctx_length = 0;
-
-    /* 5 - Verify_result. */
-    ai.length = 0;
-    if (c.slen != 0L && *c.p == (V_ASN1_CONSTRUCTED | V_ASN1_CONTEXT_SPECIFIC | 5)) {
-        c.q = c.p;
-        Tinf = ASN1_get_object(&c.p, &Tlen, &Ttag, &Tclass, c.slen);
-        if (Tinf & 0x80) {
-            SSLerr(SSL_F_D2I_SSL_SESSION, ERR_R_BAD_ASN1_OBJECT_HEADER);
-            goto err;
-        }
-        if (Tinf == (V_ASN1_CONSTRUCTED + 1))
-            Tlen = c.slen - (c.p - c.q) - 2;
-        if (d2i_ASN1_INTEGER(&aip, &c.p, Tlen) == NULL) {
-            SSLerr(SSL_F_D2I_SSL_SESSION, ERR_R_NESTED_ASN1_ERROR);
-            goto err;
-        }
-        if (Tinf == (V_ASN1_CONSTRUCTED + 1)) {
-            Tlen = c.slen - (c.p - c.q);
-            if (!ASN1_const_check_infinite_end(&c.p, Tlen)) {
-                SSLerr(SSL_F_D2I_SSL_SESSION, ERR_R_MISSING_ASN1_EOS);
-                goto err;
-            }
-        }
-        c.slen -= (c.p - c.q);
-    }
-    if (ai.data != NULL) {
-        ret->verify_result = ASN1_INTEGER_get(aip);
-        free(ai.data);
-        ai.data = NULL;
-        ai.length = 0;
-    } else
-        ret->verify_result = X509_V_OK;
-
-    /* 6 - HostName (OCTET STRING). */
-    os.length = 0;
-    os.data = NULL;
-    if (c.slen != 0L && *c.p == (V_ASN1_CONSTRUCTED | V_ASN1_CONTEXT_SPECIFIC | 6)) {
-        c.q = c.p;
-        Tinf = ASN1_get_object(&c.p, &Tlen, &Ttag, &Tclass, c.slen);
-        if (Tinf & 0x80) {
-            SSLerr(SSL_F_D2I_SSL_SESSION, ERR_R_BAD_ASN1_OBJECT_HEADER);
-            goto err;
-        }
-        if (Tinf == (V_ASN1_CONSTRUCTED + 1))
-            Tlen = c.slen - (c.p - c.q) - 2;
-        if (d2i_ASN1_OCTET_STRING(&osp, &c.p, Tlen) == NULL) {
-            SSLerr(SSL_F_D2I_SSL_SESSION, ERR_R_NESTED_ASN1_ERROR);
-            goto err;
-        }
-        if (Tinf == (V_ASN1_CONSTRUCTED + 1)) {
-            Tlen = c.slen - (c.p - c.q);
-            if (!ASN1_const_check_infinite_end(&c.p, Tlen)) {
-                SSLerr(SSL_F_D2I_SSL_SESSION, ERR_R_MISSING_ASN1_EOS);
-                goto err;
-            }
-        }
-        c.slen -= (c.p - c.q);
-    }
-    if (os.data) {
-        ret->tlsext_hostname = strndup((char *)os.data, os.length);
-        free(os.data);
-        os.data = NULL;
-        os.length = 0;
-    } else
-        ret->tlsext_hostname = NULL;
-
-    /* 7 - PSK identity hint (OCTET STRING). */
-    /* 8 - PSK identity (OCTET STRING). */
-
-    /* 9 - Ticket lifetime. */
-    ai.length = 0;
-    if (c.slen != 0L && *c.p == (V_ASN1_CONSTRUCTED | V_ASN1_CONTEXT_SPECIFIC | 9)) {
-        c.q = c.p;
-        Tinf = ASN1_get_object(&c.p, &Tlen, &Ttag, &Tclass, c.slen);
-        if (Tinf & 0x80) {
-            SSLerr(SSL_F_D2I_SSL_SESSION, ERR_R_BAD_ASN1_OBJECT_HEADER);
-            goto err;
-        }
-        if (Tinf == (V_ASN1_CONSTRUCTED + 1))
-            Tlen = c.slen - (c.p - c.q) - 2;
-        if (d2i_ASN1_INTEGER(&aip, &c.p, Tlen) == NULL) {
-            SSLerr(SSL_F_D2I_SSL_SESSION, ERR_R_NESTED_ASN1_ERROR);
-            goto err;
-        }
-        if (Tinf == (V_ASN1_CONSTRUCTED + 1)) {
-            Tlen = c.slen - (c.p - c.q);
-            if (!ASN1_const_check_infinite_end(&c.p, Tlen)) {
-                SSLerr(SSL_F_D2I_SSL_SESSION, ERR_R_MISSING_ASN1_EOS);
-                goto err;
-            }
-        }
-        c.slen -= (c.p - c.q);
-    }
-    if (ai.data != NULL) {
-        ret->tlsext_tick_lifetime_hint = ASN1_INTEGER_get(aip);
-        free(ai.data);
-        ai.data = NULL;
-        ai.length = 0;
-    } else if (ret->tlsext_ticklen && ret->session_id_length)
-        ret->tlsext_tick_lifetime_hint = -1;
-    else
-        ret->tlsext_tick_lifetime_hint = 0;
-    os.length = 0;
-    os.data = NULL;
-
-    /* 10 - Ticket (OCTET STRING). */
-    if (c.slen != 0L && *c.p == (V_ASN1_CONSTRUCTED | V_ASN1_CONTEXT_SPECIFIC | 10)) {
-        c.q = c.p;
-        Tinf = ASN1_get_object(&c.p, &Tlen, &Ttag, &Tclass, c.slen);
-        if (Tinf & 0x80) {
-            SSLerr(SSL_F_D2I_SSL_SESSION, ERR_R_BAD_ASN1_OBJECT_HEADER);
-            goto err;
-        }
-        if (Tinf == (V_ASN1_CONSTRUCTED + 1))
-            Tlen = c.slen - (c.p - c.q) - 2;
-        if (d2i_ASN1_OCTET_STRING(&osp, &c.p, Tlen) == NULL) {
-            SSLerr(SSL_F_D2I_SSL_SESSION, ERR_R_NESTED_ASN1_ERROR);
-            goto err;
-        }
-        if (Tinf == (V_ASN1_CONSTRUCTED + 1)) {
-            Tlen = c.slen - (c.p - c.q);
-            if (!ASN1_const_check_infinite_end(&c.p, Tlen)) {
-                SSLerr(SSL_F_D2I_SSL_SESSION, ERR_R_MISSING_ASN1_EOS);
-                goto err;
-            }
-        }
-        c.slen -= (c.p - c.q);
-    }
-    if (os.data) {
-        ret->tlsext_tick = os.data;
-        ret->tlsext_ticklen = os.length;
-        os.data = NULL;
-        os.length = 0;
-    } else
-        ret->tlsext_tick = NULL;
-
-    /* 11 - Compression method (OCTET STRING). */
-    /* 12 - SRP username (OCTET STRING). */
-
-    if (!asn1_const_Finish(&c)) {
-        SSLerr(SSL_F_D2I_SSL_SESSION, ERR_R_NESTED_ASN1_ERROR);
+    if (!ssl_session_memcpy(ret->sid_ctx, &ret->sid_ctx_length,
+                            as->session_id_context, SSL_MAX_SID_CTX_LENGTH))
         goto err;
+
+    /* NB: this defaults to zero which is X509_V_OK */
+    ret->verify_result = as->verify_result;
+
+    if (!ssl_session_strndup(&ret->tlsext_hostname, as->tlsext_hostname))
+        goto err;
+
+    ret->tlsext_tick_lifetime_hint = as->tlsext_tick_lifetime_hint;
+    if (as->tlsext_tick) {
+        ret->tlsext_tick = as->tlsext_tick->data;
+        ret->tlsext_ticklen = as->tlsext_tick->length;
+        as->tlsext_tick->data = NULL;
+    } else {
+        ret->tlsext_tick = NULL;
     }
+    /* Flags defaults to zero which is fine */
+    ret->flags = as->flags;
 
-    *pp = c.p;
-    if (a != NULL)
+    M_ASN1_free_of(as, SSL_SESSION_ASN1);
+
+    if ((a != NULL) && (*a == NULL))
         *a = ret;
-
-    return (ret);
+    *pp = p;
+    return ret;
 
 err:
-    ERR_asprintf_error_data("offset=%d", (int)(c.q - *pp));
-    if (ret != NULL && (a == NULL || *a != ret))
+    M_ASN1_free_of(as, SSL_SESSION_ASN1);
+    if ((a == NULL) || (*a != ret))
         SSL_SESSION_free(ret);
-
-    return (NULL);
+    return NULL;
 }

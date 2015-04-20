@@ -728,7 +728,6 @@ typedef struct ASN1_STREAM_ARG_st {
 
 /* Macro to implement standard functions in terms of ASN1_ITEM structures */
 
-#ifndef VIGORTLS_INTERNAL
 #define IMPLEMENT_ASN1_FUNCTIONS(stname) IMPLEMENT_ASN1_FUNCTIONS_fname(stname, stname, stname)
 
 #define IMPLEMENT_ASN1_FUNCTIONS_name(stname, itname) IMPLEMENT_ASN1_FUNCTIONS_fname(stname, itname, itname)
@@ -827,8 +826,6 @@ typedef struct ASN1_STREAM_ARG_st {
 #define IMPLEMENT_ASN1_FUNCTIONS_const_fname(stname, itname, fname)    \
     IMPLEMENT_ASN1_ENCODE_FUNCTIONS_const_fname(stname, itname, fname) \
         IMPLEMENT_ASN1_ALLOC_FUNCTIONS_fname(stname, itname, fname)
-
-#endif /* !VIGORTLS_INTERNAL */
 
 /* external definitions for primitive types */
 
