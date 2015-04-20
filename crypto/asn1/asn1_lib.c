@@ -61,7 +61,6 @@
 #include <limits.h>
 
 #include <openssl/asn1.h>
-#include <openssl/asn1_mac.h>
 #include <openssl/err.h>
 
 #include "cryptlib.h"
@@ -274,57 +273,6 @@ int ASN1_object_size(int constructed, int length, int tag)
     return (ret);
 }
 
-static int _asn1_Finish(ASN1_const_CTX *c)
-{
-    if ((c->inf == (1 | V_ASN1_CONSTRUCTED)) && (!c->eos)) {
-        if (!ASN1_const_check_infinite_end(&c->p, c->slen)) {
-            c->error = ERR_R_MISSING_ASN1_EOS;
-            return (0);
-        }
-    }
-    if (((c->slen != 0) && !(c->inf & 1)) || ((c->slen < 0) && (c->inf & 1))) {
-        c->error = ERR_R_ASN1_LENGTH_MISMATCH;
-        return (0);
-    }
-    return (1);
-}
-
-int asn1_Finish(ASN1_CTX *c)
-{
-    return _asn1_Finish((ASN1_const_CTX *)c);
-}
-
-int asn1_const_Finish(ASN1_const_CTX *c)
-{
-    return _asn1_Finish(c);
-}
-
-int asn1_GetSequence(ASN1_const_CTX *c, long *length)
-{
-    const unsigned char *q;
-
-    q = c->p;
-    c->inf = ASN1_get_object(&(c->p), &(c->slen), &(c->tag), &(c->xclass),
-                             *length);
-    if (c->inf & 0x80) {
-        c->error = ERR_R_BAD_GET_ASN1_OBJECT_CALL;
-        return (0);
-    }
-    if (c->tag != V_ASN1_SEQUENCE) {
-        c->error = ERR_R_EXPECTING_AN_ASN1_SEQUENCE;
-        return (0);
-    }
-    (*length) -= (c->p - q);
-    if (c->max && (*length < 0)) {
-        c->error = ERR_R_ASN1_LENGTH_MISMATCH;
-        return (0);
-    }
-    if (c->inf == (1 | V_ASN1_CONSTRUCTED))
-        c->slen = *length + *(c->pp) - c->p;
-    c->eos = 0;
-    return (1);
-}
-
 int ASN1_STRING_copy(ASN1_STRING *dst, const ASN1_STRING *str)
 {
     if (str == NULL)
@@ -435,11 +383,6 @@ int ASN1_STRING_cmp(const ASN1_STRING *a, const ASN1_STRING *b)
             return (i);
     } else
         return (i);
-}
-
-void asn1_add_error(const unsigned char *address, int offset)
-{
-    ERR_asprintf_error_data("address=%p offset=%d", address, offset);
 }
 
 int ASN1_STRING_length(const ASN1_STRING *x)

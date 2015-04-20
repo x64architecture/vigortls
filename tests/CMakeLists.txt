@@ -28,7 +28,6 @@ add_test(aes-128-gcm_aead ./aeadtest aes-128-gcm ${AEADTDIR}/aes_128_gcm_tests.t
 add_test(aes-256-gcm_aead ./aeadtest aes-256-gcm ${AEADTDIR}/aes_256_gcm_tests.txt)
 add_test(chacha20-poly1305_aead ./aeadtest chacha20-poly1305 ${AEADTDIR}/chacha20_poly1305_tests.txt)
 add_test_suite(aes_wrap aes_wrap.c)
-add_test_suite(asn1test asn1test.c)
 add_test_suite(bftest bftest.c)
 add_test_suite(bntest bntest.c)
 add_test_suite(bytestringtest bytestringtest.c)
