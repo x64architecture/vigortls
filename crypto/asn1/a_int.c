@@ -65,7 +65,7 @@
 
 ASN1_INTEGER *ASN1_INTEGER_dup(const ASN1_INTEGER *x)
 {
-    return M_ASN1_INTEGER_dup(x);
+    return ASN1_INTEGER_dup(x);
 }
 
 int ASN1_INTEGER_cmp(const ASN1_INTEGER *x, const ASN1_INTEGER *y)
@@ -194,7 +194,7 @@ ASN1_INTEGER *c2i_ASN1_INTEGER(ASN1_INTEGER **a, const unsigned char **pp,
     int i;
 
     if ((a == NULL) || ((*a) == NULL)) {
-        if ((ret = M_ASN1_INTEGER_new()) == NULL)
+        if ((ret = ASN1_INTEGER_new()) == NULL)
             return (NULL);
         ret->type = V_ASN1_INTEGER;
     } else
@@ -267,7 +267,7 @@ ASN1_INTEGER *c2i_ASN1_INTEGER(ASN1_INTEGER **a, const unsigned char **pp,
 err:
     ASN1err(ASN1_F_C2I_ASN1_INTEGER, i);
     if ((ret != NULL) && ((a == NULL) || (*a != ret)))
-        M_ASN1_INTEGER_free(ret);
+        ASN1_INTEGER_free(ret);
     return (NULL);
 }
 
@@ -287,7 +287,7 @@ ASN1_INTEGER *d2i_ASN1_UINTEGER(ASN1_INTEGER **a, const unsigned char **pp,
     int i;
 
     if ((a == NULL) || ((*a) == NULL)) {
-        if ((ret = M_ASN1_INTEGER_new()) == NULL)
+        if ((ret = ASN1_INTEGER_new()) == NULL)
             return (NULL);
         ret->type = V_ASN1_INTEGER;
     } else
@@ -332,7 +332,7 @@ ASN1_INTEGER *d2i_ASN1_UINTEGER(ASN1_INTEGER **a, const unsigned char **pp,
 err:
     ASN1err(ASN1_F_D2I_ASN1_UINTEGER, i);
     if ((ret != NULL) && ((a == NULL) || (*a != ret)))
-        M_ASN1_INTEGER_free(ret);
+        ASN1_INTEGER_free(ret);
     return (NULL);
 }
 
@@ -404,7 +404,7 @@ ASN1_INTEGER *BN_to_ASN1_INTEGER(const BIGNUM *bn, ASN1_INTEGER *ai)
     int len, j;
 
     if (ai == NULL)
-        ret = M_ASN1_INTEGER_new();
+        ret = ASN1_INTEGER_new();
     else
         ret = ai;
     if (ret == NULL) {
@@ -434,7 +434,7 @@ ASN1_INTEGER *BN_to_ASN1_INTEGER(const BIGNUM *bn, ASN1_INTEGER *ai)
     return (ret);
 err:
     if (ret != ai)
-        M_ASN1_INTEGER_free(ret);
+        ASN1_INTEGER_free(ret);
     return (NULL);
 }
 

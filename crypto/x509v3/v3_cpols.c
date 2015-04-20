@@ -316,7 +316,7 @@ static POLICYINFO *policy_section(X509V3_CTX *ctx, STACK_OF(CONF_VALUE) *polstrs
                 X509V3err(X509V3_F_POLICY_SECTION, ERR_R_INTERNAL_ERROR);
                 goto err;
             }
-            qual->d.cpsuri = M_ASN1_IA5STRING_new();
+            qual->d.cpsuri = ASN1_IA5STRING_new();
             if (qual->d.cpsuri == NULL)
                 goto merr;
             if (!ASN1_STRING_set(qual->d.cpsuri, cnf->value,
@@ -384,7 +384,7 @@ static POLICYQUALINFO *notice_section(X509V3_CTX *ctx, STACK_OF(CONF_VALUE) *uno
     for (i = 0; i < sk_CONF_VALUE_num(unot); i++) {
         cnf = sk_CONF_VALUE_value(unot, i);
         if (!strcmp(cnf->name, "explicitText")) {
-            not->exptext = M_ASN1_VISIBLESTRING_new();
+            not->exptext = ASN1_VISIBLESTRING_new();
             if (not->exptext == NULL)
                 goto merr;
             if (!ASN1_STRING_set(not->exptext, cnf->value,

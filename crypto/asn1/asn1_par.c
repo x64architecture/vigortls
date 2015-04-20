@@ -269,7 +269,7 @@ static int asn1_parse2(BIO *bp, const unsigned char **pp, long length, int offse
                         nl = 1;
                     }
                 }
-                M_ASN1_OCTET_STRING_free(os);
+                ASN1_OCTET_STRING_free(os);
                 os = NULL;
             } else if (tag == V_ASN1_INTEGER) {
                 ASN1_INTEGER *bs;
@@ -296,7 +296,7 @@ static int asn1_parse2(BIO *bp, const unsigned char **pp, long length, int offse
                     if (BIO_write(bp, "BAD INTEGER", 11) <= 0)
                         goto end;
                 }
-                M_ASN1_INTEGER_free(bs);
+                ASN1_INTEGER_free(bs);
             } else if (tag == V_ASN1_ENUMERATED) {
                 ASN1_ENUMERATED *bs;
                 int i;
@@ -322,7 +322,7 @@ static int asn1_parse2(BIO *bp, const unsigned char **pp, long length, int offse
                     if (BIO_write(bp, "BAD ENUMERATED", 14) <= 0)
                         goto end;
                 }
-                M_ASN1_ENUMERATED_free(bs);
+                ASN1_ENUMERATED_free(bs);
             } else if (len > 0 && dump) {
                 if (!nl) {
                     if (BIO_write(bp, "\n", 1) <= 0)
@@ -350,7 +350,7 @@ static int asn1_parse2(BIO *bp, const unsigned char **pp, long length, int offse
     ret = 1;
 end:
     ASN1_OBJECT_free(o);
-    M_ASN1_OCTET_STRING_free(os);
+    ASN1_OCTET_STRING_free(os);
     *pp = p;
     return (ret);
 }

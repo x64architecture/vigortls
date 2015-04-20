@@ -79,7 +79,7 @@ X509_PKEY *X509_PKEY_new(void)
         free(ret);
         return NULL;
     }
-    if ((ret->enc_pkey = M_ASN1_OCTET_STRING_new()) == NULL) {
+    if ((ret->enc_pkey = ASN1_OCTET_STRING_new()) == NULL) {
         X509_ALGOR_free(ret->enc_algor);
         free(ret);
         return NULL;
@@ -115,7 +115,7 @@ void X509_PKEY_free(X509_PKEY *x)
 #endif
 
     X509_ALGOR_free(x->enc_algor);
-    M_ASN1_OCTET_STRING_free(x->enc_pkey);
+    ASN1_OCTET_STRING_free(x->enc_pkey);
     EVP_PKEY_free(x->dec_pkey);
     if (x->key_free)
         free(x->key_data);

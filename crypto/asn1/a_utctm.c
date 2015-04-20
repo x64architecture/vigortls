@@ -159,7 +159,7 @@ ASN1_UTCTIME *ASN1_UTCTIME_adj(ASN1_UTCTIME *s, time_t t,
     size_t len = 20;
 
     if (s == NULL)
-        s = M_ASN1_UTCTIME_new();
+        s = ASN1_UTCTIME_new();
     if (s == NULL)
         return NULL;
 

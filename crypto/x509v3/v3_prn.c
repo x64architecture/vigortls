@@ -172,7 +172,7 @@ int X509V3_extensions_print(BIO *bp, char *title, STACK_OF(X509_EXTENSION) * ext
             return 0;
         if (!X509V3_EXT_print(bp, ex, flag, indent + 4)) {
             BIO_printf(bp, "%*s", indent + 4, "");
-            M_ASN1_OCTET_STRING_print(bp, ex->value);
+            ASN1_STRING_print(bp, ex->value);
         }
         if (BIO_write(bp, "\n", 1) <= 0)
             return 0;

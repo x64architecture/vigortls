@@ -12,10 +12,6 @@ int main(int argc, char **argv)
     unsigned char **pp = NULL;
 
     M_ASN1_I2D_vars(x);
-    M_ASN1_I2D_len_SEQUENCE_opt_type(X509_EXTENSION, x->ext,
-                                     i2d_X509_EXTENSION);
     M_ASN1_I2D_seq_total();
-    M_ASN1_I2D_put_SEQUENCE_opt_type(X509_EXTENSION, x->ext,
-                                     i2d_X509_EXTENSION);
     M_ASN1_I2D_finish();
 }

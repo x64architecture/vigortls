@@ -15,7 +15,6 @@ add_library(
     asn_pack.c
     a_bitstr.c
     a_bool.c
-    a_bytes.c
     a_d2i_fp.c
     a_digest.c
     a_dup.c
@@ -27,7 +26,6 @@ add_library(
     a_object.c
     a_octet.c
     a_print.c
-    a_set.c
     a_sign.c
     a_strex.c
     a_strnid.c
