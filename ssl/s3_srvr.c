@@ -1003,8 +1003,9 @@ int ssl3_get_client_hello(SSL *s)
     }
     if (p + i - d > n)
         goto truncated;
-    if ((i > 0) && (ssl_bytes_to_cipher_list(s, p, i, &(ciphers)) == NULL)) {
-        goto err;
+    if (i > 0) {
+        if ((ssl_bytes_to_cipher_list(s, p, i) == NULL))
+            goto err;
     }
     p += i;
 

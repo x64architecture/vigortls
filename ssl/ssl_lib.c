@@ -1306,12 +1306,10 @@ int ssl_cipher_list_to_bytes(SSL *s, STACK_OF(SSL_CIPHER) *sk,
     return (p - q);
 }
 
-STACK_OF(SSL_CIPHER) * ssl_bytes_to_cipher_list(SSL *s, unsigned char *p,
-                                                int num,
-                                                STACK_OF(SSL_CIPHER) * *skp)
+STACK_OF(SSL_CIPHER) *ssl_bytes_to_cipher_list(SSL *s, unsigned char *p, int num)
 {
     const SSL_CIPHER *c;
-    STACK_OF(SSL_CIPHER) * sk;
+    STACK_OF(SSL_CIPHER) *sk = NULL;
     int i;
     unsigned int cipherid;
     uint16_t cipher_value;
@@ -1321,15 +1319,11 @@ STACK_OF(SSL_CIPHER) * ssl_bytes_to_cipher_list(SSL *s, unsigned char *p,
 
     if ((num % SSL3_CIPHER_VALUE_SIZE) != 0) {
         SSLerr(SSL_F_SSL_BYTES_TO_CIPHER_LIST, SSL_R_ERROR_IN_RECEIVED_CIPHER_LIST);
-        return (NULL);
+        return NULL;
     }
-    if (skp == NULL || *skp == NULL) {
-        sk = sk_SSL_CIPHER_new_null(); /* change perhaps later */
-        if (sk == NULL)
-            goto err;
-    } else {
-        sk = *skp;
-        sk_SSL_CIPHER_zero(sk);
+    if ((sk = sk_SSL_CIPHER_new_null()) == NULL) {
+        SSLerr(SSL_F_SSL_BYTES_TO_CIPHER_LIST, ERR_R_MALLOC_FAILURE);
+        goto err;
     }
 
     for (i = 0; i < num; i += SSL3_CIPHER_VALUE_SIZE) {
@@ -1340,8 +1334,7 @@ STACK_OF(SSL_CIPHER) * ssl_bytes_to_cipher_list(SSL *s, unsigned char *p,
         if (s->s3 && cipherid == SSL3_CK_SCSV) {
             /* SCSV fatal if renegotiating */
             if (s->renegotiate) {
-                SSLerr(SSL_F_SSL_BYTES_TO_CIPHER_LIST,
-                       SSL_R_SCSV_RECEIVED_WHEN_RENEGOTIATING);
+                SSLerr(SSL_F_SSL_BYTES_TO_CIPHER_LIST, SSL_R_SCSV_RECEIVED_WHEN_RENEGOTIATING);
                 ssl3_send_alert(s, SSL3_AL_FATAL, SSL_AD_HANDSHAKE_FAILURE);
 
                 goto err;
@@ -1372,13 +1365,10 @@ STACK_OF(SSL_CIPHER) * ssl_bytes_to_cipher_list(SSL *s, unsigned char *p,
         }
     }
 
-    if (skp != NULL)
-        *skp = sk;
-    return (sk);
+    return sk;
 err:
-    if (skp == NULL || *skp == NULL)
-        sk_SSL_CIPHER_free(sk);
-    return (NULL);
+    sk_SSL_CIPHER_free(sk);
+    return NULL;
 }
 
 /*

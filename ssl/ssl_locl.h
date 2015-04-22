@@ -609,15 +609,14 @@ int ssl_cipher_id_cmp(const SSL_CIPHER *a, const SSL_CIPHER *b);
 DECLARE_OBJ_BSEARCH_GLOBAL_CMP_FN(SSL_CIPHER, SSL_CIPHER, ssl_cipher_id);
 int ssl_cipher_ptr_id_cmp(const SSL_CIPHER *const *ap,
                           const SSL_CIPHER *const *bp);
-STACK_OF(SSL_CIPHER) * ssl_bytes_to_cipher_list(SSL *s, unsigned char *p,
-                                                int num,
-                                                STACK_OF(SSL_CIPHER) * *skp);
+STACK_OF(SSL_CIPHER) *ssl_bytes_to_cipher_list(SSL *s, unsigned char *p, 
+                                               int num);
 int ssl_cipher_list_to_bytes(SSL *s, STACK_OF(SSL_CIPHER) * sk,
                              unsigned char *p);
-STACK_OF(SSL_CIPHER) * ssl_create_cipher_list(const SSL_METHOD *meth,
-                                              STACK_OF(SSL_CIPHER) * *pref,
-                                              STACK_OF(SSL_CIPHER) * *sorted,
-                                              const char *rule_str);
+STACK_OF(SSL_CIPHER) *ssl_create_cipher_list(const SSL_METHOD *meth,
+                                             STACK_OF(SSL_CIPHER) **pref,
+                                             STACK_OF(SSL_CIPHER) **sorted,
+                                             const char *rule_str);
 void ssl_update_cache(SSL *s, int mode);
 int ssl_cipher_get_evp(const SSL_SESSION *s, const EVP_CIPHER **enc,
                        const EVP_MD **md, int *mac_pkey_type,
