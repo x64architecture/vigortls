@@ -77,7 +77,6 @@
 #include <openssl/bio.h>
 #include <openssl/bn.h>
 #include <openssl/objects.h>
-#include <openssl/rand.h>
 #include <openssl/sha.h>
 #include <openssl/err.h>
 
@@ -134,11 +133,7 @@ static int test_ecdh_curve(int nid, const char *text, BN_CTX *ctx, BIO *out)
 
     BIO_puts(out, "Testing key generation with ");
     BIO_puts(out, text);
-#ifdef NOISY
-    BIO_puts(out, "\n");
-#else
     (void)BIO_flush(out);
-#endif
 
     if (!EC_KEY_generate_key(a))
         goto err;
@@ -155,18 +150,8 @@ static int test_ecdh_curve(int nid, const char *text, BN_CTX *ctx, BIO *out)
             goto err;
     }
 #endif
-#ifdef NOISY
-    BIO_puts(out, "  pri 1=");
-    BN_print(out, a->priv_key);
-    BIO_puts(out, "\n  pub 1=");
-    BN_print(out, x_a);
-    BIO_puts(out, ",");
-    BN_print(out, y_a);
-    BIO_puts(out, "\n");
-#else
     BIO_printf(out, " .");
     (void)BIO_flush(out);
-#endif
 
     if (!EC_KEY_generate_key(b))
         goto err;
@@ -184,53 +169,24 @@ static int test_ecdh_curve(int nid, const char *text, BN_CTX *ctx, BIO *out)
     }
 #endif
 
-#ifdef NOISY
-    BIO_puts(out, "  pri 2=");
-    BN_print(out, b->priv_key);
-    BIO_puts(out, "\n  pub 2=");
-    BN_print(out, x_b);
-    BIO_puts(out, ",");
-    BN_print(out, y_b);
-    BIO_puts(out, "\n");
-#else
     BIO_printf(out, ".");
     (void)BIO_flush(out);
-#endif
 
     alen = KDF1_SHA1_len;
     abuf = malloc(alen);
     aout = ECDH_compute_key(abuf, alen, EC_KEY_get0_public_key(b), a, KDF1_SHA1);
 
-#ifdef NOISY
-    BIO_puts(out, "  key1 =");
-    for (i = 0; i < aout; i++) {
-        snprintf(buf, sizeof(buf), "%02X", abuf[i]);
-        BIO_puts(out, buf);
-    }
-    BIO_puts(out, "\n");
-#else
     BIO_printf(out, ".");
     (void)BIO_flush(out);
-#endif
 
     blen = KDF1_SHA1_len;
     bbuf = malloc(blen);
     bout = ECDH_compute_key(bbuf, blen, EC_KEY_get0_public_key(a), b, KDF1_SHA1);
 
-#ifdef NOISY
-    BIO_puts(out, "  key2 =");
-    for (i = 0; i < bout; i++) {
-        snprintf(buf, sizeof(buf), "%02X", bbuf[i]);
-        BIO_puts(out, buf);
-    }
-    BIO_puts(out, "\n");
-#else
     BIO_printf(out, ".");
     (void)BIO_flush(out);
-#endif
 
     if ((aout < 4) || (bout != aout) || (memcmp(abuf, bbuf, aout) != 0)) {
-#ifndef NOISY
         BIO_printf(out, " failed\n\n");
         BIO_printf(out, "key a:\n");
         BIO_printf(out, "private key: ");
@@ -261,13 +217,10 @@ static int test_ecdh_curve(int nid, const char *text, BN_CTX *ctx, BIO *out)
             BIO_puts(out, buf);
         }
         BIO_printf(out, "\n");
-#endif
         fprintf(stderr, "Error in ECDH routines\n");
         ret = 0;
     } else {
-#ifndef NOISY
         BIO_printf(out, " ok\n");
-#endif
         ret = 1;
     }
 err:
@@ -275,18 +228,12 @@ err:
 
     free(abuf);
     free(bbuf);
-    if (x_a)
-        BN_free(x_a);
-    if (y_a)
-        BN_free(y_a);
-    if (x_b)
-        BN_free(x_b);
-    if (y_b)
-        BN_free(y_b);
-    if (b)
-        EC_KEY_free(b);
-    if (a)
-        EC_KEY_free(a);
+    BN_free(x_a);
+    BN_free(y_a);
+    BN_free(x_b);
+    BN_free(y_b);
+    EC_KEY_free(b);
+    EC_KEY_free(a);
     return (ret);
 }
 

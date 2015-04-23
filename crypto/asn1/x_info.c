@@ -92,17 +92,8 @@ void X509_INFO_free(X509_INFO *x)
         return;
 
     i = CRYPTO_add(&x->references, -1, CRYPTO_LOCK_X509_INFO);
-#ifdef REF_PRINT
-    REF_PRINT("X509_INFO", x);
-#endif
     if (i > 0)
         return;
-#ifdef REF_CHECK
-    if (i < 0) {
-        fprintf(stderr, "X509_INFO_free, bad reference count\n");
-        abort();
-    }
-#endif
 
     X509_free(x->x509);
     X509_CRL_free(x->crl);

@@ -65,13 +65,6 @@
 
 #include <openssl/bio.h>
 
-#if defined(OPENSSL_NO_POSIX_IO)
-/*
- * One can argue that one should implement dummy placeholder for
- * BIO_s_fd here...
- */
-#else
-
 static int fd_write(BIO *h, const char *buf, int num);
 static int fd_read(BIO *h, char *buf, int size);
 static int fd_puts(BIO *h, const char *str);
@@ -292,4 +285,3 @@ int BIO_fd_non_fatal_error(int err)
     }
     return (0);
 }
-#endif
