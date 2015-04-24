@@ -126,7 +126,6 @@ int _CONF_add_string(CONF *conf, CONF_VALUE *section, CONF_VALUE *value)
 char *_CONF_get_string(const CONF *conf, const char *section, const char *name)
 {
     CONF_VALUE *v, vv;
-    char *p;
 
     if (name == NULL)
         return (NULL);
@@ -137,11 +136,6 @@ char *_CONF_get_string(const CONF *conf, const char *section, const char *name)
             v = lh_CONF_VALUE_retrieve(conf->data, &vv);
             if (v != NULL)
                 return (v->value);
-            if (strcmp(section, "ENV") == 0) {
-                p = getenv(name);
-                if (p != NULL)
-                    return (p);
-            }
         }
         vv.section = "default";
         vv.name = (char *)name;
@@ -149,9 +143,9 @@ char *_CONF_get_string(const CONF *conf, const char *section, const char *name)
         if (v != NULL)
             return (v->value);
         else
-            return (NULL);
+            return NULL;
     } else
-        return (getenv(name));
+        return NULL;
 }
 
 static unsigned long conf_value_hash(const CONF_VALUE *v)

@@ -524,10 +524,6 @@ char *CONF_get1_default_config_file(void)
     char *file;
     int ret;
 
-    file = getenv("OPENSSL_CONF");
-    if (file)
-        return strdup(file);
-
     ret = asprintf(&file, "%s/openssl.cnf", s);
 
     if (ret == -1)

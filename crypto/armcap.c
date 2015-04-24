@@ -30,7 +30,6 @@ void OPENSSL_cpuid_setup(void) __attribute__((constructor));
 #endif
 void OPENSSL_cpuid_setup(void)
 {
-    char *e;
 #if __ARM_ARCH__ >= 7
     struct sigaction ill_oact, ill_act;
     sigset_t oset;
@@ -40,11 +39,6 @@ void OPENSSL_cpuid_setup(void)
     if (trigger)
         return;
     trigger = 1;
-
-    if ((e = getenv("OPENSSL_armcap"))) {
-        OPENSSL_armcap_P = strtoul(e, NULL, 0);
-        return;
-    }
 
     OPENSSL_armcap_P = 0;
 
