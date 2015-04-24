@@ -67,7 +67,7 @@ int AES_wrap_unwrap_test(const unsigned char *kek, int keybits,
     otmp = malloc(keylen + 8);
     ptmp = malloc(keylen);
     if (!otmp || !ptmp)
-        return 0;
+        goto err;
     if (AES_set_encrypt_key(kek, keybits, &wctx))
         goto err;
     r = AES_wrap_key(&wctx, iv, otmp, key, keylen);
@@ -87,10 +87,8 @@ int AES_wrap_unwrap_test(const unsigned char *kek, int keybits,
     ret = 1;
 
 err:
-    if (otmp)
-        free(otmp);
-    if (ptmp)
-        free(ptmp);
+    free(otmp);
+    free(ptmp);
 
     return ret;
 }

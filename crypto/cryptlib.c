@@ -393,38 +393,24 @@ void CRYPTO_THREADID_set_numeric(CRYPTO_THREADID *id, unsigned long val)
     id->val = val;
 }
 
-static const unsigned char hash_coeffs[] = { 3, 5, 7, 11, 13, 17, 19, 23 };
 void CRYPTO_THREADID_set_pointer(CRYPTO_THREADID *id, void *ptr)
 {
-    unsigned char *dest = (void *)&id->val;
-    unsigned int accum = 0;
-    unsigned char dnum = sizeof(id->val);
-
     memset(id, 0, sizeof(*id));
     id->ptr = ptr;
-    if (sizeof(id->val) >= sizeof(id->ptr)) {
-        /* 'ptr' can be embedded in 'val' without loss of uniqueness */
-        id->val = (unsigned long)id->ptr;
-        return;
+#if LONG_MAX >= INTPTR_MAX
+    /*s u 'ptr' can be embedded in 'val' without loss of uniqueness */
+    id->val = (unsigned long)id->ptr;
+#else
+    {
+        SHA256_CTX ctx;
+        uint8_t results[SHA256_DIGEST_LENGTH];
+
+        SHA256_Init(&ctx);
+        SHA256_Update(&ctx, (char *)(&id->ptr), sizeof(id->ptr));
+        SHA256_Final(results, &ctx);
+        memcpy(&id->val, results, sizeof(id->val));
     }
-    /* hash ptr ==> val. Each byte of 'val' gets the mod-256 total of a
-     * linear function over the bytes in 'ptr', the co-efficients of which
-     * are a sequence of low-primes (hash_coeffs is an 8-element cycle) -
-     * the starting prime for the sequence varies for each byte of 'val'
-     * (unique polynomials unless pointers are >64-bit). For added spice,
-     * the totals accumulate rather than restarting from zero, and the index
-     * of the 'val' byte is added each time (position dependence). If I was
-     * a black-belt, I'd scan big-endian pointers in reverse to give
-     * low-order bits more play, but this isn't crypto and I'd prefer nobody
-     * mistake it as such. Plus I'm lazy. */
-    while (dnum--) {
-        const unsigned char *src = (void *)&id->ptr;
-        unsigned char snum = sizeof(id->ptr);
-        while (snum--)
-            accum += *(src++) * hash_coeffs[(snum + dnum) & 7];
-        accum += dnum;
-        *(dest++) = accum & 255;
-    }
+#endif
 }
 
 int CRYPTO_THREADID_set_callback(void (*func)(CRYPTO_THREADID *))
@@ -606,10 +592,10 @@ unsigned long *OPENSSL_ia32cap_loc(void)
 {
     if (sizeof(long) == 4)
         /*
-     * If 32-bit application pulls address of OPENSSL_ia32cap_P[0]
-     * clear second element to maintain the illusion that vector
-     * is 32-bit.
-     */
+         * If 32-bit application pulls address of OPENSSL_ia32cap_P[0]
+         * clear second element to maintain the illusion that vector
+         * is 32-bit.
+         */
         OPENSSL_ia32cap_P[1] = 0;
     return (unsigned long *)OPENSSL_ia32cap_P;
 }
@@ -646,14 +632,14 @@ unsigned long *OPENSSL_ia32cap_loc(void)
     return NULL;
 }
 #endif
-int OPENSSL_NONPIC_relocated = 0;
+
 #if !defined(OPENSSL_CPUID_SETUP) && !defined(OPENSSL_CPUID_OBJ)
 void OPENSSL_cpuid_setup(void)
 {
 }
 #endif
 
-void OPENSSL_showfatal(const char *fmta, ...)
+static void OPENSSL_showfatal(const char *fmta, ...)
 {
     va_list ap;
 
@@ -668,11 +654,6 @@ void OpenSSLDie(const char *file, int line, const char *assertion)
         "%s(%d): OpenSSL internal error, assertion failed: %s\n",
         file, line, assertion);
     abort();
-}
-
-void *OPENSSL_stderr(void)
-{
-    return stderr;
 }
 
 int CRYPTO_memcmp(const void *in_a, const void *in_b, size_t len)

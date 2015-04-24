@@ -67,6 +67,8 @@
 
 #endif
 
+#define OPENSSL_CPUID_OBJ
+
 /* Should we define BN_DIV2W here? */
 
 #if defined(HEADER_RC4_LOCL_H) && !defined(CONFIG_HEADER_RC4_LOCL_H)

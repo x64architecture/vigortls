@@ -85,8 +85,8 @@ static int test_exp_mod_zero()
     BN_zero(&p);
 
     BN_init(&r);
-    BN_mod_exp(&r, &a, &p, &m, ctx);
-    BN_CTX_free(ctx);
+    if (!BN_mod_exp(&r, &a, &p, &m, ctx))
+        goto err;
 
     if (BN_is_zero(&r))
         ret = 0;
@@ -96,10 +96,12 @@ static int test_exp_mod_zero()
         printf(", should be 0\n");
     }
 
+err:
     BN_free(&r);
     BN_free(&a);
     BN_free(&p);
     BN_free(&m);
+    BN_CTX_free(ctx);
 
     return ret;
 }

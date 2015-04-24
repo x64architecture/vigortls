@@ -82,7 +82,10 @@ static int convert(unsigned char *s)
             fprintf(stderr, "Odd number of hex digits!");
             exit(4);
         }
-        sscanf((char *)s, "%2x", &n);
+        if (!(sscanf((char *)s, "%2x", &n))) {
+            fprintf(stderr, "sscanf failed!");
+            exit(4);
+        }
         *d = (unsigned char)n;
     }
     return s - d;

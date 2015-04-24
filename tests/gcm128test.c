@@ -834,12 +834,13 @@ static int do_gcm128_test(int testnum, struct gcm128_test *tv)
     AES_KEY key;
     uint8_t *out;
     size_t outlen;
+    int ret = 1;
 
     outlen = tv->P_len;
     out = malloc(outlen);
     if (out == NULL) {
         fprintf(stderr, "malloc failure");
-        return 1;
+        goto fail;
     }
 
     AES_set_encrypt_key(tv->K, tv->K_len * 8, &key);
@@ -875,11 +876,11 @@ static int do_gcm128_test(int testnum, struct gcm128_test *tv)
         goto fail;
     }
 
-    return 0;
+    ret = 0;
 
 fail:
     free(out);
-    return 1;
+    return ret;
 }
 
 #define NUM_TESTS (sizeof(gcm128_tests) / sizeof(*gcm128_tests))
