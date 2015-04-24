@@ -773,6 +773,8 @@ static int ecp_nistz256_mult_precompute(EC_GROUP *group, BN_CTX *ctx)
 
     P = EC_POINT_new(group);
     T = EC_POINT_new(group);
+    if (P == NULL || T == NULL)
+        goto err;
 
     /* The zero entry is implicitly infinity, and we skip it,
      * storing other values with -1 offset. */
