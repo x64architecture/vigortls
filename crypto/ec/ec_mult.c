@@ -700,14 +700,14 @@ int ec_wNAF_precompute_mult(EC_GROUP *group, BN_CTX *ctx)
     /* if there is an old EC_PRE_COMP object, throw it away */
     EC_EX_DATA_free_data(&group->extra_data, ec_pre_comp_dup, ec_pre_comp_free, ec_pre_comp_clear_free);
 
-    if ((pre_comp = ec_pre_comp_new(group)) == NULL)
-        return 0;
-
     generator = EC_GROUP_get0_generator(group);
     if (generator == NULL) {
         ECerr(EC_F_EC_WNAF_PRECOMPUTE_MULT, EC_R_UNDEFINED_GENERATOR);
-        goto err;
+        return 0;
     }
+
+    if ((pre_comp = ec_pre_comp_new(group)) == NULL)
+        return 0;
 
     if (ctx == NULL) {
         ctx = new_ctx = BN_CTX_new();
