@@ -933,6 +933,9 @@ int s_server_main(int argc, char *argv[])
     argc = opt_num_rest();
     argv = opt_rest();
 
+    OpenSSL_add_ssl_algorithms();
+    SSL_load_error_strings();
+
 #ifndef OPENSSL_NO_ENGINE
     e = setup_engine(engine_id, 1);
 #endif
