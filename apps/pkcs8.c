@@ -296,7 +296,8 @@ int pkcs8_main(int argc, char **argv)
             p8pass = passin;
         else {
             p8pass = pass;
-            EVP_read_pw_string(pass, sizeof pass, "Enter Password:", 0);
+            if (EVP_read_pw_string(pass, sizeof pass, "Enter Password:", 0))
+                goto end;
         }
         p8inf = PKCS8_decrypt(p8, p8pass, strlen(p8pass));
     }

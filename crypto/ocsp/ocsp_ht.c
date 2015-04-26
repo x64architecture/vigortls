@@ -106,6 +106,8 @@ static int parse_http_line1(char *line);
 
 void OCSP_REQ_CTX_free(OCSP_REQ_CTX *rctx)
 {
+    if (rctx == NULL)
+        return;
     if (rctx->mem)
         BIO_free(rctx->mem);
     free(rctx->iobuf);
