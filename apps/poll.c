@@ -18,8 +18,6 @@
  * Dongsheng Song <dongsheng.song@gmail.com> and Brent Cook <bcook@openbsd.org>
  */
 
-#if defined(_WIN32)
-
 #include <conio.h>
 #include <errno.h>
 #include <io.h>
@@ -326,5 +324,3 @@ int poll(struct pollfd *pfds, nfds_t nfds, int timeout_ms)
 
     return rc;
 }
-
-#endif 

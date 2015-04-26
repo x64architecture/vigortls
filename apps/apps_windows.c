@@ -18,8 +18,6 @@
  * Dongsheng Song <dongsheng.song@gmail.com> and Brent Cook <bcook@openbsd.org>
  */
 
-#ifdef _WIN32
-
 #include <windows.h>
 
 #include "apps.h"
@@ -41,5 +39,3 @@ double app_tminterval(int stop, int usertime)
     }
     return 0;
 }
-
-#endif

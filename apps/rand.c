@@ -63,109 +63,82 @@
 #include <openssl/err.h>
 #include <openssl/rand.h>
 
-/* -out file         - write to file
- * -base64           - base64 encode output
- * -hex              - hex encode output
- * num               - write 'num' bytes
- */
+typedef enum OPTION_choice {
+    OPT_ERR = -1,
+    OPT_EOF = 0,
+    OPT_HELP,
+    OPT_OUT,
+    OPT_ENGINE,
+    OPT_BASE64,
+    OPT_HEX
+} OPTION_CHOICE;
 
-int rand_main(int, char **);
+OPTIONS rand_options[] = {
+    { OPT_HELP_STR, 1, '-', "Usage: %s [flags] num\n" },
+    { OPT_HELP_STR, 1, '-', "Valid options are:\n" },
+    { "help", OPT_HELP, '-', "Display this summary" },
+    { "out", OPT_OUT, '>', "Output file" },
+    { "base64", OPT_BASE64, '-', "Base64 encode output" },
+    { "hex", OPT_HEX, '-', "Hex encode output" },
+#ifndef OPENSSL_NO_ENGINE
+    { "engine", OPT_ENGINE, 's', "Use engine, possibly a hardware device" },
+#endif
+    { NULL }
+};
 
 int rand_main(int argc, char **argv)
 {
-    int i, r, ret = 1;
-    int badopt;
-    char *outfile = NULL;
-    int base64 = 0;
-    int hex = 0;
     BIO *out = NULL;
-    int num = -1;
-#ifndef OPENSSL_NO_ENGINE
-    char *engine = NULL;
-#endif
+    char *engine = NULL, *outfile = NULL, *prog;
+    OPTION_CHOICE o;
+    int base64 = 0, hex = 0, i, num = -1, r, ret = 1;
 
-    if (bio_err == NULL)
-        if ((bio_err = BIO_new(BIO_s_file())) != NULL)
-            BIO_set_fp(bio_err, stderr, BIO_NOCLOSE | BIO_FP_TEXT);
-
-    if (!load_config(bio_err, NULL))
-        goto err;
-
-    badopt = 0;
-    i = 0;
-    while (!badopt && argv[++i] != NULL) {
-        if (strcmp(argv[i], "-out") == 0) {
-            if ((argv[i + 1] != NULL) && (outfile == NULL))
-                outfile = argv[++i];
-            else
-                badopt = 1;
-        }
-#ifndef OPENSSL_NO_ENGINE
-        else if (strcmp(argv[i], "-engine") == 0) {
-            if ((argv[i + 1] != NULL) && (engine == NULL))
-                engine = argv[++i];
-            else
-                badopt = 1;
-        }
-#endif
-        else if (strcmp(argv[i], "-base64") == 0) {
-            if (!base64)
+    prog = opt_init(argc, argv, rand_options);
+    while ((o = opt_next()) != OPT_EOF) {
+        switch (o) {
+            case OPT_EOF:
+            case OPT_ERR:
+            opthelp:
+                BIO_printf(bio_err, "%s: Use -help for summary.\n", prog);
+                goto end;
+            case OPT_HELP:
+                opt_help(rand_options);
+                ret = 0;
+                goto end;
+            case OPT_OUT:
+                outfile = opt_arg();
+                break;
+            case OPT_ENGINE:
+                engine = opt_arg();
+                break;
+            case OPT_BASE64:
                 base64 = 1;
-            else
-                badopt = 1;
-        } else if (strcmp(argv[i], "-hex") == 0) {
-            if (!hex)
+                break;
+            case OPT_HEX:
                 hex = 1;
-            else
-                badopt = 1;
-        } else if (isdigit((unsigned char)argv[i][0])) {
-            if (num < 0) {
-                r = sscanf(argv[i], "%d", &num);
-                if (r == 0 || num < 0)
-                    badopt = 1;
-            } else
-                badopt = 1;
-        } else
-            badopt = 1;
+                break;
+        }
     }
+    argc = opt_num_rest();
+    argv = opt_rest();
 
-    if (hex && base64)
-        badopt = 1;
-
-    if (num < 0)
-        badopt = 1;
-
-    if (badopt) {
-        BIO_printf(bio_err, "Usage: rand [options] num\n");
-        BIO_printf(bio_err, "where options are\n");
-        BIO_printf(bio_err, "-out file             - write to file\n");
-#ifndef OPENSSL_NO_ENGINE
-        BIO_printf(bio_err, "-engine e             - use engine e, possibly a hardware device.\n");
-#endif
-        BIO_printf(bio_err, "-base64               - base64 encode output\n");
-        BIO_printf(bio_err, "-hex                  - hex encode output\n");
-        goto err;
-    }
+    if (argc != 1 || (hex && base64))
+        goto opthelp;
+    if (sscanf(argv[0], "%d", &num) != 1 || num < 0)
+        goto opthelp;
 
 #ifndef OPENSSL_NO_ENGINE
-    setup_engine(bio_err, engine, 0);
+    setup_engine(engine, 0);
 #endif
 
-    out = BIO_new(BIO_s_file());
+    out = bio_open_default(outfile, "w");
     if (out == NULL)
-        goto err;
-    if (outfile != NULL)
-        r = BIO_write_filename(out, outfile);
-    else {
-        r = BIO_set_fp(out, stdout, BIO_NOCLOSE | BIO_FP_TEXT);
-    }
-    if (r <= 0)
-        goto err;
+        goto end;
 
     if (base64) {
         BIO *b64 = BIO_new(BIO_f_base64());
         if (b64 == NULL)
-            goto err;
+            goto end;
         out = BIO_push(b64, out);
     }
 
@@ -178,7 +151,7 @@ int rand_main(int argc, char **argv)
             chunk = sizeof buf;
         r = RAND_bytes(buf, chunk);
         if (r <= 0)
-            goto err;
+            goto end;
         if (!hex)
             BIO_write(out, buf, chunk);
         else {
@@ -193,9 +166,7 @@ int rand_main(int argc, char **argv)
 
     ret = 0;
 
-err:
-    ERR_print_errors(bio_err);
-    if (out)
-        BIO_free_all(out);
+end:
+    BIO_free_all(out);
     return (ret);
 }

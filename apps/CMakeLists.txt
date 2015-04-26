@@ -2,12 +2,28 @@ include_directories (.. ../include ${CMAKE_CURRENT_BINARY_DIR})
 
 configure_file(buildinf.h.cmake buildinf.h)
 
+if (WIN32)
+    set(
+        OS_SOURCES
+
+        apps_windows.c
+        poll.c
+    )
+
+else() # Posix
+    set(
+        OS_SOURCES
+
+        apps_posix.c
+    )
+endif()
+
 add_executable(
     openssl
 
+    ${OS_SOURCES}
+
     apps.c
-    apps_posix.c
-    apps_windows.c
     asn1pars.c
     ca.c
     ciphers.c
@@ -15,7 +31,6 @@ add_executable(
     crl.c
     crl2p7.c
     dgst.c
-    dh.c
     dhparam.c
     dsa.c
     dsaparam.c
@@ -24,13 +39,13 @@ add_executable(
     enc.c
     engine.c
     errstr.c
-    gendh.c
     gendsa.c
     genpkey.c
     genrsa.c
     nseq.c
     ocsp.c
     openssl.c # main
+    opt.c
     passwd.c
     pkey.c
     pkeyparam.c
@@ -38,7 +53,6 @@ add_executable(
     pkcs7.c
     pkcs8.c
     pkcs12.c
-    poll.c
     prime.c
     rand.c
     req.c

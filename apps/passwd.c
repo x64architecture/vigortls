@@ -1,8 +1,5 @@
 /* apps/passwd.c */
 
-#ifdef OPENSSL_NO_MD5
-#define NO_MD5CRYPT_1
-#endif
 
 #if !defined(OPENSSL_NO_DES) || !defined(NO_MD5CRYPT_1)
 
@@ -35,161 +32,159 @@ static unsigned const char cov_2char[64] = {
     0x73, 0x74, 0x75, 0x76, 0x77, 0x78, 0x79, 0x7A
 };
 
-static int do_passwd(int passed_salt, char **salt_p, char **salt_malloc_p,
-                     char *passwd, BIO *out, int quiet, int table, int reverse,
-                     size_t pw_maxlen, int usecrypt, int use1, int useapr1);
+static int do_passwd(int passed_salt, char **salt_p, char **salt_malloc_p, char *passwd,
+                     BIO *out, int quiet, int table, int reverse, size_t pw_maxlen,
+                     int usecrypt, int use1, int useapr1);
 
-/* -crypt        - standard Unix password algorithm (default)
- * -1            - MD5-based password algorithm
- * -apr1         - MD5-based password algorithm, Apache variant
- * -salt string  - salt
- * -in file      - read passwords from file
- * -stdin        - read passwords from stdin
- * -noverify     - never verify when reading password from terminal
- * -quiet        - no warnings
- * -table        - format output as table
- * -reverse      - switch table columns
- */
+typedef enum OPTION_choice {
+    OPT_ERR = -1,
+    OPT_EOF = 0,
+    OPT_HELP,
+    OPT_IN,
+    OPT_NOVERIFY,
+    OPT_QUIET,
+    OPT_TABLE,
+    OPT_REVERSE,
+    OPT_APR1,
+    OPT_1,
+    OPT_CRYPT,
+    OPT_SALT,
+    OPT_STDIN
+} OPTION_CHOICE;
 
-int passwd_main(int, char **);
+OPTIONS passwd_options[] = {
+    { "help", OPT_HELP, '-', "Display this summary" },
+    { "in", OPT_IN, '<', "Read passwords from file" },
+    { "noverify", OPT_NOVERIFY, '-', "Never verify when reading password from terminal" },
+    { "quiet", OPT_QUIET, '-', "No warnings" },
+    { "table", OPT_TABLE, '-', "Format output as table" },
+    { "reverse", OPT_REVERSE, '-', "Switch table columns" },
+#ifndef NO_MD5CRYPT_1
+    { "apr1", OPT_APR1, '-', "MD5-based password algorithm, Apache variant" },
+    { "1", OPT_1, '-', "MD5-based password algorithm" },
+#endif
+#ifndef OPENSSL_NO_DES
+    { "crypt", OPT_CRYPT, '-', "Standard Unix password algorithm (default)" },
+#endif
+    { "salt", OPT_SALT, 's', "Use provided salt" },
+    { "stdin", OPT_STDIN, '-', "Read passwords from stdin" },
+    { NULL }
+};
 
 int passwd_main(int argc, char **argv)
 {
-    int ret = 1;
-    char *infile = NULL;
-    int in_stdin = 0;
-    int in_noverify = 0;
-    char *salt = NULL, *passwd = NULL, **passwds = NULL;
-    char *salt_malloc = NULL, *passwd_malloc = NULL;
-    size_t passwd_malloc_size = 0;
-    int pw_source_defined = 0;
-    BIO *in = NULL, *out = NULL;
-    int i, badopt, opt_done;
+    BIO *in = NULL;
+    char *infile = NULL, *salt = NULL, *passwd = NULL, **passwds = NULL;
+    char *salt_malloc = NULL, *passwd_malloc = NULL, *prog;
+    OPTION_CHOICE o;
+    int in_stdin = 0, in_noverify = 0, pw_source_defined = 0;
     int passed_salt = 0, quiet = 0, table = 0, reverse = 0;
-    int usecrypt = 0, use1 = 0, useapr1 = 0;
-    size_t pw_maxlen = 0;
+    int ret = 1, usecrypt = 0, use1 = 0, useapr1 = 0;
+    size_t passwd_malloc_size = 0, pw_maxlen = 256;
 
-    if (bio_err == NULL)
-        if ((bio_err = BIO_new(BIO_s_file())) != NULL)
-            BIO_set_fp(bio_err, stderr, BIO_NOCLOSE | BIO_FP_TEXT);
-
-    if (!load_config(bio_err, NULL))
-        goto err;
-    out = BIO_new(BIO_s_file());
-    if (out == NULL)
-        goto err;
-    BIO_set_fp(out, stdout, BIO_NOCLOSE | BIO_FP_TEXT);
-
-    badopt = 0, opt_done = 0;
-    i = 0;
-    while (!badopt && !opt_done && argv[++i] != NULL) {
-        if (strcmp(argv[i], "-crypt") == 0)
-            usecrypt = 1;
-        else if (strcmp(argv[i], "-1") == 0)
-            use1 = 1;
-        else if (strcmp(argv[i], "-apr1") == 0)
-            useapr1 = 1;
-        else if (strcmp(argv[i], "-salt") == 0) {
-            if ((argv[i + 1] != NULL) && (salt == NULL)) {
+    prog = opt_init(argc, argv, passwd_options);
+    while ((o = opt_next()) != OPT_EOF) {
+        switch (o) {
+            case OPT_EOF:
+            case OPT_ERR:
+            opthelp:
+                BIO_printf(bio_err, "%s: Use -help for summary.\n", prog);
+                goto end;
+            case OPT_HELP:
+                opt_help(passwd_options);
+                ret = 0;
+                goto end;
+            case OPT_IN:
+                if (pw_source_defined)
+                    goto opthelp;
+                infile = opt_arg();
+                pw_source_defined = 1;
+                break;
+            case OPT_NOVERIFY:
+                in_noverify = 1;
+                break;
+            case OPT_QUIET:
+                quiet = 1;
+                break;
+            case OPT_TABLE:
+                table = 1;
+                break;
+            case OPT_REVERSE:
+                reverse = 1;
+                break;
+            case OPT_1:
+                use1 = 1;
+                break;
+            case OPT_APR1:
+                useapr1 = 1;
+                break;
+            case OPT_CRYPT:
+                usecrypt = 1;
+                break;
+            case OPT_SALT:
                 passed_salt = 1;
-                salt = argv[++i];
-            } else
-                badopt = 1;
-        } else if (strcmp(argv[i], "-in") == 0) {
-            if ((argv[i + 1] != NULL) && !pw_source_defined) {
-                pw_source_defined = 1;
-                infile = argv[++i];
-            } else
-                badopt = 1;
-        } else if (strcmp(argv[i], "-stdin") == 0) {
-            if (!pw_source_defined) {
-                pw_source_defined = 1;
+                salt = opt_arg();
+                break;
+            case OPT_STDIN:
+                if (pw_source_defined)
+                    goto opthelp;
                 in_stdin = 1;
-            } else
-                badopt = 1;
-        } else if (strcmp(argv[i], "-noverify") == 0)
-            in_noverify = 1;
-        else if (strcmp(argv[i], "-quiet") == 0)
-            quiet = 1;
-        else if (strcmp(argv[i], "-table") == 0)
-            table = 1;
-        else if (strcmp(argv[i], "-reverse") == 0)
-            reverse = 1;
-        else if (argv[i][0] == '-')
-            badopt = 1;
-        else if (!pw_source_defined)
-        /* non-option arguments, use as passwords */
-        {
-            pw_source_defined = 1;
-            passwds = &argv[i];
-            opt_done = 1;
-        } else
-            badopt = 1;
+                break;
+        }
+    }
+    argc = opt_num_rest();
+    argv = opt_rest();
+
+    if (*argv) {
+        if (pw_source_defined)
+            goto opthelp;
+        pw_source_defined = 1;
+        passwds = argv;
     }
 
-    if (!usecrypt && !use1 && !useapr1) /* use default */
+    if (!usecrypt && !use1 && !useapr1) {
+        /* use default */
         usecrypt = 1;
-    if (usecrypt + use1 + useapr1 > 1) /* conflict */
-        badopt = 1;
+    }
+    if (usecrypt + use1 + useapr1 > 1) {
+        /* conflict */
+        goto opthelp;
+    }
 
-/* reject unsupported algorithms */
 #ifdef OPENSSL_NO_DES
     if (usecrypt)
-        badopt = 1;
+        goto opthelp;
 #endif
 #ifdef NO_MD5CRYPT_1
     if (use1 || useapr1)
-        badopt = 1;
+        goto opthelp;
 #endif
 
-    if (badopt) {
-        BIO_printf(bio_err, "Usage: passwd [options] [passwords]\n");
-        BIO_printf(bio_err, "where options are\n");
-#ifndef OPENSSL_NO_DES
-        BIO_printf(bio_err, "-crypt             standard Unix password algorithm (default)\n");
-#endif
-#ifndef NO_MD5CRYPT_1
-        BIO_printf(bio_err, "-1                 MD5-based password algorithm\n");
-        BIO_printf(bio_err, "-apr1              MD5-based password algorithm, Apache variant\n");
-#endif
-        BIO_printf(bio_err, "-salt string       use provided salt\n");
-        BIO_printf(bio_err, "-in file           read passwords from file\n");
-        BIO_printf(bio_err, "-stdin             read passwords from stdin\n");
-        BIO_printf(bio_err, "-noverify          never verify when reading password from terminal\n");
-        BIO_printf(bio_err, "-quiet             no warnings\n");
-        BIO_printf(bio_err, "-table             format output as table\n");
-        BIO_printf(bio_err, "-reverse           switch table columns\n");
-
-        goto err;
+    if (infile && in_stdin) {
+        BIO_printf(bio_err, "%s: Can't combine -in and -stdin\n", prog);
+        goto end;
     }
 
-    if ((infile != NULL) || in_stdin) {
-        in = BIO_new(BIO_s_file());
-        if (in == NULL)
-            goto err;
-        if (infile != NULL) {
-            assert(in_stdin == 0);
-            if (BIO_read_filename(in, infile) <= 0)
-                goto err;
-        } else {
-            assert(in_stdin);
-            BIO_set_fp(in, stdin, BIO_NOCLOSE);
-        }
-    }
+    in = bio_open_default(infile, "r");
+    if (in == NULL)
+        goto end;
 
     if (usecrypt)
         pw_maxlen = 8;
     else if (use1 || useapr1)
-        pw_maxlen = 256; /* arbitrary limit, should be enough for most passwords */
+        pw_maxlen = 256; /* arbitrary limit, should be enough for most
+                          * passwords */
 
     if (passwds == NULL) {
         /* no passwords on the command line */
 
         passwd_malloc_size = pw_maxlen + 2;
-        /* longer than necessary so that we can warn about truncation */
+        /*
+         * longer than necessary so that we can warn about truncation
+         */
         passwd = passwd_malloc = malloc(passwd_malloc_size);
         if (passwd_malloc == NULL)
-            goto err;
+            goto end;
     }
 
     if ((in == NULL) && (passwds == NULL)) {
@@ -198,8 +193,9 @@ int passwd_main(int argc, char **argv)
 
         passwds = passwds_static;
         if (in == NULL)
-            if (EVP_read_pw_string(passwd_malloc, passwd_malloc_size, "Password: ", !(passed_salt || in_noverify)) != 0)
-                goto err;
+            if (EVP_read_pw_string(passwd_malloc, passwd_malloc_size, "Password: ",
+                                   !(passed_salt || in_noverify)) != 0)
+                goto end;
         passwds[0] = passwd_malloc;
     }
 
@@ -207,12 +203,11 @@ int passwd_main(int argc, char **argv)
         assert(passwds != NULL);
         assert(*passwds != NULL);
 
-        do /* loop over list of passwords */
-        {
+        do { /* loop over list of passwords */
             passwd = *passwds++;
-            if (!do_passwd(passed_salt, &salt, &salt_malloc, passwd, out,
-                           quiet, table, reverse, pw_maxlen, usecrypt, use1, useapr1))
-                goto err;
+            if (!do_passwd(passed_salt, &salt, &salt_malloc, passwd, bio_out, quiet, table,
+                           reverse, pw_maxlen, usecrypt, use1, useapr1))
+                goto end;
         } while (*passwds != NULL);
     } else
     /* in != NULL */
@@ -234,42 +229,37 @@ int passwd_main(int argc, char **argv)
                     while ((r > 0) && (!strchr(trash, '\n')));
                 }
 
-                if (!do_passwd(passed_salt, &salt, &salt_malloc, passwd, out,
-                               quiet, table, reverse, pw_maxlen, usecrypt, use1, useapr1))
-                    goto err;
+                if (!do_passwd(passed_salt, &salt, &salt_malloc, passwd, bio_out, quiet,
+                               table, reverse, pw_maxlen, usecrypt, use1, useapr1))
+                    goto end;
             }
             done = (r <= 0);
         } while (!done);
     }
     ret = 0;
 
-err:
+end:
     ERR_print_errors(bio_err);
-    if (salt_malloc)
-        free(salt_malloc);
-    if (passwd_malloc)
-        free(passwd_malloc);
-    if (in)
-        BIO_free(in);
-    if (out)
-        BIO_free_all(out);
+    free(salt_malloc);
+    free(passwd_malloc);
+    BIO_free(in);
     return (ret);
 }
 
 #ifndef NO_MD5CRYPT_1
-/* MD5-based password algorithm (should probably be available as a library
- * function; then the static buffer would not be acceptable).
- * For magic string "1", this should be compatible to the MD5-based BSD
- * password algorithm.
- * For 'magic' string "apr1", this is compatible to the MD5-based Apache
- * password algorithm.
- * (Apparently, the Apache password algorithm is identical except that the
- * 'magic' string was changed -- the laziest application of the NIH principle
- * I've ever encountered.)
+/*
+ * MD5-based password algorithm (should probably be available as a library
+ * function; then the static buffer would not be acceptable). For magic
+ * string "1", this should be compatible to the MD5-based BSD password
+ * algorithm. For 'magic' string "apr1", this is compatible to the MD5-based
+ * Apache password algorithm. (Apparently, the Apache password algorithm is
+ * identical except that the 'magic' string was changed -- the laziest
+ * application of the NIH principle I've ever encountered.)
  */
 static char *md5crypt(const char *passwd, const char *magic, const char *salt)
 {
-    static char out_buf[6 + 9 + 24 + 2]; /* "$apr1$..salt..$.......md5hash..........\0" */
+    /* "$apr1$..salt..$.......md5hash..........\0" */
+    static char out_buf[6 + 9 + 24 + 2];
     unsigned char buf[MD5_DIGEST_LENGTH];
     char *salt_out;
     int n;
@@ -281,9 +271,9 @@ static char *md5crypt(const char *passwd, const char *magic, const char *salt)
     out_buf[0] = '$';
     out_buf[1] = 0;
     assert(strlen(magic) <= 4); /* "1" or "apr1" */
-    strlcat(out_buf, magic, sizeof(out_buf));
-    strlcat(out_buf, "$", sizeof(out_buf));
-    strlcat(out_buf, salt, sizeof(out_buf));
+    strncat(out_buf, magic, 4);
+    strncat(out_buf, "$", 1);
+    strncat(out_buf, salt, 8);
     assert(strlen(out_buf) <= 6 + 8); /* "$apr1$..salt.." */
     salt_out = out_buf + 2 + strlen(magic);
     salt_len = strlen(salt_out);
@@ -341,9 +331,7 @@ static char *md5crypt(const char *passwd, const char *magic, const char *salt)
             buf_perm[dest] = buf[source];
         buf_perm[14] = buf[5];
         buf_perm[15] = buf[11];
-#ifndef PEDANTIC /* Unfortunately, this generates a "no effect" warning */
         assert(16 == sizeof buf_perm);
-#endif
 
         output = salt_out + salt_len;
         assert(output == out_buf + strlen(out_buf));
@@ -368,9 +356,9 @@ static char *md5crypt(const char *passwd, const char *magic, const char *salt)
 }
 #endif
 
-static int do_passwd(int passed_salt, char **salt_p, char **salt_malloc_p,
-                     char *passwd, BIO *out, int quiet, int table, int reverse,
-                     size_t pw_maxlen, int usecrypt, int use1, int useapr1)
+static int do_passwd(int passed_salt, char **salt_p, char **salt_malloc_p, char *passwd,
+                     BIO *out, int quiet, int table, int reverse, size_t pw_maxlen,
+                     int usecrypt, int use1, int useapr1)
 {
     char *hash = NULL;
 
@@ -384,13 +372,17 @@ static int do_passwd(int passed_salt, char **salt_p, char **salt_malloc_p,
             if (*salt_malloc_p == NULL) {
                 *salt_p = *salt_malloc_p = malloc(3);
                 if (*salt_malloc_p == NULL)
-                    goto err;
+                    goto end;
             }
-            if (RAND_pseudo_bytes((unsigned char *)*salt_p, 2) < 0)
-                goto err;
+            if (RAND_bytes((unsigned char *)*salt_p, 2) <= 0)
+                goto end;
             (*salt_p)[0] = cov_2char[(*salt_p)[0] & 0x3f]; /* 6 bits */
             (*salt_p)[1] = cov_2char[(*salt_p)[1] & 0x3f]; /* 6 bits */
             (*salt_p)[2] = 0;
+#ifdef CHARSET_EBCDIC
+            ascii2ebcdic(*salt_p, *salt_p, 2); /* des_crypt will convert back
+                                                * to ASCII */
+#endif
         }
 #endif /* !OPENSSL_NO_DES */
 
@@ -401,10 +393,10 @@ static int do_passwd(int passed_salt, char **salt_p, char **salt_malloc_p,
             if (*salt_malloc_p == NULL) {
                 *salt_p = *salt_malloc_p = malloc(9);
                 if (*salt_malloc_p == NULL)
-                    goto err;
+                    goto end;
             }
-            if (RAND_pseudo_bytes((unsigned char *)*salt_p, 8) < 0)
-                goto err;
+            if (RAND_bytes((unsigned char *)*salt_p, 8) <= 0)
+                goto end;
 
             for (i = 0; i < 8; i++)
                 (*salt_p)[i] = cov_2char[(*salt_p)[i] & 0x3f]; /* 6 bits */
@@ -418,7 +410,8 @@ static int do_passwd(int passed_salt, char **salt_p, char **salt_malloc_p,
     /* truncate password if necessary */
     if ((strlen(passwd) > pw_maxlen)) {
         if (!quiet)
-            BIO_printf(bio_err, "Warning: truncating password to %zu characters\n", pw_maxlen);
+            BIO_printf(bio_err, "Warning: truncating password to %zu characters\n",
+                       pw_maxlen);
         passwd[pw_maxlen] = 0;
     }
     assert(strlen(passwd) <= pw_maxlen);
@@ -440,10 +433,10 @@ static int do_passwd(int passed_salt, char **salt_p, char **salt_malloc_p,
         BIO_printf(out, "%s\t%s\n", hash, passwd);
     else
         BIO_printf(out, "%s\n", hash);
-    return 1;
-
-err:
     return 0;
+
+end:
+    return 1;
 }
 #else
 
