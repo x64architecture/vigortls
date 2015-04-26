@@ -1886,8 +1886,8 @@ show_res:
 
 end:
     ERR_print_errors(bio_err);
-    free(buf);
-    free(buf2);
+    free(buf_malloc);
+    free(buf2_malloc);
     free(save_buf);
     free(save_buf2);
 #ifndef OPENSSL_NO_RSA
