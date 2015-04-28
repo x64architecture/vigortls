@@ -171,7 +171,7 @@ int RSA_padding_add_PKCS1_type_2(unsigned char *to, int tlen,
 
     *(p++) = '\0';
 
-    memcpy(p, from, (unsigned int)flen);
+    memcpy(p, from, flen);
     return (1);
 }
 

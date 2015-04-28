@@ -92,7 +92,7 @@ static int ssl_sock_init(void)
 int init_client(int *sock, char *host, char *port, int type, int af)
 {
     struct addrinfo hints, *ai_top, *ai;
-    int i, s;
+    int i, s = 0;
 
     if (!ssl_sock_init())
         return (0);
