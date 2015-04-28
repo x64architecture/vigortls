@@ -122,6 +122,7 @@
 #include <openssl/crypto.h>
 #include <openssl/err.h>
 #include <openssl/safestack.h>
+#include <openssl/sha.h>
 
 DECLARE_STACK_OF(CRYPTO_dynlock)
 

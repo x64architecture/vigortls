@@ -359,14 +359,13 @@ static int def_load_bio(CONF *conf, BIO *in, long *line)
             }
             if (psection == NULL)
                 psection = section;
-            v->name = malloc(strlen(pname) + 1);
+            v->name = strdup(pname);
             v->value = NULL;
             if (v->name == NULL) {
                 CONFerr(CONF_F_DEF_LOAD_BIO,
                         ERR_R_MALLOC_FAILURE);
                 goto err;
             }
-            strlcpy(v->name, pname, strlen(pname) + 1);
             if (!str_copy(conf, psection, &(v->value), start))
                 goto err;
 
