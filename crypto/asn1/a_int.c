@@ -67,7 +67,7 @@
 
 ASN1_INTEGER *ASN1_INTEGER_dup(const ASN1_INTEGER *x)
 {
-    return ASN1_INTEGER_dup(x);
+    return ASN1_STRING_dup(x);
 }
 
 int ASN1_INTEGER_cmp(const ASN1_INTEGER *x, const ASN1_INTEGER *y)
