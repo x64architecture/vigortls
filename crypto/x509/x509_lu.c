@@ -237,6 +237,10 @@ void X509_STORE_free(X509_STORE *vfy)
     if (vfy == NULL)
         return;
 
+    i = CRYPTO_add(&vfy->references, -1, CRYPTO_LOCK_X509_STORE);
+    if (i > 0)
+        return;
+
     sk = vfy->get_cert_methods;
     for (i = 0; i < sk_X509_LOOKUP_num(sk); i++) {
         lu = sk_X509_LOOKUP_value(sk, i);
