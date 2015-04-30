@@ -99,6 +99,8 @@ static int cbs_get_u(CBS *cbs, uint32_t *out, size_t len)
     size_t i;
     const uint8_t *data;
 
+    assert(len >= 1 || len <= 4);
+
     if (!cbs_get(cbs, &data, len))
         return 0;
 
