@@ -473,18 +473,18 @@ int EC_GROUP_cmp(const EC_GROUP *a, const EC_GROUP *b, BN_CTX *ctx)
         return -1;
 
     BN_CTX_start(ctx);
-    a1 = BN_CTX_get(ctx);
-    a2 = BN_CTX_get(ctx);
-    a3 = BN_CTX_get(ctx);
-    b1 = BN_CTX_get(ctx);
-    b2 = BN_CTX_get(ctx);
-    b3 = BN_CTX_get(ctx);
-    if (!b3) {
-        BN_CTX_end(ctx);
-        if (ctx_new)
-            BN_CTX_free(ctx);
-        return -1;
-    }
+    if ((a1 = BN_CTX_get(ctx)) == NULL)
+        goto err;
+    if ((a2 = BN_CTX_get(ctx)) == NULL)
+        goto err;
+    if ((a3 = BN_CTX_get(ctx)) == NULL)
+        goto err;
+    if ((b1 = BN_CTX_get(ctx)) == NULL)
+        goto err;
+    if ((b2 = BN_CTX_get(ctx)) == NULL)
+        goto err;
+    if ((b3 = BN_CTX_get(ctx)) == NULL)
+        goto err;
 
     /* XXX This approach assumes that the external representation
      * of curves over the same field type is the same.
@@ -502,21 +502,26 @@ int EC_GROUP_cmp(const EC_GROUP *a, const EC_GROUP *b, BN_CTX *ctx)
 
     if (!r) {
         /* compare the order and cofactor */
-        if (!EC_GROUP_get_order(a, a1, ctx) || !EC_GROUP_get_order(b, b1, ctx) || !EC_GROUP_get_cofactor(a, a2, ctx) || !EC_GROUP_get_cofactor(b, b2, ctx)) {
-            BN_CTX_end(ctx);
-            if (ctx_new)
-                BN_CTX_free(ctx);
-            return -1;
-        }
+        if (!EC_GROUP_get_order(a, a1, ctx) ||
+            !EC_GROUP_get_order(b, b1, ctx) ||
+            !EC_GROUP_get_cofactor(a, a2, ctx) ||
+            !EC_GROUP_get_cofactor(b, b2, ctx))
+                goto err;
         if (BN_cmp(a1, b1) || BN_cmp(a2, b2))
             r = 1;
     }
-
     BN_CTX_end(ctx);
     if (ctx_new)
         BN_CTX_free(ctx);
 
     return r;
+
+err:
+    BN_CTX_end(ctx);
+    if (ctx_new)
+        BN_CTX_free(ctx);
+
+    return -1;
 }
 
 /* this has 'package' visibility */
