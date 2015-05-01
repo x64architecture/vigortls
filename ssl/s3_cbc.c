@@ -52,6 +52,7 @@
  *
  */
 
+#include <assert.h>
 #include <openssl/md5.h>
 #include <openssl/sha.h>
 
@@ -551,12 +552,20 @@ void ssl3_cbc_digest_record(const EVP_MD_CTX *ctx, unsigned char *md_out,
 
     if (k > 0) {
         if (is_sslv3) {
-            /* The SSLv3 header is larger than a single block.
-             * overhang is the number of bytes beyond a single
-             * block that the header consumes: either 7 bytes
-             * (SHA1) or 11 bytes (MD5). */
+            /*
+             * The SSLv3 header is larger than a single block. overhang is
+             * the number of bytes beyond a single block that the header
+             * consumes: either 7 bytes (SHA1) or 11 bytes (MD5).
+             * consumes: either 7 bytes (SHA1) or 11 bytes (MD5). There are no
+             * ciphersuites in SSLv3 that are not SHA1 or MD5 based and
+             * therefore we can be confident that the header_length will be
+             * greater than |md_block_size|. However we added an assert to
+             * be sure our assumption is correct.
+             */
+            assert(header_length >= md_block_size);
             unsigned overhang = header_length - md_block_size;
             md_transform(md_state.c, header);
+            
             memcpy(first_block, header + md_block_size, overhang);
             memcpy(first_block + overhang, data, md_block_size - overhang);
             md_transform(md_state.c, first_block);
