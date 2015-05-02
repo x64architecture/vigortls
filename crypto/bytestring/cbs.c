@@ -299,16 +299,15 @@ int CBS_get_asn1_uint64(CBS *cbs, uint64_t *out)
     data = CBS_data(&bytes);
     len = CBS_len(&bytes);
 
-    if (len == 0) {
+    if (len == 0)
         /* An INTEGER is encoded with at least one content octet. */
         return 0;
 
-    if ((data[0] & 0x80) != 0) {
+    if ((data[0] & 0x80) != 0)
         /* Negative number. */
         return 0;
-    }
     
-    if (data[0] == 0 && len > 1 && (data[1] & 0x80) == 0) {
+    if (data[0] == 0 && len > 1 && (data[1] & 0x80) == 0)
         /* Violates smallest encoding rule: excessive leading zeros. */
         return 0;
 
