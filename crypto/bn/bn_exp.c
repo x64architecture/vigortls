@@ -191,7 +191,8 @@ int BN_mod_exp(BIGNUM *r, const BIGNUM *a, const BIGNUM *p, const BIGNUM *m,
     bn_check_top(p);
     bn_check_top(m);
 
-/* For even modulus  m = 2^k*m_odd,  it might make sense to compute
+    /*
+     * For even modulus  m = 2^k*m_odd,  it might make sense to compute
      * a^p mod m_odd  and  a^p mod 2^k  separately (with Montgomery
      * exponentiation for the odd part), using appropriate exponent
      * reductions, and combine the results using the CRT.
@@ -226,7 +227,8 @@ int BN_mod_exp(BIGNUM *r, const BIGNUM *a, const BIGNUM *p, const BIGNUM *m,
 #define RECP_MUL_MOD
 
 #ifdef MONT_MUL_MOD
-    /* I have finally been able to take out this pre-condition of
+    /*
+     * I have finally been able to take out this pre-condition of
      * the top bit being set.  It was caused by an error in BN_div
      * with negatives.  There was also another problem when for a^b%m
      * a >= m.  eay 07-May-97 */
@@ -312,7 +314,8 @@ int BN_mod_exp_recp(BIGNUM *r, const BIGNUM *a, const BIGNUM *p,
             goto err; /* 2 */
         j = 1 << (window - 1);
         for (i = 1; i < j; i++) {
-            if (((val[i] = BN_CTX_get(ctx)) == NULL) || !BN_mod_mul_reciprocal(val[i], val[i - 1], aa, &recp, ctx))
+            if (((val[i] = BN_CTX_get(ctx)) == NULL) ||
+                !BN_mod_mul_reciprocal(val[i], val[i - 1], aa, &recp, ctx))
                 goto err;
         }
     }
@@ -337,10 +340,11 @@ int BN_mod_exp_recp(BIGNUM *r, const BIGNUM *a, const BIGNUM *p,
             wstart--;
             continue;
         }
-        /* We now have wstart on a 'set' bit, we now need to work out
-         * how bit a window to do.  To do this we need to scan
-         * forward until the last set bit before the end of the
-         * window */
+        /*
+         * We now have wstart on a 'set' bit, we now need to work out how bit
+         * a window to do.  To do this we need to scan forward until the last
+         * set bit before the end of the window
+         */
         j = wstart;
         wvalue = 1;
         wend = 0;
@@ -418,8 +422,9 @@ int BN_mod_exp_mont(BIGNUM *rr, const BIGNUM *a, const BIGNUM *p,
     if (!d || !r || !val[0])
         goto err;
 
-    /* If this is not done, things will break in the montgomery
-     * part */
+    /*
+     * If this is not done, things will break in the montgomery part
+     */
 
     if (in_mont != NULL)
         mont = in_mont;
@@ -456,8 +461,8 @@ int BN_mod_exp_mont(BIGNUM *rr, const BIGNUM *a, const BIGNUM *p,
     }
 
     start = 1;         /* This is used to avoid multiplication etc
-             * when there is only the value '1' in the
-             * buffer. */
+                        * when there is only the value '1' in the
+                        * buffer. */
     wvalue = 0;        /* The 'value' of the window */
     wstart = bits - 1; /* The top bit of the window */
     wend = 0;          /* The bottom bit of the window */
@@ -523,10 +528,12 @@ err:
     return (ret);
 }
 
-/* BN_mod_exp_mont_consttime() stores the precomputed powers in a specific layout
- * so that accessing any of these table values shows the same access pattern as far
- * as cache lines are concerned.  The following functions are used to transfer a BIGNUM
- * from/to that table. */
+/*
+ * BN_mod_exp_mont_consttime() stores the precomputed powers in a specific
+ * layout so that accessing any of these table values shows the same access
+ * pattern as far as cache lines are concerned. The following functions are
+ * used to transfer a BIGNUM from/to that table.
+ */
 
 static int MOD_EXP_CTIME_COPY_TO_PREBUF(const BIGNUM *b, int top, unsigned char *buf, int idx, int width)
 {
@@ -561,11 +568,12 @@ static int MOD_EXP_CTIME_COPY_FROM_PREBUF(BIGNUM *b, int top, unsigned char *buf
 #define MOD_EXP_CTIME_ALIGN(x_) \
     ((unsigned char *)(x_) + (MOD_EXP_CTIME_MIN_CACHE_LINE_WIDTH - (((size_t)(x_)) & (MOD_EXP_CTIME_MIN_CACHE_LINE_MASK))))
 
-/* This variant of BN_mod_exp_mont() uses fixed windows and the special
- * precomputation memory layout to limit data-dependency to a minimum
- * to protect secret exponents (cf. the hyper-threading timing attacks
- * pointed out by Colin Percival,
- * http://www.daemonology.net/hyperthreading-considered-harmful/)
+/*
+ * This variant of BN_mod_exp_mont() uses fixed windows and the special
+ * precomputation memory layout to limit data-dependency to a minimum to
+ * protect secret exponents (cf. the hyper-threading timing attacks pointed
+ * out by Colin Percival,
+ * http://www.daemong-consideredperthreading-considered-harmful/)
  */
 int BN_mod_exp_mont_consttime(BIGNUM *rr, const BIGNUM *a, const BIGNUM *p,
                               const BIGNUM *m, BN_CTX *ctx, BN_MONT_CTX *in_mont)
@@ -598,9 +606,10 @@ int BN_mod_exp_mont_consttime(BIGNUM *rr, const BIGNUM *a, const BIGNUM *p,
 
     BN_CTX_start(ctx);
 
-    /* Allocate a montgomery context if it was not supplied by the caller.
-     * If this is not done, things will break in the montgomery part.
-      */
+    /*
+     * Allocate a montgomery context if it was not supplied by the caller. If
+     * this is not done, things will break in the montgomery part.
+     */
     if (in_mont != NULL)
         mont = in_mont;
     else {
@@ -613,15 +622,20 @@ int BN_mod_exp_mont_consttime(BIGNUM *rr, const BIGNUM *a, const BIGNUM *p,
     /* Get the window size to use with size of p. */
     window = BN_window_bits_for_ctime_exponent_size(bits);
 #if defined(OPENSSL_BN_ASM_MONT5)
-    if (window == 6 && bits <= 1024)
-        window = 5; /* ~5% improvement of 2048-bit RSA sign */
+    if (window == 6 && bits <= 1024) {
+        window = 5; /* ~5% improvement for RSA2048 sign, and even for RSA4096 */
+        if ((top & 7) == 0)
+            powerbufLen += 2 * top * sizeof(m->d[0]);
+    }
 #endif
 
-    /* Allocate a buffer large enough to hold all of the pre-computed
-     * powers of am, am itself and tmp.
+    /*
+     * Allocate a buffer large enough to hold all of the pre-computed powers
+     * of am, am itself and tmp.
      */
     numPowers = 1 << window;
-    powerbufLen = sizeof(m->d[0]) * (top * numPowers + ((2 * top) > numPowers ? (2 * top) : numPowers));
+    powerbufLen += sizeof(m->d[0]) * (top * numPowers +
+                          ((2 * top) > numPowers ? (2 * top) : numPowers));
 #ifdef alloca
     if (powerbufLen < 3072)
         powerbufFree = alloca(powerbufLen + MOD_EXP_CTIME_MIN_CACHE_LINE_WIDTH);
@@ -667,12 +681,16 @@ int BN_mod_exp_mont_consttime(BIGNUM *rr, const BIGNUM *a, const BIGNUM *p,
         goto err;
 
 #if defined(OPENSSL_BN_ASM_MONT5)
-    /* This optimization uses ideas from http://eprint.iacr.org/2011/239,
+    /* 
+     * This optimization uses ideas from http://eprint.iacr.org/2011/239,
      * specifically optimization of cache-timing attack countermeasures
-     * and pre-computation optimization. */
+     * and pre-computation optimization.
+     */
 
-    /* Dedicated window==4 case improves 512-bit RSA sign by ~15%, but as
-     * 512-bit RSA is hardly relevant, we omit it to spare size... */
+    /*
+     * Dedicated window==4 case improves 512-bit RSA sign by ~15%, but as
+     * 512-bit RSA is hardly relevant, we omit it to spare size...
+     */
     if (window == 5) {
         void bn_mul_mont_gather5(BN_ULONG * rp, const BN_ULONG *ap,
                                  const void *table, const BN_ULONG *np,
@@ -681,15 +699,30 @@ int BN_mod_exp_mont_consttime(BIGNUM *rr, const BIGNUM *a, const BIGNUM *p,
                          void *table, size_t power);
         void bn_gather5(BN_ULONG * out, size_t num,
                         void *table, size_t power);
+        void bn_power5(BN_ULONG *rp, const BN_ULONG *ap,
+                       const void *table, const BN_ULONG *np,
+                       const BN_ULONG *n0, int num, int power);
+        int bn_get_bits5(const BN_ULONG *ap, int off);
+        int bn_from_montgomery(BN_ULONG *rp, const BN_ULONG *ap,
+                               const BN_ULONG *not_used, const BN_ULONG *np,
+                               const BN_ULONG *n0, int num);
 
-        BN_ULONG *np = mont->N.d, *n0 = mont->n0;
+        BN_ULONG *np = mont->N.d, *n0 = mont->n0, *np2;
 
-        /* BN_to_montgomery can contaminate words above .top
-     * [in BN_DEBUG[_DEBUG] build]... */
+        /*
+         * BN_to_montgomery can contaminate words above .top
+         * [in BN_DEBUG[_DEBUG] build]...
+         */
         for (i = am.top; i < top; i++)
             am.d[i] = 0;
         for (i = tmp.top; i < top; i++)
             tmp.d[i] = 0;
+
+        if (top & 7)
+            np2 = np;
+        else
+            for (np2 = am.d + top, i = 0; i < top; i++)
+                np2[2 * i] = np[i];
 
         bn_scatter5(tmp.d, top, powerbuf, 0);
         bn_scatter5(am.d, am.top, powerbuf, 1);
@@ -697,12 +730,11 @@ int BN_mod_exp_mont_consttime(BIGNUM *rr, const BIGNUM *a, const BIGNUM *p,
         bn_scatter5(tmp.d, top, powerbuf, 2);
 
 #if 0
-    for (i=3; i<32; i++)
-        {
+    for (i = 3; i < 32; i++) {
         /* Calculate a^i = a^(i-1) * a */
-        bn_mul_mont_gather5(tmp.d,am.d,powerbuf,np,n0,top,i-1);
-        bn_scatter5(tmp.d,top,powerbuf,i);
-        }
+        bn_mul_mont_gather5(tmp.d, am.d, powerbuf, np2, n0, top, i - 1);
+        bn_scatter5(tmp.d, top, powerbuf, i);
+    }
 #else
         /* same as above, but uses squaring for 1/2 of operations */
         for (i = 4; i < 32; i *= 2) {
@@ -711,7 +743,7 @@ int BN_mod_exp_mont_consttime(BIGNUM *rr, const BIGNUM *a, const BIGNUM *p,
         }
         for (i = 3; i < 8; i += 2) {
             int j;
-            bn_mul_mont_gather5(tmp.d, am.d, powerbuf, np, n0, top, i - 1);
+            bn_mul_mont_gather5(tmp.d, am.d, powerbuf, np2, n0, top, i - 1);
             bn_scatter5(tmp.d, top, powerbuf, i);
             for (j = 2 * i; j < 32; j *= 2) {
                 bn_mul_mont(tmp.d, tmp.d, tmp.d, np, n0, top);
@@ -719,13 +751,13 @@ int BN_mod_exp_mont_consttime(BIGNUM *rr, const BIGNUM *a, const BIGNUM *p,
             }
         }
         for (; i < 16; i += 2) {
-            bn_mul_mont_gather5(tmp.d, am.d, powerbuf, np, n0, top, i - 1);
+            bn_mul_mont_gather5(tmp.d, am.d, powerbuf, np2, n0, top, i - 1);
             bn_scatter5(tmp.d, top, powerbuf, i);
             bn_mul_mont(tmp.d, tmp.d, tmp.d, np, n0, top);
             bn_scatter5(tmp.d, top, powerbuf, 2 * i);
         }
         for (; i < 32; i += 2) {
-            bn_mul_mont_gather5(tmp.d, am.d, powerbuf, np, n0, top, i - 1);
+            bn_mul_mont_gather5(tmp.d, am.d, powerbuf, np2, n0, top, i - 1);
             bn_scatter5(tmp.d, top, powerbuf, i);
         }
 #endif
@@ -734,23 +766,38 @@ int BN_mod_exp_mont_consttime(BIGNUM *rr, const BIGNUM *a, const BIGNUM *p,
             wvalue = (wvalue << 1) + BN_is_bit_set(p, bits);
         bn_gather5(tmp.d, top, powerbuf, wvalue);
 
-        /* Scan the exponent one window at a time starting from the most
-     * significant bits.
-     */
-        while (bits >= 0) {
-            for (wvalue = 0, i = 0; i < 5; i++, bits--)
-                wvalue = (wvalue << 1) + BN_is_bit_set(p, bits);
+        /*
+         * Scan the exponent one window at a time starting from the most
+         * significant bits.
+         */
+        if (top & 7) {
+            while (bits >= 0) {
+                for (wvalue = 0, i = 0; i < 5; i++, bits--)
+                    wvalue = (wvalue << 1) + BN_is_bit_set(p, bits);
 
-            bn_mul_mont(tmp.d, tmp.d, tmp.d, np, n0, top);
-            bn_mul_mont(tmp.d, tmp.d, tmp.d, np, n0, top);
-            bn_mul_mont(tmp.d, tmp.d, tmp.d, np, n0, top);
-            bn_mul_mont(tmp.d, tmp.d, tmp.d, np, n0, top);
-            bn_mul_mont(tmp.d, tmp.d, tmp.d, np, n0, top);
-            bn_mul_mont_gather5(tmp.d, tmp.d, powerbuf, np, n0, top, wvalue);
+                bn_mul_mont(tmp.d, tmp.d, tmp.d, np, n0, top);
+                bn_mul_mont(tmp.d, tmp.d, tmp.d, np, n0, top);
+                bn_mul_mont(tmp.d, tmp.d, tmp.d, np, n0, top);
+                bn_mul_mont(tmp.d, tmp.d, tmp.d, np, n0, top);
+                bn_mul_mont(tmp.d, tmp.d, tmp.d, np, n0, top);
+                bn_mul_mont_gather5(tmp.d, tmp.d, powerbuf, np, n0, top, wvalue);
+            }
+        } else {
+            while (bits >= 0) {
+                wvalue = bn_get_bits5(p->d, bits - 4);
+                bits -= 5;
+                bn_power5(tmp.d, tmp.d, powerbuf, np2, n0, top, wvalue);
+            }
         }
 
+        ret = bn_from_montgomery(tmp.d, tmp.d, NULL, np2, n0, top);
         tmp.top = top;
         bn_correct_top(&tmp);
+        if (ret) {
+            if (!BN_copy(rr, &tmp))
+                ret = 0;
+            goto err; /* non-zero ret means it's not error */
+        }
     } else
 #endif
     {
@@ -759,11 +806,12 @@ int BN_mod_exp_mont_consttime(BIGNUM *rr, const BIGNUM *a, const BIGNUM *p,
         if (!MOD_EXP_CTIME_COPY_TO_PREBUF(&am, top, powerbuf, 1, numPowers))
             goto err;
 
-        /* If the window size is greater than 1, then calculate
-     * val[i=2..2^winsize-1]. Powers are computed as a*a^(i-1)
-     * (even powers could instead be computed as (a^(i/2))^2
-     * to use the slight performance advantage of sqr over mul).
-     */
+        /*
+         * If the window size is greater than 1, then calculate
+         * val[i=2..2^winsize-1]. Powers are computed as a*a^(i-1)
+         * (even powers could instead be computed as (a^(i/2))^2
+         * to use the slight performance advantage of sqr over mul).
+         */
         if (window > 1) {
             if (!BN_mod_mul_montgomery(&tmp, &am, &am, mont, ctx))
                 goto err;
@@ -784,9 +832,10 @@ int BN_mod_exp_mont_consttime(BIGNUM *rr, const BIGNUM *a, const BIGNUM *p,
         if (!MOD_EXP_CTIME_COPY_FROM_PREBUF(&tmp, top, powerbuf, wvalue, numPowers))
             goto err;
 
-        /* Scan the exponent one window at a time starting from the most
-     * significant bits.
-     */
+        /*
+         * Scan the exponent one window at a time starting from the most
+         * significant bits.
+         */
         while (bits >= 0) {
             wvalue = 0; /* The 'value' of the window */
 
@@ -835,14 +884,17 @@ int BN_mod_exp_mont_word(BIGNUM *rr, BN_ULONG a, const BIGNUM *p,
 #define BN_MOD_MUL_WORD(r, w, m)                            \
     (BN_mul_word(r, (w)) && (/* BN_ucmp(r, (m)) < 0 ? 1 :*/ \
                              (BN_mod(t, r, m, ctx) && (swap_tmp = r, r = t, t = swap_tmp, 1))))
-/* BN_MOD_MUL_WORD is only used with 'w' large,
-         * so the BN_ucmp test is probably more overhead
-         * than always using BN_mod (which uses BN_copy if
-         * a similar test returns true). */
-/* We can use BN_mod and do not need BN_nnmod because our
-         * accumulator is never negative (the result of BN_mod does
-         * not depend on the sign of the modulus).
-         */
+/*
+ * BN_MOD_MUL_WORD is only used with 'w' large,
+ * so the BN_ucmp test is probably more overhead
+ * than always using BN_mod (which uses BN_copy if
+ * a similar test returns true).
+ */
+/*
+ * We can use BN_mod and do not need BN_nnmod because our
+ * accumulator is never negative (the result of BN_mod does
+ * not depend on the sign of the modulus).
+ */
 #define BN_TO_MONTGOMERY_WORD(r, w, mont) \
     (BN_set_word(r, (w)) && BN_to_montgomery(r, r, (mont), ctx))
 
@@ -1019,8 +1071,8 @@ int BN_mod_exp_simple(BIGNUM *r, const BIGNUM *a, const BIGNUM *p,
     }
 
     start = 1;         /* This is used to avoid multiplication etc
-             * when there is only the value '1' in the
-             * buffer. */
+                        * when there is only the value '1' in the
+                        * buffer. */
     wvalue = 0;        /* The 'value' of the window */
     wstart = bits - 1; /* The top bit of the window */
     wend = 0;          /* The bottom bit of the window */
@@ -1038,10 +1090,12 @@ int BN_mod_exp_simple(BIGNUM *r, const BIGNUM *a, const BIGNUM *p,
             wstart--;
             continue;
         }
-        /* We now have wstart on a 'set' bit, we now need to work out
+        /*
+         * We now have wstart on a 'set' bit, we now need to work out
          * how bit a window to do.  To do this we need to scan
          * forward until the last set bit before the end of the
-         * window */
+         * window
+         */
         j = wstart;
         wvalue = 1;
         wend = 0;
