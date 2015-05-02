@@ -285,6 +285,7 @@ int CBS_peek_asn1_tag(const CBS *cbs, unsigned int tag_value)
     return CBS_data(cbs)[0] == tag_value;
 }
 
+/* Encoding details are in ASN.1: X.690 section 8.3 */
 int CBS_get_asn1_uint64(CBS *cbs, uint64_t *out)
 {
     CBS bytes;
@@ -298,12 +299,17 @@ int CBS_get_asn1_uint64(CBS *cbs, uint64_t *out)
     data = CBS_data(&bytes);
     len = CBS_len(&bytes);
 
-    if (len == 0)
-        /* An INTEGER is encoded with at least one octet. */
+    if (len == 0) {
+        /* An INTEGER is encoded with at least one content octet. */
         return 0;
 
-    if ((data[0] & 0x80) != 0)
-        /* negative number */
+    if ((data[0] & 0x80) != 0) {
+        /* Negative number. */
+        return 0;
+    }
+    
+    if (data[0] == 0 && len > 1 && (data[1] & 0x80) == 0) {
+        /* Violates smallest encoding rule: excessive leading zeros. */
         return 0;
 
     for (i = 0; i < len; i++) {
