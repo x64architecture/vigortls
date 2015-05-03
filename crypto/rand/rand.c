@@ -28,8 +28,7 @@ const RAND_METHOD *RAND_get_rand_method(void)
     return NULL;
 }
 
-RAND_METHOD *
-RAND_SSLeay(void)
+RAND_METHOD *RAND_SSLeay(void)
 {
     return NULL;
 }
@@ -51,14 +50,12 @@ void RAND_add(const void *buf, int num, double entropy)
     return;
 }
 
-int
-RAND_status(void)
+int RAND_status(void)
 {
     return 1;
 }
 
-int
-RAND_poll(void)
+int RAND_poll(void)
 {
     return 1;
 }

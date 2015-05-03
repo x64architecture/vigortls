@@ -21,8 +21,6 @@
 
 #include <openssl/rand.h>
 
-#if defined(_WIN32)
-
 #include <limits.h>
 #include <stdlib.h>
 #include <windows.h>
@@ -54,5 +52,3 @@ int RAND_bytes(uint8_t *buf, size_t requested)
     }
     return SUCCESS;
 }
-
-#endif /* _WIN32 */
