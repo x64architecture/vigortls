@@ -159,7 +159,12 @@ typedef struct X509_sig_st {
     ASN1_OCTET_STRING *digest;
 } X509_SIG;
 
-typedef struct X509_name_entry_st X509_NAME_ENTRY;
+typedef struct X509_name_entry_st {
+    ASN1_OBJECT *object;
+    ASN1_STRING *value;
+    int set;
+    int size;                   /* temp variable */
+} X509_NAME_ENTRY;
 
 DECLARE_STACK_OF(X509_NAME_ENTRY)
 DECLARE_ASN1_SET_OF(X509_NAME_ENTRY)

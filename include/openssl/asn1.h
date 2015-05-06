@@ -479,6 +479,54 @@ typedef struct BIT_STRING_BITNAME_st {
     const char *sname;
 } BIT_STRING_BITNAME;
 
+#ifndef VIGORTLS_INTERNAL
+
+#define M_ASN1_STRING_length(x) ((x)->length)
+#define M_ASN1_STRING_length_set(x, n) ((x)->length = (n))
+#define M_ASN1_STRING_type(x) ((x)->type)
+#define M_ASN1_STRING_data(x) ((x)->data)
+
+/* Macros for string operations */
+#define M_ASN1_BIT_STRING_new() (ASN1_BIT_STRING *) \
+    ASN1_STRING_type_new(V_ASN1_BIT_STRING)
+#define M_ASN1_BIT_STRING_free(a) ASN1_STRING_free((ASN1_STRING *)a)
+#define M_ASN1_BIT_STRING_dup(a) (ASN1_BIT_STRING *) \
+    ASN1_STRING_dup((const ASN1_STRING *)a)
+#define M_ASN1_BIT_STRING_cmp(a, b) ASN1_STRING_cmp( \
+    (const ASN1_STRING *)a, (const ASN1_STRING *)b)
+#define M_ASN1_BIT_STRING_set(a, b, c) ASN1_STRING_set((ASN1_STRING *)a, b, c)
+
+#define M_ASN1_INTEGER_new() (ASN1_INTEGER *) \
+    ASN1_STRING_type_new(V_ASN1_INTEGER)
+#define M_ASN1_INTEGER_free(a) ASN1_STRING_free((ASN1_STRING *)a)
+#define M_ASN1_INTEGER_dup(a) (ASN1_INTEGER *) \
+    ASN1_STRING_dup((const ASN1_STRING *)a)
+#define M_ASN1_INTEGER_cmp(a, b) ASN1_STRING_cmp( \
+    (const ASN1_STRING *)a, (const ASN1_STRING *)b)
+
+#define M_ASN1_ENUMERATED_new() (ASN1_ENUMERATED *) \
+    ASN1_STRING_type_new(V_ASN1_ENUMERATED)
+#define M_ASN1_ENUMERATED_free(a) ASN1_STRING_free((ASN1_STRING *)a)
+#define M_ASN1_ENUMERATED_dup(a) (ASN1_ENUMERATED *) \
+    ASN1_STRING_dup((const ASN1_STRING *)a)
+#define M_ASN1_ENUMERATED_cmp(a, b) ASN1_STRING_cmp( \
+    (const ASN1_STRING *)a, (const ASN1_STRING *)b)
+
+#define M_ASN1_OCTET_STRING_new() (ASN1_OCTET_STRING *) \
+    ASN1_STRING_type_new(V_ASN1_OCTET_STRING)
+#define M_ASN1_OCTET_STRING_free(a) ASN1_STRING_free((ASN1_STRING *)a)
+#define M_ASN1_OCTET_STRING_dup(a) (ASN1_OCTET_STRING *) \
+    ASN1_STRING_dup((const ASN1_STRING *)a)
+#define M_ASN1_OCTET_STRING_cmp(a, b) ASN1_STRING_cmp( \
+    (const ASN1_STRING *)a, (const ASN1_STRING *)b)
+#define M_ASN1_OCTET_STRING_set(a, b, c) ASN1_STRING_set((ASN1_STRING *)a, b, c)
+#define M_ASN1_OCTET_STRING_print(a, b) ASN1_STRING_print(a, (ASN1_STRING *)b)
+#define M_i2d_ASN1_OCTET_STRING(a, pp)                        \
+    i2d_ASN1_bytes((ASN1_STRING *)a, pp, V_ASN1_OCTET_STRING, \
+                   V_ASN1_UNIVERSAL)
+
+#endif /* !VIGORTLS_INTERNAL */
+
 #define B_ASN1_TIME \
     B_ASN1_UTCTIME | B_ASN1_GENERALIZEDTIME
 

@@ -59,13 +59,6 @@
 
 /* Internal X509 structures and functions: not for application use */
 
-struct X509_name_entry_st {
-    ASN1_OBJECT *object;
-    ASN1_STRING *value;
-    int set;
-    int size;                   /* temp variable */
-};
-
 /* we always keep X509_NAMEs in 2 forms. */
 struct X509_name_st {
     STACK_OF(X509_NAME_ENTRY) *entries;
