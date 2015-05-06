@@ -7,7 +7,7 @@ include(CTest)
 include(ConfigureChecks.cmake)
 
 if (CMAKE_COMPILER_IS_GNUCC OR ${CMAKE_C_COMPILER_ID} STREQUAL "Clang")
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Werror -ggdb -std=c99")
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Werror -g -std=c99")
 elseif(MSVC)
   set(CMAKE_C_FLAGS "/W3 /WX /wd4267 /wd4018 /wd4090 /wd4146 /wd4244")
   set(CMAKE_C_FLAGS_RELEASE "/MT /Ox /O2 /Ob2")
@@ -44,6 +44,12 @@ if (ARCH STREQUAL "x86")
 endif()
 
 add_definitions(-DVIGORTLS_INTERNAL)
+
+set(BUILD_SHARED_LIBS OFF)
+if (BUILD_SHARED_LIBS)
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fPIC")
+    add_definitions(-DOPENSSL_PIC)
+endif()
 
 if(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
     add_definitions(-D_GNU_SOURCE)

@@ -97,7 +97,7 @@ sub ::BC	{ @_;		}
 sub ::DWC	{ @_;		}
 
 sub ::file
-{   push(@out,".file\t\"$_[0].S\"\n.text\n");	}
+{   push(@out,".file\t\"$_[0].s\"\n.text\n");	}
 
 sub ::function_begin_B
 { my $func=shift;
@@ -108,11 +108,6 @@ sub ::function_begin_B
     $func=$nmdecor.$func;
 
     push(@out,".globl\t$func\n")	if ($global);
-    if ($::macosx) {
-      push(@out,".private_extern\t$func\n");
-    } else {
-      push(@out,".hidden\t$func\n");
-    }
     if ($::coff)
     {	push(@out,".def\t$func;\t.scl\t".(3-$global).";\t.type\t32;\t.endef\n"); }
     elsif (($::aout and !$::pic) or $::macosx)
@@ -163,7 +158,7 @@ sub ::file_end
 	    {	push(@out,"$non_lazy_ptr{$i}:\n.indirect_symbol\t$i\n.long\t0\n");   }
 	}
     }
-    if (0 && grep {/\b${nmdecor}OPENSSL_ia32cap_P\b/i} @out) {
+    if (grep {/\b${nmdecor}OPENSSL_ia32cap_P\b/i} @out) {
 	my $tmp=".comm\t${nmdecor}OPENSSL_ia32cap_P,16";
 	if ($::macosx)	{ push (@out,"$tmp,2\n"); }
 	elsif ($::elf)	{ push (@out,"$tmp,4\n"); }

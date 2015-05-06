@@ -119,8 +119,6 @@ add_subdirectory(x509v3)
 add_library(
     crypto
 
-    STATIC
-
     cpt_err.c
     cryptlib.c
     ex_data.c

@@ -131,6 +131,14 @@ sub ::rdrand
     {	&::generic("rdrand",@_);	}
 }
 
+sub ::rdseed
+{ my ($dst)=@_;
+    if ($dst =~ /(e[a-dsd][ixp])/)
+    {	&::data_byte(0x0f,0xc7,0xf8|$regrm{$dst});	}
+    else
+    {	&::generic("rdrand",@_);	}
+}
+
 sub rxb {
  local *opcode=shift;
  my ($dst,$src1,$src2,$rxb)=@_;
@@ -235,9 +243,7 @@ sub ::asciz
 
 sub ::asm_finish
 {   &file_end();
-    print "#if defined(__i386__)\n" unless $win32;
     print @out;
-    print "#endif\n" unless $win32;
 }
 
 sub ::asm_init

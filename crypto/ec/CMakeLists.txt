@@ -4,6 +4,7 @@ if (${ARCH} STREQUAL "x86_64")
     set(
         EC_ARCH_SOURCES
 
+        ecp_nistz256.c
         ecp_nistz256-x86_64.${ASM_EXT}
     )
 endif()
@@ -25,7 +26,6 @@ add_library(
     ecp_nistp256.c
     ecp_nistp521.c
     ecp_nistputil.c
-    ecp_nistz256.c
     ecp_oct.c
     ecp_smpl.c
     ec_ameth.c
