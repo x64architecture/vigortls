@@ -14,8 +14,6 @@
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-#if defined(_WIN32)
-
 #include <stdlib.h>
 #include <malloc.h>
 #include <dirent.h>
@@ -115,4 +113,3 @@ int closedir(DIR *dir)
 
     return 0;
 }
-#endif

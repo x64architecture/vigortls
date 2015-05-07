@@ -1,9 +1,19 @@
 include_directories(${CMAKE_CURRENT_BINARY_DIR} .. ../../include .)
 
+if (WIN32)
+    set(
+        COMPAT_SOURCES
+
+        gettimeofday_windows.c
+        dirent_windows.c
+    )
+endif()
+
 if (NOT HAVE_VASPRINTF OR NOT HAVE_ASPRINTF)
     set(
         COMPAT_SOURCES
 
+        ${COMPAT_SOURCES}
         vasprintf.c
     )
 endif()
@@ -68,6 +78,4 @@ add_library(
     OBJECT
 
     ${COMPAT_SOURCES}
-    gettimeofday_windows.c
-    dirent_windows.c
 )

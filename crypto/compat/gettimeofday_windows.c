@@ -19,8 +19,6 @@
 
 #include <sys/time.h>
 
-#ifdef _WIN32
-
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 #include <time.h>
@@ -60,5 +58,3 @@ int gettimeofday(struct timeval *tv, struct timezone *tz)
 
     return 0;
 }
-
-#endif /* _WIN32 */
