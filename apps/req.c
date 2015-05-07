@@ -190,7 +190,7 @@ OPTIONS req_options[] = {
     { "asn1-kludge", OPT_ASN1_KLUDGE, '-', "Output the request in a format that is wrong" },
     { OPT_MORE_STR, 1, 1, "(Required by some CA's)" },
     { "no-asn1-kludge", OPT_NO_ASN1_KLUDGE, '-' },
-	{ "subj", OPT_SUBJECT, 's', "Output the request's subject (DEPRECATED OPTION)" },
+    { "subj", OPT_SUBJECT, 's', "Output the request's subject (DEPRECATED OPTION)" },
     { "subject", OPT_SUBJECT, 's', "Output the request's subject" },
     { "multivalue-rdn", OPT_MULTIVALUE_RDN, '-', "Enable support for multivalued RDNs" },
     { "days", OPT_DAYS, 'p', "Number of days cert is valid for" },

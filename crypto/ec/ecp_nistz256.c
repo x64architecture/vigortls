@@ -87,13 +87,13 @@ void ecp_nistz256_mul_by_2(BN_ULONG res[P256_LIMBS], const BN_ULONG a[P256_LIMBS
 void ecp_nistz256_div_by_2(BN_ULONG res[P256_LIMBS], const BN_ULONG a[P256_LIMBS]);
 /* Modular mul by 3: res = 3*a mod P */
 void ecp_nistz256_mul_by_3(BN_ULONG res[P256_LIMBS], const BN_ULONG a[P256_LIMBS]);
-/* Modular add: res = a+b mod P	  */
+/* Modular add: res = a+b mod P      */
 void ecp_nistz256_add(BN_ULONG res[P256_LIMBS], const BN_ULONG a[P256_LIMBS],
                       const BN_ULONG b[P256_LIMBS]);
-/* Modular sub: res = a-b mod P	  */
+/* Modular sub: res = a-b mod P      */
 void ecp_nistz256_sub(BN_ULONG res[P256_LIMBS], const BN_ULONG a[P256_LIMBS],
                       const BN_ULONG b[P256_LIMBS]);
-/* Modular neg: res = -a mod P	  */
+/* Modular neg: res = -a mod P      */
 void ecp_nistz256_neg(BN_ULONG res[P256_LIMBS], const BN_ULONG a[P256_LIMBS]);
 /* Montgomery mul: res = a*b*2^-256 mod P */
 void ecp_nistz256_mul_mont(BN_ULONG res[P256_LIMBS], const BN_ULONG a[P256_LIMBS],
