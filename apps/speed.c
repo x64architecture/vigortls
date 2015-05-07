@@ -284,6 +284,7 @@ OPTIONS speed_options[] = {
 #ifndef OPENSSL_NO_ENGINE
     { "engine", OPT_ENGINE, 's', "Use engine, possibly a hardware device" },
 #endif
+    { NULL },
 };
 
 #define D_MD2 0
