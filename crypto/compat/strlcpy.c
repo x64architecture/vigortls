@@ -16,19 +16,15 @@
 
 #include <string.h>
 
-#include <stdcompat.h>
-
 size_t strlcpy(char *dest, const char *src, size_t size)
 {
-    size_t len = 0;
-    while (size > 1 && *src) {
-        size--;
-        *dest++ = *src++;
-        len++;
+    size_t ret = strlen(src);
+
+    if (size) {
+        size_t len = (ret >= size) ? size - 1 : ret;
+        memcpy(dest, src, len);
+        dest[len] = '\0';
     }
 
-    if (size)
-        *dest = '\0';
-
-    return len + strlen(src);
+    return ret;
 }
