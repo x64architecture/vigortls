@@ -5,7 +5,6 @@
  * ====================================================================
  */
 #include <openssl/opensslconf.h>
-#if !defined(OPENSSL_NO_SHA) && !defined(OPENSSL_NO_SHA256)
 
 #include <stdlib.h>
 #include <string.h>
@@ -385,4 +384,3 @@ static void sha256_block_data_order(SHA256_CTX *ctx, const void *in, size_t num)
 #endif
 #endif /* OPENSSL_NO_ASM */
 
-#endif /* OPENSSL_NO_SHA256 */

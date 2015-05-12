@@ -61,19 +61,9 @@
 #include <string.h>
 #include <stdlib.h>
 
-#ifdef OPENSSL_NO_HMAC
-int main(int argc, char *argv[])
-{
-    printf("No HMAC support\n");
-    return (0);
-}
-#else
 #include <openssl/hmac.h>
-#ifndef OPENSSL_NO_MD5
 #include <openssl/md5.h>
-#endif
 
-#ifndef OPENSSL_NO_MD5
 static struct test_st {
     unsigned char key[16];
     int key_len;
@@ -122,20 +112,14 @@ static struct test_st {
         (unsigned char *)"56be34521d144c88dbb8c733f0e8b3f6",
       },
   };
-#endif
 
 static char *pt(unsigned char *md);
 int main(int argc, char *argv[])
 {
-#ifndef OPENSSL_NO_MD5
     int i;
     char *p;
-#endif
     int err = 0;
 
-#ifdef OPENSSL_NO_MD5
-    printf("test skipped: MD5 disabled\n");
-#else
 
     for (i = 0; i < 4; i++) {
         p = pt(HMAC(EVP_md5(),
@@ -150,12 +134,10 @@ int main(int argc, char *argv[])
         } else
             printf("test %d ok\n", i);
     }
-#endif /* OPENSSL_NO_MD5 */
     exit(err);
     return (0);
 }
 
-#ifndef OPENSSL_NO_MD5
 static char *pt(unsigned char *md)
 {
     int i;
@@ -165,5 +147,3 @@ static char *pt(unsigned char *md)
         snprintf(buf + i * 2, sizeof(buf) - i * 2, "%02x", md[i]);
     return (buf);
 }
-#endif
-#endif

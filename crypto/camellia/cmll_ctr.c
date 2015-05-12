@@ -51,7 +51,6 @@
 
 #include <openssl/opensslconf.h>
 
-#ifndef OPENSSL_NO_CAMELLIA
 #include <openssl/camellia.h>
 #include <openssl/modes.h>
 
@@ -64,4 +63,3 @@ void Camellia_ctr128_encrypt(const unsigned char *in, unsigned char *out,
 
     CRYPTO_ctr128_encrypt(in, out, length, key, ivec, ecount_buf, num, (block128_f)Camellia_encrypt);
 }
-#endif

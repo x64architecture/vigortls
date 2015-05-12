@@ -107,7 +107,6 @@
 
 #include <openssl/opensslconf.h>
 
-#ifndef OPENSSL_NO_CAMELLIA
 
 #include <openssl/camellia.h>
 #include <openssl/modes.h>
@@ -122,4 +121,3 @@ void Camellia_ofb128_encrypt(const unsigned char *in, unsigned char *out,
 {
     CRYPTO_ofb128_encrypt(in, out, length, key, ivec, num, (block128_f)Camellia_encrypt);
 }
-#endif

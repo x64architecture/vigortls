@@ -62,9 +62,7 @@
 
 #include <openssl/ossl_typ.h>
 
-#ifndef OPENSSL_NO_BIO
 #include <openssl/bio.h>
-#endif
 
 /*
 #define EVP_RC2_KEY_SIZE        16
@@ -133,9 +131,7 @@ struct evp_pkey_st {
 #ifndef OPENSSL_NO_DH
         struct dh_st *dh; /* DH */
 #endif
-#ifndef OPENSSL_NO_EC
         struct ec_key_st *ec; /* ECC */
-#endif
     } pkey;
     int save_parameters;
     STACK_OF(X509_ATTRIBUTE) * attributes; /* [ 0 ] */
@@ -229,15 +225,11 @@ struct env_md_st {
 #define EVP_PKEY_DSA_method EVP_PKEY_NULL_method
 #endif
 
-#ifndef OPENSSL_NO_ECDSA
 #define EVP_PKEY_ECDSA_method                                          \
     (evp_sign_method *) ECDSA_sign, (evp_verify_method *)ECDSA_verify, \
     {                                                                  \
         EVP_PKEY_EC, 0, 0, 0                                           \
     }
-#else
-#define EVP_PKEY_ECDSA_method EVP_PKEY_NULL_method
-#endif
 
 #ifndef OPENSSL_NO_RSA
 #define EVP_PKEY_RSA_method                                        \
@@ -451,10 +443,8 @@ typedef int(EVP_PBE_KEYGEN)(EVP_CIPHER_CTX *ctx, const char *pass, int passlen,
                                                      (char *)(dh))
 #endif
 
-#ifndef OPENSSL_NO_EC
 #define EVP_PKEY_assign_EC_KEY(pkey, eckey) EVP_PKEY_assign((pkey), EVP_PKEY_EC, \
                                                             (char *)(eckey))
-#endif
 
 /* Add some extra combinations */
 #define EVP_get_digestbynid(a) EVP_get_digestbyname(OBJ_nid2sn(a))
@@ -631,45 +621,31 @@ int EVP_CIPHER_CTX_set_padding(EVP_CIPHER_CTX *c, int pad);
 int EVP_CIPHER_CTX_ctrl(EVP_CIPHER_CTX *ctx, int type, int arg, void *ptr);
 int EVP_CIPHER_CTX_rand_key(EVP_CIPHER_CTX *ctx, unsigned char *key);
 
-#ifndef OPENSSL_NO_BIO
 BIO_METHOD *BIO_f_md(void);
 BIO_METHOD *BIO_f_base64(void);
 BIO_METHOD *BIO_f_cipher(void);
 void BIO_set_cipher(BIO *b, const EVP_CIPHER *c, const unsigned char *k,
                     const unsigned char *i, int enc);
-#endif
 
 const EVP_MD *EVP_md_null(void);
 #ifndef OPENSSL_NO_MD4
 const EVP_MD *EVP_md4(void);
 #endif
-#ifndef OPENSSL_NO_MD5
 const EVP_MD *EVP_md5(void);
-#endif
-#ifndef OPENSSL_NO_SHA
-const EVP_MD *EVP_sha(void);
 const EVP_MD *EVP_sha1(void);
-const EVP_MD *EVP_dss(void);
 const EVP_MD *EVP_dss1(void);
 const EVP_MD *EVP_ecdsa(void);
-#endif
-#ifndef OPENSSL_NO_SHA256
 const EVP_MD *EVP_sha224(void);
 const EVP_MD *EVP_sha256(void);
-#endif
-#ifndef OPENSSL_NO_SHA512
 const EVP_MD *EVP_sha384(void);
 const EVP_MD *EVP_sha512(void);
-#endif
 #ifndef OPENSSL_NO_MDC2
 const EVP_MD *EVP_mdc2(void);
 #endif
 #ifndef OPENSSL_NO_RIPEMD
 const EVP_MD *EVP_ripemd160(void);
 #endif
-#ifndef OPENSSL_NO_WHIRLPOOL
 const EVP_MD *EVP_whirlpool(void);
-#endif
 const EVP_CIPHER *EVP_enc_null(void); /* does nothing :-) */
 #ifndef OPENSSL_NO_DES
 const EVP_CIPHER *EVP_des_ecb(void);
@@ -695,13 +671,9 @@ const EVP_CIPHER *EVP_des_ede_cbc(void);
 const EVP_CIPHER *EVP_des_ede3_cbc(void);
 const EVP_CIPHER *EVP_desx_cbc(void);
 #endif
-#ifndef OPENSSL_NO_RC4
 const EVP_CIPHER *EVP_rc4(void);
 const EVP_CIPHER *EVP_rc4_40(void);
-#ifndef OPENSSL_NO_MD5
 const EVP_CIPHER *EVP_rc4_hmac_md5(void);
-#endif
-#endif
 #ifndef OPENSSL_NO_IDEA
 const EVP_CIPHER *EVP_idea_ecb(void);
 const EVP_CIPHER *EVP_idea_cfb64(void);
@@ -739,7 +711,6 @@ const EVP_CIPHER *EVP_rc5_32_12_16_cfb64(void);
 #define EVP_rc5_32_12_16_cfb EVP_rc5_32_12_16_cfb64
 const EVP_CIPHER *EVP_rc5_32_12_16_ofb(void);
 #endif
-#ifndef OPENSSL_NO_AES
 const EVP_CIPHER *EVP_aes_128_ecb(void);
 const EVP_CIPHER *EVP_aes_128_cbc(void);
 const EVP_CIPHER *EVP_aes_128_cfb1(void);
@@ -772,12 +743,8 @@ const EVP_CIPHER *EVP_aes_256_ctr(void);
 const EVP_CIPHER *EVP_aes_256_ccm(void);
 const EVP_CIPHER *EVP_aes_256_gcm(void);
 const EVP_CIPHER *EVP_aes_256_xts(void);
-#if !defined(OPENSSL_NO_SHA) && !defined(OPENSSL_NO_SHA1)
 const EVP_CIPHER *EVP_aes_128_cbc_hmac_sha1(void);
 const EVP_CIPHER *EVP_aes_256_cbc_hmac_sha1(void);
-#endif
-#endif
-#ifndef OPENSSL_NO_CAMELLIA
 const EVP_CIPHER *EVP_camellia_128_ecb(void);
 const EVP_CIPHER *EVP_camellia_128_cbc(void);
 const EVP_CIPHER *EVP_camellia_128_cfb1(void);
@@ -799,7 +766,6 @@ const EVP_CIPHER *EVP_camellia_256_cfb8(void);
 const EVP_CIPHER *EVP_camellia_256_cfb128(void);
 #define EVP_camellia_256_cfb EVP_camellia_256_cfb128
 const EVP_CIPHER *EVP_camellia_256_ofb(void);
-#endif
 
 #ifndef OPENSSL_NO_CHACHA
 const EVP_CIPHER *EVP_chacha20(void);
@@ -871,11 +837,9 @@ struct dh_st;
 int EVP_PKEY_set1_DH(EVP_PKEY *pkey, struct dh_st *key);
 struct dh_st *EVP_PKEY_get1_DH(EVP_PKEY *pkey);
 #endif
-#ifndef OPENSSL_NO_EC
 struct ec_key_st;
 int EVP_PKEY_set1_EC_KEY(EVP_PKEY *pkey, struct ec_key_st *key);
 struct ec_key_st *EVP_PKEY_get1_EC_KEY(EVP_PKEY *pkey);
-#endif
 
 EVP_PKEY *EVP_PKEY_new(void);
 void EVP_PKEY_free(EVP_PKEY *pkey);
@@ -1196,12 +1160,10 @@ void EVP_PKEY_meth_set_ctrl(EVP_PKEY_METHOD *pmeth,
 struct evp_aead_st;
 typedef struct evp_aead_st EVP_AEAD;
 
-#ifndef OPENSSL_NO_AES
 /* EVP_aes_128_gcm is AES-128 in Galois Counter Mode. */
 const EVP_AEAD *EVP_aead_aes_128_gcm(void);
 /* EVP_aes_256_gcm is AES-256 in Galois Counter Mode. */
 const EVP_AEAD *EVP_aead_aes_256_gcm(void);
-#endif
 
 #if !defined(OPENSSL_NO_CHACHA) && !defined(OPENSSL_NO_POLY1305)
 /* EVP_aead_chacha20_poly1305 is ChaCha20 with a Poly1305 authenticator. */

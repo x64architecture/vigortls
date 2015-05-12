@@ -61,9 +61,7 @@
 
 #include <openssl/opensslconf.h>
 
-#ifndef OPENSSL_NO_BIO
 #include <openssl/bio.h>
-#endif
 #include <openssl/ossl_typ.h>
 #ifndef OPENSSL_NO_DEPRECATED
 #include <openssl/bn.h>
@@ -192,11 +190,7 @@ int DH_compute_key(unsigned char *key, const BIGNUM *pub_key, DH *dh);
 DH *d2i_DHparams(DH **a, const unsigned char **pp, long length);
 int i2d_DHparams(const DH *a, unsigned char **pp);
 int DHparams_print_fp(FILE *fp, const DH *x);
-#ifndef OPENSSL_NO_BIO
 int DHparams_print(BIO *bp, const DH *x);
-#else
-int DHparams_print(char *bp, const DH *x);
-#endif
 
 #define EVP_PKEY_CTX_set_dh_paramgen_prime_len(ctx, len)      \
     EVP_PKEY_CTX_ctrl(ctx, EVP_PKEY_DH, EVP_PKEY_OP_PARAMGEN, \

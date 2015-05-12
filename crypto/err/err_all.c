@@ -59,9 +59,7 @@
 #include <stdio.h>
 #include <openssl/asn1.h>
 #include <openssl/bn.h>
-#ifndef OPENSSL_NO_EC
 #include <openssl/ec.h>
-#endif
 #include <openssl/buffer.h>
 #include <openssl/bio.h>
 #include <openssl/rsa.h>
@@ -69,12 +67,8 @@
 #ifndef OPENSSL_NO_DSA
 #include <openssl/dsa.h>
 #endif
-#ifndef OPENSSL_NO_ECDSA
 #include <openssl/ecdsa.h>
-#endif
-#ifndef OPENSSL_NO_ECDH
 #include <openssl/ecdh.h>
-#endif
 #include <openssl/evp.h>
 #include <openssl/objects.h>
 #include <openssl/pem2.h>
@@ -113,15 +107,9 @@ void ERR_load_crypto_strings(void)
     ERR_load_ASN1_strings();
     ERR_load_CONF_strings();
     ERR_load_CRYPTO_strings();
-#ifndef OPENSSL_NO_EC
     ERR_load_EC_strings();
-#endif
-#ifndef OPENSSL_NO_ECDSA
     ERR_load_ECDSA_strings();
-#endif
-#ifndef OPENSSL_NO_ECDH
     ERR_load_ECDH_strings();
-#endif
     /* skip ERR_load_SSL_strings() because it is not in this library */
     ERR_load_BIO_strings();
     ERR_load_PKCS7_strings();

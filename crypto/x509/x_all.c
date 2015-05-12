@@ -321,7 +321,6 @@ int i2d_DSA_PUBKEY_bio(BIO *bp, DSA *dsa)
 
 #endif
 
-#ifndef OPENSSL_NO_EC
 EC_KEY *d2i_EC_PUBKEY_fp(FILE *fp, EC_KEY **eckey)
 {
     return ASN1_d2i_fp_of(EC_KEY, EC_KEY_new, d2i_EC_PUBKEY, fp, eckey);
@@ -360,7 +359,6 @@ int i2d_ECPrivateKey_bio(BIO *bp, EC_KEY *eckey)
 {
     return ASN1_i2d_bio_of(EC_KEY, i2d_ECPrivateKey, bp, eckey);
 }
-#endif
 
 int X509_pubkey_digest(const X509 *data, const EVP_MD *type, unsigned char *md,
                        unsigned int *len)

@@ -58,7 +58,6 @@
 
 #include <stdio.h>
 
-#ifndef OPENSSL_NO_MD5
 
 #include <openssl/evp.h>
 #include <openssl/objects.h>
@@ -107,4 +106,3 @@ const EVP_MD *EVP_md5(void)
 {
     return (&md5_md);
 }
-#endif

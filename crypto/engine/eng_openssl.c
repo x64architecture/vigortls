@@ -95,19 +95,6 @@
 /* #define TEST_ENG_OPENSSL_SHA_P_FINAL */
 
 /* Now check what of those algorithms are actually enabled */
-#ifdef OPENSSL_NO_RC4
-#undef TEST_ENG_OPENSSL_RC4
-#undef TEST_ENG_OPENSSL_RC4_OTHERS
-#undef TEST_ENG_OPENSSL_RC4_P_INIT
-#undef TEST_ENG_OPENSSL_RC4_P_CIPHER
-#endif
-#if defined(OPENSSL_NO_SHA) || defined(OPENSSL_NO_SHA0) || defined(OPENSSL_NO_SHA1)
-#undef TEST_ENG_OPENSSL_SHA
-#undef TEST_ENG_OPENSSL_SHA_OTHERS
-#undef TEST_ENG_OPENSSL_SHA_P_INIT
-#undef TEST_ENG_OPENSSL_SHA_P_UPDATE
-#undef TEST_ENG_OPENSSL_SHA_P_FINAL
-#endif
 
 #ifdef TEST_ENG_OPENSSL_RC4
 static int openssl_ciphers(ENGINE *e, const EVP_CIPHER **cipher,
@@ -140,12 +127,8 @@ bind_helper(ENGINE *e)
 #ifndef OPENSSL_NO_DSA
         || !ENGINE_set_DSA(e, DSA_get_default_method())
 #endif
-#ifndef OPENSSL_NO_ECDH
         || !ENGINE_set_ECDH(e, ECDH_OpenSSL())
-#endif
-#ifndef OPENSSL_NO_ECDSA
         || !ENGINE_set_ECDSA(e, ECDSA_OpenSSL())
-#endif
 #ifndef OPENSSL_NO_DH
         || !ENGINE_set_DH(e, DH_get_default_method())
 #endif

@@ -155,9 +155,7 @@ void *lh_insert(_LHASH *lh, void *data)
         }
         nn->data = data;
         nn->next = NULL;
-#ifndef OPENSSL_NO_HASH_COMP
         nn->hash = hash;
-#endif
         *rn = nn;
         ret = NULL;
         lh->num_insert++;
@@ -270,12 +268,7 @@ static void expand(_LHASH *lh)
     nni = lh->num_alloc_nodes;
 
     for (np = *n1; np != NULL;) {
-#ifndef OPENSSL_NO_HASH_COMP
         hash = np->hash;
-#else
-        hash = lh->hash(np->data);
-        lh->num_hash_calls++;
-#endif
         if ((hash % nni) != p) { /* move it */
             *n1 = (*n1)->next;
             np->next = *n2;
@@ -356,13 +349,11 @@ static LHASH_NODE **getrn(_LHASH *lh, const void *data, unsigned long *rhash)
     cf = lh->comp;
     ret = &(lh->b[(int)nn]);
     for (n1 = *ret; n1 != NULL; n1 = n1->next) {
-#ifndef OPENSSL_NO_HASH_COMP
         lh->num_hash_comps++;
         if (n1->hash != hash) {
             ret = &(n1->next);
             continue;
         }
-#endif
         lh->num_comp_calls++;
         if (cf(n1->data, data) == 0)
             break;

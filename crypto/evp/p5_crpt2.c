@@ -59,7 +59,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#if !defined(OPENSSL_NO_HMAC) && !defined(OPENSSL_NO_SHA)
 #include <openssl/x509.h>
 #include <openssl/evp.h>
 #include <openssl/err.h>
@@ -278,4 +277,3 @@ err:
     return rv;
 }
 
-#endif

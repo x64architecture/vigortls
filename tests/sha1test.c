@@ -61,13 +61,6 @@
 #include <string.h>
 #include <stdlib.h>
 
-#ifdef OPENSSL_NO_SHA
-int main(int argc, char *argv[])
-{
-    printf("No SHA support\n");
-    return (0);
-}
-#else
 #include <openssl/evp.h>
 #include <openssl/sha.h>
 
@@ -152,4 +145,3 @@ static char *pt(unsigned char *md)
         snprintf(buf + i * 2, sizeof(buf) - i * 2, "%02x", md[i]);
     return (buf);
 }
-#endif

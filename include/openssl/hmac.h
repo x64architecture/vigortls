@@ -60,9 +60,6 @@
 
 #include <openssl/opensslconf.h>
 
-#ifdef OPENSSL_NO_HMAC
-#error HMAC is disabled.
-#endif
 
 #include <openssl/evp.h>
 

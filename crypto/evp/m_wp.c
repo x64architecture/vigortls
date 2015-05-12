@@ -2,7 +2,6 @@
 
 #include <stdio.h>
 
-#ifndef OPENSSL_NO_WHIRLPOOL
 
 #include <openssl/evp.h>
 #include <openssl/objects.h>
@@ -48,4 +47,3 @@ const EVP_MD *EVP_whirlpool(void)
 {
     return (&whirlpool_md);
 }
-#endif

@@ -74,13 +74,6 @@
 #include <string.h>
 #include <time.h>
 
-#ifdef OPENSSL_NO_EC
-int main(int argc, char *argv[])
-{
-    puts("Elliptic curves are disabled.");
-    return 0;
-}
-#else
 
 #include <openssl/ec.h>
 #ifndef OPENSSL_NO_ENGINE
@@ -1617,4 +1610,3 @@ int main(int argc, char *argv[])
 
     return 0;
 }
-#endif

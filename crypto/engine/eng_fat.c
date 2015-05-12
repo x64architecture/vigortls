@@ -82,14 +82,10 @@ ENGINE_set_default(ENGINE *e, unsigned int flags)
     if ((flags & ENGINE_METHOD_DH) && !ENGINE_set_default_DH(e))
         return 0;
 #endif
-#ifndef OPENSSL_NO_ECDH
     if ((flags & ENGINE_METHOD_ECDH) && !ENGINE_set_default_ECDH(e))
         return 0;
-#endif
-#ifndef OPENSSL_NO_ECDSA
     if ((flags & ENGINE_METHOD_ECDSA) && !ENGINE_set_default_ECDSA(e))
         return 0;
-#endif
     if ((flags & ENGINE_METHOD_RAND) && !ENGINE_set_default_RAND(e))
         return 0;
     if ((flags & ENGINE_METHOD_PKEY_METHS) && !ENGINE_set_default_pkey_meths(e))
@@ -163,12 +159,8 @@ ENGINE_register_complete(ENGINE *e)
 #ifndef OPENSSL_NO_DH
     ENGINE_register_DH(e);
 #endif
-#ifndef OPENSSL_NO_ECDH
     ENGINE_register_ECDH(e);
-#endif
-#ifndef OPENSSL_NO_ECDSA
     ENGINE_register_ECDSA(e);
-#endif
     ENGINE_register_RAND(e);
     ENGINE_register_pkey_meths(e);
     return 1;

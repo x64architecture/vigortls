@@ -83,7 +83,6 @@
 
 #include <openssl/opensslconf.h>
 
-#ifndef OPENSSL_NO_CAMELLIA
 
 #include <openssl/camellia.h>
 #include "cmll_locl.h"
@@ -563,4 +562,3 @@ void Camellia_DecryptBlock(int keyBitLength, const u8 plaintext[],
     Camellia_DecryptBlock_Rounds(keyBitLength == 128 ? 3 : 4,
                                  plaintext, keyTable, ciphertext);
 }
-#endif

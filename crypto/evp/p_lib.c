@@ -101,7 +101,6 @@ int EVP_PKEY_save_parameters(EVP_PKEY *pkey, int mode)
         return (ret);
     }
 #endif
-#ifndef OPENSSL_NO_EC
     if (pkey->type == EVP_PKEY_EC) {
         int ret = pkey->save_parameters;
 
@@ -109,7 +108,6 @@ int EVP_PKEY_save_parameters(EVP_PKEY *pkey, int mode)
             pkey->save_parameters = mode;
         return (ret);
     }
-#endif
     return (0);
 }
 
@@ -294,7 +292,6 @@ DSA *EVP_PKEY_get1_DSA(EVP_PKEY *pkey)
 }
 #endif
 
-#ifndef OPENSSL_NO_EC
 
 int EVP_PKEY_set1_EC_KEY(EVP_PKEY *pkey, EC_KEY *key)
 {
@@ -313,7 +310,6 @@ EC_KEY *EVP_PKEY_get1_EC_KEY(EVP_PKEY *pkey)
     EC_KEY_up_ref(pkey->pkey.ec);
     return pkey->pkey.ec;
 }
-#endif
 
 int EVP_PKEY_set1_DH(EVP_PKEY *pkey, DH *key)
 {

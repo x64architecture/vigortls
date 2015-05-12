@@ -207,7 +207,6 @@ static DH *get_dh1024dsa(void);
 static BIO *bio_err = NULL;
 static BIO *bio_stdout = NULL;
 
-#ifndef OPENSSL_NO_NEXTPROTONEG
 /* Note that this code assumes that this is only a one element list: */
 static const char NEXT_PROTO_STRING[] = "\x09testproto";
 int npn_client = 0;
@@ -282,7 +281,6 @@ static int verify_npn(SSL *client, SSL *server)
 
     return (0);
 }
-#endif
 
 static const char *alpn_client;
 static const char *alpn_server;
@@ -450,11 +448,9 @@ static void sv_usage(void)
                     "                 Use \"openssl ecparam -list_curves\" for all names\n"
                     "                 (default is sect163r2).\n");
     fprintf(stderr, " -test_cipherlist - verifies the order of the ssl cipher lists\n");
-#ifndef OPENSSL_NO_NEXTPROTONEG
     fprintf(stderr, " -npn_client - have client side offer NPN\n");
     fprintf(stderr, " -npn_server - have server side offer NPN\n");
     fprintf(stderr, " -npn_server_reject - have server reject NPN\n");
-#endif
     fprintf(stderr, " -alpn_client <string> - have client side offer ALPN\n");
     fprintf(stderr, " -alpn_server <string> - have server side offer ALPN\n");
     fprintf(stderr, " -alpn_expected <string> - the ALPN protocol that should be negotiated\n");
@@ -693,7 +689,6 @@ int main(int argc, char *argv[])
         } else if (strcmp(*argv, "-test_cipherlist") == 0) {
             test_cipherlist = 1;
         } 
-#ifndef OPENSSL_NO_NEXTPROTONEG
         else if (strcmp(*argv, "-npn_client") == 0) {
             npn_client = 1;
         } else if (strcmp(*argv, "-npn_server") == 0) {
@@ -701,7 +696,6 @@ int main(int argc, char *argv[])
         } else if (strcmp(*argv, "-npn_server_reject") == 0) {
             npn_server_reject = 1;
         }
-#endif
     else if (strcmp(*argv, "-alpn_client") == 0) {
         if (--argc < 1)
             goto bad;
@@ -870,7 +864,6 @@ int main(int argc, char *argv[])
                                        (void *)&session_id_context, sizeof(session_id_context));
     }
 
-#ifndef OPENSSL_NO_NEXTPROTONEG
     if (npn_client)
         SSL_CTX_set_next_proto_select_cb(c_ctx, cb_client_npn, NULL);
     if (npn_server) {
@@ -886,7 +879,6 @@ int main(int argc, char *argv[])
         SSL_CTX_set_next_protos_advertised_cb(s_ctx,
                                               cb_server_rejects_npn, NULL);
     }
-#endif
 
     if (alpn_server != NULL)
         SSL_CTX_set_alpn_select_cb(s_ctx, cb_server_alpn, NULL);
@@ -1302,12 +1294,10 @@ int doit_biopair(SSL *s_ssl, SSL *c_ssl, long count, clock_t *s_time,
     if (verbose)
         print_details(c_ssl, "DONE via BIO pair: ");
 
-#ifndef OPENSSL_NO_NEXTPROTONEG
     if (verify_npn(c_ssl, s_ssl) < 0) {
         ret = 1;
         goto err;
     }
-#endif
     if (verify_alpn(c_ssl, s_ssl) < 0) {
         ret = 1;
         goto err;
@@ -1565,12 +1555,10 @@ int doit(SSL *s_ssl, SSL *c_ssl, long count)
     if (verbose)
         print_details(c_ssl, "DONE: ");
 
-#ifndef OPENSSL_NO_NEXTPROTONEG
     if (verify_npn(c_ssl, s_ssl) < 0) {
         ret = 1;
         goto err;
     }
-#endif
     if (verify_alpn(c_ssl, s_ssl) < 0) {
         ret = 1;
         goto err;

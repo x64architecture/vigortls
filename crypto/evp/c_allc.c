@@ -96,13 +96,9 @@ void OpenSSL_add_all_ciphers(void)
     EVP_add_cipher(EVP_des_ede3());
 #endif
 
-#ifndef OPENSSL_NO_RC4
     EVP_add_cipher(EVP_rc4());
     EVP_add_cipher(EVP_rc4_40());
-#ifndef OPENSSL_NO_MD5
     EVP_add_cipher(EVP_rc4_hmac_md5());
-#endif
-#endif
 
 #ifndef OPENSSL_NO_IDEA
     EVP_add_cipher(EVP_idea_ecb());
@@ -154,7 +150,6 @@ void OpenSSL_add_all_ciphers(void)
     EVP_add_cipher_alias(SN_rc5_cbc, "RC5");
 #endif
 
-#ifndef OPENSSL_NO_AES
     EVP_add_cipher(EVP_aes_128_ecb());
     EVP_add_cipher(EVP_aes_128_cbc());
     EVP_add_cipher(EVP_aes_128_cfb());
@@ -187,13 +182,9 @@ void OpenSSL_add_all_ciphers(void)
     EVP_add_cipher(EVP_aes_256_xts());
     EVP_add_cipher_alias(SN_aes_256_cbc, "AES256");
     EVP_add_cipher_alias(SN_aes_256_cbc, "aes256");
-#if !defined(OPENSSL_NO_SHA) && !defined(OPENSSL_NO_SHA1)
     EVP_add_cipher(EVP_aes_128_cbc_hmac_sha1());
     EVP_add_cipher(EVP_aes_256_cbc_hmac_sha1());
-#endif
-#endif
 
-#ifndef OPENSSL_NO_CAMELLIA
     EVP_add_cipher(EVP_camellia_128_ecb());
     EVP_add_cipher(EVP_camellia_128_cbc());
     EVP_add_cipher(EVP_camellia_128_cfb());
@@ -218,7 +209,6 @@ void OpenSSL_add_all_ciphers(void)
     EVP_add_cipher(EVP_camellia_256_ofb());
     EVP_add_cipher_alias(SN_camellia_256_cbc, "CAMELLIA256");
     EVP_add_cipher_alias(SN_camellia_256_cbc, "camellia256");
-#endif
 
 #ifndef OPENSSL_NO_CHACHA
     EVP_add_cipher(EVP_chacha20());

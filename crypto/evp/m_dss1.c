@@ -58,7 +58,6 @@
 
 #include <stdio.h>
 
-#ifndef OPENSSL_NO_SHA
 
 #include <openssl/evp.h>
 #include <openssl/objects.h>
@@ -107,4 +106,3 @@ const EVP_MD *EVP_dss1(void)
 {
     return (&dss1_md);
 }
-#endif

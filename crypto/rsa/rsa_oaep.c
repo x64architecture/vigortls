@@ -18,7 +18,6 @@
  * an equivalent notion.
  */
 
-#if !defined(OPENSSL_NO_SHA) && !defined(OPENSSL_NO_SHA1)
 #include <stdio.h>
 #include <string.h>
 
@@ -242,4 +241,3 @@ static int MGF1(unsigned char *mask, long len, const unsigned char *seed,
 {
     return PKCS1_MGF1(mask, len, seed, seedlen, EVP_sha1());
 }
-#endif

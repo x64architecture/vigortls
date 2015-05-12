@@ -5,7 +5,6 @@
  * ====================================================================
  */
 #include <openssl/opensslconf.h>
-#if !defined(OPENSSL_NO_SHA) && !defined(OPENSSL_NO_SHA512)
 /*
  * IMPLEMENTATION NOTES.
  *
@@ -643,4 +642,3 @@ static void sha512_block_data_order(SHA512_CTX *ctx, const void *in, size_t num)
 
 #endif /* OPENSSL_NO_ASM */
 
-#endif /* !OPENSSL_NO_SHA512 */

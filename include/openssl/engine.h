@@ -81,12 +81,8 @@
 #ifndef OPENSSL_NO_DH
 #include <openssl/dh.h>
 #endif
-#ifndef OPENSSL_NO_ECDH
 #include <openssl/ecdh.h>
-#endif
-#ifndef OPENSSL_NO_ECDSA
 #include <openssl/ecdsa.h>
-#endif
 #include <openssl/rand.h>
 #include <openssl/ui.h>
 #include <openssl/err.h>

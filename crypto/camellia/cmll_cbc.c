@@ -51,7 +51,6 @@
 
 #include <openssl/opensslconf.h>
 
-#ifndef OPENSSL_NO_CAMELLIA
 
 #include <openssl/camellia.h>
 #include <openssl/modes.h>
@@ -66,4 +65,3 @@ void Camellia_cbc_encrypt(const unsigned char *in, unsigned char *out,
     else
         CRYPTO_cbc128_decrypt(in, out, len, key, ivec, (block128_f)Camellia_decrypt);
 }
-#endif

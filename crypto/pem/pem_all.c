@@ -126,9 +126,7 @@ static RSA *pkey_get_rsa(EVP_PKEY *key, RSA **rsa);
 static DSA *pkey_get_dsa(EVP_PKEY *key, DSA **dsa);
 #endif
 
-#ifndef OPENSSL_NO_EC
 static EC_KEY *pkey_get_eckey(EVP_PKEY *key, EC_KEY **eckey);
-#endif
 
 IMPLEMENT_PEM_rw(X509_REQ, X509_REQ, PEM_STRING_X509_REQ, X509_REQ)
 
@@ -226,7 +224,6 @@ IMPLEMENT_PEM_rw_const(DSAparams, DSA, PEM_STRING_DSAPARAMS, DSAparams)
 
 #endif
 
-#ifndef OPENSSL_NO_EC
     static EC_KEY *pkey_get_eckey(EVP_PKEY *key, EC_KEY **eckey)
 {
     EC_KEY *dtmp;
@@ -263,7 +260,6 @@ IMPLEMENT_PEM_rw_const(ECPKParameters, EC_GROUP, PEM_STRING_ECPARAMETERS, ECPKPa
     return pkey_get_eckey(pktmp, eckey); /* will free pktmp */
 }
 
-#endif
 
 IMPLEMENT_PEM_rw_const(DHparams, DH, PEM_STRING_DHPARAMS, DHparams)
 

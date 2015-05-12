@@ -61,13 +61,6 @@
 #include <string.h>
 #include <stdlib.h>
 
-#ifdef OPENSSL_NO_MD5
-int main(int argc, char *argv[])
-{
-    printf("No MD5 support\n");
-    return (0);
-}
-#else
 #include <openssl/evp.h>
 #include <openssl/md5.h>
 
@@ -130,4 +123,3 @@ static char *pt(unsigned char *md)
         snprintf(buf + i * 2, sizeof(buf) - i * 2, "%02x", md[i]);
     return (buf);
 }
-#endif

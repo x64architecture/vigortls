@@ -54,9 +54,6 @@
 
 #include <openssl/opensslconf.h>
 
-#ifdef OPENSSL_NO_AES
-#error AES is disabled.
-#endif
 
 #include <stddef.h>
 

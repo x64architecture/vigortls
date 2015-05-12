@@ -52,7 +52,6 @@
 #include <stdio.h>
 #include <string.h>
 
-#if !defined(OPENSSL_NO_AES) && !defined(OPENSSL_NO_SHA1)
 
 #include <openssl/evp.h>
 #include <openssl/objects.h>
@@ -580,5 +579,4 @@ const EVP_CIPHER *EVP_aes_256_cbc_hmac_sha1(void)
 {
     return NULL;
 }
-#endif
 #endif

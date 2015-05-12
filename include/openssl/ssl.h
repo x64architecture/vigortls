@@ -144,13 +144,9 @@
 
 #include <openssl/opensslconf.h>
 
-#ifndef OPENSSL_NO_BIO
 #include <openssl/bio.h>
-#endif
 #ifndef OPENSSL_NO_DEPRECATED
-#ifndef OPENSSL_NO_X509
 #include <openssl/x509.h>
-#endif
 #include <openssl/crypto.h>
 #include <openssl/lhash.h>
 #include <openssl/buffer.h>
@@ -839,7 +835,6 @@ struct ssl_ctx_st {
     int (*tlsext_status_cb)(SSL *ssl, void *arg);
     void *tlsext_status_arg;
 
-#ifndef OPENSSL_NO_NEXTPROTONEG
     /* Next protocol negotiation information */
     /* (for experimental NPN extension). */
 
@@ -854,7 +849,6 @@ struct ssl_ctx_st {
                                 unsigned char *outlen, const unsigned char *in,
                                 unsigned int inlen, void *arg);
     void *next_proto_select_cb_arg;
-#endif
 
     /*
      * ALPN information
@@ -952,7 +946,6 @@ void SSL_CTX_set_cookie_generate_cb(SSL_CTX *ctx,
 void SSL_CTX_set_cookie_verify_cb(SSL_CTX *ctx,
                                   int (*app_verify_cookie_cb)(SSL *ssl, unsigned char *cookie,
                                                               unsigned int cookie_len));
-#ifndef OPENSSL_NO_NEXTPROTONEG
 void
 SSL_CTX_set_next_protos_advertised_cb(SSL_CTX *s, int (*cb)(SSL *ssl,
                                                             const unsigned char **out, unsigned int *outlen, void *arg),
@@ -971,7 +964,6 @@ void SSL_get0_next_proto_negotiated(const SSL *s, const unsigned char **data,
 #define OPENSSL_NPN_UNSUPPORTED 0
 #define OPENSSL_NPN_NEGOTIATED 1
 #define OPENSSL_NPN_NO_OVERLAP 2
-#endif
 
 int SSL_CTX_set_alpn_protos(SSL_CTX *ctx, const unsigned char *protos,
                             unsigned int protos_len);
@@ -1012,16 +1004,10 @@ struct ssl_st {
      * same.  This is so data can be read and written to different
      * handlers */
 
-#ifndef OPENSSL_NO_BIO
     BIO *rbio; /* used by SSL_read */
     BIO *wbio; /* used by SSL_write */
     BIO *bbio; /* used during session-id reuse to concatenate
             * messages */
-#else
-    char *rbio; /* used by SSL_read */
-    char *wbio; /* used by SSL_write */
-    char *bbio;
-#endif
     /* This holds a variable that indicates what we were doing
      * when a 0 or -1 is returned.  This is needed for
      * non-blocking IO so we know what request needs re-doing when
@@ -1187,7 +1173,6 @@ struct ssl_st {
 
     SSL_CTX *initial_ctx; /* initial ctx, used to store sessions */
 
-#ifndef OPENSSL_NO_NEXTPROTONEG
     /* Next protocol negotiation. For the client, this is the protocol that
      * we sent in NextProtocol and is set when handling ServerHello
      * extensions.
@@ -1197,7 +1182,6 @@ struct ssl_st {
      * before the Finished message. */
     unsigned char *next_proto_negotiated;
     unsigned char next_proto_negotiated_len;
-#endif
 
 #define session_ctx initial_ctx
 
@@ -1513,14 +1497,12 @@ DECLARE_PEM_rw(SSL_SESSION, SSL_SESSION)
 #define SSL_CTX_clear_extra_chain_certs(ctx) \
     SSL_CTX_ctrl(ctx, SSL_CTRL_CLEAR_EXTRA_CHAIN_CERTS, 0, NULL)
 
-#ifndef OPENSSL_NO_BIO
 BIO_METHOD *BIO_f_ssl(void);
 BIO *BIO_new_ssl(SSL_CTX *ctx, int client);
 BIO *BIO_new_ssl_connect(SSL_CTX *ctx);
 BIO *BIO_new_buffer_ssl_connect(SSL_CTX *ctx);
 int BIO_ssl_copy_session_id(BIO *to, BIO *from);
 void BIO_ssl_shutdown(BIO *ssl_bio);
-#endif
 
 int SSL_CTX_set_cipher_list(SSL_CTX *, const char *str);
 SSL_CTX *SSL_CTX_new(const SSL_METHOD *meth);
@@ -1550,11 +1532,9 @@ int SSL_pending(const SSL *s);
 int SSL_set_fd(SSL *s, int fd);
 int SSL_set_rfd(SSL *s, int fd);
 int SSL_set_wfd(SSL *s, int fd);
-#ifndef OPENSSL_NO_BIO
 void SSL_set_bio(SSL *s, BIO *rbio, BIO *wbio);
 BIO *SSL_get_rbio(const SSL *s);
 BIO *SSL_get_wbio(const SSL *s);
-#endif
 int SSL_set_cipher_list(SSL *s, const char *str);
 void SSL_set_read_ahead(SSL *s, int yes);
 int SSL_get_verify_mode(const SSL *s);
@@ -1603,9 +1583,7 @@ const unsigned char *SSL_SESSION_get_id(const SSL_SESSION *s,
                                         unsigned int *len);
 unsigned int SSL_SESSION_get_compress_id(const SSL_SESSION *s);
 int SSL_SESSION_print_fp(FILE *fp, const SSL_SESSION *ses);
-#ifndef OPENSSL_NO_BIO
 int SSL_SESSION_print(BIO *fp, const SSL_SESSION *ses);
-#endif
 void SSL_SESSION_free(SSL_SESSION *ses);
 int i2d_SSL_SESSION(SSL_SESSION *in, unsigned char **pp);
 int SSL_set_session(SSL *to, SSL_SESSION *session);

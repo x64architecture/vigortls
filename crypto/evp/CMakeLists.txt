@@ -53,7 +53,6 @@ add_library(
     m_mdc2.c
     m_null.c
     m_ripemd.c
-    m_sha.c
     m_sha1.c
     m_sigver.c
     m_wp.c

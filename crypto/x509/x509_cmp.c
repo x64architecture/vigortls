@@ -81,7 +81,6 @@ int X509_issuer_and_serial_cmp(const X509 *a, const X509 *b)
     return (X509_NAME_cmp(ai->issuer, bi->issuer));
 }
 
-#ifndef OPENSSL_NO_MD5
 unsigned long X509_issuer_and_serial_hash(X509 *a)
 {
     unsigned long ret = 0;
@@ -106,7 +105,6 @@ err:
     EVP_MD_CTX_cleanup(&ctx);
     return (ret);
 }
-#endif
 
 int X509_issuer_name_cmp(const X509 *a, const X509 *b)
 {
@@ -123,12 +121,10 @@ int X509_CRL_cmp(const X509_CRL *a, const X509_CRL *b)
     return (X509_NAME_cmp(a->crl->issuer, b->crl->issuer));
 }
 
-#ifndef OPENSSL_NO_SHA
 int X509_CRL_match(const X509_CRL *a, const X509_CRL *b)
 {
     return memcmp(a->sha1_hash, b->sha1_hash, 20);
 }
-#endif
 
 X509_NAME *X509_get_issuer_name(X509 *a)
 {
@@ -140,12 +136,10 @@ unsigned long X509_issuer_name_hash(X509 *x)
     return (X509_NAME_hash(x->cert_info->issuer));
 }
 
-#ifndef OPENSSL_NO_MD5
 unsigned long X509_issuer_name_hash_old(X509 *x)
 {
     return (X509_NAME_hash_old(x->cert_info->issuer));
 }
-#endif
 
 X509_NAME *X509_get_subject_name(X509 *a)
 {
@@ -162,14 +156,11 @@ unsigned long X509_subject_name_hash(X509 *x)
     return (X509_NAME_hash(x->cert_info->subject));
 }
 
-#ifndef OPENSSL_NO_MD5
 unsigned long X509_subject_name_hash_old(X509 *x)
 {
     return (X509_NAME_hash_old(x->cert_info->subject));
 }
-#endif
 
-#ifndef OPENSSL_NO_SHA
 /* Compare two certificates: they must be identical for
  * this to work. NB: Although "cmp" operations are generally
  * prototyped to take "const" arguments (eg. for use in
@@ -187,7 +178,6 @@ int X509_cmp(const X509 *a, const X509 *b)
 
     return memcmp(a->sha1_hash, b->sha1_hash, SHA_DIGEST_LENGTH);
 }
-#endif
 
 int X509_NAME_cmp(const X509_NAME *a, const X509_NAME *b)
 {
@@ -230,7 +220,6 @@ unsigned long X509_NAME_hash(X509_NAME *x)
     return (ret);
 }
 
-#ifndef OPENSSL_NO_MD5
 /* I now DER encode the name and hash it.  Since I cache the DER encoding,
  * this is reasonably efficient. */
 
@@ -251,7 +240,6 @@ unsigned long X509_NAME_hash_old(X509_NAME *x)
 
     return (ret);
 }
-#endif
 
 /* Search a stack of X509 for a match */
 X509 *X509_find_by_issuer_and_serial(STACK_OF(X509) * sk, X509_NAME * name,

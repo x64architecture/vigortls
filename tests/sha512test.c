@@ -11,13 +11,6 @@
 #include <openssl/evp.h>
 #include <openssl/crypto.h>
 
-#if defined(OPENSSL_NO_SHA) || defined(OPENSSL_NO_SHA512)
-int main(int argc, char *argv[])
-{
-    printf("No SHA512 support\n");
-    return (0);
-}
-#else
 
 unsigned char app_c1[SHA512_DIGEST_LENGTH] = {
     0xdd, 0xaf, 0x35, 0xa1, 0x93, 0x61, 0x7a, 0xba,
@@ -246,4 +239,3 @@ int main(int argc, char **argv)
 
     return 0;
 }
-#endif

@@ -419,9 +419,6 @@ static int get_issuer_sk(X509 **issuer, X509_STORE_CTX *ctx, X509 *x)
 
 static int check_chain_extensions(X509_STORE_CTX *ctx)
 {
-#ifdef OPENSSL_NO_CHAIN_VERIFY
-    return 1;
-#else
     int i, ok = 0, must_be_ca, plen = 0;
     X509 *x;
     int (*cb)(int xok, X509_STORE_CTX *xctx);
@@ -552,7 +549,6 @@ static int check_chain_extensions(X509_STORE_CTX *ctx)
     ok = 1;
 end:
     return ok;
-#endif
 }
 
 static int check_name_constraints(X509_STORE_CTX *ctx)
@@ -589,9 +585,6 @@ static int check_name_constraints(X509_STORE_CTX *ctx)
 
 static int check_trust(X509_STORE_CTX *ctx)
 {
-#ifdef OPENSSL_NO_CHAIN_VERIFY
-    return 1;
-#else
     int i, ok;
     X509 *x;
     int (*cb)(int xok, X509_STORE_CTX *xctx);
@@ -610,7 +603,6 @@ static int check_trust(X509_STORE_CTX *ctx)
         ctx->error = X509_V_ERR_CERT_UNTRUSTED;
     ok = cb(0, ctx);
     return ok;
-#endif
 }
 
 static int check_revocation(X509_STORE_CTX *ctx)

@@ -595,7 +595,6 @@ SSL_CIPHER ssl3_ciphers[] = {
       .alg_bits = 128,
     },
 
-#ifndef OPENSSL_NO_CAMELLIA
     /* Camellia ciphersuites from RFC4132 (128-bit portion) */
 
     /* Cipher 41 */
@@ -661,7 +660,6 @@ SSL_CIPHER ssl3_ciphers[] = {
       .strength_bits = 128,
       .alg_bits = 128,
     },
-#endif /* OPENSSL_NO_CAMELLIA */
 
     /* TLS v1.2 ciphersuites */
     /* Cipher 67 */
@@ -802,7 +800,6 @@ SSL_CIPHER ssl3_ciphers[] = {
       .strength_bits = 0,
       .alg_bits = 0 },
 
-#ifndef OPENSSL_NO_CAMELLIA
     /* Camellia ciphersuites from RFC4132 (256-bit portion) */
 
     /* Cipher 84 */
@@ -868,7 +865,6 @@ SSL_CIPHER ssl3_ciphers[] = {
       .strength_bits = 256,
       .alg_bits = 256,
     },
-#endif /* OPENSSL_NO_CAMELLIA */
 
     /*
      * GCM ciphersuites from RFC5288.
@@ -1662,7 +1658,6 @@ SSL_CIPHER ssl3_ciphers[] = {
       .alg_bits = 256,
     },
 
-#ifndef OPENSSL_NO_CAMELLIA
     /* Cipher C072 */    
     {
      .valid = 1,
@@ -1790,7 +1785,6 @@ SSL_CIPHER ssl3_ciphers[] = {
      .strength_bits = 256,
      .alg_bits = 256,
     },
-#endif  /* OPENSSL_NO_CAMELLIA */
 
 #ifdef TEMP_GOST_TLS
     /* Cipher FF00 */
@@ -2073,11 +2067,9 @@ void ssl3_clear(SSL *s)
     s->s3->in_read_app_data = 0;
     s->version = SSL3_VERSION;
 
-#ifndef OPENSSL_NO_NEXTPROTONEG
     free(s->next_proto_negotiated);
     s->next_proto_negotiated = NULL;
     s->next_proto_negotiated_len = 0;
-#endif
 }
 
 long ssl3_ctrl(SSL *s, int cmd, long larg, void *parg)

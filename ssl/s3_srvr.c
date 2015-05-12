@@ -511,14 +511,10 @@ int ssl3_accept(SSL *s)
  * the client uses its key from the certificate
  * for key exchange.
  */
-#ifdef OPENSSL_NO_NEXTPROTONEG
-                    s->state = SSL3_ST_SR_FINISHED_A;
-#else
                     if (s->s3->next_proto_neg_seen)
                         s->state = SSL3_ST_SR_NEXT_PROTO_A;
                     else
                         s->state = SSL3_ST_SR_FINISHED_A;
-#endif
                     s->init_num = 0;
                 } else if (SSL_USE_SIGALGS(s)) {
                     s->state = SSL3_ST_SR_CERT_VRFY_A;
@@ -585,18 +581,13 @@ int ssl3_accept(SSL *s)
                 if (ret <= 0)
                     goto end;
 
-#ifdef OPENSSL_NO_NEXTPROTONEG
-                s->state = SSL3_ST_SR_FINISHED_A;
-#else
                 if (s->s3->next_proto_neg_seen)
                     s->state = SSL3_ST_SR_NEXT_PROTO_A;
                 else
                     s->state = SSL3_ST_SR_FINISHED_A;
-#endif
                 s->init_num = 0;
                 break;
 
-#ifndef OPENSSL_NO_NEXTPROTONEG
             case SSL3_ST_SR_NEXT_PROTO_A:
             case SSL3_ST_SR_NEXT_PROTO_B:
                 /*
@@ -618,7 +609,6 @@ int ssl3_accept(SSL *s)
                 s->init_num = 0;
                 s->state = SSL3_ST_SR_FINISHED_A;
                 break;
-#endif
 
             case SSL3_ST_SR_FINISHED_A:
             case SSL3_ST_SR_FINISHED_B:
@@ -698,14 +688,10 @@ int ssl3_accept(SSL *s)
                     goto end;
                 s->state = SSL3_ST_SW_FLUSH;
                 if (s->hit) {
-#ifdef OPENSSL_NO_NEXTPROTONEG
-                    s->s3->tmp.next_state = SSL3_ST_SR_FINISHED_A;
-#else
                     if (s->s3->next_proto_neg_seen) {
                         s->s3->tmp.next_state = SSL3_ST_SR_NEXT_PROTO_A;
                     } else
                         s->s3->tmp.next_state = SSL3_ST_SR_FINISHED_A;
-#endif
                 } else
                     s->s3->tmp.next_state = SSL_ST_OK;
                 s->init_num = 0;
@@ -2532,7 +2518,7 @@ int ssl3_send_newsession_ticket(SSL *s)
                                tctx->tlsext_tick_aes_key, iv))
                 goto err;
             if (!HMAC_Init_ex(&hctx, tctx->tlsext_tick_hmac_key, 16,
-                         tlsext_tick_md(), NULL))
+                              EVP_sha256(), NULL))
                 goto err;
             memcpy(key_name, tctx->tlsext_tick_key_name, 16);
         }
@@ -2626,7 +2612,6 @@ int ssl3_send_cert_status(SSL *s)
     return (ssl3_do_write(s, SSL3_RT_HANDSHAKE));
 }
 
-#ifndef OPENSSL_NO_NEXTPROTONEG
 /*
  * ssl3_get_next_proto reads a Next Protocol Negotiation handshake message.
  * It sets the next_proto member in s if found
@@ -2694,4 +2679,3 @@ int ssl3_get_next_proto(SSL *s)
 
     return (1);
 }
-#endif

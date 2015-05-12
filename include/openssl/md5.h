@@ -66,9 +66,6 @@
 extern "C" {
 #endif
 
-#ifdef OPENSSL_NO_MD5
-#error MD5 is disabled.
-#endif
 
 /*
  * !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!

@@ -55,7 +55,6 @@
 
 #include <openssl/opensslconf.h>
 
-#ifndef OPENSSL_NO_CAMELLIA
 
 #include <string.h>
 #include <assert.h>
@@ -123,4 +122,3 @@ static int camellia_init_key(EVP_CIPHER_CTX *ctx, const unsigned char *key,
     return 1;
 }
 
-#endif

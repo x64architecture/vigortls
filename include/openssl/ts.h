@@ -60,15 +60,9 @@
 #define HEADER_TS_H
 
 #include <openssl/opensslconf.h>
-#ifndef OPENSSL_NO_BUFFER
 #include <openssl/buffer.h>
-#endif
-#ifndef OPENSSL_NO_EVP
 #include <openssl/evp.h>
-#endif
-#ifndef OPENSSL_NO_BIO
 #include <openssl/bio.h>
-#endif
 #include <openssl/stack.h>
 #include <openssl/asn1.h>
 #include <openssl/safestack.h>

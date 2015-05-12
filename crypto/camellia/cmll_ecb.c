@@ -51,7 +51,6 @@
 
 #include <openssl/opensslconf.h>
 
-#ifndef OPENSSL_NO_CAMELLIA
 
 #ifndef CAMELLIA_DEBUG
 #ifndef NDEBUG
@@ -75,4 +74,3 @@ void Camellia_ecb_encrypt(const unsigned char *in, unsigned char *out,
     else
         Camellia_decrypt(in, out, key);
 }
-#endif

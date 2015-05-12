@@ -66,7 +66,6 @@
 #include <openssl/rsa.h>
 #include <openssl/x509.h>
 
-#ifndef OPENSSL_NO_RC4
 
 typedef struct netscape_pkey_st {
     long version;
@@ -367,4 +366,3 @@ err:
     return (ret);
 }
 
-#endif /* OPENSSL_NO_RC4 */

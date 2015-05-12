@@ -60,13 +60,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#ifdef OPENSSL_NO_RC4
-int main(int argc, char *argv[])
-{
-    printf("No RC4 support\n");
-    return (0);
-}
-#else
 #include <openssl/rc4.h>
 #include <openssl/sha.h>
 
@@ -225,4 +218,3 @@ int main(int argc, char *argv[])
     exit(err);
     return (0);
 }
-#endif

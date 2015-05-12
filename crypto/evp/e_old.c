@@ -134,7 +134,6 @@ const EVP_CIPHER *EVP_rc5_32_12_16_cfb(void)
 }
 #endif
 
-#ifndef OPENSSL_NO_AES
 #undef EVP_aes_128_cfb
 const EVP_CIPHER *EVP_aes_128_cfb(void);
 const EVP_CIPHER *EVP_aes_128_cfb(void)
@@ -153,6 +152,5 @@ const EVP_CIPHER *EVP_aes_256_cfb(void)
 {
     return EVP_aes_256_cfb128();
 }
-#endif
 
 #endif

@@ -822,7 +822,6 @@ skip_ext:
             i2d_X509_EXTENSIONS(s->tlsext_ocsp_exts, &ret);
     }
 
-#ifndef OPENSSL_NO_NEXTPROTONEG
     if (s->ctx->next_proto_select_cb && !s->s3->tmp.finish_md_len) {
         /* The client advertises an emtpy extension to indicate its
          * support for Next Protocol Negotiation */
@@ -831,7 +830,6 @@ skip_ext:
         s2n(TLSEXT_TYPE_next_proto_neg, ret);
         s2n(0, ret);
     }
-#endif
 
     if (s->alpn_client_proto_list != NULL && s->s3->tmp.finish_md_len == 0) {
         if ((size_t)(limit - ret) < 6 + s->alpn_client_proto_list_len)
@@ -905,9 +903,7 @@ unsigned char *ssl_add_serverhello_tlsext(SSL *s, unsigned char *p,
     int using_ecc, extdatalen = 0;
     unsigned long alg_a, alg_k;
     unsigned char *ret = p;
-#ifndef OPENSSL_NO_NEXTPROTONEG
     int next_proto_neg_seen;
-#endif
 
     alg_a = s->s3->tmp.new_cipher->algorithm_auth;
     alg_k = s->s3->tmp.new_cipher->algorithm_mkey;
@@ -1034,7 +1030,6 @@ unsigned char *ssl_add_serverhello_tlsext(SSL *s, unsigned char *p,
         ret += sizeof(cryptopro_ext);
     }
 
-#ifndef OPENSSL_NO_NEXTPROTONEG
     next_proto_neg_seen = s->s3->next_proto_neg_seen;
     s->s3->next_proto_neg_seen = 0;
     if (next_proto_neg_seen && s->ctx->next_protos_advertised_cb) {
@@ -1054,7 +1049,6 @@ unsigned char *ssl_add_serverhello_tlsext(SSL *s, unsigned char *p,
             s->s3->next_proto_neg_seen = 1;
         }
     }
-#endif
 
     if (s->s3->alpn_selected != NULL) {
         const unsigned char *selected = s->s3->alpn_selected;
@@ -1238,9 +1232,7 @@ int ssl_parse_clienthello_tlsext(SSL *s, unsigned char **p, unsigned char *d,
 
     s->servername_done = 0;
     s->tlsext_status_type = -1;
-#ifndef OPENSSL_NO_NEXTPROTONEG
     s->s3->next_proto_neg_seen = 0;
-#endif
     s->tlsext_ticket_expected = 0;
 
     free(s->s3->alpn_selected);
@@ -1532,7 +1524,6 @@ int ssl_parse_clienthello_tlsext(SSL *s, unsigned char **p, unsigned char *d,
                 s->tlsext_status_type = -1;
             }
         }
-#ifndef OPENSSL_NO_NEXTPROTONEG
         else if (type == TLSEXT_TYPE_next_proto_neg &&
                  s->s3->tmp.finish_md_len == 0 &&
                  s->s3->alpn_selected == NULL) {
@@ -1553,7 +1544,6 @@ int ssl_parse_clienthello_tlsext(SSL *s, unsigned char **p, unsigned char *d,
              * Finished message could have been computed.) */
             s->s3->next_proto_neg_seen = 1;
         }
-#endif
         else if (type == TLSEXT_TYPE_application_layer_protocol_negotiation &&
                  s->ctx->alpn_select_cb != NULL &&
                  s->s3->tmp.finish_md_len == 0)
@@ -1591,7 +1581,6 @@ ri_check:
     return 1;
 }
 
-#ifndef OPENSSL_NO_NEXTPROTONEG
 /* ssl_next_proto_validate validates a Next Protocol Negotiation block. No
  * elements of zero length are allowed and the set of elements must exactly fill
  * the length of the block. */
@@ -1608,7 +1597,6 @@ static char ssl_next_proto_validate(unsigned char *d, unsigned len)
 
     return off == len;
 }
-#endif
 
 int ssl_parse_serverhello_tlsext(SSL *s, unsigned char **p, unsigned char *d,
                                  int n, int *al)
@@ -1620,9 +1608,7 @@ int ssl_parse_serverhello_tlsext(SSL *s, unsigned char **p, unsigned char *d,
     int tlsext_servername = 0;
     int renegotiate_seen = 0;
 
-#ifndef OPENSSL_NO_NEXTPROTONEG
     s->s3->next_proto_neg_seen = 0;
-#endif
     free(s->s3->alpn_selected);
     s->s3->alpn_selected = NULL;
 
@@ -1694,7 +1680,6 @@ int ssl_parse_serverhello_tlsext(SSL *s, unsigned char **p, unsigned char *d,
             /* Set flag to expect CertificateStatus message */
             s->tlsext_status_expected = 1;
         }
-#ifndef OPENSSL_NO_NEXTPROTONEG
         else if (type == TLSEXT_TYPE_next_proto_neg && s->s3->tmp.finish_md_len == 0) {
             unsigned char *selected;
             unsigned char selected_len;
@@ -1723,7 +1708,6 @@ int ssl_parse_serverhello_tlsext(SSL *s, unsigned char **p, unsigned char *d,
             s->next_proto_negotiated_len = selected_len;
             s->s3->next_proto_neg_seen = 1;
         }
-#endif
         else if (type == TLSEXT_TYPE_application_layer_protocol_negotiation) {
             unsigned int len;
 
@@ -2164,7 +2148,7 @@ static int tls_decrypt_ticket(SSL *s, const unsigned char *etick, int eticklen,
         /* Check key name matches */
         if (memcmp(etick, tctx->tlsext_tick_key_name, 16))
             return 2;
-        HMAC_Init_ex(&hctx, tctx->tlsext_tick_hmac_key, 16, tlsext_tick_md(), NULL);
+        HMAC_Init_ex(&hctx, tctx->tlsext_tick_hmac_key, 16, EVP_sha256(), NULL);
         EVP_DecryptInit_ex(&ctx, EVP_aes_128_cbc(), NULL, tctx->tlsext_tick_aes_key,
                            etick + 16);
     }

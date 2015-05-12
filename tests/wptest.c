@@ -9,13 +9,6 @@
 #include <openssl/whrlpool.h>
 #include <openssl/crypto.h>
 
-#if defined(OPENSSL_NO_WHIRLPOOL)
-int main(int argc, char *argv[])
-{
-    printf("No Whirlpool support\n");
-    return (0);
-}
-#else
 
 /* ISO/IEC 10118-3 test vector set */
 unsigned char iso_test_1[WHIRLPOOL_DIGEST_LENGTH] = {
@@ -272,4 +265,3 @@ int main(int argc, char *argv[])
 
     return 0;
 }
-#endif

@@ -58,7 +58,6 @@
 
 #include <stdio.h>
 #include <time.h>
-#ifndef OPENSSL_NO_SHA
 #include <openssl/bn.h>
 #include <openssl/dsa.h>
 #include <openssl/rand.h>
@@ -125,4 +124,3 @@ err:
     BN_CTX_free(ctx);
     return (ok);
 }
-#endif

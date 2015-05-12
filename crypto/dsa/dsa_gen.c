@@ -58,7 +58,6 @@
 
 #include <openssl/opensslconf.h> /* To see if OPENSSL_NO_SHA is defined */
 
-#ifndef OPENSSL_NO_SHA
 
 #include <stdio.h>
 #include <string.h>
@@ -343,4 +342,3 @@ err:
     BN_MONT_CTX_free(mont);
     return ok;
 }
-#endif

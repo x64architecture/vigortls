@@ -58,7 +58,6 @@
 
 #include <stdio.h>
 
-#ifndef OPENSSL_NO_RC4
 
 #include <openssl/evp.h>
 #include "evp_locl.h"
@@ -131,4 +130,3 @@ static int rc4_cipher(EVP_CIPHER_CTX *ctx, unsigned char *out,
     RC4(&data(ctx)->ks, inl, in, out);
     return 1;
 }
-#endif

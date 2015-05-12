@@ -315,7 +315,6 @@ int i2d_DSA_PUBKEY(DSA *a, unsigned char **pp)
 }
 #endif
 
-#ifndef OPENSSL_NO_EC
 EC_KEY *d2i_EC_PUBKEY(EC_KEY **a, const unsigned char **pp, long length)
 {
     EVP_PKEY *pkey;
@@ -352,7 +351,6 @@ int i2d_EC_PUBKEY(EC_KEY *a, unsigned char **pp)
     EVP_PKEY_free(pktmp);
     return (ret);
 }
-#endif
 
 int X509_PUBKEY_set0_param(X509_PUBKEY *pub, ASN1_OBJECT *aobj,
                            int ptype, void *pval,

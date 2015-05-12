@@ -58,7 +58,6 @@
 
 #include <openssl/opensslconf.h>
 
-#ifndef OPENSSL_NO_SHA
 
 #include <stdio.h>
 #include <time.h>
@@ -89,5 +88,4 @@ DSA *DSA_generate_parameters(int bits,
     DSA_free(ret);
     return NULL;
 }
-#endif
 #endif

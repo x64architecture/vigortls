@@ -132,12 +132,10 @@ int X509_REQ_check_private_key(X509_REQ *x, EVP_PKEY *k)
             X509err(X509_F_X509_REQ_CHECK_PRIVATE_KEY, X509_R_KEY_TYPE_MISMATCH);
             break;
         case -2:
-#ifndef OPENSSL_NO_EC
             if (k->type == EVP_PKEY_EC) {
                 X509err(X509_F_X509_REQ_CHECK_PRIVATE_KEY, ERR_R_EC_LIB);
                 break;
             }
-#endif
             if (k->type == EVP_PKEY_DH) {
                 /* No idea */
                 X509err(X509_F_X509_REQ_CHECK_PRIVATE_KEY, X509_R_CANT_CHECK_DH_KEY);

@@ -71,9 +71,6 @@
 
 #include <openssl/opensslconf.h>
 
-#ifdef OPENSSL_NO_ECDH
-#error ECDH is disabled.
-#endif
 
 #include <openssl/ec.h>
 #include <openssl/ossl_typ.h>

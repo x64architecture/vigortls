@@ -52,7 +52,6 @@
 #include <stdio.h>
 #include <string.h>
 
-#if !defined(OPENSSL_NO_RC4) && !defined(OPENSSL_NO_MD5)
 
 #include <openssl/evp.h>
 #include <openssl/objects.h>
@@ -291,4 +290,3 @@ const EVP_CIPHER *EVP_rc4_hmac_md5(void)
 {
     return (&r4_hmac_md5_cipher);
 }
-#endif

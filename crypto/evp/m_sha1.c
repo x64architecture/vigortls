@@ -58,7 +58,6 @@
 
 #include <stdio.h>
 
-#ifndef OPENSSL_NO_SHA
 
 #include <openssl/evp.h>
 #include <openssl/objects.h>
@@ -105,9 +104,7 @@ const EVP_MD *EVP_sha1(void)
 {
     return (&sha1_md);
 }
-#endif
 
-#ifndef OPENSSL_NO_SHA256
 static int init224(EVP_MD_CTX *ctx)
 {
     return SHA224_Init(ctx->md_data);
@@ -181,9 +178,7 @@ const EVP_MD *EVP_sha256(void)
 {
     return (&sha256_md);
 }
-#endif /* ifndef OPENSSL_NO_SHA256 */
 
-#ifndef OPENSSL_NO_SHA512
 static int init384(EVP_MD_CTX *ctx)
 {
     return SHA384_Init(ctx->md_data);
@@ -253,4 +248,3 @@ const EVP_MD *EVP_sha512(void)
 {
     return (&sha512_md);
 }
-#endif /* ifndef OPENSSL_NO_SHA512 */

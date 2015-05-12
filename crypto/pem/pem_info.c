@@ -191,7 +191,6 @@ STACK_OF(X509_INFO) * PEM_X509_INFO_read_bio(BIO *bp, STACK_OF(X509_INFO) * sk, 
                 raw = 1;
         } else
 #endif
-#ifndef OPENSSL_NO_EC
             if (strcmp(name, PEM_STRING_ECPRIVATEKEY) == 0) {
             d2i = (D2I_OF(void))d2i_ECPrivateKey;
             if (xi->x_pkey != NULL) {
@@ -211,7 +210,6 @@ STACK_OF(X509_INFO) * PEM_X509_INFO_read_bio(BIO *bp, STACK_OF(X509_INFO) * sk, 
             if ((int)strlen(header) > 10) /* assume encrypted */
                 raw = 1;
         } else
-#endif
         {
             d2i = NULL;
             pp = NULL;

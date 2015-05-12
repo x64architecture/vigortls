@@ -80,28 +80,17 @@
 #include <openssl/sha.h>
 #include <openssl/err.h>
 
-#ifdef OPENSSL_NO_ECDH
-int main(int argc, char *argv[])
-{
-    printf("No ECDH support\n");
-    return (0);
-}
-#else
 #include <openssl/ec.h>
 #include <openssl/ecdh.h>
 
 static const int KDF1_SHA1_len = 20;
 static void *KDF1_SHA1(const void *in, size_t inlen, void *out, size_t *outlen)
 {
-#ifndef OPENSSL_NO_SHA
     if (*outlen < SHA_DIGEST_LENGTH)
         return NULL;
     else
         *outlen = SHA_DIGEST_LENGTH;
     return SHA1(in, inlen, out);
-#else
-    return NULL;
-#endif
 }
 
 static int test_ecdh_curve(int nid, const char *text, BN_CTX *ctx, BIO *out)
@@ -462,4 +451,3 @@ err:
     exit(ret);
     return (ret);
 }
-#endif

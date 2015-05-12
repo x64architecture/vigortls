@@ -53,7 +53,6 @@
 
 #include <openssl/opensslconf.h>
 
-#ifndef OPENSSL_NO_AES
 #include <openssl/aes.h>
 #include <openssl/err.h>
 #include <openssl/evp.h>
@@ -1462,4 +1461,3 @@ const EVP_AEAD *EVP_aead_aes_256_gcm(void)
     return &aead_aes_256_gcm;
 }
 
-#endif
