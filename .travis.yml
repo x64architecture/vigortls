@@ -1,18 +1,8 @@
 language: c
-matrix:
-        include:
-                - compiler: clang
-                  os: osx
-                - compiler: gcc
-                  os: osx
-                - compiler: clang
-                  os: linux
-                - compiler: gcc
-                  os: linux
 
 before_install:
  - echo "yes" | sudo add-apt-repository ppa:kalakris/cmake
  - sudo apt-get update -qq
  - sudo apt-get install cmake
 
-script: mkdir build && cd build && cmake .. && make && make test
+script: mkdir build && cd build && cmake .. && make && make test ARGS="-V"
