@@ -7,6 +7,8 @@
  */
 #include <stdio.h>
 
+#include <openssl/opensslconf.h>
+
 #if defined(OPENSSL_NO_GOST)
 int main(int argc, char *argv[])
 {

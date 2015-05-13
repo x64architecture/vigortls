@@ -525,6 +525,13 @@ int main(int argc, char **argv)
                 continue;
             }
 #endif
+#ifdef OPENSSL_NO_GOST
+        if (strstr(cipher, "md_gost") == cipher ||
+            strstr(cipher, "streebog") == cipher) {
+            fprintf(stdout, "Cipher disabled, skipping %s\n", cipher);
+            continue;
+        }
+#endif
             fprintf(stderr, "Can't find %s\n", cipher);
             exit(3);
         }
