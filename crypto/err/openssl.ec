@@ -34,6 +34,7 @@ L STORE     include/openssl/store.h            crypto/store/str_err.c
 L TS        include/openssl/ts.h               crypto/ts/ts_err.c
 L HMAC      include/openssl/hmac.h             crypto/hmac/hmac_err.c
 L CMS       include/openssl/cms.h              crypto/cms/cms_err.c
+L GOST      include/openssl/gost.h             crypto/gost/gost_err.c
 
 # additional header files to be scanned for function names
 L NONE      include/openssl/x509_vfy.h         NONE

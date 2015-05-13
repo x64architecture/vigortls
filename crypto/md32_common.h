@@ -133,8 +133,8 @@
 #ifndef HASH_TRANSFORM
 #error "HASH_TRANSFORM must be defined!"
 #endif
-#ifndef HASH_FINAL
-#error "HASH_FINAL must be defined!"
+#if !defined(HASH_FINAL) && !defined(HASH_NO_FINAL)
+#error "HASH_FINAL or HASH_NO_FINAL must be defined!"
 #endif
 
 #ifndef HASH_BLOCK_DATA_ORDER
@@ -306,6 +306,7 @@ void HASH_TRANSFORM(HASH_CTX *c, const unsigned char *data)
     HASH_BLOCK_DATA_ORDER(c, data, 1);
 }
 
+#ifndef HASH_NO_FINAL
 int HASH_FINAL(unsigned char *md, HASH_CTX *c)
 {
     unsigned char *p = (unsigned char *)c->data;
@@ -342,6 +343,7 @@ int HASH_FINAL(unsigned char *md, HASH_CTX *c)
 
     return 1;
 }
+#endif
 
 #ifndef MD32_REG_T
 #if defined(__alpha) || defined(__sparcv9) || defined(__mips)

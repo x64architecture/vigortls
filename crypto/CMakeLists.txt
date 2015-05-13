@@ -86,6 +86,7 @@ add_subdirectory(ecdh)
 add_subdirectory(ecdsa)
 add_subdirectory(engine)
 add_subdirectory(err)
+add_subdirectory(gost)
 add_subdirectory(hmac)
 add_subdirectory(idea)
 add_subdirectory(lhash)
@@ -154,6 +155,7 @@ add_library(
     $<TARGET_OBJECTS:engine>
     $<TARGET_OBJECTS:err>
     $<TARGET_OBJECTS:evp>
+    $<TARGET_OBJECTS:gost>
     $<TARGET_OBJECTS:hmac>
     $<TARGET_OBJECTS:idea>
     $<TARGET_OBJECTS:lhash>

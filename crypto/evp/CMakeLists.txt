@@ -37,6 +37,7 @@ add_library(
     e_chacha20poly1305.c
     e_des.c
     e_des3.c
+    e_gost2814789.c
     e_idea.c
     e_null.c
     e_old.c
@@ -48,6 +49,8 @@ add_library(
     m_dss.c
     m_dss1.c
     m_ecdsa.c
+    m_gost2814789.c
+    m_gostr341194.c
     m_md4.c
     m_md5.c
     m_mdc2.c
@@ -55,6 +58,7 @@ add_library(
     m_ripemd.c
     m_sha1.c
     m_sigver.c
+    m_streebog.c
     m_wp.c
     names.c
     p5_crpt.c

@@ -934,3 +934,15 @@ brainpoolP384r1		933
 brainpoolP384t1		934
 brainpoolP512r1		935
 brainpoolP512t1		936
+gost89_ecb		937
+gost89_cbc		938
+tc26		939
+id_tc26_gost3411_2012_256		940
+id_tc26_gost3411_2012_512		941
+id_tc26_gost_3410_2012_512_paramSetA		942
+id_tc26_gost_3410_2012_512_paramSetB		943
+id_tc26_gost_28147_param_Z		944
+id_tc26_gost3410_2012_256		945
+id_tc26_gost3410_2012_512		946
+id_tc26_signwithdigest_gost3410_2012_256		947
+id_tc26_signwithdigest_gost3410_2012_512		948

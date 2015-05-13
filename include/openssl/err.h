@@ -189,6 +189,7 @@ typedef struct err_state_st {
 #define ERR_LIB_CMS 46
 #define ERR_LIB_TS 47
 #define ERR_LIB_HMAC 48
+#define ERR_LIB_GOST 49
 
 #define ERR_LIB_USER 128
 
@@ -223,6 +224,7 @@ typedef struct err_state_st {
 #define CMSerr(f, r) ERR_PUT_error(ERR_LIB_CMS, (f), (r), __FILE__, __LINE__)
 #define TSerr(f, r) ERR_PUT_error(ERR_LIB_TS, (f), (r), __FILE__, __LINE__)
 #define HMACerr(f, r) ERR_PUT_error(ERR_LIB_HMAC, (f), (r), __FILE__, __LINE__)
+#define GOSTerr(f, r) ERR_PUT_error(ERR_LIB_GOST, (f), (r), __FILE__, __LINE__)
 
 #define ERR_PACK(l, f, r) (((((unsigned long)l) & 0xffL ) << 24L) \
                          | ((((unsigned long)f) & 0xfffL) << 12L) \

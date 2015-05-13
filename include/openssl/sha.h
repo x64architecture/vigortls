@@ -130,6 +130,8 @@ void SHA256_Transform(SHA256_CTX *c, const unsigned char *data);
 #define SHA512_CBLOCK (SHA_LBLOCK * 8) /* SHA-512 treats input data as a \
                  * contiguous array of 64 bit                            \
                  * wide big-endian values. */
+
+#undef U64 /* Fix conflict with gost header */
 #if defined(__arch64__)
 #define SHA_LONG64 unsigned long
 #define U64(C) C##UL

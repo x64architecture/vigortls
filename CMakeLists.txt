@@ -4,7 +4,8 @@ project(VigorTLS C)
 find_package(Perl REQUIRED)
 
 include(CTest)
-include(ConfigureChecks.cmake)
+include(CMake/ConfigureChecks.cmake)
+include(CMake/GenDeps.cmake)
 
 if (CMAKE_COMPILER_IS_GNUCC OR ${CMAKE_C_COMPILER_ID} STREQUAL "Clang")
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Werror -g -std=c99")
