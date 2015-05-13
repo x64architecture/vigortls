@@ -711,10 +711,7 @@ int ssl_add_cert_chain(SSL *s, X509 *x, unsigned long *l)
                 SSLerr(SSL_F_SSL_ADD_CERT_CHAIN, ERR_R_X509_LIB);
                 return 0;
             }
-            if (X509_verify_cert(&xs_ctx) <= 0) {
-                SSLerr(SSL_F_SSL_ADD_CERT_CHAIN, ERR_R_X509_LIB);
-                return 0;
-            }
+            X509_verify_cert(&xs_ctx);
             /* Don't leave errors in the queue */
             ERR_clear_error();
             for (i = 0; i < sk_X509_num(xs_ctx.chain); i++) {
