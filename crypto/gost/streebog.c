@@ -48,6 +48,9 @@
  * ====================================================================
  */
 
+#include <machine/endian.h>
+
+#include <stdlib.h>
 #include <string.h>
 
 #include <openssl/opensslconf.h>
@@ -940,6 +943,16 @@ int STREEBOG512_Final(unsigned char *md, STREEBOG_CTX *c)
             for (n = 0; n < STREEBOG256_LENGTH / 8; n++) {
                 STREEBOG_LONG64 t = c->h[4 + n];
 
+#if BYTE_ORDER == BIG_ENDIAN
+                *(md++) = (unsigned char)(t);
+                *(md++) = (unsigned char)(t >> 8);
+                *(md++) = (unsigned char)(t >> 16);
+                *(md++) = (unsigned char)(t >> 24);
+                *(md++) = (unsigned char)(t >> 32);
+                *(md++) = (unsigned char)(t >> 40);
+                *(md++) = (unsigned char)(t >> 48);
+                *(md++) = (unsigned char)(t >> 56);
+#else
                 *(md++) = (unsigned char)(t >> 56);
                 *(md++) = (unsigned char)(t >> 48);
                 *(md++) = (unsigned char)(t >> 40);
@@ -948,12 +961,23 @@ int STREEBOG512_Final(unsigned char *md, STREEBOG_CTX *c)
                 *(md++) = (unsigned char)(t >> 16);
                 *(md++) = (unsigned char)(t >> 8);
                 *(md++) = (unsigned char)(t);
+#endif
             }
             break;
         case STREEBOG512_LENGTH:
             for (n = 0; n < STREEBOG512_LENGTH / 8; n++) {
                 STREEBOG_LONG64 t = c->h[n];
 
+#if BYTE_ORDER == BIG_ENDIAN
+                *(md++) = (unsigned char)(t);
+                *(md++) = (unsigned char)(t >> 8);
+                *(md++) = (unsigned char)(t >> 16);
+                *(md++) = (unsigned char)(t >> 24);
+                *(md++) = (unsigned char)(t >> 32);
+                *(md++) = (unsigned char)(t >> 40);
+                *(md++) = (unsigned char)(t >> 48);
+                *(md++) = (unsigned char)(t >> 56);
+#else
                 *(md++) = (unsigned char)(t >> 56);
                 *(md++) = (unsigned char)(t >> 48);
                 *(md++) = (unsigned char)(t >> 40);
@@ -962,6 +986,7 @@ int STREEBOG512_Final(unsigned char *md, STREEBOG_CTX *c)
                 *(md++) = (unsigned char)(t >> 16);
                 *(md++) = (unsigned char)(t >> 8);
                 *(md++) = (unsigned char)(t);
+#endif
             }
             break;
         /* ... as well as make sure md_len is not abused. */

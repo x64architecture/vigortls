@@ -177,36 +177,37 @@ int GOST_KEY_set_public_key_affine_coordinates(GOST_KEY *key, BIGNUM *x, BIGNUM 
     EC_POINT *point = NULL;
     int ok = 0;
 
-    if (!key || !key->group || !x || !y) {
+    if (key == NULL || key->group == NULL || x == NULL || y == NULL) {
         GOSTerr(GOST_F_GOST_KEY_SET_PUBLIC_KEY_AFFINE_COORDINATES,
                 ERR_R_PASSED_NULL_PARAMETER);
         return 0;
     }
     ctx = BN_CTX_new();
-    if (!ctx)
+    if (ctx == NULL)
         goto err;
 
     point = EC_POINT_new(key->group);
-
-    if (!point)
+    if (point == NULL)
         goto err;
 
-    tx = BN_CTX_get(ctx);
-    ty = BN_CTX_get(ctx);
-    if (!EC_POINT_set_affine_coordinates_GFp(key->group, point, x, y, ctx))
+    if ((tx = BN_CTX_get(ctx)) == NULL)
         goto err;
-    if (!EC_POINT_get_affine_coordinates_GFp(key->group, point, tx, ty, ctx))
+    if ((ty = BN_CTX_get(ctx)) == NULL)
+        goto err;
+    if (EC_POINT_set_affine_coordinates_GFp(key->group, point, x, y, ctx) == 0)
+        goto err;
+    if (EC_POINT_get_affine_coordinates_GFp(key->group, point, tx, ty, ctx) == 0)
         goto err;
     /*
      * Check if retrieved coordinates match originals: if not values are
      * out of range.
      */
-    if (BN_cmp(x, tx) || BN_cmp(y, ty)) {
+    if (BN_cmp(x, tx) != 0 || BN_cmp(y, ty) != 0) {
         GOSTerr(GOST_F_GOST_KEY_SET_PUBLIC_KEY_AFFINE_COORDINATES,
                 EC_R_COORDINATES_OUT_OF_RANGE);
         goto err;
     }
-    if (!GOST_KEY_set_public_key(key, point))
+    if (GOST_KEY_set_public_key(key, point) != 0)
         goto err;
 
     if (GOST_KEY_check_key(key) == 0)

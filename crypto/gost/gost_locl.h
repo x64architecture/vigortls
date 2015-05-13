@@ -100,8 +100,8 @@ extern int gost2001_compute_public(GOST_KEY *ec);
 extern ECDSA_SIG *gost2001_do_sign(BIGNUM *md, GOST_KEY *eckey);
 extern int gost2001_do_verify(BIGNUM *md, ECDSA_SIG *sig, GOST_KEY *ec);
 extern int gost2001_keygen(GOST_KEY *ec);
-extern void VKO_compute_key(BIGNUM *X, BIGNUM *Y, const GOST_KEY *pkey,
-                            GOST_KEY *priv_key, const BIGNUM *ukm);
+extern int VKO_compute_key(BIGNUM *X, BIGNUM *Y, const GOST_KEY *pkey,
+                           GOST_KEY *priv_key, const BIGNUM *ukm);
 extern BIGNUM *GOST_le2bn(const unsigned char *buf, size_t len, BIGNUM *bn);
 extern int GOST_bn2le(BIGNUM *bn, unsigned char *buf, int len);
 

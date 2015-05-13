@@ -73,7 +73,7 @@ static int pkey_gost_mac_init(EVP_PKEY_CTX *ctx)
     struct gost_mac_pmeth_data *data;
 
     data = calloc(1, sizeof(struct gost_mac_pmeth_data));
-    if (!data)
+    if (data == NULL)
         return 0;
     EVP_PKEY_CTX_set_data(ctx, data);
     return 1;
@@ -111,6 +111,10 @@ static int pkey_gost_mac_keygen(EVP_PKEY_CTX *ctx, EVP_PKEY *pkey)
     }
 
     keydata = malloc(32);
+    if (keydata == NULL) {
+        GOSTerr(GOST_F_PKEY_GOST_MAC_KEYGEN, ERR_R_MALLOC_FAILURE);
+        return 0;
+    }
     memcpy(keydata, data->key, 32);
     EVP_PKEY_assign(pkey, NID_id_Gost28147_89_MAC, keydata);
 
