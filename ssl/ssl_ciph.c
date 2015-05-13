@@ -1161,7 +1161,8 @@ static int ssl_cipher_process_rulestr(const char *rule_str,
             j = found = 0;
             cipher_id = 0;
             while (ca_list[j]) {
-                if (!strncmp(buf, ca_list[j]->name, buflen) && (ca_list[j]->name[buflen] == '\0')) {
+                if (strncmp(buf, ca_list[j]->name, buflen) == 0 &&
+                    (ca_list[j]->name[buflen] == '\0')) {
                     found = 1;
                     break;
                 } else
@@ -1261,7 +1262,7 @@ static int ssl_cipher_process_rulestr(const char *rule_str,
         if (rule == CIPHER_SPECIAL) {
             /* special command */
             ok = 0;
-            if ((buflen == 8) && !strncmp(buf, "STRENGTH", 8))
+            if ((buflen == 8) && strncmp(buf, "STRENGTH", 8) == 0)
                 ok = ssl_cipher_strength_sort(head_p, tail_p);
             else
                 SSLerr(SSL_F_SSL_CIPHER_PROCESS_RULESTR, SSL_R_INVALID_COMMAND);

@@ -137,10 +137,10 @@ static void *v2i_NAME_CONSTRAINTS(const X509V3_EXT_METHOD *method, X509V3_CTX *c
         goto memerr;
     for (i = 0; i < sk_CONF_VALUE_num(nval); i++) {
         val = sk_CONF_VALUE_value(nval, i);
-        if (!strncmp(val->name, "permitted", 9) && val->name[9]) {
+        if (strncmp(val->name, "permitted", 9) == 0 && val->name[9]) {
             ptree = &ncons->permittedSubtrees;
             tval.name = val->name + 10;
-        } else if (!strncmp(val->name, "excluded", 8) && val->name[8]) {
+        } else if (strncmp(val->name, "excluded", 8) == 0 && val->name[8]) {
             ptree = &ncons->excludedSubtrees;
             tval.name = val->name + 9;
         } else {
@@ -414,7 +414,7 @@ static int nc_email(ASN1_IA5STRING *eml, ASN1_IA5STRING *base)
     if (!baseat && (*baseptr == '.')) {
         if (eml->length > base->length) {
             emlptr += eml->length - base->length;
-            if (!strcasecmp(baseptr, emlptr))
+            if (strcasecmp(baseptr, emlptr) == 0)
                 return X509_V_OK;
         }
         return X509_V_ERR_PERMITTED_VIOLATION;
@@ -473,7 +473,7 @@ static int nc_uri(ASN1_IA5STRING *uri, ASN1_IA5STRING *base)
     if (*baseptr == '.') {
         if (hostlen > base->length) {
             p = hostptr + hostlen - base->length;
-            if (!strncasecmp(p, baseptr, base->length))
+            if (strncasecmp(p, baseptr, base->length) == 0)
                 return X509_V_OK;
         }
         return X509_V_ERR_PERMITTED_VIOLATION;

@@ -55,6 +55,7 @@
  *
  */
 
+#include <limits.h>
 #include <stdio.h>
 #include <string.h>
 
@@ -140,19 +141,35 @@ static int pkey_dh_ctrl(EVP_PKEY_CTX *ctx, int type, int p1, void *p2)
     }
 }
 
-static int pkey_dh_ctrl_str(EVP_PKEY_CTX *ctx,
-                            const char *type, const char *value)
+static int pkey_dh_ctrl_str(EVP_PKEY_CTX *ctx, const char *type, const char *value)
 {
-    if (!strcmp(type, "dh_paramgen_prime_len")) {
-        int len;
-        len = atoi(value);
+    long lval;
+    char *ep;
+    int len;
+    if (strcmp(type, "dh_paramgen_prime_len") == 0) {
+        errno = 0;
+        lval = strtol(value, &ep, 10);
+        if (value[0] == '\0' || *ep != '\0')
+            goto invalid_number;
+        if ((errno == ERANGE && (lval == LONG_MAX || lval == LONG_MIN)) ||
+            (lval > INT_MAX || lval < INT_MIN))
+            goto out_of_range;
+        len = lval;
         return EVP_PKEY_CTX_set_dh_paramgen_prime_len(ctx, len);
     }
-    if (!strcmp(type, "dh_paramgen_generator")) {
-        int len;
-        len = atoi(value);
+    if (strcmp(type, "dh_paramgen_generator") == 0) {
+        errno = 0;
+        lval = strtol(value, &ep, 10);
+        if (value[0] == '\0' || *ep != '\0')
+            goto invalid_number;
+        if ((errno == ERANGE && (lval == LONG_MAX || lval == LONG_MIN)) ||
+            (lval > INT_MAX || lval < INT_MIN))
+            goto out_of_range;
+        len = lval;
         return EVP_PKEY_CTX_set_dh_paramgen_generator(ctx, len);
     }
+invalid_number:
+out_of_range:
     return -2;
 }
 

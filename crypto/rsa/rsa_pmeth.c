@@ -56,6 +56,7 @@
  *
  */
 
+#include <limits.h>
 #include <stdio.h>
 #include <string.h>
 
@@ -74,8 +75,7 @@
 
 /* RSA pkey context structure */
 
-typedef struct
-    {
+typedef struct {
     /* Key gen parameters */
     int nbits;
     BIGNUM *pub_exp;
@@ -97,7 +97,7 @@ static int pkey_rsa_init(EVP_PKEY_CTX *ctx)
 {
     RSA_PKEY_CTX *rctx;
     rctx = malloc(sizeof(RSA_PKEY_CTX));
-    if (!rctx)
+    if (rctx == NULL)
         return 0;
     rctx->nbits = 1024;
     rctx->pub_exp = NULL;
@@ -135,10 +135,10 @@ static int pkey_rsa_copy(EVP_PKEY_CTX *dst, EVP_PKEY_CTX *src)
 
 static int setup_tbuf(RSA_PKEY_CTX *ctx, EVP_PKEY_CTX *pk)
 {
-    if (ctx->tbuf)
+    if (ctx->tbuf != NULL)
         return 1;
     ctx->tbuf = malloc(EVP_PKEY_size(pk->pkey));
-    if (!ctx->tbuf)
+    if (ctx->tbuf == NULL)
         return 0;
     return 1;
 }
@@ -146,13 +146,11 @@ static int setup_tbuf(RSA_PKEY_CTX *ctx, EVP_PKEY_CTX *pk)
 static void pkey_rsa_cleanup(EVP_PKEY_CTX *ctx)
 {
     RSA_PKEY_CTX *rctx = ctx->data;
-    if (rctx) {
-        if (rctx->pub_exp)
-            BN_free(rctx->pub_exp);
-        if (rctx->tbuf)
-            free(rctx->tbuf);
-        free(rctx);
-    }
+    if (rctx == NULL)
+        return;
+    BN_free(rctx->pub_exp);
+    free(rctx->tbuf);
+    free(rctx);
 }
 
 static int pkey_rsa_sign(EVP_PKEY_CTX *ctx, unsigned char *sig, size_t *siglen,
@@ -328,8 +326,7 @@ static int pkey_rsa_decrypt(EVP_PKEY_CTX *ctx,
 {
     int ret;
     RSA_PKEY_CTX *rctx = ctx->data;
-    ret = RSA_private_decrypt(inlen, in, out, ctx->pkey->pkey.rsa,
-                              rctx->pad_mode);
+    ret = RSA_private_decrypt(inlen, in, out, ctx->pkey->pkey.rsa, rctx->pad_mode);
     if (ret < 0)
         return ret;
     *outlen = ret;
@@ -348,8 +345,7 @@ static int check_padding_md(const EVP_MD *md, int padding)
 
     if (padding == RSA_X931_PADDING) {
         if (RSA_X931_hash_id(EVP_MD_type(md)) == -1) {
-            RSAerr(RSA_F_CHECK_PADDING_MD,
-                   RSA_R_INVALID_X931_DIGEST);
+            RSAerr(RSA_F_CHECK_PADDING_MD, RSA_R_INVALID_X931_DIGEST);
             return 0;
         }
         return 1;
@@ -382,8 +378,7 @@ static int pkey_rsa_ctrl(EVP_PKEY_CTX *ctx, int type, int p1, void *p2)
                 return 1;
             }
         bad_pad:
-            RSAerr(RSA_F_PKEY_RSA_CTRL,
-                   RSA_R_ILLEGAL_OR_UNSUPPORTED_PADDING_MODE);
+            RSAerr(RSA_F_PKEY_RSA_CTRL, RSA_R_ILLEGAL_OR_UNSUPPORTED_PADDING_MODE);
             return -2;
 
         case EVP_PKEY_CTRL_GET_RSA_PADDING:
@@ -470,50 +465,65 @@ static int pkey_rsa_ctrl(EVP_PKEY_CTX *ctx, int type, int p1, void *p2)
     }
 }
 
-static int pkey_rsa_ctrl_str(EVP_PKEY_CTX *ctx,
-                             const char *type, const char *value)
+static int pkey_rsa_ctrl_str(EVP_PKEY_CTX *ctx, const char *type, const char *value)
 {
+    long lval;
+    char *ep;
     if (!value) {
         RSAerr(RSA_F_PKEY_RSA_CTRL_STR, RSA_R_VALUE_MISSING);
         return 0;
     }
-    if (!strcmp(type, "rsa_padding_mode")) {
+    if (strcmp(type, "rsa_padding_mode") == 0) {
         int pm;
-        if (!strcmp(value, "pkcs1"))
+        if (strcmp(value, "pkcs1") == 0)
             pm = RSA_PKCS1_PADDING;
-        else if (!strcmp(value, "sslv23"))
+        else if (strcmp(value, "sslv23") == 0)
             pm = RSA_SSLV23_PADDING;
-        else if (!strcmp(value, "none"))
+        else if (strcmp(value, "none") == 0)
             pm = RSA_NO_PADDING;
-        else if (!strcmp(value, "oeap"))
+        else if (strcmp(value, "oeap") == 0) /* FIXME: Typo was fixed in 2013 */
             pm = RSA_PKCS1_OAEP_PADDING;
-        else if (!strcmp(value, "oaep"))
+        else if (strcmp(value, "oaep") == 0)
             pm = RSA_PKCS1_OAEP_PADDING;
-        else if (!strcmp(value, "x931"))
+        else if (strcmp(value, "x931") == 0)
             pm = RSA_X931_PADDING;
-        else if (!strcmp(value, "pss"))
+        else if (strcmp(value, "pss") == 0)
             pm = RSA_PKCS1_PSS_PADDING;
         else {
-            RSAerr(RSA_F_PKEY_RSA_CTRL_STR,
-                   RSA_R_UNKNOWN_PADDING_TYPE);
+            RSAerr(RSA_F_PKEY_RSA_CTRL_STR, RSA_R_UNKNOWN_PADDING_TYPE);
             return -2;
         }
         return EVP_PKEY_CTX_set_rsa_padding(ctx, pm);
     }
 
-    if (!strcmp(type, "rsa_pss_saltlen")) {
+    if (strcmp(type, "rsa_pss_saltlen") == 0) {
         int saltlen;
-        saltlen = atoi(value);
+
+        lval = strtol(value, &ep, 10);
+        if (value[0] == '\0' || *ep != '\0')
+            goto invalid_number;
+        if ((errno == ERANGE && (lval == LONG_MAX || lval == LONG_MIN)) ||
+            (lval > INT_MAX || lval < INT_MIN))
+            goto out_of_range;
+        saltlen = lval;
         return EVP_PKEY_CTX_set_rsa_pss_saltlen(ctx, saltlen);
     }
 
-    if (!strcmp(type, "rsa_keygen_bits")) {
+    if (strcmp(type, "rsa_keygen_bits") == 0) {
         int nbits;
-        nbits = atoi(value);
+
+        errno = 0;
+        lval = strtol(value, &ep, 10);
+        if (value[0] == '\0' || *ep != '\0')
+            goto invalid_number;
+        if ((errno == ERANGE && (lval == LONG_MAX || lval == LONG_MIN)) ||
+            (lval > INT_MAX || lval < INT_MIN))
+            goto out_of_range;
+        nbits = lval;
         return EVP_PKEY_CTX_set_rsa_keygen_bits(ctx, nbits);
     }
 
-    if (!strcmp(type, "rsa_keygen_pubexp")) {
+    if (strcmp(type, "rsa_keygen_pubexp") == 0) {
         int ret;
         BIGNUM *pubexp = NULL;
         if (!BN_asc2bn(&pubexp, value))
@@ -524,6 +534,8 @@ static int pkey_rsa_ctrl_str(EVP_PKEY_CTX *ctx,
         return ret;
     }
 
+invalid_number:
+out_of_range:
     return -2;
 }
 
@@ -555,37 +567,25 @@ static int pkey_rsa_keygen(EVP_PKEY_CTX *ctx, EVP_PKEY *pkey)
 }
 
 const EVP_PKEY_METHOD rsa_pkey_meth = {
-    EVP_PKEY_RSA,
-    EVP_PKEY_FLAG_AUTOARGLEN,
-    pkey_rsa_init,
-    pkey_rsa_copy,
-    pkey_rsa_cleanup,
+    .pkey_id = EVP_PKEY_RSA,
+    .flags = EVP_PKEY_FLAG_AUTOARGLEN,
 
-    0, 0,
+    .init = pkey_rsa_init,
+    .copy = pkey_rsa_copy,
+    .cleanup = pkey_rsa_cleanup,
 
-    0,
-    pkey_rsa_keygen,
+    .keygen = pkey_rsa_keygen,
 
-    0,
-    pkey_rsa_sign,
+    .sign = pkey_rsa_sign,
 
-    0,
-    pkey_rsa_verify,
+    .verify = pkey_rsa_verify,
 
-    0,
-    pkey_rsa_verifyrecover,
+    .verify_recover = pkey_rsa_verifyrecover,
 
-    0, 0, 0, 0,
+    .encrypt = pkey_rsa_encrypt,
 
-    0,
-    pkey_rsa_encrypt,
+    .decrypt = pkey_rsa_decrypt,
 
-    0,
-    pkey_rsa_decrypt,
-
-    0, 0,
-
-    pkey_rsa_ctrl,
-    pkey_rsa_ctrl_str
-
+    .ctrl = pkey_rsa_ctrl,
+    .ctrl_str = pkey_rsa_ctrl_str
 };

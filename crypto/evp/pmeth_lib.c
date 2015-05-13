@@ -399,7 +399,7 @@ int EVP_PKEY_CTX_ctrl_str(EVP_PKEY_CTX *ctx,
                EVP_R_COMMAND_NOT_SUPPORTED);
         return -2;
     }
-    if (!strcmp(name, "digest")) {
+    if (strcmp(name, "digest") == 0) {
         const EVP_MD *md;
         if (!value || !(md = EVP_get_digestbyname(value))) {
             EVPerr(EVP_F_EVP_PKEY_CTX_CTRL_STR,

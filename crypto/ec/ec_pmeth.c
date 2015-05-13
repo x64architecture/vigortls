@@ -235,7 +235,7 @@ static int pkey_ec_ctrl(EVP_PKEY_CTX *ctx, int type, int p1, void *p2)
 static int pkey_ec_ctrl_str(EVP_PKEY_CTX *ctx,
                             const char *type, const char *value)
 {
-    if (!strcmp(type, "ec_paramgen_curve")) {
+    if (strcmp(type, "ec_paramgen_curve") == 0) {
         int nid;
         nid = OBJ_sn2nid(value);
         if (nid == NID_undef)

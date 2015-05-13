@@ -429,9 +429,9 @@ static char *app_get_pass(char *arg, int keepbio)
     static BIO *pwdbio = NULL;
     int i;
     const char *stnerr = NULL;
-    if (!strncmp(arg, "pass:", 5))
+    if (strncmp(arg, "pass:", 5) == 0)
         return strdup(arg + 5);
-    if (!strncmp(arg, "env:", 4)) {
+    if (strncmp(arg, "env:", 4) == 0) {
         tmp = getenv(arg + 4);
         if (!tmp) {
             BIO_printf(bio_err, "Can't read environment variable %s\n", arg + 4);
@@ -440,13 +440,13 @@ static char *app_get_pass(char *arg, int keepbio)
         return strdup(tmp);
     }
     if (!keepbio || !pwdbio) {
-        if (!strncmp(arg, "file:", 5)) {
+        if (strncmp(arg, "file:", 5) == 0) {
             pwdbio = BIO_new_file(arg + 5, "r");
             if (!pwdbio) {
                 BIO_printf(bio_err, "Can't open file %s\n", arg + 5);
                 return NULL;
             }
-        } else if (!strncmp(arg, "fd:", 3)) {
+        } else if (strncmp(arg, "fd:", 3) == 0) {
             BIO *btmp;
             i = strtonum(arg + 3, 1, INT_MAX, &stnerr);
             if (stnerr) {
@@ -461,7 +461,7 @@ static char *app_get_pass(char *arg, int keepbio)
             /* Can't do BIO_gets on an fd BIO so add a buffering BIO */
             btmp = BIO_new(BIO_f_buffer());
             pwdbio = BIO_push(btmp, pwdbio);
-        } else if (!strcmp(arg, "stdin")) {
+        } else if (strcmp(arg, "stdin") == 0) {
             pwdbio = BIO_new_fp(stdin, BIO_NOCLOSE);
             if (!pwdbio) {
                 BIO_printf(bio_err, "Can't open BIO for stdin\n");
@@ -959,11 +959,11 @@ int set_name_ex(unsigned long *flags, const char *arg)
 
 int set_ext_copy(int *copy_type, const char *arg)
 {
-    if (!strcasecmp(arg, "none"))
+    if (strcasecmp(arg, "none") == 0)
         *copy_type = EXT_COPY_NONE;
-    else if (!strcasecmp(arg, "copy"))
+    else if (strcasecmp(arg, "copy") == 0)
         *copy_type = EXT_COPY_ADD;
-    else if (!strcasecmp(arg, "copyall"))
+    else if (strcasecmp(arg, "copyall") == 0)
         *copy_type = EXT_COPY_ALL;
     else
         return 0;
@@ -1043,7 +1043,7 @@ static int set_table_opts(unsigned long *flags, const char *arg, const NAME_EX_T
         c = 1;
 
     for (ptbl = in_tbl; ptbl->name; ptbl++) {
-        if (!strcasecmp(arg, ptbl->name)) {
+        if (strcasecmp(arg, ptbl->name) == 0) {
             *flags &= ~ptbl->mask;
             if (c)
                 *flags |= ptbl->flag;

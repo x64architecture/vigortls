@@ -55,6 +55,7 @@
  *
  */
 
+#include <limits.h>
 #include <stdio.h>
 #include <string.h>
 
@@ -176,7 +177,9 @@ static int pkey_dsa_ctrl(EVP_PKEY_CTX *ctx, int type, int p1, void *p2)
             return 1;
 
         case EVP_PKEY_CTRL_DSA_PARAMGEN_MD:
-            if (EVP_MD_type((const EVP_MD *)p2) != NID_sha1 && EVP_MD_type((const EVP_MD *)p2) != NID_sha224 && EVP_MD_type((const EVP_MD *)p2) != NID_sha256) {
+            if (EVP_MD_type((const EVP_MD *)p2) != NID_sha1 &&
+                EVP_MD_type((const EVP_MD *)p2) != NID_sha224 &&
+                EVP_MD_type((const EVP_MD *)p2) != NID_sha256) {
                 DSAerr(DSA_F_PKEY_DSA_CTRL, DSA_R_INVALID_DIGEST_TYPE);
                 return 0;
             }
@@ -184,7 +187,13 @@ static int pkey_dsa_ctrl(EVP_PKEY_CTX *ctx, int type, int p1, void *p2)
             return 1;
 
         case EVP_PKEY_CTRL_MD:
-            if (EVP_MD_type((const EVP_MD *)p2) != NID_sha1 && EVP_MD_type((const EVP_MD *)p2) != NID_dsa && EVP_MD_type((const EVP_MD *)p2) != NID_dsaWithSHA && EVP_MD_type((const EVP_MD *)p2) != NID_sha224 && EVP_MD_type((const EVP_MD *)p2) != NID_sha256 && EVP_MD_type((const EVP_MD *)p2) != NID_sha384 && EVP_MD_type((const EVP_MD *)p2) != NID_sha512) {
+            if (EVP_MD_type((const EVP_MD *)p2) != NID_sha1 &&
+                EVP_MD_type((const EVP_MD *)p2) != NID_dsa &&
+                EVP_MD_type((const EVP_MD *)p2) != NID_dsaWithSHA &&
+                EVP_MD_type((const EVP_MD *)p2) != NID_sha224 &&
+                EVP_MD_type((const EVP_MD *)p2) != NID_sha256 &&
+                EVP_MD_type((const EVP_MD *)p2) != NID_sha384 &&
+                EVP_MD_type((const EVP_MD *)p2) != NID_sha512) {
                 DSAerr(DSA_F_PKEY_DSA_CTRL, DSA_R_INVALID_DIGEST_TYPE);
                 return 0;
             }
@@ -205,24 +214,44 @@ static int pkey_dsa_ctrl(EVP_PKEY_CTX *ctx, int type, int p1, void *p2)
     }
 }
 
-static int pkey_dsa_ctrl_str(EVP_PKEY_CTX *ctx,
-                             const char *type, const char *value)
+static int pkey_dsa_ctrl_str(EVP_PKEY_CTX *ctx, const char *type, const char *value)
 {
-    if (!strcmp(type, "dsa_paramgen_bits")) {
+    long lval;
+    char *ep;
+    if (strcmp(type, "dsa_paramgen_bits") == 0) {
         int nbits;
-        nbits = atoi(value);
+        
+        errno = 0;
+        lval = strtol(value, &ep, 10);
+        if (value[0] == '\0' || *ep != '\0')
+            goto invalid_number;
+        if ((errno == ERANGE && (lval == LONG_MAX || lval == LONG_MIN)) ||
+            (lval > INT_MAX || lval < INT_MIN))
+            goto out_of_range;
+        nbits = lval;
         return EVP_PKEY_CTX_set_dsa_paramgen_bits(ctx, nbits);
     }
-    if (!strcmp(type, "dsa_paramgen_q_bits")) {
-        int qbits = atoi(value);
+    if (strcmp(type, "dsa_paramgen_q_bits") == 0) {
+        int qbits;
+
+        lval = strtol(value, &ep, 10);
+        if (value[0] == '\0' || *ep != '\0')
+            goto invalid_number;
+        if ((errno == ERANGE && (lval == LONG_MAX || lval == LONG_MIN)) ||
+            (lval > INT_MAX || lval < INT_MIN))
+            goto out_of_range;
+        qbits = lval;
         return EVP_PKEY_CTX_ctrl(ctx, EVP_PKEY_DSA, EVP_PKEY_OP_PARAMGEN,
                                  EVP_PKEY_CTRL_DSA_PARAMGEN_Q_BITS, qbits, NULL);
     }
-    if (!strcmp(type, "dsa_paramgen_md")) {
+    if (strcmp(type, "dsa_paramgen_md") == 0) {
         return EVP_PKEY_CTX_ctrl(ctx, EVP_PKEY_DSA, EVP_PKEY_OP_PARAMGEN,
                                  EVP_PKEY_CTRL_DSA_PARAMGEN_MD, 0,
                                  (void *)EVP_get_digestbyname(value));
     }
+
+invalid_number:
+out_of_range:
     return -2;
 }
 
@@ -267,35 +296,21 @@ static int pkey_dsa_keygen(EVP_PKEY_CTX *ctx, EVP_PKEY *pkey)
 }
 
 const EVP_PKEY_METHOD dsa_pkey_meth = {
-    EVP_PKEY_DSA,
-    EVP_PKEY_FLAG_AUTOARGLEN,
-    pkey_dsa_init,
-    pkey_dsa_copy,
-    pkey_dsa_cleanup,
+    .pkey_id = EVP_PKEY_DSA,
+    .flags = EVP_PKEY_FLAG_AUTOARGLEN,
 
-    0,
-    pkey_dsa_paramgen,
+    .init = pkey_dsa_init,
+    .copy = pkey_dsa_copy,
+    .cleanup = pkey_dsa_cleanup,
 
-    0,
-    pkey_dsa_keygen,
+    .paramgen = pkey_dsa_paramgen,
 
-    0,
-    pkey_dsa_sign,
+    .keygen = pkey_dsa_keygen,
 
-    0,
-    pkey_dsa_verify,
+    .sign = pkey_dsa_sign,
 
-    0, 0,
+    .verify = pkey_dsa_verify,
 
-    0, 0, 0, 0,
-
-    0, 0,
-
-    0, 0,
-
-    0, 0,
-
-    pkey_dsa_ctrl,
-    pkey_dsa_ctrl_str
-
+    .ctrl = pkey_dsa_ctrl,
+    .ctrl_str = pkey_dsa_ctrl_str
 };
