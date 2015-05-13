@@ -389,7 +389,7 @@ static void EVP_PKEY_free_it(EVP_PKEY *x)
 static int unsup_alg(BIO *out, const EVP_PKEY *pkey, int indent,
                      const char *kstr)
 {
-    BIO_indent(out, indent, 128);
+    (void) BIO_indent(out, indent, 128);
     BIO_printf(out, "%s algorithm \"%s\" unsupported\n",
                kstr, OBJ_nid2ln(pkey->type));
     return 1;

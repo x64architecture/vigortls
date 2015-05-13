@@ -100,15 +100,22 @@ static int pack_signature_cp(ECDSA_SIG *s, int order, unsigned char *sig,
 static ECDSA_SIG *unpack_signature_le(const unsigned char *sig, size_t siglen)
 {
     ECDSA_SIG *s;
+    BIGNUM *a = NULL, *b = NULL;
 
     s = ECDSA_SIG_new();
     if (s == NULL) {
         GOSTerr(GOST_F_UNPACK_SIGNATURE_LE, ERR_R_MALLOC_FAILURE);
         return NULL;
     }
-    GOST_le2bn(sig, siglen / 2, s->r);
-    GOST_le2bn(sig + siglen / 2, siglen / 2, s->s);
+    if ((a = GOST_le2bn(sig, siglen / 2, s->r)) == NULL)
+        goto err;
+    if ((b = GOST_le2bn(sig + siglen / 2, siglen / 2, s->s)) == NULL)
+        goto err;
     return s;
+err:
+    ECDSA_SIG_free(s);
+    BN_free(a);
+    BN_free(b);
 }
 
 static int pack_signature_le(ECDSA_SIG *s, int order, unsigned char *sig,
@@ -254,6 +261,7 @@ static int pkey_gost01_sign(EVP_PKEY_CTX *ctx, unsigned char *sig, size_t *sigle
             break;
         case GOST_SIG_FORMAT_RS_LE:
             ret = pack_signature_le(unpacked_sig, size, sig, siglen);
+            break;
         default:
             ret = -1;
             break;

@@ -342,7 +342,8 @@ static int do_dh_print(BIO *bp, const DH *x, int indent,
         goto err;
     }
 
-    BIO_indent(bp, indent, 128);
+    if (BIO_indent(bp, indent, 128) == 0)
+        goto err;
     if (BIO_printf(bp, "%s: (%d bit)\n", ktype, BN_num_bits(x->p)) <= 0)
         goto err;
     indent += 4;

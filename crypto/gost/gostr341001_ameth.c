@@ -121,6 +121,8 @@ static ASN1_STRING *encode_gost01_algor_params(const EVP_PKEY *key)
 
     if (params == NULL || gkp == NULL) {
         GOSTerr(GOST_F_ENCODE_GOST01_ALGOR_PARAMS, ERR_R_MALLOC_FAILURE);
+        ASN1_STRING_free(params);
+        params = NULL;
         goto err;
     }
 
@@ -135,7 +137,6 @@ static ASN1_STRING *encode_gost01_algor_params(const EVP_PKEY *key)
     }
     params->type = V_ASN1_SEQUENCE;
 err:
-    ASN1_STRING_free(params);
     GOST_KEY_PARAMS_free(gkp);
     return params;
 }

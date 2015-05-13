@@ -79,7 +79,8 @@ static int asn1_print_info(BIO *bp, int tag, int xclass, int constructed,
         p = "prim: ";
     if (BIO_write(bp, p, 6) < 6)
         goto err;
-    BIO_indent(bp, indent, 128);
+    if (BIO_indent(bp, indent, 128) == 0)
+        goto err;
 
     p = str;
     if ((xclass & V_ASN1_PRIVATE) == V_ASN1_PRIVATE)
