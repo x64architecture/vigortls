@@ -5,4 +5,4 @@ before_install:
  - sudo apt-get update -qq
  - sudo apt-get install cmake
 
-script: mkdir build && cd build && cmake .. && make && make test ARGS="-V"
+script: mkdir build && cd build && cmake .. && make && make test
