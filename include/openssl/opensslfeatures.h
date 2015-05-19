@@ -18,6 +18,7 @@
 #define OPENSSL_NO_HEARTBEATS
 #define OPENSSL_NO_DYNAMIC_ENGINE
 #define OPENSSL_THREADS
+#define OPENSSL_USE_IPV6
 
 #if defined(__clang__) || defined(_MSC_VER) || defined(__GNUC__) && \
 (__GNUC__ < 3 || (__GNUC__ == 3 && __GNUC_MINOR__ < 1)) \

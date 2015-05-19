@@ -644,9 +644,7 @@ int generate_cookie_callback(SSL *ssl, unsigned char *cookie, unsigned int *cook
     union {
         struct sockaddr sa;
         struct sockaddr_in s4;
-#if OPENSSL_USE_IPV6
         struct sockaddr_in6 s6;
-#endif
     } peer;
 
     /* Initialize a random secret */
@@ -668,12 +666,10 @@ int generate_cookie_callback(SSL *ssl, unsigned char *cookie, unsigned int *cook
             length += sizeof(struct in_addr);
             length += sizeof(peer.s4.sin_port);
             break;
-#if OPENSSL_USE_IPV6
         case AF_INET6:
             length += sizeof(struct in6_addr);
             length += sizeof(peer.s6.sin6_port);
             break;
-#endif
         default:
             OPENSSL_assert(0);
             break;
@@ -694,7 +690,6 @@ int generate_cookie_callback(SSL *ssl, unsigned char *cookie, unsigned int *cook
                    &peer.s4.sin_addr,
                    sizeof(struct in_addr));
             break;
-#if OPENSSL_USE_IPV6
         case AF_INET6:
             memcpy(buffer,
                    &peer.s6.sin6_port,
@@ -703,7 +698,6 @@ int generate_cookie_callback(SSL *ssl, unsigned char *cookie, unsigned int *cook
                    &peer.s6.sin6_addr,
                    sizeof(struct in6_addr));
             break;
-#endif
         default:
             OPENSSL_assert(0);
             break;
@@ -727,9 +721,7 @@ int verify_cookie_callback(SSL *ssl, unsigned char *cookie, unsigned int cookie_
     union {
         struct sockaddr sa;
         struct sockaddr_in s4;
-#if OPENSSL_USE_IPV6
         struct sockaddr_in6 s6;
-#endif
     } peer;
 
     /* If secret isn't initialized yet, the cookie can't be valid */
@@ -746,12 +738,10 @@ int verify_cookie_callback(SSL *ssl, unsigned char *cookie, unsigned int cookie_
             length += sizeof(struct in_addr);
             length += sizeof(peer.s4.sin_port);
             break;
-#if OPENSSL_USE_IPV6
         case AF_INET6:
             length += sizeof(struct in6_addr);
             length += sizeof(peer.s6.sin6_port);
             break;
-#endif
         default:
             OPENSSL_assert(0);
             break;
@@ -772,7 +762,6 @@ int verify_cookie_callback(SSL *ssl, unsigned char *cookie, unsigned int cookie_
                    &peer.s4.sin_addr,
                    sizeof(struct in_addr));
             break;
-#if OPENSSL_USE_IPV6
         case AF_INET6:
             memcpy(buffer,
                    &peer.s6.sin6_port,
@@ -781,7 +770,6 @@ int verify_cookie_callback(SSL *ssl, unsigned char *cookie, unsigned int cookie_
                    &peer.s6.sin6_addr,
                    sizeof(struct in6_addr));
             break;
-#endif
         default:
             OPENSSL_assert(0);
             break;

@@ -195,9 +195,7 @@ int BIO_get_accept_socket(char *host, int bind_mode)
     union {
         struct sockaddr sa;
         struct sockaddr_in sa_in;
-#if OPENSSL_USE_IPV6
         struct sockaddr_in6 sa_in6;
-#endif
     } server, client;
     int s = INVALID_SOCKET, cs, addrlen;
     unsigned char ip[4];
@@ -242,11 +240,7 @@ int BIO_get_accept_socket(char *host, int bind_mode)
             if (strchr(h, ':')) {
                 if (h[1] == '\0')
                     h = NULL;
-#if OPENSSL_USE_IPV6
                 hint.ai_family = AF_INET6;
-#else
-                h = NULL;
-#endif
             } else if (h[0] == '*' && h[1] == '\0') {
                 hint.ai_family = AF_INET;
                 h = NULL;
@@ -306,13 +300,10 @@ again:
         if ((bind_mode == BIO_BIND_REUSEADDR_IF_UNUSED) && (err_num == EADDRINUSE)) {
             client = server;
             if (h == NULL || strcmp(h, "*") == 0) {
-#if OPENSSL_USE_IPV6
                 if (client.sa.sa_family == AF_INET6) {
                     memset(&client.sa_in6.sin6_addr, 0, sizeof(client.sa_in6.sin6_addr));
                     client.sa_in6.sin6_addr.s6_addr[15] = 1;
-                } else
-#endif
-                    if (client.sa.sa_family == AF_INET) {
+                } else if (client.sa.sa_family == AF_INET) {
                     client.sa_in.sin_addr.s_addr = htonl(0x7F000001);
                 } else
                     goto err;
@@ -364,9 +355,7 @@ int BIO_accept(int sock, char **addr)
         union {
             struct sockaddr sa;
             struct sockaddr_in sa_in;
-#if OPENSSL_USE_IPV6
             struct sockaddr_in6 sa_in6;
-#endif
         } from;
     } sa;
 
