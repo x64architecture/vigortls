@@ -25,18 +25,16 @@
 #include <stdlib.h>
 #include <windows.h>
 
-#define FAILURE 0
-#define SUCCESS 1
-
 #define SystemFunction036 NTAPI SystemFunction036
 #include <NTSecAPI.h>
 #undef SystemFunction036
 
 void RAND_cleanup(void)
 {
+    return;
 }
 
-int RAND_bytes(uint8_t *buf, size_t requested)
+int CRYPTO_genrandom(uint8_t *buf, size_t requested)
 {
     while (requested > 0) {
         unsigned long output_bytes;
@@ -45,10 +43,10 @@ int RAND_bytes(uint8_t *buf, size_t requested)
         }
         if (RtlGenRandom(buf, output_bytes) == FALSE) {
             abort();
-            return FAILURE;
+            return 0;
         }
         requested -= output_bytes;
         buf += output_bytes;
     }
-    return SUCCESS;
+    return 1;
 }

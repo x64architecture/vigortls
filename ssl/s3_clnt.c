@@ -657,8 +657,10 @@ int ssl3_client_hello(SSL *s)
         } else
             i = 1;
 
-        if (i)
-            RAND_pseudo_bytes(p, sizeof(s->s3->client_random) - 4);
+        if (i) {
+            if (RAND_bytes(p, sizeof(s->s3->client_random) - 4) <= 0)
+                goto err;
+        }
 
         /* Do the message type and length last */
         d = p = ssl_handshake_start(s);

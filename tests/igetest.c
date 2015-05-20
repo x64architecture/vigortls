@@ -186,9 +186,10 @@ int main(int argc, char **argv)
 
     assert(BIG_TEST_SIZE >= TEST_SIZE);
 
-    RAND_pseudo_bytes(rkey, sizeof rkey);
-    RAND_pseudo_bytes(plaintext, sizeof plaintext);
-    RAND_pseudo_bytes(iv, sizeof iv);
+    RAND_bytes(rkey, sizeof rkey);
+    RAND_bytes(plaintext, sizeof plaintext);  
+    RAND_bytes(iv, sizeof iv);
+        
     memcpy(saved_iv, iv, sizeof saved_iv);
 
     /* Forward IGE only... */

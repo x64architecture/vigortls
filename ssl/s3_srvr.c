@@ -1059,7 +1059,10 @@ int ssl3_get_client_hello(SSL *s)
     {
         unsigned char *pos;
         pos = s->s3->server_random;
-        RAND_pseudo_bytes(pos, SSL3_RANDOM_SIZE);
+        if (RAND_bytes(pos, SSL3_RANDOM_SIZE) <= 0) {
+            SSLerr(SSL_F_SSL3_SEND_CLIENT_KEY_EXCHANGE, ERR_R_INTERNAL_ERROR);
+            goto err;
+        }
     }
 
     if (!s->hit && s->version >= TLS1_VERSION && s->tls_session_secret_cb) {

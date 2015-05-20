@@ -14,9 +14,12 @@
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
+#include <limits.h>
 #include <stdint.h>
 
 #include <openssl/rand.h>
+
+#include "internal.h"
 
 int RAND_set_rand_method(const RAND_METHOD *meth)
 {
@@ -50,6 +53,19 @@ void RAND_add(const void *buf, int num, double entropy)
     return;
 }
 
+int RAND_bytes(uint8_t *buf, size_t len)
+{
+    int ret = 0;
+
+    if (len == 0) {
+        return ret;
+    }
+
+    ret = CRYPTO_genrandom(buf, len);
+
+    return ret;
+}
+
 int RAND_status(void)
 {
     return 1;
@@ -63,4 +79,14 @@ int RAND_poll(void)
 int RAND_pseudo_bytes(uint8_t *buf, size_t len)
 {
     return RAND_bytes(buf, len);
+}
+
+int RAND_load_file(const char *path, long num) {
+    if (num < 0) {
+        return 1;
+    } else if (num <= INT_MAX) {
+        return (int)num;
+    } else {
+        return INT_MAX;
+    }
 }

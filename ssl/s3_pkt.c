@@ -543,7 +543,8 @@ int ssl3_write_bytes(SSL *s, int type, const void *buf_, int len)
             return i;
         }
 
-        if ((i == (int)n) || (type == SSL3_RT_APPLICATION_DATA && (s->mode & SSL_MODE_ENABLE_PARTIAL_WRITE))) {
+        if ((i == (int)n) || (type == SSL3_RT_APPLICATION_DATA
+            && (s->mode & SSL_MODE_ENABLE_PARTIAL_WRITE))) {
             /*
              * Next chunk of data should get another prepended
              * empty fragment in ciphersuites with known-IV
@@ -714,9 +715,9 @@ static int do_ssl3_write(SSL *s, int type, const unsigned char *buf,
     wr->data = p;
 
     if (eivlen) {
-        /* if (RAND_pseudo_bytes(p, eivlen) <= 0)
-            goto err;
-    */
+        /* if (RAND_bytes(p, eivlen) <= 0)
+               goto err;
+         */
         wr->length += eivlen;
     }
 
@@ -845,7 +846,8 @@ int ssl3_read_bytes(SSL *s, int type, unsigned char *buf, int len, int peek)
         return -1;
     }
 
-    if ((type && type != SSL3_RT_APPLICATION_DATA && type != SSL3_RT_HANDSHAKE) || (peek && (type != SSL3_RT_APPLICATION_DATA))) {
+    if ((type && type != SSL3_RT_APPLICATION_DATA && type != SSL3_RT_HANDSHAKE)
+        || (peek && (type != SSL3_RT_APPLICATION_DATA))) {
         SSLerr(SSL_F_SSL3_READ_BYTES, ERR_R_INTERNAL_ERROR);
         return -1;
     }
@@ -1002,7 +1004,9 @@ start:
     {
         s->s3->handshake_fragment_len = 0;
 
-        if ((s->s3->handshake_fragment[1] != 0) || (s->s3->handshake_fragment[2] != 0) || (s->s3->handshake_fragment[3] != 0)) {
+        if ((s->s3->handshake_fragment[1] != 0)
+            || (s->s3->handshake_fragment[2] != 0)
+            || (s->s3->handshake_fragment[3] != 0)) {
             al = SSL_AD_DECODE_ERROR;
             SSLerr(SSL_F_SSL3_READ_BYTES, SSL_R_BAD_HELLO_REQUEST);
             goto f_err;
@@ -1012,7 +1016,9 @@ start:
             s->msg_callback(0, s->version, SSL3_RT_HANDSHAKE,
                             s->s3->handshake_fragment, 4, s, s->msg_callback_arg);
 
-        if (SSL_is_init_finished(s) && !(s->s3->flags & SSL3_FLAGS_NO_RENEGOTIATE_CIPHERS) && !s->s3->renegotiate) {
+        if (SSL_is_init_finished(s)
+            && !(s->s3->flags & SSL3_FLAGS_NO_RENEGOTIATE_CIPHERS)
+            && !s->s3->renegotiate) {
             ssl3_renegotiate(s);
             if (ssl3_renegotiate_check(s)) {
                 i = s->handshake_func(s);
@@ -1163,7 +1169,8 @@ start:
 
     /* Unexpected handshake message (Client Hello, or protocol violation) */
     if ((s->s3->handshake_fragment_len >= 4) && !s->in_handshake) {
-        if (((s->state & SSL_ST_MASK) == SSL_ST_OK) && !(s->s3->flags & SSL3_FLAGS_NO_RENEGOTIATE_CIPHERS)) {
+        if (((s->state & SSL_ST_MASK) == SSL_ST_OK)
+            && !(s->s3->flags & SSL3_FLAGS_NO_RENEGOTIATE_CIPHERS)) {
             s->state = s->server ? SSL_ST_ACCEPT : SSL_ST_CONNECT;
             s->renegotiate = 1;
             s->new_session = 1;

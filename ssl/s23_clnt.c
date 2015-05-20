@@ -312,7 +312,10 @@ static int ssl23_client_hello(SSL *s)
     buf = (unsigned char *)s->init_buf->data;
     if (s->state == SSL23_ST_CW_CLNT_HELLO_A) {
         p = s->s3->client_random;
-        RAND_pseudo_bytes(p, SSL3_RANDOM_SIZE);
+        if (RAND_bytes(p, SSL3_RANDOM_SIZE) <= 0) {
+            SSLerr(SSL_F_SSL23_CLIENT_HELLO, ERR_R_INTERNAL_ERROR);
+            return -1;
+        }
 
         if (version == TLS1_2_VERSION) {
             version_major = TLS1_2_VERSION_MAJOR;
