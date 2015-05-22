@@ -230,8 +230,7 @@ int EC_GROUP_copy(EC_GROUP *dest, const EC_GROUP *src)
         dest->seed = malloc(src->seed_len);
         if (dest->seed == NULL)
             return 0;
-        if (!memcpy(dest->seed, src->seed, src->seed_len))
-            return 0;
+        memcpy(dest->seed, src->seed, src->seed_len);
         dest->seed_len = src->seed_len;
     } else {
         if (dest->seed)
