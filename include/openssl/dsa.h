@@ -137,7 +137,7 @@ struct dsa_st {
      * a DSA is passed instead of of a EVP_PKEY */
     int pad;
     long version;
-    int write_params;
+    int write_params; /* Kept for compatability (unused) */
     BIGNUM *p;
     BIGNUM *q; /* == 20 */
     BIGNUM *g;

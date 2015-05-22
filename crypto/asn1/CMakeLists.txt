@@ -17,7 +17,6 @@ add_library(
     a_d2i_fp.c
     a_digest.c
     a_dup.c
-    a_enum.c
     a_gentm.c
     a_i2d_fp.c
     a_int.c
@@ -38,7 +37,6 @@ add_library(
     d2i_pr.c
     d2i_pu.c
     evp_asn1.c
-    f_enum.c
     f_int.c
     f_string.c
     i2d_pr.c

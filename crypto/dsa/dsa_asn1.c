@@ -157,17 +157,12 @@ int i2d_DSAparams(const DSA *a, unsigned char **out)
  * in a SEQUENCE
  */
 
-ASN1_SEQUENCE(dsa_pub_internal) = {
+ASN1_SEQUENCE(DSAPublicKey) = {
     ASN1_SIMPLE(DSA, pub_key, BIGNUM),
     ASN1_SIMPLE(DSA, p, BIGNUM),
     ASN1_SIMPLE(DSA, q, BIGNUM),
     ASN1_SIMPLE(DSA, g, BIGNUM)
-} ASN1_SEQUENCE_END_name(DSA, dsa_pub_internal)
-
-ASN1_CHOICE_cb(DSAPublicKey, dsa_cb) = {
-    ASN1_SIMPLE(DSA, pub_key, BIGNUM),
-    ASN1_EX_COMBINE(0, 0, dsa_pub_internal)
-} ASN1_CHOICE_END_cb(DSA, DSAPublicKey, write_params)
+} ASN1_SEQUENCE_END_name(DSA, DSAPublicKey)
 
 DSA *d2i_DSAPublicKey(DSA **a, const unsigned char **in, long len)
 {

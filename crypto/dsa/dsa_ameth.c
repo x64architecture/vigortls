@@ -133,6 +133,7 @@ static int dsa_pub_encode(X509_PUBKEY *pk, const EVP_PKEY *pkey)
     unsigned char *penc = NULL;
     int penclen;
     ASN1_STRING *str = NULL;
+    ASN1_INTEGER *pubint = NULL;
 
     dsa = pkey->pkey.dsa;
     if (pkey->save_parameters && dsa->p && dsa->q && dsa->g) {
@@ -150,9 +151,13 @@ static int dsa_pub_encode(X509_PUBKEY *pk, const EVP_PKEY *pkey)
     } else
         ptype = V_ASN1_UNDEF;
 
-    dsa->write_params = 0;
-
-    penclen = i2d_DSAPublicKey(dsa, &penc);
+    pubint = BN_to_ASN1_INTEGER(dsa->pub_key, NULL);
+    if (pubint == NULL) {
+        DSAerr(DSA_F_DSA_PUB_ENCODE, ERR_R_MALLOC_FAILURE);
+        goto err;
+    }
+    penclen = i2d_ASN1_INTEGER(pubint, &penc);
+    ASN1_INTEGER_free(pubint);
 
     if (penclen <= 0) {
         DSAerr(DSA_F_DSA_PUB_ENCODE, ERR_R_MALLOC_FAILURE);

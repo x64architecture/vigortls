@@ -198,3 +198,16 @@ err:
     free(s);
     return (ret);
 }
+
+int i2a_ASN1_ENUMERATED(BIO *bp, ASN1_ENUMERATED *a)
+{
+    return i2a_ASN1_INTEGER(bp, a);
+}
+
+int a2i_ASN1_ENUMERATED(BIO *bp, ASN1_ENUMERATED *bs, char *buf, int size)
+{
+    int rv = a2i_ASN1_INTEGER(bp, bs, buf, size);
+    if (rv == 1)
+        bs->type = V_ASN1_INTEGER | (bs->type & V_ASN1_NEG);
+    return rv;
+}
