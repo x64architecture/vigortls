@@ -853,7 +853,7 @@ start:
             || (s->d1->handshake_fragment[3] != 0)) {
             al = SSL_AD_DECODE_ERROR;
             SSLerr(SSL_F_DTLS1_READ_BYTES, SSL_R_BAD_HELLO_REQUEST);
-            goto err;
+            goto f_err;
         }
 
         /* no need to check sequence number on HELLO REQUEST messages */
