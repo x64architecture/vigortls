@@ -144,13 +144,8 @@ static int bnrand(int pseudorand, BIGNUM *rnd, int bits, int top, int bottom)
 
     /* make a random number and set the top and bottom bits */
 
-    if (pseudorand) {
-        if (RAND_bytes(buf, bytes) <= 0)
-            goto err;
-    } else {
-        if (RAND_bytes(buf, bytes) <= 0)
-            goto err;
-    }
+    if (RAND_bytes(buf, bytes) <= 0)
+        goto err;
 
     if (pseudorand == 2) {
         /* generate patterns that are more likely to trigger BN
