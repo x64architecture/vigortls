@@ -118,6 +118,7 @@ static ERR_STRING_DATA BN_str_reasons[] = {
     { ERR_REASON(BN_R_ARG2_LT_ARG3), "arg2 lt arg3" },
     { ERR_REASON(BN_R_BAD_RECIPROCAL), "bad reciprocal" },
     { ERR_REASON(BN_R_BIGNUM_TOO_LONG), "bignum too long" },
+    { ERR_REASON(BN_R_BITS_TOO_SMALL), "bits too small" },
     { ERR_REASON(BN_R_CALLED_WITH_EVEN_MODULUS), "called with even modulus" },
     { ERR_REASON(BN_R_DIV_BY_ZERO), "div by zero" },
     { ERR_REASON(BN_R_ENCODING_ERROR), "encoding error" },

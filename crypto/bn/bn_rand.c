@@ -127,6 +127,11 @@ static int bnrand(int pseudorand, BIGNUM *rnd, int bits, int top, int bottom)
         return 0;
     }
 
+    if (bits < 0 || (bits == 1 && top > 0)) {
+        BNerr(BN_F_BNRAND, BN_R_BITS_TOO_SMALL);
+        return 0;
+    }
+
     if (bits == 0) {
         BN_zero(rnd);
         return 1;
@@ -165,7 +170,7 @@ static int bnrand(int pseudorand, BIGNUM *rnd, int bits, int top, int bottom)
         }
     }
 
-    if (top != -1) {
+    if (top >= 0) {
         if (top) {
             if (bit == 0) {
                 buf[0] = 1;
