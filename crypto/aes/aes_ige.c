@@ -138,7 +138,8 @@ void AES_ige_encrypt(const unsigned char *in, unsigned char *out,
             memcpy(ivec + AES_BLOCK_SIZE, iv2.data, AES_BLOCK_SIZE);
         }
     } else {
-        if (in != out && (UNALIGNED_MEMOPS_ARE_FAST || ((size_t)in | (size_t)out | (size_t)ivec) % sizeof(long) == 0)) {
+        if (in != out && (UNALIGNED_MEMOPS_ARE_FAST ||
+            ((size_t)in | (size_t)out | (size_t)ivec) % sizeof(long) == 0)) {
 
             aes_block_t *ivp = (aes_block_t *)ivec;
             aes_block_t *iv2p = (aes_block_t *)(ivec + AES_BLOCK_SIZE);

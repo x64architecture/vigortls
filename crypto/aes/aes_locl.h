@@ -58,6 +58,7 @@
 #error AES is disabled.
 #endif
 
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -74,10 +75,10 @@
 #ifdef AES_LONG
 typedef unsigned long u32;
 #else
-typedef unsigned int u32;
+typedef uint32_t u32;
 #endif
-typedef unsigned short u16;
-typedef unsigned char u8;
+typedef uint16_t u16;
+typedef uint8_t u8;
 
 #define MAXKC (256 / 32)
 #define MAXKB (256 / 8)
