@@ -31,22 +31,20 @@ struct chacha_ctx {
     uint8_t unused;
 };
 
-typedef unsigned char u8;
-typedef unsigned int u32;
-
 typedef struct chacha_ctx chacha_ctx;
 
 #define U8C(v) (v##U)
 #define U32C(v) (v##U)
 
-#define U8V(v) ((u8)(v) & U8C(0xFF))
-#define U32V(v) ((u32)(v) & U32C(0xFFFFFFFF))
+#define U8V(v) ((uint8_t)(v) & U8C(0xFF))
+#define U32V(v) ((uint32_t)(v) & U32C(0xFFFFFFFF))
 
 #define ROTL32(v, n) \
     (U32V((v) << (n)) | ((v) >> (32 - (n))))
 
 #define U8TO32_LITTLE(p) \
-    (((u32)((p)[0])) | ((u32)((p)[1]) << 8) | ((u32)((p)[2]) << 16) | ((u32)((p)[3]) << 24))
+    (((uint32_t)((p)[0])) | ((uint32_t)((p)[1]) << 8) \
+    | ((uint32_t)((p)[2]) << 16) | ((uint32_t)((p)[3]) << 24))
 
 #define U32TO8_LITTLE(p, v)      \
     do {                         \
@@ -75,7 +73,7 @@ static const char sigma[16] = "expand 32-byte k";
 static const char tau[16] = "expand 16-byte k";
 
 static inline void
-chacha_keysetup(chacha_ctx *x, const u8 *k, u32 kbits)
+chacha_keysetup(chacha_ctx *x, const uint8_t *k, uint32_t kbits)
 {
     const char *constants;
 
@@ -100,7 +98,7 @@ chacha_keysetup(chacha_ctx *x, const u8 *k, u32 kbits)
 }
 
 static inline void
-chacha_ivsetup(chacha_ctx *x, const u8 *nonce, const u8 *counter)
+chacha_ivsetup(chacha_ctx *x, const uint8_t *nonce, const uint8_t *counter)
 {
     x->input[12] = counter == NULL ? 0 : U8TO32_LITTLE(counter + 0);
     x->input[13] = counter == NULL ? 0 : U8TO32_LITTLE(counter + 4);
@@ -109,14 +107,14 @@ chacha_ivsetup(chacha_ctx *x, const u8 *nonce, const u8 *counter)
 }
 
 static inline void
-chacha_encrypt_bytes(chacha_ctx *x, const u8 *m, u8 *c, u32 bytes)
+chacha_encrypt_bytes(chacha_ctx *x, const uint8_t *m, uint8_t *c, uint32_t bytes)
 {
-    u32 x0, x1, x2, x3, x4, x5, x6, x7;
-    u32 x8, x9, x10, x11, x12, x13, x14, x15;
-    u32 j0, j1, j2, j3, j4, j5, j6, j7;
-    u32 j8, j9, j10, j11, j12, j13, j14, j15;
-    u8 *ctarget = NULL;
-    u8 tmp[64];
+    uint32_t x0, x1, x2, x3, x4, x5, x6, x7;
+    uint32_t x8, x9, x10, x11, x12, x13, x14, x15;
+    uint32_t j0, j1, j2, j3, j4, j5, j6, j7;
+    uint32_t j8, j9, j10, j11, j12, j13, j14, j15;
+    uint8_t *ctarget = NULL;
+    uint8_t tmp[64];
     unsigned int i;
 
     if (!bytes)
