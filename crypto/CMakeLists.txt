@@ -90,7 +90,6 @@ add_subdirectory(gost)
 add_subdirectory(hmac)
 add_subdirectory(idea)
 add_subdirectory(lhash)
-add_subdirectory(md4)
 add_subdirectory(md5)
 add_subdirectory(mdc2)
 add_subdirectory(modes)
@@ -159,7 +158,6 @@ add_library(
     $<TARGET_OBJECTS:hmac>
     $<TARGET_OBJECTS:idea>
     $<TARGET_OBJECTS:lhash>
-    $<TARGET_OBJECTS:md4>
     $<TARGET_OBJECTS:md5>
     $<TARGET_OBJECTS:mdc2>
     $<TARGET_OBJECTS:modes>
