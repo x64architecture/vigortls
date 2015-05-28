@@ -155,7 +155,7 @@ $code.=<<___;
 .type	bn_GF2m_mul_2x2,%function
 .align	5
 bn_GF2m_mul_2x2:
-#if __ARM_MAX_ARCH__>=7
+#if __ARM_ARCH__>=7
 	ldr	r12,.LOPENSSL_armcap
 .Lpic:	ldr	r12,[pc,r12]
 	tst	r12,#1
@@ -218,7 +218,7 @@ my ($r,$t0,$t1,$t2,$t3)=map("q$_",(0..3,8..12));
 my ($a,$b,$k48,$k32,$k16)=map("d$_",(26..31));
 
 $code.=<<___;
-#if __ARM_MAX_ARCH__>=7
+#if __ARM_ARCH__>=7
 .arch	armv7-a
 .fpu	neon
 
@@ -276,7 +276,7 @@ ___
 }
 $code.=<<___;
 .size	bn_GF2m_mul_2x2,.-bn_GF2m_mul_2x2
-#if __ARM_MAX_ARCH__>=7
+#if __ARM_ARCH__>=7
 .align	5
 .LOPENSSL_armcap:
 .word	OPENSSL_armcap_P-(.Lpic+8)
@@ -284,7 +284,7 @@ $code.=<<___;
 .asciz	"GF(2^m) Multiplication for ARMv4/NEON, CRYPTOGAMS by <appro\@openssl.org>"
 .align	5
 
-#if __ARM_MAX_ARCH__>=7
+#if __ARM_ARCH__>=7
 .comm	OPENSSL_armcap_P,4,4
 #endif
 ___
