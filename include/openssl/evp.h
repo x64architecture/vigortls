@@ -645,9 +645,6 @@ void BIO_set_cipher(BIO *b, const EVP_CIPHER *c, const unsigned char *k,
                     const unsigned char *i, int enc);
 
 const EVP_MD *EVP_md_null(void);
-#ifndef OPENSSL_NO_MD4
-const EVP_MD *EVP_md4(void);
-#endif
 const EVP_MD *EVP_md5(void);
 const EVP_MD *EVP_sha1(void);
 const EVP_MD *EVP_dss1(void);

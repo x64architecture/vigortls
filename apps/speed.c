@@ -97,14 +97,8 @@
 #endif
 #include <openssl/aes.h>
 #include <openssl/camellia.h>
-#ifndef OPENSSL_NO_MD2
-#include <openssl/md2.h>
-#endif
 #ifndef OPENSSL_NO_MDC2
 #include <openssl/mdc2.h>
-#endif
-#ifndef OPENSSL_NO_MD4
-#include <openssl/md4.h>
 #endif
 #include <openssl/md5.h>
 #include <openssl/hmac.h>
@@ -318,14 +312,8 @@ OPTIONS speed_options[] = {
 #define D_IGE_256_AES 28
 #define D_GHASH 29
 OPT_PAIR doit_choices[] = {
-#ifndef OPENSSL_NO_MD2
-    { "md2", D_MD2 },
-#endif
 #ifndef OPENSSL_NO_MDC2
     { "mdc2", D_MDC2 },
-#endif
-#ifndef OPENSSL_NO_MD4
-    { "md4", D_MD4 },
 #endif
     { "md5", D_MD5 },
     { "hmac", D_HMAC },
@@ -478,14 +466,8 @@ int speed_main(int argc, char **argv)
 #if !defined(OPENSSL_NO_RSA) || !defined(OPENSSL_NO_DSA)
     long rsa_count;
 #endif
-#ifndef OPENSSL_NO_MD2
-    unsigned char md2[MD2_DIGEST_LENGTH];
-#endif
 #ifndef OPENSSL_NO_MDC2
     unsigned char mdc2[MDC2_DIGEST_LENGTH];
-#endif
-#ifndef OPENSSL_NO_MD4
-    unsigned char md4[MD4_DIGEST_LENGTH];
 #endif
     unsigned char md5[MD5_DIGEST_LENGTH];
     unsigned char hmac[MD5_DIGEST_LENGTH];
@@ -1077,20 +1059,6 @@ int speed_main(int argc, char **argv)
     signal(SIGALRM, sig_done);
 #endif
 #endif /* SIGALRM */
-
-#ifndef OPENSSL_NO_MD2
-    if (doit[D_MD2]) {
-        for (j = 0; j < SIZE_NUM; j++) {
-            print_message(names[D_MD2], c[D_MD2][j], lengths[j]);
-            Time_F(START);
-            for (count = 0, run = 1; COND(c[D_MD2][j]); count++)
-                EVP_Digest(buf, (unsigned long)lengths[j], &(md2[0]), NULL, EVP_md2(),
-                           NULL);
-            d = Time_F(STOP);
-            print_result(D_MD2, j, count, d);
-        }
-    }
-#endif
 #ifndef OPENSSL_NO_MDC2
     if (doit[D_MDC2]) {
         for (j = 0; j < SIZE_NUM; j++) {
@@ -1101,20 +1069,6 @@ int speed_main(int argc, char **argv)
                            NULL);
             d = Time_F(STOP);
             print_result(D_MDC2, j, count, d);
-        }
-    }
-#endif
-
-#ifndef OPENSSL_NO_MD4
-    if (doit[D_MD4]) {
-        for (j = 0; j < SIZE_NUM; j++) {
-            print_message(names[D_MD4], c[D_MD4][j], lengths[j]);
-            Time_F(START);
-            for (count = 0, run = 1; COND(c[D_MD4][j]); count++)
-                EVP_Digest(&(buf[0]), (unsigned long)lengths[j], &(md4[0]), NULL, EVP_md4(),
-                           NULL);
-            d = Time_F(STOP);
-            print_result(D_MD4, j, count, d);
         }
     }
 #endif

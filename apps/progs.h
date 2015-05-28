@@ -183,9 +183,6 @@ FUNCTION functions[] = {
     { FT_general, "smime", smime_main, smime_options },
     { FT_general, "speed", speed_main, speed_options },
     { FT_general, "spkac", spkac_main, spkac_options },
-#ifndef OPENSSL_NO_SRP
-    { FT_general, "srp", srp_main, srp_options },
-#endif
     { FT_general, "ts", ts_main, ts_options },
     { FT_general, "verify", verify_main, verify_options },
     { FT_general, "version", version_main, version_options },
@@ -193,12 +190,6 @@ FUNCTION functions[] = {
     { FT_general, "list", list_main, list_options },
     { FT_general, "help", help_main, help_options },
     { FT_general, "exit", exit_main, exit_options },
-#ifndef OPENSSL_NO_MD2
-    { FT_md, "md2", dgst_main},
-#endif
-#ifndef OPENSSL_NO_MD4
-    { FT_md, "md4", dgst_main},
-#endif
 #ifndef OPENSSL_NO_MD5
     { FT_md, "md5", dgst_main},
 #endif

@@ -63,9 +63,6 @@
 
 void OpenSSL_add_all_digests(void)
 {
-#ifndef OPENSSL_NO_MD4
-    EVP_add_digest(EVP_md4());
-#endif
     EVP_add_digest(EVP_md5());
     EVP_add_digest_alias(SN_md5, "ssl3-md5");
     EVP_add_digest(EVP_sha1());
