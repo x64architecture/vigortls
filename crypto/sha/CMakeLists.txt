@@ -35,8 +35,7 @@ add_library(
 
     OBJECT
 
-    sha1dgst.c
-    sha1_one.c
+    sha1.c
     sha256.c
     sha512.c
 

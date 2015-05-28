@@ -1,4 +1,3 @@
-/* crypto/sha/sha256.c */
 /* ====================================================================
  * Copyright (c) 2004 The OpenSSL Project.  All rights reserved
  * according to the OpenSSL license [found in ../../LICENSE].
@@ -13,76 +12,89 @@
 #include <openssl/sha.h>
 #include <machine/endian.h>
 
-int SHA224_Init(SHA256_CTX *c)
+#if !defined(OPENSSL_NO_ASM) && \
+    (defined(VIGORTLS_X86) || defined(VIGORTLS_X86_64) || \
+     defined(VIGORTLS_ARM))
+#define SHA256_ASM
+#endif
+
+int SHA224_Init(SHA256_CTX *ctx)
 {
-    memset(c, 0, sizeof(*c));
-    c->h[0] = 0xc1059ed8UL;
-    c->h[1] = 0x367cd507UL;
-    c->h[2] = 0x3070dd17UL;
-    c->h[3] = 0xf70e5939UL;
-    c->h[4] = 0xffc00b31UL;
-    c->h[5] = 0x68581511UL;
-    c->h[6] = 0x64f98fa7UL;
-    c->h[7] = 0xbefa4fa4UL;
-    c->md_len = SHA224_DIGEST_LENGTH;
+    memset(ctx, 0, sizeof(*ctx));
+    ctx->h[0] = 0xc1059ed8UL;
+    ctx->h[1] = 0x367cd507UL;
+    ctx->h[2] = 0x3070dd17UL;
+    ctx->h[3] = 0xf70e5939UL;
+    ctx->h[4] = 0xffc00b31UL;
+    ctx->h[5] = 0x68581511UL;
+    ctx->h[6] = 0x64f98fa7UL;
+    ctx->h[7] = 0xbefa4fa4UL;
+    ctx->md_len = SHA224_DIGEST_LENGTH;
     return 1;
 }
 
-int SHA256_Init(SHA256_CTX *c)
+int SHA256_Init(SHA256_CTX *ctx)
 {
-    memset(c, 0, sizeof(*c));
-    c->h[0] = 0x6a09e667UL;
-    c->h[1] = 0xbb67ae85UL;
-    c->h[2] = 0x3c6ef372UL;
-    c->h[3] = 0xa54ff53aUL;
-    c->h[4] = 0x510e527fUL;
-    c->h[5] = 0x9b05688cUL;
-    c->h[6] = 0x1f83d9abUL;
-    c->h[7] = 0x5be0cd19UL;
-    c->md_len = SHA256_DIGEST_LENGTH;
+    memset(ctx, 0, sizeof(*ctx));
+    ctx->h[0] = 0x6a09e667UL;
+    ctx->h[1] = 0xbb67ae85UL;
+    ctx->h[2] = 0x3c6ef372UL;
+    ctx->h[3] = 0xa54ff53aUL;
+    ctx->h[4] = 0x510e527fUL;
+    ctx->h[5] = 0x9b05688cUL;
+    ctx->h[6] = 0x1f83d9abUL;
+    ctx->h[7] = 0x5be0cd19UL;
+    ctx->md_len = SHA256_DIGEST_LENGTH;
     return 1;
 }
 
-unsigned char *SHA224(const unsigned char *d, size_t n, unsigned char *md)
+uint8_t *SHA224(const uint8_t *data, size_t len, uint8_t *out)
 {
-    SHA256_CTX c;
-    static unsigned char m[SHA224_DIGEST_LENGTH];
+    SHA256_CTX ctx;
+    static uint8_t digest[SHA224_DIGEST_LENGTH];
 
-    if (md == NULL)
-        md = m;
-    SHA224_Init(&c);
-    SHA256_Update(&c, d, n);
-    SHA256_Final(md, &c);
-    vigortls_zeroize(&c, sizeof(c));
-    return (md);
+    if (out == NULL)
+        out = digest;
+
+    SHA224_Init(&ctx);
+    SHA256_Update(&ctx, data, len);
+    SHA256_Final(out, &ctx);
+
+    vigortls_zeroize(&ctx, sizeof(ctx));
+
+    return out;
 }
 
-unsigned char *SHA256(const unsigned char *d, size_t n, unsigned char *md)
+uint8_t *SHA256(const uint8_t *data, size_t len, uint8_t *out)
 {
-    SHA256_CTX c;
-    static unsigned char m[SHA256_DIGEST_LENGTH];
+    SHA256_CTX ctx;
+    static uint8_t digest[SHA256_DIGEST_LENGTH];
 
-    if (md == NULL)
-        md = m;
-    SHA256_Init(&c);
-    SHA256_Update(&c, d, n);
-    SHA256_Final(md, &c);
-    vigortls_zeroize(&c, sizeof(c));
-    return (md);
+    if (out == NULL)
+        out = digest;
+
+    SHA256_Init(&ctx);
+    SHA256_Update(&ctx, data, len);
+    SHA256_Final(out, &ctx);
+    
+    vigortls_zeroize(&ctx, sizeof(ctx));
+
+    return out;
 }
 
-int SHA224_Update(SHA256_CTX *c, const void *data, size_t len)
+int SHA224_Update(SHA256_CTX *ctx, const void *data, size_t len)
 {
-    return SHA256_Update(c, data, len);
+    return SHA256_Update(ctx, data, len);
 }
-int SHA224_Final(unsigned char *md, SHA256_CTX *c)
+
+int SHA224_Final(uint8_t *md, SHA256_CTX *ctx)
 {
-    return SHA256_Final(md, c);
+    return SHA256_Final(md, ctx);
 }
 
 #define DATA_ORDER_IS_BIG_ENDIAN
 
-#define HASH_LONG SHA_LONG
+#define HASH_LONG uint64_t
 #define HASH_CTX SHA256_CTX
 #define HASH_CBLOCK SHA_CBLOCK
 /*
@@ -125,7 +137,7 @@ int SHA224_Final(unsigned char *md, SHA256_CTX *c)
 #define HASH_TRANSFORM SHA256_Transform
 #define HASH_FINAL SHA256_Final
 #define HASH_BLOCK_DATA_ORDER sha256_block_data_order
-#ifdef OPENSSL_NO_ASM
+#ifndef SHA256_ASM
 static
 #endif
     void
@@ -133,7 +145,7 @@ static
 
 #include "md32_common.h"
 
-#ifdef OPENSSL_NO_ASM
+#ifndef SHA256_ASM
 static const SHA_LONG K256[64] = {
     0x428a2f98UL, 0x71374491UL, 0xb5c0fbcfUL, 0xe9b5dba5UL,
     0x3956c25bUL, 0x59f111f1UL, 0x923f82a4UL, 0xab1c5ed5UL,
@@ -170,7 +182,7 @@ static const SHA_LONG K256[64] = {
 
 static void sha256_block_data_order(SHA256_CTX *ctx, const void *in, size_t num)
 {
-    unsigned MD32_REG_T a, b, c, d, e, f, g, h, s0, s1, T1, T2;
+    unsigned int a, b, c, d, e, f, g, h, s0, s1, T1, T2;
     SHA_LONG X[16], l;
     int i;
     const unsigned char *data = in;
@@ -253,7 +265,7 @@ static void sha256_block_data_order(SHA256_CTX *ctx, const void *in, size_t num)
 
 static void sha256_block_data_order(SHA256_CTX *ctx, const void *in, size_t num)
 {
-    unsigned MD32_REG_T a, b, c, d, e, f, g, h, s0, s1, T1;
+    unsigned int a, b, c, d, e, f, g, h, s0, s1, T1;
     SHA_LONG X[16];
     int i;
     const unsigned char *data = in;
@@ -382,5 +394,4 @@ static void sha256_block_data_order(SHA256_CTX *ctx, const void *in, size_t num)
 }
 
 #endif
-#endif /* OPENSSL_NO_ASM */
-
+#endif /* SHA256_ASM */

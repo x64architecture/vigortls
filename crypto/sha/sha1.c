@@ -1,4 +1,3 @@
-/* crypto/sha/sha_locl.h */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -56,179 +55,154 @@
  * [including the GNU Public Licence.]
  */
 
-#include <stdlib.h>
+#include <machine/endian.h>
 #include <string.h>
 
+#include <openssl/crypto.h>
 #include <openssl/opensslconf.h>
 #include <openssl/sha.h>
-#include <machine/endian.h>
+
+#if !defined(OPENSSL_NO_ASM) && \
+    (defined(VIGORTLS_X86) || defined(VIGORTLS_X86_64) || \
+     defined(VIGORTLS_ARM))
+#define SHA1_ASM
+#endif
+
+int SHA1_Init(SHA_CTX *ctx)
+{
+    memset(ctx, 0, sizeof(*ctx));
+    ctx->h0 = 0x67452301UL;
+    ctx->h1 = 0xefcdab89UL;
+    ctx->h2 = 0x98badcfeUL;
+    ctx->h3 = 0x10325476UL;
+    ctx->h4 = 0xc3d2e1f0UL;
+    return 1;
+}
+
+uint8_t *SHA1(const uint8_t *data, size_t len, uint8_t *out)
+{
+    SHA_CTX ctx;
+    static uint8_t digest[SHA_DIGEST_LENGTH];
+
+    if (out == NULL)
+        out = digest;
+
+    SHA1_Init(&ctx);
+    SHA1_Update(&ctx, data, len);
+    SHA1_Final(out, &ctx);
+    vigortls_zeroize(&ctx, sizeof(ctx));
+
+    return out;
+}
 
 #define DATA_ORDER_IS_BIG_ENDIAN
 
-#define HASH_LONG SHA_LONG
+#define HASH_LONG uint32_t
 #define HASH_CTX SHA_CTX
-#define HASH_CBLOCK SHA_CBLOCK
-#define HASH_MAKE_STRING(c, s)    \
-    do {                          \
-        unsigned long ll;         \
-        ll = (c)->h0;             \
-         HOST_l2c(ll, (s)); \
-        ll = (c)->h1;             \
-         HOST_l2c(ll, (s)); \
-        ll = (c)->h2;             \
-         HOST_l2c(ll, (s)); \
-        ll = (c)->h3;             \
-         HOST_l2c(ll, (s)); \
-        ll = (c)->h4;             \
-         HOST_l2c(ll, (s)); \
+#define HASH_CBLOCK 64
+#define HASH_MAKE_STRING(c, s)                                                     \
+    do {                                                                           \
+        unsigned long ll;                                                          \
+        ll = (c)->h0;                                                              \
+        (void) HOST_l2c(ll, (s));                                                  \
+        ll = (c)->h1;                                                              \
+        (void) HOST_l2c(ll, (s));                                                  \
+        ll = (c)->h2;                                                              \
+        (void) HOST_l2c(ll, (s));                                                  \
+        ll = (c)->h3;                                                              \
+        (void) HOST_l2c(ll, (s));                                                  \
+        ll = (c)->h4;                                                              \
+        (void) HOST_l2c(ll, (s));                                                  \
     } while (0)
-
-#if defined(SHA_0)
-
-#define HASH_UPDATE SHA_Update
-#define HASH_TRANSFORM SHA_Transform
-#define HASH_FINAL SHA_Final
-#define HASH_INIT SHA_Init
-#define HASH_BLOCK_DATA_ORDER sha_block_data_order
-#define Xupdate(a, ix, ia, ib, ic, id) (ix = (a) = (ia ^ ib ^ ic ^ id))
-
-static void sha_block_data_order(SHA_CTX *c, const void *p, size_t num);
-
-#elif defined(SHA_1)
 
 #define HASH_UPDATE SHA1_Update
 #define HASH_TRANSFORM SHA1_Transform
 #define HASH_FINAL SHA1_Final
-#define HASH_INIT SHA1_Init
 #define HASH_BLOCK_DATA_ORDER sha1_block_data_order
-#define Xupdate(a, ix, ia, ib, ic, id) ((a) = (ia ^ ib ^ ic ^ id), \
-                                        ix = (a) = ROTATE((a), 1))
+#define Xupdate(a, ix, ia, ib, ic, id)                                             \
+    ((a) = (ia ^ ib ^ ic ^ id), ix = (a) = ROTATE((a), 1))
 
-#ifdef OPENSSL_NO_ASM
+#ifndef SHA1_ASM
 static
 #endif
-    void
-    sha1_block_data_order(SHA_CTX *c, const void *p, size_t num);
+void sha1_block_data_order(SHA_CTX *ctx, const void *p, size_t num);
 
-#else
-#error "Either SHA_0 or SHA_1 must be defined."
-#endif
-
-#include "md32_common.h"
-
-#define INIT_DATA_h0 0x67452301UL
-#define INIT_DATA_h1 0xefcdab89UL
-#define INIT_DATA_h2 0x98badcfeUL
-#define INIT_DATA_h3 0x10325476UL
-#define INIT_DATA_h4 0xc3d2e1f0UL
-
-#ifdef SHA_0
-int SHA_Init(SHA_CTX *c)
-#else
-int SHA1_Init(SHA_CTX *c)
-#endif
-{
-    memset(c, 0, sizeof(*c));
-    c->h0 = INIT_DATA_h0;
-    c->h1 = INIT_DATA_h1;
-    c->h2 = INIT_DATA_h2;
-    c->h3 = INIT_DATA_h3;
-    c->h4 = INIT_DATA_h4;
-    return 1;
-}
+#include "../md32_common.h"
 
 #define K_00_19 0x5a827999UL
 #define K_20_39 0x6ed9eba1UL
 #define K_40_59 0x8f1bbcdcUL
 #define K_60_79 0xca62c1d6UL
 
-/* As  pointed out by Wei Dai <weidai@eskimo.com>, F() below can be
- * simplified to the code in F_00_19.  Wei attributes these optimisations
- * to Peter Gutmann's SHS code, and he attributes it to Rich Schroeppel.
- * #define F(x,y,z) (((x) & (y))  |  ((~(x)) & (z)))
- * I've just become aware of another tweak to be made, again from Wei Dai,
- * in F_40_59, (x&a)|(y&a) -> (x|y)&a
- */
+/* As  pointed out by Wei Dai <weidai@eskimo.com>, F() below can be simplified
+ * to the code in F_00_19.  Wei attributes these optimisations to Peter
+ * Gutmann's SHS code, and he attributes it to Rich Schroeppel. #define
+ * F(x,y,z) (((x) & (y))  |  ((~(x)) & (z))) I've just become aware of another
+ * tweak to be made, again from Wei Dai, in F_40_59, (x&a)|(y&a) -> (x|y)&a */
 #define F_00_19(b, c, d) ((((c) ^ (d)) & (b)) ^ (d))
 #define F_20_39(b, c, d) ((b) ^ (c) ^ (d))
 #define F_40_59(b, c, d) (((b) & (c)) | (((b) | (c)) & (d)))
 #define F_60_79(b, c, d) F_20_39(b, c, d)
 
-#ifndef OPENSSL_SMALL_FOOTPRINT
-
-#define BODY_00_15(i, a, b, c, d, e, f, xi)                           \
-    (f) = xi + (e)+K_00_19 + ROTATE((a), 5) + F_00_19((b), (c), (d)); \
+#define BODY_00_15(i, a, b, c, d, e, f, xi)                                        \
+    (f) = xi + (e) + K_00_19 + ROTATE((a), 5) + F_00_19((b), (c), (d));            \
     (b) = ROTATE((b), 30);
 
-#define BODY_16_19(i, a, b, c, d, e, f, xi, xa, xb, xc, xd)       \
-    Xupdate(f, xi, xa, xb, xc, xd);                               \
-    (f) += (e)+K_00_19 + ROTATE((a), 5) + F_00_19((b), (c), (d)); \
+#define BODY_16_19(i, a, b, c, d, e, f, xi, xa, xb, xc, xd)                        \
+    Xupdate(f, xi, xa, xb, xc, xd);                                                \
+    (f) += (e) + K_00_19 + ROTATE((a), 5) + F_00_19((b), (c), (d));                \
     (b) = ROTATE((b), 30);
 
-#define BODY_20_31(i, a, b, c, d, e, f, xi, xa, xb, xc, xd)       \
-    Xupdate(f, xi, xa, xb, xc, xd);                               \
-    (f) += (e)+K_20_39 + ROTATE((a), 5) + F_20_39((b), (c), (d)); \
+#define BODY_20_31(i, a, b, c, d, e, f, xi, xa, xb, xc, xd)                        \
+    Xupdate(f, xi, xa, xb, xc, xd);                                                \
+    (f) += (e) + K_20_39 + ROTATE((a), 5) + F_20_39((b), (c), (d));                \
     (b) = ROTATE((b), 30);
 
-#define BODY_32_39(i, a, b, c, d, e, f, xa, xb, xc, xd)           \
-    Xupdate(f, xa, xa, xb, xc, xd);                               \
-    (f) += (e)+K_20_39 + ROTATE((a), 5) + F_20_39((b), (c), (d)); \
+#define BODY_32_39(i, a, b, c, d, e, f, xa, xb, xc, xd)                            \
+    Xupdate(f, xa, xa, xb, xc, xd);                                                \
+    (f) += (e) + K_20_39 + ROTATE((a), 5) + F_20_39((b), (c), (d));                \
     (b) = ROTATE((b), 30);
 
-#define BODY_40_59(i, a, b, c, d, e, f, xa, xb, xc, xd)           \
-    Xupdate(f, xa, xa, xb, xc, xd);                               \
-    (f) += (e)+K_40_59 + ROTATE((a), 5) + F_40_59((b), (c), (d)); \
+#define BODY_40_59(i, a, b, c, d, e, f, xa, xb, xc, xd)                            \
+    Xupdate(f, xa, xa, xb, xc, xd);                                                \
+    (f) += (e) + K_40_59 + ROTATE((a), 5) + F_40_59((b), (c), (d));                \
     (b) = ROTATE((b), 30);
 
-#define BODY_60_79(i, a, b, c, d, e, f, xa, xb, xc, xd)               \
-    Xupdate(f, xa, xa, xb, xc, xd);                                   \
-    (f) = xa + (e)+K_60_79 + ROTATE((a), 5) + F_60_79((b), (c), (d)); \
+#define BODY_60_79(i, a, b, c, d, e, f, xa, xb, xc, xd)                            \
+    Xupdate(f, xa, xa, xb, xc, xd);                                                \
+    (f) = xa + (e) + K_60_79 + ROTATE((a), 5) + F_60_79((b), (c), (d));            \
     (b) = ROTATE((b), 30);
 
 #ifdef X
 #undef X
 #endif
-#ifndef MD32_XARRAY
-/*
-   * Originally X was an array. As it's automatic it's natural
-   * to expect RISC compiler to accomodate at least part of it in
-   * the register bank, isn't it? Unfortunately not all compilers
-   * "find" this expectation reasonable:-( On order to make such
-   * compilers generate better code I replace X[] with a bunch of
-   * X0, X1, etc. See the function body below...
-   *                    <appro@fy.chalmers.se>
-   */
+
+/* Originally X was an array. As it's automatic it's natural
+* to expect RISC compiler to accomodate at least part of it in
+* the register bank, isn't it? Unfortunately not all compilers
+* "find" this expectation reasonable:-( On order to make such
+* compilers generate better code I replace X[] with a bunch of
+* X0, X1, etc. See the function body below...
+*					<appro@fy.chalmers.se> */
 #define X(i) XX##i
-#else
-/*
-   * However! Some compilers (most notably HP C) get overwhelmed by
-   * that many local variables so that we have to have the way to
-   * fall down to the original behavior.
-   */
-#define X(i) XX[i]
-#endif
 
-#if !defined(SHA_1) || defined(OPENSSL_NO_ASM)
-static void HASH_BLOCK_DATA_ORDER(SHA_CTX *c, const void *p, size_t num)
+#if !defined(SHA1_ASM)
+static void HASH_BLOCK_DATA_ORDER(SHA_CTX *ctx, const void *p, size_t num)
 {
-    const unsigned char *data = p;
-    register unsigned MD32_REG_T A, B, C, D, E, T, l;
-#ifndef MD32_XARRAY
-    unsigned MD32_REG_T XX0, XX1, XX2, XX3, XX4, XX5, XX6, XX7,
-        XX8, XX9, XX10, XX11, XX12, XX13, XX14, XX15;
-#else
-    SHA_LONG XX[16];
-#endif
+    const uint8_t *data = p;
+    uint32_t A, B, C, D, E, T, l;
+    uint32_t XX0, XX1, XX2, XX3, XX4, XX5, XX6, XX7, XX8, XX9, XX10, XX11, XX12,
+        XX13, XX14, XX15;
 
-    A = c->h0;
-    B = c->h1;
-    C = c->h2;
-    D = c->h3;
-    E = c->h4;
+    A = ctx->h0;
+    B = ctx->h1;
+    C = ctx->h2;
+    D = ctx->h3;
+    E = ctx->h4;
 
     for (;;) {
-
-        if (BYTE_ORDER == BIG_ENDIAN && sizeof(SHA_LONG) == 4 && ((size_t)p % 4) == 0) {
+        if (BYTE_ORDER == BIG_ENDIAN && sizeof(SHA_LONG) == 4
+            && ((size_t)p % 4) == 0) {
             const SHA_LONG *W = (const SHA_LONG *)data;
 
             X(0) = W[0];
@@ -264,53 +238,53 @@ static void HASH_BLOCK_DATA_ORDER(SHA_CTX *c, const void *p, size_t num)
             BODY_00_15(14, E, T, A, B, C, D, X(14));
             BODY_00_15(15, D, E, T, A, B, C, X(15));
 
-            data += SHA_CBLOCK;
+            data += HASH_CBLOCK;
         } else {
-            HOST_c2l(data, l);
+            (void)HOST_c2l(data, l);
             X(0) = l;
-            HOST_c2l(data, l);
+            (void)HOST_c2l(data, l);
             X(1) = l;
             BODY_00_15(0, A, B, C, D, E, T, X(0));
-            HOST_c2l(data, l);
+            (void)HOST_c2l(data, l);
             X(2) = l;
             BODY_00_15(1, T, A, B, C, D, E, X(1));
-            HOST_c2l(data, l);
+            (void)HOST_c2l(data, l);
             X(3) = l;
             BODY_00_15(2, E, T, A, B, C, D, X(2));
-            HOST_c2l(data, l);
+            (void)HOST_c2l(data, l);
             X(4) = l;
             BODY_00_15(3, D, E, T, A, B, C, X(3));
-            HOST_c2l(data, l);
+            (void)HOST_c2l(data, l);
             X(5) = l;
             BODY_00_15(4, C, D, E, T, A, B, X(4));
-            HOST_c2l(data, l);
+            (void)HOST_c2l(data, l);
             X(6) = l;
             BODY_00_15(5, B, C, D, E, T, A, X(5));
-            HOST_c2l(data, l);
+            (void)HOST_c2l(data, l);
             X(7) = l;
             BODY_00_15(6, A, B, C, D, E, T, X(6));
-            HOST_c2l(data, l);
+            (void)HOST_c2l(data, l);
             X(8) = l;
             BODY_00_15(7, T, A, B, C, D, E, X(7));
-            HOST_c2l(data, l);
+            (void)HOST_c2l(data, l);
             X(9) = l;
             BODY_00_15(8, E, T, A, B, C, D, X(8));
-            HOST_c2l(data, l);
+            (void)HOST_c2l(data, l);
             X(10) = l;
             BODY_00_15(9, D, E, T, A, B, C, X(9));
-            HOST_c2l(data, l);
+            (void)HOST_c2l(data, l);
             X(11) = l;
             BODY_00_15(10, C, D, E, T, A, B, X(10));
-            HOST_c2l(data, l);
+            (void)HOST_c2l(data, l);
             X(12) = l;
             BODY_00_15(11, B, C, D, E, T, A, X(11));
-            HOST_c2l(data, l);
+            (void)HOST_c2l(data, l);
             X(13) = l;
             BODY_00_15(12, A, B, C, D, E, T, X(12));
-            HOST_c2l(data, l);
+            (void)HOST_c2l(data, l);
             X(14) = l;
             BODY_00_15(13, T, A, B, C, D, E, X(13));
-            HOST_c2l(data, l);
+            (void)HOST_c2l(data, l);
             X(15) = l;
             BODY_00_15(14, E, T, A, B, C, D, X(14));
             BODY_00_15(15, D, E, T, A, B, C, X(15));
@@ -385,114 +359,21 @@ static void HASH_BLOCK_DATA_ORDER(SHA_CTX *c, const void *p, size_t num)
         BODY_60_79(78, A, B, C, D, E, T, X(14), X(0), X(6), X(11));
         BODY_60_79(79, T, A, B, C, D, E, X(15), X(1), X(7), X(12));
 
-        c->h0 = (c->h0 + E) & 0xffffffffL;
-        c->h1 = (c->h1 + T) & 0xffffffffL;
-        c->h2 = (c->h2 + A) & 0xffffffffL;
-        c->h3 = (c->h3 + B) & 0xffffffffL;
-        c->h4 = (c->h4 + C) & 0xffffffffL;
+        ctx->h0 = (ctx->h0 + E) & 0xffffffffL;
+        ctx->h1 = (ctx->h1 + T) & 0xffffffffL;
+        ctx->h2 = (ctx->h2 + A) & 0xffffffffL;
+        ctx->h3 = (ctx->h3 + B) & 0xffffffffL;
+        ctx->h4 = (ctx->h4 + C) & 0xffffffffL;
 
-        if (--num == 0)
+        if (--num == 0) {
             break;
+        }
 
-        A = c->h0;
-        B = c->h1;
-        C = c->h2;
-        D = c->h3;
-        E = c->h4;
+        A = ctx->h0;
+        B = ctx->h1;
+        C = ctx->h2;
+        D = ctx->h3;
+        E = ctx->h4;
     }
 }
-#endif
-
-#else /* OPENSSL_SMALL_FOOTPRINT */
-
-#define BODY_00_15(xi)                          \
-    do {                                        \
-        T = E + K_00_19 + F_00_19(B, C, D);     \
-        E = D, D = C, C = ROTATE(B, 30), B = A; \
-        A = ROTATE(A, 5) + T + xi;              \
-    } while (0)
-
-#define BODY_16_19(xa, xb, xc, xd)              \
-    do {                                        \
-        Xupdate(T, xa, xa, xb, xc, xd);         \
-        T += E + K_00_19 + F_00_19(B, C, D);    \
-        E = D, D = C, C = ROTATE(B, 30), B = A; \
-        A = ROTATE(A, 5) + T;                   \
-    } while (0)
-
-#define BODY_20_39(xa, xb, xc, xd)              \
-    do {                                        \
-        Xupdate(T, xa, xa, xb, xc, xd);         \
-        T += E + K_20_39 + F_20_39(B, C, D);    \
-        E = D, D = C, C = ROTATE(B, 30), B = A; \
-        A = ROTATE(A, 5) + T;                   \
-    } while (0)
-
-#define BODY_40_59(xa, xb, xc, xd)              \
-    do {                                        \
-        Xupdate(T, xa, xa, xb, xc, xd);         \
-        T += E + K_40_59 + F_40_59(B, C, D);    \
-        E = D, D = C, C = ROTATE(B, 30), B = A; \
-        A = ROTATE(A, 5) + T;                   \
-    } while (0)
-
-#define BODY_60_79(xa, xb, xc, xd)              \
-    do {                                        \
-        Xupdate(T, xa, xa, xb, xc, xd);         \
-        T = E + K_60_79 + F_60_79(B, C, D);     \
-        E = D, D = C, C = ROTATE(B, 30), B = A; \
-        A = ROTATE(A, 5) + T + xa;              \
-    } while (0)
-
-#if !defined(SHA_1) || defined(OPENSSL_NO_ASM)
-static void HASH_BLOCK_DATA_ORDER(SHA_CTX *c, const void *p, size_t num)
-{
-    const unsigned char *data = p;
-    register unsigned MD32_REG_T A, B, C, D, E, T, l;
-    int i;
-    SHA_LONG X[16];
-
-    A = c->h0;
-    B = c->h1;
-    C = c->h2;
-    D = c->h3;
-    E = c->h4;
-
-    for (;;) {
-        for (i = 0; i < 16; i++) {
-            HOST_c2l(data, l);
-            X[i] = l;
-            BODY_00_15(X[i]);
-        }
-        for (i = 0; i < 4; i++) {
-            BODY_16_19(X[i], X[i + 2], X[i + 8], X[(i + 13) & 15]);
-        }
-        for (; i < 24; i++) {
-            BODY_20_39(X[i & 15], X[(i + 2) & 15], X[(i + 8) & 15], X[(i + 13) & 15]);
-        }
-        for (i = 0; i < 20; i++) {
-            BODY_40_59(X[(i + 8) & 15], X[(i + 10) & 15], X[i & 15], X[(i + 5) & 15]);
-        }
-        for (i = 4; i < 24; i++) {
-            BODY_60_79(X[(i + 8) & 15], X[(i + 10) & 15], X[i & 15], X[(i + 5) & 15]);
-        }
-
-        c->h0 = (c->h0 + A) & 0xffffffffL;
-        c->h1 = (c->h1 + B) & 0xffffffffL;
-        c->h2 = (c->h2 + C) & 0xffffffffL;
-        c->h3 = (c->h3 + D) & 0xffffffffL;
-        c->h4 = (c->h4 + E) & 0xffffffffL;
-
-        if (--num == 0)
-            break;
-
-        A = c->h0;
-        B = c->h1;
-        C = c->h2;
-        D = c->h3;
-        E = c->h4;
-    }
-}
-#endif
-
 #endif

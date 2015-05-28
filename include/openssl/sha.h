@@ -1,4 +1,3 @@
-/* crypto/sha/sha.h */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -61,63 +60,54 @@
 
 #include <openssl/opensslconf.h>
 #include <stddef.h>
+#include <stdint.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-
-/*
- * !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
- * ! SHA_LONG has to be at least 32 bits wide. If it's wider, then !
- * ! SHA_LONG_LOG2 has to be defined along.                        !
- * !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
- */
-
-#define SHA_LONG unsigned int
-
 #define SHA_LBLOCK 16
-#define SHA_CBLOCK (SHA_LBLOCK * 4) /* SHA treats input data as a \
-                 * contiguous array of 32 bit                     \
-                 * wide big-endian values. */
+#define SHA_CBLOCK (SHA_LBLOCK * 4) /* SHA treats input data as a
+                                     * contiguous array of 32 bit
+                                     * wide big-endian values. */
 #define SHA_LAST_BLOCK (SHA_CBLOCK - 8)
 #define SHA_DIGEST_LENGTH 20
 
 typedef struct SHAstate_st {
-    SHA_LONG h0, h1, h2, h3, h4;
-    SHA_LONG Nl, Nh;
-    SHA_LONG data[SHA_LBLOCK];
+    uint32_t h0, h1, h2, h3, h4;
+    uint32_t Nl, Nh;
+    uint32_t data[SHA_LBLOCK];
     unsigned int num;
 } SHA_CTX;
 
-int SHA1_Init(SHA_CTX *c);
-int SHA1_Update(SHA_CTX *c, const void *data, size_t len);
-int SHA1_Final(unsigned char *md, SHA_CTX *c);
-unsigned char *SHA1(const unsigned char *d, size_t n, unsigned char *md);
-void SHA1_Transform(SHA_CTX *c, const unsigned char *data);
+int SHA1_Init(SHA_CTX *ctx);
+int SHA1_Update(SHA_CTX *ctx, const void *data, size_t len);
+int SHA1_Final(uint8_t *md, SHA_CTX *ctx);
+uint8_t *SHA1(const uint8_t *d, size_t n, uint8_t *md);
+void SHA1_Transform(SHA_CTX *ctx, const uint8_t *data);
 
-#define SHA256_CBLOCK (SHA_LBLOCK * 4) /* SHA-256 treats input data as a \
-                 * contiguous array of 32 bit                            \
-                 * wide big-endian values. */
+#define SHA256_CBLOCK (SHA_LBLOCK * 4) /* SHA-256 treats input data as a
+                                        * contiguous array of 32 bit
+                                        * wide big-endian values. */
 #define SHA224_DIGEST_LENGTH 28
 #define SHA256_DIGEST_LENGTH 32
 
 typedef struct SHA256state_st {
-    SHA_LONG h[8];
-    SHA_LONG Nl, Nh;
-    SHA_LONG data[SHA_LBLOCK];
+    uint32_t h[8];
+    uint32_t Nl, Nh;
+    uint32_t data[SHA_LBLOCK];
     unsigned int num, md_len;
 } SHA256_CTX;
 
 int SHA224_Init(SHA256_CTX *c);
 int SHA224_Update(SHA256_CTX *c, const void *data, size_t len);
-int SHA224_Final(unsigned char *md, SHA256_CTX *c);
-unsigned char *SHA224(const unsigned char *d, size_t n, unsigned char *md);
+int SHA224_Final(uint8_t *md, SHA256_CTX *c);
+uint8_t *SHA224(const uint8_t *d, size_t n, uint8_t *md);
 int SHA256_Init(SHA256_CTX *c);
 int SHA256_Update(SHA256_CTX *c, const void *data, size_t len);
-int SHA256_Final(unsigned char *md, SHA256_CTX *c);
-unsigned char *SHA256(const unsigned char *d, size_t n, unsigned char *md);
-void SHA256_Transform(SHA256_CTX *c, const unsigned char *data);
+int SHA256_Final(uint8_t *md, SHA256_CTX *c);
+uint8_t *SHA256(const uint8_t *d, size_t n, uint8_t *md);
+void SHA256_Transform(SHA256_CTX *c, const uint8_t *data);
 
 #define SHA384_DIGEST_LENGTH 48
 #define SHA512_DIGEST_LENGTH 64
@@ -127,38 +117,29 @@ void SHA256_Transform(SHA256_CTX *c, const unsigned char *data);
  * being exactly 64-bit wide. See Implementation Notes in sha512.c
  * for further details.
  */
-#define SHA512_CBLOCK (SHA_LBLOCK * 8) /* SHA-512 treats input data as a \
-                 * contiguous array of 64 bit                            \
-                 * wide big-endian values. */
-
-#undef U64 /* Fix conflict with gost header */
-#if defined(__arch64__)
-#define SHA_LONG64 unsigned long
-#define U64(C) C##UL
-#else
-#define SHA_LONG64 unsigned long long
-#define U64(C) C##ULL
-#endif
+#define SHA512_CBLOCK (SHA_LBLOCK * 8) /* SHA-512 treats input data as a
+                                        * contiguous array of 64 bit
+                                        * wide big-endian values. */
 
 typedef struct SHA512state_st {
-    SHA_LONG64 h[8];
-    SHA_LONG64 Nl, Nh;
+    uint64_t h[8];
+    uint64_t Nl, Nh;
     union {
-        SHA_LONG64 d[SHA_LBLOCK];
-        unsigned char p[SHA512_CBLOCK];
+        uint64_t d[SHA_LBLOCK];
+        uint8_t p[SHA512_CBLOCK];
     } u;
     unsigned int num, md_len;
 } SHA512_CTX;
 
 int SHA384_Init(SHA512_CTX *c);
 int SHA384_Update(SHA512_CTX *c, const void *data, size_t len);
-int SHA384_Final(unsigned char *md, SHA512_CTX *c);
-unsigned char *SHA384(const unsigned char *d, size_t n, unsigned char *md);
+int SHA384_Final(uint8_t *md, SHA512_CTX *c);
+uint8_t *SHA384(const uint8_t *d, size_t n, uint8_t *md);
 int SHA512_Init(SHA512_CTX *c);
 int SHA512_Update(SHA512_CTX *c, const void *data, size_t len);
-int SHA512_Final(unsigned char *md, SHA512_CTX *c);
-unsigned char *SHA512(const unsigned char *d, size_t n, unsigned char *md);
-void SHA512_Transform(SHA512_CTX *c, const unsigned char *data);
+int SHA512_Final(uint8_t *md, SHA512_CTX *c);
+uint8_t *SHA512(const uint8_t *d, size_t n, uint8_t *md);
+void SHA512_Transform(SHA512_CTX *c, const uint8_t *data);
 
 #ifdef __cplusplus
 }
