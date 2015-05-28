@@ -94,6 +94,12 @@ char *opt_getprog(void)
     return prog;
 }
 
+#define _dbg_assert(x)  \
+    {                   \
+        assert(x);      \
+        (void)(x);      \
+    }
+
 /* Set up the arg parsing. */
 char *opt_init(int ac, char **av, const OPTIONS *o)
 {
@@ -116,7 +122,7 @@ char *opt_init(int ac, char **av, const OPTIONS *o)
         /* Make sure options are legit. */
         assert(o->name[0] != '-');
         assert(o->retval > 0);
-        assert(i == 0 || i == '-' || i == 'n' || i == 'p' || i == 'u' || i == 's' ||
+        _dbg_assert(i == 0 || i == '-' || i == 'n' || i == 'p' || i == 'u' || i == 's' ||
                i == '<' || i == '>' || i == '/' || i == 'f' || i == 'F');
 
         /* Make sure there are no duplicates. */
@@ -125,7 +131,7 @@ char *opt_init(int ac, char **av, const OPTIONS *o)
              * Some compilers inline strcmp and the assert string is too long.
              */
             duplicated = strcmp(o->name, next->name) == 0;
-            assert(!duplicated);
+            _dbg_assert(!duplicated);
         }
         if (o->name[0] == '\0') {
             assert(unknown == NULL);
