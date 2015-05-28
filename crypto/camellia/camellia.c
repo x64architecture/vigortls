@@ -81,51 +81,49 @@
  * words reasonable performance even with not so modern compilers.
  */
 
-#include <openssl/opensslconf.h>
-
-
-#include <openssl/camellia.h>
-#include "cmll_locl.h"
 #include <string.h>
 #include <stdlib.h>
+#include <stdint.h>
+
+#include <openssl/opensslconf.h>
+#include <openssl/camellia.h>
+
+#if defined(OPENSSL_NO_ASM) || \
+    (!defined(VIGORTLS_X86_64) && !defined(VIGORTLS_X86))
 
 /* 32-bit rotations */
 #if !defined(OPENSSL_NO_ASM) && !defined(OPENSSL_NO_INLINE_ASM)
-#if defined(__GNUC__) && __GNUC__ >= 2
-#if defined(__i386) || defined(__x86_64)
-#define RightRotate(x, s) ({u32 ret; __asm__ ("rorl %1,%0":"=r"(ret):"I"(s),"0"(x):"cc"); ret; })
-#define LeftRotate(x, s) ({u32 ret; __asm__ ("roll %1,%0":"=r"(ret):"I"(s),"0"(x):"cc"); ret; })
-#define GETU32(p) ({u32 r=*(const u32 *)(p); __asm__ ("bswapl %0":"=r"(r):"0"(r)); r; })
-#define PUTU32(p, v) ({u32 r=(v); __asm__ ("bswapl %0":"=r"(r):"0"(r)); *(u32 *)(p)=r; })
-#elif defined(_ARCH_PPC) || defined(_ARCH_PPC64) || defined(__powerpc) || defined(__ppc__) || defined(__powerpc64__)
-#define LeftRotate(x, s) ({u32 ret; __asm__ ("rlwinm %0,%1,%2,0,31":"=r"(ret):"r"(x),"I"(s)); ret; })
-#define RightRotate(x, s) LeftRotate(x, (32 - s))
-#elif defined(__s390x__)
-#define LeftRotate(x, s) ({u32 ret; __asm__ ("rll %0,%1,%2":"=r"(ret):"r"(x),"I"(s)); ret; })
-#define RightRotate(x, s) LeftRotate(x, (32 - s))
-#define GETU32(p) (*(u32 *)(p))
-#define PUTU32(p, v) (*(u32 *)(p) = (v))
-#endif
-#endif
-#endif
-
-#if !defined(RightRotate) && !defined(LeftRotate)
-#define RightRotate(x, s) (((x) >> (s)) + ((x) << (32 - s)))
-#define LeftRotate(x, s) (((x) << (s)) + ((x) >> (32 - s)))
+#  if defined(__GNUC__) && __GNUC__ >= 2
+#    if defined(__i386) || defined(__x86_64)
+#      define GETU32(p) ({uint32_t r=*(const uint32_t *)(p); __asm__ ("bswapl %0":"=r"(r):"0"(r)); r; })
+#      define PUTU32(p, v) ({uint32_t r=(v); __asm__ ("bswapl %0":"=r"(r):"0"(r)); *(uint32_t *)(p)=r; })
+#    endif
+#  endif
 #endif
 
 #if !defined(GETU32) && !defined(PUTU32)
-#define GETU32(p) (((u32)(p)[0] << 24) ^ ((u32)(p)[1] << 16) ^ ((u32)(p)[2] << 8) ^ ((u32)(p)[3]))
-#define PUTU32(p, v) ((p)[0] = (u8)((v) >> 24), (p)[1] = (u8)((v) >> 16), (p)[2] = (u8)((v) >> 8), (p)[3] = (u8)(v))
+#define GETU32(p) (((uint32_t)(p)[0] << 24) ^ ((uint32_t)(p)[1] << 16) ^ ((uint32_t)(p)[2] << 8) ^ ((uint32_t)(p)[3]))
+#define PUTU32(p, v) ((p)[0] = (uint8_t)((v) >> 24), (p)[1] = (uint8_t)((v) >> 16), (p)[2] = (uint8_t)((v) >> 8), (p)[3] = (uint8_t)(v))
 #endif
+
+static inline uint32_t RightRotate(uint32_t a, unsigned int n)
+{
+    return ((a >> n) | (a << (32 - n)));
+}
+
+static inline uint32_t LeftRotate(uint32_t a, unsigned int n)
+{
+    return ((a << n) | (a >> (32 - n)));
+}
 
 /* S-box data */
 #define SBOX1_1110 Camellia_SBOX[0]
 #define SBOX4_4404 Camellia_SBOX[1]
 #define SBOX2_0222 Camellia_SBOX[2]
 #define SBOX3_3033 Camellia_SBOX[3]
-static const u32 Camellia_SBOX[][256] = {
-    { 0x70707000, 0x82828200, 0x2c2c2c00, 0xececec00, 0xb3b3b300, 0x27272700,
+static const uint32_t Camellia_SBOX[][256] = {
+    {
+      0x70707000, 0x82828200, 0x2c2c2c00, 0xececec00, 0xb3b3b300, 0x27272700,
       0xc0c0c000, 0xe5e5e500, 0xe4e4e400, 0x85858500, 0x57575700, 0x35353500,
       0xeaeaea00, 0x0c0c0c00, 0xaeaeae00, 0x41414100, 0x23232300, 0xefefef00,
       0x6b6b6b00, 0x93939300, 0x45454500, 0x19191900, 0xa5a5a500, 0x21212100,
@@ -167,8 +165,10 @@ static const u32 Camellia_SBOX[][256] = {
       0x2a2a2a00, 0x68686800, 0x3c3c3c00, 0x38383800, 0xf1f1f100, 0xa4a4a400,
       0x40404000, 0x28282800, 0xd3d3d300, 0x7b7b7b00, 0xbbbbbb00, 0xc9c9c900,
       0x43434300, 0xc1c1c100, 0x15151500, 0xe3e3e300, 0xadadad00, 0xf4f4f400,
-      0x77777700, 0xc7c7c700, 0x80808000, 0x9e9e9e00 },
-    { 0x70700070, 0x2c2c002c, 0xb3b300b3, 0xc0c000c0, 0xe4e400e4, 0x57570057,
+      0x77777700, 0xc7c7c700, 0x80808000, 0x9e9e9e00
+    },
+    {
+      0x70700070, 0x2c2c002c, 0xb3b300b3, 0xc0c000c0, 0xe4e400e4, 0x57570057,
       0xeaea00ea, 0xaeae00ae, 0x23230023, 0x6b6b006b, 0x45450045, 0xa5a500a5,
       0xeded00ed, 0x4f4f004f, 0x1d1d001d, 0x92920092, 0x86860086, 0xafaf00af,
       0x7c7c007c, 0x1f1f001f, 0x3e3e003e, 0xdcdc00dc, 0x5e5e005e, 0x0b0b000b,
@@ -210,8 +210,10 @@ static const u32 Camellia_SBOX[][256] = {
       0x46460046, 0xbaba00ba, 0x25250025, 0x42420042, 0xa2a200a2, 0xfafa00fa,
       0x07070007, 0x55550055, 0xeeee00ee, 0x0a0a000a, 0x49490049, 0x68680068,
       0x38380038, 0xa4a400a4, 0x28280028, 0x7b7b007b, 0xc9c900c9, 0xc1c100c1,
-      0xe3e300e3, 0xf4f400f4, 0xc7c700c7, 0x9e9e009e },
-    { 0x00e0e0e0, 0x00050505, 0x00585858, 0x00d9d9d9, 0x00676767, 0x004e4e4e,
+      0xe3e300e3, 0xf4f400f4, 0xc7c700c7, 0x9e9e009e
+    },
+    {
+      0x00e0e0e0, 0x00050505, 0x00585858, 0x00d9d9d9, 0x00676767, 0x004e4e4e,
       0x00818181, 0x00cbcbcb, 0x00c9c9c9, 0x000b0b0b, 0x00aeaeae, 0x006a6a6a,
       0x00d5d5d5, 0x00181818, 0x005d5d5d, 0x00828282, 0x00464646, 0x00dfdfdf,
       0x00d6d6d6, 0x00272727, 0x008a8a8a, 0x00323232, 0x004b4b4b, 0x00424242,
@@ -254,7 +256,8 @@ static const u32 Camellia_SBOX[][256] = {
       0x00808080, 0x00505050, 0x00a7a7a7, 0x00f6f6f6, 0x00777777, 0x00939393,
       0x00868686, 0x00838383, 0x002a2a2a, 0x00c7c7c7, 0x005b5b5b, 0x00e9e9e9,
       0x00eeeeee, 0x008f8f8f, 0x00010101, 0x003d3d3d },
-    { 0x38003838, 0x41004141, 0x16001616, 0x76007676, 0xd900d9d9, 0x93009393,
+    {
+      0x38003838, 0x41004141, 0x16001616, 0x76007676, 0xd900d9d9, 0x93009393,
       0x60006060, 0xf200f2f2, 0x72007272, 0xc200c2c2, 0xab00abab, 0x9a009a9a,
       0x75007575, 0x06000606, 0x57005757, 0xa000a0a0, 0x91009191, 0xf700f7f7,
       0xb500b5b5, 0xc900c9c9, 0xa200a2a2, 0x8c008c8c, 0xd200d2d2, 0x90009090,
@@ -296,11 +299,12 @@ static const u32 Camellia_SBOX[][256] = {
       0x15001515, 0x34003434, 0x1e001e1e, 0x1c001c1c, 0xf800f8f8, 0x52005252,
       0x20002020, 0x14001414, 0xe900e9e9, 0xbd00bdbd, 0xdd00dddd, 0xe400e4e4,
       0xa100a1a1, 0xe000e0e0, 0x8a008a8a, 0xf100f1f1, 0xd600d6d6, 0x7a007a7a,
-      0xbb00bbbb, 0xe300e3e3, 0x40004040, 0x4f004f4f }
+      0xbb00bbbb, 0xe300e3e3, 0x40004040, 0x4f004f4f
+    }
 };
 
 /* Key generation constants */
-static const u32 SIGMA[] = {
+static const uint32_t SIGMA[] = {
     0xa09e667f, 0x3bcc908b, 0xb67ae858, 0x4caa73b2, 0xc6ef372f, 0xe94f82be,
     0x54ff53a5, 0xf1d36f1c, 0x10e527fa, 0xde682d1d, 0xb05688c2, 0xb3e6c1fd
 };
@@ -315,7 +319,7 @@ static const u32 SIGMA[] = {
  */
 #define Camellia_Feistel(_s0, _s1, _s2, _s3, _key) \
     do {                                           \
-        register u32 _t0, _t1, _t2, _t3;           \
+        register uint32_t _t0, _t1, _t2, _t3;      \
                                                    \
         _t0 = _s0 ^ (_key)[0];                     \
         _t3 = SBOX4_4404[_t0 & 0xff];              \
@@ -341,16 +345,16 @@ static const u32 SIGMA[] = {
  */
 #define RotLeft128(_s0, _s1, _s2, _s3, _n)      \
     do {                                        \
-        u32 _t0 = _s0 >> (32 - _n);             \
+        uint32_t _t0 = _s0 >> (32 - _n);        \
         _s0 = (_s0 << _n) | (_s1 >> (32 - _n)); \
         _s1 = (_s1 << _n) | (_s2 >> (32 - _n)); \
         _s2 = (_s2 << _n) | (_s3 >> (32 - _n)); \
         _s3 = (_s3 << _n) | _t0;                \
     } while (0)
 
-int Camellia_Ekeygen(int keyBitLength, const u8 *rawKey, KEY_TABLE_TYPE k)
+int Camellia_Ekeygen(int keyBitLength, const uint8_t *rawKey, KEY_TABLE_TYPE k)
 {
-    register u32 s0, s1, s2, s3;
+    register uint32_t s0, s1, s2, s3;
 
     k[0] = s0 = GETU32(rawKey);
     k[1] = s1 = GETU32(rawKey + 4);
@@ -465,11 +469,11 @@ int Camellia_Ekeygen(int keyBitLength, const u8 *rawKey, KEY_TABLE_TYPE k)
      */
 }
 
-void Camellia_EncryptBlock_Rounds(int grandRounds, const u8 plaintext[],
-                                  const KEY_TABLE_TYPE keyTable, u8 ciphertext[])
+void Camellia_EncryptBlock_Rounds(int grandRounds, const uint8_t plaintext[],
+                                  const KEY_TABLE_TYPE keyTable, uint8_t ciphertext[])
 {
-    register u32 s0, s1, s2, s3;
-    const u32 *k = keyTable, *kend = keyTable + grandRounds * 16;
+    register uint32_t s0, s1, s2, s3;
+    const uint32_t *k = keyTable, *kend = keyTable + grandRounds * 16;
 
     s0 = GETU32(plaintext) ^ k[0];
     s1 = GETU32(plaintext + 4) ^ k[1];
@@ -507,18 +511,18 @@ void Camellia_EncryptBlock_Rounds(int grandRounds, const u8 plaintext[],
     PUTU32(ciphertext + 8, s0);
     PUTU32(ciphertext + 12, s1);
 }
-void Camellia_EncryptBlock(int keyBitLength, const u8 plaintext[],
-                           const KEY_TABLE_TYPE keyTable, u8 ciphertext[])
+void Camellia_EncryptBlock(int keyBitLength, const uint8_t plaintext[],
+                           const KEY_TABLE_TYPE keyTable, uint8_t ciphertext[])
 {
     Camellia_EncryptBlock_Rounds(keyBitLength == 128 ? 3 : 4,
                                  plaintext, keyTable, ciphertext);
 }
 
-void Camellia_DecryptBlock_Rounds(int grandRounds, const u8 ciphertext[],
-                                  const KEY_TABLE_TYPE keyTable, u8 plaintext[])
+void Camellia_DecryptBlock_Rounds(int grandRounds, const uint8_t ciphertext[],
+                                  const KEY_TABLE_TYPE keyTable, uint8_t plaintext[])
 {
-    u32 s0, s1, s2, s3;
-    const u32 *k = keyTable + grandRounds * 16, *kend = keyTable + 4;
+    uint32_t s0, s1, s2, s3;
+    const uint32_t *k = keyTable + grandRounds * 16, *kend = keyTable + 4;
 
     s0 = GETU32(ciphertext) ^ k[0];
     s1 = GETU32(ciphertext + 4) ^ k[1];
@@ -556,9 +560,46 @@ void Camellia_DecryptBlock_Rounds(int grandRounds, const u8 ciphertext[],
     PUTU32(plaintext + 8, s0);
     PUTU32(plaintext + 12, s1);
 }
-void Camellia_DecryptBlock(int keyBitLength, const u8 plaintext[],
-                           const KEY_TABLE_TYPE keyTable, u8 ciphertext[])
+void Camellia_DecryptBlock(int keyBitLength, const uint8_t plaintext[],
+                           const KEY_TABLE_TYPE keyTable, uint8_t ciphertext[])
 {
     Camellia_DecryptBlock_Rounds(keyBitLength == 128 ? 3 : 4,
                                  plaintext, keyTable, ciphertext);
 }
+
+#else /* OPENSSL_NO_ASM || (!VIGORTLS_X86_64 && !VIGORTLS_X86) */
+
+void Camellia_EncryptBlock_Rounds(int grandRounds, const uint8_t plaintext[],
+                                  const KEY_TABLE_TYPE keyTable, uint8_t ciphertext[]);
+void Camellia_DecryptBlock_Rounds(int grandRounds, const uint8_t ciphertext[],
+                                  const KEY_TABLE_TYPE keyTable, uint8_t plaintext[]);
+
+#endif /* OPENSSL_NO_ASM || (!VIGORTLS_X86_64 && !VIGORTLS_X86) */
+
+void Camellia_encrypt(const uint8_t *in, uint8_t *out,
+                      const CAMELLIA_KEY *key)
+{
+    Camellia_EncryptBlock_Rounds(key->grand_rounds, in, key->u.rd_key, out);
+}
+
+void Camellia_decrypt(const uint8_t *in, uint8_t *out,
+                      const CAMELLIA_KEY *key)
+{
+    Camellia_DecryptBlock_Rounds(key->grand_rounds, in, key->u.rd_key, out);
+}
+
+/* TODO: Why is this implemented in ASM on X86? */
+#if (!defined(VIGORTLS_X86) & !defined(OPENSSL_NO_ASM))
+int Camellia_Ekeygen(int keyBitLength, const uint8_t *rawKey,
+                     KEY_TABLE_TYPE keyTable);
+int Camellia_set_key(const uint8_t *userKey, const int bits,
+                     CAMELLIA_KEY *key)
+{
+    if (userKey == NULL || key == NULL)
+        return -1;
+    if (bits != 128 && bits != 192 && bits != 256)
+        return -2;
+    key->grand_rounds = Camellia_Ekeygen(bits, userKey, key->u.rd_key);
+    return 0;
+}
+#endif

@@ -4,24 +4,13 @@ if (${ARCH} STREQUAL "x86_64")
     set(
         CMLL_ARCH_SOURCES
 
-	    cmll_misc.c
         cmll-x86_64.${ASM_EXT}
     )
-
 elseif (${ARCH} STREQUAL "x86")
     set(
         CMLL_ARCH_SOURCES
 
         cmll-x86.${ASM_EXT}
-    )
-
-else()
-    set(
-        CMLL_ARCH_SOURCES
-
-        camellia.c
-        cmll_cbc.c
-	    cmll_misc.c
     )
 endif()
 
@@ -30,10 +19,8 @@ add_library(
 
     OBJECT
 
-    cmll_ecb.c
-    cmll_ofb.c
-    cmll_cfb.c
-    cmll_ctr.c
+    camellia.c
+    camellia_modes.c
 
     ${CMLL_ARCH_SOURCES}
 )
