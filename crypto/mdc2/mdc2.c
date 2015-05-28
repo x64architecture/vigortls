@@ -1,4 +1,3 @@
-/* crypto/mdc2/mdc2dgst.c */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -74,6 +73,21 @@
                    *((c)++) = (unsigned char)(((l) >> 8L) & 0xff),  \
                    *((c)++) = (unsigned char)(((l) >> 16L) & 0xff), \
                    *((c)++) = (unsigned char)(((l) >> 24L) & 0xff))
+
+unsigned char *MDC2(const unsigned char *d, size_t n, unsigned char *md)
+{
+    MDC2_CTX c;
+    static unsigned char m[MDC2_DIGEST_LENGTH];
+
+    if (md == NULL)
+        md = m;
+
+    MDC2_Init(&c);
+    MDC2_Update(&c, d, n);
+    MDC2_Final(md, &c);
+    vigortls_zeroize(&c, sizeof(c)); /* security consideration */
+    return (md);
+}
 
 static void mdc2_body(MDC2_CTX *c, const unsigned char *in, size_t len);
 int MDC2_Init(MDC2_CTX *c)

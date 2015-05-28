@@ -1,10 +1,9 @@
-include_directories(${CMAKE_CURRENT_BINARY_DIR} .. ../../include . ../asn1 ../evp ../modes)
+include_directories(${CMAKE_CURRENT_BINARY_DIR} .. ../../include)
 
 add_library(
     mdc2
 
     OBJECT
 
-    mdc2dgst.c
-    mdc2_one.c
+    mdc2.c
 )
