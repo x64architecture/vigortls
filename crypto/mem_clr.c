@@ -14,7 +14,7 @@
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-#if defined(_WIN32)
+#if defined(_MSVC)
 # define WIN32_LEAN_AND_MEAN
 # include <windows.h>
 #endif
@@ -23,11 +23,21 @@
 
 void vigortls_zeroize(void *ptr, size_t len)
 {
-#if defined(_WIN32)
+#if defined(_MSVC)
     SecureZeroMemory(ptr, len);
 #else
     memset(ptr, 0, len);
-#endif
+
+/*
+ * Try to prevent compiler optimizations
+ */
+    __asm__ volatile(
+        ""
+        :
+        : "r"(ptr)
+        : "memory"
+    );
+#endif /* !MSVC */
 }
 
 void OPENSSL_cleanse(void *ptr, size_t len)

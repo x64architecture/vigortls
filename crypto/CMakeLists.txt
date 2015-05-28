@@ -183,9 +183,6 @@ add_library(
     $<TARGET_OBJECTS:x509>
     $<TARGET_OBJECTS:x509v3>
 )
-if (CMAKE_COMPILER_IS_GNUCC OR ${CMAKE_C_COMPILER_ID} STREQUAL "Clang")
-set_source_files_properties(mem_clr.c PROPERTIES COMPILE_FLAGS -O0)
-endif()
 
 if (WIN32)
 	target_link_libraries(crypto Ws2_32)
