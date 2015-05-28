@@ -10,7 +10,6 @@ if (${ARCH} STREQUAL "x86_64")
         bsaes-x86_64.${ASM_EXT}
         vpaes-x86_64.${ASM_EXT}
     )
-
 elseif (${ARCH} STREQUAL "x86")
     set(
         AES_ARCH_SOURCES
@@ -19,21 +18,17 @@ elseif (${ARCH} STREQUAL "x86")
         vpaes-x86.${ASM_EXT}
         aesni-x86.${ASM_EXT}
     )
-
 elseif (${ARCH} STREQUAL "arm")
     set(
         AES_ARCH_SOURCES
 
-        aes_cbc.c
         aes-armv4.${ASM_EXT}
     )
-
 else()
     set(
         AES_ARCH_SOURCES
 
-        aes_core.c
-        aes_cbc.c
+        aes.c
     )
 endif()
 
@@ -43,10 +38,7 @@ add_library(
     OBJECT
 
     aes_misc.c
-    aes_ecb.c
-    aes_cfb.c
-    aes_ofb.c
-    aes_ctr.c
+    aes_modes.c
     aes_ige.c
     aes_wrap.c
 

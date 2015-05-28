@@ -56,15 +56,14 @@
 #include <openssl/aes.h>
 #include <openssl/bio.h>
 
-static const unsigned char default_iv[] = {
+static const uint8_t default_iv[] = {
     0xA6, 0xA6, 0xA6, 0xA6, 0xA6, 0xA6, 0xA6, 0xA6,
 };
 
-int AES_wrap_key(AES_KEY *key, const unsigned char *iv,
-                 unsigned char *out,
-                 const unsigned char *in, unsigned int inlen)
+int AES_wrap_key(AES_KEY *key, const uint8_t *iv, uint8_t *out, const uint8_t *in,
+                 unsigned int inlen)
 {
-    unsigned char *A, B[16], *R;
+    uint8_t *A, B[16], *R;
     unsigned int i, j, t;
     if ((inlen & 0x7) || (inlen < 8))
         return -1;
@@ -81,11 +80,11 @@ int AES_wrap_key(AES_KEY *key, const unsigned char *iv,
         for (i = 0; i < inlen; i += 8, t++, R += 8) {
             memcpy(B + 8, R, 8);
             AES_encrypt(B, B, key);
-            A[7] ^= (unsigned char)(t & 0xff);
+            A[7] ^= (uint8_t)(t & 0xff);
             if (t > 0xff) {
-                A[6] ^= (unsigned char)((t >> 8) & 0xff);
-                A[5] ^= (unsigned char)((t >> 16) & 0xff);
-                A[4] ^= (unsigned char)((t >> 24) & 0xff);
+                A[6] ^= (uint8_t)((t >> 8) & 0xff);
+                A[5] ^= (uint8_t)((t >> 16) & 0xff);
+                A[4] ^= (uint8_t)((t >> 24) & 0xff);
             }
             memcpy(R, B + 8, 8);
         }
@@ -94,11 +93,10 @@ int AES_wrap_key(AES_KEY *key, const unsigned char *iv,
     return inlen + 8;
 }
 
-int AES_unwrap_key(AES_KEY *key, const unsigned char *iv,
-                   unsigned char *out,
-                   const unsigned char *in, unsigned int inlen)
+int AES_unwrap_key(AES_KEY *key, const uint8_t *iv, uint8_t *out, const uint8_t *in,
+                   unsigned int inlen)
 {
-    unsigned char *A, B[16], *R;
+    uint8_t *A, B[16], *R;
     unsigned int i, j, t;
     inlen -= 8;
     if (inlen & 0x7)
@@ -112,11 +110,11 @@ int AES_unwrap_key(AES_KEY *key, const unsigned char *iv,
     for (j = 0; j < 6; j++) {
         R = out + inlen - 8;
         for (i = 0; i < inlen; i += 8, t--, R -= 8) {
-            A[7] ^= (unsigned char)(t & 0xff);
+            A[7] ^= (uint8_t)(t & 0xff);
             if (t > 0xff) {
-                A[6] ^= (unsigned char)((t >> 8) & 0xff);
-                A[5] ^= (unsigned char)((t >> 16) & 0xff);
-                A[4] ^= (unsigned char)((t >> 24) & 0xff);
+                A[6] ^= (uint8_t)((t >> 8) & 0xff);
+                A[5] ^= (uint8_t)((t >> 16) & 0xff);
+                A[4] ^= (uint8_t)((t >> 24) & 0xff);
             }
             memcpy(B + 8, R, 8);
             AES_decrypt(B, B, key);

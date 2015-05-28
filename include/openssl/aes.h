@@ -1,4 +1,3 @@
-/* crypto/aes/aes.h */
 /* ====================================================================
  * Copyright (c) 1998-2002 The OpenSSL Project.  All rights reserved.
  *
@@ -56,6 +55,7 @@
 
 
 #include <stddef.h>
+#include <stdint.h>
 
 #define AES_ENCRYPT 1
 #define AES_DECRYPT 0
@@ -71,60 +71,56 @@ extern "C" {
 
 /* This should be a hidden type, but EVP requires that the size be known */
 struct aes_key_st {
-#ifdef AES_LONG
-    unsigned long rd_key[4 * (AES_MAXNR + 1)];
-#else
     unsigned int rd_key[4 * (AES_MAXNR + 1)];
-#endif
     int rounds;
 };
 typedef struct aes_key_st AES_KEY;
 
 const char *AES_options(void);
 
-int AES_set_encrypt_key(const unsigned char *userKey, const int bits,
+int AES_set_encrypt_key(const uint8_t *userKey, const int bits,
                         AES_KEY *key);
-int AES_set_decrypt_key(const unsigned char *userKey, const int bits,
+int AES_set_decrypt_key(const uint8_t *userKey, const int bits,
                         AES_KEY *key);
 
-void AES_encrypt(const unsigned char *in, unsigned char *out,
+void AES_encrypt(const uint8_t *in, uint8_t *out,
                  const AES_KEY *key);
-void AES_decrypt(const unsigned char *in, unsigned char *out,
+void AES_decrypt(const uint8_t *in, uint8_t *out,
                  const AES_KEY *key);
 
-void AES_ecb_encrypt(const unsigned char *in, unsigned char *out,
+void AES_ecb_encrypt(const uint8_t *in, uint8_t *out,
                      const AES_KEY *key, const int enc);
-void AES_cbc_encrypt(const unsigned char *in, unsigned char *out,
+void AES_cbc_encrypt(const uint8_t *in, uint8_t *out,
                      size_t length, const AES_KEY *key,
-                     unsigned char *ivec, const int enc);
-void AES_cfb128_encrypt(const unsigned char *in, unsigned char *out,
+                     uint8_t *ivec, const int enc);
+void AES_cfb128_encrypt(const uint8_t *in, uint8_t *out,
                         size_t length, const AES_KEY *key,
-                        unsigned char *ivec, int *num, const int enc);
-void AES_cfb1_encrypt(const unsigned char *in, unsigned char *out,
+                        uint8_t *ivec, int *num, const int enc);
+void AES_cfb1_encrypt(const uint8_t *in, uint8_t *out,
                       size_t length, const AES_KEY *key,
-                      unsigned char *ivec, int *num, const int enc);
-void AES_cfb8_encrypt(const unsigned char *in, unsigned char *out,
+                      uint8_t *ivec, int *num, const int enc);
+void AES_cfb8_encrypt(const uint8_t *in, uint8_t *out,
                       size_t length, const AES_KEY *key,
-                      unsigned char *ivec, int *num, const int enc);
-void AES_ofb128_encrypt(const unsigned char *in, unsigned char *out,
+                      uint8_t *ivec, int *num, const int enc);
+void AES_ofb128_encrypt(const uint8_t *in, uint8_t *out,
                         size_t length, const AES_KEY *key,
-                        unsigned char *ivec, int *num);
-void AES_ctr128_encrypt(const unsigned char *in, unsigned char *out,
+                        uint8_t *ivec, int *num);
+void AES_ctr128_encrypt(const uint8_t *in, uint8_t *out,
                         size_t length, const AES_KEY *key,
-                        unsigned char ivec[AES_BLOCK_SIZE],
-                        unsigned char ecount_buf[AES_BLOCK_SIZE],
+                        uint8_t ivec[AES_BLOCK_SIZE],
+                        uint8_t ecount_buf[AES_BLOCK_SIZE],
                         unsigned int *num);
 /* NB: the IV is _two_ blocks long */
-void AES_ige_encrypt(const unsigned char *in, unsigned char *out,
+void AES_ige_encrypt(const uint8_t *in, uint8_t *out,
                      size_t length, const AES_KEY *key,
-                     unsigned char *ivec, const int enc);
+                     uint8_t *ivec, const int enc);
 
-int AES_wrap_key(AES_KEY *key, const unsigned char *iv,
-                 unsigned char *out,
-                 const unsigned char *in, unsigned int inlen);
-int AES_unwrap_key(AES_KEY *key, const unsigned char *iv,
-                   unsigned char *out,
-                   const unsigned char *in, unsigned int inlen);
+int AES_wrap_key(AES_KEY *key, const uint8_t *iv,
+                 uint8_t *out,
+                 const uint8_t *in, unsigned int inlen);
+int AES_unwrap_key(AES_KEY *key, const uint8_t *iv,
+                   uint8_t *out,
+                   const uint8_t *in, unsigned int inlen);
 
 #ifdef __cplusplus
 }
