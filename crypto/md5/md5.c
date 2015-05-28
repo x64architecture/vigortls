@@ -1,4 +1,3 @@
-/* crypto/md5/md5_dgst.c */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -56,50 +55,122 @@
  * [including the GNU Public Licence.]
  */
 
-#include <stdio.h>
-#include "md5_locl.h"
+#include <stdlib.h>
+#include <string.h>
+
 #include <openssl/crypto.h>
+#include <openssl/md5.h>
 
-/* Implemented from RFC1321 The MD5 Message-Digest Algorithm
- */
-
-#define INIT_DATA_A (unsigned long)0x67452301L
-#define INIT_DATA_B (unsigned long)0xefcdab89L
-#define INIT_DATA_C (unsigned long)0x98badcfeL
-#define INIT_DATA_D (unsigned long)0x10325476L
-
-int MD5_Init(MD5_CTX *c)
+uint8_t *MD5(const uint8_t *data, size_t len, uint8_t *out)
 {
-    memset(c, 0, sizeof(*c));
-    c->A = INIT_DATA_A;
-    c->B = INIT_DATA_B;
-    c->C = INIT_DATA_C;
-    c->D = INIT_DATA_D;
+    MD5_CTX ctx;
+    static uint8_t digest[MD5_DIGEST_LENGTH];
+
+    if (out == NULL)
+        out = digest;
+
+    MD5_Init(&ctx);
+    MD5_Update(&ctx, data, len);
+    MD5_Final(out, &ctx);
+    vigortls_zeroize(&ctx, sizeof(ctx)); /* security consideration */
+
+    return out;
+}
+
+int MD5_Init(MD5_CTX *ctx)
+{
+    memset(ctx, 0, sizeof(*ctx));
+    ctx->A = 0x67452301UL;
+    ctx->B = 0xefcdab89UL;
+    ctx->C = 0x98badcfeUL;
+    ctx->D = 0x10325476UL;
     return 1;
 }
+
+#if !defined(OPENSSL_NO_ASM) && \
+    (defined(VIGORTLS_X86_64) || defined(VIGORTLS_X86))
+#define md5_block_data_order md5_block_asm_data_order
+#endif
+
+void md5_block_data_order(MD5_CTX *ctx, const void *p, size_t num);
+
+#define DATA_ORDER_IS_LITTLE_ENDIAN
+
+#define HASH_LONG uint32_t
+#define HASH_CTX MD5_CTX
+#define HASH_CBLOCK 64
+#define HASH_UPDATE MD5_Update
+#define HASH_TRANSFORM MD5_Transform
+#define HASH_FINAL MD5_Final
+#define HASH_MAKE_STRING(c, s)    \
+    do {                          \
+        unsigned long ll;         \
+        ll = (c)->A;              \
+        (void) HOST_l2c(ll, (s)); \
+        ll = (c)->B;              \
+        (void) HOST_l2c(ll, (s)); \
+        ll = (c)->C;              \
+        (void) HOST_l2c(ll, (s)); \
+        ll = (c)->D;              \
+        (void) HOST_l2c(ll, (s)); \
+    } while (0)
+#define HASH_BLOCK_DATA_ORDER md5_block_data_order
+
+#include "md32_common.h"
+
+/* As pointed out by Wei Dai <weidai@eskimo.com>, the above can be
+ * simplified to the code below.  Wei attributes these optimizations
+ * to Peter Gutmann's SHS code, and he attributes it to Rich Schroeppel.
+ */
+#define F(b, c, d) ((((c) ^ (d)) & (b)) ^ (d))
+#define G(b, c, d) ((((b) ^ (c)) & (d)) ^ (c))
+#define H(b, c, d) ((b) ^ (c) ^ (d))
+#define I(b, c, d) (((~(d)) | (b)) ^ (c))
+
+#define R0(a, b, c, d, k, s, t)            \
+    {                                      \
+        a += ((k) + (t)+F((b), (c), (d))); \
+        a = ROTATE(a, s);                  \
+        a += b;                            \
+    };
+
+#define R1(a, b, c, d, k, s, t)            \
+    {                                      \
+        a += ((k) + (t)+G((b), (c), (d))); \
+        a = ROTATE(a, s);                  \
+        a += b;                            \
+    };
+
+#define R2(a, b, c, d, k, s, t)            \
+    {                                      \
+        a += ((k) + (t)+H((b), (c), (d))); \
+        a = ROTATE(a, s);                  \
+        a += b;                            \
+    };
+
+#define R3(a, b, c, d, k, s, t)            \
+    {                                      \
+        a += ((k) + (t)+I((b), (c), (d))); \
+        a = ROTATE(a, s);                  \
+        a += b;                            \
+    };
 
 #ifndef md5_block_data_order
 #ifdef X
 #undef X
 #endif
-void md5_block_data_order(MD5_CTX *c, const void *data_, size_t num)
+void md5_block_data_order(MD5_CTX *ctx, const void *data_, size_t num)
 {
-    const unsigned char *data = data_;
-    register unsigned MD32_REG_T A, B, C, D, l;
-#ifndef MD32_XARRAY
-    /* See comment in crypto/sha/sha_locl.h for details. */
-    unsigned MD32_REG_T XX0, XX1, XX2, XX3, XX4, XX5, XX6, XX7,
+    const uint8_t *data = data_;
+    uint32_t A, B, C, D, l;
+    uint32_t XX0, XX1, XX2, XX3, XX4, XX5, XX6, XX7,
         XX8, XX9, XX10, XX11, XX12, XX13, XX14, XX15;
 #define X(i) XX##i
-#else
-    MD5_LONG XX[MD5_LBLOCK];
-#define X(i) XX[i]
-#endif
 
-    A = c->A;
-    B = c->B;
-    C = c->C;
-    D = c->D;
+    A = ctx->A;
+    B = ctx->B;
+    C = ctx->C;
+    D = ctx->D;
 
     for (; num--;) {
         HOST_c2l(data, l);
@@ -203,10 +274,10 @@ void md5_block_data_order(MD5_CTX *c, const void *data_, size_t num)
         R3(C, D, A, B, X(2), 15, 0x2ad7d2bbL);
         R3(B, C, D, A, X(9), 21, 0xeb86d391L);
 
-        A = c->A += A;
-        B = c->B += B;
-        C = c->C += C;
-        D = c->D += D;
+        A = ctx->A += A;
+        B = ctx->B += B;
+        C = ctx->C += C;
+        D = ctx->D += D;
     }
 }
 #endif

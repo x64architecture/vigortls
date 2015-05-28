@@ -21,8 +21,7 @@ add_library(
 
     OBJECT
 
-    md5_dgst.c
-    md5_one.c
+    md5.c
 
     ${MD5_ARCH_SOURCES}
 )
