@@ -16,9 +16,12 @@
 
 #include <openssl/poly1305.h>
 
-#include "poly1305-donna.c"
+extern void poly1305_init(poly1305_context *ctx, const uint8_t key[32]);
+extern void poly1305_update(poly1305_context *ctx, const uint8_t *m,
+                            size_t bytes);
+extern void poly1305_finish(poly1305_context *ctx, uint8_t mac[16]);
 
-void CRYPTO_poly1305_init(poly1305_context *ctx, const unsigned char key[32])
+extern void CRYPTO_poly1305_init(poly1305_context *ctx, const unsigned char key[32])
 {
     poly1305_init(ctx, key);
 }

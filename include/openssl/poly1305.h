@@ -24,6 +24,7 @@
 #endif
 
 #include <stddef.h>
+#include <stdint.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -31,15 +32,15 @@ extern "C" {
 
 typedef struct poly1305_context {
     size_t aligner;
-    unsigned char opaque[136];
+    uint8_t opaque[136];
 } poly1305_context;
 
 typedef struct poly1305_context poly1305_state;
 
-void CRYPTO_poly1305_init(poly1305_context *ctx, const unsigned char key[32]);
-void CRYPTO_poly1305_update(poly1305_context *ctx, const unsigned char *in,
+void CRYPTO_poly1305_init(poly1305_context *ctx, const uint8_t key[32]);
+void CRYPTO_poly1305_update(poly1305_context *ctx, const uint8_t *in,
                             size_t inlen);
-void CRYPTO_poly1305_finish(poly1305_context *ctx, unsigned char mac[16]);
+void CRYPTO_poly1305_finish(poly1305_context *ctx, uint8_t mac[16]);
 
 #ifdef __cplusplus
 }
