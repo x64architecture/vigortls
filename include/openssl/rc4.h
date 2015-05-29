@@ -1,4 +1,3 @@
-/* crypto/rc4/rc4.h */
 /* Copyright (C) 1995-1997 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -59,23 +58,23 @@
 #ifndef HEADER_RC4_H
 #define HEADER_RC4_H
 
-#include <openssl/opensslconf.h> /* OPENSSL_NO_RC4, RC4_INT */
+#include <openssl/opensslconf.h>
 
 #include <stddef.h>
+#include <stdint.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 typedef struct rc4_key_st {
-    RC4_INT x, y;
-    RC4_INT data[256];
+    uint32_t x, y;
+    uint32_t data[256];
 } RC4_KEY;
 
 const char *RC4_options(void);
-void RC4_set_key(RC4_KEY *key, int len, const unsigned char *data);
-void RC4(RC4_KEY *key, size_t len, const unsigned char *indata,
-         unsigned char *outdata);
+void RC4_set_key(RC4_KEY *key, int len, const uint8_t *data);
+void RC4(RC4_KEY *key, size_t len, const uint8_t *in, uint8_t *out);
 
 #ifdef __cplusplus
 }

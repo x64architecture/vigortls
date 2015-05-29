@@ -1,4 +1,4 @@
-include_directories(${CMAKE_CURRENT_BINARY_DIR} .. ../../include . ../asn1 ../evp ../modes)
+include_directories(${CMAKE_CURRENT_BINARY_DIR} .. ../../include . ../evp)
 
 if (${ARCH} STREQUAL "x86_64")
     set(
@@ -17,8 +17,7 @@ else()
 set(
     RC4_ARCH_SOURCES
 
-    rc4_enc.c
-    rc4_skey.c
+    rc4.c
 ) 
 endif()
 
