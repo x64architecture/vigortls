@@ -5,16 +5,10 @@
  * forms are granted according to the OpenSSL license.
  */
 
-#include <openssl/crypto.h>
-#include "modes_lcl.h"
+#include <assert.h>
 #include <string.h>
 
-#ifndef MODES_DEBUG
-#ifndef NDEBUG
-#define NDEBUG
-#endif
-#endif
-#include <assert.h>
+#include "modes_lcl.h"
 
 /*
  * Trouble with Ciphertext Stealing, CTS, mode is that there is no
@@ -29,9 +23,9 @@
  * compliant with the NIST proposal, both extending CBC mode.
  */
 
-size_t CRYPTO_cts128_encrypt_block(const unsigned char *in, unsigned char *out,
-                                   size_t len, const void *key,
-                                   unsigned char ivec[16], block128_f block)
+size_t CRYPTO_cts128_encrypt_block(const uint8_t *in, uint8_t *out, size_t len,
+                                   const void *key, uint8_t ivec[16],
+                                   block128_f block)
 {
     size_t residue, n;
 
@@ -59,9 +53,9 @@ size_t CRYPTO_cts128_encrypt_block(const unsigned char *in, unsigned char *out,
     return len + residue;
 }
 
-size_t CRYPTO_nistcts128_encrypt_block(const unsigned char *in, unsigned char *out,
-                                       size_t len, const void *key,
-                                       unsigned char ivec[16], block128_f block)
+size_t CRYPTO_nistcts128_encrypt_block(const uint8_t *in, uint8_t *out, size_t len,
+                                       const void *key, uint8_t ivec[16],
+                                       block128_f block)
 {
     size_t residue, n;
 
@@ -90,14 +84,13 @@ size_t CRYPTO_nistcts128_encrypt_block(const unsigned char *in, unsigned char *o
     return len + residue;
 }
 
-size_t CRYPTO_cts128_encrypt(const unsigned char *in, unsigned char *out,
-                             size_t len, const void *key,
-                             unsigned char ivec[16], cbc128_f cbc)
+size_t CRYPTO_cts128_encrypt(const uint8_t *in, uint8_t *out, size_t len,
+                             const void *key, uint8_t ivec[16], cbc128_f cbc)
 {
     size_t residue;
     union {
         size_t align;
-        unsigned char c[16];
+        uint8_t c[16];
     } tmp;
 
     assert(in && out && key && ivec);
@@ -128,14 +121,13 @@ size_t CRYPTO_cts128_encrypt(const unsigned char *in, unsigned char *out,
     return len + residue;
 }
 
-size_t CRYPTO_nistcts128_encrypt(const unsigned char *in, unsigned char *out,
-                                 size_t len, const void *key,
-                                 unsigned char ivec[16], cbc128_f cbc)
+size_t CRYPTO_nistcts128_encrypt(const uint8_t *in, uint8_t *out, size_t len,
+                                 const void *key, uint8_t ivec[16], cbc128_f cbc)
 {
     size_t residue;
     union {
         size_t align;
-        unsigned char c[16];
+        uint8_t c[16];
     } tmp;
 
     assert(in && out && key && ivec);
@@ -165,14 +157,14 @@ size_t CRYPTO_nistcts128_encrypt(const unsigned char *in, unsigned char *out,
     return len + residue;
 }
 
-size_t CRYPTO_cts128_decrypt_block(const unsigned char *in, unsigned char *out,
-                                   size_t len, const void *key,
-                                   unsigned char ivec[16], block128_f block)
+size_t CRYPTO_cts128_decrypt_block(const uint8_t *in, uint8_t *out, size_t len,
+                                   const void *key, uint8_t ivec[16],
+                                   block128_f block)
 {
     size_t residue, n;
     union {
         size_t align;
-        unsigned char c[32];
+        uint8_t c[32];
     } tmp;
 
     assert(in && out && key && ivec);
@@ -198,7 +190,7 @@ size_t CRYPTO_cts128_decrypt_block(const unsigned char *in, unsigned char *out,
     (*block)(tmp.c, tmp.c, key);
 
     for (n = 0; n < 16; ++n) {
-        unsigned char c = in[n];
+        uint8_t c = in[n];
         out[n] = tmp.c[n] ^ ivec[n];
         ivec[n] = c;
     }
@@ -208,14 +200,14 @@ size_t CRYPTO_cts128_decrypt_block(const unsigned char *in, unsigned char *out,
     return 16 + len + residue;
 }
 
-size_t CRYPTO_nistcts128_decrypt_block(const unsigned char *in, unsigned char *out,
-                                       size_t len, const void *key,
-                                       unsigned char ivec[16], block128_f block)
+size_t CRYPTO_nistcts128_decrypt_block(const uint8_t *in, uint8_t *out, size_t len,
+                                       const void *key, uint8_t ivec[16],
+                                       block128_f block)
 {
     size_t residue, n;
     union {
         size_t align;
-        unsigned char c[32];
+        uint8_t c[32];
     } tmp;
 
     assert(in && out && key && ivec);
@@ -245,7 +237,7 @@ size_t CRYPTO_nistcts128_decrypt_block(const unsigned char *in, unsigned char *o
     (*block)(tmp.c, tmp.c, key);
 
     for (n = 0; n < 16; ++n) {
-        unsigned char c = in[n];
+        uint8_t c = in[n];
         out[n] = tmp.c[n] ^ ivec[n];
         ivec[n] = in[n + residue];
         tmp.c[n] = c;
@@ -256,14 +248,13 @@ size_t CRYPTO_nistcts128_decrypt_block(const unsigned char *in, unsigned char *o
     return 16 + len + residue;
 }
 
-size_t CRYPTO_cts128_decrypt(const unsigned char *in, unsigned char *out,
-                             size_t len, const void *key,
-                             unsigned char ivec[16], cbc128_f cbc)
+size_t CRYPTO_cts128_decrypt(const uint8_t *in, uint8_t *out, size_t len,
+                             const void *key, uint8_t ivec[16], cbc128_f cbc)
 {
     size_t residue;
     union {
         size_t align;
-        unsigned char c[32];
+        uint8_t c[32];
     } tmp;
 
     assert(in && out && key && ivec);
@@ -296,14 +287,13 @@ size_t CRYPTO_cts128_decrypt(const unsigned char *in, unsigned char *out,
     return 16 + len + residue;
 }
 
-size_t CRYPTO_nistcts128_decrypt(const unsigned char *in, unsigned char *out,
-                                 size_t len, const void *key,
-                                 unsigned char ivec[16], cbc128_f cbc)
+size_t CRYPTO_nistcts128_decrypt(const uint8_t *in, uint8_t *out, size_t len,
+                                 const void *key, uint8_t ivec[16], cbc128_f cbc)
 {
     size_t residue;
     union {
         size_t align;
-        unsigned char c[32];
+        uint8_t c[32];
     } tmp;
 
     assert(in && out && key && ivec);

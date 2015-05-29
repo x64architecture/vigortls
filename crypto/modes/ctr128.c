@@ -49,27 +49,19 @@
  */
 
 #include <machine/endian.h>
+#include <assert.h>
 #include <string.h>
 
-#include <openssl/crypto.h>
-
 #include "modes_lcl.h"
-
-#ifndef MODES_DEBUG
-#ifndef NDEBUG
-#define NDEBUG
-#endif
-#endif
-#include <assert.h>
 
 /* NOTE: the IV/counter CTR mode is big-endian.  The code itself
  * is endian-neutral. */
 
 /* increment counter (128-bit int) by 1 */
-static void ctr128_inc(unsigned char *counter)
+static void ctr128_inc(uint8_t *counter)
 {
-    u32 n = 16;
-    u8 c;
+    uint32_t n = 16;
+    uint8_t c;
 
     do {
         --n;
@@ -82,7 +74,7 @@ static void ctr128_inc(unsigned char *counter)
 }
 
 #if !defined(OPENSSL_SMALL_FOOTPRINT)
-static void ctr128_inc_aligned(unsigned char *counter)
+static void ctr128_inc_aligned(uint8_t *counter)
 {
     size_t *data, c, n;
 
@@ -117,10 +109,10 @@ static void ctr128_inc_aligned(unsigned char *counter)
  * responsability for checking that the counter doesn't overflow
  * into the rest of the IV when incremented.
  */
-void CRYPTO_ctr128_encrypt(const unsigned char *in, unsigned char *out,
-                           size_t len, const void *key,
-                           unsigned char ivec[16], unsigned char ecount_buf[16],
-                           unsigned int *num, block128_f block)
+void CRYPTO_ctr128_encrypt(const uint8_t *in, uint8_t *out, size_t len,
+                           const void *key, uint8_t ivec[16],
+                           uint8_t ecount_buf[16], unsigned int *num,
+                           block128_f block)
 {
     unsigned int n;
     size_t l = 0;
@@ -147,7 +139,8 @@ void CRYPTO_ctr128_encrypt(const unsigned char *in, unsigned char *out,
                 (*block)(ivec, ecount_buf, key);
                 ctr128_inc_aligned(ivec);
                 for (; n < 16; n += sizeof(size_t))
-                    *(size_t *)(out + n) = *(size_t *)(in + n) ^ *(size_t *)(ecount_buf + n);
+                    *(size_t *)(out + n) = *(size_t *)(in + n)
+                                           ^ *(size_t *)(ecount_buf + n);
                 len -= 16;
                 out += 16;
                 in += 16;
@@ -180,10 +173,10 @@ void CRYPTO_ctr128_encrypt(const unsigned char *in, unsigned char *out,
 }
 
 /* increment upper 96 bits of 128-bit counter by 1 */
-static void ctr96_inc(unsigned char *counter)
+static void ctr96_inc(uint8_t *counter)
 {
-    u32 n = 12;
-    u8 c;
+    uint32_t n = 12;
+    uint8_t c;
 
     do {
         --n;
@@ -195,10 +188,10 @@ static void ctr96_inc(unsigned char *counter)
     } while (n);
 }
 
-void CRYPTO_ctr128_encrypt_ctr32(const unsigned char *in, unsigned char *out,
-                                 size_t len, const void *key,
-                                 unsigned char ivec[16], unsigned char ecount_buf[16],
-                                 unsigned int *num, ctr128_f func)
+void CRYPTO_ctr128_encrypt_ctr32(const uint8_t *in, uint8_t *out, size_t len,
+                                 const void *key, uint8_t ivec[16],
+                                 uint8_t ecount_buf[16], unsigned int *num,
+                                 ctr128_f func)
 {
     unsigned int n, ctr32;
 
@@ -229,7 +222,7 @@ void CRYPTO_ctr128_encrypt_ctr32(const unsigned char *in, unsigned char *out,
          * overflow, which is then handled by limiting the
          * amount of blocks to the exact overflow point...
          */
-        ctr32 += (u32)blocks;
+        ctr32 += (uint32_t)blocks;
         if (ctr32 < blocks) {
             blocks -= ctr32;
             ctr32 = 0;

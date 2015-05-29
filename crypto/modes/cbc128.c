@@ -48,32 +48,26 @@
  *
  */
 
-#include <openssl/crypto.h>
-#include "modes_lcl.h"
+#include <assert.h>
 #include <string.h>
 
-#ifndef MODES_DEBUG
-#ifndef NDEBUG
-#define NDEBUG
-#endif
-#endif
-#include <assert.h>
+#include "modes_lcl.h"
 
 #ifndef STRICT_ALIGNMENT
 #define STRICT_ALIGNMENT 0
 #endif
 
-void CRYPTO_cbc128_encrypt(const unsigned char *in, unsigned char *out,
-                           size_t len, const void *key,
-                           unsigned char ivec[16], block128_f block)
+void CRYPTO_cbc128_encrypt(const uint8_t *in, uint8_t *out, size_t len,
+                           const void *key, uint8_t ivec[16], block128_f block)
 {
     size_t n;
-    const unsigned char *iv = ivec;
+    const uint8_t *iv = ivec;
 
     assert(in && out && key && ivec);
 
 #if !defined(OPENSSL_SMALL_FOOTPRINT)
-    if (STRICT_ALIGNMENT && ((size_t)in | (size_t)out | (size_t)ivec) % sizeof(size_t) != 0) {
+    if (STRICT_ALIGNMENT
+        && ((size_t)in | (size_t)out | (size_t)ivec) % sizeof(size_t) != 0) {
         while (len >= 16) {
             for (n = 0; n < 16; ++n)
                 out[n] = in[n] ^ iv[n];
@@ -111,23 +105,23 @@ void CRYPTO_cbc128_encrypt(const unsigned char *in, unsigned char *out,
     memcpy(ivec, iv, 16);
 }
 
-void CRYPTO_cbc128_decrypt(const unsigned char *in, unsigned char *out,
-                           size_t len, const void *key,
-                           unsigned char ivec[16], block128_f block)
+void CRYPTO_cbc128_decrypt(const uint8_t *in, uint8_t *out, size_t len,
+                           const void *key, uint8_t ivec[16], block128_f block)
 {
     size_t n;
     union {
         size_t t[16 / sizeof(size_t)];
-        unsigned char c[16];
+        uint8_t c[16];
     } tmp;
 
     assert(in && out && key && ivec);
 
 #if !defined(OPENSSL_SMALL_FOOTPRINT)
     if (in != out) {
-        const unsigned char *iv = ivec;
+        const uint8_t *iv = ivec;
 
-        if (STRICT_ALIGNMENT && ((size_t)in | (size_t)out | (size_t)ivec) % sizeof(size_t) != 0) {
+        if (STRICT_ALIGNMENT
+            && ((size_t)in | (size_t)out | (size_t)ivec) % sizeof(size_t) != 0) {
             while (len >= 16) {
                 (*block)(in, out, key);
                 for (n = 0; n < 16; ++n)
@@ -152,8 +146,9 @@ void CRYPTO_cbc128_decrypt(const unsigned char *in, unsigned char *out,
         }
         memcpy(ivec, iv, 16);
     } else {
-        if (STRICT_ALIGNMENT && ((size_t)in | (size_t)out | (size_t)ivec) % sizeof(size_t) != 0) {
-            unsigned char c;
+        if (STRICT_ALIGNMENT
+            && ((size_t)in | (size_t)out | (size_t)ivec) % sizeof(size_t) != 0) {
+            uint8_t c;
             while (len >= 16) {
                 (*block)(in, tmp.c, key);
                 for (n = 0; n < 16; ++n) {
@@ -184,7 +179,7 @@ void CRYPTO_cbc128_decrypt(const unsigned char *in, unsigned char *out,
     }
 #endif
     while (len) {
-        unsigned char c;
+        uint8_t c;
         (*block)(in, tmp.c, key);
         for (n = 0; n < 16 && n < len; ++n) {
             c = in[n];

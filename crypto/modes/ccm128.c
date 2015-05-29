@@ -47,24 +47,18 @@
  * ====================================================================
  */
 
-#include <openssl/crypto.h>
-#include "modes_lcl.h"
+#include <assert.h>
 #include <string.h>
 
-#ifndef MODES_DEBUG
-#ifndef NDEBUG
-#define NDEBUG
-#endif
-#endif
-#include <assert.h>
+#include "modes_lcl.h"
 
 /* First you setup M and L parameters and pass the key schedule.
  * This is called once per session setup... */
-void CRYPTO_ccm128_init(CCM128_CONTEXT *ctx,
-                        unsigned int M, unsigned int L, void *key, block128_f block)
+void CRYPTO_ccm128_init(CCM128_CONTEXT *ctx, unsigned int M, unsigned int L,
+                        void *key, block128_f block)
 {
     memset(ctx->nonce.c, 0, sizeof(ctx->nonce.c));
-    ctx->nonce.c[0] = ((u8)(L - 1) & 7) | (u8)(((M - 2) / 2) & 7) << 3;
+    ctx->nonce.c[0] = ((uint8_t)(L - 1) & 7) | (uint8_t)(((M - 2) / 2) & 7) << 3;
     ctx->blocks = 0;
     ctx->block = block;
     ctx->key = key;
@@ -73,8 +67,8 @@ void CRYPTO_ccm128_init(CCM128_CONTEXT *ctx,
 /* !!! Following interfaces are to be called *once* per packet !!! */
 
 /* Then you setup per-message nonce and pass the length of the message */
-int CRYPTO_ccm128_setiv(CCM128_CONTEXT *ctx,
-                        const unsigned char *nonce, size_t nlen, size_t mlen)
+int CRYPTO_ccm128_setiv(CCM128_CONTEXT *ctx, const uint8_t *nonce, size_t nlen,
+                        size_t mlen)
 {
     unsigned int L = ctx->nonce.c[0] & 7; /* the L parameter */
 
@@ -82,17 +76,17 @@ int CRYPTO_ccm128_setiv(CCM128_CONTEXT *ctx,
         return -1; /* nonce is too short */
 
     if (sizeof(mlen) == 8 && L >= 3) {
-        ctx->nonce.c[8] = (u8)(mlen >> (56 % (sizeof(mlen) * 8)));
-        ctx->nonce.c[9] = (u8)(mlen >> (48 % (sizeof(mlen) * 8)));
-        ctx->nonce.c[10] = (u8)(mlen >> (40 % (sizeof(mlen) * 8)));
-        ctx->nonce.c[11] = (u8)(mlen >> (32 % (sizeof(mlen) * 8)));
+        ctx->nonce.c[8] = (uint8_t)(mlen >> (56 % (sizeof(mlen) * 8)));
+        ctx->nonce.c[9] = (uint8_t)(mlen >> (48 % (sizeof(mlen) * 8)));
+        ctx->nonce.c[10] = (uint8_t)(mlen >> (40 % (sizeof(mlen) * 8)));
+        ctx->nonce.c[11] = (uint8_t)(mlen >> (32 % (sizeof(mlen) * 8)));
     } else
         ctx->nonce.u[1] = 0;
 
-    ctx->nonce.c[12] = (u8)(mlen >> 24);
-    ctx->nonce.c[13] = (u8)(mlen >> 16);
-    ctx->nonce.c[14] = (u8)(mlen >> 8);
-    ctx->nonce.c[15] = (u8)mlen;
+    ctx->nonce.c[12] = (uint8_t)(mlen >> 24);
+    ctx->nonce.c[13] = (uint8_t)(mlen >> 16);
+    ctx->nonce.c[14] = (uint8_t)(mlen >> 8);
+    ctx->nonce.c[15] = (uint8_t)mlen;
 
     ctx->nonce.c[0] &= ~0x40; /* clear Adata flag */
     memcpy(&ctx->nonce.c[1], nonce, 14 - L);
@@ -101,8 +95,7 @@ int CRYPTO_ccm128_setiv(CCM128_CONTEXT *ctx,
 }
 
 /* Then you pass additional authentication data, this is optional */
-void CRYPTO_ccm128_aad(CCM128_CONTEXT *ctx,
-                       const unsigned char *aad, size_t alen)
+void CRYPTO_ccm128_aad(CCM128_CONTEXT *ctx, const uint8_t *aad, size_t alen)
 {
     unsigned int i;
     block128_f block = ctx->block;
@@ -111,40 +104,39 @@ void CRYPTO_ccm128_aad(CCM128_CONTEXT *ctx,
         return;
 
     ctx->nonce.c[0] |= 0x40; /* set Adata flag */
-    (*block)(ctx->nonce.c, ctx->cmac.c, ctx->key),
-        ctx->blocks++;
+    (*block)(ctx->nonce.c, ctx->cmac.c, ctx->key), ctx->blocks++;
 
     if (alen < (0x10000 - 0x100)) {
-        ctx->cmac.c[0] ^= (u8)(alen >> 8);
-        ctx->cmac.c[1] ^= (u8)alen;
+        ctx->cmac.c[0] ^= (uint8_t)(alen >> 8);
+        ctx->cmac.c[1] ^= (uint8_t)alen;
         i = 2;
-    } else if (sizeof(alen) == 8 && alen >= (size_t)1 << (32 % (sizeof(alen) * 8))) {
+    } else if (sizeof(alen) == 8
+               && alen >= (size_t)1 << (32 % (sizeof(alen) * 8))) {
         ctx->cmac.c[0] ^= 0xFF;
         ctx->cmac.c[1] ^= 0xFF;
-        ctx->cmac.c[2] ^= (u8)(alen >> (56 % (sizeof(alen) * 8)));
-        ctx->cmac.c[3] ^= (u8)(alen >> (48 % (sizeof(alen) * 8)));
-        ctx->cmac.c[4] ^= (u8)(alen >> (40 % (sizeof(alen) * 8)));
-        ctx->cmac.c[5] ^= (u8)(alen >> (32 % (sizeof(alen) * 8)));
-        ctx->cmac.c[6] ^= (u8)(alen >> 24);
-        ctx->cmac.c[7] ^= (u8)(alen >> 16);
-        ctx->cmac.c[8] ^= (u8)(alen >> 8);
-        ctx->cmac.c[9] ^= (u8)alen;
+        ctx->cmac.c[2] ^= (uint8_t)(alen >> (56 % (sizeof(alen) * 8)));
+        ctx->cmac.c[3] ^= (uint8_t)(alen >> (48 % (sizeof(alen) * 8)));
+        ctx->cmac.c[4] ^= (uint8_t)(alen >> (40 % (sizeof(alen) * 8)));
+        ctx->cmac.c[5] ^= (uint8_t)(alen >> (32 % (sizeof(alen) * 8)));
+        ctx->cmac.c[6] ^= (uint8_t)(alen >> 24);
+        ctx->cmac.c[7] ^= (uint8_t)(alen >> 16);
+        ctx->cmac.c[8] ^= (uint8_t)(alen >> 8);
+        ctx->cmac.c[9] ^= (uint8_t)alen;
         i = 10;
     } else {
         ctx->cmac.c[0] ^= 0xFF;
         ctx->cmac.c[1] ^= 0xFE;
-        ctx->cmac.c[2] ^= (u8)(alen >> 24);
-        ctx->cmac.c[3] ^= (u8)(alen >> 16);
-        ctx->cmac.c[4] ^= (u8)(alen >> 8);
-        ctx->cmac.c[5] ^= (u8)alen;
+        ctx->cmac.c[2] ^= (uint8_t)(alen >> 24);
+        ctx->cmac.c[3] ^= (uint8_t)(alen >> 16);
+        ctx->cmac.c[4] ^= (uint8_t)(alen >> 8);
+        ctx->cmac.c[5] ^= (uint8_t)alen;
         i = 6;
     }
 
     do {
         for (; i < 16 && alen; ++i, ++aad, --alen)
             ctx->cmac.c[i] ^= *aad;
-        (*block)(ctx->cmac.c, ctx->cmac.c, ctx->key),
-            ctx->blocks++;
+        (*block)(ctx->cmac.c, ctx->cmac.c, ctx->key), ctx->blocks++;
         i = 0;
     } while (alen);
 }
@@ -153,10 +145,10 @@ void CRYPTO_ccm128_aad(CCM128_CONTEXT *ctx,
 
 /* counter part of nonce may not be larger than L*8 bits,
  * L is not larger than 8, therefore 64-bit counter... */
-static void ctr64_inc(unsigned char *counter)
+static void ctr64_inc(uint8_t *counter)
 {
     unsigned int n = 8;
-    u8 c;
+    uint8_t c;
 
     counter += 8;
     do {
@@ -169,23 +161,21 @@ static void ctr64_inc(unsigned char *counter)
     } while (n);
 }
 
-int CRYPTO_ccm128_encrypt(CCM128_CONTEXT *ctx,
-                          const unsigned char *inp, unsigned char *out,
+int CRYPTO_ccm128_encrypt(CCM128_CONTEXT *ctx, const uint8_t *inp, uint8_t *out,
                           size_t len)
 {
     size_t n;
     unsigned int i, L;
-    unsigned char flags0 = ctx->nonce.c[0];
+    uint8_t flags0 = ctx->nonce.c[0];
     block128_f block = ctx->block;
     void *key = ctx->key;
     union {
-        u64 u[2];
-        u8 c[16];
+        uint64_t u[2];
+        uint8_t c[16];
     } scratch;
 
     if (!(flags0 & 0x40))
-        (*block)(ctx->nonce.c, ctx->cmac.c, key),
-            ctx->blocks++;
+        (*block)(ctx->nonce.c, ctx->cmac.c, key), ctx->blocks++;
 
     ctx->nonce.c[0] = L = flags0 & 7;
     for (n = 0, i = 15 - L; i < 15; ++i) {
@@ -206,16 +196,16 @@ int CRYPTO_ccm128_encrypt(CCM128_CONTEXT *ctx,
     while (len >= 16) {
 #if defined(STRICT_ALIGNMENT)
         union {
-            u64 u[2];
-            u8 c[16];
+            uint64_t u[2];
+            uint8_t c[16];
         } temp;
 
         memcpy(temp.c, inp, 16);
         ctx->cmac.u[0] ^= temp.u[0];
         ctx->cmac.u[1] ^= temp.u[1];
 #else
-        ctx->cmac.u[0] ^= ((u64 *)inp)[0];
-        ctx->cmac.u[1] ^= ((u64 *)inp)[1];
+        ctx->cmac.u[0] ^= ((uint64_t *)inp)[0];
+        ctx->cmac.u[1] ^= ((uint64_t *)inp)[1];
 #endif
         (*block)(ctx->cmac.c, ctx->cmac.c, key);
         (*block)(ctx->nonce.c, scratch.c, key);
@@ -225,8 +215,8 @@ int CRYPTO_ccm128_encrypt(CCM128_CONTEXT *ctx,
         temp.u[1] ^= scratch.u[1];
         memcpy(out, temp.c, 16);
 #else
-        ((u64 *)out)[0] = scratch.u[0] ^ ((u64 *)inp)[0];
-        ((u64 *)out)[1] = scratch.u[1] ^ ((u64 *)inp)[1];
+        ((uint64_t *)out)[0] = scratch.u[0] ^ ((uint64_t *)inp)[0];
+        ((uint64_t *)out)[1] = scratch.u[1] ^ ((uint64_t *)inp)[1];
 #endif
         inp += 16;
         out += 16;
@@ -254,18 +244,17 @@ int CRYPTO_ccm128_encrypt(CCM128_CONTEXT *ctx,
     return 0;
 }
 
-int CRYPTO_ccm128_decrypt(CCM128_CONTEXT *ctx,
-                          const unsigned char *inp, unsigned char *out,
+int CRYPTO_ccm128_decrypt(CCM128_CONTEXT *ctx, const uint8_t *inp, uint8_t *out,
                           size_t len)
 {
     size_t n;
     unsigned int i, L;
-    unsigned char flags0 = ctx->nonce.c[0];
+    uint8_t flags0 = ctx->nonce.c[0];
     block128_f block = ctx->block;
     void *key = ctx->key;
     union {
-        u64 u[2];
-        u8 c[16];
+        uint64_t u[2];
+        uint8_t c[16];
     } scratch;
 
     if (!(flags0 & 0x40))
@@ -286,8 +275,8 @@ int CRYPTO_ccm128_decrypt(CCM128_CONTEXT *ctx,
     while (len >= 16) {
 #if defined(STRICT_ALIGNMENT)
         union {
-            u64 u[2];
-            u8 c[16];
+            uint64_t u[2];
+            uint8_t c[16];
         } temp;
 #endif
         (*block)(ctx->nonce.c, scratch.c, key);
@@ -298,8 +287,10 @@ int CRYPTO_ccm128_decrypt(CCM128_CONTEXT *ctx,
         ctx->cmac.u[1] ^= (scratch.u[1] ^= temp.u[1]);
         memcpy(out, scratch.c, 16);
 #else
-        ctx->cmac.u[0] ^= (((u64 *)out)[0] = scratch.u[0] ^ ((u64 *)inp)[0]);
-        ctx->cmac.u[1] ^= (((u64 *)out)[1] = scratch.u[1] ^ ((u64 *)inp)[1]);
+        ctx->cmac.u[0]
+            ^= (((uint64_t *)out)[0] = scratch.u[0] ^ ((uint64_t *)inp)[0]);
+        ctx->cmac.u[1]
+            ^= (((uint64_t *)out)[1] = scratch.u[1] ^ ((uint64_t *)inp)[1]);
 #endif
         (*block)(ctx->cmac.c, ctx->cmac.c, key);
 
@@ -327,7 +318,7 @@ int CRYPTO_ccm128_decrypt(CCM128_CONTEXT *ctx,
     return 0;
 }
 
-static void ctr64_add(unsigned char *counter, size_t inc)
+static void ctr64_add(uint8_t *counter, size_t inc)
 {
     size_t n = 8, val = 0;
 
@@ -335,29 +326,27 @@ static void ctr64_add(unsigned char *counter, size_t inc)
     do {
         --n;
         val += counter[n] + (inc & 0xff);
-        counter[n] = (unsigned char)val;
+        counter[n] = (uint8_t)val;
         val >>= 8; /* carry bit */
         inc >>= 8;
     } while (n && (inc || val));
 }
 
-int CRYPTO_ccm128_encrypt_ccm64(CCM128_CONTEXT *ctx,
-                                const unsigned char *inp, unsigned char *out,
-                                size_t len, ccm128_f stream)
+int CRYPTO_ccm128_encrypt_ccm64(CCM128_CONTEXT *ctx, const uint8_t *inp,
+                                uint8_t *out, size_t len, ccm128_f stream)
 {
     size_t n;
     unsigned int i, L;
-    unsigned char flags0 = ctx->nonce.c[0];
+    uint8_t flags0 = ctx->nonce.c[0];
     block128_f block = ctx->block;
     void *key = ctx->key;
     union {
-        u64 u[2];
-        u8 c[16];
+        uint64_t u[2];
+        uint8_t c[16];
     } scratch;
 
     if (!(flags0 & 0x40))
-        (*block)(ctx->nonce.c, ctx->cmac.c, key),
-            ctx->blocks++;
+        (*block)(ctx->nonce.c, ctx->cmac.c, key), ctx->blocks++;
 
     ctx->nonce.c[0] = L = flags0 & 7;
     for (n = 0, i = 15 - L; i < 15; ++i) {
@@ -406,18 +395,17 @@ int CRYPTO_ccm128_encrypt_ccm64(CCM128_CONTEXT *ctx,
     return 0;
 }
 
-int CRYPTO_ccm128_decrypt_ccm64(CCM128_CONTEXT *ctx,
-                                const unsigned char *inp, unsigned char *out,
-                                size_t len, ccm128_f stream)
+int CRYPTO_ccm128_decrypt_ccm64(CCM128_CONTEXT *ctx, const uint8_t *inp,
+                                uint8_t *out, size_t len, ccm128_f stream)
 {
     size_t n;
     unsigned int i, L;
-    unsigned char flags0 = ctx->nonce.c[0];
+    uint8_t flags0 = ctx->nonce.c[0];
     block128_f block = ctx->block;
     void *key = ctx->key;
     union {
-        u64 u[2];
-        u8 c[16];
+        uint64_t u[2];
+        uint8_t c[16];
     } scratch;
 
     if (!(flags0 & 0x40))
@@ -464,7 +452,7 @@ int CRYPTO_ccm128_decrypt_ccm64(CCM128_CONTEXT *ctx,
     return 0;
 }
 
-size_t CRYPTO_ccm128_tag(CCM128_CONTEXT *ctx, unsigned char *tag, size_t len)
+size_t CRYPTO_ccm128_tag(CCM128_CONTEXT *ctx, uint8_t *tag, size_t len)
 {
     unsigned int M = (ctx->nonce.c[0] >> 3) & 7; /* the M parameter */
 

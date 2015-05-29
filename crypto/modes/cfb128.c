@@ -48,25 +48,18 @@
  *
  */
 
-#include <openssl/crypto.h>
-#include "modes_lcl.h"
+#include <assert.h>
 #include <string.h>
 
-#ifndef MODES_DEBUG
-#ifndef NDEBUG
-#define NDEBUG
-#endif
-#endif
-#include <assert.h>
+#include "modes_lcl.h"
 
 /* The input and output encrypted as though 128bit cfb mode is being
  * used.  The extra state information to record how much of the
  * 128bit block we have used is contained in *num;
  */
-void CRYPTO_cfb128_encrypt(const unsigned char *in, unsigned char *out,
-                           size_t len, const void *key,
-                           unsigned char ivec[16], int *num,
-                           int enc, block128_f block)
+void CRYPTO_cfb128_encrypt(const uint8_t *in, uint8_t *out, size_t len,
+                           const void *key, uint8_t ivec[16], int *num, int enc,
+                           block128_f block)
 {
     unsigned int n;
     size_t l = 0;
@@ -91,7 +84,8 @@ void CRYPTO_cfb128_encrypt(const unsigned char *in, unsigned char *out,
                 while (len >= 16) {
                     (*block)(ivec, ivec, key);
                     for (; n < 16; n += sizeof(size_t)) {
-                        *(size_t *)(out + n) = *(size_t *)(ivec + n) ^= *(size_t *)(in + n);
+                        *(size_t *)(out + n) = *(size_t *)(ivec + n)
+                            ^= *(size_t *)(in + n);
                     }
                     len -= 16;
                     out += 16;
@@ -124,7 +118,7 @@ void CRYPTO_cfb128_encrypt(const unsigned char *in, unsigned char *out,
         if (16 % sizeof(size_t) == 0)
             do { /* always true actually */
                 while (n && len) {
-                    unsigned char c;
+                    uint8_t c;
                     *(out++) = ivec[n] ^ (c = *(in++));
                     ivec[n] = c;
                     --len;
@@ -149,7 +143,7 @@ void CRYPTO_cfb128_encrypt(const unsigned char *in, unsigned char *out,
                 if (len) {
                     (*block)(ivec, ivec, key);
                     while (len--) {
-                        unsigned char c;
+                        uint8_t c;
                         out[n] = ivec[n] ^ (c = in[n]);
                         ivec[n] = c;
                         ++n;
@@ -161,7 +155,7 @@ void CRYPTO_cfb128_encrypt(const unsigned char *in, unsigned char *out,
 /* the rest would be commonly eliminated by x86* compiler */
 #endif
         while (l < len) {
-            unsigned char c;
+            uint8_t c;
             if (n == 0) {
                 (*block)(ivec, ivec, key);
             }
@@ -176,13 +170,14 @@ void CRYPTO_cfb128_encrypt(const unsigned char *in, unsigned char *out,
 
 /* This expects a single block of size nbits for both in and out. Note that
    it corrupts any extra bits in the last byte of out */
-static void cfbr_encrypt_block(const unsigned char *in, unsigned char *out,
-                               int nbits, const void *key,
-                               unsigned char ivec[16], int enc,
+static void cfbr_encrypt_block(const uint8_t *in, uint8_t *out, int nbits,
+                               const void *key, uint8_t ivec[16], int enc,
                                block128_f block)
 {
     int n, rem, num;
-    unsigned char ovec[16 * 2 + 1]; /* +1 because we dererefence (but don't use) one byte off the end */
+    uint8_t ovec
+        [16 * 2
+         + 1]; /* +1 because we dererefence (but don't use) one byte off the end */
 
     if (nbits <= 0 || nbits > 128)
         return;
@@ -211,13 +206,12 @@ static void cfbr_encrypt_block(const unsigned char *in, unsigned char *out,
 }
 
 /* N.B. This expects the input to be packed, MS bit first */
-void CRYPTO_cfb128_1_encrypt(const unsigned char *in, unsigned char *out,
-                             size_t bits, const void *key,
-                             unsigned char ivec[16], int *num,
-                             int enc, block128_f block)
+void CRYPTO_cfb128_1_encrypt(const uint8_t *in, uint8_t *out, size_t bits,
+                             const void *key, uint8_t ivec[16], int *num, int enc,
+                             block128_f block)
 {
     size_t n;
-    unsigned char c[1], d[1];
+    uint8_t c[1], d[1];
 
     assert(in && out && key && ivec && num);
     assert(*num == 0);
@@ -225,14 +219,14 @@ void CRYPTO_cfb128_1_encrypt(const unsigned char *in, unsigned char *out,
     for (n = 0; n < bits; ++n) {
         c[0] = (in[n / 8] & (1 << (7 - n % 8))) ? 0x80 : 0;
         cfbr_encrypt_block(c, d, 1, key, ivec, enc, block);
-        out[n / 8] = (out[n / 8] & ~(1 << (unsigned int)(7 - n % 8))) | ((d[0] & 0x80) >> (unsigned int)(n % 8));
+        out[n / 8] = (out[n / 8] & ~(1 << (unsigned int)(7 - n % 8)))
+                     | ((d[0] & 0x80) >> (unsigned int)(n % 8));
     }
 }
 
-void CRYPTO_cfb128_8_encrypt(const unsigned char *in, unsigned char *out,
-                             size_t length, const void *key,
-                             unsigned char ivec[16], int *num,
-                             int enc, block128_f block)
+void CRYPTO_cfb128_8_encrypt(const uint8_t *in, uint8_t *out, size_t length,
+                             const void *key, uint8_t ivec[16], int *num, int enc,
+                             block128_f block)
 {
     size_t n;
 

@@ -48,24 +48,17 @@
  *
  */
 
-#include <openssl/crypto.h>
-#include "modes_lcl.h"
+#include <assert.h>
 #include <string.h>
 
-#ifndef MODES_DEBUG
-#ifndef NDEBUG
-#define NDEBUG
-#endif
-#endif
-#include <assert.h>
+#include "modes_lcl.h"
 
 /* The input and output encrypted as though 128bit ofb mode is being
  * used.  The extra state information to record how much of the
  * 128bit block we have used is contained in *num;
  */
-void CRYPTO_ofb128_encrypt(const unsigned char *in, unsigned char *out,
-                           size_t len, const void *key,
-                           unsigned char ivec[16], int *num,
+void CRYPTO_ofb128_encrypt(const uint8_t *in, uint8_t *out, size_t len,
+                           const void *key, uint8_t ivec[16], int *num,
                            block128_f block)
 {
     unsigned int n;
@@ -90,7 +83,8 @@ void CRYPTO_ofb128_encrypt(const unsigned char *in, unsigned char *out,
             while (len >= 16) {
                 (*block)(ivec, ivec, key);
                 for (; n < 16; n += sizeof(size_t))
-                    *(size_t *)(out + n) = *(size_t *)(in + n) ^ *(size_t *)(ivec + n);
+                    *(size_t *)(out + n) = *(size_t *)(in + n)
+                                           ^ *(size_t *)(ivec + n);
                 len -= 16;
                 out += 16;
                 in += 16;
