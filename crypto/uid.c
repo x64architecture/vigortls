@@ -14,25 +14,7 @@
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-#include <unistd.h>
-#include <sys/types.h>
-
-#include <openssl/crypto.h>
-
-#if !defined(_WIN32)
-
-int OPENSSL_issetugid(void)
-{
-    if (getuid() != geteuid())
-        return 1;
-    if (getgid() != getegid())
-        return 1;
-    return 0;
-}
-
-#else
 int OPENSSL_issetugid(void)
 {
     return 1;
 }
-#endif
