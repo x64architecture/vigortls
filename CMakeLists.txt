@@ -49,7 +49,8 @@ endif()
 
 add_definitions(-DVIGORTLS_INTERNAL)
 
-set(BUILD_SHARED_LIBS OFF)
+option(BUILD_SHARED_LIBS
+    "Build as a shared library instead of static" OFF)
 if (BUILD_SHARED_LIBS)
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fPIC")
     add_definitions(-DOPENSSL_PIC)
