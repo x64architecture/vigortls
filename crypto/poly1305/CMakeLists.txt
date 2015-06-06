@@ -6,5 +6,5 @@ add_library(
     OBJECT
 
     poly1305.c
-    poly1305-donna.c
 )
+set_source_files_properties(poly1305 PROPERTIES COMPILE_FLAGS "-O3 -march=native -save-temps") 

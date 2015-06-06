@@ -16,23 +16,62 @@
 
 #include <openssl/poly1305.h>
 
-extern void poly1305_init(poly1305_context *ctx, const uint8_t key[32]);
-extern void poly1305_update(poly1305_context *ctx, const uint8_t *m,
-                            size_t bytes);
-extern void poly1305_finish(poly1305_context *ctx, uint8_t mac[16]);
+#if defined(VIGORTLS_64_BIT)
+#include "poly1305_64.h"
+#elif defined(VIGORTLS_32_BIT)
+#include "poly1305_32.h"
+#endif
 
-extern void CRYPTO_poly1305_init(poly1305_context *ctx, const unsigned char key[32])
+static inline void poly1305_update(poly1305_context *ctx, const uint8_t *m,
+                                   size_t bytes)
+{
+    poly1305_state_internal_t *st = (poly1305_state_internal_t *)ctx;
+    size_t i, want;
+
+    /* handle leftover */
+    if (st->leftover) {
+        want = (POLY1305_BLOCK_SIZE - st->leftover);
+        if (want > bytes)
+            want = bytes;
+        for (i = 0; i < want; i++)
+            st->buffer[st->leftover + i] = m[i];
+        bytes -= want;
+        m += want;
+        st->leftover += want;
+        if (st->leftover < POLY1305_BLOCK_SIZE)
+            return;
+        poly1305_blocks(st, st->buffer, POLY1305_BLOCK_SIZE);
+        st->leftover = 0;
+    }
+
+    /* process full blocks */
+    if (bytes >= POLY1305_BLOCK_SIZE) {
+        want = (bytes & ~(POLY1305_BLOCK_SIZE - 1));
+        poly1305_blocks(st, m, want);
+        m += want;
+        bytes -= want;
+    }
+
+    /* store leftover */
+    if (bytes) {
+        for (i = 0; i < bytes; i++)
+            st->buffer[st->leftover + i] = m[i];
+        st->leftover += bytes;
+    }
+}
+
+void CRYPTO_poly1305_init(poly1305_context *ctx, const uint8_t key[32])
 {
     poly1305_init(ctx, key);
 }
 
-void CRYPTO_poly1305_update(poly1305_context *ctx, const unsigned char *in,
+void CRYPTO_poly1305_update(poly1305_context *ctx, const uint8_t *in,
                             size_t inlen)
 {
     poly1305_update(ctx, in, inlen);
 }
 
-void CRYPTO_poly1305_finish(poly1305_context *ctx, unsigned char mac[16])
+POLY1305_NOINLINE void CRYPTO_poly1305_finish(poly1305_context *ctx, uint8_t mac[16])
 {
     poly1305_finish(ctx, mac);
 }
