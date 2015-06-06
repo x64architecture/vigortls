@@ -76,10 +76,9 @@
 #define MAXWRITE (1024 * 16)
 #define BSIZE (MAXWRITE + 4)
 
-#define c2l(c, l) (l = ((DES_LONG)(*((c)++))),         \
-                   l |= ((DES_LONG)(*((c)++))) << 8L,  \
-                   l |= ((DES_LONG)(*((c)++))) << 16L, \
-                   l |= ((DES_LONG)(*((c)++))) << 24L)
+#define c2l(c, l)                                                   \
+    (l = ((uint32_t)(*((c)++))), l |= ((uint32_t)(*((c)++))) << 8L, \
+     l |= ((uint32_t)(*((c)++))) << 16L, l |= ((uint32_t)(*((c)++))) << 24L)
 
 /* NOTE - c is not incremented as per c2l */
 #define c2ln(c, l1, l2, n)                           \
@@ -88,42 +87,43 @@
         l1 = l2 = 0;                                 \
         switch (n) {                                 \
             case 8:                                  \
-                l2 = ((DES_LONG)(*(--(c)))) << 24L;  \
+                l2 = ((uint32_t)(*(--(c)))) << 24L;  \
             case 7:                                  \
-                l2 |= ((DES_LONG)(*(--(c)))) << 16L; \
+                l2 |= ((uint32_t)(*(--(c)))) << 16L; \
             case 6:                                  \
-                l2 |= ((DES_LONG)(*(--(c)))) << 8L;  \
+                l2 |= ((uint32_t)(*(--(c)))) << 8L;  \
             case 5:                                  \
-                l2 |= ((DES_LONG)(*(--(c))));        \
+                l2 |= ((uint32_t)(*(--(c))));        \
             case 4:                                  \
-                l1 = ((DES_LONG)(*(--(c)))) << 24L;  \
+                l1 = ((uint32_t)(*(--(c)))) << 24L;  \
             case 3:                                  \
-                l1 |= ((DES_LONG)(*(--(c)))) << 16L; \
+                l1 |= ((uint32_t)(*(--(c)))) << 16L; \
             case 2:                                  \
-                l1 |= ((DES_LONG)(*(--(c)))) << 8L;  \
+                l1 |= ((uint32_t)(*(--(c)))) << 8L;  \
             case 1:                                  \
-                l1 |= ((DES_LONG)(*(--(c))));        \
+                l1 |= ((uint32_t)(*(--(c))));        \
         }                                            \
     }
 
-#define l2c(l, c) (*((c)++) = (unsigned char)(((l)) & 0xff),        \
-                   *((c)++) = (unsigned char)(((l) >> 8L) & 0xff),  \
-                   *((c)++) = (unsigned char)(((l) >> 16L) & 0xff), \
-                   *((c)++) = (unsigned char)(((l) >> 24L) & 0xff))
+#define l2c(l, c)                                     \
+    (*((c)++) = (unsigned char)(((l)) & 0xff),        \
+     *((c)++) = (unsigned char)(((l) >> 8L) & 0xff),  \
+     *((c)++) = (unsigned char)(((l) >> 16L) & 0xff), \
+     *((c)++) = (unsigned char)(((l) >> 24L) & 0xff))
 
 /* replacements for htonl and ntohl since I have no idea what to do
  * when faced with machines with 8 byte longs. */
 #define HDRSIZE 4
 
-#define n2l(c, l) (l = ((DES_LONG)(*((c)++))) << 24L,  \
-                   l |= ((DES_LONG)(*((c)++))) << 16L, \
-                   l |= ((DES_LONG)(*((c)++))) << 8L,  \
-                   l |= ((DES_LONG)(*((c)++))))
+#define n2l(c, l)                                                           \
+    (l = ((uint32_t)(*((c)++))) << 24L, l |= ((uint32_t)(*((c)++))) << 16L, \
+     l |= ((uint32_t)(*((c)++))) << 8L, l |= ((uint32_t)(*((c)++))))
 
-#define l2n(l, c) (*((c)++) = (unsigned char)(((l) >> 24L) & 0xff), \
-                   *((c)++) = (unsigned char)(((l) >> 16L) & 0xff), \
-                   *((c)++) = (unsigned char)(((l) >> 8L) & 0xff),  \
-                   *((c)++) = (unsigned char)(((l)) & 0xff))
+#define l2n(l, c)                                     \
+    (*((c)++) = (unsigned char)(((l) >> 24L) & 0xff), \
+     *((c)++) = (unsigned char)(((l) >> 16L) & 0xff), \
+     *((c)++) = (unsigned char)(((l) >> 8L) & 0xff),  \
+     *((c)++) = (unsigned char)(((l)) & 0xff))
 
 /* NOTE - c is not incremented as per l2c */
 #define l2cn(l1, l2, c, n)                                        \
@@ -161,7 +161,7 @@ static inline uint32_t ROTATE(uint32_t a, unsigned int n)
 
 #define LOAD_DATA_tmp(R, S, u, t, E0, E1)   \
     {                                       \
-        DES_LONG tmp;                       \
+        uint32_t tmp;                       \
         LOAD_DATA(R, S, u, t, E0, E1, tmp); \
     }
 
@@ -186,7 +186,7 @@ static inline uint32_t ROTATE(uint32_t a, unsigned int n)
  * compiler and the architecture.  gcc2 always seems to do well :-).
  * Inspired by Dana How <how@isl.stanford.edu>
  * DO NOT use the alternative version on machines with 8 byte longs.
- * It does not seem to work on the Alpha, even when DES_LONG is 4
+ * It does not seem to work on the Alpha, even when uint32_t is 4
  * bytes, probably an issue of accessing non-word aligned objects :-( */
 #ifdef DES_PTR
 
@@ -205,24 +205,24 @@ static inline uint32_t ROTATE(uint32_t a, unsigned int n)
         u2 &= 0xfc;                                     \
         t = ROTATE(t, 4);                               \
         u >>= 16L;                                      \
-        LL ^= *(const DES_LONG *)(des_SP + u1);         \
-        LL ^= *(const DES_LONG *)(des_SP + 0x200 + u2); \
+        LL ^= *(const uint32_t *)(des_SP + u1);         \
+        LL ^= *(const uint32_t *)(des_SP + 0x200 + u2); \
         u3 = (int)(u >> 8L);                            \
         u1 = (int)u & 0xfc;                             \
         u3 &= 0xfc;                                     \
-        LL ^= *(const DES_LONG *)(des_SP + 0x400 + u1); \
-        LL ^= *(const DES_LONG *)(des_SP + 0x600 + u3); \
+        LL ^= *(const uint32_t *)(des_SP + 0x400 + u1); \
+        LL ^= *(const uint32_t *)(des_SP + 0x600 + u3); \
         u2 = (int)t >> 8L;                              \
         u1 = (int)t & 0xfc;                             \
         u2 &= 0xfc;                                     \
         t >>= 16L;                                      \
-        LL ^= *(const DES_LONG *)(des_SP + 0x100 + u1); \
-        LL ^= *(const DES_LONG *)(des_SP + 0x300 + u2); \
+        LL ^= *(const uint32_t *)(des_SP + 0x100 + u1); \
+        LL ^= *(const uint32_t *)(des_SP + 0x300 + u2); \
         u3 = (int)t >> 8L;                              \
         u1 = (int)t & 0xfc;                             \
         u3 &= 0xfc;                                     \
-        LL ^= *(const DES_LONG *)(des_SP + 0x500 + u1); \
-        LL ^= *(const DES_LONG *)(des_SP + 0x700 + u3); \
+        LL ^= *(const uint32_t *)(des_SP + 0x500 + u1); \
+        LL ^= *(const uint32_t *)(des_SP + 0x700 + u3); \
     }
 #endif
 #ifdef DES_RISC2
@@ -234,33 +234,40 @@ static inline uint32_t ROTATE(uint32_t a, unsigned int n)
         u1 = (int)u & 0xfc;                             \
         u2 &= 0xfc;                                     \
         t = ROTATE(t, 4);                               \
-        LL ^= *(const DES_LONG *)(des_SP + u1);         \
-        LL ^= *(const DES_LONG *)(des_SP + 0x200 + u2); \
+        LL ^= *(const uint32_t *)(des_SP + u1);         \
+        LL ^= *(const uint32_t *)(des_SP + 0x200 + u2); \
         s1 = (int)(u >> 16L);                           \
         s2 = (int)(u >> 24L);                           \
         s1 &= 0xfc;                                     \
         s2 &= 0xfc;                                     \
-        LL ^= *(const DES_LONG *)(des_SP + 0x400 + s1); \
-        LL ^= *(const DES_LONG *)(des_SP + 0x600 + s2); \
+        LL ^= *(const uint32_t *)(des_SP + 0x400 + s1); \
+        LL ^= *(const uint32_t *)(des_SP + 0x600 + s2); \
         u2 = (int)t >> 8L;                              \
         u1 = (int)t & 0xfc;                             \
         u2 &= 0xfc;                                     \
-        LL ^= *(const DES_LONG *)(des_SP + 0x100 + u1); \
-        LL ^= *(const DES_LONG *)(des_SP + 0x300 + u2); \
+        LL ^= *(const uint32_t *)(des_SP + 0x100 + u1); \
+        LL ^= *(const uint32_t *)(des_SP + 0x300 + u2); \
         s1 = (int)(t >> 16L);                           \
         s2 = (int)(t >> 24L);                           \
         s1 &= 0xfc;                                     \
         s2 &= 0xfc;                                     \
-        LL ^= *(const DES_LONG *)(des_SP + 0x500 + s1); \
-        LL ^= *(const DES_LONG *)(des_SP + 0x700 + s2); \
+        LL ^= *(const uint32_t *)(des_SP + 0x500 + s1); \
+        LL ^= *(const uint32_t *)(des_SP + 0x700 + s2); \
     }
 #endif
 #else
-#define D_ENCRYPT(LL, R, S)                                                                                                                                                                                                                                                                                                                                                                                                                                                      \
-    {                                                                                                                                                                                                                                                                                                                                                                                                                                                                            \
-        LOAD_DATA_tmp(R, S, u, t, E0, E1);                                                                                                                                                                                                                                                                                                                                                                                                                                       \
-        t = ROTATE(t, 4);                                                                                                                                                                                                                                                                                                                                                                                                                                                        \
-        LL ^= *(const DES_LONG *)(des_SP + ((u)&0xfc)) ^ *(const DES_LONG *)(des_SP + 0x200 + ((u >> 8L) & 0xfc)) ^ *(const DES_LONG *)(des_SP + 0x400 + ((u >> 16L) & 0xfc)) ^ *(const DES_LONG *)(des_SP + 0x600 + ((u >> 24L) & 0xfc)) ^ *(const DES_LONG *)(des_SP + 0x100 + ((t)&0xfc)) ^ *(const DES_LONG *)(des_SP + 0x300 + ((t >> 8L) & 0xfc)) ^ *(const DES_LONG *)(des_SP + 0x500 + ((t >> 16L) & 0xfc)) ^ *(const DES_LONG *)(des_SP + 0x700 + ((t >> 24L) & 0xfc)); \
+#define D_ENCRYPT(LL, R, S)                                                \
+    {                                                                      \
+        LOAD_DATA_tmp(R, S, u, t, E0, E1);                                 \
+        t = ROTATE(t, 4);                                                  \
+        LL ^= *(const uint32_t *)(des_SP + ((u)&0xfc))                     \
+              ^ *(const uint32_t *)(des_SP + 0x200 + ((u >> 8L) & 0xfc))   \
+              ^ *(const uint32_t *)(des_SP + 0x400 + ((u >> 16L) & 0xfc))  \
+              ^ *(const uint32_t *)(des_SP + 0x600 + ((u >> 24L) & 0xfc))  \
+              ^ *(const uint32_t *)(des_SP + 0x100 + ((t)&0xfc))           \
+              ^ *(const uint32_t *)(des_SP + 0x300 + ((t >> 8L) & 0xfc))   \
+              ^ *(const uint32_t *)(des_SP + 0x500 + ((t >> 16L) & 0xfc))  \
+              ^ *(const uint32_t *)(des_SP + 0x700 + ((t >> 24L) & 0xfc)); \
     }
 #endif
 
@@ -332,11 +339,17 @@ static inline uint32_t ROTATE(uint32_t a, unsigned int n)
 
 #else
 
-#define D_ENCRYPT(LL, R, S)                                                                                                                                                                                                                                                                                \
-    {                                                                                                                                                                                                                                                                                                      \
-        LOAD_DATA_tmp(R, S, u, t, E0, E1);                                                                                                                                                                                                                                                                 \
-        t = ROTATE(t, 4);                                                                                                                                                                                                                                                                                  \
-        LL ^= DES_SPtrans[0][(u >> 2L) & 0x3f] ^ DES_SPtrans[2][(u >> 10L) & 0x3f] ^ DES_SPtrans[4][(u >> 18L) & 0x3f] ^ DES_SPtrans[6][(u >> 26L) & 0x3f] ^ DES_SPtrans[1][(t >> 2L) & 0x3f] ^ DES_SPtrans[3][(t >> 10L) & 0x3f] ^ DES_SPtrans[5][(t >> 18L) & 0x3f] ^ DES_SPtrans[7][(t >> 26L) & 0x3f]; \
+#define D_ENCRYPT(LL, R, S)                                                        \
+    {                                                                              \
+        LOAD_DATA_tmp(R, S, u, t, E0, E1);                                         \
+        t = ROTATE(t, 4);                                                          \
+        LL ^= DES_SPtrans[0][(u >> 2L) & 0x3f] ^ DES_SPtrans[2][(u >> 10L) & 0x3f] \
+              ^ DES_SPtrans[4][(u >> 18L) & 0x3f]                                  \
+              ^ DES_SPtrans[6][(u >> 26L) & 0x3f]                                  \
+              ^ DES_SPtrans[1][(t >> 2L) & 0x3f]                                   \
+              ^ DES_SPtrans[3][(t >> 10L) & 0x3f]                                  \
+              ^ DES_SPtrans[5][(t >> 18L) & 0x3f]                                  \
+              ^ DES_SPtrans[7][(t >> 26L) & 0x3f];                                 \
     }
 #endif
 #endif
@@ -378,13 +391,12 @@ static inline uint32_t ROTATE(uint32_t a, unsigned int n)
     I first got ~42 operations without xors.  When I remembered
     how to use xors :-) I got it to its final state.
     */
-#define PERM_OP(a, b, t, n, m) ((t) = ((((a) >> (n)) ^ (b)) & (m)), \
-                                (b) ^= (t),                         \
-                                (a) ^= ((t) << (n)))
+#define PERM_OP(a, b, t, n, m) \
+    ((t) = ((((a) >> (n)) ^ (b)) & (m)), (b) ^= (t), (a) ^= ((t) << (n)))
 
 #define IP(l, r)                            \
     {                                       \
-        register DES_LONG tt;               \
+        uint32_t tt;                        \
         PERM_OP(r, l, tt, 4, 0x0f0f0f0fL);  \
         PERM_OP(l, r, tt, 16, 0x0000ffffL); \
         PERM_OP(r, l, tt, 2, 0x33333333L);  \
@@ -394,7 +406,7 @@ static inline uint32_t ROTATE(uint32_t a, unsigned int n)
 
 #define FP(l, r)                            \
     {                                       \
-        register DES_LONG tt;               \
+        uint32_t tt;                        \
         PERM_OP(l, r, tt, 1, 0x55555555L);  \
         PERM_OP(r, l, tt, 8, 0x00ff00ffL);  \
         PERM_OP(l, r, tt, 2, 0x33333333L);  \
@@ -402,10 +414,10 @@ static inline uint32_t ROTATE(uint32_t a, unsigned int n)
         PERM_OP(l, r, tt, 4, 0x0f0f0f0fL);  \
     }
 
-extern const DES_LONG DES_SPtrans[8][64];
+extern const uint32_t DES_SPtrans[8][64];
 
-void fcrypt_body(DES_LONG *out, DES_key_schedule *ks,
-                 DES_LONG Eswap0, DES_LONG Eswap1);
+void fcrypt_body(uint32_t *out, DES_key_schedule *ks, uint32_t Eswap0,
+                 uint32_t Eswap1);
 
 #ifdef OPENSSL_SMALL_FOOTPRINT
 #undef DES_UNROLL

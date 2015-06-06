@@ -59,7 +59,8 @@
 #ifndef HEADER_RC2_H
 #define HEADER_RC2_H
 
-#include <openssl/opensslconf.h> /* OPENSSL_NO_RC2, RC2_INT */
+#include <stdint.h>
+#include <openssl/opensslconf.h> /* OPENSSL_NO_RC2, uint32_t */
 #ifdef OPENSSL_NO_RC2
 #error RC2 is disabled.
 #endif
@@ -75,7 +76,7 @@ extern "C" {
 #endif
 
 typedef struct rc2_key_st {
-    RC2_INT data[64];
+    uint32_t data[64];
 } RC2_KEY;
 
 void RC2_set_key(RC2_KEY *key, int len, const unsigned char *data, int bits);

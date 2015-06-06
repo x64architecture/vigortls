@@ -95,7 +95,7 @@ void RC2_set_key(RC2_KEY *key, int len, const unsigned char *data, int bits)
 {
     int i, j;
     unsigned char *k;
-    RC2_INT *ki;
+    uint32_t *ki;
     unsigned int c, d;
 
     k = (unsigned char *)&(key->data[0]);

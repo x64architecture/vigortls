@@ -79,8 +79,8 @@
  *  -  This code cannot handle non-blocking sockets.
  */
 
-int DES_enc_write(int fd, const void *_buf, int len,
-                  DES_key_schedule *sched, DES_cblock *iv)
+int DES_enc_write(int fd, const void *_buf, int len, DES_key_schedule *sched,
+                  DES_cblock *iv)
 {
 #ifdef _LIBC
     extern unsigned long time();
@@ -111,7 +111,8 @@ int DES_enc_write(int fd, const void *_buf, int len,
         j = 0;
         for (i = 0; i < len; i += k) {
             k = DES_enc_write(fd, &(buf[i]),
-                              ((len - i) > MAXWRITE) ? MAXWRITE : (len - i), sched, iv);
+                              ((len - i) > MAXWRITE) ? MAXWRITE : (len - i), sched,
+                              iv);
             if (k < 0)
                 return (k);
             else

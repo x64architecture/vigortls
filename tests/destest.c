@@ -310,7 +310,7 @@ static unsigned char ofb_cipher[24] = {
     0x3d, 0x6d, 0x5b, 0xe3, 0x25, 0x5a, 0xf8, 0xc3
 };
 
-static DES_LONG cbc_cksum_ret = 0xF7FE62B4L;
+static uint32_t cbc_cksum_ret = 0xF7FE62B4L;
 static unsigned char cbc_cksum_data[8] = { 0x1D, 0x26, 0x93, 0x97, 0xf7, 0xfe, 0x62, 0xb4 };
 
 static char *pt(unsigned char *p);
@@ -325,9 +325,9 @@ int main(int argc, char *argv[])
     DES_key_schedule ks, ks2, ks3;
     unsigned char cbc_in[40];
     unsigned char cbc_out[40];
-    DES_LONG cs;
+    uint32_t cs;
     unsigned char cret[8];
-    DES_LONG lqret[4];
+    uint32_t lqret[4];
     int num;
     char *str;
 

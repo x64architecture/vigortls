@@ -72,10 +72,10 @@ void DES_cfb_encrypt(const unsigned char *in, unsigned char *out, int numbits,
                      long length, DES_key_schedule *schedule, DES_cblock *ivec,
                      int enc)
 {
-    register DES_LONG d0, d1, v0, v1;
+    uint32_t d0, d1, v0, v1;
     register unsigned long l = length;
     register int num = numbits / 8, n = (numbits + 7) / 8, i, rem = numbits % 8;
-    DES_LONG ti[2];
+    uint32_t ti[2];
     unsigned char *iv;
 #if BYTE_ORDER != LITTLE_ENDIAN
     unsigned char ovec[16];
@@ -85,7 +85,7 @@ void DES_cfb_encrypt(const unsigned char *in, unsigned char *out, int numbits,
 
     /* I kind of count that compiler optimizes away this assertioni,*/
     assert(sizeof(sh[0]) == 4); /* as this holds true for all,    */
-/* but 16-bit platforms...    */
+                                /* but 16-bit platforms...    */
 
 #endif
 
@@ -99,7 +99,7 @@ void DES_cfb_encrypt(const unsigned char *in, unsigned char *out, int numbits,
             l -= n;
             ti[0] = v0;
             ti[1] = v1;
-            DES_encrypt1((DES_LONG *)ti, schedule, DES_ENCRYPT);
+            DES_encrypt1((uint32_t *)ti, schedule, DES_ENCRYPT);
             c2ln(in, d0, d1, n);
             in += n;
             d0 ^= ti[0];
@@ -128,7 +128,8 @@ void DES_cfb_encrypt(const unsigned char *in, unsigned char *out, int numbits,
                     memmove(ovec, ovec + num, 8);
                 else
                     for (i = 0; i < 8; ++i)
-                        ovec[i] = ovec[i + num] << rem | ovec[i + num + 1] >> (8 - rem);
+                        ovec[i] = ovec[i + num] << rem
+                                  | ovec[i + num + 1] >> (8 - rem);
 #if BYTE_ORDER == LITTLE_ENDIAN
                 v0 = sh[0], v1 = sh[1];
 #else
@@ -143,7 +144,7 @@ void DES_cfb_encrypt(const unsigned char *in, unsigned char *out, int numbits,
             l -= n;
             ti[0] = v0;
             ti[1] = v1;
-            DES_encrypt1((DES_LONG *)ti, schedule, DES_ENCRYPT);
+            DES_encrypt1((uint32_t *)ti, schedule, DES_ENCRYPT);
             c2ln(in, d0, d1, n);
             in += n;
             /* 30-08-94 - eay - changed because l>>32 and
@@ -168,7 +169,8 @@ void DES_cfb_encrypt(const unsigned char *in, unsigned char *out, int numbits,
                     memmove(ovec, ovec + num, 8);
                 else
                     for (i = 0; i < 8; ++i)
-                        ovec[i] = ovec[i + num] << rem | ovec[i + num + 1] >> (8 - rem);
+                        ovec[i] = ovec[i + num] << rem
+                                  | ovec[i + num + 1] >> (8 - rem);
 #if BYTE_ORDER == LITTLE_ENDIAN
                 v0 = sh[0], v1 = sh[1];
 #else

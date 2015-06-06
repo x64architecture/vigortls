@@ -69,29 +69,28 @@
 #undef DES_FCRYPT
 
 #undef PERM_OP
-#define PERM_OP(a, b, t, n, m) ((t) = ((((a) >> (n)) ^ (b)) & (m)), \
-                                (b) ^= (t),                         \
-                                (a) ^= ((t) << (n)))
+#define PERM_OP(a, b, t, n, m) \
+    ((t) = ((((a) >> (n)) ^ (b)) & (m)), (b) ^= (t), (a) ^= ((t) << (n)))
 
 #undef HPERM_OP
-#define HPERM_OP(a, t, n, m) ((t) = ((((a) << (16 - (n))) ^ (a)) & (m)), \
-                              (a) = (a) ^ (t) ^ (t >> (16 - (n))))
+#define HPERM_OP(a, t, n, m) \
+    ((t) = ((((a) << (16 - (n))) ^ (a)) & (m)), (a) = (a) ^ (t) ^ (t >> (16 - (n))))
 
-void fcrypt_body(DES_LONG *out, DES_key_schedule *ks, DES_LONG Eswap0,
-                 DES_LONG Eswap1)
+void fcrypt_body(uint32_t *out, DES_key_schedule *ks, uint32_t Eswap0,
+                 uint32_t Eswap1)
 {
-    register DES_LONG l, r, t, u;
+    uint32_t l, r, t, u;
 #ifdef DES_PTR
     register const unsigned char *des_SP = (const unsigned char *)DES_SPtrans;
 #endif
-    register DES_LONG *s;
+    uint32_t *s;
     register int j;
-    register DES_LONG E0, E1;
+    uint32_t E0, E1;
 
     l = 0;
     r = 0;
 
-    s = (DES_LONG *)ks;
+    s = (uint32_t *)ks;
     E0 = Eswap0;
     E1 = Eswap1;
 

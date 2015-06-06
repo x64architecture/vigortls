@@ -63,10 +63,10 @@
 #include <openssl/mdc2.h>
 
 #undef c2l
-#define c2l(c, l) (l = ((DES_LONG)(*((c)++))),         \
-                   l |= ((DES_LONG)(*((c)++))) << 8L,  \
-                   l |= ((DES_LONG)(*((c)++))) << 16L, \
-                   l |= ((DES_LONG)(*((c)++))) << 24L)
+#define c2l(c, l) (l = ((uint32_t)(*((c)++))),         \
+                   l |= ((uint32_t)(*((c)++))) << 8L,  \
+                   l |= ((uint32_t)(*((c)++))) << 16L, \
+                   l |= ((uint32_t)(*((c)++))) << 24L)
 
 #undef l2c
 #define l2c(l, c) (*((c)++) = (unsigned char)(((l)) & 0xff),        \
@@ -133,9 +133,9 @@ int MDC2_Update(MDC2_CTX *c, const unsigned char *in, size_t len)
 
 static void mdc2_body(MDC2_CTX *c, const unsigned char *in, size_t len)
 {
-    register DES_LONG tin0, tin1;
-    register DES_LONG ttin0, ttin1;
-    DES_LONG d[2], dd[2];
+    uint32_t tin0, tin1;
+    uint32_t ttin0, ttin1;
+    uint32_t d[2], dd[2];
     DES_key_schedule k;
     unsigned char *p;
     size_t i;

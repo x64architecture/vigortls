@@ -121,8 +121,7 @@ int DES_enc_read(int fd, void *buf, int len, DES_key_schedule *sched,
             /* we still still need more data but will return
              * with the number of bytes we have - should always
              * check the return value */
-            memcpy(buf, &(unnet[unnet_start]),
-                   unnet_left);
+            memcpy(buf, &(unnet[unnet_start]), unnet_left);
             /* eay 26/08/92 I had the next 2 lines
              * reversed :-( */
             i = unnet_left;
@@ -197,22 +196,18 @@ int DES_enc_read(int fd, void *buf, int len, DES_key_schedule *sched,
         if (len < rnum) {
 
             if (DES_rw_mode & DES_PCBC_MODE)
-                DES_pcbc_encrypt(net, tmpbuf, num, sched, iv,
-                                 DES_DECRYPT);
+                DES_pcbc_encrypt(net, tmpbuf, num, sched, iv, DES_DECRYPT);
             else
-                DES_cbc_encrypt(net, tmpbuf, num, sched, iv,
-                                DES_DECRYPT);
+                DES_cbc_encrypt(net, tmpbuf, num, sched, iv, DES_DECRYPT);
 
             /* eay 26/08/92 fix a bug that returned more
              * bytes than you asked for (returned len bytes :-( */
             memcpy(buf, tmpbuf, num);
         } else {
             if (DES_rw_mode & DES_PCBC_MODE)
-                DES_pcbc_encrypt(net, buf, num, sched, iv,
-                                 DES_DECRYPT);
+                DES_pcbc_encrypt(net, buf, num, sched, iv, DES_DECRYPT);
             else
-                DES_cbc_encrypt(net, buf, num, sched, iv,
-                                DES_DECRYPT);
+                DES_cbc_encrypt(net, buf, num, sched, iv, DES_DECRYPT);
         }
     }
     return num;

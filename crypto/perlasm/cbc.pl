@@ -9,7 +9,7 @@
 # int enc;
 #
 # calls 
-# des_encrypt((DES_LONG *)tin,schedule,DES_ENCRYPT);
+# des_encrypt((uint32_t *)tin,schedule,DES_ENCRYPT);
 #
 
 #&cbc("des_ncbc_encrypt","des_encrypt",0);

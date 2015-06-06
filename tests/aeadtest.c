@@ -211,7 +211,7 @@ int main(int argc, char **argv)
         unsigned int i, type_len = 0;
 
         unsigned char *buf = NULL;
-        unsigned int *buf_len;
+        unsigned int *buf_len = NULL;
 
         if (!fgets(line, sizeof(line), fp))
             break;

@@ -60,17 +60,16 @@
 
 /* RSA's DESX */
 
-void DES_xcbc_encrypt(const unsigned char *in, unsigned char *out,
-                      long length, DES_key_schedule *schedule,
-                      DES_cblock *ivec, const_DES_cblock *inw,
-                      const_DES_cblock *outw, int enc)
+void DES_xcbc_encrypt(const unsigned char *in, unsigned char *out, long length,
+                      DES_key_schedule *schedule, DES_cblock *ivec,
+                      const_DES_cblock *inw, const_DES_cblock *outw, int enc)
 {
-    register DES_LONG tin0, tin1;
-    register DES_LONG tout0, tout1, xor0, xor1;
-    register DES_LONG inW0, inW1, outW0, outW1;
+    uint32_t tin0, tin1;
+    uint32_t tout0, tout1, xor0, xor1;
+    uint32_t inW0, inW1, outW0, outW1;
     register const unsigned char *in2;
     register long l = length;
-    DES_LONG tin[2];
+    uint32_t tin[2];
     unsigned char *iv;
 
     in2 = &(*inw)[0];

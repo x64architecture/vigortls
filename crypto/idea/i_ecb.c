@@ -61,16 +61,13 @@
 
 const char *idea_options(void)
 {
-    if (sizeof(short) != sizeof(IDEA_INT))
-        return ("idea(int)");
-    else
-        return ("idea(short)");
+    return ("idea(int)");
 }
 
-void idea_ecb_encrypt(const unsigned char *in, unsigned char *out,
+void idea_ecb_encrypt(const uint8_t *in, uint8_t *out,
                       IDEA_KEY_SCHEDULE *ks)
 {
-    unsigned long l0, l1, d[2];
+    uint32_t l0, l1, d[2];
 
     n2l(in, l0);
     d[0] = l0;

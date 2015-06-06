@@ -68,10 +68,10 @@ void DES_ede3_cfb64_encrypt(const unsigned char *in, unsigned char *out,
                             DES_key_schedule *ks2, DES_key_schedule *ks3,
                             DES_cblock *ivec, int *num, int enc)
 {
-    register DES_LONG v0, v1;
+    uint32_t v0, v1;
     register long l = length;
     register int n = *num;
-    DES_LONG ti[2];
+    uint32_t ti[2];
     unsigned char *iv, c, cc;
 
     iv = &(*ivec)[0];
@@ -129,15 +129,14 @@ void DES_ede3_cfb64_encrypt(const unsigned char *in, unsigned char *out,
  * not what EVP needs.
  */
 
-void DES_ede3_cfb_encrypt(const unsigned char *in, unsigned char *out,
-                          int numbits, long length, DES_key_schedule *ks1,
-                          DES_key_schedule *ks2, DES_key_schedule *ks3,
-                          DES_cblock *ivec, int enc)
+void DES_ede3_cfb_encrypt(const unsigned char *in, unsigned char *out, int numbits,
+                          long length, DES_key_schedule *ks1, DES_key_schedule *ks2,
+                          DES_key_schedule *ks3, DES_cblock *ivec, int enc)
 {
-    register DES_LONG d0, d1, v0, v1;
+    uint32_t d0, d1, v0, v1;
     register unsigned long l = length, n = ((unsigned int)numbits + 7) / 8;
     register int num = numbits, i;
-    DES_LONG ti[2];
+    uint32_t ti[2];
     unsigned char *iv;
     unsigned char ovec[16];
 

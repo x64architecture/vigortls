@@ -59,13 +59,13 @@
 #include <openssl/idea.h>
 #include "idea_lcl.h"
 
-void idea_cbc_encrypt(const unsigned char *in, unsigned char *out, long length,
-                      IDEA_KEY_SCHEDULE *ks, unsigned char *iv, int encrypt)
+void idea_cbc_encrypt(const uint8_t *in, uint8_t *out, long length,
+                      IDEA_KEY_SCHEDULE *ks, uint8_t *iv, int encrypt)
 {
-    register unsigned long tin0, tin1;
-    register unsigned long tout0, tout1, xor0, xor1;
+    register uint32_t tin0, tin1;
+    register uint32_t tout0, tout1, xor0, xor1;
     register long l = length;
-    unsigned long tin[2];
+    uint32_t tin[2];
 
     if (encrypt) {
         n2l(iv, tout0);
@@ -134,10 +134,10 @@ void idea_cbc_encrypt(const unsigned char *in, unsigned char *out, long length,
     tin[0] = tin[1] = 0;
 }
 
-void idea_encrypt(unsigned long *d, IDEA_KEY_SCHEDULE *key)
+void idea_encrypt(uint32_t *d, IDEA_KEY_SCHEDULE *key)
 {
-    register IDEA_INT *p;
-    register unsigned long x1, x2, x3, x4, t0, t1, ul;
+    uint32_t *p;
+    uint32_t x1, x2, x3, x4, t0, t1, ul;
 
     x2 = d[0];
     x1 = (x2 >> 16);

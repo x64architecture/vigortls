@@ -65,15 +65,14 @@
 void DES_ede3_ofb64_encrypt(register const unsigned char *in,
                             register unsigned char *out, long length,
                             DES_key_schedule *k1, DES_key_schedule *k2,
-                            DES_key_schedule *k3, DES_cblock *ivec,
-                            int *num)
+                            DES_key_schedule *k3, DES_cblock *ivec, int *num)
 {
-    register DES_LONG v0, v1;
+    uint32_t v0, v1;
     register int n = *num;
     register long l = length;
     DES_cblock d;
     register char *dp;
-    DES_LONG ti[2];
+    uint32_t ti[2];
     unsigned char *iv;
     int save = 0;
 

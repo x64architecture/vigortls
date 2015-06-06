@@ -64,19 +64,19 @@
 #include "des_locl.h"
 
 /* bug fix for dos - 7/6/91 - Larry hughes@logos.ucs.indiana.edu */
-#define Q_B0(a) (((DES_LONG)(a)))
-#define Q_B1(a) (((DES_LONG)(a)) << 8)
-#define Q_B2(a) (((DES_LONG)(a)) << 16)
-#define Q_B3(a) (((DES_LONG)(a)) << 24)
+#define Q_B0(a) (((uint32_t)(a)))
+#define Q_B1(a) (((uint32_t)(a)) << 8)
+#define Q_B2(a) (((uint32_t)(a)) << 16)
+#define Q_B3(a) (((uint32_t)(a)) << 24)
 
 /* used to scramble things a bit */
 /* Got the value MIT uses via brute force :-) 2/10/90 eay */
-#define NOISE ((DES_LONG)83653421L)
+#define NOISE ((uint32_t)83653421L)
 
-DES_LONG DES_quad_cksum(const unsigned char *input, DES_cblock output[],
+uint32_t DES_quad_cksum(const unsigned char *input, DES_cblock output[],
                         long length, int out_count, DES_cblock *seed)
 {
-    DES_LONG z0, z1, t0, t1;
+    uint32_t z0, z1, t0, t1;
     int i;
     long l;
     const unsigned char *cp;
@@ -84,9 +84,9 @@ DES_LONG DES_quad_cksum(const unsigned char *input, DES_cblock output[],
     struct lp_st {
         int a : 32;
         int b : 32;
-    } *lp;
+    } * lp;
 #else
-    DES_LONG *lp;
+    uint32_t *lp;
 #endif
 
     if (out_count < 1)
@@ -94,7 +94,7 @@ DES_LONG DES_quad_cksum(const unsigned char *input, DES_cblock output[],
 #ifdef _CRAY
     lp = (struct lp_st *)&(output[0])[0];
 #else
-    lp = (DES_LONG *)&(output[0])[0];
+    lp = (uint32_t *)&(output[0])[0];
 #endif
 
     z0 = Q_B0((*seed)[0]) | Q_B1((*seed)[1]) | Q_B2((*seed)[2]) | Q_B3((*seed)[3]);
@@ -105,11 +105,11 @@ DES_LONG DES_quad_cksum(const unsigned char *input, DES_cblock output[],
         l = length;
         while (l > 0) {
             if (l > 1) {
-                t0 = (DES_LONG)(*(cp++));
-                t0 |= (DES_LONG)Q_B1(*(cp++));
+                t0 = (uint32_t)(*(cp++));
+                t0 |= (uint32_t)Q_B1(*(cp++));
                 l--;
             } else
-                t0 = (DES_LONG)(*(cp++));
+                t0 = (uint32_t)(*(cp++));
             l--;
             /* add */
             t0 += z0;

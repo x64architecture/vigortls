@@ -88,12 +88,11 @@ const char *DES_options(void)
 #else
         unroll = "2";
 #endif
-        if (sizeof(DES_LONG) != sizeof(long))
+        if (sizeof(uint32_t) != sizeof(long))
             size = "int";
         else
             size = "long";
-        snprintf(buf, sizeof buf, "des(%s,%s,%s,%s)", ptr, risc, unroll,
-                 size);
+        snprintf(buf, sizeof buf, "des(%s,%s,%s,%s)", ptr, risc, unroll, size);
         init = 0;
     }
     return (buf);
@@ -102,8 +101,8 @@ const char *DES_options(void)
 void DES_ecb_encrypt(const_DES_cblock *input, DES_cblock *output,
                      DES_key_schedule *ks, int enc)
 {
-    register DES_LONG l;
-    DES_LONG ll[2];
+    uint32_t l;
+    uint32_t ll[2];
     const unsigned char *in = &(*input)[0];
     unsigned char *out = &(*output)[0];
 

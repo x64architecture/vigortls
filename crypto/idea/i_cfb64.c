@@ -64,17 +64,17 @@
  * 64bit block we have used is contained in *num;
  */
 
-void idea_cfb64_encrypt(const unsigned char *in, unsigned char *out,
+void idea_cfb64_encrypt(const uint8_t *in, uint8_t *out,
                         long length, IDEA_KEY_SCHEDULE *schedule,
-                        unsigned char *ivec, int *num, int encrypt)
+                        uint8_t *ivec, int *num, int encrypt)
 {
-    register unsigned long v0, v1, t;
+    uint32_t v0, v1, t;
     register int n = *num;
     register long l = length;
-    unsigned long ti[2];
-    unsigned char *iv, c, cc;
+    uint32_t ti[2];
+    uint8_t *iv, c, cc;
 
-    iv = (unsigned char *)ivec;
+    iv = (uint8_t *)ivec;
     if (encrypt) {
         while (l--) {
             if (n == 0) {
@@ -82,13 +82,13 @@ void idea_cfb64_encrypt(const unsigned char *in, unsigned char *out,
                 ti[0] = v0;
                 n2l(iv, v1);
                 ti[1] = v1;
-                idea_encrypt((unsigned long *)ti, schedule);
-                iv = (unsigned char *)ivec;
+                idea_encrypt((uint32_t *)ti, schedule);
+                iv = (uint8_t *)ivec;
                 t = ti[0];
                 l2n(t, iv);
                 t = ti[1];
                 l2n(t, iv);
-                iv = (unsigned char *)ivec;
+                iv = (uint8_t *)ivec;
             }
             c = *(in++) ^ iv[n];
             *(out++) = c;
@@ -102,13 +102,13 @@ void idea_cfb64_encrypt(const unsigned char *in, unsigned char *out,
                 ti[0] = v0;
                 n2l(iv, v1);
                 ti[1] = v1;
-                idea_encrypt((unsigned long *)ti, schedule);
-                iv = (unsigned char *)ivec;
+                idea_encrypt((uint32_t *)ti, schedule);
+                iv = (uint8_t *)ivec;
                 t = ti[0];
                 l2n(t, iv);
                 t = ti[1];
                 l2n(t, iv);
-                iv = (unsigned char *)ivec;
+                iv = (uint8_t *)ivec;
             }
             cc = *(in++);
             c = iv[n];

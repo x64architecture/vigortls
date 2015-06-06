@@ -60,7 +60,7 @@
  * Colin Plumb <colin@nyx10.cs.du.edu> */
 /* Removal of the inner if from from Wei Dai 24/4/96 */
 #define idea_mul(r, a, b, ul)           \
-    ul = (unsigned long)a * b;          \
+    ul = (uint32_t)a * b;          \
     if (ul != 0) {                      \
         r = (ul & 0xffff) - (ul >> 16); \
         r -= ((r) >> 16);               \
@@ -84,21 +84,21 @@
         l1 = l2 = 0;                                     \
         switch (n) {                                     \
             case 8:                                      \
-                l2 = ((unsigned long)(*(--(c))));        \
+                l2 = ((uint32_t)(*(--(c))));        \
             case 7:                                      \
-                l2 |= ((unsigned long)(*(--(c)))) << 8;  \
+                l2 |= ((uint32_t)(*(--(c)))) << 8;  \
             case 6:                                      \
-                l2 |= ((unsigned long)(*(--(c)))) << 16; \
+                l2 |= ((uint32_t)(*(--(c)))) << 16; \
             case 5:                                      \
-                l2 |= ((unsigned long)(*(--(c)))) << 24; \
+                l2 |= ((uint32_t)(*(--(c)))) << 24; \
             case 4:                                      \
-                l1 = ((unsigned long)(*(--(c))));        \
+                l1 = ((uint32_t)(*(--(c))));        \
             case 3:                                      \
-                l1 |= ((unsigned long)(*(--(c)))) << 8;  \
+                l1 |= ((uint32_t)(*(--(c)))) << 8;  \
             case 2:                                      \
-                l1 |= ((unsigned long)(*(--(c)))) << 16; \
+                l1 |= ((uint32_t)(*(--(c)))) << 16; \
             case 1:                                      \
-                l1 |= ((unsigned long)(*(--(c)))) << 24; \
+                l1 |= ((uint32_t)(*(--(c)))) << 24; \
         }                                                \
     }
 
@@ -108,43 +108,43 @@
         c += n;                                                  \
         switch (n) {                                             \
             case 8:                                              \
-                *(--(c)) = (unsigned char)(((l2)) & 0xff);       \
+                *(--(c)) = (uint8_t)(((l2)) & 0xff);       \
             case 7:                                              \
-                *(--(c)) = (unsigned char)(((l2) >> 8) & 0xff);  \
+                *(--(c)) = (uint8_t)(((l2) >> 8) & 0xff);  \
             case 6:                                              \
-                *(--(c)) = (unsigned char)(((l2) >> 16) & 0xff); \
+                *(--(c)) = (uint8_t)(((l2) >> 16) & 0xff); \
             case 5:                                              \
-                *(--(c)) = (unsigned char)(((l2) >> 24) & 0xff); \
+                *(--(c)) = (uint8_t)(((l2) >> 24) & 0xff); \
             case 4:                                              \
-                *(--(c)) = (unsigned char)(((l1)) & 0xff);       \
+                *(--(c)) = (uint8_t)(((l1)) & 0xff);       \
             case 3:                                              \
-                *(--(c)) = (unsigned char)(((l1) >> 8) & 0xff);  \
+                *(--(c)) = (uint8_t)(((l1) >> 8) & 0xff);  \
             case 2:                                              \
-                *(--(c)) = (unsigned char)(((l1) >> 16) & 0xff); \
+                *(--(c)) = (uint8_t)(((l1) >> 16) & 0xff); \
             case 1:                                              \
-                *(--(c)) = (unsigned char)(((l1) >> 24) & 0xff); \
+                *(--(c)) = (uint8_t)(((l1) >> 24) & 0xff); \
         }                                                        \
     }
 
 #undef n2l
-#define n2l(c, l) (l = ((unsigned long)(*((c)++))) << 24L,  \
-                   l |= ((unsigned long)(*((c)++))) << 16L, \
-                   l |= ((unsigned long)(*((c)++))) << 8L,  \
-                   l |= ((unsigned long)(*((c)++))))
+#define n2l(c, l) (l = ((uint32_t)(*((c)++))) << 24L,  \
+                   l |= ((uint32_t)(*((c)++))) << 16L, \
+                   l |= ((uint32_t)(*((c)++))) << 8L,  \
+                   l |= ((uint32_t)(*((c)++))))
 
 #undef l2n
-#define l2n(l, c) (*((c)++) = (unsigned char)(((l) >> 24L) & 0xff), \
-                   *((c)++) = (unsigned char)(((l) >> 16L) & 0xff), \
-                   *((c)++) = (unsigned char)(((l) >> 8L) & 0xff),  \
-                   *((c)++) = (unsigned char)(((l)) & 0xff))
+#define l2n(l, c) (*((c)++) = (uint8_t)(((l) >> 24L) & 0xff), \
+                   *((c)++) = (uint8_t)(((l) >> 16L) & 0xff), \
+                   *((c)++) = (uint8_t)(((l) >> 8L) & 0xff),  \
+                   *((c)++) = (uint8_t)(((l)) & 0xff))
 
 #undef s2n
-#define s2n(l, c) (*((c)++) = (unsigned char)(((l)) & 0xff), \
-                   *((c)++) = (unsigned char)(((l) >> 8L) & 0xff))
+#define s2n(l, c) (*((c)++) = (uint8_t)(((l)) & 0xff), \
+                   *((c)++) = (uint8_t)(((l) >> 8L) & 0xff))
 
 #undef n2s
-#define n2s(c, l) (l = ((IDEA_INT)(*((c)++))) << 8L, \
-                   l |= ((IDEA_INT)(*((c)++))))
+#define n2s(c, l) (l = ((uint32_t)(*((c)++))) << 8L, \
+                   l |= ((uint32_t)(*((c)++))))
 
 #define E_IDEA(num)                       \
     x1 &= 0xffff;                         \
