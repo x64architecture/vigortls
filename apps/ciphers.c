@@ -69,18 +69,18 @@ typedef enum OPTION_choice {
     OPT_SSL3,
     OPT_TLS1,
     OPT_V,
-    OPT_UPPER_V,
+    OPT_UPPER_V
 } OPTION_CHOICE;
 
 OPTIONS ciphers_options[] = {
-        { "help", OPT_HELP, '-', "Display this summary" },
-        { "v", OPT_V, '-', "Verbose listing of the SSL/TLS ciphers" },
-        { "V", OPT_UPPER_V, '-', "Even more verbose" },
+    { "help", OPT_HELP, '-', "Display this summary" },
+    { "v", OPT_V, '-', "Verbose listing of the SSL/TLS ciphers" },
+    { "V", OPT_UPPER_V, '-', "Even more verbose" },
+    { "tls1", OPT_TLS1, '-', "TLS1 mode" },
 #ifndef OPENSSL_NO_SSL3
-        { "ssl3", OPT_SSL3, '-', "SSL3 mode" },
+    { "ssl3", OPT_SSL3, '-', "SSL3 mode" },
 #endif
-        { "tls1", OPT_TLS1, '-', "TLS1 mode" },
-        { NULL }
+    { NULL }
 };
 
 int ciphers_main(int argc, char **argv)
@@ -113,11 +113,11 @@ int ciphers_main(int argc, char **argv)
             case OPT_UPPER_V:
                 verbose = Verbose = 1;
                 break;
-#ifndef OPENSSL_NO_SSL3
             case OPT_SSL3:
+#ifndef OPENSSL_NO_SSL3
                 meth = SSLv3_client_method();
-                break;
 #endif
+                break;
             case OPT_TLS1:
                 meth = TLSv1_client_method();
                 break;
@@ -130,6 +130,8 @@ int ciphers_main(int argc, char **argv)
         ciphers = *argv;
     else if (argc != 0)
         goto opthelp;
+
+    OpenSSL_add_ssl_algorithms();
 
     ctx = SSL_CTX_new(meth);
     if (ctx == NULL)
@@ -144,12 +146,9 @@ int ciphers_main(int argc, char **argv)
     if (ssl == NULL)
         goto err;
 
-    sk = SSL_get_ciphers(ssl);
-
     if (!verbose) {
-        for (i = 0; i < sk_SSL_CIPHER_num(sk); i++) {
-            SSL_CIPHER *c = sk_SSL_CIPHER_value(sk, i);
-            p = SSL_CIPHER_get_name(c);
+        for (i = 0;; i++) {
+            p = SSL_get_cipher_list(ssl, i);
             if (p == NULL)
                 break;
             if (i != 0)
@@ -157,7 +156,8 @@ int ciphers_main(int argc, char **argv)
             BIO_printf(bio_out, "%s", p);
         }
         BIO_printf(bio_out, "\n");
-    } else {
+    } else { /* verbose */
+        sk = SSL_get_ciphers(ssl);
 
         for (i = 0; i < sk_SSL_CIPHER_num(sk); i++) {
             SSL_CIPHER *c;
@@ -171,13 +171,12 @@ int ciphers_main(int argc, char **argv)
                 int id2 = (int)((id >> 8) & 0xffL);
                 int id3 = (int)(id & 0xffL);
 
-                if ((id & 0xff000000L) == 0x03000000L) {
-                    /* SSL3 cipher */
-                    BIO_printf(bio_out, "          0x%02X,0x%02X - ", id2, id3);
-                } else {
-                    /* whatever */
-                    BIO_printf(bio_out, "0x%02X,0x%02X,0x%02X,0x%02X - ", id0, id1, id2, id3);
-                }
+                if ((id & 0xff000000L) == 0x03000000L)
+                    BIO_printf(bio_out, "          0x%02X,0x%02X - ", id2,
+                               id3); /* SSL3 cipher */
+                else
+                    BIO_printf(bio_out, "0x%02X,0x%02X,0x%02X,0x%02X - ", id0, id1,
+                               id2, id3); /* whatever */
             }
 
             BIO_puts(bio_out, SSL_CIPHER_description(c, buf, sizeof buf));
@@ -187,6 +186,7 @@ int ciphers_main(int argc, char **argv)
     ret = 0;
     goto end;
 err:
+    SSL_load_error_strings();
     ERR_print_errors(bio_err);
 end:
     SSL_CTX_free(ctx);

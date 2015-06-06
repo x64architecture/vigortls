@@ -286,6 +286,10 @@ int main(int argc, char *argv[])
     if (p == NULL)
         p = to_free = make_config_name();
 
+    bio_in = dup_bio_in();
+    bio_out = dup_bio_out();
+    bio_err = BIO_new_fp(stderr, BIO_NOCLOSE | BIO_FP_TEXT);
+
     default_config_file = p;
 
     if (!load_config(NULL))
