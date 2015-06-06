@@ -176,7 +176,7 @@ static void print_result(int alg, int run_no, int count, double time_used);
 static int do_multi(int multi);
 #endif
 
-#define ALGOR_NUM 30
+#define ALGOR_NUM 28
 #define SIZE_NUM 5
 #define PRIME_NUM 3
 #define RSA_NUM 7
@@ -187,11 +187,11 @@ static int do_multi(int multi);
 #define MISALIGN 64
 
 static const char *names[ALGOR_NUM] = {
-    "md2", "mdc2", "md4", "md5", "hmac(md5)", "sha1", "rmd160", "rc4", "des cbc",
+    "mdc2", "md5", "hmac(md5)", "sha1", "rmd160", "rc4", "des cbc",
     "des ede3", "idea cbc", "seed cbc", "rc2 cbc", "rc5-32/12 cbc", "blowfish cbc",
     "cast cbc", "aes-128 cbc", "aes-192 cbc", "aes-256 cbc", "camellia-128 cbc",
     "camellia-192 cbc", "camellia-256 cbc", "evp", "sha256", "sha512", "whirlpool",
-    "aes-128 ige", "aes-192 ige", "aes-256 ige", "ghash"
+    "aes-128 ige", "aes-192 ige", "aes-256 ige", "ghash",
 };
 
 static double results[ALGOR_NUM][SIZE_NUM];
@@ -281,36 +281,37 @@ OPTIONS speed_options[] = {
     { NULL },
 };
 
-#define D_MD2 0
-#define D_MDC2 1
-#define D_MD4 2
-#define D_MD5 3
-#define D_HMAC 4
-#define D_SHA1 5
-#define D_RMD160 6
-#define D_RC4 7
-#define D_CBC_DES 8
-#define D_EDE3_DES 9
-#define D_CBC_IDEA 10
-#define D_CBC_SEED 11
-#define D_CBC_RC2 12
-#define D_CBC_RC5 13
-#define D_CBC_BF 14
-#define D_CBC_CAST 15
-#define D_CBC_128_AES 16
-#define D_CBC_192_AES 17
-#define D_CBC_256_AES 18
-#define D_CBC_128_CML 19
-#define D_CBC_192_CML 20
-#define D_CBC_256_CML 21
-#define D_EVP 22
-#define D_SHA256 23
-#define D_SHA512 24
-#define D_WHIRLPOOL 25
-#define D_IGE_128_AES 26
-#define D_IGE_192_AES 27
-#define D_IGE_256_AES 28
-#define D_GHASH 29
+#define D_MDC2 0
+#define D_MD5 1
+#define D_HMAC 2
+#define D_SHA1 3
+#define D_RMD160 4
+#define D_RC4 5
+#define D_CBC_DES 6
+#define D_EDE3_DES 7
+#define D_CBC_IDEA 8
+#define D_CBC_SEED 9
+#define D_CBC_RC2 10
+#define D_CBC_RC5 11
+#define D_CBC_BF 12
+#define D_CBC_CAST 13
+#define D_CBC_128_AES 14
+#define D_CBC_192_AES 15
+#define D_CBC_256_AES 16
+#define D_CBC_128_CML 17
+#define D_CBC_192_CML 18
+#define D_CBC_256_CML 19
+#define D_EVP 20
+#define D_SHA256 21
+#define D_SHA512 22
+#define D_WHIRLPOOL 23
+#define D_IGE_128_AES 24
+#define D_IGE_192_AES 25
+#define D_IGE_256_AES 26
+#define D_GHASH 27
+#define D_CBC_256_THREEFISH 28
+#define D_CBC_512_THREEFISH 29
+#define D_CBC_1024_THREEFISH 30
 OPT_PAIR doit_choices[] = {
 #ifndef OPENSSL_NO_MDC2
     { "mdc2", D_MDC2 },
@@ -456,7 +457,6 @@ int speed_main(int argc, char **argv)
     long c[ALGOR_NUM][SIZE_NUM], count = 0, save_count = 0;
     unsigned char *buf_malloc = NULL, *buf2_malloc = NULL;
     unsigned char *buf = NULL, *buf2 = NULL;
-    unsigned char *save_buf = NULL, *save_buf2 = NULL;
     unsigned char md[EVP_MAX_MD_SIZE];
     const char *stnerr = NULL;
 #ifndef NO_FORK
@@ -857,9 +857,7 @@ int speed_main(int argc, char **argv)
         d = Time_F(STOP);
     } while (d < 3);
     save_count = count;
-    c[D_MD2][0] = count / 10;
     c[D_MDC2][0] = count / 10;
-    c[D_MD4][0] = count;
     c[D_MD5][0] = count;
     c[D_HMAC][0] = count;
     c[D_SHA1][0] = count;
@@ -886,6 +884,9 @@ int speed_main(int argc, char **argv)
     c[D_IGE_192_AES][0] = count;
     c[D_IGE_256_AES][0] = count;
     c[D_GHASH][0] = count;
+    c[D_CBC_256_THREEFISH][0] = count;
+    c[D_CBC_512_THREEFISH][0] = count;
+    c[D_CBC_1024_THREEFISH][0] = count;
 
     for (i = 1; i < SIZE_NUM; i++) {
         long l0, l1;
@@ -893,9 +894,7 @@ int speed_main(int argc, char **argv)
         l0 = (long)lengths[0];
         l1 = (long)lengths[i];
 
-        c[D_MD2][i] = c[D_MD2][0] * 4 * l0 / l1;
         c[D_MDC2][i] = c[D_MDC2][0] * 4 * l0 / l1;
-        c[D_MD4][i] = c[D_MD4][0] * 4 * l0 / l1;
         c[D_MD5][i] = c[D_MD5][0] * 4 * l0 / l1;
         c[D_HMAC][i] = c[D_HMAC][0] * 4 * l0 / l1;
         c[D_SHA1][i] = c[D_SHA1][0] * 4 * l0 / l1;
@@ -924,6 +923,9 @@ int speed_main(int argc, char **argv)
         c[D_IGE_128_AES][i] = c[D_IGE_128_AES][i - 1] * l0 / l1;
         c[D_IGE_192_AES][i] = c[D_IGE_192_AES][i - 1] * l0 / l1;
         c[D_IGE_256_AES][i] = c[D_IGE_256_AES][i - 1] * l0 / l1;
+        c[D_CBC_256_THREEFISH][i] = c[D_CBC_256_THREEFISH][i - 1] * l0 / l1;
+        c[D_CBC_512_THREEFISH][i] = c[D_CBC_512_THREEFISH][i - 1] * l0 / l1;
+        c[D_CBC_1024_THREEFISH][i] = c[D_CBC_1024_THREEFISH][i - 1] * l0 / l1;
     }
 
 #ifndef OPENSSL_NO_RSA
@@ -1382,7 +1384,6 @@ int speed_main(int argc, char **argv)
         }
     }
 #endif
-
     if (doit[D_EVP]) {
         for (j = 0; j < SIZE_NUM; j++) {
             if (evp_cipher) {
@@ -1841,10 +1842,6 @@ show_res:
 
 end:
     ERR_print_errors(bio_err);
-    free(buf_malloc);
-    free(buf2_malloc);
-    free(save_buf);
-    free(save_buf2);
 #ifndef OPENSSL_NO_RSA
     for (i = 0; i < RSA_NUM; i++)
         RSA_free(rsa_key[i]);
