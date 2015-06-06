@@ -3,7 +3,11 @@ VigorTLS
 
 VigorTLS is a fork of OpenSSL developed by Kurt Cancemi.
 
-[![Build Status](https://secure.travis-ci.org/vigortls/vigortls.png)](http://travis-ci.org/vigortls/vigortls)
+Some new features added:
+*   ChaCha20-Poly1305 Support
+*   Support for GOST in the EVP interface
+
+[![Build Status](https://secure.travis-ci.org/vigortls/vigortls.png)](https://travis-ci.org/vigortls/vigortls)
 
 Goal
 ====
@@ -11,7 +15,8 @@ Goal
 The goal of the VigorTLS Project is to improve the original OpenSSL codebase
 by using modern C features, removing support for ancient operating systems
 that are rarely used/hard to support, replacing potentially dangerous
-functions/calls with secure ones, and replacing the unreadable coding style.
+functions/calls with secure ones, replacing the unreadable coding style,
+adding in some new features, etc.
 
 Currently tested operating systems
 ==================================
