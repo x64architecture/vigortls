@@ -62,9 +62,8 @@
 #include <openssl/opensslconf.h>
 #include <openssl/sha.h>
 
-#if !defined(OPENSSL_NO_ASM) && \
-    (defined(VIGORTLS_X86) || defined(VIGORTLS_X86_64) || \
-     defined(VIGORTLS_ARM))
+#if !defined(OPENSSL_NO_ASM) && (defined(VIGORTLS_X86) || defined(VIGORTLS_X86_64) \
+                                 || defined(VIGORTLS_ARM))
 #define SHA1_ASM
 #endif
 
@@ -100,32 +99,33 @@ uint8_t *SHA1(const uint8_t *data, size_t len, uint8_t *out)
 #define HASH_LONG uint32_t
 #define HASH_CTX SHA_CTX
 #define HASH_CBLOCK 64
-#define HASH_MAKE_STRING(c, s)                                                     \
-    do {                                                                           \
-        unsigned long ll;                                                          \
-        ll = (c)->h0;                                                              \
-        (void) HOST_l2c(ll, (s));                                                  \
-        ll = (c)->h1;                                                              \
-        (void) HOST_l2c(ll, (s));                                                  \
-        ll = (c)->h2;                                                              \
-        (void) HOST_l2c(ll, (s));                                                  \
-        ll = (c)->h3;                                                              \
-        (void) HOST_l2c(ll, (s));                                                  \
-        ll = (c)->h4;                                                              \
-        (void) HOST_l2c(ll, (s));                                                  \
+#define HASH_MAKE_STRING(c, s)    \
+    do {                          \
+        uint32_t ll;              \
+        ll = (c)->h0;             \
+        (void) HOST_l2c(ll, (s)); \
+        ll = (c)->h1;             \
+        (void) HOST_l2c(ll, (s)); \
+        ll = (c)->h2;             \
+        (void) HOST_l2c(ll, (s)); \
+        ll = (c)->h3;             \
+        (void) HOST_l2c(ll, (s)); \
+        ll = (c)->h4;             \
+        (void) HOST_l2c(ll, (s)); \
     } while (0)
 
 #define HASH_UPDATE SHA1_Update
 #define HASH_TRANSFORM SHA1_Transform
 #define HASH_FINAL SHA1_Final
 #define HASH_BLOCK_DATA_ORDER sha1_block_data_order
-#define Xupdate(a, ix, ia, ib, ic, id)                                             \
+#define Xupdate(a, ix, ia, ib, ic, id) \
     ((a) = (ia ^ ib ^ ic ^ id), ix = (a) = ROTATE((a), 1))
 
 #ifndef SHA1_ASM
 static
 #endif
-void sha1_block_data_order(SHA_CTX *ctx, const void *p, size_t num);
+    void
+    sha1_block_data_order(SHA_CTX *ctx, const void *p, size_t num);
 
 #include "../md32_common.h"
 
@@ -144,33 +144,33 @@ void sha1_block_data_order(SHA_CTX *ctx, const void *p, size_t num);
 #define F_40_59(b, c, d) (((b) & (c)) | (((b) | (c)) & (d)))
 #define F_60_79(b, c, d) F_20_39(b, c, d)
 
-#define BODY_00_15(i, a, b, c, d, e, f, xi)                                        \
-    (f) = xi + (e) + K_00_19 + ROTATE((a), 5) + F_00_19((b), (c), (d));            \
+#define BODY_00_15(i, a, b, c, d, e, f, xi)                             \
+    (f) = xi + (e) + K_00_19 + ROTATE((a), 5) + F_00_19((b), (c), (d)); \
     (b) = ROTATE((b), 30);
 
-#define BODY_16_19(i, a, b, c, d, e, f, xi, xa, xb, xc, xd)                        \
-    Xupdate(f, xi, xa, xb, xc, xd);                                                \
-    (f) += (e) + K_00_19 + ROTATE((a), 5) + F_00_19((b), (c), (d));                \
+#define BODY_16_19(i, a, b, c, d, e, f, xi, xa, xb, xc, xd)         \
+    Xupdate(f, xi, xa, xb, xc, xd);                                 \
+    (f) += (e) + K_00_19 + ROTATE((a), 5) + F_00_19((b), (c), (d)); \
     (b) = ROTATE((b), 30);
 
-#define BODY_20_31(i, a, b, c, d, e, f, xi, xa, xb, xc, xd)                        \
-    Xupdate(f, xi, xa, xb, xc, xd);                                                \
-    (f) += (e) + K_20_39 + ROTATE((a), 5) + F_20_39((b), (c), (d));                \
+#define BODY_20_31(i, a, b, c, d, e, f, xi, xa, xb, xc, xd)         \
+    Xupdate(f, xi, xa, xb, xc, xd);                                 \
+    (f) += (e) + K_20_39 + ROTATE((a), 5) + F_20_39((b), (c), (d)); \
     (b) = ROTATE((b), 30);
 
-#define BODY_32_39(i, a, b, c, d, e, f, xa, xb, xc, xd)                            \
-    Xupdate(f, xa, xa, xb, xc, xd);                                                \
-    (f) += (e) + K_20_39 + ROTATE((a), 5) + F_20_39((b), (c), (d));                \
+#define BODY_32_39(i, a, b, c, d, e, f, xa, xb, xc, xd)             \
+    Xupdate(f, xa, xa, xb, xc, xd);                                 \
+    (f) += (e) + K_20_39 + ROTATE((a), 5) + F_20_39((b), (c), (d)); \
     (b) = ROTATE((b), 30);
 
-#define BODY_40_59(i, a, b, c, d, e, f, xa, xb, xc, xd)                            \
-    Xupdate(f, xa, xa, xb, xc, xd);                                                \
-    (f) += (e) + K_40_59 + ROTATE((a), 5) + F_40_59((b), (c), (d));                \
+#define BODY_40_59(i, a, b, c, d, e, f, xa, xb, xc, xd)             \
+    Xupdate(f, xa, xa, xb, xc, xd);                                 \
+    (f) += (e) + K_40_59 + ROTATE((a), 5) + F_40_59((b), (c), (d)); \
     (b) = ROTATE((b), 30);
 
-#define BODY_60_79(i, a, b, c, d, e, f, xa, xb, xc, xd)                            \
-    Xupdate(f, xa, xa, xb, xc, xd);                                                \
-    (f) = xa + (e) + K_60_79 + ROTATE((a), 5) + F_60_79((b), (c), (d));            \
+#define BODY_60_79(i, a, b, c, d, e, f, xa, xb, xc, xd)                 \
+    Xupdate(f, xa, xa, xb, xc, xd);                                     \
+    (f) = xa + (e) + K_60_79 + ROTATE((a), 5) + F_60_79((b), (c), (d)); \
     (b) = ROTATE((b), 30);
 
 #ifdef X

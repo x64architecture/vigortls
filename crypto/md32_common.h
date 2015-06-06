@@ -155,66 +155,60 @@ static inline uint32_t ROTATE(uint32_t a, unsigned int n)
  * this trick on x86* platforms only, because these CPUs can fetch
  * unaligned data without raising an exception.
  */
-#define HOST_c2l(c, l)                             \
-({                                                 \
-    unsigned int r = *((const unsigned int *)(c)); \
-    __asm__ ("bswapl %0" : "=r"(r) : "0"(r));      \
-    (c) += 4;                                      \
-    (l) = r;                                       \
+#define HOST_c2l(c, l)                        \
+({                                            \
+    uint32_t r = *((const uint32_t *)(c));    \
+    __asm__ ("bswapl %0" : "=r"(r) : "0"(r)); \
+    (c) += 4;                                 \
+    (l) = r;                                  \
 })
 #define HOST_l2c(l, c)                        \
 ({                                            \
     unsigned int r = (l);                     \
     __asm__ ("bswapl %0" : "=r"(r) : "0"(r)); \
-    *((unsigned int *)(c)) = r;               \
+    *((uint32_t *)(c)) = r;                   \
     (c) += 4;                                 \
 })
 #endif
 #endif
 
 #ifndef HOST_c2l
-#define HOST_c2l(c, l)                            \
-    do {                                          \
-        l = (((unsigned long)(*((c)++))) << 24 ); \
-        l |= (((unsigned long)(*((c)++))) << 16); \
-        l |= (((unsigned long)(*((c)++))) << 8 ); \
-        l |= (((unsigned long)(*((c)++)))      ); \
-    } while (0)
+#define HOST_c2l(c, l)                       \
+        l = (((uint32_t)(*((c)++))) <<  24), \
+        l |= (((uint32_t)(*((c)++))) << 16), \
+        l |= (((uint32_t)(*((c)++))) << 8 ), \
+        l |= (((uint32_t)(*((c)++)))      )
 #endif
 #ifndef HOST_l2c
-#define HOST_l2c(l, c)                                  \
-    do {                                                \
-        *((c)++) = (uint8_t)(((l) >> 24) & 0xff); \
-        *((c)++) = (uint8_t)(((l) >> 16) & 0xff); \
-        *((c)++) = (uint8_t)(((l) >> 8 ) & 0xff); \
-        *((c)++) = (uint8_t)(((l)) & 0xff);       \
-    } while (0)
+#define HOST_l2c(l, c)                            \
+       (*((c)++) = (uint8_t)(((l) >> 24) & 0xff), \
+        *((c)++) = (uint8_t)(((l) >> 16) & 0xff), \
+        *((c)++) = (uint8_t)(((l) >> 8 ) & 0xff), \
+        *((c)++) = (uint8_t)(((l)      ) & 0xff), \
+        l)
 #endif
 
 #elif defined(DATA_ORDER_IS_LITTLE_ENDIAN)
 
 #if defined(VIGORTLS_X86) || defined(VIGORTLS_X86_64)
-#define HOST_c2l(c, l) ((l) = *((const unsigned int *)(c)), (c) += 4)
-#define HOST_l2c(l, c) (*((unsigned int *)(c)) = (l), (c) += 4)
+#define HOST_c2l(c, l) ((l) = *((const uint32_t *)(c)), (c) += 4)
+#define HOST_l2c(l, c) (*((uint32_t *)(c)) = (l), (c) += 4)
 #endif
 
 #ifndef HOST_c2l
-#define HOST_c2l(c, l)                            \
-    do {                                          \
-        l = (((unsigned long)(*((c)++)))       ); \
-        l |= (((unsigned long)(*((c)++))) << 8 ); \
-        l |= (((unsigned long)(*((c)++))) << 16); \
-        l |= (((unsigned long)(*((c)++))) << 24); \
-    } while (0)
+#define HOST_c2l(c, l)                       \
+        l = (((uint32_t)(*((c)++)))       ), \
+        l |= (((uint32_t)(*((c)++))) << 8 ), \
+        l |= (((uint32_t)(*((c)++))) << 16), \
+        l |= (((uint32_t)(*((c)++))) << 24)
 #endif
 #ifndef HOST_l2c
-#define HOST_l2c(l, c)                                     \
-    do {                                                   \
-        *((c)++) = (uint8_t)(((l)      ) & 0xff);    \
-        *((c)++) = (uint8_t)(((l) >> 8 ) & 0xff);    \
-        *((c)++) = (uint8_t)(((l) >> 16) & 0xff);    \
-        *((c)++) = (uint8_t)(((l) >> 24) & 0xff);    \
-      } while (0)
+#define HOST_l2c(l, c)                               \
+       (*((c)++) = (uint8_t)(((l)      ) & 0xff),    \
+        *((c)++) = (uint8_t)(((l) >> 8 ) & 0xff),    \
+        *((c)++) = (uint8_t)(((l) >> 16) & 0xff),    \
+        *((c)++) = (uint8_t)(((l) >> 24) & 0xff),    \
+        l)
 #endif
 
 #endif
@@ -299,11 +293,11 @@ int HASH_FINAL(uint8_t *md, HASH_CTX *ctx)
 
     p += HASH_CBLOCK - 8;
 #if defined(DATA_ORDER_IS_BIG_ENDIAN)
-    HOST_l2c(ctx->Nh, p);
-    HOST_l2c(ctx->Nl, p);
+    (void) HOST_l2c(ctx->Nh, p);
+    (void) HOST_l2c(ctx->Nl, p);
 #elif defined(DATA_ORDER_IS_LITTLE_ENDIAN)
-    HOST_l2c(ctx->Nl, p);
-    HOST_l2c(ctx->Nh, p);
+    (void) HOST_l2c(ctx->Nl, p);
+    (void) HOST_l2c(ctx->Nh, p);
 #endif
     p -= HASH_CBLOCK;
     HASH_BLOCK_DATA_ORDER(ctx, p, 1);
