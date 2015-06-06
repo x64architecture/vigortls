@@ -7,4 +7,3 @@ add_library(
 
     poly1305.c
 )
-set_source_files_properties(poly1305 PROPERTIES COMPILE_FLAGS "-O3 -march=native -save-temps") 
