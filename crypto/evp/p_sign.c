@@ -63,10 +63,10 @@
 #include <openssl/objects.h>
 #include <openssl/x509.h>
 
-int EVP_SignFinal(EVP_MD_CTX *ctx, unsigned char *sigret, unsigned int *siglen,
+int EVP_SignFinal(EVP_MD_CTX *ctx, uint8_t *sigret, unsigned int *siglen,
                   EVP_PKEY *pkey)
 {
-    unsigned char m[EVP_MAX_MD_SIZE];
+    uint8_t m[EVP_MAX_MD_SIZE];
     unsigned int m_len;
     int i = 0, ok = 0, v;
     EVP_MD_CTX tmp_ctx;

@@ -80,8 +80,8 @@ struct evp_pkey_asn1_method_st {
     int (*pkey_bits) (const EVP_PKEY *pk);
     int (*pkey_security_bits) (const EVP_PKEY *pk);
     int (*param_decode) (EVP_PKEY *pkey,
-                         const unsigned char **pder, int derlen);
-    int (*param_encode) (const EVP_PKEY *pkey, unsigned char **pder);
+                         const uint8_t **pder, int derlen);
+    int (*param_encode) (const EVP_PKEY *pkey, uint8_t **pder);
     int (*param_missing) (const EVP_PKEY *pk);
     int (*param_copy) (EVP_PKEY *to, const EVP_PKEY *from);
     int (*param_cmp) (const EVP_PKEY *a, const EVP_PKEY *b);
@@ -94,8 +94,8 @@ struct evp_pkey_asn1_method_st {
     int (*pkey_ctrl) (EVP_PKEY *pkey, int op, long arg1, void *arg2);
     /* Legacy functions for old PEM */
     int (*old_priv_decode) (EVP_PKEY *pkey,
-                            const unsigned char **pder, int derlen);
-    int (*old_priv_encode) (const EVP_PKEY *pkey, unsigned char **pder);
+                            const uint8_t **pder, int derlen);
+    int (*old_priv_encode) (const EVP_PKEY *pkey, uint8_t **pder);
     /* Custom ASN1 signature verification */
     int (*item_verify) (EVP_MD_CTX *ctx, const ASN1_ITEM *it, void *asn,
                         X509_ALGOR *a, ASN1_BIT_STRING *sig, EVP_PKEY *pkey);
@@ -116,7 +116,7 @@ struct asn1_object_st {
     const char *sn, *ln;
     int nid;
     int length;
-    const unsigned char *data;  /* data remains const after init */
+    const uint8_t *data;  /* data remains const after init */
     int flags;                  /* Should we free this one */
 };
 

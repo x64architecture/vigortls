@@ -72,10 +72,10 @@ static STACK_OF(OPENSSL_STRING) * get_email(X509_NAME *name, GENERAL_NAMES *gens
 static void str_free(OPENSSL_STRING str);
 static int append_ia5(STACK_OF(OPENSSL_STRING) * *sk, ASN1_IA5STRING * email);
 
-static int ipv4_from_asc(unsigned char *v4, const char *in);
-static int ipv6_from_asc(unsigned char *v6, const char *in);
+static int ipv4_from_asc(uint8_t *v4, const char *in);
+static int ipv6_from_asc(uint8_t *v6, const char *in);
 static int ipv6_cb(const char *elem, int len, void *usr);
-static int ipv6_hex(unsigned char *out, const char *in, int inlen);
+static int ipv6_hex(uint8_t *out, const char *in, int inlen);
 
 /* Add a CONF_VALUE name value pair to stack */
 
@@ -109,7 +109,7 @@ err:
     return 0;
 }
 
-int X509V3_add_value_uchar(const char *name, const unsigned char *value,
+int X509V3_add_value_uchar(const char *name, const uint8_t *value,
                            STACK_OF(CONF_VALUE) * *extlist)
 {
     return X509V3_add_value(name, (const char *)value, extlist);
@@ -355,12 +355,12 @@ static char *strip_spaces(char *name)
     char *p, *q;
     /* Skip over leading spaces */
     p = name;
-    while (*p && isspace((unsigned char)*p))
+    while (*p && isspace((uint8_t)*p))
         p++;
     if (!*p)
         return NULL;
     q = p + strlen(p) - 1;
-    while ((q != p) && isspace((unsigned char)*q))
+    while ((q != p) && isspace((uint8_t)*q))
         q--;
     if (p != q)
         q[1] = 0;
@@ -376,10 +376,10 @@ static char *strip_spaces(char *name)
  * @@@ (Contents of buffer are always kept in ASCII, also on EBCDIC machines)
  */
 
-char *hex_to_string(const unsigned char *buffer, long len)
+char *hex_to_string(const uint8_t *buffer, long len)
 {
     char *tmp, *q;
-    const unsigned char *p;
+    const uint8_t *p;
     int i;
     static const char hexdig[] = "0123456789ABCDEF";
     if (!buffer || !len)
@@ -403,17 +403,17 @@ char *hex_to_string(const unsigned char *buffer, long len)
  * a buffer
  */
 
-unsigned char *string_to_hex(const char *str, long *len)
+uint8_t *string_to_hex(const char *str, long *len)
 {
-    unsigned char *hexbuf, *q;
-    unsigned char ch, cl, *p;
+    uint8_t *hexbuf, *q;
+    uint8_t ch, cl, *p;
     if (!str) {
         X509V3err(X509V3_F_STRING_TO_HEX, X509V3_R_INVALID_NULL_ARGUMENT);
         return NULL;
     }
     if (!(hexbuf = malloc(strlen(str) >> 1)))
         goto err;
-    for (p = (unsigned char *)str, q = hexbuf; *p;) {
+    for (p = (uint8_t *)str, q = hexbuf; *p;) {
         ch = *p++;
         if (ch == ':')
             continue;
@@ -598,7 +598,7 @@ void X509_email_free(STACK_OF(OPENSSL_STRING) * sk)
 
 ASN1_OCTET_STRING *a2i_IPADDRESS(const char *ipasc)
 {
-    unsigned char ipout[16];
+    uint8_t ipout[16];
     ASN1_OCTET_STRING *ret;
     int iplen;
 
@@ -622,7 +622,7 @@ ASN1_OCTET_STRING *a2i_IPADDRESS(const char *ipasc)
 ASN1_OCTET_STRING *a2i_IPADDRESS_NC(const char *ipasc)
 {
     ASN1_OCTET_STRING *ret = NULL;
-    unsigned char ipout[32];
+    uint8_t ipout[32];
     char *iptmp = NULL, *p;
     int iplen1, iplen2;
     p = strchr(ipasc, '/');
@@ -663,7 +663,7 @@ err:
     return NULL;
 }
 
-int a2i_ipadd(unsigned char *ipout, const char *ipasc)
+int a2i_ipadd(uint8_t *ipout, const char *ipasc)
 {
     /* If string contains a ':' assume IPv6 */
 
@@ -678,7 +678,7 @@ int a2i_ipadd(unsigned char *ipout, const char *ipasc)
     }
 }
 
-static int ipv4_from_asc(unsigned char *v4, const char *in)
+static int ipv4_from_asc(uint8_t *v4, const char *in)
 {
     int a0, a1, a2, a3;
     if (sscanf(in, "%d.%d.%d.%d", &a0, &a1, &a2, &a3) != 4)
@@ -695,7 +695,7 @@ static int ipv4_from_asc(unsigned char *v4, const char *in)
 
 typedef struct {
     /* Temporary store for IPV6 output */
-    unsigned char tmp[16];
+    uint8_t tmp[16];
     /* Total number of bytes in tmp */
     int total;
     /* The position of a zero (corresponding to '::') */
@@ -704,7 +704,7 @@ typedef struct {
     int zero_cnt;
 } IPV6_STAT;
 
-static int ipv6_from_asc(unsigned char *v6, const char *in)
+static int ipv6_from_asc(uint8_t *v6, const char *in)
 {
     IPV6_STAT v6stat;
     v6stat.total = 0;
@@ -806,9 +806,9 @@ static int ipv6_cb(const char *elem, int len, void *usr)
  * IPv6 form.
  */
 
-static int ipv6_hex(unsigned char *out, const char *in, int inlen)
+static int ipv6_hex(uint8_t *out, const char *in, int inlen)
 {
-    unsigned char c;
+    uint8_t c;
     unsigned int num = 0;
     if (inlen > 4)
         return 0;
@@ -857,7 +857,7 @@ int X509V3_NAME_from_section(X509_NAME *nm, STACK_OF(CONF_VALUE) * dn_sk,
         } else
             mval = 0;
         if (!X509_NAME_add_entry_by_txt(nm, type, chtype,
-                                        (unsigned char *)v->value, -1, -1, mval))
+                                        (uint8_t *)v->value, -1, -1, mval))
             return 0;
     }
     return 1;

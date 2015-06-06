@@ -16,11 +16,11 @@ typedef struct comp_method_st {
     int (*init)(COMP_CTX *ctx);
     void (*finish)(COMP_CTX *ctx);
     int (*compress)(COMP_CTX *ctx,
-                    unsigned char *out, unsigned int olen,
-                    unsigned char *in, unsigned int ilen);
+                    uint8_t *out, unsigned int olen,
+                    uint8_t *in, unsigned int ilen);
     int (*expand)(COMP_CTX *ctx,
-                  unsigned char *out, unsigned int olen,
-                  unsigned char *in, unsigned int ilen);
+                  uint8_t *out, unsigned int olen,
+                  uint8_t *in, unsigned int ilen);
     /* The following two do NOTHING, but are kept for backward compatibility */
     long (*ctrl)(void);
     long (*callback_ctrl)(void);
@@ -38,10 +38,10 @@ struct comp_ctx_st {
 
 COMP_CTX *COMP_CTX_new(COMP_METHOD *meth);
 void COMP_CTX_free(COMP_CTX *ctx);
-int COMP_compress_block(COMP_CTX *ctx, unsigned char *out, int olen,
-                        unsigned char *in, int ilen);
-int COMP_expand_block(COMP_CTX *ctx, unsigned char *out, int olen,
-                      unsigned char *in, int ilen);
+int COMP_compress_block(COMP_CTX *ctx, uint8_t *out, int olen,
+                        uint8_t *in, int ilen);
+int COMP_expand_block(COMP_CTX *ctx, uint8_t *out, int olen,
+                      uint8_t *in, int ilen);
 COMP_METHOD *COMP_rle(void);
 COMP_METHOD *COMP_zlib(void);
 void COMP_zlib_cleanup(void);

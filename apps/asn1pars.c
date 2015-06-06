@@ -127,11 +127,11 @@ int asn1parse_main(int argc, char **argv)
     char *genstr = NULL, *genconf = NULL;
     char *infile = NULL, *str = NULL, *oidfile = NULL, *derfile = NULL;
     char *name = NULL, *header = NULL, *prog;
-    const unsigned char *ctmpbuf;
+    const uint8_t *ctmpbuf;
     int indent = 0, noout = 0, dump = 0, strictpem = 0, informat = FORMAT_PEM;
     int offset = 0, ret = 1, i, j;
     long num, tmplen;
-    unsigned char *tmpbuf;
+    uint8_t *tmpbuf;
     unsigned int length = 0;
     const char *stnerr = NULL;
     OPTION_CHOICE o;
@@ -218,7 +218,7 @@ int asn1parse_main(int argc, char **argv)
         goto end;
 
     if (strictpem) {
-        if (PEM_read_bio(in, &name, &header, (unsigned char **)&str, &num) != 1) {
+        if (PEM_read_bio(in, &name, &header, (uint8_t **)&str, &num) != 1) {
             BIO_printf(bio_err, "Error reading PEM file\n");
             ERR_print_errors(bio_err);
             goto end;
@@ -267,7 +267,7 @@ int asn1parse_main(int argc, char **argv)
     /* If any structs to parse go through in sequence */
 
     if (sk_OPENSSL_STRING_num(osk)) {
-        tmpbuf = (unsigned char *)str;
+        tmpbuf = (uint8_t *)str;
         tmplen = num;
         for (i = 0; i < sk_OPENSSL_STRING_num(osk); i++) {
             ASN1_TYPE *atmp;
@@ -320,7 +320,7 @@ int asn1parse_main(int argc, char **argv)
         }
     }
     if (!noout
-        && !ASN1_parse_dump(bio_out, (unsigned char *)&(str[offset]), length,
+        && !ASN1_parse_dump(bio_out, (uint8_t *)&(str[offset]), length,
                             indent, dump)) {
         ERR_print_errors(bio_err);
         goto end;
@@ -351,7 +351,7 @@ static int do_generate(BIO *bio, char *genstr, char *genconf, BUF_MEM *buf)
     CONF *cnf = NULL;
     int len;
     long errline;
-    unsigned char *p;
+    uint8_t *p;
     ASN1_TYPE *atyp = NULL;
 
     if (genconf) {
@@ -381,7 +381,7 @@ static int do_generate(BIO *bio, char *genstr, char *genconf, BUF_MEM *buf)
     if (!BUF_MEM_grow(buf, len))
         goto err;
 
-    p = (unsigned char *)buf->data;
+    p = (uint8_t *)buf->data;
 
     i2d_ASN1_TYPE(atyp, &p);
 

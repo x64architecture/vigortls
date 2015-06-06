@@ -112,7 +112,7 @@ static int ecdh_compute_key(void *out, size_t outlen, const EC_POINT *pub_key,
     const EC_GROUP *group;
     int ret = -1;
     size_t buflen, len;
-    unsigned char *buf = NULL;
+    uint8_t *buf = NULL;
 
     if (outlen > INT_MAX) {
         ECDHerr(ECDH_F_ECDH_COMPUTE_KEY, ERR_R_MALLOC_FAILURE); /* sort of, anyway */

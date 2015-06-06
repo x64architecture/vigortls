@@ -599,7 +599,7 @@ end:
 static int dtls1_get_hello_verify(SSL *s)
 {
     int n, al, ok = 0;
-    unsigned char *data;
+    uint8_t *data;
     unsigned int cookie_len;
 
     n = s->method->ssl_get_message(s, DTLS1_ST_CR_HELLO_VERIFY_REQUEST_A,
@@ -617,7 +617,7 @@ static int dtls1_get_hello_verify(SSL *s)
 
     if (2 > n)
         goto truncated;
-    data = (unsigned char *)s->init_msg;
+    data = (uint8_t *)s->init_msg;
 
     if ((data[0] != (s->version >> 8)) || (data[1] != (s->version & 0xff))) {
         SSLerr(SSL_F_DTLS1_GET_HELLO_VERIFY, SSL_R_WRONG_SSL_VERSION);
@@ -652,15 +652,15 @@ f_err:
 
 int dtls1_send_client_verify(SSL *s)
 {
-    unsigned char *p, *d;
-    unsigned char data[MD5_DIGEST_LENGTH + SHA_DIGEST_LENGTH];
+    uint8_t *p, *d;
+    uint8_t data[MD5_DIGEST_LENGTH + SHA_DIGEST_LENGTH];
     EVP_PKEY *pkey;
     unsigned u = 0;
     unsigned long n;
     int j;
 
     if (s->state == SSL3_ST_CW_CERT_VRFY_A) {
-        d = (unsigned char *)s->init_buf->data;
+        d = (uint8_t *)s->init_buf->data;
         p = &(d[DTLS1_HM_HEADER_LENGTH]);
         pkey = s->cert->key->privatekey;
 

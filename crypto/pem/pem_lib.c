@@ -79,7 +79,7 @@
 
 #define MIN_LENGTH 4
 
-static int load_iv(char **fromp, unsigned char *to, int num);
+static int load_iv(char **fromp, uint8_t *to, int num);
 static int check_pem(const char *nm, const char *name);
 int pem_check_suffix(const char *pem_str, const char *suffix);
 
@@ -138,7 +138,7 @@ void PEM_proc_type(char *buf, int type)
 
 void PEM_dek_info(char *buf, const char *type, int len, char *str)
 {
-    static const unsigned char map[17] = "0123456789ABCDEF";
+    static const uint8_t map[17] = "0123456789ABCDEF";
     long i;
     int j;
 
@@ -255,12 +255,12 @@ static int check_pem(const char *nm, const char *name)
     return 0;
 }
 
-int PEM_bytes_read_bio(unsigned char **pdata, long *plen, char **pnm, const char *name, BIO *bp,
+int PEM_bytes_read_bio(uint8_t **pdata, long *plen, char **pnm, const char *name, BIO *bp,
                        pem_password_cb *cb, void *u)
 {
     EVP_CIPHER_INFO cipher;
     char *nm = NULL, *header = NULL;
-    unsigned char *data = NULL;
+    uint8_t *data = NULL;
     long len;
     int ret = 0;
 
@@ -299,7 +299,7 @@ err:
 }
 
 int PEM_ASN1_write(i2d_of_void *i2d, const char *name, FILE *fp,
-                   void *x, const EVP_CIPHER *enc, unsigned char *kstr,
+                   void *x, const EVP_CIPHER *enc, uint8_t *kstr,
                    int klen, pem_password_cb *callback, void *u)
 {
     BIO *b;
@@ -316,16 +316,16 @@ int PEM_ASN1_write(i2d_of_void *i2d, const char *name, FILE *fp,
 }
 
 int PEM_ASN1_write_bio(i2d_of_void *i2d, const char *name, BIO *bp,
-                       void *x, const EVP_CIPHER *enc, unsigned char *kstr,
+                       void *x, const EVP_CIPHER *enc, uint8_t *kstr,
                        int klen, pem_password_cb *callback, void *u)
 {
     EVP_CIPHER_CTX ctx;
     int dsize = 0, i, j, ret = 0;
-    unsigned char *p, *data = NULL;
+    uint8_t *p, *data = NULL;
     const char *objstr = NULL;
     char buf[PEM_BUFSIZE];
-    unsigned char key[EVP_MAX_KEY_LENGTH];
-    unsigned char iv[EVP_MAX_IV_LENGTH];
+    uint8_t key[EVP_MAX_KEY_LENGTH];
+    uint8_t iv[EVP_MAX_IV_LENGTH];
 
     if (enc != NULL) {
         objstr = OBJ_nid2sn(EVP_CIPHER_nid(enc));
@@ -360,7 +360,7 @@ int PEM_ASN1_write_bio(i2d_of_void *i2d, const char *name, BIO *bp,
                 PEMerr(PEM_F_PEM_ASN1_WRITE_BIO, PEM_R_READ_KEY);
                 goto err;
             }
-            kstr = (unsigned char *)buf;
+            kstr = (uint8_t *)buf;
         }
         OPENSSL_assert(enc->iv_len <= (int)sizeof(iv));
         if (RAND_bytes(iv, enc->iv_len) <= 0) /* Generate a salt */
@@ -370,7 +370,7 @@ int PEM_ASN1_write_bio(i2d_of_void *i2d, const char *name, BIO *bp,
         if (!EVP_BytesToKey(enc, EVP_md5(), iv, kstr, klen, 1, key, NULL))
             goto err;
 
-        if (kstr == (unsigned char *)buf)
+        if (kstr == (uint8_t *)buf)
             vigortls_zeroize(buf, PEM_BUFSIZE);
 
         OPENSSL_assert(strlen(objstr) + 23 + 2 * enc->iv_len + 13 <= sizeof buf);
@@ -409,13 +409,13 @@ err:
     return (ret);
 }
 
-int PEM_do_header(EVP_CIPHER_INFO *cipher, unsigned char *data, long *plen,
+int PEM_do_header(EVP_CIPHER_INFO *cipher, uint8_t *data, long *plen,
                   pem_password_cb *callback, void *u)
 {
     int i = 0, j, o, klen;
     long len;
     EVP_CIPHER_CTX ctx;
-    unsigned char key[EVP_MAX_KEY_LENGTH];
+    uint8_t key[EVP_MAX_KEY_LENGTH];
     char buf[PEM_BUFSIZE];
 
     len = *plen;
@@ -432,7 +432,7 @@ int PEM_do_header(EVP_CIPHER_INFO *cipher, unsigned char *data, long *plen,
     }
 
     if (!EVP_BytesToKey(cipher->cipher, EVP_md5(), &(cipher->iv[0]),
-                        (unsigned char *)buf, klen, 1, key, NULL))
+                        (uint8_t *)buf, klen, 1, key, NULL))
         return 0;
 
     j = (int)len;
@@ -513,7 +513,7 @@ int PEM_get_EVP_CIPHER_INFO(char *header, EVP_CIPHER_INFO *cipher)
     return (1);
 }
 
-static int load_iv(char **fromp, unsigned char *to, int num)
+static int load_iv(char **fromp, uint8_t *to, int num)
 {
     int v, i;
     char *from;
@@ -541,7 +541,7 @@ static int load_iv(char **fromp, unsigned char *to, int num)
     return (1);
 }
 
-int PEM_write(FILE *fp, char *name, char *header, unsigned char *data,
+int PEM_write(FILE *fp, char *name, char *header, uint8_t *data,
               long len)
 {
     BIO *b;
@@ -557,11 +557,11 @@ int PEM_write(FILE *fp, char *name, char *header, unsigned char *data,
     return (ret);
 }
 
-int PEM_write_bio(BIO *bp, const char *name, char *header, unsigned char *data,
+int PEM_write_bio(BIO *bp, const char *name, char *header, uint8_t *data,
                   long len)
 {
     int nlen, n, i, j, outl;
-    unsigned char *buf = NULL;
+    uint8_t *buf = NULL;
     EVP_ENCODE_CTX ctx;
     int reason = ERR_R_BUF_LIB;
 
@@ -611,7 +611,7 @@ err:
     return (0);
 }
 
-int PEM_read(FILE *fp, char **name, char **header, unsigned char **data,
+int PEM_read(FILE *fp, char **name, char **header, uint8_t **data,
              long *len)
 {
     BIO *b;
@@ -627,7 +627,7 @@ int PEM_read(FILE *fp, char **name, char **header, unsigned char **data,
     return (ret);
 }
 
-int PEM_read_bio(BIO *bp, char **name, char **header, unsigned char **data,
+int PEM_read_bio(BIO *bp, char **name, char **header, uint8_t **data,
                  long *len)
 {
     EVP_ENCODE_CTX ctx;
@@ -765,13 +765,13 @@ int PEM_read_bio(BIO *bp, char **name, char **header, unsigned char **data,
 
     EVP_DecodeInit(&ctx);
     i = EVP_DecodeUpdate(&ctx,
-                         (unsigned char *)dataB->data, &bl,
-                         (unsigned char *)dataB->data, bl);
+                         (uint8_t *)dataB->data, &bl,
+                         (uint8_t *)dataB->data, bl);
     if (i < 0) {
         PEMerr(PEM_F_PEM_READ_BIO, PEM_R_BAD_BASE64_DECODE);
         goto err;
     }
-    i = EVP_DecodeFinal(&ctx, (unsigned char *)&(dataB->data[bl]), &k);
+    i = EVP_DecodeFinal(&ctx, (uint8_t *)&(dataB->data[bl]), &k);
     if (i < 0) {
         PEMerr(PEM_F_PEM_READ_BIO, PEM_R_BAD_BASE64_DECODE);
         goto err;
@@ -782,7 +782,7 @@ int PEM_read_bio(BIO *bp, char **name, char **header, unsigned char **data,
         goto err;
     *name = nameB->data;
     *header = headerB->data;
-    *data = (unsigned char *)dataB->data;
+    *data = (uint8_t *)dataB->data;
     *len = bl;
     free(nameB);
     free(headerB);

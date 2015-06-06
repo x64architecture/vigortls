@@ -66,9 +66,9 @@
 #include <pqueue.h>
 
 /* remember to change the expected results if you change these values */
-unsigned char prio1[8] = "trutheca";
-unsigned char prio2[8] = "kapuvuxu";
-unsigned char prio3[8] = "chusuwru";
+uint8_t prio1[8] = "trutheca";
+uint8_t prio2[8] = "kapuvuxu";
+uint8_t prio3[8] = "chusuwru";
 
 const char prio1_expected[] = "6368757375777275";
 const char prio2_expected[] = "6b61707576757875";

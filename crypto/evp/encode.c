@@ -75,7 +75,7 @@
 #define CHUNKS_PER_LINE (64 / 4)
 #define CHAR_PER_LINE (64 + 1)
 
-static const unsigned char data_bin2ascii[65] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ\
+static const uint8_t data_bin2ascii[65] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ\
 abcdefghijklmnopqrstuvwxyz0123456789+/";
 
 /* 0xF0 is a EOLN
@@ -92,7 +92,7 @@ abcdefghijklmnopqrstuvwxyz0123456789+/";
 #define B64_ERROR 0xFF
 #define B64_NOT_BASE64(a) (((a) | 0x13) == 0xF3)
 
-static const unsigned char data_ascii2bin[128] = {
+static const uint8_t data_ascii2bin[128] = {
     0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
     0xFF, 0xE0, 0xF0, 0xFF, 0xFF, 0xF1, 0xFF, 0xFF,
     0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
@@ -118,8 +118,8 @@ void EVP_EncodeInit(EVP_ENCODE_CTX *ctx)
     ctx->line_num = 0;
 }
 
-void EVP_EncodeUpdate(EVP_ENCODE_CTX *ctx, unsigned char *out, int *outl,
-                      const unsigned char *in, int inl)
+void EVP_EncodeUpdate(EVP_ENCODE_CTX *ctx, uint8_t *out, int *outl,
+                      const uint8_t *in, int inl)
 {
     int i, j;
     unsigned int total = 0;
@@ -160,7 +160,7 @@ void EVP_EncodeUpdate(EVP_ENCODE_CTX *ctx, unsigned char *out, int *outl,
     *outl = total;
 }
 
-void EVP_EncodeFinal(EVP_ENCODE_CTX *ctx, unsigned char *out, int *outl)
+void EVP_EncodeFinal(EVP_ENCODE_CTX *ctx, uint8_t *out, int *outl)
 {
     unsigned int ret = 0;
 
@@ -173,7 +173,7 @@ void EVP_EncodeFinal(EVP_ENCODE_CTX *ctx, unsigned char *out, int *outl)
     *outl = ret;
 }
 
-int EVP_EncodeBlock(unsigned char *t, const unsigned char *f, int dlen)
+int EVP_EncodeBlock(uint8_t *t, const uint8_t *f, int dlen)
 {
     int i, ret = 0;
     unsigned long l;
@@ -215,11 +215,11 @@ void EVP_DecodeInit(EVP_ENCODE_CTX *ctx)
  *  0 for last line
  *  1 for full line
  */
-int EVP_DecodeUpdate(EVP_ENCODE_CTX *ctx, unsigned char *out, int *outl,
-                     const unsigned char *in, int inl)
+int EVP_DecodeUpdate(EVP_ENCODE_CTX *ctx, uint8_t *out, int *outl,
+                     const uint8_t *in, int inl)
 {
     int seof = -1, eof = 0, rv = -1, ret = 0, i, v, tmp, n, ln, exp_nl;
-    unsigned char *d;
+    uint8_t *d;
 
     n = ctx->num;
     d = ctx->enc_data;
@@ -342,7 +342,7 @@ end:
     return (rv);
 }
 
-int EVP_DecodeBlock(unsigned char *t, const unsigned char *f, int n)
+int EVP_DecodeBlock(uint8_t *t, const uint8_t *f, int n)
 {
     int i, ret = 0, a, b, c, d;
     unsigned long l;
@@ -369,15 +369,15 @@ int EVP_DecodeBlock(unsigned char *t, const unsigned char *f, int n)
         if ((a & 0x80) || (b & 0x80) || (c & 0x80) || (d & 0x80))
             return (-1);
         l = ((((unsigned long)a) << 18L) | (((unsigned long)b) << 12L) | (((unsigned long)c) << 6L) | (((unsigned long)d)));
-        *(t++) = (unsigned char)(l >> 16L) & 0xff;
-        *(t++) = (unsigned char)(l >> 8L) & 0xff;
-        *(t++) = (unsigned char)(l) & 0xff;
+        *(t++) = (uint8_t)(l >> 16L) & 0xff;
+        *(t++) = (uint8_t)(l >> 8L) & 0xff;
+        *(t++) = (uint8_t)(l) & 0xff;
         ret += 3;
     }
     return (ret);
 }
 
-int EVP_DecodeFinal(EVP_ENCODE_CTX *ctx, unsigned char *out, int *outl)
+int EVP_DecodeFinal(EVP_ENCODE_CTX *ctx, uint8_t *out, int *outl)
 {
     int i;
 

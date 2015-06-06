@@ -280,8 +280,8 @@ end:
 
 static int ssl23_client_hello(SSL *s)
 {
-    unsigned char *buf;
-    unsigned char *p, *d;
+    uint8_t *buf;
+    uint8_t *p, *d;
     int i;
     unsigned long l;
     int version = 0, version_major, version_minor;
@@ -309,7 +309,7 @@ static int ssl23_client_hello(SSL *s)
         version = SSL3_VERSION;
     mask &= ~SSL_OP_NO_SSLv3;
 
-    buf = (unsigned char *)s->init_buf->data;
+    buf = (uint8_t *)s->init_buf->data;
     if (s->state == SSL23_ST_CW_CLNT_HELLO_A) {
         p = s->s3->client_random;
         if (RAND_bytes(p, SSL3_RANDOM_SIZE) <= 0) {
@@ -443,7 +443,7 @@ static int ssl23_client_hello(SSL *s)
 static int ssl23_get_server_hello(SSL *s)
 {
     char buf[8];
-    unsigned char *p;
+    uint8_t *p;
     int i;
     int n;
 

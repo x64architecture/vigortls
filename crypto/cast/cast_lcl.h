@@ -89,10 +89,10 @@
     }
 
 #undef l2c
-#define l2c(l, c) (*((c)++) = (unsigned char)(((l)) & 0xff),        \
-                   *((c)++) = (unsigned char)(((l) >> 8L) & 0xff),  \
-                   *((c)++) = (unsigned char)(((l) >> 16L) & 0xff), \
-                   *((c)++) = (unsigned char)(((l) >> 24L) & 0xff))
+#define l2c(l, c) (*((c)++) = (uint8_t)(((l)) & 0xff),        \
+                   *((c)++) = (uint8_t)(((l) >> 8L) & 0xff),  \
+                   *((c)++) = (uint8_t)(((l) >> 16L) & 0xff), \
+                   *((c)++) = (uint8_t)(((l) >> 24L) & 0xff))
 
 /* NOTE - c is not incremented as per l2c */
 #undef l2cn
@@ -101,21 +101,21 @@
         c += n;                                                   \
         switch (n) {                                              \
             case 8:                                               \
-                *(--(c)) = (unsigned char)(((l2) >> 24L) & 0xff); \
+                *(--(c)) = (uint8_t)(((l2) >> 24L) & 0xff); \
             case 7:                                               \
-                *(--(c)) = (unsigned char)(((l2) >> 16L) & 0xff); \
+                *(--(c)) = (uint8_t)(((l2) >> 16L) & 0xff); \
             case 6:                                               \
-                *(--(c)) = (unsigned char)(((l2) >> 8L) & 0xff);  \
+                *(--(c)) = (uint8_t)(((l2) >> 8L) & 0xff);  \
             case 5:                                               \
-                *(--(c)) = (unsigned char)(((l2)) & 0xff);        \
+                *(--(c)) = (uint8_t)(((l2)) & 0xff);        \
             case 4:                                               \
-                *(--(c)) = (unsigned char)(((l1) >> 24L) & 0xff); \
+                *(--(c)) = (uint8_t)(((l1) >> 24L) & 0xff); \
             case 3:                                               \
-                *(--(c)) = (unsigned char)(((l1) >> 16L) & 0xff); \
+                *(--(c)) = (uint8_t)(((l1) >> 16L) & 0xff); \
             case 2:                                               \
-                *(--(c)) = (unsigned char)(((l1) >> 8L) & 0xff);  \
+                *(--(c)) = (uint8_t)(((l1) >> 8L) & 0xff);  \
             case 1:                                               \
-                *(--(c)) = (unsigned char)(((l1)) & 0xff);        \
+                *(--(c)) = (uint8_t)(((l1)) & 0xff);        \
         }                                                         \
     }
 
@@ -150,21 +150,21 @@
         c += n;                                                  \
         switch (n) {                                             \
             case 8:                                              \
-                *(--(c)) = (unsigned char)(((l2)) & 0xff);       \
+                *(--(c)) = (uint8_t)(((l2)) & 0xff);       \
             case 7:                                              \
-                *(--(c)) = (unsigned char)(((l2) >> 8) & 0xff);  \
+                *(--(c)) = (uint8_t)(((l2) >> 8) & 0xff);  \
             case 6:                                              \
-                *(--(c)) = (unsigned char)(((l2) >> 16) & 0xff); \
+                *(--(c)) = (uint8_t)(((l2) >> 16) & 0xff); \
             case 5:                                              \
-                *(--(c)) = (unsigned char)(((l2) >> 24) & 0xff); \
+                *(--(c)) = (uint8_t)(((l2) >> 24) & 0xff); \
             case 4:                                              \
-                *(--(c)) = (unsigned char)(((l1)) & 0xff);       \
+                *(--(c)) = (uint8_t)(((l1)) & 0xff);       \
             case 3:                                              \
-                *(--(c)) = (unsigned char)(((l1) >> 8) & 0xff);  \
+                *(--(c)) = (uint8_t)(((l1) >> 8) & 0xff);  \
             case 2:                                              \
-                *(--(c)) = (unsigned char)(((l1) >> 16) & 0xff); \
+                *(--(c)) = (uint8_t)(((l1) >> 16) & 0xff); \
             case 1:                                              \
-                *(--(c)) = (unsigned char)(((l1) >> 24) & 0xff); \
+                *(--(c)) = (uint8_t)(((l1) >> 24) & 0xff); \
         }                                                        \
     }
 
@@ -175,10 +175,10 @@
                    l |= ((unsigned long)(*((c)++))))
 
 #undef l2n
-#define l2n(l, c) (*((c)++) = (unsigned char)(((l) >> 24L) & 0xff), \
-                   *((c)++) = (unsigned char)(((l) >> 16L) & 0xff), \
-                   *((c)++) = (unsigned char)(((l) >> 8L) & 0xff),  \
-                   *((c)++) = (unsigned char)(((l)) & 0xff))
+#define l2n(l, c) (*((c)++) = (uint8_t)(((l) >> 24L) & 0xff), \
+                   *((c)++) = (uint8_t)(((l) >> 16L) & 0xff), \
+                   *((c)++) = (uint8_t)(((l) >> 8L) & 0xff),  \
+                   *((c)++) = (uint8_t)(((l)) & 0xff))
 
 #define ROTL(a, n) ((((a) << (n)) & 0xffffffffL) | ((a) >> (32 - (n))))
 
@@ -196,7 +196,7 @@
         t = (key[n * 2] OP1 R) & 0xffffffffL;                                                                                                                                                                                                                                                                                                                  \
         i = key[n * 2 + 1];                                                                                                                                                                                                                                                                                                                                    \
         t = ROTL(t, i);                                                                                                                                                                                                                                                                                                                                        \
-        L ^= (((((*(CAST_LONG *)((unsigned char *)CAST_S_table0 + ((t >> C_2) & C_M)) OP2 * (CAST_LONG *)((unsigned char *)CAST_S_table1 + ((t << C_3) & C_M))) & 0xffffffffL)OP3 * (CAST_LONG *)((unsigned char *)CAST_S_table2 + ((t >> C_0) & C_M))) & 0xffffffffL)OP1 * (CAST_LONG *)((unsigned char *)CAST_S_table3 + ((t >> C_1) & C_M))) & 0xffffffffL; \
+        L ^= (((((*(CAST_LONG *)((uint8_t *)CAST_S_table0 + ((t >> C_2) & C_M)) OP2 * (CAST_LONG *)((uint8_t *)CAST_S_table1 + ((t << C_3) & C_M))) & 0xffffffffL)OP3 * (CAST_LONG *)((uint8_t *)CAST_S_table2 + ((t >> C_0) & C_M))) & 0xffffffffL)OP1 * (CAST_LONG *)((uint8_t *)CAST_S_table3 + ((t >> C_1) & C_M))) & 0xffffffffL; \
     }
 #elif defined(CAST_PTR2)
 #define E_CAST(n, key, L, R, OP1, OP2, OP3)                                            \
@@ -210,14 +210,14 @@
         v = w << C_3;                                                                  \
         u &= C_M;                                                                      \
         v &= C_M;                                                                      \
-        t = *(CAST_LONG *)((unsigned char *)CAST_S_table0 + u);                        \
+        t = *(CAST_LONG *)((uint8_t *)CAST_S_table0 + u);                        \
         u = w >> C_0;                                                                  \
-        t = (t OP2 * (CAST_LONG *)((unsigned char *)CAST_S_table1 + v)) & 0xffffffffL; \
+        t = (t OP2 * (CAST_LONG *)((uint8_t *)CAST_S_table1 + v)) & 0xffffffffL; \
         v = w >> C_1;                                                                  \
         u &= C_M;                                                                      \
         v &= C_M;                                                                      \
-        t = (t OP3 * (CAST_LONG *)((unsigned char *)CAST_S_table2 + u) & 0xffffffffL); \
-        t = (t OP1 * (CAST_LONG *)((unsigned char *)CAST_S_table3 + v) & 0xffffffffL); \
+        t = (t OP3 * (CAST_LONG *)((uint8_t *)CAST_S_table2 + u) & 0xffffffffL); \
+        t = (t OP1 * (CAST_LONG *)((uint8_t *)CAST_S_table3 + v) & 0xffffffffL); \
         L ^= (t & 0xffffffff);                                                         \
     }
 #else

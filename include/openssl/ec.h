@@ -271,9 +271,9 @@ int EC_GROUP_get_asn1_flag(const EC_GROUP *group);
 void EC_GROUP_set_point_conversion_form(EC_GROUP *group, point_conversion_form_t form);
 point_conversion_form_t EC_GROUP_get_point_conversion_form(const EC_GROUP *);
 
-unsigned char *EC_GROUP_get0_seed(const EC_GROUP *x);
+uint8_t *EC_GROUP_get0_seed(const EC_GROUP *x);
 size_t EC_GROUP_get_seed_len(const EC_GROUP *);
-size_t EC_GROUP_set_seed(EC_GROUP *, const unsigned char *, size_t len);
+size_t EC_GROUP_set_seed(EC_GROUP *, const uint8_t *, size_t len);
 
 /** Sets the parameter of a ec over GFp defined by y^2 = x^3 + a*x + b
  *  \param  group  EC_GROUP object
@@ -539,7 +539,7 @@ int EC_POINT_set_compressed_coordinates_GF2m(const EC_GROUP *group, EC_POINT *p,
  */
 size_t EC_POINT_point2oct(const EC_GROUP *group, const EC_POINT *p,
                           point_conversion_form_t form,
-                          unsigned char *buf, size_t len, BN_CTX *ctx);
+                          uint8_t *buf, size_t len, BN_CTX *ctx);
 
 /** Decodes a EC_POINT from a octet string
  *  \param  group  underlying EC_GROUP object
@@ -550,7 +550,7 @@ size_t EC_POINT_point2oct(const EC_GROUP *group, const EC_POINT *p,
  *  \return 1 on success and 0 if an error occured
  */
 int EC_POINT_oct2point(const EC_GROUP *group, EC_POINT *p,
-                       const unsigned char *buf, size_t len, BN_CTX *ctx);
+                       const uint8_t *buf, size_t len, BN_CTX *ctx);
 
 /* other interfaces to point2oct/oct2point: */
 BIGNUM *EC_POINT_point2bn(const EC_GROUP *, const EC_POINT *,
@@ -673,15 +673,15 @@ int EC_GROUP_get_pentanomial_basis(const EC_GROUP *, unsigned int *k1,
 
 typedef struct ecpk_parameters_st ECPKPARAMETERS;
 
-EC_GROUP *d2i_ECPKParameters(EC_GROUP **, const unsigned char **in, long len);
-int i2d_ECPKParameters(const EC_GROUP *, unsigned char **out);
+EC_GROUP *d2i_ECPKParameters(EC_GROUP **, const uint8_t **in, long len);
+int i2d_ECPKParameters(const EC_GROUP *, uint8_t **out);
 
 #define d2i_ECPKParameters_bio(bp, x) ASN1_d2i_bio_of(EC_GROUP, NULL, d2i_ECPKParameters, bp, x)
 #define i2d_ECPKParameters_bio(bp, x) ASN1_i2d_bio_of_const(EC_GROUP, i2d_ECPKParameters, bp, x)
 #define d2i_ECPKParameters_fp(fp, x) (EC_GROUP *) ASN1_d2i_fp(NULL, \
-                                                              (char *(*)())d2i_ECPKParameters, (fp), (unsigned char **)(x))
+                                                              (char *(*)())d2i_ECPKParameters, (fp), (uint8_t **)(x))
 #define i2d_ECPKParameters_fp(fp, x) ASN1_i2d_fp(i2d_ECPKParameters, (fp), \
-                                                 (unsigned char *)(x))
+                                                 (uint8_t *)(x))
 
 int ECPKParameters_print(BIO *bp, const EC_GROUP *x, int off);
 int ECPKParameters_print_fp(FILE *fp, const EC_GROUP *x, int off);
@@ -839,7 +839,7 @@ int EC_KEY_set_public_key_affine_coordinates(EC_KEY *key, BIGNUM *x, BIGNUM *y);
  *  \param  len  length of the DER encoded private key
  *  \return the decoded private key or NULL if an error occurred.
  */
-EC_KEY *d2i_ECPrivateKey(EC_KEY **key, const unsigned char **in, long len);
+EC_KEY *d2i_ECPrivateKey(EC_KEY **key, const uint8_t **in, long len);
 
 /** Encodes a private key object and stores the result in a buffer.
  *  \param  key  the EC_KEY object to encode
@@ -847,7 +847,7 @@ EC_KEY *d2i_ECPrivateKey(EC_KEY **key, const unsigned char **in, long len);
  *               of bytes needed).
  *  \return 1 on success and 0 if an error occurred.
  */
-int i2d_ECPrivateKey(EC_KEY *key, unsigned char **out);
+int i2d_ECPrivateKey(EC_KEY *key, uint8_t **out);
 
 /********************************************************************/
 /*        de- and encoding functions for EC parameters              */
@@ -860,7 +860,7 @@ int i2d_ECPrivateKey(EC_KEY *key, unsigned char **out);
  *  \return a EC_KEY object with the decoded parameters or NULL if an error
  *          occurred.
  */
-EC_KEY *d2i_ECParameters(EC_KEY **key, const unsigned char **in, long len);
+EC_KEY *d2i_ECParameters(EC_KEY **key, const uint8_t **in, long len);
 
 /** Encodes ec parameter and stores the result in a buffer.
  *  \param  key  the EC_KEY object with ec paramters to encode
@@ -868,7 +868,7 @@ EC_KEY *d2i_ECParameters(EC_KEY **key, const unsigned char **in, long len);
  *               of bytes needed).
  *  \return 1 on success and 0 if an error occurred.
  */
-int i2d_ECParameters(EC_KEY *key, unsigned char **out);
+int i2d_ECParameters(EC_KEY *key, uint8_t **out);
 
 /********************************************************************/
 /*         de- and encoding functions for EC public key             */
@@ -882,7 +882,7 @@ int i2d_ECParameters(EC_KEY *key, unsigned char **out);
  *  \return EC_KEY object with decoded public key or NULL if an error
  *          occurred.
  */
-EC_KEY *o2i_ECPublicKey(EC_KEY **key, const unsigned char **in, long len);
+EC_KEY *o2i_ECPublicKey(EC_KEY **key, const uint8_t **in, long len);
 
 /** Encodes a ec public key in an octet string.
  *  \param  key  the EC_KEY object with the public key
@@ -890,7 +890,7 @@ EC_KEY *o2i_ECPublicKey(EC_KEY **key, const unsigned char **in, long len);
  *               of bytes needed).
  *  \return 1 on success and 0 if an error occurred
  */
-int i2o_ECPublicKey(EC_KEY *key, unsigned char **out);
+int i2o_ECPublicKey(EC_KEY *key, uint8_t **out);
 
 /** Prints out the ec parameters on human readable form.
  *  \param  bp   BIO object to which the information is printed

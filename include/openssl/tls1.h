@@ -288,8 +288,8 @@ int SSL_get_servername_type(const SSL *s);
  *
  * It returns 1 on success and zero otherwise.
  */
-int SSL_export_keying_material(SSL *s, unsigned char *out, size_t olen,
-                               const char *label, size_t llen, const unsigned char *p, size_t plen,
+int SSL_export_keying_material(SSL *s, uint8_t *out, size_t olen,
+                               const char *label, size_t llen, const uint8_t *p, size_t plen,
                                int use_context);
 
 #define SSL_set_tlsext_host_name(s, name) \

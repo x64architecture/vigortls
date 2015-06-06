@@ -74,7 +74,7 @@ static int update(EVP_MD_CTX *ctx, const void *data, size_t count)
     return SHA1_Update(ctx->md_data, data, count);
 }
 
-static int final(EVP_MD_CTX *ctx, unsigned char *md)
+static int final(EVP_MD_CTX *ctx, uint8_t *md)
 {
     return SHA1_Final(md, ctx->md_data);
 }
@@ -122,7 +122,7 @@ static int update256(EVP_MD_CTX *ctx, const void *data, size_t count)
 {
     return SHA256_Update(ctx->md_data, data, count);
 }
-static int final256(EVP_MD_CTX *ctx, unsigned char *md)
+static int final256(EVP_MD_CTX *ctx, uint8_t *md)
 {
     return SHA256_Final(md, ctx->md_data);
 }
@@ -192,7 +192,7 @@ static int update512(EVP_MD_CTX *ctx, const void *data, size_t count)
 {
     return SHA512_Update(ctx->md_data, data, count);
 }
-static int final512(EVP_MD_CTX *ctx, unsigned char *md)
+static int final512(EVP_MD_CTX *ctx, uint8_t *md)
 {
     return SHA512_Final(md, ctx->md_data);
 }

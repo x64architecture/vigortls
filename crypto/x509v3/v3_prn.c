@@ -101,7 +101,7 @@ int X509V3_EXT_print(BIO *out, X509_EXTENSION *ext, unsigned long flag, int inde
 {
     void *ext_str = NULL;
     char *value = NULL;
-    const unsigned char *p;
+    const uint8_t *p;
     const X509V3_EXT_METHOD *method;
     STACK_OF(CONF_VALUE) *nval = NULL;
     int ok = 1;

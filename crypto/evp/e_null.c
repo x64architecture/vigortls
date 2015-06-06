@@ -61,10 +61,10 @@
 #include <openssl/evp.h>
 #include <openssl/objects.h>
 
-static int null_init_key(EVP_CIPHER_CTX *ctx, const unsigned char *key,
-                         const unsigned char *iv, int enc);
-static int null_cipher(EVP_CIPHER_CTX *ctx, unsigned char *out,
-                       const unsigned char *in, size_t inl);
+static int null_init_key(EVP_CIPHER_CTX *ctx, const uint8_t *key,
+                         const uint8_t *iv, int enc);
+static int null_cipher(EVP_CIPHER_CTX *ctx, uint8_t *out,
+                       const uint8_t *in, size_t inl);
 static const EVP_CIPHER n_cipher = {
     NID_undef,
     1, 0, 0,
@@ -84,15 +84,15 @@ const EVP_CIPHER *EVP_enc_null(void)
     return (&n_cipher);
 }
 
-static int null_init_key(EVP_CIPHER_CTX *ctx, const unsigned char *key,
-                         const unsigned char *iv, int enc)
+static int null_init_key(EVP_CIPHER_CTX *ctx, const uint8_t *key,
+                         const uint8_t *iv, int enc)
 {
     /*    memset(&(ctx->c),0,sizeof(ctx->c));*/
     return 1;
 }
 
-static int null_cipher(EVP_CIPHER_CTX *ctx, unsigned char *out,
-                       const unsigned char *in, size_t inl)
+static int null_cipher(EVP_CIPHER_CTX *ctx, uint8_t *out,
+                       const uint8_t *in, size_t inl)
 {
     if (in != out)
         memcpy((char *)out, (const char *)in, inl);

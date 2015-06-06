@@ -78,12 +78,12 @@ ASN1_SEQUENCE(X509_CERT_AUX) = {
     ASN1_IMP_SEQUENCE_OF_OPT(X509_CERT_AUX, other, X509_ALGOR, 1)
 } ASN1_SEQUENCE_END(X509_CERT_AUX)
 
-X509_CERT_AUX *d2i_X509_CERT_AUX(X509_CERT_AUX **a, const unsigned char **in, long len)
+X509_CERT_AUX *d2i_X509_CERT_AUX(X509_CERT_AUX **a, const uint8_t **in, long len)
 {
     return (X509_CERT_AUX *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, &X509_CERT_AUX_it);
 }
 
-int i2d_X509_CERT_AUX(X509_CERT_AUX *a, unsigned char **out)
+int i2d_X509_CERT_AUX(X509_CERT_AUX *a, uint8_t **out)
 {
     return ASN1_item_i2d((ASN1_VALUE *)a, out, &X509_CERT_AUX_it);
 }
@@ -107,7 +107,7 @@ static X509_CERT_AUX * aux_get(X509 * x)
     return x->aux;
 }
 
-int X509_alias_set1(X509 *x, unsigned char *name, int len)
+int X509_alias_set1(X509 *x, uint8_t *name, int len)
 {
     X509_CERT_AUX *aux;
     if (!name) {
@@ -124,7 +124,7 @@ int X509_alias_set1(X509 *x, unsigned char *name, int len)
     return ASN1_STRING_set(aux->alias, name, len);
 }
 
-int X509_keyid_set1(X509 *x, unsigned char *id, int len)
+int X509_keyid_set1(X509 *x, uint8_t *id, int len)
 {
     X509_CERT_AUX *aux;
     if (!id) {
@@ -141,7 +141,7 @@ int X509_keyid_set1(X509 *x, unsigned char *id, int len)
     return ASN1_STRING_set(aux->keyid, id, len);
 }
 
-unsigned char *X509_alias_get0(X509 *x, int *len)
+uint8_t *X509_alias_get0(X509 *x, int *len)
 {
     if (!x->aux || !x->aux->alias)
         return NULL;
@@ -150,7 +150,7 @@ unsigned char *X509_alias_get0(X509 *x, int *len)
     return x->aux->alias->data;
 }
 
-unsigned char *X509_keyid_get0(X509 *x, int *len)
+uint8_t *X509_keyid_get0(X509 *x, int *len)
 {
     if (!x->aux || !x->aux->keyid)
         return NULL;

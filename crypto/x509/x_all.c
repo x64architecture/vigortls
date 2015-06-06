@@ -360,7 +360,7 @@ int i2d_ECPrivateKey_bio(BIO *bp, EC_KEY *eckey)
     return ASN1_i2d_bio_of(EC_KEY, i2d_ECPrivateKey, bp, eckey);
 }
 
-int X509_pubkey_digest(const X509 *data, const EVP_MD *type, unsigned char *md,
+int X509_pubkey_digest(const X509 *data, const EVP_MD *type, uint8_t *md,
                        unsigned int *len)
 {
     ASN1_BIT_STRING *key;
@@ -370,32 +370,32 @@ int X509_pubkey_digest(const X509 *data, const EVP_MD *type, unsigned char *md,
     return EVP_Digest(key->data, key->length, md, len, type, NULL);
 }
 
-int X509_digest(const X509 *data, const EVP_MD *type, unsigned char *md,
+int X509_digest(const X509 *data, const EVP_MD *type, uint8_t *md,
                 unsigned int *len)
 {
     return (ASN1_item_digest(ASN1_ITEM_rptr(X509), type, (char *)data, md, len));
 }
 
-int X509_CRL_digest(const X509_CRL *data, const EVP_MD *type, unsigned char *md,
+int X509_CRL_digest(const X509_CRL *data, const EVP_MD *type, uint8_t *md,
                     unsigned int *len)
 {
     return (ASN1_item_digest(ASN1_ITEM_rptr(X509_CRL), type, (char *)data, md, len));
 }
 
-int X509_REQ_digest(const X509_REQ *data, const EVP_MD *type, unsigned char *md,
+int X509_REQ_digest(const X509_REQ *data, const EVP_MD *type, uint8_t *md,
                     unsigned int *len)
 {
     return (ASN1_item_digest(ASN1_ITEM_rptr(X509_REQ), type, (char *)data, md, len));
 }
 
-int X509_NAME_digest(const X509_NAME *data, const EVP_MD *type, unsigned char *md,
+int X509_NAME_digest(const X509_NAME *data, const EVP_MD *type, uint8_t *md,
                      unsigned int *len)
 {
     return (ASN1_item_digest(ASN1_ITEM_rptr(X509_NAME), type, (char *)data, md, len));
 }
 
 int PKCS7_ISSUER_AND_SERIAL_digest(PKCS7_ISSUER_AND_SERIAL *data, const EVP_MD *type,
-                                   unsigned char *md, unsigned int *len)
+                                   uint8_t *md, unsigned int *len)
 {
     return (ASN1_item_digest(ASN1_ITEM_rptr(PKCS7_ISSUER_AND_SERIAL), type,
                              (char *)data, md, len));

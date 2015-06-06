@@ -78,17 +78,17 @@ extern "C" {
 
 struct rsa_meth_st {
     const char *name;
-    int (*rsa_pub_enc)(int flen, const unsigned char *from,
-                       unsigned char *to,
+    int (*rsa_pub_enc)(int flen, const uint8_t *from,
+                       uint8_t *to,
                        RSA *rsa, int padding);
-    int (*rsa_pub_dec)(int flen, const unsigned char *from,
-                       unsigned char *to,
+    int (*rsa_pub_dec)(int flen, const uint8_t *from,
+                       uint8_t *to,
                        RSA *rsa, int padding);
-    int (*rsa_priv_enc)(int flen, const unsigned char *from,
-                        unsigned char *to,
+    int (*rsa_priv_enc)(int flen, const uint8_t *from,
+                        uint8_t *to,
                         RSA *rsa, int padding);
-    int (*rsa_priv_dec)(int flen, const unsigned char *from,
-                        unsigned char *to,
+    int (*rsa_priv_dec)(int flen, const uint8_t *from,
+                        uint8_t *to,
                         RSA *rsa, int padding);
     int (*rsa_mod_exp)(BIGNUM *r0, const BIGNUM *I, RSA *rsa, BN_CTX *ctx); /* Can be null */
     int (*bn_mod_exp)(BIGNUM *r, const BIGNUM *a, const BIGNUM *p,
@@ -106,11 +106,11 @@ struct rsa_meth_st {
  * option is set in 'flags'.
  */
     int (*rsa_sign)(int type,
-                    const unsigned char *m, unsigned int m_length,
-                    unsigned char *sigret, unsigned int *siglen, const RSA *rsa);
+                    const uint8_t *m, unsigned int m_length,
+                    uint8_t *sigret, unsigned int *siglen, const RSA *rsa);
     int (*rsa_verify)(int dtype,
-                      const unsigned char *m, unsigned int m_length,
-                      const unsigned char *sigbuf, unsigned int siglen,
+                      const uint8_t *m, unsigned int m_length,
+                      const uint8_t *sigbuf, unsigned int siglen,
                       const RSA *rsa);
     /* If this callback is NULL, the builtin software RSA key-gen will be used. This
  * is for behavioural compatibility whilst the code gets rewired, but one day
@@ -272,14 +272,14 @@ int RSA_generate_key_ex(RSA *rsa, int bits, BIGNUM *e, BN_GENCB *cb);
 
 int RSA_check_key(const RSA *);
 /* next 4 return -1 on error */
-int RSA_public_encrypt(int flen, const unsigned char *from,
-                       unsigned char *to, RSA *rsa, int padding);
-int RSA_private_encrypt(int flen, const unsigned char *from,
-                        unsigned char *to, RSA *rsa, int padding);
-int RSA_public_decrypt(int flen, const unsigned char *from,
-                       unsigned char *to, RSA *rsa, int padding);
-int RSA_private_decrypt(int flen, const unsigned char *from,
-                        unsigned char *to, RSA *rsa, int padding);
+int RSA_public_encrypt(int flen, const uint8_t *from,
+                       uint8_t *to, RSA *rsa, int padding);
+int RSA_private_encrypt(int flen, const uint8_t *from,
+                        uint8_t *to, RSA *rsa, int padding);
+int RSA_public_decrypt(int flen, const uint8_t *from,
+                       uint8_t *to, RSA *rsa, int padding);
+int RSA_private_decrypt(int flen, const uint8_t *from,
+                        uint8_t *to, RSA *rsa, int padding);
 void RSA_free(RSA *r);
 /* "up" the RSA object's reference count */
 int RSA_up_ref(RSA *r);
@@ -312,82 +312,82 @@ int RSA_print_fp(FILE *fp, const RSA *r, int offset);
 
 int RSA_print(BIO *bp, const RSA *r, int offset);
 
-int i2d_RSA_NET(const RSA *a, unsigned char **pp,
+int i2d_RSA_NET(const RSA *a, uint8_t **pp,
                 int (*cb)(char *buf, int len, const char *prompt, int verify),
                 int sgckey);
-RSA *d2i_RSA_NET(RSA **a, const unsigned char **pp, long length,
+RSA *d2i_RSA_NET(RSA **a, const uint8_t **pp, long length,
                  int (*cb)(char *buf, int len, const char *prompt, int verify),
                  int sgckey);
 
-int i2d_Netscape_RSA(const RSA *a, unsigned char **pp,
+int i2d_Netscape_RSA(const RSA *a, uint8_t **pp,
                      int (*cb)(char *buf, int len, const char *prompt,
                                int verify));
-RSA *d2i_Netscape_RSA(RSA **a, const unsigned char **pp, long length,
+RSA *d2i_Netscape_RSA(RSA **a, const uint8_t **pp, long length,
                       int (*cb)(char *buf, int len, const char *prompt,
                                 int verify));
 
 /* The following 2 functions sign and verify a X509_SIG ASN1 object
  * inside PKCS#1 padded RSA encryption */
-int RSA_sign(int type, const unsigned char *m, unsigned int m_length,
-             unsigned char *sigret, unsigned int *siglen, RSA *rsa);
-int RSA_verify(int type, const unsigned char *m, unsigned int m_length,
-               const unsigned char *sigbuf, unsigned int siglen, RSA *rsa);
+int RSA_sign(int type, const uint8_t *m, unsigned int m_length,
+             uint8_t *sigret, unsigned int *siglen, RSA *rsa);
+int RSA_verify(int type, const uint8_t *m, unsigned int m_length,
+               const uint8_t *sigbuf, unsigned int siglen, RSA *rsa);
 
 /* The following 2 function sign and verify a ASN1_OCTET_STRING
  * object inside PKCS#1 padded RSA encryption */
 int RSA_sign_ASN1_OCTET_STRING(int type,
-                               const unsigned char *m, unsigned int m_length,
-                               unsigned char *sigret, unsigned int *siglen, RSA *rsa);
+                               const uint8_t *m, unsigned int m_length,
+                               uint8_t *sigret, unsigned int *siglen, RSA *rsa);
 int RSA_verify_ASN1_OCTET_STRING(int type,
-                                 const unsigned char *m, unsigned int m_length,
-                                 unsigned char *sigbuf, unsigned int siglen, RSA *rsa);
+                                 const uint8_t *m, unsigned int m_length,
+                                 uint8_t *sigbuf, unsigned int siglen, RSA *rsa);
 
 int RSA_blinding_on(RSA *rsa, BN_CTX *ctx);
 void RSA_blinding_off(RSA *rsa);
 BN_BLINDING *RSA_setup_blinding(RSA *rsa, BN_CTX *ctx);
 
-int RSA_padding_add_PKCS1_type_1(unsigned char *to, int tlen,
-                                 const unsigned char *f, int fl);
-int RSA_padding_check_PKCS1_type_1(unsigned char *to, int tlen,
-                                   const unsigned char *f, int fl, int rsa_len);
-int RSA_padding_add_PKCS1_type_2(unsigned char *to, int tlen,
-                                 const unsigned char *f, int fl);
-int RSA_padding_check_PKCS1_type_2(unsigned char *to, int tlen,
-                                   const unsigned char *f, int fl, int rsa_len);
-int PKCS1_MGF1(unsigned char *mask, long len,
-               const unsigned char *seed, long seedlen, const EVP_MD *dgst);
-int RSA_padding_add_PKCS1_OAEP(unsigned char *to, int tlen,
-                               const unsigned char *f, int fl,
-                               const unsigned char *p, int pl);
-int RSA_padding_check_PKCS1_OAEP(unsigned char *to, int tlen,
-                                 const unsigned char *f, int fl, int rsa_len,
-                                 const unsigned char *p, int pl);
-int RSA_padding_add_SSLv23(unsigned char *to, int tlen,
-                           const unsigned char *f, int fl);
-int RSA_padding_check_SSLv23(unsigned char *to, int tlen,
-                             const unsigned char *f, int fl, int rsa_len);
-int RSA_padding_add_none(unsigned char *to, int tlen,
-                         const unsigned char *f, int fl);
-int RSA_padding_check_none(unsigned char *to, int tlen,
-                           const unsigned char *f, int fl, int rsa_len);
-int RSA_padding_add_X931(unsigned char *to, int tlen,
-                         const unsigned char *f, int fl);
-int RSA_padding_check_X931(unsigned char *to, int tlen,
-                           const unsigned char *f, int fl, int rsa_len);
+int RSA_padding_add_PKCS1_type_1(uint8_t *to, int tlen,
+                                 const uint8_t *f, int fl);
+int RSA_padding_check_PKCS1_type_1(uint8_t *to, int tlen,
+                                   const uint8_t *f, int fl, int rsa_len);
+int RSA_padding_add_PKCS1_type_2(uint8_t *to, int tlen,
+                                 const uint8_t *f, int fl);
+int RSA_padding_check_PKCS1_type_2(uint8_t *to, int tlen,
+                                   const uint8_t *f, int fl, int rsa_len);
+int PKCS1_MGF1(uint8_t *mask, long len,
+               const uint8_t *seed, long seedlen, const EVP_MD *dgst);
+int RSA_padding_add_PKCS1_OAEP(uint8_t *to, int tlen,
+                               const uint8_t *f, int fl,
+                               const uint8_t *p, int pl);
+int RSA_padding_check_PKCS1_OAEP(uint8_t *to, int tlen,
+                                 const uint8_t *f, int fl, int rsa_len,
+                                 const uint8_t *p, int pl);
+int RSA_padding_add_SSLv23(uint8_t *to, int tlen,
+                           const uint8_t *f, int fl);
+int RSA_padding_check_SSLv23(uint8_t *to, int tlen,
+                             const uint8_t *f, int fl, int rsa_len);
+int RSA_padding_add_none(uint8_t *to, int tlen,
+                         const uint8_t *f, int fl);
+int RSA_padding_check_none(uint8_t *to, int tlen,
+                           const uint8_t *f, int fl, int rsa_len);
+int RSA_padding_add_X931(uint8_t *to, int tlen,
+                         const uint8_t *f, int fl);
+int RSA_padding_check_X931(uint8_t *to, int tlen,
+                           const uint8_t *f, int fl, int rsa_len);
 int RSA_X931_hash_id(int nid);
 
-int RSA_verify_PKCS1_PSS(RSA *rsa, const unsigned char *mHash,
-                         const EVP_MD *Hash, const unsigned char *EM, int sLen);
-int RSA_padding_add_PKCS1_PSS(RSA *rsa, unsigned char *EM,
-                              const unsigned char *mHash,
+int RSA_verify_PKCS1_PSS(RSA *rsa, const uint8_t *mHash,
+                         const EVP_MD *Hash, const uint8_t *EM, int sLen);
+int RSA_padding_add_PKCS1_PSS(RSA *rsa, uint8_t *EM,
+                              const uint8_t *mHash,
                               const EVP_MD *Hash, int sLen);
 
-int RSA_verify_PKCS1_PSS_mgf1(RSA *rsa, const unsigned char *mHash,
+int RSA_verify_PKCS1_PSS_mgf1(RSA *rsa, const uint8_t *mHash,
                               const EVP_MD *Hash, const EVP_MD *mgf1Hash,
-                              const unsigned char *EM, int sLen);
+                              const uint8_t *EM, int sLen);
 
-int RSA_padding_add_PKCS1_PSS_mgf1(RSA *rsa, unsigned char *EM,
-                                   const unsigned char *mHash,
+int RSA_padding_add_PKCS1_PSS_mgf1(RSA *rsa, uint8_t *EM,
+                                   const uint8_t *mHash,
                                    const EVP_MD *Hash, const EVP_MD *mgf1Hash, int sLen);
 
 int RSA_get_ex_new_index(long argl, void *argp, CRYPTO_EX_new *new_func,

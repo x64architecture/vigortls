@@ -379,14 +379,14 @@ int STORE_ATTR_INFO_free(STORE_ATTR_INFO *attrs);
 
 /* Manipulators */
 char *STORE_ATTR_INFO_get0_cstr(STORE_ATTR_INFO *attrs, STORE_ATTR_TYPES code);
-unsigned char *STORE_ATTR_INFO_get0_sha1str(STORE_ATTR_INFO *attrs,
+uint8_t *STORE_ATTR_INFO_get0_sha1str(STORE_ATTR_INFO *attrs,
                                             STORE_ATTR_TYPES code);
 X509_NAME *STORE_ATTR_INFO_get0_dn(STORE_ATTR_INFO *attrs, STORE_ATTR_TYPES code);
 BIGNUM *STORE_ATTR_INFO_get0_number(STORE_ATTR_INFO *attrs, STORE_ATTR_TYPES code);
 int STORE_ATTR_INFO_set_cstr(STORE_ATTR_INFO *attrs, STORE_ATTR_TYPES code,
                              char *cstr, size_t cstr_size);
 int STORE_ATTR_INFO_set_sha1str(STORE_ATTR_INFO *attrs, STORE_ATTR_TYPES code,
-                                unsigned char *sha1str, size_t sha1str_size);
+                                uint8_t *sha1str, size_t sha1str_size);
 int STORE_ATTR_INFO_set_dn(STORE_ATTR_INFO *attrs, STORE_ATTR_TYPES code,
                            X509_NAME *dn);
 int STORE_ATTR_INFO_set_number(STORE_ATTR_INFO *attrs, STORE_ATTR_TYPES code,
@@ -394,7 +394,7 @@ int STORE_ATTR_INFO_set_number(STORE_ATTR_INFO *attrs, STORE_ATTR_TYPES code,
 int STORE_ATTR_INFO_modify_cstr(STORE_ATTR_INFO *attrs, STORE_ATTR_TYPES code,
                                 char *cstr, size_t cstr_size);
 int STORE_ATTR_INFO_modify_sha1str(STORE_ATTR_INFO *attrs, STORE_ATTR_TYPES code,
-                                   unsigned char *sha1str, size_t sha1str_size);
+                                   uint8_t *sha1str, size_t sha1str_size);
 int STORE_ATTR_INFO_modify_dn(STORE_ATTR_INFO *attrs, STORE_ATTR_TYPES code,
                               X509_NAME *dn);
 int STORE_ATTR_INFO_modify_number(STORE_ATTR_INFO *attrs, STORE_ATTR_TYPES code,

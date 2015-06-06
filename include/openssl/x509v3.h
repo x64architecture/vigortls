@@ -74,8 +74,8 @@ struct v3_ext_ctx;
 
 typedef void *(*X509V3_EXT_NEW)(void);
 typedef void (*X509V3_EXT_FREE)(void *);
-typedef void *(*X509V3_EXT_D2I)(void *, const unsigned char **, long);
-typedef int (*X509V3_EXT_I2D)(void *, unsigned char **);
+typedef void *(*X509V3_EXT_D2I)(void *, const uint8_t **, long);
+typedef int (*X509V3_EXT_I2D)(void *, uint8_t **);
 typedef STACK_OF(CONF_VALUE) * (*X509V3_EXT_I2V)(const struct v3_ext_method *method, void *ext,
                                                  STACK_OF(CONF_VALUE) * extlist);
 typedef void *(*X509V3_EXT_V2I)(const struct v3_ext_method *method,
@@ -627,7 +627,7 @@ void X509V3_set_ctx(X509V3_CTX *ctx, X509 *issuer, X509 *subject,
 
 int X509V3_add_value(const char *name, const char *value,
                      STACK_OF(CONF_VALUE) * *extlist);
-int X509V3_add_value_uchar(const char *name, const unsigned char *value,
+int X509V3_add_value_uchar(const char *name, const uint8_t *value,
                            STACK_OF(CONF_VALUE) * *extlist);
 int X509V3_add_value_bool(const char *name, int asn1_bool,
                           STACK_OF(CONF_VALUE) * *extlist);
@@ -652,8 +652,8 @@ void *X509V3_get_d2i(STACK_OF(X509_EXTENSION) * x, int nid, int *crit, int *idx)
 X509_EXTENSION *X509V3_EXT_i2d(int ext_nid, int crit, void *ext_struc);
 int X509V3_add1_i2d(STACK_OF(X509_EXTENSION) * *x, int nid, void *value, int crit, unsigned long flags);
 
-char *hex_to_string(const unsigned char *buffer, long len);
-unsigned char *string_to_hex(const char *str, long *len);
+char *hex_to_string(const uint8_t *buffer, long len);
+uint8_t *string_to_hex(const char *str, long *len);
 int name_cmp(const char *name, const char *cmp);
 
 void X509V3_EXT_val_prn(BIO *out, STACK_OF(CONF_VALUE) * val, int indent,
@@ -689,7 +689,7 @@ STACK_OF(OPENSSL_STRING) * X509_get1_ocsp(X509 *x);
 
 ASN1_OCTET_STRING *a2i_IPADDRESS(const char *ipasc);
 ASN1_OCTET_STRING *a2i_IPADDRESS_NC(const char *ipasc);
-int a2i_ipadd(unsigned char *ipout, const char *ipasc);
+int a2i_ipadd(uint8_t *ipout, const char *ipasc);
 int X509V3_NAME_from_section(X509_NAME *nm, STACK_OF(CONF_VALUE) * dn_sk,
                              unsigned long chtype);
 

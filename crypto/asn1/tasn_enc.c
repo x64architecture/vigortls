@@ -66,31 +66,31 @@
 #include "internal/asn1_int.h"
 #include "asn1_locl.h"
 
-static int asn1_i2d_ex_primitive(ASN1_VALUE **pval, unsigned char **out,
+static int asn1_i2d_ex_primitive(ASN1_VALUE **pval, uint8_t **out,
                                  const ASN1_ITEM *it,
                                  int tag, int aclass);
-static int asn1_set_seq_out(STACK_OF(ASN1_VALUE) * sk, unsigned char **out,
+static int asn1_set_seq_out(STACK_OF(ASN1_VALUE) * sk, uint8_t **out,
                             int skcontlen, const ASN1_ITEM *item,
                             int do_sort, int iclass);
-static int asn1_template_ex_i2d(ASN1_VALUE **pval, unsigned char **out,
+static int asn1_template_ex_i2d(ASN1_VALUE **pval, uint8_t **out,
                                 const ASN1_TEMPLATE *tt,
                                 int tag, int aclass);
-static int asn1_item_flags_i2d(ASN1_VALUE *val, unsigned char **out,
+static int asn1_item_flags_i2d(ASN1_VALUE *val, uint8_t **out,
                                const ASN1_ITEM *it, int flags);
-static int asn1_ex_i2c(ASN1_VALUE **pval, unsigned char *cont, int *putype,
+static int asn1_ex_i2c(ASN1_VALUE **pval, uint8_t *cont, int *putype,
                        const ASN1_ITEM *it);
 
 /* Top level i2d equivalents: the 'ndef' variant instructs the encoder
  * to use indefinite length constructed encoding, where appropriate
  */
 
-int ASN1_item_ndef_i2d(ASN1_VALUE *val, unsigned char **out,
+int ASN1_item_ndef_i2d(ASN1_VALUE *val, uint8_t **out,
                        const ASN1_ITEM *it)
 {
     return asn1_item_flags_i2d(val, out, it, ASN1_TFLG_NDEF);
 }
 
-int ASN1_item_i2d(ASN1_VALUE *val, unsigned char **out, const ASN1_ITEM *it)
+int ASN1_item_i2d(ASN1_VALUE *val, uint8_t **out, const ASN1_ITEM *it)
 {
     return asn1_item_flags_i2d(val, out, it, 0);
 }
@@ -104,11 +104,11 @@ int ASN1_item_i2d(ASN1_VALUE *val, unsigned char **out, const ASN1_ITEM *it)
  * allocated and populated with the encoding.
  */
 
-static int asn1_item_flags_i2d(ASN1_VALUE *val, unsigned char **out,
+static int asn1_item_flags_i2d(ASN1_VALUE *val, uint8_t **out,
                                const ASN1_ITEM *it, int flags)
 {
     if (out && !*out) {
-        unsigned char *p, *buf;
+        uint8_t *p, *buf;
         int len;
         len = ASN1_item_ex_i2d(&val, NULL, it, -1, flags);
         if (len <= 0)
@@ -130,7 +130,7 @@ static int asn1_item_flags_i2d(ASN1_VALUE *val, unsigned char **out,
  * used in external types.
  */
 
-int ASN1_item_ex_i2d(ASN1_VALUE **pval, unsigned char **out,
+int ASN1_item_ex_i2d(ASN1_VALUE **pval, uint8_t **out,
                      const ASN1_ITEM *it, int tag, int aclass)
 {
     const ASN1_TEMPLATE *tt = NULL;
@@ -244,7 +244,7 @@ int ASN1_item_ex_i2d(ASN1_VALUE **pval, unsigned char **out,
     return 0;
 }
 
-static int asn1_template_ex_i2d(ASN1_VALUE **pval, unsigned char **out,
+static int asn1_template_ex_i2d(ASN1_VALUE **pval, uint8_t **out,
                                 const ASN1_TEMPLATE *tt, int tag, int iclass)
 {
     int i, ret, flags, ttag, tclass, ndef;
@@ -383,7 +383,7 @@ static int asn1_template_ex_i2d(ASN1_VALUE **pval, unsigned char **out,
 /* Temporary structure used to hold DER encoding of items for SET OF */
 
 typedef struct {
-    unsigned char *data;
+    uint8_t *data;
     int length;
     ASN1_VALUE *field;
 } DER_ENC;
@@ -401,13 +401,13 @@ static int der_cmp(const void *a, const void *b)
 
 /* Output the content octets of SET OF or SEQUENCE OF */
 
-static int asn1_set_seq_out(STACK_OF(ASN1_VALUE) * sk, unsigned char **out,
+static int asn1_set_seq_out(STACK_OF(ASN1_VALUE) * sk, uint8_t **out,
                             int skcontlen, const ASN1_ITEM *item,
                             int do_sort, int iclass)
 {
     int i;
     ASN1_VALUE *skitem;
-    unsigned char *tmpdat = NULL, *p = NULL;
+    uint8_t *tmpdat = NULL, *p = NULL;
     DER_ENC *derlst = NULL, *tder;
     if (do_sort) {
         /* Don't need to sort less than 2 items */
@@ -462,7 +462,7 @@ static int asn1_set_seq_out(STACK_OF(ASN1_VALUE) * sk, unsigned char **out,
     return 1;
 }
 
-static int asn1_i2d_ex_primitive(ASN1_VALUE **pval, unsigned char **out,
+static int asn1_i2d_ex_primitive(ASN1_VALUE **pval, uint8_t **out,
                                  const ASN1_ITEM *it, int tag, int aclass)
 {
     int len;
@@ -522,15 +522,15 @@ static int asn1_i2d_ex_primitive(ASN1_VALUE **pval, unsigned char **out,
 
 /* Produce content octets from a structure */
 
-static int asn1_ex_i2c(ASN1_VALUE **pval, unsigned char *cout, int *putype,
+static int asn1_ex_i2c(ASN1_VALUE **pval, uint8_t *cout, int *putype,
                        const ASN1_ITEM *it)
 {
     ASN1_BOOLEAN *tbool = NULL;
     ASN1_STRING *strtmp;
     ASN1_OBJECT *otmp;
     int utype;
-    const unsigned char *cont;
-    unsigned char c;
+    const uint8_t *cont;
+    uint8_t c;
     int len;
     const ASN1_PRIMITIVE_FUNCS *pf;
     pf = it->funcs;
@@ -582,7 +582,7 @@ static int asn1_ex_i2c(ASN1_VALUE **pval, unsigned char *cout, int *putype,
                 if (!*tbool && !it->size)
                     return -1;
             }
-            c = (unsigned char)*tbool;
+            c = (uint8_t)*tbool;
             cont = &c;
             len = 1;
             break;

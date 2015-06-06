@@ -32,12 +32,12 @@
 #define CHACHA20_NONCE_LEN 8
 
 struct aead_chacha20_poly1305_ctx {
-    unsigned char key[32];
-    unsigned char tag_len;
+    uint8_t key[32];
+    uint8_t tag_len;
 };
 
 static int
-aead_chacha20_poly1305_init(EVP_AEAD_CTX *ctx, const unsigned char *key,
+aead_chacha20_poly1305_init(EVP_AEAD_CTX *ctx, const uint8_t *key,
                             size_t key_len, size_t tag_len)
 {
     struct aead_chacha20_poly1305_ctx *c20_ctx;
@@ -76,10 +76,10 @@ aead_chacha20_poly1305_cleanup(EVP_AEAD_CTX *ctx)
 
 static void
 poly1305_update_with_length(poly1305_state *poly1305,
-                            const unsigned char *data, size_t data_len)
+                            const uint8_t *data, size_t data_len)
 {
     size_t j = data_len;
-    unsigned char length_bytes[8];
+    uint8_t length_bytes[8];
     unsigned i;
 
     for (i = 0; i < sizeof(length_bytes); i++) {
@@ -92,13 +92,13 @@ poly1305_update_with_length(poly1305_state *poly1305,
 }
 
 static int
-aead_chacha20_poly1305_seal(const EVP_AEAD_CTX *ctx, unsigned char *out,
-                            size_t *out_len, size_t max_out_len, const unsigned char *nonce,
-                            size_t nonce_len, const unsigned char *in, size_t in_len,
-                            const unsigned char *ad, size_t ad_len)
+aead_chacha20_poly1305_seal(const EVP_AEAD_CTX *ctx, uint8_t *out,
+                            size_t *out_len, size_t max_out_len, const uint8_t *nonce,
+                            size_t nonce_len, const uint8_t *in, size_t in_len,
+                            const uint8_t *ad, size_t ad_len)
 {
     const struct aead_chacha20_poly1305_ctx *c20_ctx = ctx->aead_state;
-    unsigned char poly1305_key[32];
+    uint8_t poly1305_key[32];
     poly1305_state poly1305;
     const uint64_t in_len_64 = in_len;
 
@@ -136,7 +136,7 @@ aead_chacha20_poly1305_seal(const EVP_AEAD_CTX *ctx, unsigned char *out,
     poly1305_update_with_length(&poly1305, out, in_len);
 
     if (c20_ctx->tag_len != POLY1305_TAG_LEN) {
-        unsigned char tag[POLY1305_TAG_LEN];
+        uint8_t tag[POLY1305_TAG_LEN];
         CRYPTO_poly1305_finish(&poly1305, tag);
         memcpy(out + in_len, tag, c20_ctx->tag_len);
         *out_len = in_len + c20_ctx->tag_len;
@@ -149,14 +149,14 @@ aead_chacha20_poly1305_seal(const EVP_AEAD_CTX *ctx, unsigned char *out,
 }
 
 static int
-aead_chacha20_poly1305_open(const EVP_AEAD_CTX *ctx, unsigned char *out,
-                            size_t *out_len, size_t max_out_len, const unsigned char *nonce,
-                            size_t nonce_len, const unsigned char *in, size_t in_len,
-                            const unsigned char *ad, size_t ad_len)
+aead_chacha20_poly1305_open(const EVP_AEAD_CTX *ctx, uint8_t *out,
+                            size_t *out_len, size_t max_out_len, const uint8_t *nonce,
+                            size_t nonce_len, const uint8_t *in, size_t in_len,
+                            const uint8_t *ad, size_t ad_len)
 {
     const struct aead_chacha20_poly1305_ctx *c20_ctx = ctx->aead_state;
-    unsigned char mac[POLY1305_TAG_LEN];
-    unsigned char poly1305_key[32];
+    uint8_t mac[POLY1305_TAG_LEN];
+    uint8_t poly1305_key[32];
     poly1305_state poly1305;
     const uint64_t in_len_64 = in_len;
     size_t plaintext_len;

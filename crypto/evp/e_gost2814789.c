@@ -85,8 +85,8 @@ static int gost2814789_ctl(EVP_CIPHER_CTX *ctx, int type, int arg, void *ptr)
     }
 }
 
-static int gost2814789_init_key(EVP_CIPHER_CTX *ctx, const unsigned char *key,
-                                const unsigned char *iv, int enc)
+static int gost2814789_init_key(EVP_CIPHER_CTX *ctx, const uint8_t *key,
+                                const uint8_t *iv, int enc)
 {
     EVP_GOST2814789_CTX *c = ctx->cipher_data;
 
@@ -96,8 +96,8 @@ static int gost2814789_init_key(EVP_CIPHER_CTX *ctx, const unsigned char *key,
 int gost2814789_set_asn1_params(EVP_CIPHER_CTX *ctx, ASN1_TYPE *params)
 {
     int len = 0;
-    unsigned char *buf = NULL;
-    unsigned char *p = NULL;
+    uint8_t *buf = NULL;
+    uint8_t *p = NULL;
     EVP_GOST2814789_CTX *c = ctx->cipher_data;
     GOST_CIPHER_PARAMS *gcp = GOST_CIPHER_PARAMS_new();
     ASN1_OCTET_STRING *os = NULL;
@@ -142,7 +142,7 @@ int gost2814789_get_asn1_params(EVP_CIPHER_CTX *ctx, ASN1_TYPE *params)
     int len;
     GOST_CIPHER_PARAMS *gcp = NULL;
     EVP_GOST2814789_CTX *c = ctx->cipher_data;
-    unsigned char *p;
+    uint8_t *p;
 
     if (ASN1_TYPE_get(params) != V_ASN1_SEQUENCE) {
         return ret;
@@ -150,7 +150,7 @@ int gost2814789_get_asn1_params(EVP_CIPHER_CTX *ctx, ASN1_TYPE *params)
 
     p = params->value.sequence->data;
 
-    gcp = d2i_GOST_CIPHER_PARAMS(NULL, (const unsigned char **)&p,
+    gcp = d2i_GOST_CIPHER_PARAMS(NULL, (const uint8_t **)&p,
                                  params->value.sequence->length);
 
     len = gcp->iv->length;
@@ -177,8 +177,8 @@ int gost2814789_get_asn1_params(EVP_CIPHER_CTX *ctx, ASN1_TYPE *params)
 BLOCK_CIPHER_func_ecb(gost2814789, Gost2814789, EVP_GOST2814789_CTX, ks)
     BLOCK_CIPHER_func_cfb(gost2814789, Gost2814789, 64, EVP_GOST2814789_CTX, ks)
 
-        static int gost2814789_cnt_cipher(EVP_CIPHER_CTX *ctx, unsigned char *out,
-                                          const unsigned char *in, size_t inl)
+        static int gost2814789_cnt_cipher(EVP_CIPHER_CTX *ctx, uint8_t *out,
+                                          const uint8_t *in, size_t inl)
 {
     EVP_GOST2814789_CTX *c = ctx->cipher_data;
 

@@ -69,31 +69,31 @@ int main(int argc, char *argv[])
 #else
 #include <openssl/idea.h>
 
-unsigned char k[16] = {
+uint8_t k[16] = {
     0x00, 0x01, 0x00, 0x02, 0x00, 0x03, 0x00, 0x04,
     0x00, 0x05, 0x00, 0x06, 0x00, 0x07, 0x00, 0x08
 };
 
-unsigned char in[8] = { 0x00, 0x00, 0x00, 0x01, 0x00, 0x02, 0x00, 0x03 };
-unsigned char c[8] = { 0x11, 0xFB, 0xED, 0x2B, 0x01, 0x98, 0x6D, 0xE5 };
-unsigned char out[80];
+uint8_t in[8] = { 0x00, 0x00, 0x00, 0x01, 0x00, 0x02, 0x00, 0x03 };
+uint8_t c[8] = { 0x11, 0xFB, 0xED, 0x2B, 0x01, 0x98, 0x6D, 0xE5 };
+uint8_t out[80];
 
 char *text = "Hello to all people out there";
 
-static unsigned char cfb_key[16] = {
+static uint8_t cfb_key[16] = {
     0xe1, 0xf0, 0xc3, 0xd2, 0xa5, 0xb4, 0x87, 0x96,
     0x69, 0x78, 0x4b, 0x5a, 0x2d, 0x3c, 0x0f, 0x1e,
 };
-static unsigned char cfb_iv[80] = { 0x34, 0x12, 0x78, 0x56, 0xab, 0x90, 0xef, 0xcd };
-static unsigned char cfb_buf1[40], cfb_buf2[40], cfb_tmp[8];
+static uint8_t cfb_iv[80] = { 0x34, 0x12, 0x78, 0x56, 0xab, 0x90, 0xef, 0xcd };
+static uint8_t cfb_buf1[40], cfb_buf2[40], cfb_tmp[8];
 #define CFB_TEST_SIZE 24
-static unsigned char plain[CFB_TEST_SIZE] = {
+static uint8_t plain[CFB_TEST_SIZE] = {
     0x4e, 0x6f, 0x77, 0x20, 0x69, 0x73,
     0x20, 0x74, 0x68, 0x65, 0x20, 0x74,
     0x69, 0x6d, 0x65, 0x20, 0x66, 0x6f,
     0x72, 0x20, 0x61, 0x6c, 0x6c, 0x20
 };
-static unsigned char cfb_cipher64[CFB_TEST_SIZE] = {
+static uint8_t cfb_cipher64[CFB_TEST_SIZE] = {
     0x59, 0xD8, 0xE2, 0x65, 0x00, 0x58, 0x6C, 0x3F,
     0x2C, 0x17, 0x25, 0xD0, 0x1A, 0x38, 0xB7, 0x2A,
     0x39, 0x61, 0x37, 0xDC, 0x79, 0xFB, 0x9F, 0x45
@@ -103,13 +103,13 @@ static unsigned char cfb_cipher64[CFB_TEST_SIZE] = {
     0x3D,0x1E,0xAE,0x47,0xFC,0xCF,0x29,0x0B,*/
 };
 
-static int cfb64_test(unsigned char *cfb_cipher);
-static char *pt(unsigned char *p);
+static int cfb64_test(uint8_t *cfb_cipher);
+static char *pt(uint8_t *p);
 int main(int argc, char *argv[])
 {
     int i, err = 0;
     IDEA_KEY_SCHEDULE key, dkey;
-    unsigned char iv[8];
+    uint8_t iv[8];
 
     idea_set_encrypt_key(k, &key);
     idea_ecb_encrypt(in, out, &key);
@@ -145,7 +145,7 @@ int main(int argc, char *argv[])
         printf("ecb idea ok\n");
 
     memcpy(iv, k, 8);
-    idea_cbc_encrypt((unsigned char *)text, out, strlen(text) + 1, &key, iv, 1);
+    idea_cbc_encrypt((uint8_t *)text, out, strlen(text) + 1, &key, iv, 1);
     memcpy(iv, k, 8);
     idea_cbc_encrypt(out, out, 8, &dkey, iv, 0);
     idea_cbc_encrypt(&(out[8]), &(out[8]), strlen(text) + 1 - 8, &dkey, iv, 0);
@@ -166,7 +166,7 @@ int main(int argc, char *argv[])
     return (err);
 }
 
-static int cfb64_test(unsigned char *cfb_cipher)
+static int cfb64_test(uint8_t *cfb_cipher)
 {
     IDEA_KEY_SCHEDULE eks, dks;
     int err = 0, i, n;
@@ -202,7 +202,7 @@ static int cfb64_test(unsigned char *cfb_cipher)
     return (err);
 }
 
-static char *pt(unsigned char *p)
+static char *pt(uint8_t *p)
 {
     static char bufs[10][20];
     static int bnum = 0;

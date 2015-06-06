@@ -96,7 +96,7 @@ int NETSCAPE_SPKI_print(BIO *out, NETSCAPE_SPKI *spki)
     for (i = 0; i < n; i++) {
         if ((i % 18) == 0)
             BIO_write(out, "\n      ", 7);
-        BIO_printf(out, "%02x%s", (unsigned char)s[i],
+        BIO_printf(out, "%02x%s", (uint8_t)s[i],
                    ((i + 1) == n) ? "" : ":");
     }
     BIO_write(out, "\n", 1);

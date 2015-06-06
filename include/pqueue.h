@@ -62,14 +62,14 @@
 typedef struct _pqueue *pqueue;
 
 typedef struct _pitem {
-    unsigned char priority[8]; /* 64-bit value in big-endian encoding */
+    uint8_t priority[8]; /* 64-bit value in big-endian encoding */
     void *data;
     struct _pitem *next;
 } pitem;
 
 typedef struct _pitem *piterator;
 
-pitem *pitem_new(unsigned char *prio64be, void *data);
+pitem *pitem_new(uint8_t *prio64be, void *data);
 void pitem_free(pitem *item);
 
 pqueue pqueue_new(void);
@@ -78,7 +78,7 @@ void pqueue_free(pqueue pq);
 pitem *pqueue_insert(pqueue pq, pitem *item);
 pitem *pqueue_peek(pqueue pq);
 pitem *pqueue_pop(pqueue pq);
-pitem *pqueue_find(pqueue pq, unsigned char *prio64be);
+pitem *pqueue_find(pqueue pq, uint8_t *prio64be);
 pitem *pqueue_iterator(pqueue pq);
 pitem *pqueue_next(piterator *iter);
 

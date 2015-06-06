@@ -70,7 +70,7 @@
 #include "dsa_locl.h"
 
 int DSA_generate_parameters_ex(DSA *ret, int bits,
-                               const unsigned char *seed_in, int seed_len,
+                               const uint8_t *seed_in, int seed_len,
                                int *counter_ret, unsigned long *h_ret, BN_GENCB *cb)
 {
     if (ret->meth->dsa_paramgen)
@@ -94,14 +94,14 @@ int DSA_generate_parameters_ex(DSA *ret, int bits,
 }
 
 int dsa_builtin_paramgen(DSA *ret, size_t bits, size_t qbits,
-                         const EVP_MD *evpmd, const unsigned char *seed_in, size_t seed_len,
-                         unsigned char *seed_out,
+                         const EVP_MD *evpmd, const uint8_t *seed_in, size_t seed_len,
+                         uint8_t *seed_out,
                          int *counter_ret, unsigned long *h_ret, BN_GENCB *cb)
 {
     int ok = 0;
-    unsigned char seed[SHA256_DIGEST_LENGTH];
-    unsigned char md[SHA256_DIGEST_LENGTH];
-    unsigned char buf[SHA256_DIGEST_LENGTH], buf2[SHA256_DIGEST_LENGTH];
+    uint8_t seed[SHA256_DIGEST_LENGTH];
+    uint8_t md[SHA256_DIGEST_LENGTH];
+    uint8_t buf[SHA256_DIGEST_LENGTH], buf2[SHA256_DIGEST_LENGTH];
     BIGNUM *r0, *W, *X, *c, *test;
     BIGNUM *g = NULL, *q = NULL, *p = NULL;
     BN_MONT_CTX *mont = NULL;

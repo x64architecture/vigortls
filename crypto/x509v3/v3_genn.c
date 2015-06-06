@@ -67,12 +67,12 @@ ASN1_SEQUENCE(OTHERNAME) = {
     ASN1_EXP(OTHERNAME, value, ASN1_ANY, 0)
 } ASN1_SEQUENCE_END(OTHERNAME)
 
-OTHERNAME *d2i_OTHERNAME(OTHERNAME **a, const unsigned char **in, long len)
+OTHERNAME *d2i_OTHERNAME(OTHERNAME **a, const uint8_t **in, long len)
 {
     return (OTHERNAME *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, &OTHERNAME_it);
 }
 
-int i2d_OTHERNAME(OTHERNAME *a, unsigned char **out)
+int i2d_OTHERNAME(OTHERNAME *a, uint8_t **out)
 {
     return ASN1_item_i2d((ASN1_VALUE *)a, out, &OTHERNAME_it);
 }
@@ -92,12 +92,12 @@ ASN1_SEQUENCE(EDIPARTYNAME) = {
     ASN1_IMP_OPT(EDIPARTYNAME, partyName, DIRECTORYSTRING, 1)
 } ASN1_SEQUENCE_END(EDIPARTYNAME)
 
-EDIPARTYNAME *d2i_EDIPARTYNAME(EDIPARTYNAME **a, const unsigned char **in, long len)
+EDIPARTYNAME *d2i_EDIPARTYNAME(EDIPARTYNAME **a, const uint8_t **in, long len)
 {
     return (EDIPARTYNAME *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, &EDIPARTYNAME_it);
 }
 
-int i2d_EDIPARTYNAME(EDIPARTYNAME *a, unsigned char **out)
+int i2d_EDIPARTYNAME(EDIPARTYNAME *a, uint8_t **out)
 {
     return ASN1_item_i2d((ASN1_VALUE *)a, out, &EDIPARTYNAME_it);
 }
@@ -126,12 +126,12 @@ ASN1_CHOICE(GENERAL_NAME) = {
     ASN1_IMP(GENERAL_NAME, d.registeredID, ASN1_OBJECT, GEN_RID)
 } ASN1_CHOICE_END(GENERAL_NAME)
 
-GENERAL_NAME *d2i_GENERAL_NAME(GENERAL_NAME **a, const unsigned char **in, long len)
+GENERAL_NAME *d2i_GENERAL_NAME(GENERAL_NAME **a, const uint8_t **in, long len)
 {
     return (GENERAL_NAME *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, &GENERAL_NAME_it);
 }
 
-int i2d_GENERAL_NAME(GENERAL_NAME *a, unsigned char **out)
+int i2d_GENERAL_NAME(GENERAL_NAME *a, uint8_t **out)
 {
     return ASN1_item_i2d((ASN1_VALUE *)a, out, &GENERAL_NAME_it);
 }
@@ -149,12 +149,12 @@ void GENERAL_NAME_free(GENERAL_NAME *a)
 ASN1_ITEM_TEMPLATE(GENERAL_NAMES) = ASN1_EX_TEMPLATE_TYPE(ASN1_TFLG_SEQUENCE_OF, 0, GeneralNames, GENERAL_NAME)
 ASN1_ITEM_TEMPLATE_END(GENERAL_NAMES)
 
-GENERAL_NAMES *d2i_GENERAL_NAMES(GENERAL_NAMES **a, const unsigned char **in, long len)
+GENERAL_NAMES *d2i_GENERAL_NAMES(GENERAL_NAMES **a, const uint8_t **in, long len)
 {
     return (GENERAL_NAMES *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, &GENERAL_NAMES_it);
 }
 
-int i2d_GENERAL_NAMES(GENERAL_NAMES *a, unsigned char **out)
+int i2d_GENERAL_NAMES(GENERAL_NAMES *a, uint8_t **out)
 {
     return ASN1_item_i2d((ASN1_VALUE *)a, out, &GENERAL_NAMES_it);
 }

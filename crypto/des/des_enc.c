@@ -63,7 +63,7 @@ void DES_encrypt1(uint32_t *data, DES_key_schedule *ks, int enc)
 {
     uint32_t l, r, t, u;
 #ifdef DES_PTR
-    register const unsigned char *des_SP = (const unsigned char *)DES_SPtrans;
+    register const uint8_t *des_SP = (const uint8_t *)DES_SPtrans;
 #endif
 #ifndef DES_UNROLL
     register int i;
@@ -152,7 +152,7 @@ void DES_encrypt2(uint32_t *data, DES_key_schedule *ks, int enc)
 {
     uint32_t l, r, t, u;
 #ifdef DES_PTR
-    register const unsigned char *des_SP = (const unsigned char *)DES_SPtrans;
+    register const uint8_t *des_SP = (const uint8_t *)DES_SPtrans;
 #endif
 #ifndef DES_UNROLL
     register int i;
@@ -275,17 +275,17 @@ void DES_decrypt3(uint32_t *data, DES_key_schedule *ks1, DES_key_schedule *ks2,
 #undef CBC_ENC_C__DONT_UPDATE_IV
 #include "ncbc_enc.c" /* DES_ncbc_encrypt */
 
-void DES_ede3_cbc_encrypt(const unsigned char *input, unsigned char *output,
+void DES_ede3_cbc_encrypt(const uint8_t *input, uint8_t *output,
                           long length, DES_key_schedule *ks1, DES_key_schedule *ks2,
                           DES_key_schedule *ks3, DES_cblock *ivec, int enc)
 {
     uint32_t tin0, tin1;
     uint32_t tout0, tout1, xor0, xor1;
-    register const unsigned char *in;
-    unsigned char *out;
+    register const uint8_t *in;
+    uint8_t *out;
     register long l = length;
     uint32_t tin[2];
-    unsigned char *iv;
+    uint8_t *iv;
 
     in = input;
     out = output;

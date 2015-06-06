@@ -24,10 +24,10 @@
 
 #include "evp_locl.h"
 
-static int chacha_cipher(EVP_CIPHER_CTX *ctx, unsigned char *out,
-                         const unsigned char *in, size_t len);
-static int chacha_init(EVP_CIPHER_CTX *ctx, const unsigned char *key,
-                       const unsigned char *iv, int enc);
+static int chacha_cipher(EVP_CIPHER_CTX *ctx, uint8_t *out,
+                         const uint8_t *in, size_t len);
+static int chacha_init(EVP_CIPHER_CTX *ctx, const uint8_t *key,
+                       const uint8_t *iv, int enc);
 
 static const EVP_CIPHER chacha20_cipher = {
     .nid = NID_chacha20,
@@ -47,8 +47,8 @@ EVP_chacha20(void)
 }
 
 static int
-chacha_init(EVP_CIPHER_CTX *ctx, const unsigned char *key,
-            const unsigned char *iv, int enc)
+chacha_init(EVP_CIPHER_CTX *ctx, const uint8_t *key,
+            const uint8_t *iv, int enc)
 {
     ChaCha_set_key((ChaCha_ctx *)ctx->cipher_data, key,
                    EVP_CIPHER_CTX_key_length(ctx) * 8);
@@ -58,7 +58,7 @@ chacha_init(EVP_CIPHER_CTX *ctx, const unsigned char *key,
 }
 
 static int
-chacha_cipher(EVP_CIPHER_CTX *ctx, unsigned char *out, const unsigned char *in,
+chacha_cipher(EVP_CIPHER_CTX *ctx, uint8_t *out, const uint8_t *in,
               size_t len)
 {
     ChaCha((ChaCha_ctx *)ctx->cipher_data, out, in, len);

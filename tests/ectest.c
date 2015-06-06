@@ -216,7 +216,7 @@ static void prime_field_tests(void)
     EC_GROUP *P_160 = NULL, *P_192 = NULL, *P_224 = NULL, *P_256 = NULL, *P_384 = NULL, *P_521 = NULL;
     EC_POINT *P, *Q, *R;
     BIGNUM *x, *y, *z;
-    unsigned char buf[100];
+    uint8_t buf[100];
     size_t i, len;
     int k;
 
@@ -903,7 +903,7 @@ static void char2_field_tests(void)
     EC_GROUP *C2_B163 = NULL, *C2_B233 = NULL, *C2_B283 = NULL, *C2_B409 = NULL, *C2_B571 = NULL;
     EC_POINT *P, *Q, *R;
     BIGNUM *x, *y, *z, *cof;
-    unsigned char buf[100];
+    uint8_t buf[100];
     size_t i, len;
     int k;
 

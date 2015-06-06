@@ -83,7 +83,7 @@ int dump_certs_pkeys_bags(BIO *out, STACK_OF(PKCS12_SAFEBAG) * bags, char *pass,
 int dump_certs_pkeys_bag(BIO *out, PKCS12_SAFEBAG *bags, char *pass, int passlen,
                          int options, char *pempass, const EVP_CIPHER *enc);
 int print_attribs(BIO *out, STACK_OF(X509_ATTRIBUTE) * attrlst, const char *name);
-void hex_prin(BIO *out, unsigned char *buf, int len);
+void hex_prin(BIO *out, uint8_t *buf, int len);
 int alg_print(BIO *x, X509_ALGOR *alg);
 int cert_load(BIO *in, STACK_OF(X509) * sk);
 static int set_pbe(int *ppbe, const char *str);
@@ -385,7 +385,7 @@ int pkcs12_main(int argc, char **argv)
         X509 *ucert = NULL, *x = NULL;
         STACK_OF(X509) *certs = NULL;
         const EVP_MD *macmd = NULL;
-        unsigned char *catmp = NULL;
+        uint8_t *catmp = NULL;
         int i;
 
         if ((options & (NOCERTS | NOKEYS)) == (NOCERTS | NOKEYS)) {
@@ -472,13 +472,13 @@ int pkcs12_main(int argc, char **argv)
         /* Add any CA names */
 
         for (i = 0; i < sk_OPENSSL_STRING_num(canames); i++) {
-            catmp = (unsigned char *)sk_OPENSSL_STRING_value(canames, i);
+            catmp = (uint8_t *)sk_OPENSSL_STRING_value(canames, i);
             X509_alias_set1(sk_X509_value(certs, i), catmp, -1);
         }
 
         if (csp_name && key)
             EVP_PKEY_add1_attr_by_NID(key, NID_ms_csp_name, MBSTRING_ASC,
-                                      (unsigned char *)csp_name, -1);
+                                      (uint8_t *)csp_name, -1);
 
         if (add_lmk && key)
             EVP_PKEY_add1_attr_by_NID(key, NID_LocalKeySet, 0, NULL, -1);
@@ -737,7 +737,7 @@ err:
 int alg_print(BIO *x, X509_ALGOR *alg)
 {
     PBEPARAM *pbe;
-    const unsigned char *p;
+    const uint8_t *p;
     p = alg->parameter->value.sequence->data;
     pbe = d2i_PBEPARAM(NULL, &p, alg->parameter->value.sequence->length);
     if (!pbe)
@@ -824,7 +824,7 @@ int print_attribs(BIO *out, STACK_OF(X509_ATTRIBUTE) * attrlst, const char *name
     return 1;
 }
 
-void hex_prin(BIO *out, unsigned char *buf, int len)
+void hex_prin(BIO *out, uint8_t *buf, int len)
 {
     int i;
     for (i = 0; i < len; i++)

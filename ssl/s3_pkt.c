@@ -115,7 +115,7 @@
 #include <openssl/buffer.h>
 #include <openssl/rand.h>
 
-static int do_ssl3_write(SSL *s, int type, const unsigned char *buf,
+static int do_ssl3_write(SSL *s, int type, const uint8_t *buf,
                          unsigned int len, int create_empty_fragment);
 static int ssl3_get_record(SSL *s);
 
@@ -130,7 +130,7 @@ int ssl3_read_n(SSL *s, int n, int max, int extend)
 {
     int i, len, left;
     size_t align;
-    unsigned char *pkt;
+    uint8_t *pkt;
     SSL3_BUFFER *rb;
 
     if (n <= 0)
@@ -283,8 +283,8 @@ static int ssl3_get_record(SSL *s)
     int enc_err, n, i, ret = -1;
     SSL3_RECORD *rr;
     SSL_SESSION *sess;
-    unsigned char *p;
-    unsigned char md[EVP_MAX_MD_SIZE];
+    uint8_t *p;
+    uint8_t md[EVP_MAX_MD_SIZE];
     short version;
     unsigned mac_size, orig_len;
     size_t extra;
@@ -401,8 +401,8 @@ again:
     /* r->length is now the compressed data plus mac */
     if ((sess != NULL) && (s->enc_read_ctx != NULL) && (EVP_MD_CTX_md(s->read_hash) != NULL)) {
         /* s->read_hash != NULL => mac_size != -1 */
-        unsigned char *mac = NULL;
-        unsigned char mac_tmp[EVP_MAX_MD_SIZE];
+        uint8_t *mac = NULL;
+        uint8_t mac_tmp[EVP_MAX_MD_SIZE];
 
         mac_size = EVP_MD_CTX_size(s->read_hash);
         OPENSSL_assert(mac_size <= EVP_MAX_MD_SIZE);
@@ -505,7 +505,7 @@ err:
  */
 int ssl3_write_bytes(SSL *s, int type, const void *buf_, int len)
 {
-    const unsigned char *buf = buf_;
+    const uint8_t *buf = buf_;
     unsigned int tot, n, nw;
     int i;
 
@@ -560,10 +560,10 @@ int ssl3_write_bytes(SSL *s, int type, const void *buf_, int len)
     }
 }
 
-static int do_ssl3_write(SSL *s, int type, const unsigned char *buf,
+static int do_ssl3_write(SSL *s, int type, const uint8_t *buf,
                          unsigned int len, int create_empty_fragment)
 {
-    unsigned char *p, *plen;
+    uint8_t *p, *plen;
     int i, mac_size, clear = 0;
     int prefix_len = 0;
     int eivlen;
@@ -694,7 +694,7 @@ static int do_ssl3_write(SSL *s, int type, const unsigned char *buf,
     /* lets setup the record stuff. */
     wr->data = p + eivlen;
     wr->length = (int)len;
-    wr->input = (unsigned char *)buf;
+    wr->input = (uint8_t *)buf;
 
     /* we now 'read' from wr->input, wr->length bytes into wr->data */
 
@@ -758,7 +758,7 @@ err:
 }
 
 /* if s->s3->wbuf.left != 0, we need to call this */
-int ssl3_write_pending(SSL *s, int type, const unsigned char *buf,
+int ssl3_write_pending(SSL *s, int type, const uint8_t *buf,
                        unsigned int len)
 {
     int i;
@@ -830,7 +830,7 @@ int ssl3_write_pending(SSL *s, int type, const unsigned char *buf,
  *     Application data protocol
  *             none of our business
  */
-int ssl3_read_bytes(SSL *s, int type, unsigned char *buf, int len, int peek)
+int ssl3_read_bytes(SSL *s, int type, uint8_t *buf, int len, int peek)
 {
     int al, i, j, ret;
     unsigned int n;
@@ -854,8 +854,8 @@ int ssl3_read_bytes(SSL *s, int type, unsigned char *buf, int len, int peek)
 
     if ((type == SSL3_RT_HANDSHAKE) && (s->s3->handshake_fragment_len > 0)) {
         /* (partially) satisfy request from storage */
-        unsigned char *src = s->s3->handshake_fragment;
-        unsigned char *dst = buf;
+        uint8_t *src = s->s3->handshake_fragment;
+        uint8_t *dst = buf;
         unsigned int k;
 
         /* peek == 0 */
@@ -964,7 +964,7 @@ start:
          * at a fixed place.
          */
         unsigned int dest_maxlen = 0;
-        unsigned char *dest = NULL;
+        uint8_t *dest = NULL;
         unsigned int *dest_len = NULL;
 
         if (rr->type == SSL3_RT_HANDSHAKE) {

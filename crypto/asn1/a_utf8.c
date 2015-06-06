@@ -71,9 +71,9 @@
  * -4 = character encoded incorrectly (not minimal length).
  */
 
-int UTF8_getc(const unsigned char *str, int len, unsigned long *val)
+int UTF8_getc(const uint8_t *str, int len, unsigned long *val)
 {
-    const unsigned char *p;
+    const uint8_t *p;
     unsigned long value;
     int ret;
     if (len <= 0)
@@ -167,7 +167,7 @@ int UTF8_getc(const unsigned char *str, int len, unsigned long *val)
  * It will need at most 6 characters.
  */
 
-int UTF8_putc(unsigned char *str, int len, unsigned long value)
+int UTF8_putc(uint8_t *str, int len, unsigned long value)
 {
     if (!str)
         len = 6; /* Maximum we will need */
@@ -175,15 +175,15 @@ int UTF8_putc(unsigned char *str, int len, unsigned long value)
         return -1;
     if (value < 0x80) {
         if (str)
-            *str = (unsigned char)value;
+            *str = (uint8_t)value;
         return 1;
     }
     if (value < 0x800) {
         if (len < 2)
             return -1;
         if (str) {
-            *str++ = (unsigned char)(((value >> 6) & 0x1f) | 0xc0);
-            *str = (unsigned char)((value & 0x3f) | 0x80);
+            *str++ = (uint8_t)(((value >> 6) & 0x1f) | 0xc0);
+            *str = (uint8_t)((value & 0x3f) | 0x80);
         }
         return 2;
     }
@@ -191,9 +191,9 @@ int UTF8_putc(unsigned char *str, int len, unsigned long value)
         if (len < 3)
             return -1;
         if (str) {
-            *str++ = (unsigned char)(((value >> 12) & 0xf) | 0xe0);
-            *str++ = (unsigned char)(((value >> 6) & 0x3f) | 0x80);
-            *str = (unsigned char)((value & 0x3f) | 0x80);
+            *str++ = (uint8_t)(((value >> 12) & 0xf) | 0xe0);
+            *str++ = (uint8_t)(((value >> 6) & 0x3f) | 0x80);
+            *str = (uint8_t)((value & 0x3f) | 0x80);
         }
         return 3;
     }
@@ -201,10 +201,10 @@ int UTF8_putc(unsigned char *str, int len, unsigned long value)
         if (len < 4)
             return -1;
         if (str) {
-            *str++ = (unsigned char)(((value >> 18) & 0x7) | 0xf0);
-            *str++ = (unsigned char)(((value >> 12) & 0x3f) | 0x80);
-            *str++ = (unsigned char)(((value >> 6) & 0x3f) | 0x80);
-            *str = (unsigned char)((value & 0x3f) | 0x80);
+            *str++ = (uint8_t)(((value >> 18) & 0x7) | 0xf0);
+            *str++ = (uint8_t)(((value >> 12) & 0x3f) | 0x80);
+            *str++ = (uint8_t)(((value >> 6) & 0x3f) | 0x80);
+            *str = (uint8_t)((value & 0x3f) | 0x80);
         }
         return 4;
     }
@@ -212,23 +212,23 @@ int UTF8_putc(unsigned char *str, int len, unsigned long value)
         if (len < 5)
             return -1;
         if (str) {
-            *str++ = (unsigned char)(((value >> 24) & 0x3) | 0xf8);
-            *str++ = (unsigned char)(((value >> 18) & 0x3f) | 0x80);
-            *str++ = (unsigned char)(((value >> 12) & 0x3f) | 0x80);
-            *str++ = (unsigned char)(((value >> 6) & 0x3f) | 0x80);
-            *str = (unsigned char)((value & 0x3f) | 0x80);
+            *str++ = (uint8_t)(((value >> 24) & 0x3) | 0xf8);
+            *str++ = (uint8_t)(((value >> 18) & 0x3f) | 0x80);
+            *str++ = (uint8_t)(((value >> 12) & 0x3f) | 0x80);
+            *str++ = (uint8_t)(((value >> 6) & 0x3f) | 0x80);
+            *str = (uint8_t)((value & 0x3f) | 0x80);
         }
         return 5;
     }
     if (len < 6)
         return -1;
     if (str) {
-        *str++ = (unsigned char)(((value >> 30) & 0x1) | 0xfc);
-        *str++ = (unsigned char)(((value >> 24) & 0x3f) | 0x80);
-        *str++ = (unsigned char)(((value >> 18) & 0x3f) | 0x80);
-        *str++ = (unsigned char)(((value >> 12) & 0x3f) | 0x80);
-        *str++ = (unsigned char)(((value >> 6) & 0x3f) | 0x80);
-        *str = (unsigned char)((value & 0x3f) | 0x80);
+        *str++ = (uint8_t)(((value >> 30) & 0x1) | 0xfc);
+        *str++ = (uint8_t)(((value >> 24) & 0x3f) | 0x80);
+        *str++ = (uint8_t)(((value >> 18) & 0x3f) | 0x80);
+        *str++ = (uint8_t)(((value >> 12) & 0x3f) | 0x80);
+        *str++ = (uint8_t)(((value >> 6) & 0x3f) | 0x80);
+        *str = (uint8_t)((value & 0x3f) | 0x80);
     }
     return 6;
 }

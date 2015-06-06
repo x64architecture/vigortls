@@ -65,11 +65,11 @@
  * malloc'ed buffer
  */
 
-unsigned char *PKCS12_pbe_crypt(X509_ALGOR *algor, const char *pass,
-                                int passlen, unsigned char *in, int inlen, unsigned char **data,
+uint8_t *PKCS12_pbe_crypt(X509_ALGOR *algor, const char *pass,
+                                int passlen, uint8_t *in, int inlen, uint8_t **data,
                                 int *datalen, int en_de)
 {
-    unsigned char *out;
+    uint8_t *out;
     int outlen, i;
     EVP_CIPHER_CTX ctx;
 
@@ -117,8 +117,8 @@ err:
 void *PKCS12_item_decrypt_d2i(X509_ALGOR *algor, const ASN1_ITEM *it,
                               const char *pass, int passlen, ASN1_OCTET_STRING *oct, int zbuf)
 {
-    unsigned char *out;
-    const unsigned char *p;
+    uint8_t *out;
+    const uint8_t *p;
     void *ret;
     int outlen;
 
@@ -146,7 +146,7 @@ ASN1_OCTET_STRING *PKCS12_item_i2d_encrypt(X509_ALGOR *algor, const ASN1_ITEM *i
                                            void *obj, int zbuf)
 {
     ASN1_OCTET_STRING *oct;
-    unsigned char *in = NULL;
+    uint8_t *in = NULL;
     int inlen;
     if (!(oct = ASN1_OCTET_STRING_new())) {
         PKCS12err(PKCS12_F_PKCS12_ITEM_I2D_ENCRYPT, ERR_R_MALLOC_FAILURE);

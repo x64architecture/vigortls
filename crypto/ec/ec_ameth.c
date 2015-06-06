@@ -104,7 +104,7 @@ static int eckey_pub_encode(X509_PUBKEY *pk, const EVP_PKEY *pkey)
     EC_KEY *ec_key = pkey->pkey.ec;
     void *pval = NULL;
     int ptype;
-    unsigned char *penc = NULL, *p;
+    uint8_t *penc = NULL, *p;
     int penclen;
 
     if (!eckey_param2type(&ptype, &pval, ec_key)) {
@@ -139,7 +139,7 @@ static EC_KEY *eckey_type2param(int ptype, void *pval)
     EC_KEY *eckey = NULL;
     if (ptype == V_ASN1_SEQUENCE) {
         ASN1_STRING *pstr = pval;
-        const unsigned char *pm = NULL;
+        const uint8_t *pm = NULL;
         int pmlen;
         pm = pstr->data;
         pmlen = pstr->length;
@@ -180,7 +180,7 @@ ecerr:
 
 static int eckey_pub_decode(EVP_PKEY *pkey, X509_PUBKEY *pubkey)
 {
-    const unsigned char *p = NULL;
+    const uint8_t *p = NULL;
     void *pval;
     int ptype, pklen;
     EC_KEY *eckey = NULL;
@@ -228,7 +228,7 @@ static int eckey_pub_cmp(const EVP_PKEY *a, const EVP_PKEY *b)
 
 static int eckey_priv_decode(EVP_PKEY *pkey, PKCS8_PRIV_KEY_INFO *p8)
 {
-    const unsigned char *p = NULL;
+    const uint8_t *p = NULL;
     void *pval;
     int ptype, pklen;
     EC_KEY *eckey = NULL;
@@ -295,7 +295,7 @@ ecerr:
 static int eckey_priv_encode(PKCS8_PRIV_KEY_INFO *p8, const EVP_PKEY *pkey)
 {
     EC_KEY *ec_key;
-    unsigned char *ep, *p;
+    uint8_t *ep, *p;
     int eplen, ptype;
     void *pval;
     unsigned int tmp_flags, old_flags;
@@ -405,7 +405,7 @@ static void int_ec_free(EVP_PKEY *pkey)
 
 static int do_EC_KEY_print(BIO *bp, const EC_KEY *x, int off, int ktype)
 {
-    unsigned char *buffer = NULL;
+    uint8_t *buffer = NULL;
     const char *ecstr;
     size_t buf_len = 0, i;
     int ret = 0, reason = ERR_R_BIO_LIB;
@@ -486,7 +486,7 @@ err:
 }
 
 static int eckey_param_decode(EVP_PKEY *pkey,
-                              const unsigned char **pder, int derlen)
+                              const uint8_t **pder, int derlen)
 {
     EC_KEY *eckey;
     if (!(eckey = d2i_ECParameters(NULL, pder, derlen))) {
@@ -497,7 +497,7 @@ static int eckey_param_decode(EVP_PKEY *pkey,
     return 1;
 }
 
-static int eckey_param_encode(const EVP_PKEY *pkey, unsigned char **pder)
+static int eckey_param_encode(const EVP_PKEY *pkey, uint8_t **pder)
 {
     return i2d_ECParameters(pkey->pkey.ec, pder);
 }
@@ -521,7 +521,7 @@ static int eckey_priv_print(BIO *bp, const EVP_PKEY *pkey, int indent,
 }
 
 static int old_ec_priv_decode(EVP_PKEY *pkey,
-                              const unsigned char **pder, int derlen)
+                              const uint8_t **pder, int derlen)
 {
     EC_KEY *ec;
     if (!(ec = d2i_ECPrivateKey(NULL, pder, derlen))) {
@@ -532,7 +532,7 @@ static int old_ec_priv_decode(EVP_PKEY *pkey,
     return 1;
 }
 
-static int old_ec_priv_encode(const EVP_PKEY *pkey, unsigned char **pder)
+static int old_ec_priv_encode(const EVP_PKEY *pkey, uint8_t **pder)
 {
     return i2d_ECPrivateKey(pkey->pkey.ec, pder);
 }

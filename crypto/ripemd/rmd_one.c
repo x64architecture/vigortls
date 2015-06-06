@@ -61,11 +61,11 @@
 #include <openssl/ripemd.h>
 #include <openssl/crypto.h>
 
-unsigned char *RIPEMD160(const unsigned char *d, size_t n,
-                         unsigned char *md)
+uint8_t *RIPEMD160(const uint8_t *d, size_t n,
+                         uint8_t *md)
 {
     RIPEMD160_CTX c;
-    static unsigned char m[RIPEMD160_DIGEST_LENGTH];
+    static uint8_t m[RIPEMD160_DIGEST_LENGTH];
 
     if (md == NULL)
         md = m;

@@ -94,7 +94,7 @@ int x9_62_test_internal(BIO *out, int nid, const char *r_in, const char *s_in)
 {
     int ret = 0;
     const char message[] = "abc";
-    unsigned char digest[20];
+    uint8_t digest[20];
     unsigned int dgst_len = 0;
     EVP_MD_CTX md_ctx;
     EC_KEY *key = NULL;
@@ -160,11 +160,11 @@ int test_builtin(BIO *out)
     EC_KEY *eckey = NULL, *wrong_eckey = NULL;
     EC_GROUP *group;
     ECDSA_SIG *ecdsa_sig = NULL;
-    unsigned char digest[20], wrong_digest[20];
-    unsigned char *signature = NULL;
-    const unsigned char *sig_ptr;
-    unsigned char *sig_ptr2;
-    unsigned char *raw_buf = NULL;
+    uint8_t digest[20], wrong_digest[20];
+    uint8_t *signature = NULL;
+    const uint8_t *sig_ptr;
+    uint8_t *sig_ptr2;
+    uint8_t *raw_buf = NULL;
     unsigned int sig_len, degree, r_len, s_len, bn_len, buf_len;
     int nid, ret = 0;
 
@@ -196,7 +196,7 @@ int test_builtin(BIO *out)
 
     /* now create and verify a signature for every curve */
     for (n = 0; n < crv_len; n++) {
-        unsigned char dirt, offset;
+        uint8_t dirt, offset;
 
         nid = curves[n].nid;
         if (nid == NID_ipsec4)

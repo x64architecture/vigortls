@@ -139,14 +139,14 @@
 #include <openssl/evp.h>
 #include <openssl/md5.h>
 
-static unsigned char ssl3_pad_1[48] = {
+static uint8_t ssl3_pad_1[48] = {
     0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36,
     0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36,
     0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36,
     0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36
 };
 
-static unsigned char ssl3_pad_2[48] = {
+static uint8_t ssl3_pad_2[48] = {
     0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c,
     0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c,
     0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c,
@@ -154,14 +154,14 @@ static unsigned char ssl3_pad_2[48] = {
 };
 
 static int ssl3_handshake_mac(SSL *s, int md_nid, const char *sender, int len,
-                              unsigned char *p);
+                              uint8_t *p);
 
-static int ssl3_generate_key_block(SSL *s, unsigned char *km, int num)
+static int ssl3_generate_key_block(SSL *s, uint8_t *km, int num)
 {
     EVP_MD_CTX m5;
     EVP_MD_CTX s1;
-    unsigned char buf[16], smd[SHA_DIGEST_LENGTH];
-    unsigned char c = 'A';
+    uint8_t buf[16], smd[SHA_DIGEST_LENGTH];
+    uint8_t c = 'A';
     unsigned int i, j, k;
 
     k = 0;
@@ -206,11 +206,11 @@ static int ssl3_generate_key_block(SSL *s, unsigned char *km, int num)
 
 int ssl3_change_cipher_state(SSL *s, int which)
 {
-    const unsigned char *client_write_mac_secret, *server_write_mac_secret;
-    const unsigned char *client_write_key, *server_write_key;
-    const unsigned char *client_write_iv, *server_write_iv;
-    const unsigned char *mac_secret, *key, *iv;
-    unsigned char *key_block;
+    const uint8_t *client_write_mac_secret, *server_write_mac_secret;
+    const uint8_t *client_write_key, *server_write_key;
+    const uint8_t *client_write_iv, *server_write_iv;
+    const uint8_t *mac_secret, *key, *iv;
+    uint8_t *key_block;
     int mac_len, key_len, iv_len;
     char is_read, use_client_keys;
     EVP_CIPHER_CTX *cipher_ctx;
@@ -311,7 +311,7 @@ err2:
 int ssl3_setup_key_block(SSL *s)
 {
     int key_block_len, mac_len, key_len, iv_len;
-    unsigned char *key_block;
+    uint8_t *key_block;
     const EVP_CIPHER *cipher;
     const EVP_MD *mac;
     int ret = 0;
@@ -473,7 +473,7 @@ void ssl3_free_digest_list(SSL *s)
     s->s3->handshake_dgst = NULL;
 }
 
-void ssl3_finish_mac(SSL *s, const unsigned char *buf, int len)
+void ssl3_finish_mac(SSL *s, const uint8_t *buf, int len)
 {
     if (s->s3->handshake_buffer && !(s->s3->flags & TLS1_FLAGS_KEEP_HANDSHAKE)) {
         BIO_write(s->s3->handshake_buffer, (void *)buf, len);
@@ -530,13 +530,13 @@ int ssl3_digest_cached_records(SSL *s)
     return 1;
 }
 
-int ssl3_cert_verify_mac(SSL *s, int md_nid, unsigned char *p)
+int ssl3_cert_verify_mac(SSL *s, int md_nid, uint8_t *p)
 {
     return (ssl3_handshake_mac(s, md_nid, NULL, 0, p));
 }
 
 int ssl3_final_finish_mac(SSL *s, const char *sender, int len,
-                          unsigned char *p)
+                          uint8_t *p)
 {
     int ret_md5, ret_sha1;
 
@@ -551,12 +551,12 @@ int ssl3_final_finish_mac(SSL *s, const char *sender, int len,
 }
 
 static int ssl3_handshake_mac(SSL *s, int md_nid, const char *sender, int len,
-                              unsigned char *p)
+                              uint8_t *p)
 {
     unsigned int ret;
     int npad, n;
     unsigned int i;
-    unsigned char md_buf[EVP_MAX_MD_SIZE];
+    uint8_t md_buf[EVP_MAX_MD_SIZE];
     EVP_MD_CTX ctx, *d = NULL;
 
     if (s->s3->handshake_buffer)
@@ -599,13 +599,13 @@ static int ssl3_handshake_mac(SSL *s, int md_nid, const char *sender, int len,
     return ((int)ret);
 }
 
-int n_ssl3_mac(SSL *ssl, unsigned char *md, int send)
+int n_ssl3_mac(SSL *ssl, uint8_t *md, int send)
 {
     SSL3_RECORD *rec;
-    unsigned char *mac_sec, *seq;
+    uint8_t *mac_sec, *seq;
     EVP_MD_CTX md_ctx;
     const EVP_MD_CTX *hash;
-    unsigned char *p, rec_char;
+    uint8_t *p, rec_char;
     size_t md_size, orig_len;
     int npad;
     int t;
@@ -644,7 +644,7 @@ int n_ssl3_mac(SSL *ssl, unsigned char *md, int send)
          * With SHA-1 (the largest hash speced for SSLv3) the hash size
          * goes up 4, but npad goes down by 8, resulting in a smaller
          * total size. */
-        unsigned char header[75];
+        uint8_t header[75];
         unsigned j = 0;
         memcpy(header + j, mac_sec, md_size);
         j += md_size;
@@ -693,7 +693,7 @@ int n_ssl3_mac(SSL *ssl, unsigned char *md, int send)
     return (md_size);
 }
 
-void ssl3_record_sequence_increment(unsigned char *seq)
+void ssl3_record_sequence_increment(uint8_t *seq)
 {
     int i;
 
@@ -703,14 +703,14 @@ void ssl3_record_sequence_increment(unsigned char *seq)
     }
 }
 
-int ssl3_generate_master_secret(SSL *s, unsigned char *out, unsigned char *p,
+int ssl3_generate_master_secret(SSL *s, uint8_t *out, uint8_t *p,
                                 int len)
 {
-    static const unsigned char *salt[3] = {
-        (const unsigned char *)"A", (const unsigned char *)"BB",
-        (const unsigned char *)"CCC",
+    static const uint8_t *salt[3] = {
+        (const uint8_t *)"A", (const uint8_t *)"BB",
+        (const uint8_t *)"CCC",
     };
-    unsigned char buf[EVP_MAX_MD_SIZE];
+    uint8_t buf[EVP_MAX_MD_SIZE];
     EVP_MD_CTX ctx;
     int i, ret = 0;
     unsigned int n;

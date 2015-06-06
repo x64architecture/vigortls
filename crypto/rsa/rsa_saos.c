@@ -66,16 +66,16 @@
 #include <openssl/x509.h>
 
 int RSA_sign_ASN1_OCTET_STRING(int type,
-                               const unsigned char *m, unsigned int m_len,
-                               unsigned char *sigret, unsigned int *siglen, RSA *rsa)
+                               const uint8_t *m, unsigned int m_len,
+                               uint8_t *sigret, unsigned int *siglen, RSA *rsa)
 {
     ASN1_OCTET_STRING sig;
     int i, j, ret = 1;
-    unsigned char *p, *s;
+    uint8_t *p, *s;
 
     sig.type = V_ASN1_OCTET_STRING;
     sig.length = m_len;
-    sig.data = (unsigned char *)m;
+    sig.data = (uint8_t *)m;
 
     i = i2d_ASN1_OCTET_STRING(&sig, NULL);
     j = RSA_size(rsa);
@@ -102,13 +102,13 @@ int RSA_sign_ASN1_OCTET_STRING(int type,
 }
 
 int RSA_verify_ASN1_OCTET_STRING(int dtype,
-                                 const unsigned char *m,
-                                 unsigned int m_len, unsigned char *sigbuf, unsigned int siglen,
+                                 const uint8_t *m,
+                                 unsigned int m_len, uint8_t *sigbuf, unsigned int siglen,
                                  RSA *rsa)
 {
     int i, ret = 0;
-    unsigned char *s;
-    const unsigned char *p;
+    uint8_t *s;
+    const uint8_t *p;
     ASN1_OCTET_STRING *sig = NULL;
 
     if (siglen != (unsigned int)RSA_size(rsa)) {

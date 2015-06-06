@@ -72,8 +72,8 @@ int PKCS12_PBE_keyivgen(EVP_CIPHER_CTX *ctx, const char *pass, int passlen,
 {
     PBEPARAM *pbe;
     int saltlen, iter, ret;
-    unsigned char *salt;
-    unsigned char key[EVP_MAX_KEY_LENGTH], iv[EVP_MAX_IV_LENGTH];
+    uint8_t *salt;
+    uint8_t key[EVP_MAX_KEY_LENGTH], iv[EVP_MAX_IV_LENGTH];
 
     /* Extract useful info from parameter */
 

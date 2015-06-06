@@ -88,8 +88,8 @@ int i2a_ASN1_INTEGER(BIO *bp, ASN1_INTEGER *a)
                     goto err;
                 n += 2;
             }
-            buf[0] = h[((unsigned char)a->data[i] >> 4) & 0x0f];
-            buf[1] = h[((unsigned char)a->data[i]) & 0x0f];
+            buf[0] = h[((uint8_t)a->data[i] >> 4) & 0x0f];
+            buf[1] = h[((uint8_t)a->data[i]) & 0x0f];
             if (BIO_write(bp, buf, 2) != 2)
                 goto err;
             n += 2;
@@ -104,8 +104,8 @@ int a2i_ASN1_INTEGER(BIO *bp, ASN1_INTEGER *bs, char *buf, int size)
 {
     int ret = 0;
     int i, j, k, m, n, again, bufsize;
-    unsigned char *s = NULL, *sp = NULL;
-    unsigned char *bufp;
+    uint8_t *s = NULL, *sp = NULL;
+    uint8_t *bufp;
     int num = 0, slen = 0, first = 1;
 
     bs->type = V_ASN1_INTEGER;
@@ -137,7 +137,7 @@ int a2i_ASN1_INTEGER(BIO *bp, ASN1_INTEGER *bs, char *buf, int size)
         if (i < 2)
             goto err_sl;
 
-        bufp = (unsigned char *)buf;
+        bufp = (uint8_t *)buf;
         if (first) {
             first = 0;
             if ((bufp[0] == '0') && (buf[1] == '0')) {

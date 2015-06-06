@@ -71,12 +71,12 @@ ASN1_SEQUENCE(PBE2PARAM) = {
     ASN1_SIMPLE(PBE2PARAM, encryption, X509_ALGOR)
 } ASN1_SEQUENCE_END(PBE2PARAM)
 
-PBE2PARAM *d2i_PBE2PARAM(PBE2PARAM **a, const unsigned char **in, long len)
+PBE2PARAM *d2i_PBE2PARAM(PBE2PARAM **a, const uint8_t **in, long len)
 {
     return (PBE2PARAM *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, &PBE2PARAM_it);
 }
 
-int i2d_PBE2PARAM(PBE2PARAM *a, unsigned char **out)
+int i2d_PBE2PARAM(PBE2PARAM *a, uint8_t **out)
 {
     return ASN1_item_i2d((ASN1_VALUE *)a, out, &PBE2PARAM_it);
 }
@@ -98,12 +98,12 @@ ASN1_SEQUENCE(PBKDF2PARAM) = {
     ASN1_OPT(PBKDF2PARAM, prf, X509_ALGOR)
 } ASN1_SEQUENCE_END(PBKDF2PARAM)
 
-PBKDF2PARAM *d2i_PBKDF2PARAM(PBKDF2PARAM **a, const unsigned char **in, long len)
+PBKDF2PARAM *d2i_PBKDF2PARAM(PBKDF2PARAM **a, const uint8_t **in, long len)
 {
     return (PBKDF2PARAM *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, &PBKDF2PARAM_it);
 }
 
-int i2d_PBKDF2PARAM(PBKDF2PARAM *a, unsigned char **out)
+int i2d_PBKDF2PARAM(PBKDF2PARAM *a, uint8_t **out)
 {
     return ASN1_item_i2d((ASN1_VALUE *)a, out, &PBKDF2PARAM_it);
 }
@@ -125,13 +125,13 @@ void PBKDF2PARAM_free(PBKDF2PARAM *a)
  */
 
 X509_ALGOR *PKCS5_pbe2_set_iv(const EVP_CIPHER *cipher, int iter,
-                              unsigned char *salt, int saltlen,
-                              unsigned char *aiv, int prf_nid)
+                              uint8_t *salt, int saltlen,
+                              uint8_t *aiv, int prf_nid)
 {
     X509_ALGOR *scheme = NULL, *kalg = NULL, *ret = NULL;
     int alg_nid, keylen;
     EVP_CIPHER_CTX ctx;
-    unsigned char iv[EVP_MAX_IV_LENGTH];
+    uint8_t iv[EVP_MAX_IV_LENGTH];
     PBE2PARAM *pbe2 = NULL;
     ASN1_OBJECT *obj;
 
@@ -227,12 +227,12 @@ err:
 }
 
 X509_ALGOR *PKCS5_pbe2_set(const EVP_CIPHER *cipher, int iter,
-                           unsigned char *salt, int saltlen)
+                           uint8_t *salt, int saltlen)
 {
     return PKCS5_pbe2_set_iv(cipher, iter, salt, saltlen, NULL, -1);
 }
 
-X509_ALGOR *PKCS5_pbkdf2_set(int iter, unsigned char *salt, int saltlen,
+X509_ALGOR *PKCS5_pbkdf2_set(int iter, uint8_t *salt, int saltlen,
                              int prf_nid, int keylen)
 {
     X509_ALGOR *keyfunc = NULL;

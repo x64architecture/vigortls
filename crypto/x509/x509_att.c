@@ -156,7 +156,7 @@ err2:
 
 STACK_OF(X509_ATTRIBUTE) * X509at_add1_attr_by_OBJ(STACK_OF(X509_ATTRIBUTE) * *x,
                                                    const ASN1_OBJECT *obj, int type,
-                                                   const unsigned char *bytes, int len)
+                                                   const uint8_t *bytes, int len)
 {
     X509_ATTRIBUTE *attr;
     STACK_OF(X509_ATTRIBUTE) * ret;
@@ -170,7 +170,7 @@ STACK_OF(X509_ATTRIBUTE) * X509at_add1_attr_by_OBJ(STACK_OF(X509_ATTRIBUTE) * *x
 
 STACK_OF(X509_ATTRIBUTE) * X509at_add1_attr_by_NID(STACK_OF(X509_ATTRIBUTE) * *x,
                                                    int nid, int type,
-                                                   const unsigned char *bytes, int len)
+                                                   const uint8_t *bytes, int len)
 {
     X509_ATTRIBUTE *attr;
     STACK_OF(X509_ATTRIBUTE) * ret;
@@ -184,7 +184,7 @@ STACK_OF(X509_ATTRIBUTE) * X509at_add1_attr_by_NID(STACK_OF(X509_ATTRIBUTE) * *x
 
 STACK_OF(X509_ATTRIBUTE) * X509at_add1_attr_by_txt(STACK_OF(X509_ATTRIBUTE) * *x,
                                                    const char *attrname, int type,
-                                                   const unsigned char *bytes, int len)
+                                                   const uint8_t *bytes, int len)
 {
     X509_ATTRIBUTE *attr;
     STACK_OF(X509_ATTRIBUTE) * ret;
@@ -257,7 +257,7 @@ err:
 }
 
 X509_ATTRIBUTE *X509_ATTRIBUTE_create_by_txt(X509_ATTRIBUTE **attr,
-                                             const char *atrname, int type, const unsigned char *bytes, int len)
+                                             const char *atrname, int type, const uint8_t *bytes, int len)
 {
     ASN1_OBJECT *obj;
     X509_ATTRIBUTE *nattr;

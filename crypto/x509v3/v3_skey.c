@@ -104,7 +104,7 @@ static ASN1_OCTET_STRING *s2i_skey_id(X509V3_EXT_METHOD *method,
 {
     ASN1_OCTET_STRING *oct;
     ASN1_BIT_STRING *pk;
-    unsigned char pkey_dig[EVP_MAX_MD_SIZE];
+    uint8_t pkey_dig[EVP_MAX_MD_SIZE];
     unsigned int diglen;
 
     if (strcmp(str, "hash"))

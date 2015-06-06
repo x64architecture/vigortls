@@ -118,8 +118,8 @@
 
 #include "ssl_locl.h"
 
-static int tls_decrypt_ticket(SSL *s, const unsigned char *tick, int ticklen,
-                              const unsigned char *sess_id, int sesslen,
+static int tls_decrypt_ticket(SSL *s, const uint8_t *tick, int ticklen,
+                              const uint8_t *sess_id, int sesslen,
                               SSL_SESSION **psess);
 
 SSL3_ENC_METHOD TLSv1_enc_data = {
@@ -241,13 +241,13 @@ static int nid_list[] = {
     NID_secp521r1,        /* secp521r1 (25) */
 };
 
-static const unsigned char ecformats_default[] = {
+static const uint8_t ecformats_default[] = {
     TLSEXT_ECPOINTFORMAT_uncompressed,
     TLSEXT_ECPOINTFORMAT_ansiX962_compressed_prime,
     TLSEXT_ECPOINTFORMAT_ansiX962_compressed_char2
 };
 
-static const unsigned char eccurves_default[] = {
+static const uint8_t eccurves_default[] = {
     0, 14,   /* sect571r1 (14) */
     0, 13,   /* sect571k1 (13) */
     0, 25,   /* secp521r1 (25) */
@@ -347,7 +347,7 @@ int tls1_ec_nid2curve_id(int nid)
  * the client/session curves. Otherwise return the custom curve list if one
  * exists, or the default curves if a custom list has not been specified.
  */
-static void tls1_get_curvelist(SSL *s, int client_curves, const unsigned char **pcurves,
+static void tls1_get_curvelist(SSL *s, int client_curves, const uint8_t **pcurves,
                                size_t *pcurveslen)
 {
     if (client_curves != 0) {
@@ -365,9 +365,9 @@ static void tls1_get_curvelist(SSL *s, int client_curves, const unsigned char **
 }
 
 /* Check that a curve is one of our preferences. */
-int tls1_check_curve(SSL *s, const unsigned char *p, size_t len)
+int tls1_check_curve(SSL *s, const uint8_t *p, size_t len)
 {
-    const unsigned char *curves;
+    const uint8_t *curves;
     size_t curveslen, i;
 
     /* Only named curves are supported. */
@@ -386,7 +386,7 @@ int tls1_check_curve(SSL *s, const unsigned char *p, size_t len)
 
 int tls1_get_shared_curve(SSL *s)
 {
-    const unsigned char *pref, *supp, *tsupp;
+    const uint8_t *pref, *supp, *tsupp;
     size_t preflen, supplen, i, j;
     unsigned long server_pref;
     int id;
@@ -413,7 +413,7 @@ int tls1_get_shared_curve(SSL *s)
 }
 
 /* For an EC key set TLS ID and required compression based on parameters. */
-static int tls1_set_ec_id(unsigned char *curve_id, unsigned char *comp_id, EC_KEY *ec)
+static int tls1_set_ec_id(uint8_t *curve_id, uint8_t *comp_id, EC_KEY *ec)
 {
     const EC_GROUP *grp;
     const EC_METHOD *meth;
@@ -438,7 +438,7 @@ static int tls1_set_ec_id(unsigned char *curve_id, unsigned char *comp_id, EC_KE
     /* If we have an ID set it, otherwise set arbitrary explicit curve. */
     if (id != 0) {
         curve_id[0] = 0;
-        curve_id[1] = (unsigned char)id;
+        curve_id[1] = (uint8_t)id;
     } else {
         curve_id[0] = 0xff;
         curve_id[1] = is_prime ? 0x01 : 0x02;
@@ -461,9 +461,9 @@ static int tls1_set_ec_id(unsigned char *curve_id, unsigned char *comp_id, EC_KE
 }
 
 /* Check that an EC key is compatible with extensions. */
-static int tls1_check_ec_key(SSL *s, unsigned char *curve_id, unsigned char *comp_id)
+static int tls1_check_ec_key(SSL *s, uint8_t *curve_id, uint8_t *comp_id)
 {
-    const unsigned char *p;
+    const uint8_t *p;
     size_t plen, i;
 
     /*
@@ -502,7 +502,7 @@ static int tls1_check_ec_key(SSL *s, unsigned char *curve_id, unsigned char *com
 int tls1_check_ec_server_key(SSL *s)
 {
     CERT_PKEY *cpk = s->cert->pkeys + SSL_PKEY_ECC;
-    unsigned char comp_id, curve_id[2];
+    uint8_t comp_id, curve_id[2];
     EVP_PKEY *pkey;
     int rv;
 
@@ -522,7 +522,7 @@ int tls1_check_ec_server_key(SSL *s)
 int tls1_check_ec_tmp_key(SSL *s)
 {
     EC_KEY *ec = s->cert->ecdh_tmp;
-    unsigned char curve_id[2];
+    uint8_t curve_id[2];
 
     if (s->cert->ecdh_tmp_auto != 0) {
         /* Need a shared curve. */
@@ -543,7 +543,7 @@ int tls1_check_ec_tmp_key(SSL *s)
     return tls1_check_ec_key(s, curve_id, NULL);
 }
 
-static void tls1_get_formatlist(SSL *s, const unsigned char **pformats, size_t *pformatslen)
+static void tls1_get_formatlist(SSL *s, const uint8_t **pformats, size_t *pformatslen)
 {
     /*
      * If we have a custom point format list use it, otherwise use the
@@ -562,7 +562,7 @@ static void tls1_get_formatlist(SSL *s, const unsigned char **pformats, size_t *
  * customizable at some point, for now include everything we support.
  */
 
-static unsigned char tls12_sigalgs[] = {
+static uint8_t tls12_sigalgs[] = {
     TLSEXT_hash_sha512, TLSEXT_signature_rsa, TLSEXT_hash_sha512,
     TLSEXT_signature_dsa, TLSEXT_hash_sha512, TLSEXT_signature_ecdsa,
 
@@ -579,7 +579,7 @@ static unsigned char tls12_sigalgs[] = {
     TLSEXT_signature_dsa, TLSEXT_hash_sha1, TLSEXT_signature_ecdsa,
 };
 
-int tls12_get_req_sig_algs(SSL *s, unsigned char *p)
+int tls12_get_req_sig_algs(SSL *s, uint8_t *p)
 {
     size_t slen = sizeof(tls12_sigalgs);
 
@@ -588,12 +588,12 @@ int tls12_get_req_sig_algs(SSL *s, unsigned char *p)
     return (int)slen;
 }
 
-unsigned char *ssl_add_clienthello_tlsext(SSL *s, unsigned char *p,
-                                          unsigned char *limit)
+uint8_t *ssl_add_clienthello_tlsext(SSL *s, uint8_t *p,
+                                          uint8_t *limit)
 {
     int extdatalen = 0;
     int using_ecc = 0;
-    unsigned char *ret = p;
+    uint8_t *ret = p;
 
     /* See if we support any ECC ciphersuites. */
     if (s->version != DTLS1_VERSION && s->version >= TLS1_VERSION) {
@@ -652,7 +652,7 @@ unsigned char *ssl_add_clienthello_tlsext(SSL *s, unsigned char *p,
         s2n(size_str + 3, ret);
 
         /* hostname type, length and hostname */
-        *(ret++) = (unsigned char)TLSEXT_NAMETYPE_host_name;
+        *(ret++) = (uint8_t)TLSEXT_NAMETYPE_host_name;
         s2n(size_str, ret);
         memcpy(ret, s->tlsext_hostname, size_str);
         ret += size_str;
@@ -686,7 +686,7 @@ unsigned char *ssl_add_clienthello_tlsext(SSL *s, unsigned char *p,
          * Add TLS extension ECPointFormats to the ClientHello message
          */
         size_t lenmax;
-        const unsigned char *plist;
+        const uint8_t *plist;
         size_t plistlen;
 
         tls1_get_formatlist(s, &plist, &plistlen);
@@ -704,7 +704,7 @@ unsigned char *ssl_add_clienthello_tlsext(SSL *s, unsigned char *p,
 
         s2n(TLSEXT_TYPE_ec_point_formats, ret);
         s2n(plistlen + 1, ret);
-        *(ret++) = (unsigned char)plistlen;
+        *(ret++) = (uint8_t)plistlen;
         memcpy(ret, plist, plistlen);
         ret += plistlen;
 
@@ -809,7 +809,7 @@ skip_ext:
         s2n(idlen, ret);
         for (i = 0; i < sk_OCSP_RESPID_num(s->tlsext_ocsp_ids); i++) {
             /* save position of id len */
-            unsigned char *q = ret;
+            uint8_t *q = ret;
             id = sk_OCSP_RESPID_value(s->tlsext_ocsp_ids, i);
             /* skip over id len */
             ret += 2;
@@ -869,7 +869,7 @@ skip_ext:
      * extensions it MUST always appear last.
      */
     {
-        int hlen = ret - (unsigned char *)s->init_buf->data;
+        int hlen = ret - (uint8_t *)s->init_buf->data;
         /* The code in s23_clnt.c to build ClientHello messages includes the
          * 5-byte record header in the buffer, while the code in s3_clnt.c does
          * not. */
@@ -897,12 +897,12 @@ skip_ext:
     return ret;
 }
 
-unsigned char *ssl_add_serverhello_tlsext(SSL *s, unsigned char *p,
-                                          unsigned char *limit)
+uint8_t *ssl_add_serverhello_tlsext(SSL *s, uint8_t *p,
+                                          uint8_t *limit)
 {
     int using_ecc, extdatalen = 0;
     unsigned long alg_a, alg_k;
-    unsigned char *ret = p;
+    uint8_t *ret = p;
     int next_proto_neg_seen;
 
     alg_a = s->s3->tmp.new_cipher->algorithm_auth;
@@ -953,7 +953,7 @@ unsigned char *ssl_add_serverhello_tlsext(SSL *s, unsigned char *p,
         /* 
          * Add TLS extension ECPointFormats to the ServerHello message
          */
-        const unsigned char *plist;
+        const uint8_t *plist;
         size_t plistlen;
         size_t lenmax;
 
@@ -972,7 +972,7 @@ unsigned char *ssl_add_serverhello_tlsext(SSL *s, unsigned char *p,
 
         s2n(TLSEXT_TYPE_ec_point_formats, ret);
         s2n(plistlen + 1, ret);
-        *(ret++) = (unsigned char)plistlen;
+        *(ret++) = (uint8_t)plistlen;
         memcpy(ret, plist, plistlen);
         ret += plistlen;
     }
@@ -1017,7 +1017,7 @@ unsigned char *ssl_add_serverhello_tlsext(SSL *s, unsigned char *p,
     if (((s->s3->tmp.new_cipher->id & 0xFFFF) == 0x80 
         || (s->s3->tmp.new_cipher->id & 0xFFFF) == 0x81) 
         && (SSL_get_options(s) & SSL_OP_CRYPTOPRO_TLSEXT_BUG)) {
-        static const unsigned char cryptopro_ext[36] = {
+        static const uint8_t cryptopro_ext[36] = {
             0xfd, 0xe8, /* 65000 */
             0x00, 0x20, /* 32 bytes length */
             0x30, 0x1e, 0x30, 0x08, 0x06, 0x06, 0x2a, 0x85, 0x03, 0x02, 0x02,
@@ -1033,7 +1033,7 @@ unsigned char *ssl_add_serverhello_tlsext(SSL *s, unsigned char *p,
     next_proto_neg_seen = s->s3->next_proto_neg_seen;
     s->s3->next_proto_neg_seen = 0;
     if (next_proto_neg_seen && s->ctx->next_protos_advertised_cb) {
-        const unsigned char *npa;
+        const uint8_t *npa;
         unsigned int npalen;
         int r;
 
@@ -1051,7 +1051,7 @@ unsigned char *ssl_add_serverhello_tlsext(SSL *s, unsigned char *p,
     }
 
     if (s->s3->alpn_selected != NULL) {
-        const unsigned char *selected = s->s3->alpn_selected;
+        const uint8_t *selected = s->s3->alpn_selected;
         unsigned int len = s->s3->alpn_selected_len;
 
         if ((long)(limit - ret - 4 - 2 - 1 - len) < 0)
@@ -1080,11 +1080,11 @@ unsigned char *ssl_add_serverhello_tlsext(SSL *s, unsigned char *p,
  *       return.
  *   returns: 1 on success.
  */
-static int tls1_alpn_handle_client_hello(SSL *s, const unsigned char *data,
+static int tls1_alpn_handle_client_hello(SSL *s, const uint8_t *data,
                                          unsigned int data_len, int *al)
 {
-    const unsigned char *selected;
-    unsigned char selected_len;
+    const uint8_t *selected;
+    uint8_t selected_len;
     unsigned int proto_len;
     unsigned int i;
     int r;
@@ -1152,11 +1152,11 @@ parse_error:
  * Sadly we cannot differentiate 10.6, 10.7 and 10.8.4 (which work), from
  * 10.8..10.8.3 (which don't work).
  */
-static void ssl_check_for_safari(SSL *s, const unsigned char *data,
-                                 const unsigned char *d, int n)
+static void ssl_check_for_safari(SSL *s, const uint8_t *data,
+                                 const uint8_t *d, int n)
 {
     unsigned short type, size;
-    static const unsigned char kSafariExtensionsBlock[] = {
+    static const uint8_t kSafariExtensionsBlock[] = {
         0x00, 0x0a, /* elliptic_curves extension */
         0x00, 0x08, /* 8 bytes */
         0x00, 0x06, /* 6 bytes of curve ids */
@@ -1171,7 +1171,7 @@ static void ssl_check_for_safari(SSL *s, const unsigned char *data,
     };
 
     /* The following is only present in TLS 1.2 */
-    static const unsigned char kSafariTLS12ExtensionsBlock[] = {
+    static const uint8_t kSafariTLS12ExtensionsBlock[] = {
         0x00, 0x0d, /* signature_algorithms */
         0x00, 0x0c, /* 12 bytes */
         0x00, 0x0a, /* 10 bytes */
@@ -1220,13 +1220,13 @@ static void ssl_check_for_safari(SSL *s, const unsigned char *data,
     s->s3->is_probably_safari = 1;
 }
 
-int ssl_parse_clienthello_tlsext(SSL *s, unsigned char **p, unsigned char *d,
+int ssl_parse_clienthello_tlsext(SSL *s, uint8_t **p, uint8_t *d,
                                  int n, int *al)
 {
     unsigned short type;
     unsigned short size;
     unsigned short len;
-    unsigned char *data = *p;
+    uint8_t *data = *p;
     int renegotiate_seen = 0;
     int sigalg_seen = 0;
 
@@ -1279,7 +1279,7 @@ int ssl_parse_clienthello_tlsext(SSL *s, unsigned char **p, unsigned char *d,
         */
 
         if (type == TLSEXT_TYPE_server_name) {
-            unsigned char *sdata;
+            uint8_t *sdata;
             int servname_type;
             int dsize;
 
@@ -1353,7 +1353,7 @@ int ssl_parse_clienthello_tlsext(SSL *s, unsigned char **p, unsigned char *d,
         }
 
         else if (type == TLSEXT_TYPE_ec_point_formats && s->version != DTLS1_VERSION) {
-            unsigned char *sdata = data;
+            uint8_t *sdata = data;
             int ecpointformatlist_length;
 
             if (size < 1) {
@@ -1378,7 +1378,7 @@ int ssl_parse_clienthello_tlsext(SSL *s, unsigned char **p, unsigned char *d,
                        ecpointformatlist_length);
             }
         } else if (type == TLSEXT_TYPE_elliptic_curves && s->version != DTLS1_VERSION) {
-            unsigned char *sdata = data;
+            uint8_t *sdata = data;
             int ellipticcurvelist_length;
 
             if (size < 2) {
@@ -1446,7 +1446,7 @@ int ssl_parse_clienthello_tlsext(SSL *s, unsigned char **p, unsigned char *d,
             s->tlsext_status_type = *data++;
             size--;
             if (s->tlsext_status_type == TLSEXT_STATUSTYPE_ocsp) {
-                const unsigned char *sdata;
+                const uint8_t *sdata;
                 int dsize;
                 /* Read in responder_id_list */
                 n2s(data, dsize);
@@ -1584,7 +1584,7 @@ ri_check:
 /* ssl_next_proto_validate validates a Next Protocol Negotiation block. No
  * elements of zero length are allowed and the set of elements must exactly fill
  * the length of the block. */
-static char ssl_next_proto_validate(unsigned char *d, unsigned len)
+static char ssl_next_proto_validate(uint8_t *d, unsigned len)
 {
     unsigned int off = 0;
 
@@ -1598,13 +1598,13 @@ static char ssl_next_proto_validate(unsigned char *d, unsigned len)
     return off == len;
 }
 
-int ssl_parse_serverhello_tlsext(SSL *s, unsigned char **p, unsigned char *d,
+int ssl_parse_serverhello_tlsext(SSL *s, uint8_t **p, uint8_t *d,
                                  int n, int *al)
 {
     unsigned short length;
     unsigned short type;
     unsigned short size;
-    unsigned char *data = *p;
+    uint8_t *data = *p;
     int tlsext_servername = 0;
     int renegotiate_seen = 0;
 
@@ -1639,7 +1639,7 @@ int ssl_parse_serverhello_tlsext(SSL *s, unsigned char **p, unsigned char *d,
             tlsext_servername = 1;
 
         } else if (type == TLSEXT_TYPE_ec_point_formats && s->version != DTLS1_VERSION) {
-            unsigned char *sdata = data;
+            uint8_t *sdata = data;
             int ecpointformatlist_length = *(sdata++);
 
             if (ecpointformatlist_length != size - 1 || ecpointformatlist_length < 1) {
@@ -1681,8 +1681,8 @@ int ssl_parse_serverhello_tlsext(SSL *s, unsigned char **p, unsigned char *d,
             s->tlsext_status_expected = 1;
         }
         else if (type == TLSEXT_TYPE_next_proto_neg && s->s3->tmp.finish_md_len == 0) {
-            unsigned char *selected;
-            unsigned char selected_len;
+            uint8_t *selected;
+            uint8_t selected_len;
 
             /* We must have requested it. */
             if (s->ctx->next_proto_select_cb == NULL) {
@@ -1921,7 +1921,7 @@ int ssl_check_serverhello_tlsext(SSL *s)
         || (alg_a & SSL_aECDSA))) {
         /* we are using an ECC cipher */
         size_t i;
-        unsigned char *list;
+        uint8_t *list;
         int found_uncompressed = 0;
         list = s->session->tlsext_ecpointformatlist;
         for (i = 0; i < s->session->tlsext_ecpointformatlist_length; i++) {
@@ -2017,11 +2017,11 @@ int ssl_check_serverhello_tlsext(SSL *s)
  *   s->ctx->tlsext_ticket_key_cb asked to renew the client's ticket.
  *   Otherwise, s->tlsext_ticket_expected is set to 0.
  */
-int tls1_process_ticket(SSL *s, unsigned char *session_id, int len,
-                        const unsigned char *limit, SSL_SESSION **ret)
+int tls1_process_ticket(SSL *s, uint8_t *session_id, int len,
+                        const uint8_t *limit, SSL_SESSION **ret)
 {
     /* Point after session ID in client hello */
-    const unsigned char *p = session_id + len;
+    const uint8_t *p = session_id + len;
     unsigned short i;
 
     *ret = NULL;
@@ -2113,15 +2113,15 @@ int tls1_process_ticket(SSL *s, unsigned char *session_id, int len,
  *    3: a ticket was successfully decrypted and *psess was set.
  *    4: same as 3, but the ticket needs to be renewed.
  */
-static int tls_decrypt_ticket(SSL *s, const unsigned char *etick, int eticklen,
-                              const unsigned char *sess_id, int sesslen,
+static int tls_decrypt_ticket(SSL *s, const uint8_t *etick, int eticklen,
+                              const uint8_t *sess_id, int sesslen,
                               SSL_SESSION **psess)
 {
     SSL_SESSION *sess;
-    unsigned char *sdec;
-    const unsigned char *p;
+    uint8_t *sdec;
+    const uint8_t *p;
     int slen, mlen, renew_ticket = 0;
-    unsigned char tick_hmac[EVP_MAX_MD_SIZE];
+    uint8_t tick_hmac[EVP_MAX_MD_SIZE];
     HMAC_CTX hctx;
     EVP_CIPHER_CTX ctx;
     SSL_CTX *tctx = s->initial_ctx;
@@ -2132,7 +2132,7 @@ static int tls_decrypt_ticket(SSL *s, const unsigned char *etick, int eticklen,
     HMAC_CTX_init(&hctx);
     EVP_CIPHER_CTX_init(&ctx);
     if (tctx->tlsext_ticket_key_cb) {
-        unsigned char *nctick = (unsigned char *)etick;
+        uint8_t *nctick = (uint8_t *)etick;
         int rv = tctx->tlsext_ticket_key_cb(s, nctick, nctick + 16, &ctx, &hctx, 0);
         if (rv < 0) {
             EVP_CIPHER_CTX_cleanup(&ctx);
@@ -2239,7 +2239,7 @@ static int tls12_find_id(int nid, tls12_lookup *table, size_t tlen)
     return -1;
 }
 
-int tls12_get_sigandhash(unsigned char *p, const EVP_PKEY *pk,
+int tls12_get_sigandhash(uint8_t *p, const EVP_PKEY *pk,
                          const EVP_MD *md)
 {
     int sig_id, md_id;
@@ -2252,8 +2252,8 @@ int tls12_get_sigandhash(unsigned char *p, const EVP_PKEY *pk,
     sig_id = tls12_get_sigid(pk);
     if (sig_id == -1)
         return 0;
-    p[0] = (unsigned char)md_id;
-    p[1] = (unsigned char)sig_id;
+    p[0] = (uint8_t)md_id;
+    p[1] = (uint8_t)sig_id;
     return 1;
 }
 
@@ -2263,7 +2263,7 @@ int tls12_get_sigid(const EVP_PKEY *pk)
                          sizeof(tls12_sig) / sizeof(tls12_lookup));
 }
 
-const EVP_MD *tls12_get_hash(unsigned char hash_alg)
+const EVP_MD *tls12_get_hash(uint8_t hash_alg)
 {
     switch (hash_alg) {
         case TLSEXT_hash_sha1:
@@ -2283,7 +2283,7 @@ const EVP_MD *tls12_get_hash(unsigned char hash_alg)
 
 /* Set preferred digest for each key type */
 
-int tls1_process_sigalgs(SSL *s, const unsigned char *data, int dsize)
+int tls1_process_sigalgs(SSL *s, const uint8_t *data, int dsize)
 {
     int i, idx;
     const EVP_MD *md;
@@ -2303,7 +2303,7 @@ int tls1_process_sigalgs(SSL *s, const unsigned char *data, int dsize)
     c->pkeys[SSL_PKEY_ECC].digest = NULL;
 
     for (i = 0; i < dsize; i += 2) {
-        unsigned char hash_alg = data[i], sig_alg = data[i + 1];
+        uint8_t hash_alg = data[i], sig_alg = data[i + 1];
 
         switch (sig_alg) {
             case TLSEXT_signature_rsa:

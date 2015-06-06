@@ -65,22 +65,22 @@
 #include <openssl/des.h>
 #include <openssl/rand.h>
 
-static int des_init_key(EVP_CIPHER_CTX *ctx, const unsigned char *key,
-                        const unsigned char *iv, int enc);
+static int des_init_key(EVP_CIPHER_CTX *ctx, const uint8_t *key,
+                        const uint8_t *iv, int enc);
 static int des_ctrl(EVP_CIPHER_CTX *c, int type, int arg, void *ptr);
 
 /* Because of various casts and different names can't use IMPLEMENT_BLOCK_CIPHER */
 
-static int des_ecb_cipher(EVP_CIPHER_CTX *ctx, unsigned char *out,
-                          const unsigned char *in, size_t inl)
+static int des_ecb_cipher(EVP_CIPHER_CTX *ctx, uint8_t *out,
+                          const uint8_t *in, size_t inl)
 {
     BLOCK_CIPHER_ecb_loop()
         DES_ecb_encrypt((DES_cblock *)(in + i), (DES_cblock *)(out + i), ctx->cipher_data, ctx->encrypt);
     return 1;
 }
 
-static int des_ofb_cipher(EVP_CIPHER_CTX *ctx, unsigned char *out,
-                          const unsigned char *in, size_t inl)
+static int des_ofb_cipher(EVP_CIPHER_CTX *ctx, uint8_t *out,
+                          const uint8_t *in, size_t inl)
 {
     while (inl >= EVP_MAXCHUNK) {
         DES_ofb64_encrypt(in, out, (long)EVP_MAXCHUNK, ctx->cipher_data,
@@ -95,8 +95,8 @@ static int des_ofb_cipher(EVP_CIPHER_CTX *ctx, unsigned char *out,
     return 1;
 }
 
-static int des_cbc_cipher(EVP_CIPHER_CTX *ctx, unsigned char *out,
-                          const unsigned char *in, size_t inl)
+static int des_cbc_cipher(EVP_CIPHER_CTX *ctx, uint8_t *out,
+                          const uint8_t *in, size_t inl)
 {
     while (inl >= EVP_MAXCHUNK) {
         DES_ncbc_encrypt(in, out, (long)EVP_MAXCHUNK, ctx->cipher_data,
@@ -111,8 +111,8 @@ static int des_cbc_cipher(EVP_CIPHER_CTX *ctx, unsigned char *out,
     return 1;
 }
 
-static int des_cfb64_cipher(EVP_CIPHER_CTX *ctx, unsigned char *out,
-                            const unsigned char *in, size_t inl)
+static int des_cfb64_cipher(EVP_CIPHER_CTX *ctx, uint8_t *out,
+                            const uint8_t *in, size_t inl)
 {
     while (inl >= EVP_MAXCHUNK) {
         DES_cfb64_encrypt(in, out, (long)EVP_MAXCHUNK, ctx->cipher_data,
@@ -129,11 +129,11 @@ static int des_cfb64_cipher(EVP_CIPHER_CTX *ctx, unsigned char *out,
 
 /* Although we have a CFB-r implementation for DES, it doesn't pack the right
    way, so wrap it here */
-static int des_cfb1_cipher(EVP_CIPHER_CTX *ctx, unsigned char *out,
-                           const unsigned char *in, size_t inl)
+static int des_cfb1_cipher(EVP_CIPHER_CTX *ctx, uint8_t *out,
+                           const uint8_t *in, size_t inl)
 {
     size_t n, chunk = EVP_MAXCHUNK / 8;
-    unsigned char c[1], d[1];
+    uint8_t c[1], d[1];
 
     if (inl < chunk)
         chunk = inl;
@@ -155,8 +155,8 @@ static int des_cfb1_cipher(EVP_CIPHER_CTX *ctx, unsigned char *out,
     return 1;
 }
 
-static int des_cfb8_cipher(EVP_CIPHER_CTX *ctx, unsigned char *out,
-                           const unsigned char *in, size_t inl)
+static int des_cfb8_cipher(EVP_CIPHER_CTX *ctx, uint8_t *out,
+                           const uint8_t *in, size_t inl)
 {
     while (inl >= EVP_MAXCHUNK) {
         DES_cfb_encrypt(in, out, 8, (long)EVP_MAXCHUNK, ctx->cipher_data,
@@ -187,8 +187,8 @@ BLOCK_CIPHER_defs(des, DES_key_schedule, NID_des, 8, 8, 8, 64,
                              EVP_CIPHER_set_asn1_iv,
                              EVP_CIPHER_get_asn1_iv, des_ctrl)
 
-            static int des_init_key(EVP_CIPHER_CTX *ctx, const unsigned char *key,
-                                    const unsigned char *iv, int enc)
+            static int des_init_key(EVP_CIPHER_CTX *ctx, const uint8_t *key,
+                                    const uint8_t *iv, int enc)
 {
     DES_cblock *deskey = (DES_cblock *)key;
 #ifdef EVP_CHECK_DES_KEY

@@ -85,17 +85,17 @@ unsigned long X509_issuer_and_serial_hash(X509 *a)
 {
     unsigned long ret = 0;
     EVP_MD_CTX ctx;
-    unsigned char md[16];
+    uint8_t md[16];
     char *f;
 
     EVP_MD_CTX_init(&ctx);
     f = X509_NAME_oneline(a->cert_info->issuer, NULL, 0);
     if (!EVP_DigestInit_ex(&ctx, EVP_md5(), NULL))
         goto err;
-    if (!EVP_DigestUpdate(&ctx, (unsigned char *)f, strlen(f)))
+    if (!EVP_DigestUpdate(&ctx, (uint8_t *)f, strlen(f)))
         goto err;
     free(f);
-    if (!EVP_DigestUpdate(&ctx, (unsigned char *)a->cert_info->serialNumber->data,
+    if (!EVP_DigestUpdate(&ctx, (uint8_t *)a->cert_info->serialNumber->data,
                           (unsigned long)a->cert_info->serialNumber->length))
         goto err;
     if (!EVP_DigestFinal_ex(&ctx, &(md[0]), NULL))
@@ -208,7 +208,7 @@ int X509_NAME_cmp(const X509_NAME *a, const X509_NAME *b)
 unsigned long X509_NAME_hash(X509_NAME *x)
 {
     unsigned long ret = 0;
-    unsigned char md[SHA_DIGEST_LENGTH];
+    uint8_t md[SHA_DIGEST_LENGTH];
 
     /* Make sure X509_NAME structure contains valid cached encoding */
     i2d_X509_NAME(x, NULL);
@@ -227,7 +227,7 @@ unsigned long X509_NAME_hash_old(X509_NAME *x)
 {
     EVP_MD_CTX md_ctx;
     unsigned long ret = 0;
-    unsigned char md[16];
+    uint8_t md[16];
 
     /* Make sure X509_NAME structure contains valid cached encoding */
     i2d_X509_NAME(x, NULL);

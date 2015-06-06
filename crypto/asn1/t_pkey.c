@@ -62,7 +62,7 @@
 #include <openssl/bn.h>
 
 int ASN1_bn_print(BIO *bp, const char *number, const BIGNUM *num,
-                  unsigned char *buf, int off)
+                  uint8_t *buf, int off)
 {
     int n, i;
     const char *neg;

@@ -141,7 +141,7 @@ int init_client(int *sock, char *host, char *port, int type, int af)
     return (0);
 }
 
-int do_server(int port, int type, int *ret, int (*cb)(char *hostname, int s, unsigned char *context), unsigned char *context)
+int do_server(int port, int type, int *ret, int (*cb)(char *hostname, int s, uint8_t *context), uint8_t *context)
 {
     int sock = 0;
     char *name = NULL;
@@ -299,7 +299,7 @@ end:
     return (1);
 }
 
-int extract_host_port(char *str, char **host_ptr, unsigned char *ip,
+int extract_host_port(char *str, char **host_ptr, uint8_t *ip,
                       char **port_ptr)
 {
     char *h, *p;

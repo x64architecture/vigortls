@@ -58,9 +58,9 @@
 #include "gost_locl.h"
 
 /* Convert little-endian byte array into bignum */
-BIGNUM *GOST_le2bn(const unsigned char *buf, size_t len, BIGNUM *bn)
+BIGNUM *GOST_le2bn(const uint8_t *buf, size_t len, BIGNUM *bn)
 {
-    unsigned char temp[64];
+    uint8_t temp[64];
     int i;
     if (len > 64)
         return NULL;
@@ -72,9 +72,9 @@ BIGNUM *GOST_le2bn(const unsigned char *buf, size_t len, BIGNUM *bn)
     return BN_bin2bn(temp, len, bn);
 }
 
-int GOST_bn2le(BIGNUM *bn, unsigned char *buf, int len)
+int GOST_bn2le(BIGNUM *bn, uint8_t *buf, int len)
 {
-    unsigned char temp[64];
+    uint8_t temp[64];
     int i, bytes;
 
     bytes = BN_num_bytes(bn);

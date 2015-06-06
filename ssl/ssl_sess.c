@@ -218,7 +218,7 @@ SSL_SESSION *SSL_SESSION_new(void)
     return (ss);
 }
 
-const unsigned char *SSL_SESSION_get_id(const SSL_SESSION *s,
+const uint8_t *SSL_SESSION_get_id(const SSL_SESSION *s,
                                         unsigned int *len)
 {
     if (len)
@@ -245,7 +245,7 @@ unsigned int SSL_SESSION_get_compress_id(const SSL_SESSION *s)
 
 #define MAX_SESS_ID_ATTEMPTS 10
 
-static int def_generate_session_id(const SSL *ssl, unsigned char *id,
+static int def_generate_session_id(const SSL *ssl, uint8_t *id,
                                    unsigned int *id_len)
 {
     unsigned int retry = 0;
@@ -412,8 +412,8 @@ int ssl_get_new_session(SSL *s, int session)
  *   - Both for new and resumed sessions, s->tlsext_ticket_expected is set
  *     to 1 if the server should issue a new session ticket (to 0 otherwise).
  */
-int ssl_get_prev_session(SSL *s, unsigned char *session_id, int len,
-                         const unsigned char *limit)
+int ssl_get_prev_session(SSL *s, uint8_t *session_id, int len,
+                         const uint8_t *limit)
 {
     SSL_SESSION *ret = NULL;
     int fatal = 0;
@@ -771,7 +771,7 @@ X509 *SSL_SESSION_get0_peer(SSL_SESSION *s)
     return s->peer;
 }
 
-int SSL_SESSION_set1_id_context(SSL_SESSION *s, const unsigned char *sid_ctx,
+int SSL_SESSION_set1_id_context(SSL_SESSION *s, const uint8_t *sid_ctx,
                                 unsigned int sid_ctx_len)
 {
     if (sid_ctx_len > SSL_MAX_SID_CTX_LENGTH) {
@@ -977,14 +977,14 @@ void (*SSL_CTX_sess_get_remove_cb(SSL_CTX *ctx))(SSL_CTX *ctx,
 
 void SSL_CTX_sess_set_get_cb(SSL_CTX *ctx,
                              SSL_SESSION *(*cb)(struct ssl_st *ssl,
-                                                unsigned char *data, int len,
+                                                uint8_t *data, int len,
                                                 int *copy))
 {
     ctx->get_session_cb = cb;
 }
 
 SSL_SESSION *(*SSL_CTX_sess_get_get_cb(SSL_CTX *ctx))(SSL *ssl,
-                                                      unsigned char *data,
+                                                      uint8_t *data,
                                                       int len, int *copy)
 {
     return ctx->get_session_cb;
@@ -1032,14 +1032,14 @@ int SSL_CTX_set_client_cert_engine(SSL_CTX *ctx, ENGINE *e)
 #endif
 
 void SSL_CTX_set_cookie_generate_cb(SSL_CTX *ctx,
-                                    int (*cb)(SSL *ssl, unsigned char *cookie,
+                                    int (*cb)(SSL *ssl, uint8_t *cookie,
                                               unsigned int *cookie_len))
 {
     ctx->app_gen_cookie_cb = cb;
 }
 
 void SSL_CTX_set_cookie_verify_cb(SSL_CTX *ctx,
-                                  int (*cb)(SSL *ssl, unsigned char *cookie,
+                                  int (*cb)(SSL *ssl, uint8_t *cookie,
                                             unsigned int cookie_len))
 {
     ctx->app_verify_cookie_cb = cb;

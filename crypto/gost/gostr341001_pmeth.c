@@ -65,7 +65,7 @@
 #include "gost_locl.h"
 #include "gost_asn1.h"
 
-static ECDSA_SIG *unpack_signature_cp(const unsigned char *sig, size_t siglen)
+static ECDSA_SIG *unpack_signature_cp(const uint8_t *sig, size_t siglen)
 {
     ECDSA_SIG *s;
 
@@ -79,7 +79,7 @@ static ECDSA_SIG *unpack_signature_cp(const unsigned char *sig, size_t siglen)
     return s;
 }
 
-static int pack_signature_cp(ECDSA_SIG *s, int order, unsigned char *sig,
+static int pack_signature_cp(ECDSA_SIG *s, int order, uint8_t *sig,
                              size_t *siglen)
 {
     int r_len = BN_num_bytes(s->r);
@@ -97,7 +97,7 @@ static int pack_signature_cp(ECDSA_SIG *s, int order, unsigned char *sig,
     return 1;
 }
 
-static ECDSA_SIG *unpack_signature_le(const unsigned char *sig, size_t siglen)
+static ECDSA_SIG *unpack_signature_le(const uint8_t *sig, size_t siglen)
 {
     ECDSA_SIG *s;
     BIGNUM *a = NULL, *b = NULL;
@@ -118,7 +118,7 @@ err:
     BN_free(b);
 }
 
-static int pack_signature_le(ECDSA_SIG *s, int order, unsigned char *sig,
+static int pack_signature_le(ECDSA_SIG *s, int order, uint8_t *sig,
                              size_t *siglen)
 {
     *siglen = 2 * order;
@@ -133,7 +133,7 @@ struct gost_pmeth_data {
     int sign_param_nid; /* Should be set whenever parameters are filled */
     int digest_nid;
     EVP_MD *md;
-    unsigned char *shared_ukm;
+    uint8_t *shared_ukm;
     int peer_key_used;
     int sig_format;
 };
@@ -223,8 +223,8 @@ static int pkey_gost01_keygen(EVP_PKEY_CTX *ctx, EVP_PKEY *pkey)
     return gost2001_keygen(pkey->pkey.gost) != 0;
 }
 
-static int pkey_gost01_sign(EVP_PKEY_CTX *ctx, unsigned char *sig, size_t *siglen,
-                            const unsigned char *tbs, size_t tbs_len)
+static int pkey_gost01_sign(EVP_PKEY_CTX *ctx, uint8_t *sig, size_t *siglen,
+                            const uint8_t *tbs, size_t tbs_len)
 {
     ECDSA_SIG *unpacked_sig = NULL;
     EVP_PKEY *pkey = EVP_PKEY_CTX_get0_pkey(ctx);
@@ -271,8 +271,8 @@ static int pkey_gost01_sign(EVP_PKEY_CTX *ctx, unsigned char *sig, size_t *sigle
     return ret;
 }
 
-static int pkey_gost01_verify(EVP_PKEY_CTX *ctx, const unsigned char *sig,
-                              size_t siglen, const unsigned char *tbs,
+static int pkey_gost01_verify(EVP_PKEY_CTX *ctx, const uint8_t *sig,
+                              size_t siglen, const uint8_t *tbs,
                               size_t tbs_len)
 {
     int ok = 0;
@@ -305,9 +305,9 @@ err:
 }
 
 static int gost01_VKO_key(EVP_PKEY *pub_key, EVP_PKEY *priv_key,
-                          const unsigned char *ukm, unsigned char *key)
+                          const uint8_t *ukm, uint8_t *key)
 {
-    unsigned char hashbuf[128];
+    uint8_t hashbuf[128];
     int digest_nid;
     int ret = 0;
     BN_CTX *ctx = BN_CTX_new();
@@ -357,15 +357,15 @@ err:
     return ret;
 }
 
-int pkey_gost01_decrypt(EVP_PKEY_CTX *pctx, unsigned char *key, size_t *key_len,
-                        const unsigned char *in, size_t in_len)
+int pkey_gost01_decrypt(EVP_PKEY_CTX *pctx, uint8_t *key, size_t *key_len,
+                        const uint8_t *in, size_t in_len)
 {
-    const unsigned char *p = in;
+    const uint8_t *p = in;
     EVP_PKEY *priv = EVP_PKEY_CTX_get0_pkey(pctx);
     GOST_KEY_TRANSPORT *gkt = NULL;
     int ret = 0;
-    unsigned char wrappedKey[44];
-    unsigned char sharedKey[32];
+    uint8_t wrappedKey[44];
+    uint8_t sharedKey[32];
     EVP_PKEY *eph_key = NULL, *peerkey = NULL;
     int nid;
 
@@ -373,7 +373,7 @@ int pkey_gost01_decrypt(EVP_PKEY_CTX *pctx, unsigned char *key, size_t *key_len,
         *key_len = 32;
         return 1;
     }
-    gkt = d2i_GOST_KEY_TRANSPORT(NULL, (const unsigned char **)&p, in_len);
+    gkt = d2i_GOST_KEY_TRANSPORT(NULL, (const uint8_t **)&p, in_len);
     if (!gkt) {
         GOSTerr(GOST_F_PKEY_GOST01_DECRYPT,
                 GOST_R_ERROR_PARSING_KEY_TRANSPORT_INFO);
@@ -422,7 +422,7 @@ err:
     return ret;
 }
 
-int pkey_gost01_derive(EVP_PKEY_CTX *ctx, unsigned char *key, size_t *keylen)
+int pkey_gost01_derive(EVP_PKEY_CTX *ctx, uint8_t *key, size_t *keylen)
 {
     /*
      * Public key of peer is in the ctx field peerkey
@@ -449,13 +449,13 @@ int pkey_gost01_derive(EVP_PKEY_CTX *ctx, unsigned char *key, size_t *keylen)
     return 1;
 }
 
-int pkey_gost01_encrypt(EVP_PKEY_CTX *pctx, unsigned char *out, size_t *out_len,
-                        const unsigned char *key, size_t key_len)
+int pkey_gost01_encrypt(EVP_PKEY_CTX *pctx, uint8_t *out, size_t *out_len,
+                        const uint8_t *key, size_t key_len)
 {
     GOST_KEY_TRANSPORT *gkt = NULL;
     EVP_PKEY *pubk = EVP_PKEY_CTX_get0_pkey(pctx);
     struct gost_pmeth_data *data = EVP_PKEY_CTX_get_data(pctx);
-    unsigned char ukm[8], shared_key[32], crypted_key[44];
+    uint8_t ukm[8], shared_key[32], crypted_key[44];
     int ret = 0;
     int key_is_ephemeral;
     EVP_PKEY *sec_key = EVP_PKEY_CTX_get0_peerkey(pctx);

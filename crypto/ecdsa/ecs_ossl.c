@@ -61,11 +61,11 @@
 #include <openssl/obj_mac.h>
 #include <openssl/bn.h>
 
-static ECDSA_SIG *ecdsa_do_sign(const unsigned char *dgst, int dlen,
+static ECDSA_SIG *ecdsa_do_sign(const uint8_t *dgst, int dlen,
                                 const BIGNUM *, const BIGNUM *, EC_KEY *eckey);
 static int ecdsa_sign_setup(EC_KEY *eckey, BN_CTX *ctx_in, BIGNUM **kinvp,
                             BIGNUM **rp);
-static int ecdsa_do_verify(const unsigned char *dgst, int dgst_len,
+static int ecdsa_do_verify(const uint8_t *dgst, int dgst_len,
                            const ECDSA_SIG *sig, EC_KEY *eckey);
 
 static ECDSA_METHOD openssl_ecdsa_meth = {
@@ -220,7 +220,7 @@ err:
     return (ret);
 }
 
-static ECDSA_SIG *ecdsa_do_sign(const unsigned char *dgst, int dgst_len,
+static ECDSA_SIG *ecdsa_do_sign(const uint8_t *dgst, int dgst_len,
                                 const BIGNUM *in_kinv, const BIGNUM *in_r, EC_KEY *eckey)
 {
     int ok = 0, i;
@@ -330,7 +330,7 @@ err:
     return ret;
 }
 
-static int ecdsa_do_verify(const unsigned char *dgst, int dgst_len,
+static int ecdsa_do_verify(const uint8_t *dgst, int dgst_len,
                            const ECDSA_SIG *sig, EC_KEY *eckey)
 {
     int ret = -1, i;

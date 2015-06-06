@@ -87,14 +87,14 @@ int asn1_do_lock(ASN1_VALUE **pval, int op, const ASN1_ITEM *it);
 
 void asn1_enc_init(ASN1_VALUE **pval, const ASN1_ITEM *it);
 void asn1_enc_free(ASN1_VALUE **pval, const ASN1_ITEM *it);
-int asn1_enc_restore(int *len, unsigned char **out, ASN1_VALUE **pval, const ASN1_ITEM *it);
-int asn1_enc_save(ASN1_VALUE **pval, const unsigned char *in, int inlen, const ASN1_ITEM *it);
+int asn1_enc_restore(int *len, uint8_t **out, ASN1_VALUE **pval, const ASN1_ITEM *it);
+int asn1_enc_save(ASN1_VALUE **pval, const uint8_t *in, int inlen, const ASN1_ITEM *it);
 
 void asn1_primitive_free(ASN1_VALUE **pval, const ASN1_ITEM *it);
 void asn1_template_free(ASN1_VALUE **pval, const ASN1_TEMPLATE *tt);
 
-ASN1_OBJECT *c2i_ASN1_OBJECT(ASN1_OBJECT **a, const unsigned char **pp, long length);
-int i2c_ASN1_BIT_STRING(ASN1_BIT_STRING *a, unsigned char **pp);
-ASN1_BIT_STRING *c2i_ASN1_BIT_STRING(ASN1_BIT_STRING **a, const unsigned char **pp, long length);
-int i2c_ASN1_INTEGER(ASN1_INTEGER *a, unsigned char **pp);
-ASN1_INTEGER *c2i_ASN1_INTEGER(ASN1_INTEGER **a, const unsigned char **pp, long length);
+ASN1_OBJECT *c2i_ASN1_OBJECT(ASN1_OBJECT **a, const uint8_t **pp, long length);
+int i2c_ASN1_BIT_STRING(ASN1_BIT_STRING *a, uint8_t **pp);
+ASN1_BIT_STRING *c2i_ASN1_BIT_STRING(ASN1_BIT_STRING **a, const uint8_t **pp, long length);
+int i2c_ASN1_INTEGER(ASN1_INTEGER *a, uint8_t **pp);
+ASN1_INTEGER *c2i_ASN1_INTEGER(ASN1_INTEGER **a, const uint8_t **pp, long length);

@@ -83,7 +83,7 @@ int BIO_dump_indent_cb(int (*cb)(const void *data, size_t len, void *u),
     int ret = 0;
     char buf[288 + 1], tmp[20], str[128 + 1];
     int i, j, rows, trc;
-    unsigned char ch;
+    uint8_t ch;
     int dump_width;
 
     trc = 0;
@@ -115,7 +115,7 @@ int BIO_dump_indent_cb(int (*cb)(const void *data, size_t len, void *u),
             if (((i * dump_width) + j) >= len) {
                 strlcat(buf, "   ", sizeof buf);
             } else {
-                ch = ((unsigned char)*(s + i * dump_width + j)) & 0xff;
+                ch = ((uint8_t)*(s + i * dump_width + j)) & 0xff;
                 snprintf(tmp, sizeof tmp, "%02x%c", ch,
                          j == 7 ? '-' : ' ');
                 strlcat(buf, tmp, sizeof buf);
@@ -125,7 +125,7 @@ int BIO_dump_indent_cb(int (*cb)(const void *data, size_t len, void *u),
         for (j = 0; j < dump_width; j++) {
             if (((i * dump_width) + j) >= len)
                 break;
-            ch = ((unsigned char)*(s + i * dump_width + j)) & 0xff;
+            ch = ((uint8_t)*(s + i * dump_width + j)) & 0xff;
             snprintf(tmp, sizeof tmp, "%c",
                      ((ch >= ' ') && (ch <= '~')) ? ch : '.');
             strlcat(buf, tmp, sizeof buf);

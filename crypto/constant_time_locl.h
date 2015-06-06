@@ -80,32 +80,32 @@ static inline unsigned int constant_time_msb(unsigned int a);
  */
 static inline unsigned int constant_time_lt(unsigned int a, unsigned int b);
 /* Convenience method for getting an 8-bit mask. */
-static inline unsigned char constant_time_lt_8(unsigned int a, unsigned int b);
+static inline uint8_t constant_time_lt_8(unsigned int a, unsigned int b);
 
 /*
  * Returns 0xff..f if a >= b and 0 otherwise.
  */
 static inline unsigned int constant_time_ge(unsigned int a, unsigned int b);
 /* Convenience method for getting an 8-bit mask. */
-static inline unsigned char constant_time_ge_8(unsigned int a, unsigned int b);
+static inline uint8_t constant_time_ge_8(unsigned int a, unsigned int b);
 
 /*
  * Returns 0xff..f if a == 0 and 0 otherwise.
  */
 static inline unsigned int constant_time_is_zero(unsigned int a);
 /* Convenience method for getting an 8-bit mask. */
-static inline unsigned char constant_time_is_zero_8(unsigned int a);
+static inline uint8_t constant_time_is_zero_8(unsigned int a);
 
 /*
  * Returns 0xff..f if a == b and 0 otherwise.
  */
 static inline unsigned int constant_time_eq(unsigned int a, unsigned int b);
 /* Convenience method for getting an 8-bit mask. */
-static inline unsigned char constant_time_eq_8(unsigned int a, unsigned int b);
+static inline uint8_t constant_time_eq_8(unsigned int a, unsigned int b);
 /* Signed integers. */
 static inline unsigned int constant_time_eq_int(int a, int b);
 /* Convenience method for getting an 8-bit mask. */
-static inline unsigned char constant_time_eq_int_8(int a, int b);
+static inline uint8_t constant_time_eq_int_8(int a, int b);
 
 /*
  * Returns (mask & a) | (~mask & b).
@@ -116,9 +116,9 @@ static inline unsigned char constant_time_eq_int_8(int a, int b);
  */
 static inline unsigned int constant_time_select(unsigned int mask,
                                                 unsigned int a, unsigned int b);
-/* Convenience method for unsigned chars. */
-static inline unsigned char constant_time_select_8(unsigned char mask,
-                                                   unsigned char a, unsigned char b);
+/* Convenience method for uint8_ts. */
+static inline uint8_t constant_time_select_8(uint8_t mask,
+                                                   uint8_t a, uint8_t b);
 /* Convenience method for signed integers. */
 static inline int constant_time_select_int(unsigned int mask, int a, int b);
 
@@ -132,9 +132,9 @@ static inline unsigned int constant_time_lt(unsigned int a, unsigned int b)
     return constant_time_msb(a ^ ((a ^ b) | ((a - b) ^ b)));
 }
 
-static inline unsigned char constant_time_lt_8(unsigned int a, unsigned int b)
+static inline uint8_t constant_time_lt_8(unsigned int a, unsigned int b)
 {
-    return (unsigned char)(constant_time_lt(a, b));
+    return (uint8_t)(constant_time_lt(a, b));
 }
 
 static inline unsigned int constant_time_ge(unsigned int a, unsigned int b)
@@ -142,9 +142,9 @@ static inline unsigned int constant_time_ge(unsigned int a, unsigned int b)
     return ~constant_time_lt(a, b);
 }
 
-static inline unsigned char constant_time_ge_8(unsigned int a, unsigned int b)
+static inline uint8_t constant_time_ge_8(unsigned int a, unsigned int b)
 {
-    return (unsigned char)(constant_time_ge(a, b));
+    return (uint8_t)(constant_time_ge(a, b));
 }
 
 static inline unsigned int constant_time_is_zero(unsigned int a)
@@ -152,9 +152,9 @@ static inline unsigned int constant_time_is_zero(unsigned int a)
     return constant_time_msb(~a & (a - 1));
 }
 
-static inline unsigned char constant_time_is_zero_8(unsigned int a)
+static inline uint8_t constant_time_is_zero_8(unsigned int a)
 {
-    return (unsigned char)(constant_time_is_zero(a));
+    return (uint8_t)(constant_time_is_zero(a));
 }
 
 static inline unsigned int constant_time_eq(unsigned int a, unsigned int b)
@@ -162,9 +162,9 @@ static inline unsigned int constant_time_eq(unsigned int a, unsigned int b)
     return constant_time_is_zero(a ^ b);
 }
 
-static inline unsigned char constant_time_eq_8(unsigned int a, unsigned int b)
+static inline uint8_t constant_time_eq_8(unsigned int a, unsigned int b)
 {
-    return (unsigned char)(constant_time_eq(a, b));
+    return (uint8_t)(constant_time_eq(a, b));
 }
 
 static inline unsigned int constant_time_eq_int(int a, int b)
@@ -172,7 +172,7 @@ static inline unsigned int constant_time_eq_int(int a, int b)
     return constant_time_eq((unsigned)(a), (unsigned)(b));
 }
 
-static inline unsigned char constant_time_eq_int_8(int a, int b)
+static inline uint8_t constant_time_eq_int_8(int a, int b)
 {
     return constant_time_eq_8((unsigned)(a), (unsigned)(b));
 }
@@ -183,10 +183,10 @@ static inline unsigned int constant_time_select(unsigned int mask,
     return (mask & a) | (~mask & b);
 }
 
-static inline unsigned char constant_time_select_8(unsigned char mask,
-                                                   unsigned char a, unsigned char b)
+static inline uint8_t constant_time_select_8(uint8_t mask,
+                                                   uint8_t a, uint8_t b)
 {
-    return (unsigned char)(constant_time_select(mask, a, b));
+    return (uint8_t)(constant_time_select(mask, a, b));
 }
 
 static inline int constant_time_select_int(unsigned int mask, int a, int b)

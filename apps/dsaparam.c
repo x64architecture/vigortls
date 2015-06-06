@@ -254,7 +254,7 @@ int dsaparam_main(int argc, char **argv)
     }
 
     if (C) {
-        unsigned char *data;
+        uint8_t *data;
         int len, bits_p;
 
         len = BN_num_bytes(dsa->p);

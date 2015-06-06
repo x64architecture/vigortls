@@ -65,7 +65,7 @@ BIGNUM *EC_POINT_point2bn(const EC_GROUP *group,
                           BN_CTX *ctx)
 {
     size_t buf_len = 0;
-    unsigned char *buf;
+    uint8_t *buf;
 
     buf_len = EC_POINT_point2oct(group, point, form,
                                  NULL, 0, ctx);
@@ -93,7 +93,7 @@ EC_POINT *EC_POINT_bn2point(const EC_GROUP *group,
                             BN_CTX *ctx)
 {
     size_t buf_len = 0;
-    unsigned char *buf;
+    uint8_t *buf;
     EC_POINT *ret;
 
     if ((buf_len = BN_num_bytes(bn)) == 0)
@@ -136,7 +136,7 @@ char *EC_POINT_point2hex(const EC_GROUP *group,
 {
     char *ret, *p;
     size_t buf_len = 0, i;
-    unsigned char *buf, *pbuf;
+    uint8_t *buf, *pbuf;
 
     buf_len = EC_POINT_point2oct(group, point, form,
                                  NULL, 0, ctx);

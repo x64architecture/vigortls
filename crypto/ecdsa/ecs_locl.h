@@ -67,11 +67,11 @@ extern "C" {
 
 struct ecdsa_method {
     const char *name;
-    ECDSA_SIG *(*ecdsa_do_sign)(const unsigned char *dgst, int dgst_len,
+    ECDSA_SIG *(*ecdsa_do_sign)(const uint8_t *dgst, int dgst_len,
                                 const BIGNUM *inv, const BIGNUM *rp, EC_KEY *eckey);
     int (*ecdsa_sign_setup)(EC_KEY *eckey, BN_CTX *ctx, BIGNUM **kinv,
                             BIGNUM **r);
-    int (*ecdsa_do_verify)(const unsigned char *dgst, int dgst_len,
+    int (*ecdsa_do_verify)(const uint8_t *dgst, int dgst_len,
                            const ECDSA_SIG *sig, EC_KEY *eckey);
 #if 0
     int (*init)(EC_KEY *eckey);

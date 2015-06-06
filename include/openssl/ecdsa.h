@@ -90,10 +90,10 @@ void ECDSA_SIG_free(ECDSA_SIG *sig);
 /** DER encode content of ECDSA_SIG object (note: this function modifies *pp
  *  (*pp += length of the DER encoded signature)).
  *  \param  sig  pointer to the ECDSA_SIG object
- *  \param  pp   pointer to a unsigned char pointer for the output or NULL
+ *  \param  pp   pointer to a uint8_t pointer for the output or NULL
  *  \return the length of the DER encoded ECDSA_SIG object or 0
  */
-int i2d_ECDSA_SIG(const ECDSA_SIG *sig, unsigned char **pp);
+int i2d_ECDSA_SIG(const ECDSA_SIG *sig, uint8_t **pp);
 
 /** Decodes a DER encoded ECDSA signature (note: this function changes *pp
  *  (*pp += len)).
@@ -102,7 +102,7 @@ int i2d_ECDSA_SIG(const ECDSA_SIG *sig, unsigned char **pp);
  *  \param  len  length of the buffer
  *  \return pointer to the decoded ECDSA_SIG structure (or NULL)
  */
-ECDSA_SIG *d2i_ECDSA_SIG(ECDSA_SIG **sig, const unsigned char **pp, long len);
+ECDSA_SIG *d2i_ECDSA_SIG(ECDSA_SIG **sig, const uint8_t **pp, long len);
 
 /** Computes the ECDSA signature of the given hash value using
  *  the supplied private key and returns the created signature.
@@ -111,7 +111,7 @@ ECDSA_SIG *d2i_ECDSA_SIG(ECDSA_SIG **sig, const unsigned char **pp, long len);
  *  \param  eckey     EC_KEY object containing a private EC key
  *  \return pointer to a ECDSA_SIG structure or NULL if an error occurred
  */
-ECDSA_SIG *ECDSA_do_sign(const unsigned char *dgst, int dgst_len, EC_KEY *eckey);
+ECDSA_SIG *ECDSA_do_sign(const uint8_t *dgst, int dgst_len, EC_KEY *eckey);
 
 /** Computes ECDSA signature of a given hash value using the supplied
  *  private key (note: sig must point to ECDSA_size(eckey) bytes of memory).
@@ -123,7 +123,7 @@ ECDSA_SIG *ECDSA_do_sign(const unsigned char *dgst, int dgst_len, EC_KEY *eckey)
  *  \param  eckey    EC_KEY object containing a private EC key
  *  \return pointer to a ECDSA_SIG structure or NULL if an error occurred
  */
-ECDSA_SIG *ECDSA_do_sign_ex(const unsigned char *dgst, int dgstlen,
+ECDSA_SIG *ECDSA_do_sign_ex(const uint8_t *dgst, int dgstlen,
                             const BIGNUM *kinv, const BIGNUM *rp, EC_KEY *eckey);
 
 /** Verifies that the supplied signature is a valid ECDSA
@@ -135,7 +135,7 @@ ECDSA_SIG *ECDSA_do_sign_ex(const unsigned char *dgst, int dgstlen,
  *  \return 1 if the signature is valid, 0 if the signature is invalid
  *          and -1 on error
  */
-int ECDSA_do_verify(const unsigned char *dgst, int dgst_len,
+int ECDSA_do_verify(const uint8_t *dgst, int dgst_len,
                     const ECDSA_SIG *sig, EC_KEY *eckey);
 
 const ECDSA_METHOD *ECDSA_OpenSSL(void);
@@ -183,8 +183,8 @@ int ECDSA_sign_setup(EC_KEY *eckey, BN_CTX *ctx, BIGNUM **kinv,
  *  \param  eckey    EC_KEY object containing a private EC key
  *  \return 1 on success and 0 otherwise
  */
-int ECDSA_sign(int type, const unsigned char *dgst, int dgstlen,
-               unsigned char *sig, unsigned int *siglen, EC_KEY *eckey);
+int ECDSA_sign(int type, const uint8_t *dgst, int dgstlen,
+               uint8_t *sig, unsigned int *siglen, EC_KEY *eckey);
 
 /** Computes ECDSA signature of a given hash value using the supplied
  *  private key (note: sig must point to ECDSA_size(eckey) bytes of memory).
@@ -199,8 +199,8 @@ int ECDSA_sign(int type, const unsigned char *dgst, int dgstlen,
  *  \param  eckey    EC_KEY object containing a private EC key
  *  \return 1 on success and 0 otherwise
  */
-int ECDSA_sign_ex(int type, const unsigned char *dgst, int dgstlen,
-                  unsigned char *sig, unsigned int *siglen, const BIGNUM *kinv,
+int ECDSA_sign_ex(int type, const uint8_t *dgst, int dgstlen,
+                  uint8_t *sig, unsigned int *siglen, const BIGNUM *kinv,
                   const BIGNUM *rp, EC_KEY *eckey);
 
 /** Verifies that the given signature is valid ECDSA signature
@@ -214,8 +214,8 @@ int ECDSA_sign_ex(int type, const unsigned char *dgst, int dgstlen,
  *  \return 1 if the signature is valid, 0 if the signature is invalid
  *          and -1 on error
  */
-int ECDSA_verify(int type, const unsigned char *dgst, int dgstlen,
-                 const unsigned char *sig, int siglen, EC_KEY *eckey);
+int ECDSA_verify(int type, const uint8_t *dgst, int dgstlen,
+                 const uint8_t *sig, int siglen, EC_KEY *eckey);
 
 /* the standard ex_data functions */
 int ECDSA_get_ex_new_index(long argl, void *argp, CRYPTO_EX_new *new_func, CRYPTO_EX_dup *dup_func, CRYPTO_EX_free *free_func);

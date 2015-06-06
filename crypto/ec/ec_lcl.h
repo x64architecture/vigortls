@@ -137,9 +137,9 @@ struct ec_method_st {
 
     /* used by EC_POINT_point2oct, EC_POINT_oct2point: */
     size_t (*point2oct)(const EC_GROUP *, const EC_POINT *, point_conversion_form_t form,
-                        unsigned char *buf, size_t len, BN_CTX *);
+                        uint8_t *buf, size_t len, BN_CTX *);
     int (*oct2point)(const EC_GROUP *, EC_POINT *,
-                     const unsigned char *buf, size_t len, BN_CTX *);
+                     const uint8_t *buf, size_t len, BN_CTX *);
 
     /* used by EC_POINT_add, EC_POINT_dbl, ECP_POINT_invert: */
     int (*add)(const EC_GROUP *, EC_POINT *r, const EC_POINT *a, const EC_POINT *b, BN_CTX *);
@@ -194,7 +194,7 @@ struct ec_group_st {
     int asn1_flag;  /* flag to control the asn1 encoding */
     point_conversion_form_t asn1_form;
 
-    unsigned char *seed; /* optional seed for parameters (appears in ASN1) */
+    uint8_t *seed; /* optional seed for parameters (appears in ASN1) */
     size_t seed_len;
 
     EC_EXTRA_DATA *extra_data; /* linked list */
@@ -315,9 +315,9 @@ int ec_GFp_simple_point_get_affine_coordinates(const EC_GROUP *, const EC_POINT 
 int ec_GFp_simple_set_compressed_coordinates(const EC_GROUP *, EC_POINT *,
                                              const BIGNUM *x, int y_bit, BN_CTX *);
 size_t ec_GFp_simple_point2oct(const EC_GROUP *, const EC_POINT *, point_conversion_form_t form,
-                               unsigned char *buf, size_t len, BN_CTX *);
+                               uint8_t *buf, size_t len, BN_CTX *);
 int ec_GFp_simple_oct2point(const EC_GROUP *, EC_POINT *,
-                            const unsigned char *buf, size_t len, BN_CTX *);
+                            const uint8_t *buf, size_t len, BN_CTX *);
 int ec_GFp_simple_add(const EC_GROUP *, EC_POINT *r, const EC_POINT *a, const EC_POINT *b, BN_CTX *);
 int ec_GFp_simple_dbl(const EC_GROUP *, EC_POINT *r, const EC_POINT *a, BN_CTX *);
 int ec_GFp_simple_invert(const EC_GROUP *, EC_POINT *, BN_CTX *);
@@ -368,9 +368,9 @@ int ec_GF2m_simple_point_get_affine_coordinates(const EC_GROUP *, const EC_POINT
 int ec_GF2m_simple_set_compressed_coordinates(const EC_GROUP *, EC_POINT *,
                                               const BIGNUM *x, int y_bit, BN_CTX *);
 size_t ec_GF2m_simple_point2oct(const EC_GROUP *, const EC_POINT *, point_conversion_form_t form,
-                                unsigned char *buf, size_t len, BN_CTX *);
+                                uint8_t *buf, size_t len, BN_CTX *);
 int ec_GF2m_simple_oct2point(const EC_GROUP *, EC_POINT *,
-                             const unsigned char *buf, size_t len, BN_CTX *);
+                             const uint8_t *buf, size_t len, BN_CTX *);
 int ec_GF2m_simple_add(const EC_GROUP *, EC_POINT *r, const EC_POINT *a, const EC_POINT *b, BN_CTX *);
 int ec_GF2m_simple_dbl(const EC_GROUP *, EC_POINT *r, const EC_POINT *a, BN_CTX *);
 int ec_GF2m_simple_invert(const EC_GROUP *, EC_POINT *, BN_CTX *);
@@ -433,7 +433,7 @@ void ec_GFp_nistp_points_make_affine_internal(size_t num, void *point_array,
                                               void (*felem_mul)(void *out, const void *in1, const void *in2),
                                               void (*felem_inv)(void *out, const void *in),
                                               void (*felem_contract)(void *out, const void *in));
-void ec_GFp_nistp_recode_scalar_bits(unsigned char *sign, unsigned char *digit, unsigned char in);
+void ec_GFp_nistp_recode_scalar_bits(uint8_t *sign, uint8_t *digit, uint8_t in);
 #endif
 int ec_precompute_mont_data(EC_GROUP *);
 

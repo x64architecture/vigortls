@@ -68,12 +68,12 @@ ASN1_SEQUENCE(PKCS12) = {
     ASN1_OPT(PKCS12, mac, PKCS12_MAC_DATA)
 } ASN1_SEQUENCE_END(PKCS12)
 
-PKCS12 *d2i_PKCS12(PKCS12 **a, const unsigned char **in, long len)
+PKCS12 *d2i_PKCS12(PKCS12 **a, const uint8_t **in, long len)
 {
     return (PKCS12 *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, &PKCS12_it);
 }
 
-int i2d_PKCS12(PKCS12 *a, unsigned char **out)
+int i2d_PKCS12(PKCS12 *a, uint8_t **out)
 {
     return ASN1_item_i2d((ASN1_VALUE *)a, out, &PKCS12_it);
 }
@@ -94,12 +94,12 @@ ASN1_SEQUENCE(PKCS12_MAC_DATA) = {
     ASN1_OPT(PKCS12_MAC_DATA, iter, ASN1_INTEGER)
 } ASN1_SEQUENCE_END(PKCS12_MAC_DATA)
 
-PKCS12_MAC_DATA *d2i_PKCS12_MAC_DATA(PKCS12_MAC_DATA **a, const unsigned char **in, long len)
+PKCS12_MAC_DATA *d2i_PKCS12_MAC_DATA(PKCS12_MAC_DATA **a, const uint8_t **in, long len)
 {
     return (PKCS12_MAC_DATA *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, &PKCS12_MAC_DATA_it);
 }
 
-int i2d_PKCS12_MAC_DATA(PKCS12_MAC_DATA *a, unsigned char **out)
+int i2d_PKCS12_MAC_DATA(PKCS12_MAC_DATA *a, uint8_t **out)
 {
     return ASN1_item_i2d((ASN1_VALUE *)a, out, &PKCS12_MAC_DATA_it);
 }
@@ -127,12 +127,12 @@ ASN1_SEQUENCE(PKCS12_BAGS) = {
     ASN1_ADB_OBJECT(PKCS12_BAGS),
 } ASN1_SEQUENCE_END(PKCS12_BAGS)
 
-PKCS12_BAGS *d2i_PKCS12_BAGS(PKCS12_BAGS **a, const unsigned char **in, long len)
+PKCS12_BAGS *d2i_PKCS12_BAGS(PKCS12_BAGS **a, const uint8_t **in, long len)
 {
     return (PKCS12_BAGS *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, &PKCS12_BAGS_it);
 }
 
-int i2d_PKCS12_BAGS(PKCS12_BAGS *a, unsigned char **out)
+int i2d_PKCS12_BAGS(PKCS12_BAGS *a, uint8_t **out)
 {
     return ASN1_item_i2d((ASN1_VALUE *)a, out, &PKCS12_BAGS_it);
 }
@@ -164,12 +164,12 @@ ASN1_SEQUENCE(PKCS12_SAFEBAG) = {
     ASN1_SET_OF_OPT(PKCS12_SAFEBAG, attrib, X509_ATTRIBUTE)
 } ASN1_SEQUENCE_END(PKCS12_SAFEBAG)
 
-PKCS12_SAFEBAG *d2i_PKCS12_SAFEBAG(PKCS12_SAFEBAG **a, const unsigned char **in, long len)
+PKCS12_SAFEBAG *d2i_PKCS12_SAFEBAG(PKCS12_SAFEBAG **a, const uint8_t **in, long len)
 {
     return (PKCS12_SAFEBAG *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, &PKCS12_SAFEBAG_it);
 }
 
-int i2d_PKCS12_SAFEBAG(PKCS12_SAFEBAG *a, unsigned char **out)
+int i2d_PKCS12_SAFEBAG(PKCS12_SAFEBAG *a, uint8_t **out)
 {
     return ASN1_item_i2d((ASN1_VALUE *)a, out, &PKCS12_SAFEBAG_it);
 }

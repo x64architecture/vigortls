@@ -59,8 +59,8 @@
 #include <openssl/rc2.h>
 #include "rc2_locl.h"
 
-void RC2_cbc_encrypt(const unsigned char *in, unsigned char *out, long length,
-                     RC2_KEY *ks, unsigned char *iv, int encrypt)
+void RC2_cbc_encrypt(const uint8_t *in, uint8_t *out, long length,
+                     RC2_KEY *ks, uint8_t *iv, int encrypt)
 {
     register unsigned long tin0, tin1;
     register unsigned long tout0, tout1, xor0, xor1;

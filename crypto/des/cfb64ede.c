@@ -63,7 +63,7 @@
  * 64bit block we have used is contained in *num;
  */
 
-void DES_ede3_cfb64_encrypt(const unsigned char *in, unsigned char *out,
+void DES_ede3_cfb64_encrypt(const uint8_t *in, uint8_t *out,
                             long length, DES_key_schedule *ks1,
                             DES_key_schedule *ks2, DES_key_schedule *ks3,
                             DES_cblock *ivec, int *num, int enc)
@@ -72,7 +72,7 @@ void DES_ede3_cfb64_encrypt(const unsigned char *in, unsigned char *out,
     register long l = length;
     register int n = *num;
     uint32_t ti[2];
-    unsigned char *iv, c, cc;
+    uint8_t *iv, c, cc;
 
     iv = &(*ivec)[0];
     if (enc) {
@@ -129,7 +129,7 @@ void DES_ede3_cfb64_encrypt(const unsigned char *in, unsigned char *out,
  * not what EVP needs.
  */
 
-void DES_ede3_cfb_encrypt(const unsigned char *in, unsigned char *out, int numbits,
+void DES_ede3_cfb_encrypt(const uint8_t *in, uint8_t *out, int numbits,
                           long length, DES_key_schedule *ks1, DES_key_schedule *ks2,
                           DES_key_schedule *ks3, DES_cblock *ivec, int enc)
 {
@@ -137,8 +137,8 @@ void DES_ede3_cfb_encrypt(const unsigned char *in, unsigned char *out, int numbi
     register unsigned long l = length, n = ((unsigned int)numbits + 7) / 8;
     register int num = numbits, i;
     uint32_t ti[2];
-    unsigned char *iv;
-    unsigned char ovec[16];
+    uint8_t *iv;
+    uint8_t ovec[16];
 
     if (num > 64)
         return;

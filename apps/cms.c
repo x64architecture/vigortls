@@ -295,8 +295,8 @@ int cms_main(int argc, char **argv)
     int operation = 0, ret = 1, rr_print = 0, rr_allorfirst = -1;
     int verify_retcode = 0, rctformat = FORMAT_SMIME, keyform = FORMAT_PEM;
     size_t secret_keylen = 0, secret_keyidlen = 0;
-    unsigned char *pwri_pass = NULL, *pwri_tmp = NULL;
-    unsigned char *secret_key = NULL, *secret_keyid = NULL;
+    uint8_t *pwri_pass = NULL, *pwri_tmp = NULL;
+    uint8_t *secret_key = NULL, *secret_keyid = NULL;
     long ltmp;
     OPTION_CHOICE o;
 
@@ -498,7 +498,7 @@ int cms_main(int argc, char **argv)
                 secret_keyidlen = (size_t)ltmp;
                 break;
             case OPT_PWRI_PASSWORD:
-                pwri_pass = (unsigned char *)opt_arg();
+                pwri_pass = (uint8_t *)opt_arg();
                 break;
             case OPT_ECONTENT_TYPE:
                 econtent_type = OBJ_txt2obj(opt_arg(), 0);
@@ -914,7 +914,7 @@ int cms_main(int argc, char **argv)
             secret_keyid = NULL;
         }
         if (pwri_pass) {
-            pwri_tmp = (unsigned char *)BUF_strdup((char *)pwri_pass);
+            pwri_tmp = (uint8_t *)BUF_strdup((char *)pwri_pass);
             if (!pwri_tmp)
                 goto end;
             if (!CMS_add0_recipient_password(cms, -1, NID_undef, NID_undef, pwri_tmp, -1,

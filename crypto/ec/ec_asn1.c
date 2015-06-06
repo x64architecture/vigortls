@@ -282,12 +282,12 @@ ASN1_CHOICE(ECPKPARAMETERS) = {
 
 DECLARE_ASN1_FUNCTIONS_const(ECPKPARAMETERS)
 DECLARE_ASN1_ENCODE_FUNCTIONS_const(ECPKPARAMETERS, ECPKPARAMETERS)
-ECPKPARAMETERS *d2i_ECPKPARAMETERS(ECPKPARAMETERS **a, const unsigned char **in, long len)
+ECPKPARAMETERS *d2i_ECPKPARAMETERS(ECPKPARAMETERS **a, const uint8_t **in, long len)
 {
     return (ECPKPARAMETERS *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, &ECPKPARAMETERS_it);
 }
 
-int i2d_ECPKPARAMETERS(const ECPKPARAMETERS *a, unsigned char **out)
+int i2d_ECPKPARAMETERS(const ECPKPARAMETERS *a, uint8_t **out)
 {
     return ASN1_item_i2d((ASN1_VALUE *)a, out, &ECPKPARAMETERS_it);
 }
@@ -311,12 +311,12 @@ ASN1_SEQUENCE(EC_PRIVATEKEY) = {
 
 DECLARE_ASN1_FUNCTIONS_const(EC_PRIVATEKEY)
 DECLARE_ASN1_ENCODE_FUNCTIONS_const(EC_PRIVATEKEY, EC_PRIVATEKEY)
-EC_PRIVATEKEY *d2i_EC_PRIVATEKEY(EC_PRIVATEKEY **a, const unsigned char **in, long len)
+EC_PRIVATEKEY *d2i_EC_PRIVATEKEY(EC_PRIVATEKEY **a, const uint8_t **in, long len)
 {
     return (EC_PRIVATEKEY *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, &EC_PRIVATEKEY_it);
 }
 
-int i2d_EC_PRIVATEKEY(const EC_PRIVATEKEY *a, unsigned char **out)
+int i2d_EC_PRIVATEKEY(const EC_PRIVATEKEY *a, uint8_t **out)
 {
     return ASN1_item_i2d((ASN1_VALUE *)a, out, &EC_PRIVATEKEY_it);
 }
@@ -477,10 +477,10 @@ static int ec_asn1_group2curve(const EC_GROUP *group, X9_62_CURVE *curve)
 {
     int ok = 0, nid;
     BIGNUM *tmp_1 = NULL, *tmp_2 = NULL;
-    unsigned char *buffer_1 = NULL, *buffer_2 = NULL,
+    uint8_t *buffer_1 = NULL, *buffer_2 = NULL,
                   *a_buf = NULL, *b_buf = NULL;
     size_t len_1, len_2;
-    unsigned char char_zero = 0;
+    uint8_t char_zero = 0;
 
     if (!group || !curve || !curve->a || !curve->b)
         return 0;
@@ -591,7 +591,7 @@ static ECPARAMETERS *ec_asn1_group2parameters(const EC_GROUP *group,
     size_t len = 0;
     ECPARAMETERS *ret = NULL;
     BIGNUM *tmp = NULL;
-    unsigned char *buffer = NULL;
+    uint8_t *buffer = NULL;
     const EC_POINT *point = NULL;
     point_conversion_form_t form;
 
@@ -1007,7 +1007,7 @@ EC_GROUP *ec_asn1_pkparameters2group(const ECPKPARAMETERS *params)
 
 /* EC_GROUP <-> DER encoding of ECPKPARAMETERS */
 
-EC_GROUP *d2i_ECPKParameters(EC_GROUP **a, const unsigned char **in, long len)
+EC_GROUP *d2i_ECPKParameters(EC_GROUP **a, const uint8_t **in, long len)
 {
     EC_GROUP *group = NULL;
     ECPKPARAMETERS *params = NULL;
@@ -1033,7 +1033,7 @@ EC_GROUP *d2i_ECPKParameters(EC_GROUP **a, const unsigned char **in, long len)
     return (group);
 }
 
-int i2d_ECPKParameters(const EC_GROUP *a, unsigned char **out)
+int i2d_ECPKParameters(const EC_GROUP *a, uint8_t **out)
 {
     int ret = 0;
     ECPKPARAMETERS *tmp = ec_asn1_group2pkparameters(a, NULL);
@@ -1052,7 +1052,7 @@ int i2d_ECPKParameters(const EC_GROUP *a, unsigned char **out)
 
 /* some EC_KEY functions */
 
-EC_KEY *d2i_ECPrivateKey(EC_KEY **a, const unsigned char **in, long len)
+EC_KEY *d2i_ECPrivateKey(EC_KEY **a, const uint8_t **in, long len)
 {
     int ok = 0;
     EC_KEY *ret = NULL;
@@ -1101,7 +1101,7 @@ EC_KEY *d2i_ECPrivateKey(EC_KEY **a, const unsigned char **in, long len)
     }
 
     if (priv_key->publicKey) {
-        const unsigned char *pub_oct;
+        const uint8_t *pub_oct;
         size_t pub_oct_len;
 
         if (ret->pub_key)
@@ -1138,10 +1138,10 @@ err:
     return (ret);
 }
 
-int i2d_ECPrivateKey(EC_KEY *a, unsigned char **out)
+int i2d_ECPrivateKey(EC_KEY *a, uint8_t **out)
 {
     int ret = 0, ok = 0;
-    unsigned char *buffer = NULL;
+    uint8_t *buffer = NULL;
     size_t buf_len = 0, tmp_len, bn_len;
     EC_PRIVATEKEY *priv_key = NULL;
 
@@ -1211,7 +1211,7 @@ int i2d_ECPrivateKey(EC_KEY *a, unsigned char **out)
                                      a->conv_form, NULL, 0, NULL);
 
         if (tmp_len > buf_len) {
-            unsigned char *tmp_buffer = realloc(buffer, tmp_len);
+            uint8_t *tmp_buffer = realloc(buffer, tmp_len);
             if (!tmp_buffer) {
                 ECerr(EC_F_I2D_ECPRIVATEKEY, ERR_R_MALLOC_FAILURE);
                 goto err;
@@ -1247,7 +1247,7 @@ err:
     return (ok ? ret : 0);
 }
 
-int i2d_ECParameters(EC_KEY *a, unsigned char **out)
+int i2d_ECParameters(EC_KEY *a, uint8_t **out)
 {
     if (a == NULL) {
         ECerr(EC_F_I2D_ECPARAMETERS, ERR_R_PASSED_NULL_PARAMETER);
@@ -1256,7 +1256,7 @@ int i2d_ECParameters(EC_KEY *a, unsigned char **out)
     return i2d_ECPKParameters(a->group, out);
 }
 
-EC_KEY *d2i_ECParameters(EC_KEY **a, const unsigned char **in, long len)
+EC_KEY *d2i_ECParameters(EC_KEY **a, const uint8_t **in, long len)
 {
     EC_KEY *ret;
 
@@ -1286,7 +1286,7 @@ EC_KEY *d2i_ECParameters(EC_KEY **a, const unsigned char **in, long len)
     return ret;
 }
 
-EC_KEY *o2i_ECPublicKey(EC_KEY **a, const unsigned char **in, long len)
+EC_KEY *o2i_ECPublicKey(EC_KEY **a, const uint8_t **in, long len)
 {
     EC_KEY *ret = NULL;
 
@@ -1311,7 +1311,7 @@ EC_KEY *o2i_ECPublicKey(EC_KEY **a, const unsigned char **in, long len)
     return ret;
 }
 
-int i2o_ECPublicKey(EC_KEY *a, unsigned char **out)
+int i2o_ECPublicKey(EC_KEY *a, uint8_t **out)
 {
     size_t buf_len = 0;
     int new_buffer = 0;

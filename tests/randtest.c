@@ -65,7 +65,7 @@
 
 int main(int argc, char **argv)
 {
-    unsigned char buf[2500];
+    uint8_t buf[2500];
     int i, j, k, s, sign, nsign, err = 0;
     unsigned long n1;
     unsigned long n2[16];

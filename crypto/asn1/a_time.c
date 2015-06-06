@@ -74,12 +74,12 @@
 
 IMPLEMENT_ASN1_MSTRING(ASN1_TIME, B_ASN1_TIME)
 
-ASN1_TIME *d2i_ASN1_TIME(ASN1_TIME **a, const unsigned char **in, long len)
+ASN1_TIME *d2i_ASN1_TIME(ASN1_TIME **a, const uint8_t **in, long len)
 {
     return (ASN1_TIME *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, &ASN1_TIME_it);
 }
 
-int i2d_ASN1_TIME(ASN1_TIME *a, unsigned char **out)
+int i2d_ASN1_TIME(ASN1_TIME *a, uint8_t **out)
 {
     return ASN1_item_i2d((ASN1_VALUE *)a, out, &ASN1_TIME_it);
 }
@@ -175,7 +175,7 @@ int ASN1_TIME_set_string(ASN1_TIME *s, const char *str)
     ASN1_TIME t;
 
     t.length = strlen(str);
-    t.data = (unsigned char *)str;
+    t.data = (uint8_t *)str;
     t.flags = 0;
 
     t.type = V_ASN1_UTCTIME;

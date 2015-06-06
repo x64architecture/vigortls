@@ -178,7 +178,7 @@ int X509V3_add_standard_extensions(void)
 void *X509V3_EXT_d2i(X509_EXTENSION *ext)
 {
     const X509V3_EXT_METHOD *method;
-    const unsigned char *p;
+    const uint8_t *p;
 
     if (!(method = X509V3_EXT_get(ext)))
         return NULL;

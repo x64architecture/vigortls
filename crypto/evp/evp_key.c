@@ -112,11 +112,11 @@ int EVP_read_pw_string_min(char *buf, int min, int len, const char *prompt, int 
 }
 
 int EVP_BytesToKey(const EVP_CIPHER *type, const EVP_MD *md,
-                   const unsigned char *salt, const unsigned char *data, int datal,
-                   int count, unsigned char *key, unsigned char *iv)
+                   const uint8_t *salt, const uint8_t *data, int datal,
+                   int count, uint8_t *key, uint8_t *iv)
 {
     EVP_MD_CTX c;
-    unsigned char md_buf[EVP_MAX_MD_SIZE];
+    uint8_t md_buf[EVP_MAX_MD_SIZE];
     int niv, nkey, addmd = 0;
     unsigned int mds = 0, i;
     int rv = 0;

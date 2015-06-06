@@ -88,15 +88,15 @@ static char *ret[] = {
 static char *bigret = "34aa973cd4c4daa4f61eeb2bdbad27316534016f";
 #endif
 
-static char *pt(unsigned char *md);
+static char *pt(uint8_t *md);
 int main(int argc, char *argv[])
 {
     int i, err = 0;
     char **P, **R;
-    static unsigned char buf[1000];
+    static uint8_t buf[1000];
     char *p, *r;
     EVP_MD_CTX c;
-    unsigned char md[SHA_DIGEST_LENGTH];
+    uint8_t md[SHA_DIGEST_LENGTH];
 
     EVP_MD_CTX_init(&c);
     P = test;
@@ -136,7 +136,7 @@ int main(int argc, char *argv[])
     return (0);
 }
 
-static char *pt(unsigned char *md)
+static char *pt(uint8_t *md)
 {
     int i;
     static char buf[80];

@@ -64,7 +64,7 @@
 
 #include "rc5_locl.h"
 
-void RC5_32_ecb_encrypt(const unsigned char *in, unsigned char *out,
+void RC5_32_ecb_encrypt(const uint8_t *in, uint8_t *out,
                         RC5_32_KEY *ks, int encrypt)
 {
     unsigned long l, d[2];

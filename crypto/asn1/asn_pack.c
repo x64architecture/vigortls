@@ -97,7 +97,7 @@ ASN1_STRING *ASN1_item_pack(void *obj, const ASN1_ITEM *it, ASN1_STRING **oct)
 
 void *ASN1_item_unpack(ASN1_STRING *oct, const ASN1_ITEM *it)
 {
-    const unsigned char *p;
+    const uint8_t *p;
     void *ret;
 
     p = oct->data;

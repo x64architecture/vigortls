@@ -1102,7 +1102,7 @@ end_of_options:
                 for (k = 0; k < j; k++) {
                     if (n >= &(buf[2][sizeof(buf[2])]))
                         break;
-                    snprintf(n, &buf[2][0] + sizeof(buf[2]) - n, "%02X", (unsigned char)*(p++));
+                    snprintf(n, &buf[2][0] + sizeof(buf[2]) - n, "%02X", (uint8_t)*(p++));
                     n += 2;
                 }
             } else {
@@ -2050,7 +2050,7 @@ static int certify_spkac(X509 **xret, char *infile, EVP_PKEY *pkey, X509 *x509,
         }
 
         if (!X509_NAME_add_entry_by_NID(n, nid, chtype,
-                                        (unsigned char *)buf, -1, -1, 0))
+                                        (uint8_t *)buf, -1, -1, 0))
             goto err;
     }
     if (spki == NULL) {
@@ -2232,7 +2232,7 @@ static int get_certificate_status(const char *serial, CA_DB *db)
 
     /* Make it Upper Case */
     for (i = 0; row[DB_serial][i] != '\0'; i++)
-        row[DB_serial][i] = toupper((unsigned char)row[DB_serial][i]);
+        row[DB_serial][i] = toupper((uint8_t)row[DB_serial][i]);
 
     ok = 1;
 
@@ -2514,7 +2514,7 @@ int old_entry_print(BIO *bp, ASN1_OBJECT *obj, ASN1_STRING *str)
             BIO_printf(bp, "%c", *p);
         else if (*p & 0x80)
             BIO_printf(bp, "\\0x%02X", *p);
-        else if ((unsigned char)*p == 0xf7)
+        else if ((uint8_t)*p == 0xf7)
             BIO_printf(bp, "^?");
         else
             BIO_printf(bp, "^%c", *p + '@');

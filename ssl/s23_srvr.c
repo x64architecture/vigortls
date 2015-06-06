@@ -269,7 +269,7 @@ int ssl23_get_client_hello(SSL *s)
      *  6-8   length          > Client Hello message
      *  9/10  client_version  /
      */
-    unsigned char *p, *d, *d_len, *dd;
+    uint8_t *p, *d, *d_len, *dd;
     unsigned int i;
     unsigned int csl, sil, cl;
     int n = 0, j;
@@ -448,7 +448,7 @@ int ssl23_get_client_hello(SSL *s)
         n2s(p, csl);
         n2s(p, sil);
         n2s(p, cl);
-        d = (unsigned char *)s->init_buf->data;
+        d = (uint8_t *)s->init_buf->data;
         if ((csl + sil + cl + 11) != s->packet_length) {
             /*
              * We can't have TLS extensions in SSL 2.0 format
@@ -496,7 +496,7 @@ int ssl23_get_client_hello(SSL *s)
         *(d++) = 1;
         *(d++) = 0;
 
-        i = (d - (unsigned char *)s->init_buf->data) - 4;
+        i = (d - (uint8_t *)s->init_buf->data) - 4;
         l2n3((long)i, d_len);
 
         /* get the data reused from the init_buf */

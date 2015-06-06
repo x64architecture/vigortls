@@ -79,7 +79,7 @@
 #define SIZE (512)
 #define BSIZE (8 * 1024)
 
-static int set_hex(char *in, unsigned char *out, int size);
+static int set_hex(char *in, uint8_t *out, int size);
 static void show_ciphers(const OBJ_NAME *name, void *bio_);
 
 typedef enum OPTION_choice {
@@ -160,8 +160,8 @@ int enc_main(int argc, char **argv)
     int bsize = BSIZE, verbose = 0, debug = 0, olb64 = 0, nosalt = 0;
     int enc = 1, printkey = 0, i, k, base64 = 0;
     int ret = 1, inl, nopad = 0;
-    unsigned char key[EVP_MAX_KEY_LENGTH], iv[EVP_MAX_IV_LENGTH];
-    unsigned char *buff = NULL, salt[PKCS5_SALT_LEN];
+    uint8_t key[EVP_MAX_KEY_LENGTH], iv[EVP_MAX_IV_LENGTH];
+    uint8_t *buff = NULL, salt[PKCS5_SALT_LEN];
     unsigned long n;
 
     /* first check the program name */
@@ -405,7 +405,7 @@ int enc_main(int argc, char **argv)
              * Salt handling: if encrypting generate a salt and write to
              * output BIO. If decrypting read salt from input BIO.
              */
-            unsigned char *sptr;
+            uint8_t *sptr;
             if (nosalt)
                 sptr = NULL;
             else {
@@ -427,7 +427,7 @@ int enc_main(int argc, char **argv)
                         goto end;
                     }
                 } else if (BIO_read(rbio, mbuf, sizeof mbuf) != sizeof mbuf ||
-                           BIO_read(rbio, (unsigned char *)salt, sizeof salt) !=
+                           BIO_read(rbio, (uint8_t *)salt, sizeof salt) !=
                                sizeof salt) {
                     BIO_printf(bio_err, "error reading input file\n");
                     goto end;
@@ -439,7 +439,7 @@ int enc_main(int argc, char **argv)
                 sptr = salt;
             }
 
-            if (!EVP_BytesToKey(cipher, dgst, sptr, (unsigned char *)str, strlen(str), 1,
+            if (!EVP_BytesToKey(cipher, dgst, sptr, (uint8_t *)str, strlen(str), 1,
                                 key, iv)) {
                 BIO_printf(bio_err, "EVP_BytesToKey failed\n");
                 goto end;
@@ -567,7 +567,7 @@ static void show_ciphers(const OBJ_NAME *name, void *bio_)
     BIO *bio = bio_;
     static int n;
 
-    if (!islower((unsigned char)*name->name))
+    if (!islower((uint8_t)*name->name))
         return;
 
     BIO_printf(bio, "-%-25s", name->name);
@@ -578,10 +578,10 @@ static void show_ciphers(const OBJ_NAME *name, void *bio_)
         BIO_printf(bio, " ");
 }
 
-static int set_hex(char *in, unsigned char *out, int size)
+static int set_hex(char *in, uint8_t *out, int size)
 {
     int i, n;
-    unsigned char j;
+    uint8_t j;
 
     n = strlen(in);
     if (n > (size * 2)) {
@@ -590,7 +590,7 @@ static int set_hex(char *in, unsigned char *out, int size)
     }
     memset(out, 0, size);
     for (i = 0; i < n; i++) {
-        j = (unsigned char)*in;
+        j = (uint8_t)*in;
         *(in++) = '\0';
         if (j == 0)
             break;

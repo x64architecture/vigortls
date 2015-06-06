@@ -39,7 +39,7 @@ typedef unsigned long u64;
 #define U64(C) C##UL
 #define FMT64 "%lu"
 #else
-typedef unsigned long long u64;
+typedef uint64_t u64;
 #define U64(C) C##ULL
 #define FMT64 "%llu"
 #endif
@@ -53,20 +53,20 @@ typedef enum g89_mode_ { G89_ECB, G89_CFB, G89_CNT, G89_IMIT } g89_mode;
 typedef struct g89_tc_ {
     u64 ullLen;                              /* ullLen > G89_MAX_TC_LEN */
                                              /*     Clear text ullLen */
-                                             /*     of zero unsigned chars */
-    const unsigned char bIn[G89_MAX_TC_LEN]; /* Clear text, when */
+                                             /*     of zero uint8_ts */
+    const uint8_t bIn[G89_MAX_TC_LEN]; /* Clear text, when */
                                              /*     ullLen <= G89_MAX_TC_LEN */
     const char *szParamSet;                  /* S-Box ID */
     const char *szDerive;                    /* String for derive bRawKey */
-    const unsigned char bRawKey[EVP_MAX_KEY_LENGTH];
+    const uint8_t bRawKey[EVP_MAX_KEY_LENGTH];
     g89_mode gMode;                             /* Mode of encryption or MAC */
-    const unsigned char bIV[EVP_MAX_IV_LENGTH]; /* IV for CFB or CNT mode */
-    const unsigned char bOut[G89_MAX_TC_LEN];   /* Cipher text for ECB/CFB/CNT */
+    const uint8_t bIV[EVP_MAX_IV_LENGTH]; /* IV for CFB or CNT mode */
+    const uint8_t bOut[G89_MAX_TC_LEN];   /* Cipher text for ECB/CFB/CNT */
     /* mode, when ullLen <= G89_MAX_TC_LEN;
-     * Last 16 unsigned char of cipher text for
+     * Last 16 uint8_t of cipher text for
      * ECB/CFB/CNT, when ullLen >
      * G89_MAX_TC_LEN;
-     * 4 unsigned char MAC for imitovstavka */
+     * 4 uint8_t MAC for imitovstavka */
 } g89_tc;
 
 const g89_tc tcs[] = {
@@ -811,12 +811,12 @@ int main(int argc, char *argv[])
     EVP_MD_CTX mctx;
     EVP_CIPHER_CTX ectx;
     EVP_PKEY *mac_key;
-    unsigned char bDerive[EVP_MAX_KEY_LENGTH];
-    unsigned char bTest[G89_MAX_TC_LEN];
-    unsigned char bTest1[G89_MAX_TC_LEN];
+    uint8_t bDerive[EVP_MAX_KEY_LENGTH];
+    uint8_t bTest[G89_MAX_TC_LEN];
+    uint8_t bTest1[G89_MAX_TC_LEN];
     u64 ullLeft;
-    static const unsigned char bZB[40 * 1024 * 1024] = { 0 };
-    static unsigned char bTS[40 * 1024 * 1024] = { 0 };
+    static const uint8_t bZB[40 * 1024 * 1024] = { 0 };
+    static uint8_t bTS[40 * 1024 * 1024] = { 0 };
     unsigned int mdl = 0;
     int enlu = 0;
     int enlf = 0;

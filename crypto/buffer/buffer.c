@@ -167,7 +167,7 @@ int BUF_MEM_grow_clean(BUF_MEM *str, size_t len)
     return (len);
 }
 
-void BUF_reverse(unsigned char *out, const unsigned char *in, size_t size)
+void BUF_reverse(uint8_t *out, const uint8_t *in, size_t size)
 {
     size_t i;
     if (in) {
@@ -175,7 +175,7 @@ void BUF_reverse(unsigned char *out, const unsigned char *in, size_t size)
         for (i = 0; i < size; i++)
             *out-- = *in++;
     } else {
-        unsigned char *q;
+        uint8_t *q;
         char c;
         q = out + size - 1;
         for (i = 0; i < size / 2; i++) {

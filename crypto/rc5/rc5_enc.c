@@ -66,8 +66,8 @@
 
 #include "rc5_locl.h"
 
-void RC5_32_cbc_encrypt(const unsigned char *in, unsigned char *out,
-                        long length, RC5_32_KEY *ks, unsigned char *iv,
+void RC5_32_cbc_encrypt(const uint8_t *in, uint8_t *out,
+                        long length, RC5_32_KEY *ks, uint8_t *iv,
                         int encrypt)
 {
     register unsigned long tin0, tin1;

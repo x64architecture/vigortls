@@ -193,7 +193,7 @@ int ECDSA_size(const EC_KEY *r)
     int ret, i;
     ASN1_INTEGER bs;
     BIGNUM *order = NULL;
-    unsigned char buf[4];
+    uint8_t buf[4];
     const EC_GROUP *group;
 
     if (r == NULL)

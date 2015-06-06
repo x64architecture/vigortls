@@ -48,7 +48,7 @@ EVP_AEAD_max_tag_len(const EVP_AEAD *aead)
 
 int
 EVP_AEAD_CTX_init(EVP_AEAD_CTX *ctx, const EVP_AEAD *aead,
-    const unsigned char *key, size_t key_len, size_t tag_len, ENGINE *impl)
+    const uint8_t *key, size_t key_len, size_t tag_len, ENGINE *impl)
 {
     ctx->aead = aead;
     if (key_len != aead->key_len) {
@@ -76,7 +76,7 @@ EVP_AEAD_CTX_cleanup(EVP_AEAD_CTX *ctx)
  *
  * This function checks for that case. */
 static int
-check_alias(const unsigned char *in, size_t in_len, const unsigned char *out)
+check_alias(const uint8_t *in, size_t in_len, const uint8_t *out)
 {
     if (out <= in)
         return 1;
@@ -86,9 +86,9 @@ check_alias(const unsigned char *in, size_t in_len, const unsigned char *out)
 }
 
 int
-EVP_AEAD_CTX_seal(const EVP_AEAD_CTX *ctx, unsigned char *out, size_t *out_len,
-    size_t max_out_len, const unsigned char *nonce, size_t nonce_len,
-    const unsigned char *in, size_t in_len, const unsigned char *ad,
+EVP_AEAD_CTX_seal(const EVP_AEAD_CTX *ctx, uint8_t *out, size_t *out_len,
+    size_t max_out_len, const uint8_t *nonce, size_t nonce_len,
+    const uint8_t *in, size_t in_len, const uint8_t *ad,
     size_t ad_len)
 {
     size_t possible_out_len = in_len + ctx->aead->overhead;
@@ -118,9 +118,9 @@ error:
 }
 
 int
-EVP_AEAD_CTX_open(const EVP_AEAD_CTX *ctx, unsigned char *out, size_t *out_len,
-    size_t max_out_len, const unsigned char *nonce, size_t nonce_len,
-    const unsigned char *in, size_t in_len, const unsigned char *ad,
+EVP_AEAD_CTX_open(const EVP_AEAD_CTX *ctx, uint8_t *out, size_t *out_len,
+    size_t max_out_len, const uint8_t *nonce, size_t nonce_len,
+    const uint8_t *in, size_t in_len, const uint8_t *ad,
     size_t ad_len)
 {
     if (!check_alias(in, in_len, out)) {

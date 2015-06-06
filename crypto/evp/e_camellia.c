@@ -65,8 +65,8 @@
 
 #include "evp_locl.h"
 
-static int camellia_init_key(EVP_CIPHER_CTX *ctx, const unsigned char *key,
-                             const unsigned char *iv, int enc);
+static int camellia_init_key(EVP_CIPHER_CTX *ctx, const uint8_t *key,
+                             const uint8_t *iv, int enc);
 
 /* Camellia subkey Structure */
 typedef struct
@@ -107,8 +107,8 @@ IMPLEMENT_CAMELLIA_CFBR(192, 8)
 IMPLEMENT_CAMELLIA_CFBR(256, 8)
 
 /* The subkey for Camellia is generated. */
-static int camellia_init_key(EVP_CIPHER_CTX *ctx, const unsigned char *key,
-                             const unsigned char *iv, int enc)
+static int camellia_init_key(EVP_CIPHER_CTX *ctx, const uint8_t *key,
+                             const uint8_t *iv, int enc)
 {
     int ret;
 

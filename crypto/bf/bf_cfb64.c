@@ -64,16 +64,16 @@
  * 64bit block we have used is contained in *num;
  */
 
-void BF_cfb64_encrypt(const unsigned char *in, unsigned char *out, long length,
-                      const BF_KEY *schedule, unsigned char *ivec, int *num, int encrypt)
+void BF_cfb64_encrypt(const uint8_t *in, uint8_t *out, long length,
+                      const BF_KEY *schedule, uint8_t *ivec, int *num, int encrypt)
 {
     register BF_LONG v0, v1, t;
     register int n = *num;
     register long l = length;
     BF_LONG ti[2];
-    unsigned char *iv, c, cc;
+    uint8_t *iv, c, cc;
 
-    iv = (unsigned char *)ivec;
+    iv = (uint8_t *)ivec;
     if (encrypt) {
         while (l--) {
             if (n == 0) {
@@ -82,12 +82,12 @@ void BF_cfb64_encrypt(const unsigned char *in, unsigned char *out, long length,
                 n2l(iv, v1);
                 ti[1] = v1;
                 BF_encrypt((BF_LONG *)ti, schedule);
-                iv = (unsigned char *)ivec;
+                iv = (uint8_t *)ivec;
                 t = ti[0];
                 l2n(t, iv);
                 t = ti[1];
                 l2n(t, iv);
-                iv = (unsigned char *)ivec;
+                iv = (uint8_t *)ivec;
             }
             c = *(in++) ^ iv[n];
             *(out++) = c;
@@ -102,12 +102,12 @@ void BF_cfb64_encrypt(const unsigned char *in, unsigned char *out, long length,
                 n2l(iv, v1);
                 ti[1] = v1;
                 BF_encrypt((BF_LONG *)ti, schedule);
-                iv = (unsigned char *)ivec;
+                iv = (uint8_t *)ivec;
                 t = ti[0];
                 l2n(t, iv);
                 t = ti[1];
                 l2n(t, iv);
-                iv = (unsigned char *)ivec;
+                iv = (uint8_t *)ivec;
             }
             cc = *(in++);
             c = iv[n];

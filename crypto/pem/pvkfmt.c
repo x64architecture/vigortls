@@ -73,9 +73,9 @@
  * format
  */
 
-static unsigned int read_ledword(const unsigned char **in)
+static unsigned int read_ledword(const uint8_t **in)
 {
-    const unsigned char *p = *in;
+    const uint8_t *p = *in;
     unsigned int ret;
     ret = *p++;
     ret |= (*p++ << 8);
@@ -89,10 +89,10 @@ static unsigned int read_ledword(const unsigned char **in)
  * bitlen/8 bytes.
  */
 
-static int read_lebn(const unsigned char **in, unsigned int nbyte, BIGNUM **r)
+static int read_lebn(const uint8_t **in, unsigned int nbyte, BIGNUM **r)
 {
-    const unsigned char *p;
-    unsigned char *tmpbuf, *q;
+    const uint8_t *p;
+    uint8_t *tmpbuf, *q;
     unsigned int i;
     p = *in + nbyte - 1;
     tmpbuf = malloc(nbyte);
@@ -130,16 +130,16 @@ static int read_lebn(const unsigned char **in, unsigned int nbyte, BIGNUM **r)
 /* Salt length for PVK files */
 #define PVK_SALTLEN 0x10
 
-static EVP_PKEY *b2i_rsa(const unsigned char **in, unsigned int length,
+static EVP_PKEY *b2i_rsa(const uint8_t **in, unsigned int length,
                          unsigned int bitlen, int ispub);
-static EVP_PKEY *b2i_dss(const unsigned char **in, unsigned int length,
+static EVP_PKEY *b2i_dss(const uint8_t **in, unsigned int length,
                          unsigned int bitlen, int ispub);
 
-static int do_blob_header(const unsigned char **in, unsigned int length,
+static int do_blob_header(const uint8_t **in, unsigned int length,
                           unsigned int *pmagic, unsigned int *pbitlen,
                           int *pisdss, int *pispub)
 {
-    const unsigned char *p = *in;
+    const uint8_t *p = *in;
     if (length < 16)
         return 0;
     /* bType */
@@ -229,10 +229,10 @@ static unsigned int blob_length(unsigned bitlen, int isdss, int ispub)
     }
 }
 
-static EVP_PKEY *do_b2i(const unsigned char **in, unsigned int length,
+static EVP_PKEY *do_b2i(const uint8_t **in, unsigned int length,
                         int ispub)
 {
-    const unsigned char *p = *in;
+    const uint8_t *p = *in;
     unsigned int bitlen, magic;
     int isdss;
     if (do_blob_header(&p, length, &magic, &bitlen, &isdss, &ispub) <= 0) {
@@ -252,8 +252,8 @@ static EVP_PKEY *do_b2i(const unsigned char **in, unsigned int length,
 
 static EVP_PKEY *do_b2i_bio(BIO *in, int ispub)
 {
-    const unsigned char *p;
-    unsigned char hdr_buf[16], *buf = NULL;
+    const uint8_t *p;
+    uint8_t hdr_buf[16], *buf = NULL;
     unsigned int bitlen, magic, length;
     int isdss;
     EVP_PKEY *ret = NULL;
@@ -288,10 +288,10 @@ err:
     return ret;
 }
 
-static EVP_PKEY *b2i_dss(const unsigned char **in, unsigned int length,
+static EVP_PKEY *b2i_dss(const uint8_t **in, unsigned int length,
                          unsigned int bitlen, int ispub)
 {
-    const unsigned char *p = *in;
+    const uint8_t *p = *in;
     EVP_PKEY *ret = NULL;
     DSA *dsa = NULL;
     BN_CTX *ctx = NULL;
@@ -343,11 +343,11 @@ memerr:
     return NULL;
 }
 
-static EVP_PKEY *b2i_rsa(const unsigned char **in, unsigned int length,
+static EVP_PKEY *b2i_rsa(const uint8_t **in, unsigned int length,
                          unsigned int bitlen, int ispub)
 
 {
-    const unsigned char *p = *in;
+    const uint8_t *p = *in;
     EVP_PKEY *ret = NULL;
     RSA *rsa = NULL;
     unsigned int nbyte, hnbyte;
@@ -392,12 +392,12 @@ memerr:
     return NULL;
 }
 
-EVP_PKEY *b2i_PrivateKey(const unsigned char **in, long length)
+EVP_PKEY *b2i_PrivateKey(const uint8_t **in, long length)
 {
     return do_b2i(in, length, 0);
 }
 
-EVP_PKEY *b2i_PublicKey(const unsigned char **in, long length)
+EVP_PKEY *b2i_PublicKey(const uint8_t **in, long length)
 {
     return do_b2i(in, length, 1);
 }
@@ -412,9 +412,9 @@ EVP_PKEY *b2i_PublicKey_bio(BIO *in)
     return do_b2i_bio(in, 1);
 }
 
-static void write_ledword(unsigned char **out, unsigned int dw)
+static void write_ledword(uint8_t **out, unsigned int dw)
 {
-    unsigned char *p = *out;
+    uint8_t *p = *out;
     *p++ = dw & 0xff;
     *p++ = (dw >> 8) & 0xff;
     *p++ = (dw >> 16) & 0xff;
@@ -422,10 +422,10 @@ static void write_ledword(unsigned char **out, unsigned int dw)
     *out = p;
 }
 
-static void write_lebn(unsigned char **out, const BIGNUM *bn, int len)
+static void write_lebn(uint8_t **out, const BIGNUM *bn, int len)
 {
     int nb, i;
-    unsigned char *p = *out, *q, c;
+    uint8_t *p = *out, *q, c;
     nb = BN_num_bytes(bn);
     BN_bn2bin(bn, p);
     q = p + nb - 1;
@@ -449,12 +449,12 @@ static void write_lebn(unsigned char **out, const BIGNUM *bn, int len)
 static int check_bitlen_rsa(RSA *rsa, int ispub, unsigned int *magic);
 static int check_bitlen_dsa(DSA *dsa, int ispub, unsigned int *magic);
 
-static void write_rsa(unsigned char **out, RSA *rsa, int ispub);
-static void write_dsa(unsigned char **out, DSA *dsa, int ispub);
+static void write_rsa(uint8_t **out, RSA *rsa, int ispub);
+static void write_dsa(uint8_t **out, DSA *dsa, int ispub);
 
-static int do_i2b(unsigned char **out, EVP_PKEY *pk, int ispub)
+static int do_i2b(uint8_t **out, EVP_PKEY *pk, int ispub)
 {
-    unsigned char *p;
+    uint8_t *p;
     unsigned int bitlen, magic = 0, keyalg;
     int outlen, noinc = 0;
     if (pk->type == EVP_PKEY_DSA) {
@@ -501,7 +501,7 @@ static int do_i2b(unsigned char **out, EVP_PKEY *pk, int ispub)
 
 static int do_i2b_bio(BIO *out, EVP_PKEY *pk, int ispub)
 {
-    unsigned char *tmp = NULL;
+    uint8_t *tmp = NULL;
     int outlen, wrlen;
     outlen = do_i2b(&tmp, pk, ispub);
     if (outlen < 0)
@@ -567,7 +567,7 @@ badkey:
     return 0;
 }
 
-static void write_rsa(unsigned char **out, RSA *rsa, int ispub)
+static void write_rsa(uint8_t **out, RSA *rsa, int ispub)
 {
     int nbyte, hnbyte;
     nbyte = BN_num_bytes(rsa->n);
@@ -584,7 +584,7 @@ static void write_rsa(unsigned char **out, RSA *rsa, int ispub)
     write_lebn(out, rsa->d, nbyte);
 }
 
-static void write_dsa(unsigned char **out, DSA *dsa, int ispub)
+static void write_dsa(uint8_t **out, DSA *dsa, int ispub)
 {
     int nbyte;
     nbyte = BN_num_bytes(dsa->p);
@@ -612,12 +612,12 @@ int i2b_PublicKey_bio(BIO *out, EVP_PKEY *pk)
 }
 
 
-static int do_PVK_header(const unsigned char **in, unsigned int length,
+static int do_PVK_header(const uint8_t **in, unsigned int length,
                          int skip_magic,
                          unsigned int *psaltlen, unsigned int *pkeylen)
 
 {
-    const unsigned char *p = *in;
+    const uint8_t *p = *in;
     unsigned int pvk_magic, is_encrypted;
     if (skip_magic) {
         if (length < 20) {
@@ -653,9 +653,9 @@ static int do_PVK_header(const unsigned char **in, unsigned int length,
     return 1;
 }
 
-static int derive_pvk_key(unsigned char *key,
-                          const unsigned char *salt, unsigned int saltlen,
-                          const unsigned char *pass, int passlen)
+static int derive_pvk_key(uint8_t *key,
+                          const uint8_t *salt, unsigned int saltlen,
+                          const uint8_t *pass, int passlen)
 {
     EVP_MD_CTX mctx;
     int rv = 1;
@@ -670,19 +670,19 @@ static int derive_pvk_key(unsigned char *key,
     return rv;
 }
 
-static EVP_PKEY *do_PVK_body(const unsigned char **in,
+static EVP_PKEY *do_PVK_body(const uint8_t **in,
                              unsigned int saltlen, unsigned int keylen,
                              pem_password_cb *cb, void *u)
 {
     EVP_PKEY *ret = NULL;
-    const unsigned char *p = *in;
+    const uint8_t *p = *in;
     unsigned int magic;
-    unsigned char *enctmp = NULL, *q;
+    uint8_t *enctmp = NULL, *q;
     EVP_CIPHER_CTX cctx;
     EVP_CIPHER_CTX_init(&cctx);
     if (saltlen) {
         char psbuf[PEM_BUFSIZE];
-        unsigned char keybuf[20];
+        uint8_t keybuf[20];
         int enctmplen, inlen;
         if (cb)
             inlen = cb(psbuf, PEM_BUFSIZE, 0, u);
@@ -698,7 +698,7 @@ static EVP_PKEY *do_PVK_body(const unsigned char **in,
             return NULL;
         }
         if (!derive_pvk_key(keybuf, p, saltlen,
-                            (unsigned char *)psbuf, inlen)) {
+                            (uint8_t *)psbuf, inlen)) {
             free(enctmp);
             return NULL;
         }
@@ -718,7 +718,7 @@ static EVP_PKEY *do_PVK_body(const unsigned char **in,
             goto err;
         if (!EVP_DecryptFinal_ex(&cctx, q + enctmplen, &enctmplen))
             goto err;
-        magic = read_ledword((const unsigned char **)&q);
+        magic = read_ledword((const uint8_t **)&q);
         if (magic != MS_RSA2MAGIC && magic != MS_DSS2MAGIC) {
             q = enctmp + 8;
             memset(keybuf + 5, 0, 11);
@@ -731,7 +731,7 @@ static EVP_PKEY *do_PVK_body(const unsigned char **in,
             if (!EVP_DecryptFinal_ex(&cctx, q + enctmplen,
                                      &enctmplen))
                 goto err;
-            magic = read_ledword((const unsigned char **)&q);
+            magic = read_ledword((const uint8_t **)&q);
             if (magic != MS_RSA2MAGIC && magic != MS_DSS2MAGIC) {
                 PEMerr(PEM_F_DO_PVK_BODY, PEM_R_BAD_DECRYPT);
                 goto err;
@@ -751,8 +751,8 @@ err:
 
 EVP_PKEY *b2i_PVK_bio(BIO *in, pem_password_cb *cb, void *u)
 {
-    unsigned char pvk_hdr[24], *buf = NULL;
-    const unsigned char *p;
+    uint8_t pvk_hdr[24], *buf = NULL;
+    const uint8_t *p;
     int buflen;
     EVP_PKEY *ret = NULL;
     unsigned int saltlen, keylen;
@@ -785,11 +785,11 @@ err:
     return ret;
 }
 
-static int i2b_PVK(unsigned char **out, EVP_PKEY *pk, int enclevel,
+static int i2b_PVK(uint8_t **out, EVP_PKEY *pk, int enclevel,
                    pem_password_cb *cb, void *u)
 {
     int outlen = 24, pklen;
-    unsigned char *p, *salt = NULL;
+    uint8_t *p, *salt = NULL;
     EVP_CIPHER_CTX cctx;
     EVP_CIPHER_CTX_init(&cctx);
     if (enclevel)
@@ -831,7 +831,7 @@ static int i2b_PVK(unsigned char **out, EVP_PKEY *pk, int enclevel,
         return outlen;
     } else {
         char psbuf[PEM_BUFSIZE];
-        unsigned char keybuf[20];
+        uint8_t keybuf[20];
         int enctmplen, inlen;
         if (cb)
             inlen = cb(psbuf, PEM_BUFSIZE, 1, u);
@@ -842,7 +842,7 @@ static int i2b_PVK(unsigned char **out, EVP_PKEY *pk, int enclevel,
             goto error;
         }
         if (!derive_pvk_key(keybuf, salt, PVK_SALTLEN,
-                            (unsigned char *)psbuf, inlen))
+                            (uint8_t *)psbuf, inlen))
             goto error;
         if (enclevel == 1)
             memset(keybuf + 5, 0, 11);
@@ -866,7 +866,7 @@ error:
 int i2b_PVK_bio(BIO *out, EVP_PKEY *pk, int enclevel,
                 pem_password_cb *cb, void *u)
 {
-    unsigned char *tmp = NULL;
+    uint8_t *tmp = NULL;
     int outlen, wrlen;
     outlen = i2b_PVK(&tmp, pk, enclevel, cb, u);
     if (outlen < 0) {

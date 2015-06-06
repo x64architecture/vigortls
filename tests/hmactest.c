@@ -65,18 +65,18 @@
 #include <openssl/md5.h>
 
 static struct test_st {
-    unsigned char key[16];
+    uint8_t key[16];
     int key_len;
-    unsigned char data[64];
+    uint8_t data[64];
     int data_len;
-    unsigned char *digest;
+    uint8_t *digest;
 } test[4] = {
       {
         "",
         0,
         "More text test vectors to stuff up EBCDIC machines :-)",
         54,
-        (unsigned char *)"e9139d1e6ee064ef8cf514fc7dc83e86",
+        (uint8_t *)"e9139d1e6ee064ef8cf514fc7dc83e86",
       },
       {
         {
@@ -86,14 +86,14 @@ static struct test_st {
         16,
         "Hi There",
         8,
-        (unsigned char *)"9294727a3638bb1c13f48ef8158bfc9d",
+        (uint8_t *)"9294727a3638bb1c13f48ef8158bfc9d",
       },
       {
         "Jefe",
         4,
         "what do ya want for nothing?",
         28,
-        (unsigned char *)"750c783e6ab0b503eaa86e310a5db738",
+        (uint8_t *)"750c783e6ab0b503eaa86e310a5db738",
       },
       {
         {
@@ -109,11 +109,11 @@ static struct test_st {
           0xdd, 0xdd, 0xdd, 0xdd, 0xdd, 0xdd, 0xdd, 0xdd,
           0xdd, 0xdd },
         50,
-        (unsigned char *)"56be34521d144c88dbb8c733f0e8b3f6",
+        (uint8_t *)"56be34521d144c88dbb8c733f0e8b3f6",
       },
   };
 
-static char *pt(unsigned char *md);
+static char *pt(uint8_t *md);
 int main(int argc, char *argv[])
 {
     int i;
@@ -138,7 +138,7 @@ int main(int argc, char *argv[])
     return (0);
 }
 
-static char *pt(unsigned char *md)
+static char *pt(uint8_t *md)
 {
     int i;
     static char buf[80];

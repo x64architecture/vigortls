@@ -72,7 +72,7 @@
 #define S5 CAST_S_table5
 #define S6 CAST_S_table6
 #define S7 CAST_S_table7
-void CAST_set_key(CAST_KEY *key, int len, const unsigned char *data)
+void CAST_set_key(CAST_KEY *key, int len, const uint8_t *data)
 {
     CAST_LONG x[16];
     CAST_LONG z[16];

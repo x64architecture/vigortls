@@ -66,8 +66,8 @@
 #include "evp_locl.h"
 #include <openssl/rc2.h>
 
-static int rc2_init_key(EVP_CIPHER_CTX *ctx, const unsigned char *key,
-                        const unsigned char *iv, int enc);
+static int rc2_init_key(EVP_CIPHER_CTX *ctx, const uint8_t *key,
+                        const uint8_t *iv, int enc);
 static int rc2_meth_to_magic(EVP_CIPHER_CTX *ctx);
 static int rc2_magic_to_meth(int i);
 static int rc2_set_asn1_type_and_iv(EVP_CIPHER_CTX *c, ASN1_TYPE *type);
@@ -132,8 +132,8 @@ const EVP_CIPHER *EVP_rc2_40_cbc(void)
     return (&r2_40_cbc_cipher);
 }
 
-static int rc2_init_key(EVP_CIPHER_CTX *ctx, const unsigned char *key,
-                        const unsigned char *iv, int enc)
+static int rc2_init_key(EVP_CIPHER_CTX *ctx, const uint8_t *key,
+                        const uint8_t *iv, int enc)
 {
     RC2_set_key(&data(ctx)->ks, EVP_CIPHER_CTX_key_length(ctx),
                 key, data(ctx)->key_bits);
@@ -175,7 +175,7 @@ static int rc2_get_asn1_type_and_iv(EVP_CIPHER_CTX *c, ASN1_TYPE *type)
     int i = 0;
     int key_bits;
     unsigned int l;
-    unsigned char iv[EVP_MAX_IV_LENGTH];
+    uint8_t iv[EVP_MAX_IV_LENGTH];
 
     if (type != NULL) {
         l = EVP_CIPHER_CTX_iv_length(c);

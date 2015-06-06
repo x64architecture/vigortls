@@ -64,7 +64,7 @@ static inline unsigned int f(const GOST2814789_KEY *c, unsigned int x)
            | c->k43[(x >> 8) & 255] | c->k21[(x)&255];
 }
 
-void Gost2814789_encrypt(const unsigned char *in, unsigned char *out,
+void Gost2814789_encrypt(const uint8_t *in, uint8_t *out,
                          const GOST2814789_KEY *key)
 {
     unsigned int n1, n2; /* As named in the GOST */
@@ -112,7 +112,7 @@ void Gost2814789_encrypt(const unsigned char *in, unsigned char *out,
     l2c(n1, out);
 }
 
-void Gost2814789_decrypt(const unsigned char *in, unsigned char *out,
+void Gost2814789_decrypt(const uint8_t *in, uint8_t *out,
                          const GOST2814789_KEY *key)
 {
     unsigned int n1, n2; /* As named in the GOST */
@@ -160,11 +160,11 @@ void Gost2814789_decrypt(const unsigned char *in, unsigned char *out,
     l2c(n1, out);
 }
 
-static void Gost2814789_mac(const unsigned char *in, unsigned char *mac,
+static void Gost2814789_mac(const uint8_t *in, uint8_t *mac,
                             GOST2814789_KEY *key)
 {
     unsigned int n1, n2; /* As named in the GOST */
-    unsigned char *p;
+    uint8_t *p;
     int i;
 
     for (i = 0; i < 8; i++)
@@ -198,7 +198,7 @@ static void Gost2814789_mac(const unsigned char *in, unsigned char *mac,
     l2c(n2, p);
 }
 
-void Gost2814789_ecb_encrypt(const unsigned char *in, unsigned char *out,
+void Gost2814789_ecb_encrypt(const uint8_t *in, uint8_t *out,
                              GOST2814789_KEY *key, const int enc)
 {
     if (key->key_meshing && key->count == 1024) {
@@ -212,7 +212,7 @@ void Gost2814789_ecb_encrypt(const unsigned char *in, unsigned char *out,
         Gost2814789_decrypt(in, out, key);
 }
 
-static inline void Gost2814789_encrypt_mesh(unsigned char *iv, GOST2814789_KEY *key)
+static inline void Gost2814789_encrypt_mesh(uint8_t *iv, GOST2814789_KEY *key)
 {
     if (key->key_meshing && key->count == 1024) {
         Gost2814789_cryptopro_key_mesh(key);
@@ -223,8 +223,8 @@ static inline void Gost2814789_encrypt_mesh(unsigned char *iv, GOST2814789_KEY *
     key->count += 8;
 }
 
-static inline void Gost2814789_mac_mesh(const unsigned char *data,
-                                        unsigned char *mac, GOST2814789_KEY *key)
+static inline void Gost2814789_mac_mesh(const uint8_t *data,
+                                        uint8_t *mac, GOST2814789_KEY *key)
 {
     if (key->key_meshing && key->count == 1024) {
         Gost2814789_cryptopro_key_mesh(key);
@@ -234,9 +234,9 @@ static inline void Gost2814789_mac_mesh(const unsigned char *data,
     key->count += 8;
 }
 
-void Gost2814789_cfb64_encrypt(const unsigned char *in, unsigned char *out,
+void Gost2814789_cfb64_encrypt(const uint8_t *in, uint8_t *out,
                                size_t len, GOST2814789_KEY *key,
-                               unsigned char *ivec, int *num, const int enc)
+                               uint8_t *ivec, int *num, const int enc)
 {
     unsigned int n;
     size_t l = 0;
@@ -295,7 +295,7 @@ void Gost2814789_cfb64_encrypt(const unsigned char *in, unsigned char *out,
         if (8 % sizeof(size_t) == 0)
             do { /* always true actually */
                 while (n && len) {
-                    unsigned char c;
+                    uint8_t c;
                     *(out++) = ivec[n] ^ (c = *(in++));
                     ivec[n] = c;
                     --len;
@@ -320,7 +320,7 @@ void Gost2814789_cfb64_encrypt(const unsigned char *in, unsigned char *out,
                 if (len) {
                     Gost2814789_encrypt_mesh(ivec, key);
                     while (len--) {
-                        unsigned char c;
+                        uint8_t c;
                         out[n] = ivec[n] ^ (c = in[n]);
                         ivec[n] = c;
                         ++n;
@@ -332,7 +332,7 @@ void Gost2814789_cfb64_encrypt(const unsigned char *in, unsigned char *out,
 /* the rest would be commonly eliminated by x86* compiler */
 #endif
         while (l < len) {
-            unsigned char c;
+            uint8_t c;
             if (n == 0) {
                 Gost2814789_encrypt_mesh(ivec, key);
             }
@@ -345,10 +345,10 @@ void Gost2814789_cfb64_encrypt(const unsigned char *in, unsigned char *out,
     }
 }
 
-static inline void Gost2814789_cnt_next(unsigned char *ivec, unsigned char *out,
+static inline void Gost2814789_cnt_next(uint8_t *ivec, uint8_t *out,
                                         GOST2814789_KEY *key)
 {
-    unsigned char *p = ivec, *p2 = ivec;
+    uint8_t *p = ivec, *p2 = ivec;
     unsigned int val, val2;
 
     if (key->count == 0)
@@ -374,9 +374,9 @@ static inline void Gost2814789_cnt_next(unsigned char *ivec, unsigned char *out,
     key->count += 8;
 }
 
-void Gost2814789_cnt_encrypt(const unsigned char *in, unsigned char *out,
-                             size_t len, GOST2814789_KEY *key, unsigned char *ivec,
-                             unsigned char *cnt_buf, int *num)
+void Gost2814789_cnt_encrypt(const uint8_t *in, uint8_t *out,
+                             size_t len, GOST2814789_KEY *key, uint8_t *ivec,
+                             uint8_t *cnt_buf, int *num)
 {
     unsigned int n;
     size_t l = 0;
@@ -439,7 +439,7 @@ int GOST2814789IMIT_Init(GOST2814789IMIT_CTX *c, int nid)
 }
 
 static void GOST2814789IMIT_block_data_order(GOST2814789IMIT_CTX *ctx,
-                                             const unsigned char *p, size_t num)
+                                             const uint8_t *p, size_t num)
 {
     int i;
     for (i = 0; i < num; i++) {
@@ -460,7 +460,7 @@ static void GOST2814789IMIT_block_data_order(GOST2814789IMIT_CTX *ctx,
 
 #include "md32_common.h"
 
-int GOST2814789IMIT_Final(unsigned char *md, GOST2814789IMIT_CTX *c)
+int GOST2814789IMIT_Final(uint8_t *md, GOST2814789IMIT_CTX *c)
 {
     if (c->num) {
         memset(c->data + c->num, 0, 8 - c->num);
@@ -474,12 +474,12 @@ int GOST2814789IMIT_Final(unsigned char *md, GOST2814789IMIT_CTX *c)
     return 1;
 }
 
-unsigned char *GOST2814789IMIT(const unsigned char *d, size_t n, unsigned char *md,
-                               int nid, const unsigned char *key,
-                               const unsigned char *iv)
+uint8_t *GOST2814789IMIT(const uint8_t *d, size_t n, uint8_t *md,
+                               int nid, const uint8_t *key,
+                               const uint8_t *iv)
 {
     GOST2814789IMIT_CTX c;
-    static unsigned char m[GOST2814789IMIT_LENGTH];
+    static uint8_t m[GOST2814789IMIT_LENGTH];
 
     if (md == NULL)
         md = m;

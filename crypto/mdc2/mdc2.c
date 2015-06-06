@@ -69,15 +69,15 @@
                    l |= ((uint32_t)(*((c)++))) << 24L)
 
 #undef l2c
-#define l2c(l, c) (*((c)++) = (unsigned char)(((l)) & 0xff),        \
-                   *((c)++) = (unsigned char)(((l) >> 8L) & 0xff),  \
-                   *((c)++) = (unsigned char)(((l) >> 16L) & 0xff), \
-                   *((c)++) = (unsigned char)(((l) >> 24L) & 0xff))
+#define l2c(l, c) (*((c)++) = (uint8_t)(((l)) & 0xff),        \
+                   *((c)++) = (uint8_t)(((l) >> 8L) & 0xff),  \
+                   *((c)++) = (uint8_t)(((l) >> 16L) & 0xff), \
+                   *((c)++) = (uint8_t)(((l) >> 24L) & 0xff))
 
-unsigned char *MDC2(const unsigned char *d, size_t n, unsigned char *md)
+uint8_t *MDC2(const uint8_t *d, size_t n, uint8_t *md)
 {
     MDC2_CTX c;
-    static unsigned char m[MDC2_DIGEST_LENGTH];
+    static uint8_t m[MDC2_DIGEST_LENGTH];
 
     if (md == NULL)
         md = m;
@@ -89,7 +89,7 @@ unsigned char *MDC2(const unsigned char *d, size_t n, unsigned char *md)
     return (md);
 }
 
-static void mdc2_body(MDC2_CTX *c, const unsigned char *in, size_t len);
+static void mdc2_body(MDC2_CTX *c, const uint8_t *in, size_t len);
 int MDC2_Init(MDC2_CTX *c)
 {
     c->num = 0;
@@ -99,7 +99,7 @@ int MDC2_Init(MDC2_CTX *c)
     return 1;
 }
 
-int MDC2_Update(MDC2_CTX *c, const unsigned char *in, size_t len)
+int MDC2_Update(MDC2_CTX *c, const uint8_t *in, size_t len)
 {
     size_t i, j;
 
@@ -131,13 +131,13 @@ int MDC2_Update(MDC2_CTX *c, const unsigned char *in, size_t len)
     return 1;
 }
 
-static void mdc2_body(MDC2_CTX *c, const unsigned char *in, size_t len)
+static void mdc2_body(MDC2_CTX *c, const uint8_t *in, size_t len)
 {
     uint32_t tin0, tin1;
     uint32_t ttin0, ttin1;
     uint32_t d[2], dd[2];
     DES_key_schedule k;
-    unsigned char *p;
+    uint8_t *p;
     size_t i;
 
     for (i = 0; i < len; i += 8) {
@@ -170,7 +170,7 @@ static void mdc2_body(MDC2_CTX *c, const unsigned char *in, size_t len)
     }
 }
 
-int MDC2_Final(unsigned char *md, MDC2_CTX *c)
+int MDC2_Final(uint8_t *md, MDC2_CTX *c)
 {
     unsigned int i;
     int j;

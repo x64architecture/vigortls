@@ -64,7 +64,7 @@ int HMAC_Init_ex(HMAC_CTX *ctx, const void *key, int len,
                  const EVP_MD *md, ENGINE *impl)
 {
     int i, j, reset = 0;
-    unsigned char pad[HMAC_MAX_MD_CBLOCK];
+    uint8_t pad[HMAC_MAX_MD_CBLOCK];
 
     if (md != NULL) {
         reset = 1;
@@ -131,7 +131,7 @@ int HMAC_Init(HMAC_CTX *ctx, const void *key, int len, const EVP_MD *md)
     return HMAC_Init_ex(ctx, key, len, md, NULL);
 }
 
-int HMAC_Update(HMAC_CTX *ctx, const unsigned char *data, size_t len)
+int HMAC_Update(HMAC_CTX *ctx, const uint8_t *data, size_t len)
 {
     if (!ctx->key_init)
         return 0;
@@ -139,10 +139,10 @@ int HMAC_Update(HMAC_CTX *ctx, const unsigned char *data, size_t len)
     return EVP_DigestUpdate(&ctx->md_ctx, data, len);
 }
 
-int HMAC_Final(HMAC_CTX *ctx, unsigned char *md, unsigned int *len)
+int HMAC_Final(HMAC_CTX *ctx, uint8_t *md, unsigned int *len)
 {
     unsigned int i;
-    unsigned char buf[EVP_MAX_MD_SIZE];
+    uint8_t buf[EVP_MAX_MD_SIZE];
     
     if (!ctx->key_init)
         goto err;
@@ -196,12 +196,12 @@ void HMAC_CTX_cleanup(HMAC_CTX *ctx)
     memset(ctx, 0, sizeof *ctx);
 }
 
-unsigned char *HMAC(const EVP_MD *evp_md, const void *key, int key_len,
-                    const unsigned char *d, size_t n, unsigned char *md,
+uint8_t *HMAC(const EVP_MD *evp_md, const void *key, int key_len,
+                    const uint8_t *d, size_t n, uint8_t *md,
                     unsigned int *md_len)
 {
     HMAC_CTX c;
-    static unsigned char m[EVP_MAX_MD_SIZE];
+    static uint8_t m[EVP_MAX_MD_SIZE];
 
     if (md == NULL)
         md = m;

@@ -754,7 +754,7 @@ static EVP_PKEY *load_netscape_key(BIO *key, const char *file,
     EVP_PKEY *pkey;
     BUF_MEM *buf;
     RSA *rsa;
-    const unsigned char *p;
+    const uint8_t *p;
     int size, i;
 
     buf = BUF_MEM_new();
@@ -774,7 +774,7 @@ static EVP_PKEY *load_netscape_key(BIO *key, const char *file,
             goto error;
         }
     }
-    p = (unsigned char *)buf->data;
+    p = (uint8_t *)buf->data;
     rsa = d2i_RSA_NET(NULL, &p, (long)size, NULL, 0);
     if (rsa == NULL)
         goto error;
@@ -1081,9 +1081,9 @@ void print_name(BIO *out, const char *title, X509_NAME *nm, unsigned long lflags
 }
 
 void print_bignum_var(BIO *out, BIGNUM *in, const char *var,
-                      int len, unsigned char *buffer)
+                      int len, uint8_t *buffer)
 {
-    BIO_printf(out, "    static unsigned char %s_%d[] = {", var, len);
+    BIO_printf(out, "    static uint8_t %s_%d[] = {", var, len);
     if (BN_is_zero(in))
         BIO_printf(out, "\n\t0x00");
     else {
@@ -1101,11 +1101,11 @@ void print_bignum_var(BIO *out, BIGNUM *in, const char *var,
     }
     BIO_printf(out, "\n    };\n");
 }
-void print_array(BIO *out, const char* title, int len, const unsigned char* d)
+void print_array(BIO *out, const char* title, int len, const uint8_t* d)
 {
     int i;
 
-    BIO_printf(out, "unsigned char %s[%d] = {", title, len);
+    BIO_printf(out, "uint8_t %s[%d] = {", title, len);
     for (i = 0; i < len; i++) {
         if ((i % 10) == 0)
             BIO_printf(out, "\n    ");
@@ -1702,7 +1702,7 @@ X509_NAME *parse_name(char *subject, long chtype, int multirdn)
             continue;
         }
 
-        if (!X509_NAME_add_entry_by_NID(n, nid, chtype, (unsigned char *)ne_values[i], -1, -1, mval[i]))
+        if (!X509_NAME_add_entry_by_NID(n, nid, chtype, (uint8_t *)ne_values[i], -1, -1, mval[i]))
             goto error;
     }
 
@@ -1725,11 +1725,11 @@ error:
  * return it.
  */
 
-int bio_to_mem(unsigned char **out, int maxlen, BIO *in)
+int bio_to_mem(uint8_t **out, int maxlen, BIO *in)
 {
     BIO *mem;
     int len, ret;
-    unsigned char tbuf[1024];
+    uint8_t tbuf[1024];
     mem = BIO_new(BIO_s_mem());
     if (!mem)
         return -1;
@@ -1812,10 +1812,10 @@ void policies_print(BIO *out, X509_STORE_CTX *ctx)
  *
  *   returns: a malloced buffer or NULL on failure.
  */
-unsigned char *next_protos_parse(unsigned short *outlen, const char *in)
+uint8_t *next_protos_parse(unsigned short *outlen, const char *in)
 {
     size_t len;
-    unsigned char *out;
+    uint8_t *out;
     size_t i, start = 0;
 
     len = strlen(in);

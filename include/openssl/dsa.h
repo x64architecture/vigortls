@@ -108,10 +108,10 @@ typedef struct DSA_SIG_st {
 
 struct dsa_method {
     const char *name;
-    DSA_SIG *(*dsa_do_sign)(const unsigned char *dgst, int dlen, DSA *dsa);
+    DSA_SIG *(*dsa_do_sign)(const uint8_t *dgst, int dlen, DSA *dsa);
     int (*dsa_sign_setup)(DSA *dsa, BN_CTX *ctx_in, BIGNUM **kinvp,
                           BIGNUM **rp);
-    int (*dsa_do_verify)(const unsigned char *dgst, int dgst_len,
+    int (*dsa_do_verify)(const uint8_t *dgst, int dgst_len,
                          DSA_SIG *sig, DSA *dsa);
     int (*dsa_mod_exp)(DSA *dsa, BIGNUM *rr, BIGNUM *a1, BIGNUM *p1,
                        BIGNUM *a2, BIGNUM *p2, BIGNUM *m, BN_CTX *ctx,
@@ -125,7 +125,7 @@ struct dsa_method {
     char *app_data;
     /* If this is non-NULL, it is used to generate DSA parameters */
     int (*dsa_paramgen)(DSA *dsa, int bits,
-                        const unsigned char *seed, int seed_len,
+                        const uint8_t *seed, int seed_len,
                         int *counter_ret, unsigned long *h_ret,
                         BN_GENCB *cb);
     /* If this is non-NULL, it is used to generate DSA keys */
@@ -159,20 +159,20 @@ struct dsa_st {
 };
 
 #define d2i_DSAparams_fp(fp, x) (DSA *) ASN1_d2i_fp((char *(*)())DSA_new, \
-                                                    (char *(*)())d2i_DSAparams, (fp), (unsigned char **)(x))
+                                                    (char *(*)())d2i_DSAparams, (fp), (uint8_t **)(x))
 #define i2d_DSAparams_fp(fp, x) ASN1_i2d_fp(i2d_DSAparams, (fp), \
-                                            (unsigned char *)(x))
+                                            (uint8_t *)(x))
 #define d2i_DSAparams_bio(bp, x) ASN1_d2i_bio_of(DSA, DSA_new, d2i_DSAparams, bp, x)
 #define i2d_DSAparams_bio(bp, x) ASN1_i2d_bio_of_const(DSA, i2d_DSAparams, bp, x)
 
 DSA *DSAparams_dup(DSA *x);
 DSA_SIG *DSA_SIG_new(void);
 void DSA_SIG_free(DSA_SIG *a);
-int i2d_DSA_SIG(const DSA_SIG *a, unsigned char **pp);
-DSA_SIG *d2i_DSA_SIG(DSA_SIG **v, const unsigned char **pp, long length);
+int i2d_DSA_SIG(const DSA_SIG *a, uint8_t **pp);
+DSA_SIG *d2i_DSA_SIG(DSA_SIG **v, const uint8_t **pp, long length);
 
-DSA_SIG *DSA_do_sign(const unsigned char *dgst, int dlen, DSA *dsa);
-int DSA_do_verify(const unsigned char *dgst, int dgst_len,
+DSA_SIG *DSA_do_sign(const uint8_t *dgst, int dlen, DSA *dsa);
+int DSA_do_verify(const uint8_t *dgst, int dgst_len,
                   DSA_SIG *sig, DSA *dsa);
 
 const DSA_METHOD *DSA_OpenSSL(void);
@@ -189,35 +189,35 @@ int DSA_up_ref(DSA *r);
 int DSA_size(const DSA *);
 /* next 4 return -1 on error */
 int DSA_sign_setup(DSA *dsa, BN_CTX *ctx_in, BIGNUM **kinvp, BIGNUM **rp);
-int DSA_sign(int type, const unsigned char *dgst, int dlen,
-             unsigned char *sig, unsigned int *siglen, DSA *dsa);
-int DSA_verify(int type, const unsigned char *dgst, int dgst_len,
-               const unsigned char *sigbuf, int siglen, DSA *dsa);
+int DSA_sign(int type, const uint8_t *dgst, int dlen,
+             uint8_t *sig, unsigned int *siglen, DSA *dsa);
+int DSA_verify(int type, const uint8_t *dgst, int dgst_len,
+               const uint8_t *sigbuf, int siglen, DSA *dsa);
 int DSA_get_ex_new_index(long argl, void *argp, CRYPTO_EX_new *new_func,
                          CRYPTO_EX_dup *dup_func, CRYPTO_EX_free *free_func);
 int DSA_set_ex_data(DSA *d, int idx, void *arg);
 void *DSA_get_ex_data(DSA *d, int idx);
 
-DSA *d2i_DSAPublicKey(DSA **a, const unsigned char **pp, long length);
-DSA *d2i_DSAPrivateKey(DSA **a, const unsigned char **pp, long length);
-DSA *d2i_DSAparams(DSA **a, const unsigned char **pp, long length);
+DSA *d2i_DSAPublicKey(DSA **a, const uint8_t **pp, long length);
+DSA *d2i_DSAPrivateKey(DSA **a, const uint8_t **pp, long length);
+DSA *d2i_DSAparams(DSA **a, const uint8_t **pp, long length);
 
 /* Deprecated version */
 #ifndef OPENSSL_NO_DEPRECATED
 DSA *DSA_generate_parameters(int bits,
-                             unsigned char *seed, int seed_len,
+                             uint8_t *seed, int seed_len,
                              int *counter_ret, unsigned long *h_ret, void (*callback)(int, int, void *), void *cb_arg);
 #endif /* !defined(OPENSSL_NO_DEPRECATED) */
 
 /* New version */
 int DSA_generate_parameters_ex(DSA *dsa, int bits,
-                               const unsigned char *seed, int seed_len,
+                               const uint8_t *seed, int seed_len,
                                int *counter_ret, unsigned long *h_ret, BN_GENCB *cb);
 
 int DSA_generate_key(DSA *a);
-int i2d_DSAPublicKey(const DSA *a, unsigned char **pp);
-int i2d_DSAPrivateKey(const DSA *a, unsigned char **pp);
-int i2d_DSAparams(const DSA *a, unsigned char **pp);
+int i2d_DSAPublicKey(const DSA *a, uint8_t **pp);
+int i2d_DSAPrivateKey(const DSA *a, uint8_t **pp);
+int i2d_DSAparams(const DSA *a, uint8_t **pp);
 
 int DSAparams_print(BIO *bp, const DSA *x);
 int DSA_print(BIO *bp, const DSA *x, int off);

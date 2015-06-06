@@ -116,14 +116,14 @@
 #include <openssl/rand.h>
 #include <openssl/rsa.h>
 
-static int RSA_eay_public_encrypt(int flen, const unsigned char *from,
-                                  unsigned char *to, RSA *rsa, int padding);
-static int RSA_eay_private_encrypt(int flen, const unsigned char *from,
-                                   unsigned char *to, RSA *rsa, int padding);
-static int RSA_eay_public_decrypt(int flen, const unsigned char *from,
-                                  unsigned char *to, RSA *rsa, int padding);
-static int RSA_eay_private_decrypt(int flen, const unsigned char *from,
-                                   unsigned char *to, RSA *rsa, int padding);
+static int RSA_eay_public_encrypt(int flen, const uint8_t *from,
+                                  uint8_t *to, RSA *rsa, int padding);
+static int RSA_eay_private_encrypt(int flen, const uint8_t *from,
+                                   uint8_t *to, RSA *rsa, int padding);
+static int RSA_eay_public_decrypt(int flen, const uint8_t *from,
+                                  uint8_t *to, RSA *rsa, int padding);
+static int RSA_eay_private_decrypt(int flen, const uint8_t *from,
+                                   uint8_t *to, RSA *rsa, int padding);
 static int RSA_eay_mod_exp(BIGNUM *r0, const BIGNUM *i, RSA *rsa, BN_CTX *ctx);
 static int RSA_eay_init(RSA *rsa);
 static int RSA_eay_finish(RSA *rsa);
@@ -149,12 +149,12 @@ const RSA_METHOD *RSA_PKCS1_SSLeay(void)
     return (&rsa_pkcs1_eay_meth);
 }
 
-static int RSA_eay_public_encrypt(int flen, const unsigned char *from,
-                                  unsigned char *to, RSA *rsa, int padding)
+static int RSA_eay_public_encrypt(int flen, const uint8_t *from,
+                                  uint8_t *to, RSA *rsa, int padding)
 {
     BIGNUM *f, *ret;
     int i, j, k, num = 0, r = -1;
-    unsigned char *buf = NULL;
+    uint8_t *buf = NULL;
     BN_CTX *ctx = NULL;
 
     if (BN_num_bits(rsa->n) > OPENSSL_RSA_MAX_MODULUS_BITS) {
@@ -330,12 +330,12 @@ static int rsa_blinding_invert(BN_BLINDING *b, BIGNUM *f, BIGNUM *unblind,
 }
 
 /* signing */
-static int RSA_eay_private_encrypt(int flen, const unsigned char *from,
-                                   unsigned char *to, RSA *rsa, int padding)
+static int RSA_eay_private_encrypt(int flen, const uint8_t *from,
+                                   uint8_t *to, RSA *rsa, int padding)
 {
     BIGNUM *f, *ret, *res;
     int i, j, k, num = 0, r = -1;
-    unsigned char *buf = NULL;
+    uint8_t *buf = NULL;
     BN_CTX *ctx = NULL;
     int local_blinding = 0;
     /* Used only if the blinding structure is shared. A non-NULL unblind
@@ -454,13 +454,13 @@ err:
     return (r);
 }
 
-static int RSA_eay_private_decrypt(int flen, const unsigned char *from,
-                                   unsigned char *to, RSA *rsa, int padding)
+static int RSA_eay_private_decrypt(int flen, const uint8_t *from,
+                                   uint8_t *to, RSA *rsa, int padding)
 {
     BIGNUM *f, *ret;
     int j, num = 0, r = -1;
-    unsigned char *p;
-    unsigned char *buf = NULL;
+    uint8_t *p;
+    uint8_t *buf = NULL;
     BN_CTX *ctx = NULL;
     int local_blinding = 0;
     /* Used only if the blinding structure is shared. A non-NULL unblind
@@ -574,13 +574,13 @@ err:
 }
 
 /* signature verification */
-static int RSA_eay_public_decrypt(int flen, const unsigned char *from,
-                                  unsigned char *to, RSA *rsa, int padding)
+static int RSA_eay_public_decrypt(int flen, const uint8_t *from,
+                                  uint8_t *to, RSA *rsa, int padding)
 {
     BIGNUM *f, *ret;
     int i, num = 0, r = -1;
-    unsigned char *p;
-    unsigned char *buf = NULL;
+    uint8_t *p;
+    uint8_t *buf = NULL;
     BN_CTX *ctx = NULL;
 
     if (BN_num_bits(rsa->n) > OPENSSL_RSA_MAX_MODULUS_BITS) {

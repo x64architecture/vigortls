@@ -89,13 +89,13 @@ ASN1_SEQUENCE_cb(DSA_SIG, sig_cb) = {
     ASN1_SIMPLE(DSA_SIG, s, CBIGNUM)
 } ASN1_SEQUENCE_END_cb(DSA_SIG, DSA_SIG)
 
-DSA_SIG *d2i_DSA_SIG(DSA_SIG **a, const unsigned char **in, long len)
+DSA_SIG *d2i_DSA_SIG(DSA_SIG **a, const uint8_t **in, long len)
 {
     return (DSA_SIG *)ASN1_item_d2i((ASN1_VALUE **)a, in, len,
                                     &DSA_SIG_it);
 }
 
-int i2d_DSA_SIG(const DSA_SIG *a, unsigned char **out)
+int i2d_DSA_SIG(const DSA_SIG *a, uint8_t **out)
 {
     return ASN1_item_i2d((ASN1_VALUE *)a, out, &DSA_SIG_it);
 }
@@ -125,12 +125,12 @@ ASN1_SEQUENCE_cb(DSAPrivateKey, dsa_cb) = {
     ASN1_SIMPLE(DSA, priv_key, BIGNUM)
 } ASN1_SEQUENCE_END_cb(DSA, DSAPrivateKey)
 
-DSA *d2i_DSAPrivateKey(DSA **a, const unsigned char **in, long len)
+DSA *d2i_DSAPrivateKey(DSA **a, const uint8_t **in, long len)
 {
     return (DSA *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, &DSAPrivateKey_it);
 }
 
-int i2d_DSAPrivateKey(const DSA *a, unsigned char **out)
+int i2d_DSAPrivateKey(const DSA *a, uint8_t **out)
 {
     return ASN1_item_i2d((ASN1_VALUE *)a, out, &DSAPrivateKey_it);
 }
@@ -141,12 +141,12 @@ ASN1_SEQUENCE_cb(DSAparams, dsa_cb) = {
     ASN1_SIMPLE(DSA, g, BIGNUM),
 } ASN1_SEQUENCE_END_cb(DSA, DSAparams)
 
-DSA *d2i_DSAparams(DSA **a, const unsigned char **in, long len)
+DSA *d2i_DSAparams(DSA **a, const uint8_t **in, long len)
 {
     return (DSA *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, &DSAparams_it);
 }
 
-int i2d_DSAparams(const DSA *a, unsigned char **out)
+int i2d_DSAparams(const DSA *a, uint8_t **out)
 {
     return ASN1_item_i2d((ASN1_VALUE *)a, out, &DSAparams_it);
 }
@@ -164,12 +164,12 @@ ASN1_SEQUENCE(DSAPublicKey) = {
     ASN1_SIMPLE(DSA, g, BIGNUM)
 } ASN1_SEQUENCE_END_name(DSA, DSAPublicKey)
 
-DSA *d2i_DSAPublicKey(DSA **a, const unsigned char **in, long len)
+DSA *d2i_DSAPublicKey(DSA **a, const uint8_t **in, long len)
 {
     return (DSA *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, &DSAPublicKey_it);
 }
 
-int i2d_DSAPublicKey(const DSA *a, unsigned char **out)
+int i2d_DSAPublicKey(const DSA *a, uint8_t **out)
 {
     return ASN1_item_i2d((ASN1_VALUE *)a, out, &DSAPublicKey_it);
 }
@@ -179,7 +179,7 @@ DSA *DSAparams_dup(DSA * dsa)
     return ASN1_item_dup(ASN1_ITEM_rptr(DSAparams), dsa);
 }
 
-int DSA_sign(int type, const unsigned char *dgst, int dlen, unsigned char *sig,
+int DSA_sign(int type, const uint8_t *dgst, int dlen, uint8_t *sig,
              unsigned int *siglen, DSA *dsa)
 {
     DSA_SIG *s;
@@ -200,12 +200,12 @@ int DSA_sign(int type, const unsigned char *dgst, int dlen, unsigned char *sig,
  *      0: incorrect signature
  *     -1: error
  */
-int DSA_verify(int type, const unsigned char *dgst, int dgst_len,
-               const unsigned char *sigbuf, int siglen, DSA *dsa)
+int DSA_verify(int type, const uint8_t *dgst, int dgst_len,
+               const uint8_t *sigbuf, int siglen, DSA *dsa)
 {
     DSA_SIG *s;
-    const unsigned char *p = sigbuf;
-    unsigned char *der = NULL;
+    const uint8_t *p = sigbuf;
+    uint8_t *der = NULL;
     int derlen = -1;
     int ret = -1;
 

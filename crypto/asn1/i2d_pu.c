@@ -68,7 +68,7 @@
 #include <openssl/objects.h>
 #include <openssl/rsa.h>
 
-int i2d_PublicKey(EVP_PKEY *a, unsigned char **pp)
+int i2d_PublicKey(EVP_PKEY *a, uint8_t **pp)
 {
     switch (a->type) {
         case EVP_PKEY_RSA:

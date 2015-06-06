@@ -213,7 +213,7 @@ static int pkey_dh_keygen(EVP_PKEY_CTX *ctx, EVP_PKEY *pkey)
     return DH_generate_key(pkey->pkey.dh);
 }
 
-static int pkey_dh_derive(EVP_PKEY_CTX *ctx, unsigned char *key, size_t *keylen)
+static int pkey_dh_derive(EVP_PKEY_CTX *ctx, uint8_t *key, size_t *keylen)
 {
     int ret;
     if (!ctx->pkey || !ctx->peerkey) {

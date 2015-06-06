@@ -69,7 +69,7 @@
 
 #ifndef OPENSSL_NO_DEPRECATED
 DSA *DSA_generate_parameters(int bits,
-                             unsigned char *seed_in, int seed_len,
+                             uint8_t *seed_in, int seed_len,
                              int *counter_ret, unsigned long *h_ret,
                              void (*callback)(int, int, void *),
                              void *cb_arg)

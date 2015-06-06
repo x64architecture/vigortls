@@ -64,15 +64,15 @@
 
 #include "asn1_locl.h"
 
-int ASN1_BIT_STRING_set(ASN1_BIT_STRING *x, unsigned char *d, int len)
+int ASN1_BIT_STRING_set(ASN1_BIT_STRING *x, uint8_t *d, int len)
 {
     return ASN1_STRING_set(x, d, len);
 }
 
-int i2c_ASN1_BIT_STRING(ASN1_BIT_STRING *a, unsigned char **pp)
+int i2c_ASN1_BIT_STRING(ASN1_BIT_STRING *a, uint8_t **pp)
 {
     int ret, j, bits, len;
-    unsigned char *p, *d;
+    uint8_t *p, *d;
 
     if (a == NULL)
         return (0);
@@ -116,7 +116,7 @@ int i2c_ASN1_BIT_STRING(ASN1_BIT_STRING *a, unsigned char **pp)
 
     p = *pp;
 
-    *(p++) = (unsigned char)bits;
+    *(p++) = (uint8_t)bits;
     d = a->data;
     memcpy(p, d, len);
     p += len;
@@ -127,11 +127,11 @@ int i2c_ASN1_BIT_STRING(ASN1_BIT_STRING *a, unsigned char **pp)
 }
 
 ASN1_BIT_STRING *c2i_ASN1_BIT_STRING(ASN1_BIT_STRING **a,
-                                     const unsigned char **pp, long len)
+                                     const uint8_t **pp, long len)
 {
     ASN1_BIT_STRING *ret = NULL;
-    const unsigned char *p;
-    unsigned char *s;
+    const uint8_t *p;
+    uint8_t *s;
     int i;
 
     if (len < 1) {
@@ -190,7 +190,7 @@ err:
 int ASN1_BIT_STRING_set_bit(ASN1_BIT_STRING *a, int n, int value)
 {
     int w, v, iv;
-    unsigned char *c;
+    uint8_t *c;
 
     w = n / 8;
     v = 1 << (7 - (n & 0x07));
@@ -243,7 +243,7 @@ int ASN1_BIT_STRING_get_bit(ASN1_BIT_STRING *a, int n)
  * 'len' is the length of 'flags'.
  */
 int ASN1_BIT_STRING_check(ASN1_BIT_STRING *a,
-                          unsigned char *flags, int flags_len)
+                          uint8_t *flags, int flags_len)
 {
     int i, ok;
     /* Check if there is one bit set at all. */
@@ -253,7 +253,7 @@ int ASN1_BIT_STRING_check(ASN1_BIT_STRING *a,
     /* Check each byte of the internal representation of the bit string. */
     ok = 1;
     for (i = 0; i < a->length && ok; ++i) {
-        unsigned char mask = i < flags_len ? ~flags[i] : 0xff;
+        uint8_t mask = i < flags_len ? ~flags[i] : 0xff;
         /* We are done if there is an unneeded bit set. */
         ok = (a->data[i] & mask) == 0;
     }

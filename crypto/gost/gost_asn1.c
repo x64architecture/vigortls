@@ -23,13 +23,13 @@ ASN1_NDEF_SEQUENCE(GOST_KEY_TRANSPORT) = {
 } ASN1_NDEF_SEQUENCE_END(GOST_KEY_TRANSPORT)
 
 GOST_KEY_TRANSPORT *d2i_GOST_KEY_TRANSPORT(GOST_KEY_TRANSPORT **a,
-                                           const unsigned char **in, long len)
+                                           const uint8_t **in, long len)
 {
     return (GOST_KEY_TRANSPORT *)ASN1_item_d2i((ASN1_VALUE **)a, in, len,
         &GOST_KEY_TRANSPORT_it);
 }
 
-int i2d_GOST_KEY_TRANSPORT(GOST_KEY_TRANSPORT *a, unsigned char **out)
+int i2d_GOST_KEY_TRANSPORT(GOST_KEY_TRANSPORT *a, uint8_t **out)
 {
     return ASN1_item_i2d((ASN1_VALUE *)a, out, &GOST_KEY_TRANSPORT_it);
 }
@@ -49,13 +49,13 @@ ASN1_NDEF_SEQUENCE(GOST_KEY_INFO) = {
     ASN1_SIMPLE(GOST_KEY_INFO, imit, ASN1_OCTET_STRING)
 } ASN1_NDEF_SEQUENCE_END(GOST_KEY_INFO)
 
-GOST_KEY_INFO *d2i_GOST_KEY_INFO(GOST_KEY_INFO **a, const unsigned char **in, long len)
+GOST_KEY_INFO *d2i_GOST_KEY_INFO(GOST_KEY_INFO **a, const uint8_t **in, long len)
 {
     return (GOST_KEY_INFO *)ASN1_item_d2i((ASN1_VALUE **)a, in, len,
         &GOST_KEY_INFO_it);
 }
 
-int i2d_GOST_KEY_INFO(GOST_KEY_INFO *a, unsigned char **out)
+int i2d_GOST_KEY_INFO(GOST_KEY_INFO *a, uint8_t **out)
 {
     return ASN1_item_i2d((ASN1_VALUE *)a, out, &GOST_KEY_INFO_it);
 }
@@ -77,13 +77,13 @@ ASN1_NDEF_SEQUENCE(GOST_KEY_AGREEMENT_INFO) = {
 } ASN1_NDEF_SEQUENCE_END(GOST_KEY_AGREEMENT_INFO)
 
 GOST_KEY_AGREEMENT_INFO *d2i_GOST_KEY_AGREEMENT_INFO(GOST_KEY_AGREEMENT_INFO **a,
-                                                     const unsigned char **in, long len)
+                                                     const uint8_t **in, long len)
 {
     return (GOST_KEY_AGREEMENT_INFO *)ASN1_item_d2i((ASN1_VALUE **)a, in, len,
         &GOST_KEY_AGREEMENT_INFO_it);
 }
 
-int i2d_GOST_KEY_AGREEMENT_INFO(GOST_KEY_AGREEMENT_INFO *a, unsigned char **out)
+int i2d_GOST_KEY_AGREEMENT_INFO(GOST_KEY_AGREEMENT_INFO *a, uint8_t **out)
 {
     return ASN1_item_i2d((ASN1_VALUE *)a, out, &GOST_KEY_AGREEMENT_INFO_it);
 }
@@ -104,13 +104,13 @@ ASN1_NDEF_SEQUENCE(GOST_KEY_PARAMS) = {
     ASN1_OPT(GOST_KEY_PARAMS, cipher_params, ASN1_OBJECT),
 } ASN1_NDEF_SEQUENCE_END(GOST_KEY_PARAMS)
 
-GOST_KEY_PARAMS *d2i_GOST_KEY_PARAMS(GOST_KEY_PARAMS **a, const unsigned char **in, long len)
+GOST_KEY_PARAMS *d2i_GOST_KEY_PARAMS(GOST_KEY_PARAMS **a, const uint8_t **in, long len)
 {
     return (GOST_KEY_PARAMS *)ASN1_item_d2i((ASN1_VALUE **)a, in, len,
         &GOST_KEY_PARAMS_it);
 }
 
-int i2d_GOST_KEY_PARAMS(GOST_KEY_PARAMS *a, unsigned char **out)
+int i2d_GOST_KEY_PARAMS(GOST_KEY_PARAMS *a, uint8_t **out)
 {
     return ASN1_item_i2d((ASN1_VALUE *)a, out, &GOST_KEY_PARAMS_it);
 }
@@ -130,13 +130,13 @@ ASN1_NDEF_SEQUENCE(GOST_CIPHER_PARAMS) = {
     ASN1_SIMPLE(GOST_CIPHER_PARAMS, enc_param_set, ASN1_OBJECT),
 } ASN1_NDEF_SEQUENCE_END(GOST_CIPHER_PARAMS)
 
-GOST_CIPHER_PARAMS *d2i_GOST_CIPHER_PARAMS(GOST_CIPHER_PARAMS **a, const unsigned char **in, long len)
+GOST_CIPHER_PARAMS *d2i_GOST_CIPHER_PARAMS(GOST_CIPHER_PARAMS **a, const uint8_t **in, long len)
 {
     return (GOST_CIPHER_PARAMS *)ASN1_item_d2i((ASN1_VALUE **)a, in, len,
         &GOST_CIPHER_PARAMS_it);
 }
 
-int i2d_GOST_CIPHER_PARAMS(GOST_CIPHER_PARAMS *a, unsigned char **out)
+int i2d_GOST_CIPHER_PARAMS(GOST_CIPHER_PARAMS *a, uint8_t **out)
 {
     return ASN1_item_i2d((ASN1_VALUE *)a, out, &GOST_CIPHER_PARAMS_it);
 }

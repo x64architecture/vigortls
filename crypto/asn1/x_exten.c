@@ -70,12 +70,12 @@ ASN1_SEQUENCE(X509_EXTENSION) = {
 ASN1_ITEM_TEMPLATE(X509_EXTENSIONS) = ASN1_EX_TEMPLATE_TYPE(ASN1_TFLG_SEQUENCE_OF, 0, Extension, X509_EXTENSION)
 ASN1_ITEM_TEMPLATE_END(X509_EXTENSIONS)
 
-X509_EXTENSION *d2i_X509_EXTENSION(X509_EXTENSION **a, const unsigned char **in, long len)
+X509_EXTENSION *d2i_X509_EXTENSION(X509_EXTENSION **a, const uint8_t **in, long len)
 {
     return (X509_EXTENSION *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, &X509_EXTENSION_it);
 }
 
-int i2d_X509_EXTENSION(X509_EXTENSION *a, unsigned char **out)
+int i2d_X509_EXTENSION(X509_EXTENSION *a, uint8_t **out)
 {
     return ASN1_item_i2d((ASN1_VALUE *)a, out, &X509_EXTENSION_it);
 }
@@ -90,12 +90,12 @@ void X509_EXTENSION_free(X509_EXTENSION *a)
     ASN1_item_free((ASN1_VALUE *)a, &X509_EXTENSION_it);
 }
 
-X509_EXTENSIONS *d2i_X509_EXTENSIONS(X509_EXTENSIONS **a, const unsigned char **in, long len)
+X509_EXTENSIONS *d2i_X509_EXTENSIONS(X509_EXTENSIONS **a, const uint8_t **in, long len)
 {
     return (X509_EXTENSIONS *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, &X509_EXTENSIONS_it);
 }
 
-int i2d_X509_EXTENSIONS(X509_EXTENSIONS *a, unsigned char **out)
+int i2d_X509_EXTENSIONS(X509_EXTENSIONS *a, uint8_t **out)
 {
     return ASN1_item_i2d((ASN1_VALUE *)a, out, &X509_EXTENSIONS_it);
 }

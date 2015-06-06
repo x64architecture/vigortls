@@ -295,7 +295,7 @@ int crl_main(int argc, char **argv)
             if (fingerprint == i) {
                 int j;
                 unsigned int n;
-                unsigned char md[EVP_MAX_MD_SIZE];
+                uint8_t md[EVP_MAX_MD_SIZE];
 
                 if (!X509_CRL_digest(x, digest, md, &n)) {
                     BIO_printf(bio_err, "out of memory\n");

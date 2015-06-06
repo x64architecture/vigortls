@@ -68,7 +68,7 @@
 
 int DES_check_key = 0; /* defaults to false */
 
-static const unsigned char odd_parity[256] = {
+static const uint8_t odd_parity[256] = {
     1,   1,   2,   2,   4,   4,   7,   7,   8,   8,   11,  11,  13,  13,  14,  14,
     16,  16,  19,  19,  21,  21,  22,  22,  25,  25,  26,  26,  28,  28,  31,  31,
     32,  32,  35,  35,  37,  37,  38,  38,  41,  41,  42,  42,  44,  44,  47,  47,
@@ -307,7 +307,7 @@ void DES_set_key_unchecked(const_DES_cblock *key, DES_key_schedule *schedule)
     static const int shifts2[16]
         = { 0, 0, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 0 };
     uint32_t c, d, t, s, t2;
-    register const unsigned char *in;
+    register const uint8_t *in;
     uint32_t *k;
     register int i;
 

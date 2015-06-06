@@ -66,25 +66,25 @@
 #include <openssl/rand.h>
 #include <openssl/sha.h>
 
-static const unsigned char zeroes[] = { 0, 0, 0, 0, 0, 0, 0, 0 };
+static const uint8_t zeroes[] = { 0, 0, 0, 0, 0, 0, 0, 0 };
 
-int RSA_verify_PKCS1_PSS(RSA *rsa, const unsigned char *mHash,
-                         const EVP_MD *Hash, const unsigned char *EM, int sLen)
+int RSA_verify_PKCS1_PSS(RSA *rsa, const uint8_t *mHash,
+                         const EVP_MD *Hash, const uint8_t *EM, int sLen)
 {
     return RSA_verify_PKCS1_PSS_mgf1(rsa, mHash, Hash, NULL, EM, sLen);
 }
 
-int RSA_verify_PKCS1_PSS_mgf1(RSA *rsa, const unsigned char *mHash,
+int RSA_verify_PKCS1_PSS_mgf1(RSA *rsa, const uint8_t *mHash,
                               const EVP_MD *Hash, const EVP_MD *mgf1Hash,
-                              const unsigned char *EM, int sLen)
+                              const uint8_t *EM, int sLen)
 {
     int i;
     int ret = 0;
     int hLen, maskedDBLen, MSBits, emLen;
-    const unsigned char *H;
-    unsigned char *DB = NULL;
+    const uint8_t *H;
+    uint8_t *DB = NULL;
     EVP_MD_CTX ctx;
-    unsigned char H_[EVP_MAX_MD_SIZE];
+    uint8_t H_[EVP_MAX_MD_SIZE];
     EVP_MD_CTX_init(&ctx);
 
     if (mgf1Hash == NULL)
@@ -174,21 +174,21 @@ err:
     return ret;
 }
 
-int RSA_padding_add_PKCS1_PSS(RSA *rsa, unsigned char *EM,
-                              const unsigned char *mHash,
+int RSA_padding_add_PKCS1_PSS(RSA *rsa, uint8_t *EM,
+                              const uint8_t *mHash,
                               const EVP_MD *Hash, int sLen)
 {
     return RSA_padding_add_PKCS1_PSS_mgf1(rsa, EM, mHash, Hash, NULL, sLen);
 }
 
-int RSA_padding_add_PKCS1_PSS_mgf1(RSA *rsa, unsigned char *EM,
-                                   const unsigned char *mHash,
+int RSA_padding_add_PKCS1_PSS_mgf1(RSA *rsa, uint8_t *EM,
+                                   const uint8_t *mHash,
                                    const EVP_MD *Hash, const EVP_MD *mgf1Hash, int sLen)
 {
     int i;
     int ret = 0;
     int hLen, maskedDBLen, MSBits, emLen;
-    unsigned char *H, *salt = NULL, *p;
+    uint8_t *H, *salt = NULL, *p;
     EVP_MD_CTX ctx;
 
     if (mgf1Hash == NULL)

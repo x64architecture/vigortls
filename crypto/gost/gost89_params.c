@@ -187,7 +187,7 @@ static const gost_subst_block Gost28147_TC26ParamSetZ = {
         { 0xc, 0x4, 0x6, 0x2, 0xa, 0x5, 0xb, 0x9, 0xe, 0x8, 0xd, 0x7, 0x0, 0x3, 0xf, 0x1 }
 };
 
-static const unsigned char CryptoProKeyMeshingKey[] = {
+static const uint8_t CryptoProKeyMeshingKey[] = {
         0x69, 0x00, 0x72, 0x22, 0x64, 0xC9, 0x04, 0x23, 0x8D, 0x3A, 0xDB,
         0x96, 0x46, 0xE9, 0x2A, 0xC4, 0x18, 0xFE, 0xAC, 0x94, 0x00, 0xED,
         0x07, 0x12, 0xC0, 0x86, 0xDC, 0xC2, 0xEF, 0x4C, 0xA9, 0x2B
@@ -241,7 +241,7 @@ int Gost2814789_set_sbox(GOST2814789_KEY *key, int nid)
     return 1;
 }
 
-int Gost2814789_set_key(GOST2814789_KEY *key, const unsigned char *userKey,
+int Gost2814789_set_key(GOST2814789_KEY *key, const uint8_t *userKey,
                         const int bits)
 {
     int i;
@@ -259,7 +259,7 @@ int Gost2814789_set_key(GOST2814789_KEY *key, const unsigned char *userKey,
 
 void Gost2814789_cryptopro_key_mesh(GOST2814789_KEY *key)
 {
-    unsigned char newkey[32];
+    uint8_t newkey[32];
 
     Gost2814789_decrypt(CryptoProKeyMeshingKey + 0, newkey + 0, key);
     Gost2814789_decrypt(CryptoProKeyMeshingKey + 8, newkey + 8, key);

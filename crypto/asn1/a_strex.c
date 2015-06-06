@@ -109,9 +109,9 @@ typedef int char_io(void *arg, const void *buf, int len);
  * 4 byte forms.
  */
 
-static int do_esc_char(unsigned long c, unsigned char flags, char *do_quotes, char_io *io_ch, void *arg)
+static int do_esc_char(unsigned long c, uint8_t flags, char *do_quotes, char_io *io_ch, void *arg)
 {
-    unsigned char chflgs, chtmp;
+    uint8_t chflgs, chtmp;
     char tmphex[HEX_SIZE(long)+3];
 
     if (c > 0xffffffffL)
@@ -128,7 +128,7 @@ static int do_esc_char(unsigned long c, unsigned char flags, char *do_quotes, ch
             return -1;
         return 6;
     }
-    chtmp = (unsigned char)c;
+    chtmp = (uint8_t)c;
     if (chtmp > 0x7f)
         chflgs = flags & ASN1_STRFLGS_ESC_MSB;
     else
@@ -175,11 +175,11 @@ static int do_esc_char(unsigned long c, unsigned char flags, char *do_quotes, ch
  * and converts to or from UTF8 as appropriate.
  */
 
-static int do_buf(unsigned char *buf, int buflen,
-                  int type, unsigned char flags, char *quotes, char_io *io_ch, void *arg)
+static int do_buf(uint8_t *buf, int buflen,
+                  int type, uint8_t flags, char *quotes, char_io *io_ch, void *arg)
 {
     int i, outlen, len;
-    unsigned char orflags, *p, *q;
+    uint8_t orflags, *p, *q;
     unsigned long c;
     p = buf;
     q = buf + buflen;
@@ -218,7 +218,7 @@ static int do_buf(unsigned char *buf, int buflen,
         if (p == q && flags & ASN1_STRFLGS_ESC_2253)
             orflags = CHARTYPE_LAST_ESC_2253;
         if (type & BUF_TYPE_CONVUTF8) {
-            unsigned char utfbuf[6];
+            uint8_t utfbuf[6];
             int utflen;
             utflen = UTF8_putc(utfbuf, sizeof utfbuf, c);
             for (i = 0; i < utflen; i++) {
@@ -227,13 +227,13 @@ static int do_buf(unsigned char *buf, int buflen,
                  * otherwise each character will be > 0x7f and so the
                  * character will never be escaped on first and last.
                  */
-                len = do_esc_char(utfbuf[i], (unsigned char)(flags | orflags), quotes, io_ch, arg);
+                len = do_esc_char(utfbuf[i], (uint8_t)(flags | orflags), quotes, io_ch, arg);
                 if (len < 0)
                     return -1;
                 outlen += len;
             }
         } else {
-            len = do_esc_char(c, (unsigned char)(flags | orflags), quotes, io_ch, arg);
+            len = do_esc_char(c, (uint8_t)(flags | orflags), quotes, io_ch, arg);
             if (len < 0)
                 return -1;
             outlen += len;
@@ -244,10 +244,10 @@ static int do_buf(unsigned char *buf, int buflen,
 
 /* This function hex dumps a buffer of characters */
 
-static int do_hex_dump(char_io *io_ch, void *arg, unsigned char *buf, int buflen)
+static int do_hex_dump(char_io *io_ch, void *arg, uint8_t *buf, int buflen)
 {
     static const char hexdig[] = "0123456789ABCDEF";
-    unsigned char *p, *q;
+    uint8_t *p, *q;
     char hextmp[2];
     if (arg) {
         p = buf;
@@ -275,7 +275,7 @@ static int do_dump(unsigned long lflags, char_io *io_ch, void *arg, ASN1_STRING 
      * the DER encoding to readily obtained
      */
     ASN1_TYPE t;
-    unsigned char *der_buf, *p;
+    uint8_t *der_buf, *p;
     int outlen, der_len;
 
     if (!io_ch(arg, "#", 1))
@@ -330,10 +330,10 @@ static int do_print_ex(char_io *io_ch, void *arg, unsigned long lflags, ASN1_STR
     int outlen, len;
     int type;
     char quotes;
-    unsigned char flags;
+    uint8_t flags;
     quotes = 0;
     /* Keep a copy of escape flags */
-    flags = (unsigned char)(lflags & ESC_FLAGS);
+    flags = (uint8_t)(lflags & ESC_FLAGS);
 
     type = str->type;
 
@@ -590,7 +590,7 @@ int ASN1_STRING_print_ex_fp(FILE *fp, ASN1_STRING *str, unsigned long flags)
  * in output string or a negative error code
  */
 
-int ASN1_STRING_to_UTF8(unsigned char **out, ASN1_STRING *in)
+int ASN1_STRING_to_UTF8(uint8_t **out, ASN1_STRING *in)
 {
     ASN1_STRING stmp, *str = &stmp;
     int mbflag, type, ret;

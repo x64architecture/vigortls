@@ -88,17 +88,17 @@ int DES_enc_read(int fd, void *buf, int len, DES_key_schedule *sched,
 {
     /* data to be unencrypted */
     int net_num = 0;
-    static unsigned char *net = NULL;
+    static uint8_t *net = NULL;
     /* extra unencrypted data
      * for when a block of 100 comes in but is des_read one byte at
      * a time. */
-    static unsigned char *unnet = NULL;
+    static uint8_t *unnet = NULL;
     static int unnet_start = 0;
     static int unnet_left = 0;
-    static unsigned char *tmpbuf = NULL;
+    static uint8_t *tmpbuf = NULL;
     int i;
     long num = 0, rnum;
-    unsigned char *p;
+    uint8_t *p;
 
     if (tmpbuf == NULL) {
         tmpbuf = malloc(BSIZE);

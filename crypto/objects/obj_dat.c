@@ -111,13 +111,13 @@ static unsigned long added_obj_hash(const ADDED_OBJ *ca)
     const ASN1_OBJECT *a;
     int i;
     unsigned long ret = 0;
-    unsigned char *p;
+    uint8_t *p;
 
     a = ca->obj;
     switch (ca->type) {
         case ADDED_DATA:
             ret = a->length << 20L;
-            p = (unsigned char *)a->data;
+            p = (uint8_t *)a->data;
             for (i = 0; i < a->length; i++)
                 ret ^= p[i] << ((i * 3) % 24);
             break;
@@ -416,9 +416,9 @@ ASN1_OBJECT *OBJ_txt2obj(const char *s, int no_name)
 {
     int nid = NID_undef;
     ASN1_OBJECT *op = NULL;
-    unsigned char *buf;
-    unsigned char *p;
-    const unsigned char *cp;
+    uint8_t *buf;
+    uint8_t *p;
+    const uint8_t *cp;
     int i, j;
 
     if (!no_name) {
@@ -456,7 +456,7 @@ int OBJ_obj2txt(char *buf, int buf_len, const ASN1_OBJECT *a, int no_name)
     int i, n = 0, len, nid, first, use_bn;
     BIGNUM *bl;
     unsigned long l;
-    const unsigned char *p;
+    const uint8_t *p;
     char tbuf[DECIMAL_SIZE(i) + DECIMAL_SIZE(l) + 2];
 
     /* Ensure that, at every state, |buf| is NUL-terminated. */
@@ -489,7 +489,7 @@ int OBJ_obj2txt(char *buf, int buf_len, const ASN1_OBJECT *a, int no_name)
         l = 0;
         use_bn = 0;
         for (;;) {
-            unsigned char c = *p++;
+            uint8_t c = *p++;
             len--;
             if ((len == 0) && (c & 0x80))
                 goto err;
@@ -691,24 +691,24 @@ int OBJ_create_objects(BIO *in)
         if (i <= 0)
             return (num);
         buf[i - 1] = '\0';
-        if (!isalnum((unsigned char)buf[0]))
+        if (!isalnum((uint8_t)buf[0]))
             return (num);
         o = s = buf;
-        while (isdigit((unsigned char)*s) || (*s == '.'))
+        while (isdigit((uint8_t)*s) || (*s == '.'))
             s++;
         if (*s != '\0') {
             *(s++) = '\0';
-            while (isspace((unsigned char)*s))
+            while (isspace((uint8_t)*s))
                 s++;
             if (*s == '\0')
                 s = NULL;
             else {
                 l = s;
-                while ((*l != '\0') && !isspace((unsigned char)*l))
+                while ((*l != '\0') && !isspace((uint8_t)*l))
                     l++;
                 if (*l != '\0') {
                     *(l++) = '\0';
-                    while (isspace((unsigned char)*l))
+                    while (isspace((uint8_t)*l))
                         l++;
                     if (*l == '\0')
                         l = NULL;
@@ -730,7 +730,7 @@ int OBJ_create(const char *oid, const char *sn, const char *ln)
 {
     int ok = 0;
     ASN1_OBJECT *op = NULL;
-    unsigned char *buf;
+    uint8_t *buf;
     int i;
 
     i = a2d_ASN1_OBJECT(NULL, 0, oid, -1);
@@ -761,7 +761,7 @@ size_t OBJ_length(const ASN1_OBJECT *obj)
     return obj->length;
 }
 
-const unsigned char *OBJ_get0_data(const ASN1_OBJECT *obj)
+const uint8_t *OBJ_get0_data(const ASN1_OBJECT *obj)
 {
     if (obj == NULL)
         return NULL;

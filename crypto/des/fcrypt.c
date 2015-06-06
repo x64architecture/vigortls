@@ -55,9 +55,9 @@ char *DES_fcrypt(const char *buf, const char *salt, char *ret)
     uint32_t out[2], ll;
     DES_cblock key;
     DES_key_schedule ks;
-    unsigned char bb[9];
-    unsigned char *b = bb;
-    unsigned char c, u;
+    uint8_t bb[9];
+    uint8_t *b = bb;
+    uint8_t c, u;
 
     /* eay 25/08/92
      * If you call crypt("pwd","*") as often happens when you

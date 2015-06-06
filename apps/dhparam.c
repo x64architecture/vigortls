@@ -358,7 +358,7 @@ int dhparam_main(int argc, char **argv)
             printf("DH parameters appear to be ok.\n");
     }
     if (C) {
-        unsigned char *data;
+        uint8_t *data;
         int len, bits;
 
         len = BN_num_bytes(dh->p);

@@ -194,7 +194,7 @@ err:
 }
 
 size_t ec_GFp_simple_point2oct(const EC_GROUP *group, const EC_POINT *point, point_conversion_form_t form,
-                               unsigned char *buf, size_t len, BN_CTX *ctx)
+                               uint8_t *buf, size_t len, BN_CTX *ctx)
 {
     size_t ret;
     BN_CTX *new_ctx = NULL;
@@ -304,7 +304,7 @@ err:
 }
 
 int ec_GFp_simple_oct2point(const EC_GROUP *group, EC_POINT *point,
-                            const unsigned char *buf, size_t len, BN_CTX *ctx)
+                            const uint8_t *buf, size_t len, BN_CTX *ctx)
 {
     point_conversion_form_t form;
     int y_bit;

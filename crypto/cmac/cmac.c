@@ -60,19 +60,19 @@ struct CMAC_CTX_st {
     /* Cipher context to use */
     EVP_CIPHER_CTX cctx;
     /* Keys k1 and k2 */
-    unsigned char k1[EVP_MAX_BLOCK_LENGTH];
-    unsigned char k2[EVP_MAX_BLOCK_LENGTH];
+    uint8_t k1[EVP_MAX_BLOCK_LENGTH];
+    uint8_t k2[EVP_MAX_BLOCK_LENGTH];
     /* Temporary block */
-    unsigned char tbl[EVP_MAX_BLOCK_LENGTH];
+    uint8_t tbl[EVP_MAX_BLOCK_LENGTH];
     /* Last (possibly partial) block */
-    unsigned char last_block[EVP_MAX_BLOCK_LENGTH];
+    uint8_t last_block[EVP_MAX_BLOCK_LENGTH];
     /* Number of bytes in last block: -1 means context not initialised */
     int nlast_block;
 };
 
 /* Make temporary keys K1 and K2 */
 
-static void make_kn(unsigned char *k1, unsigned char *l, int bl)
+static void make_kn(uint8_t *k1, uint8_t *l, int bl)
 {
     int i;
     /* Shift block to left, including carry */
@@ -137,7 +137,7 @@ int CMAC_CTX_copy(CMAC_CTX *out, const CMAC_CTX *in)
 int CMAC_Init(CMAC_CTX *ctx, const void *key, size_t keylen,
               const EVP_CIPHER *cipher, ENGINE *impl)
 {
-    static unsigned char zero_iv[EVP_MAX_BLOCK_LENGTH];
+    static uint8_t zero_iv[EVP_MAX_BLOCK_LENGTH];
     /* All zeros means restart */
     if (!key && !cipher && !impl && keylen == 0) {
         /* Not initialised */
@@ -179,7 +179,7 @@ int CMAC_Init(CMAC_CTX *ctx, const void *key, size_t keylen,
 
 int CMAC_Update(CMAC_CTX *ctx, const void *in, size_t dlen)
 {
-    const unsigned char *data = in;
+    const uint8_t *data = in;
     size_t bl;
     if (ctx->nlast_block == -1)
         return 0;
@@ -216,7 +216,7 @@ int CMAC_Update(CMAC_CTX *ctx, const void *in, size_t dlen)
     return 1;
 }
 
-int CMAC_Final(CMAC_CTX *ctx, unsigned char *out, size_t *poutlen)
+int CMAC_Final(CMAC_CTX *ctx, uint8_t *out, size_t *poutlen)
 {
     int i, bl, lb;
     if (ctx->nlast_block == -1)

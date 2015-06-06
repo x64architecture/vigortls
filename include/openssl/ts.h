@@ -257,8 +257,8 @@ typedef struct ESS_signing_cert {
 
 TS_REQ *TS_REQ_new(void);
 void TS_REQ_free(TS_REQ *a);
-int i2d_TS_REQ(const TS_REQ *a, unsigned char **pp);
-TS_REQ *d2i_TS_REQ(TS_REQ **a, const unsigned char **pp, long length);
+int i2d_TS_REQ(const TS_REQ *a, uint8_t **pp);
+TS_REQ *d2i_TS_REQ(TS_REQ **a, const uint8_t **pp, long length);
 
 TS_REQ *TS_REQ_dup(TS_REQ *a);
 
@@ -269,9 +269,9 @@ int i2d_TS_REQ_bio(BIO *fp, TS_REQ *a);
 
 TS_MSG_IMPRINT *TS_MSG_IMPRINT_new(void);
 void TS_MSG_IMPRINT_free(TS_MSG_IMPRINT *a);
-int i2d_TS_MSG_IMPRINT(const TS_MSG_IMPRINT *a, unsigned char **pp);
+int i2d_TS_MSG_IMPRINT(const TS_MSG_IMPRINT *a, uint8_t **pp);
 TS_MSG_IMPRINT *d2i_TS_MSG_IMPRINT(TS_MSG_IMPRINT **a,
-                                   const unsigned char **pp, long length);
+                                   const uint8_t **pp, long length);
 
 TS_MSG_IMPRINT *TS_MSG_IMPRINT_dup(TS_MSG_IMPRINT *a);
 
@@ -282,8 +282,8 @@ int i2d_TS_MSG_IMPRINT_bio(BIO *fp, TS_MSG_IMPRINT *a);
 
 TS_RESP *TS_RESP_new(void);
 void TS_RESP_free(TS_RESP *a);
-int i2d_TS_RESP(const TS_RESP *a, unsigned char **pp);
-TS_RESP *d2i_TS_RESP(TS_RESP **a, const unsigned char **pp, long length);
+int i2d_TS_RESP(const TS_RESP *a, uint8_t **pp);
+TS_RESP *d2i_TS_RESP(TS_RESP **a, const uint8_t **pp, long length);
 TS_TST_INFO *PKCS7_to_TS_TST_INFO(PKCS7 *token);
 TS_RESP *TS_RESP_dup(TS_RESP *a);
 
@@ -294,15 +294,15 @@ int i2d_TS_RESP_bio(BIO *fp, TS_RESP *a);
 
 TS_STATUS_INFO *TS_STATUS_INFO_new(void);
 void TS_STATUS_INFO_free(TS_STATUS_INFO *a);
-int i2d_TS_STATUS_INFO(const TS_STATUS_INFO *a, unsigned char **pp);
+int i2d_TS_STATUS_INFO(const TS_STATUS_INFO *a, uint8_t **pp);
 TS_STATUS_INFO *d2i_TS_STATUS_INFO(TS_STATUS_INFO **a,
-                                   const unsigned char **pp, long length);
+                                   const uint8_t **pp, long length);
 TS_STATUS_INFO *TS_STATUS_INFO_dup(TS_STATUS_INFO *a);
 
 TS_TST_INFO *TS_TST_INFO_new(void);
 void TS_TST_INFO_free(TS_TST_INFO *a);
-int i2d_TS_TST_INFO(const TS_TST_INFO *a, unsigned char **pp);
-TS_TST_INFO *d2i_TS_TST_INFO(TS_TST_INFO **a, const unsigned char **pp,
+int i2d_TS_TST_INFO(const TS_TST_INFO *a, uint8_t **pp);
+TS_TST_INFO *d2i_TS_TST_INFO(TS_TST_INFO **a, const uint8_t **pp,
                              long length);
 TS_TST_INFO *TS_TST_INFO_dup(TS_TST_INFO *a);
 
@@ -313,32 +313,32 @@ int i2d_TS_TST_INFO_bio(BIO *fp, TS_TST_INFO *a);
 
 TS_ACCURACY *TS_ACCURACY_new(void);
 void TS_ACCURACY_free(TS_ACCURACY *a);
-int i2d_TS_ACCURACY(const TS_ACCURACY *a, unsigned char **pp);
-TS_ACCURACY *d2i_TS_ACCURACY(TS_ACCURACY **a, const unsigned char **pp,
+int i2d_TS_ACCURACY(const TS_ACCURACY *a, uint8_t **pp);
+TS_ACCURACY *d2i_TS_ACCURACY(TS_ACCURACY **a, const uint8_t **pp,
                              long length);
 TS_ACCURACY *TS_ACCURACY_dup(TS_ACCURACY *a);
 
 ESS_ISSUER_SERIAL *ESS_ISSUER_SERIAL_new(void);
 void ESS_ISSUER_SERIAL_free(ESS_ISSUER_SERIAL *a);
 int i2d_ESS_ISSUER_SERIAL(const ESS_ISSUER_SERIAL *a,
-                          unsigned char **pp);
+                          uint8_t **pp);
 ESS_ISSUER_SERIAL *d2i_ESS_ISSUER_SERIAL(ESS_ISSUER_SERIAL **a,
-                                         const unsigned char **pp, long length);
+                                         const uint8_t **pp, long length);
 ESS_ISSUER_SERIAL *ESS_ISSUER_SERIAL_dup(ESS_ISSUER_SERIAL *a);
 
 ESS_CERT_ID *ESS_CERT_ID_new(void);
 void ESS_CERT_ID_free(ESS_CERT_ID *a);
-int i2d_ESS_CERT_ID(const ESS_CERT_ID *a, unsigned char **pp);
-ESS_CERT_ID *d2i_ESS_CERT_ID(ESS_CERT_ID **a, const unsigned char **pp,
+int i2d_ESS_CERT_ID(const ESS_CERT_ID *a, uint8_t **pp);
+ESS_CERT_ID *d2i_ESS_CERT_ID(ESS_CERT_ID **a, const uint8_t **pp,
                              long length);
 ESS_CERT_ID *ESS_CERT_ID_dup(ESS_CERT_ID *a);
 
 ESS_SIGNING_CERT *ESS_SIGNING_CERT_new(void);
 void ESS_SIGNING_CERT_free(ESS_SIGNING_CERT *a);
 int i2d_ESS_SIGNING_CERT(const ESS_SIGNING_CERT *a,
-                         unsigned char **pp);
+                         uint8_t **pp);
 ESS_SIGNING_CERT *d2i_ESS_SIGNING_CERT(ESS_SIGNING_CERT **a,
-                                       const unsigned char **pp, long length);
+                                       const uint8_t **pp, long length);
 ESS_SIGNING_CERT *ESS_SIGNING_CERT_dup(ESS_SIGNING_CERT *a);
 
 void ERR_load_TS_strings(void);
@@ -352,7 +352,7 @@ TS_MSG_IMPRINT *TS_REQ_get_msg_imprint(TS_REQ *a);
 int TS_MSG_IMPRINT_set_algo(TS_MSG_IMPRINT *a, X509_ALGOR *alg);
 X509_ALGOR *TS_MSG_IMPRINT_get_algo(TS_MSG_IMPRINT *a);
 
-int TS_MSG_IMPRINT_set_msg(TS_MSG_IMPRINT *a, unsigned char *d, int len);
+int TS_MSG_IMPRINT_set_msg(TS_MSG_IMPRINT *a, uint8_t *d, int len);
 ASN1_OCTET_STRING *TS_MSG_IMPRINT_get_msg(TS_MSG_IMPRINT *a);
 
 int TS_REQ_set_policy_id(TS_REQ *a, ASN1_OBJECT *policy);
@@ -633,7 +633,7 @@ typedef struct TS_verify_ctx {
     /* Must be set only with TS_VFY_IMPRINT. If md_alg is NULL,
        the algorithm from the response is used. */
     X509_ALGOR *md_alg;
-    unsigned char *imprint;
+    uint8_t *imprint;
     unsigned imprint_len;
 
     /* Must be set only with TS_VFY_DATA. */

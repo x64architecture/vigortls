@@ -368,7 +368,7 @@ point_conversion_form_t EC_GROUP_get_point_conversion_form(const EC_GROUP *group
     return group->asn1_form;
 }
 
-size_t EC_GROUP_set_seed(EC_GROUP *group, const unsigned char *p, size_t len)
+size_t EC_GROUP_set_seed(EC_GROUP *group, const uint8_t *p, size_t len)
 {
     if (group->seed) {
         free(group->seed);
@@ -387,7 +387,7 @@ size_t EC_GROUP_set_seed(EC_GROUP *group, const unsigned char *p, size_t len)
     return len;
 }
 
-unsigned char *EC_GROUP_get0_seed(const EC_GROUP *group)
+uint8_t *EC_GROUP_get0_seed(const EC_GROUP *group)
 {
     return group->seed;
 }

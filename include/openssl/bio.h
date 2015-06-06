@@ -62,6 +62,7 @@
 #include <openssl/opensslconf.h>
 
 #include <stdio.h>
+#include <stdint.h>
 #include <stdarg.h>
 
 #include <openssl/crypto.h>
@@ -329,7 +330,7 @@ typedef struct bio_f_buffer_ctx_struct {
 } BIO_F_BUFFER_CTX;
 
 /* Prefix and suffix callback in ASN1 BIO */
-typedef int asn1_ps_func(BIO *b, unsigned char **pbuf, int *plen, void *parg);
+typedef int asn1_ps_func(BIO *b, uint8_t **pbuf, int *plen, void *parg);
 
 /* connect BIO stuff */
 #define BIO_CONN_S_BEFORE 1
@@ -644,7 +645,7 @@ int BIO_sock_error(int sock);
 int BIO_socket_ioctl(int fd, long type, void *arg);
 int BIO_socket_nbio(int fd, int mode);
 int BIO_get_port(const char *str, unsigned short *port_ptr);
-int BIO_get_host_ip(const char *str, unsigned char *ip);
+int BIO_get_host_ip(const char *str, uint8_t *ip);
 int BIO_get_accept_socket(char *host_port, int mode);
 int BIO_accept(int sock, char **ip_port);
 int BIO_sock_init(void);

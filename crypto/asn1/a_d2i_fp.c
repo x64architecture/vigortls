@@ -85,7 +85,7 @@ void *ASN1_d2i_fp(void *(*xnew)(void), d2i_of_void *d2i, FILE *in, void **x)
 void *ASN1_d2i_bio(void *(*xnew)(void), d2i_of_void *d2i, BIO *in, void **x)
 {
     BUF_MEM *b = NULL;
-    const unsigned char *p;
+    const uint8_t *p;
     void *ret = NULL;
     int len;
 
@@ -93,7 +93,7 @@ void *ASN1_d2i_bio(void *(*xnew)(void), d2i_of_void *d2i, BIO *in, void **x)
     if (len < 0)
         goto err;
 
-    p = (unsigned char *)b->data;
+    p = (uint8_t *)b->data;
     ret = d2i(x, &p, len);
 err:
     BUF_MEM_free(b);
@@ -105,7 +105,7 @@ err:
 void *ASN1_item_d2i_bio(const ASN1_ITEM *it, BIO *in, void *x)
 {
     BUF_MEM *b = NULL;
-    const unsigned char *p;
+    const uint8_t *p;
     void *ret = NULL;
     int len;
 
@@ -113,7 +113,7 @@ void *ASN1_item_d2i_bio(const ASN1_ITEM *it, BIO *in, void *x)
     if (len < 0)
         goto err;
 
-    p = (const unsigned char *)b->data;
+    p = (const uint8_t *)b->data;
     ret = ASN1_item_d2i(x, &p, len, it);
 err:
     BUF_MEM_free(b);
@@ -139,14 +139,14 @@ void *ASN1_item_d2i_fp(const ASN1_ITEM *it, FILE *in, void *x)
 static int asn1_d2i_read_bio(BIO *in, BUF_MEM **pb)
 {
     BUF_MEM *b;
-    unsigned char *p;
+    uint8_t *p;
     int i;
     size_t want = HEADER_SIZE;
     int eos = 0;
     size_t off = 0;
     size_t len = 0;
 
-    const unsigned char *q;
+    const uint8_t *q;
     long slen;
     int inf, tag, xclass;
 
@@ -180,7 +180,7 @@ static int asn1_d2i_read_bio(BIO *in, BUF_MEM **pb)
         }
         /* else data already loaded */
 
-        p = (unsigned char *)&(b->data[off]);
+        p = (uint8_t *)&(b->data[off]);
         q = p;
         inf = ASN1_get_object(&q, &slen, &tag, &xclass, len - off);
         if (inf & 0x80) {

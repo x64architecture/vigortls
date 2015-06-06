@@ -73,13 +73,13 @@
 /* Got the value MIT uses via brute force :-) 2/10/90 eay */
 #define NOISE ((uint32_t)83653421L)
 
-uint32_t DES_quad_cksum(const unsigned char *input, DES_cblock output[],
+uint32_t DES_quad_cksum(const uint8_t *input, DES_cblock output[],
                         long length, int out_count, DES_cblock *seed)
 {
     uint32_t z0, z1, t0, t1;
     int i;
     long l;
-    const unsigned char *cp;
+    const uint8_t *cp;
 #ifdef _CRAY
     struct lp_st {
         int a : 32;

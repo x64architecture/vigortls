@@ -81,7 +81,7 @@ const BIGNUM *BN_value_one(void)
 
 int BN_num_bits_word(BN_ULONG l)
 {
-    static const unsigned char bits[256] = {
+    static const uint8_t bits[256] = {
         0, 1, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 4,
         5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
         6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6,
@@ -468,7 +468,7 @@ int BN_set_word(BIGNUM *a, BN_ULONG w)
     return (1);
 }
 
-BIGNUM *BN_bin2bn(const unsigned char *s, int len, BIGNUM *ret)
+BIGNUM *BN_bin2bn(const uint8_t *s, int len, BIGNUM *ret)
 {
     unsigned int i, m;
     unsigned int n;
@@ -510,7 +510,7 @@ BIGNUM *BN_bin2bn(const unsigned char *s, int len, BIGNUM *ret)
 }
 
 /* ignore negative */
-int BN_bn2bin(const BIGNUM *a, unsigned char *to)
+int BN_bn2bin(const BIGNUM *a, uint8_t *to)
 {
     int n, i;
     BN_ULONG l;
@@ -519,7 +519,7 @@ int BN_bn2bin(const BIGNUM *a, unsigned char *to)
     n = i = BN_num_bytes(a);
     while (i--) {
         l = a->d[i / BN_BYTES];
-        *(to++) = (unsigned char)(l >> (8 * (i % BN_BYTES))) & 0xff;
+        *(to++) = (uint8_t)(l >> (8 * (i % BN_BYTES))) & 0xff;
     }
     return (n);
 }

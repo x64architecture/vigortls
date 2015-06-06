@@ -65,11 +65,11 @@
 
 #include "cryptlib.h"
 
-static int asn1_get_length(const unsigned char **pp, int *inf, long *rl, int max);
-static void asn1_put_length(unsigned char **pp, int length);
+static int asn1_get_length(const uint8_t **pp, int *inf, long *rl, int max);
+static void asn1_put_length(uint8_t **pp, int length);
 
 static int
-_asn1_check_infinite_end(const unsigned char **p, long len)
+_asn1_check_infinite_end(const uint8_t **p, long len)
 {
     /* If there is 0 or 1 byte left, the length check should pick
      * things up */
@@ -82,22 +82,22 @@ _asn1_check_infinite_end(const unsigned char **p, long len)
     return (0);
 }
 
-int ASN1_check_infinite_end(unsigned char **p, long len)
+int ASN1_check_infinite_end(uint8_t **p, long len)
 {
-    return _asn1_check_infinite_end((const unsigned char **)p, len);
+    return _asn1_check_infinite_end((const uint8_t **)p, len);
 }
 
-int ASN1_const_check_infinite_end(const unsigned char **p, long len)
+int ASN1_const_check_infinite_end(const uint8_t **p, long len)
 {
     return _asn1_check_infinite_end(p, len);
 }
 
-int ASN1_get_object(const unsigned char **pp, long *plength, int *ptag,
+int ASN1_get_object(const uint8_t **pp, long *plength, int *ptag,
                     int *pclass, long omax)
 {
     int i, ret;
     long l;
-    const unsigned char *p = *pp;
+    const uint8_t *p = *pp;
     int tag, xclass, inf;
     long max = omax;
 
@@ -148,9 +148,9 @@ err:
     return (0x80);
 }
 
-static int asn1_get_length(const unsigned char **pp, int *inf, long *rl, int max)
+static int asn1_get_length(const uint8_t **pp, int *inf, long *rl, int max)
 {
-    const unsigned char *p = *pp;
+    const uint8_t *p = *pp;
     unsigned long ret = 0;
     unsigned int i;
 
@@ -189,10 +189,10 @@ static int asn1_get_length(const unsigned char **pp, int *inf, long *rl, int max
 
 /* class 0 is constructed
  * constructed == 2 for indefinite length constructed */
-void ASN1_put_object(unsigned char **pp, int constructed, int length, int tag,
+void ASN1_put_object(uint8_t **pp, int constructed, int length, int tag,
                      int xclass)
 {
-    unsigned char *p = *pp;
+    uint8_t *p = *pp;
     int i, ttag;
 
     i = (constructed) ? V_ASN1_CONSTRUCTED : 0;
@@ -219,21 +219,21 @@ void ASN1_put_object(unsigned char **pp, int constructed, int length, int tag,
     *pp = p;
 }
 
-int ASN1_put_eoc(unsigned char **pp)
+int ASN1_put_eoc(uint8_t **pp)
 {
-    unsigned char *p = *pp;
+    uint8_t *p = *pp;
     *p++ = 0;
     *p++ = 0;
     *pp = p;
     return 2;
 }
 
-static void asn1_put_length(unsigned char **pp, int length)
+static void asn1_put_length(uint8_t **pp, int length)
 {
-    unsigned char *p = *pp;
+    uint8_t *p = *pp;
     int i, l;
     if (length <= 127)
-        *(p++) = (unsigned char)length;
+        *(p++) = (uint8_t)length;
     else {
         l = length;
         for (i = 0; l > 0; i++)
@@ -301,7 +301,7 @@ ASN1_STRING *ASN1_STRING_dup(const ASN1_STRING *str)
 
 int ASN1_STRING_set(ASN1_STRING *str, const void *_data, int len)
 {
-    unsigned char *c;
+    uint8_t *c;
     const char *data = _data;
 
     if (len < 0) {
@@ -400,7 +400,7 @@ int ASN1_STRING_type(ASN1_STRING *x)
     return x->type;
 }
 
-unsigned char *ASN1_STRING_data(ASN1_STRING *x)
+uint8_t *ASN1_STRING_data(ASN1_STRING *x)
 {
     return x->data;
 }

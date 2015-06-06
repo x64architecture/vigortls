@@ -75,12 +75,12 @@ ASN1_SEQUENCE_enc(X509_CINF, enc, 0) = {
     ASN1_EXP_SEQUENCE_OF_OPT(X509_CINF, extensions, X509_EXTENSION, 3)
 } ASN1_SEQUENCE_END_enc(X509_CINF, X509_CINF)
 
-X509_CINF *d2i_X509_CINF(X509_CINF **a, const unsigned char **in, long len)
+X509_CINF *d2i_X509_CINF(X509_CINF **a, const uint8_t **in, long len)
 {
     return (X509_CINF *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, &X509_CINF_it);
 }
 
-int i2d_X509_CINF(X509_CINF *a, unsigned char **out)
+int i2d_X509_CINF(X509_CINF *a, uint8_t **out)
 {
     return ASN1_item_i2d((ASN1_VALUE *)a, out, &X509_CINF_it);
 }
@@ -145,12 +145,12 @@ ASN1_SEQUENCE_ref(X509, x509_cb, CRYPTO_LOCK_X509) = {
     ASN1_SIMPLE(X509, signature, ASN1_BIT_STRING)
 } ASN1_SEQUENCE_END_ref(X509, X509)
 
-X509 *d2i_X509(X509 **a, const unsigned char **in, long len)
+X509 *d2i_X509(X509 **a, const uint8_t **in, long len)
 {
     return (X509 *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, &X509_it);
 }
 
-int i2d_X509(X509 *a, unsigned char **out)
+int i2d_X509(X509 *a, uint8_t **out)
 {
     return ASN1_item_i2d((ASN1_VALUE *)a, out, &X509_it);
 }
@@ -195,9 +195,9 @@ void *X509_get_ex_data(X509 *r, int idx)
  *
  */
 
-X509 *d2i_X509_AUX(X509 **a, const unsigned char **pp, long length)
+X509 *d2i_X509_AUX(X509 **a, const uint8_t **pp, long length)
 {
-    const unsigned char *q;
+    const uint8_t *q;
     X509 *ret;
     int freeret = 0;
     
@@ -227,7 +227,7 @@ err:
     return NULL;
 }
 
-int i2d_X509_AUX(X509 *a, unsigned char **pp)
+int i2d_X509_AUX(X509 *a, uint8_t **pp)
 {
     int length;
     length = i2d_X509(a, pp);

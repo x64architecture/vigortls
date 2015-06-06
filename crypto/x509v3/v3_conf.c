@@ -74,7 +74,7 @@ static char *conf_lhash_get_string(void *db, char *section, char *value);
 static STACK_OF(CONF_VALUE) * conf_lhash_get_section(void *db, char *section);
 static X509_EXTENSION *do_ext_i2d(const X509V3_EXT_METHOD *method, int ext_nid,
                                   int crit, void *ext_struc);
-static unsigned char *generic_asn1(char *value, X509V3_CTX *ctx, long *ext_len);
+static uint8_t *generic_asn1(char *value, X509V3_CTX *ctx, long *ext_len);
 /* CONF *conf:  Config file    */
 /* char *name:  Name    */
 /* char *value:  Value    */
@@ -170,7 +170,7 @@ static X509_EXTENSION *do_ext_nconf(CONF *conf, X509V3_CTX *ctx, int ext_nid,
 static X509_EXTENSION *do_ext_i2d(const X509V3_EXT_METHOD *method, int ext_nid,
                                   int crit, void *ext_struc)
 {
-    unsigned char *ext_der;
+    uint8_t *ext_der;
     int ext_len;
     ASN1_OCTET_STRING *ext_oct;
     X509_EXTENSION *ext;
@@ -181,7 +181,7 @@ static X509_EXTENSION *do_ext_i2d(const X509V3_EXT_METHOD *method, int ext_nid,
         if (ext_len < 0)
             goto merr;
     } else {
-        unsigned char *p;
+        uint8_t *p;
         ext_len = method->i2d(ext_struc, NULL);
         if (!(ext_der = malloc(ext_len)))
             goto merr;
@@ -226,7 +226,7 @@ static int v3_check_critical(char **value)
     if ((strlen(p) < 9) || strncmp(p, "critical,", 9))
         return 0;
     p += 9;
-    while (isspace((unsigned char)*p))
+    while (isspace((uint8_t)*p))
         p++;
     *value = p;
     return 1;
@@ -246,7 +246,7 @@ static int v3_check_generic(char **value)
     } else
         return 0;
 
-    while (isspace((unsigned char)*p))
+    while (isspace((uint8_t)*p))
         p++;
     *value = p;
     return gen_type;
@@ -257,7 +257,7 @@ static X509_EXTENSION *v3_generic_extension(const char *ext, char *value,
                                             int crit, int gen_type,
                                             X509V3_CTX *ctx)
 {
-    unsigned char *ext_der = NULL;
+    uint8_t *ext_der = NULL;
     long ext_len;
     ASN1_OBJECT *obj = NULL;
     ASN1_OCTET_STRING *oct = NULL;
@@ -297,10 +297,10 @@ err:
     return extension;
 }
 
-static unsigned char *generic_asn1(char *value, X509V3_CTX *ctx, long *ext_len)
+static uint8_t *generic_asn1(char *value, X509V3_CTX *ctx, long *ext_len)
 {
     ASN1_TYPE *typ;
-    unsigned char *ext_der = NULL;
+    uint8_t *ext_der = NULL;
     typ = ASN1_generate_v3(value, ctx);
     if (typ == NULL)
         return NULL;

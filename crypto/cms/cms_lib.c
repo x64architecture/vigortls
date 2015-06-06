@@ -64,12 +64,12 @@
 #include <openssl/cms.h>
 #include "cms_lcl.h"
 
-CMS_ContentInfo *d2i_CMS_ContentInfo(CMS_ContentInfo **a, const unsigned char **in, long len)
+CMS_ContentInfo *d2i_CMS_ContentInfo(CMS_ContentInfo **a, const uint8_t **in, long len)
 {
     return (CMS_ContentInfo *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, &CMS_ContentInfo_it);
 }
 
-int i2d_CMS_ContentInfo(CMS_ContentInfo *a, unsigned char **out)
+int i2d_CMS_ContentInfo(CMS_ContentInfo *a, uint8_t **out)
 {
     return ASN1_item_i2d((ASN1_VALUE *)a, out, &CMS_ContentInfo_it);
 }
@@ -185,7 +185,7 @@ int CMS_dataFinal(CMS_ContentInfo *cms, BIO *cmsbio)
     /* If ebmedded content find memory BIO and set content */
     if (*pos && ((*pos)->flags & ASN1_STRING_FLAG_CONT)) {
         BIO *mbio;
-        unsigned char *cont;
+        uint8_t *cont;
         long contlen;
         mbio = BIO_find_type(cmsbio, BIO_TYPE_MEM);
         if (!mbio) {

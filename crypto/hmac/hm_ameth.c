@@ -103,7 +103,7 @@ static int hmac_pkey_ctrl(EVP_PKEY *pkey, int op, long arg1, void *arg2)
  */
 
 static int old_hmac_decode(EVP_PKEY *pkey,
-                           const unsigned char **pder, int derlen)
+                           const uint8_t **pder, int derlen)
 {
     ASN1_OCTET_STRING *os;
     os = ASN1_OCTET_STRING_new();
@@ -113,7 +113,7 @@ static int old_hmac_decode(EVP_PKEY *pkey,
     return 1;
 }
 
-static int old_hmac_encode(const EVP_PKEY *pkey, unsigned char **pder)
+static int old_hmac_encode(const EVP_PKEY *pkey, uint8_t **pder)
 {
     int inc;
     ASN1_OCTET_STRING *os = (ASN1_OCTET_STRING *)pkey->pkey.ptr;

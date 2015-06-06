@@ -286,7 +286,7 @@ int SMIME_write_ASN1(BIO *bio, ASN1_VALUE *val, BIO *data, int flags,
     if ((flags & SMIME_DETACHED) && data) {
         /* We want multipart/signed */
         /* Generate a random boundary */
-        if (RAND_bytes((unsigned char *)bound, 32) <= 0)
+        if (RAND_bytes((uint8_t *)bound, 32) <= 0)
             return 0;
         for (i = 0; i < 32; i++) {
             c = bound[i] & 0xf;
@@ -655,7 +655,7 @@ static STACK_OF(MIME_HEADER) *mime_parse_hdr(BIO *bio)
     headers = sk_MIME_HEADER_new(mime_hdr_cmp);
     while ((len = BIO_gets(bio, linebuf, MAX_SMLEN)) > 0) {
         /* If whitespace at line start then continuation line */
-        if (mhdr && isspace((unsigned char)linebuf[0]))
+        if (mhdr && isspace((uint8_t)linebuf[0]))
             state = MIME_NAME;
         else
             state = MIME_START;
@@ -773,7 +773,7 @@ static char *strip_start(char *name)
             /* Else null string */
             return NULL;
         }
-        if (!isspace((unsigned char)c))
+        if (!isspace((uint8_t)c))
             return p;
     }
     return NULL;
@@ -794,7 +794,7 @@ static char *strip_end(char *name)
             *p = 0;
             return name;
         }
-        if (isspace((unsigned char)c))
+        if (isspace((uint8_t)c))
             *p = 0;
         else
             return name;
@@ -811,7 +811,7 @@ static MIME_HEADER *mime_hdr_new(char *name, char *value)
         if (!(tmpname = strdup(name)))
             return NULL;
         for (p = tmpname; *p; p++) {
-            c = (unsigned char)*p;
+            c = (uint8_t)*p;
             if (isupper(c)) {
                 c = tolower(c);
                 *p = c;
@@ -822,7 +822,7 @@ static MIME_HEADER *mime_hdr_new(char *name, char *value)
         if (!(tmpval = strdup(value)))
             goto err;
         for (p = tmpval; *p; p++) {
-            c = (unsigned char)*p;
+            c = (uint8_t)*p;
             if (isupper(c)) {
                 c = tolower(c);
                 *p = c;
@@ -854,7 +854,7 @@ static int mime_hdr_addparam(MIME_HEADER *mhdr, char *name, char *value)
         if (!tmpname)
             goto err;
         for (p = tmpname; *p; p++)
-            *p = tolower((unsigned char)*p);
+            *p = tolower((uint8_t)*p);
     }
     if (value) {
         tmpval = strdup(value);

@@ -30,16 +30,16 @@
 
 #include "../constant_time_locl.h"
 
-static int MGF1(unsigned char *mask, long len,
-                const unsigned char *seed, long seedlen);
+static int MGF1(uint8_t *mask, long len,
+                const uint8_t *seed, long seedlen);
 
-int RSA_padding_add_PKCS1_OAEP(unsigned char *to, int tlen,
-                               const unsigned char *from, int flen,
-                               const unsigned char *param, int plen)
+int RSA_padding_add_PKCS1_OAEP(uint8_t *to, int tlen,
+                               const uint8_t *from, int flen,
+                               const uint8_t *param, int plen)
 {
     int i, emlen = tlen - 1;
-    unsigned char *db, *seed;
-    unsigned char *dbmask, seedmask[SHA_DIGEST_LENGTH];
+    uint8_t *db, *seed;
+    uint8_t *dbmask, seedmask[SHA_DIGEST_LENGTH];
 
     if (flen > emlen - 2 * SHA_DIGEST_LENGTH - 1) {
         RSAerr(RSA_F_RSA_PADDING_ADD_PKCS1_OAEP,
@@ -85,16 +85,16 @@ int RSA_padding_add_PKCS1_OAEP(unsigned char *to, int tlen,
     return 1;
 }
 
-int RSA_padding_check_PKCS1_OAEP(unsigned char *to, int tlen,
-                                 const unsigned char *from, int flen, int num,
-                                 const unsigned char *param, int plen)
+int RSA_padding_check_PKCS1_OAEP(uint8_t *to, int tlen,
+                                 const uint8_t *from, int flen, int num,
+                                 const uint8_t *param, int plen)
 {
     int i, dblen, mlen = -1, one_index = 0, msg_index;
     unsigned int good, found_one_byte;
-    const unsigned char *maskedseed, *maskeddb;
+    const uint8_t *maskedseed, *maskeddb;
     /* |em| is the encoded message, zero-padded to exactly |num| bytes:
      * em = Y || maskedSeed || maskedDB */
-    unsigned char *db = NULL, *em = NULL, seed[EVP_MAX_MD_SIZE],
+    uint8_t *db = NULL, *em = NULL, seed[EVP_MAX_MD_SIZE],
                   phash[EVP_MAX_MD_SIZE];
 
     if (tlen <= 0 || flen <= 0)
@@ -196,13 +196,13 @@ cleanup:
     return mlen;
 }
 
-int PKCS1_MGF1(unsigned char *mask, long len,
-               const unsigned char *seed, long seedlen, const EVP_MD *dgst)
+int PKCS1_MGF1(uint8_t *mask, long len,
+               const uint8_t *seed, long seedlen, const EVP_MD *dgst)
 {
     long i, outlen = 0;
-    unsigned char cnt[4];
+    uint8_t cnt[4];
     EVP_MD_CTX c;
-    unsigned char md[EVP_MAX_MD_SIZE];
+    uint8_t md[EVP_MAX_MD_SIZE];
     int mdlen;
     int rv = -1;
 
@@ -211,10 +211,10 @@ int PKCS1_MGF1(unsigned char *mask, long len,
     if (mdlen < 0)
         goto err;
     for (i = 0; outlen < len; i++) {
-        cnt[0] = (unsigned char)((i >> 24) & 255);
-        cnt[1] = (unsigned char)((i >> 16) & 255);
-        cnt[2] = (unsigned char)((i >> 8)) & 255;
-        cnt[3] = (unsigned char)(i & 255);
+        cnt[0] = (uint8_t)((i >> 24) & 255);
+        cnt[1] = (uint8_t)((i >> 16) & 255);
+        cnt[2] = (uint8_t)((i >> 8)) & 255;
+        cnt[3] = (uint8_t)(i & 255);
         if (!EVP_DigestInit_ex(&c, dgst, NULL)
             || !EVP_DigestUpdate(&c, seed, seedlen)
             || !EVP_DigestUpdate(&c, cnt, 4))
@@ -236,7 +236,7 @@ err:
     return rv;
 }
 
-static int MGF1(unsigned char *mask, long len, const unsigned char *seed,
+static int MGF1(uint8_t *mask, long len, const uint8_t *seed,
                 long seedlen)
 {
     return PKCS1_MGF1(mask, len, seed, seedlen, EVP_sha1());

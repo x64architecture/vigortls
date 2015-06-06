@@ -85,13 +85,13 @@ ASN1_SEQUENCE_cb(DHparams, dh_cb) = {
     ASN1_OPT(DH, length, ZLONG),
 } ASN1_SEQUENCE_END_cb(DH, DHparams)
 
-DH *d2i_DHparams(DH **a, const unsigned char **in, long len)
+DH *d2i_DHparams(DH **a, const uint8_t **in, long len)
 {
     return (DH *)ASN1_item_d2i((ASN1_VALUE **)a, in, len,
                                &DHparams_it);
 }
 
-int i2d_DHparams(const DH *a, unsigned char **out)
+int i2d_DHparams(const DH *a, uint8_t **out)
 {
     return ASN1_item_i2d((ASN1_VALUE *)a, out, &DHparams_it);
 }

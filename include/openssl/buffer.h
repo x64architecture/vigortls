@@ -66,6 +66,7 @@ extern "C" {
 #endif
 
 #include <stddef.h>
+#include <stdint.h>
 
 #if !defined(_WIN32)
 #include <sys/types.h>
@@ -89,7 +90,7 @@ char *BUF_strdup(const char *str);
 char *BUF_strndup(const char *str, size_t siz);
 #endif
 void *BUF_memdup(const void *data, size_t siz);
-void BUF_reverse(unsigned char *out, const unsigned char *in, size_t siz);
+void BUF_reverse(uint8_t *out, const uint8_t *in, size_t siz);
 
 /* safe string functions */
 size_t BUF_strlcpy(char *dst, const char *src, size_t siz);

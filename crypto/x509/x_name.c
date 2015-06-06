@@ -71,11 +71,11 @@ typedef STACK_OF(X509_NAME_ENTRY) STACK_OF_X509_NAME_ENTRY;
 DECLARE_STACK_OF(STACK_OF_X509_NAME_ENTRY)
 
 static int x509_name_ex_d2i(ASN1_VALUE **val,
-                            const unsigned char **in, long len,
+                            const uint8_t **in, long len,
                             const ASN1_ITEM *it,
                             int tag, int aclass, char opt, ASN1_TLC *ctx);
 
-static int x509_name_ex_i2d(ASN1_VALUE **val, unsigned char **out,
+static int x509_name_ex_i2d(ASN1_VALUE **val, uint8_t **out,
                             const ASN1_ITEM *it, int tag, int aclass);
 static int x509_name_ex_new(ASN1_VALUE **val, const ASN1_ITEM *it);
 static void x509_name_ex_free(ASN1_VALUE **val, const ASN1_ITEM *it);
@@ -84,7 +84,7 @@ static int x509_name_encode(X509_NAME *a);
 static int x509_name_canon(X509_NAME *a);
 static int asn1_string_canon(ASN1_STRING *out, ASN1_STRING *in);
 static int i2d_name_canon(STACK_OF(STACK_OF_X509_NAME_ENTRY) * intname,
-                          unsigned char **in);
+                          uint8_t **in);
 
 static int x509_name_ex_print(BIO *out, ASN1_VALUE **pval,
                               int indent,
@@ -96,12 +96,12 @@ ASN1_SEQUENCE(X509_NAME_ENTRY) = {
     ASN1_SIMPLE(X509_NAME_ENTRY, value, ASN1_PRINTABLE)
 } ASN1_SEQUENCE_END(X509_NAME_ENTRY)
 
-X509_NAME_ENTRY *d2i_X509_NAME_ENTRY(X509_NAME_ENTRY **a, const unsigned char **in, long len)
+X509_NAME_ENTRY *d2i_X509_NAME_ENTRY(X509_NAME_ENTRY **a, const uint8_t **in, long len)
 {
     return (X509_NAME_ENTRY *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, &X509_NAME_ENTRY_it);
 }
 
-int i2d_X509_NAME_ENTRY(X509_NAME_ENTRY *a, unsigned char **out)
+int i2d_X509_NAME_ENTRY(X509_NAME_ENTRY *a, uint8_t **out)
 {
     return ASN1_item_i2d((ASN1_VALUE *)a, out, &X509_NAME_ENTRY_it);
 }
@@ -149,12 +149,12 @@ const ASN1_EXTERN_FUNCS x509_name_ff = {
 
 IMPLEMENT_EXTERN_ASN1(X509_NAME, V_ASN1_SEQUENCE, x509_name_ff)
 
-X509_NAME *d2i_X509_NAME(X509_NAME **a, const unsigned char **in, long len)
+X509_NAME *d2i_X509_NAME(X509_NAME **a, const uint8_t **in, long len)
 {
     return (X509_NAME *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, &X509_NAME_it);
 }
 
-int i2d_X509_NAME(X509_NAME *a, unsigned char **out)
+int i2d_X509_NAME(X509_NAME *a, uint8_t **out)
 {
     return ASN1_item_i2d((ASN1_VALUE *)a, out, &X509_NAME_it);
 }
@@ -216,10 +216,10 @@ static void x509_name_ex_free(ASN1_VALUE **pval, const ASN1_ITEM *it)
 }
 
 static int x509_name_ex_d2i(ASN1_VALUE **val,
-                            const unsigned char **in, long len, const ASN1_ITEM *it,
+                            const uint8_t **in, long len, const ASN1_ITEM *it,
                             int tag, int aclass, char opt, ASN1_TLC *ctx)
 {
-    const unsigned char *p = *in, *q;
+    const uint8_t *p = *in, *q;
     union {
         STACK_OF(STACK_OF_X509_NAME_ENTRY) * s;
         ASN1_VALUE *a;
@@ -275,7 +275,7 @@ err:
     return 0;
 }
 
-static int x509_name_ex_i2d(ASN1_VALUE **val, unsigned char **out, const ASN1_ITEM *it, int tag, int aclass)
+static int x509_name_ex_i2d(ASN1_VALUE **val, uint8_t **out, const ASN1_ITEM *it, int tag, int aclass)
 {
     int ret;
     X509_NAME *a = (X509_NAME *)*val;
@@ -312,7 +312,7 @@ static int x509_name_encode(X509_NAME *a)
         ASN1_VALUE *a;
     } intname = { NULL };
     int len;
-    unsigned char *p;
+    uint8_t *p;
     STACK_OF(X509_NAME_ENTRY) *entries = NULL;
     X509_NAME_ENTRY *entry;
     int i, set = -1;
@@ -337,7 +337,7 @@ static int x509_name_encode(X509_NAME *a)
                            ASN1_ITEM_rptr(X509_NAME_INTERNAL), -1, -1);
     if (!BUF_MEM_grow(a->bytes, len))
         goto memerr;
-    p = (unsigned char *)a->bytes->data;
+    p = (uint8_t *)a->bytes->data;
     ASN1_item_ex_i2d(&intname.a,
                      &p, ASN1_ITEM_rptr(X509_NAME_INTERNAL), -1, -1);
     sk_STACK_OF_X509_NAME_ENTRY_pop_free(intname.s,
@@ -377,7 +377,7 @@ static int x509_name_ex_print(BIO *out, ASN1_VALUE **pval,
 
 static int x509_name_canon(X509_NAME *a)
 {
-    unsigned char *p;
+    uint8_t *p;
     STACK_OF(STACK_OF_X509_NAME_ENTRY) *intname = NULL;
     STACK_OF(X509_NAME_ENTRY) *entries = NULL;
     X509_NAME_ENTRY *entry, *tmpentry = NULL;
@@ -447,7 +447,7 @@ err:
 
 static int asn1_string_canon(ASN1_STRING *out, ASN1_STRING *in)
 {
-    unsigned char *to, *from;
+    uint8_t *to, *from;
     int len, i;
 
     /* If type not in bitmask just copy string across */
@@ -521,7 +521,7 @@ static int asn1_string_canon(ASN1_STRING *out, ASN1_STRING *in)
 }
 
 static int i2d_name_canon(STACK_OF(STACK_OF_X509_NAME_ENTRY) * _intname,
-                          unsigned char **in)
+                          uint8_t **in)
 {
     int i, len, ltmp;
     ASN1_VALUE *v;

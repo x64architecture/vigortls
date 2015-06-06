@@ -1585,7 +1585,7 @@ int X509_cmp_time(const ASN1_TIME *ctm, time_t *cmp_time)
     atm.type = ctm->type;
     atm.flags = 0;
     atm.length = sizeof(buff2);
-    atm.data = (unsigned char *)buff2;
+    atm.data = (uint8_t *)buff2;
 
     if (X509_time_adj(&atm, offset * 60, cmp_time) == NULL)
         return 0;

@@ -74,16 +74,16 @@ extern "C" {
 
 typedef struct mdc2_ctx_st {
     unsigned int num;
-    unsigned char data[MDC2_BLOCK];
+    uint8_t data[MDC2_BLOCK];
     DES_cblock h, hh;
     int pad_type; /* either 1 or 2, default 1 */
 } MDC2_CTX;
 
 int MDC2_Init(MDC2_CTX *c);
-int MDC2_Update(MDC2_CTX *c, const unsigned char *data, size_t len);
-int MDC2_Final(unsigned char *md, MDC2_CTX *c);
-unsigned char *MDC2(const unsigned char *d, size_t n,
-                    unsigned char *md);
+int MDC2_Update(MDC2_CTX *c, const uint8_t *data, size_t len);
+int MDC2_Final(uint8_t *md, MDC2_CTX *c);
+uint8_t *MDC2(const uint8_t *d, size_t n,
+                    uint8_t *md);
 
 #ifdef __cplusplus
 }

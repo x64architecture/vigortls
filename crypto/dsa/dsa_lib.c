@@ -207,7 +207,7 @@ int DSA_size(const DSA *r)
 {
     int ret, i;
     ASN1_INTEGER bs;
-    unsigned char buf[4]; /* 4 bytes looks really small.
+    uint8_t buf[4]; /* 4 bytes looks really small.
                    However, i2d_ASN1_INTEGER() will not look
                    beyond the first byte, as long as the second
                    parameter is NULL. */

@@ -72,11 +72,11 @@
  */
 
 int PKCS5_PBKDF2_HMAC(const char *pass, int passlen,
-                      const unsigned char *salt, int saltlen, int iter,
+                      const uint8_t *salt, int saltlen, int iter,
                       const EVP_MD *digest,
-                      int keylen, unsigned char *out)
+                      int keylen, uint8_t *out)
 {
-    unsigned char digtmp[EVP_MAX_MD_SIZE], *p, itmp[4];
+    uint8_t digtmp[EVP_MAX_MD_SIZE], *p, itmp[4];
     int cplen, j, k, tkeylen, mdlen;
     unsigned long i = 1;
     HMAC_CTX hctx_tpl, hctx;
@@ -104,10 +104,10 @@ int PKCS5_PBKDF2_HMAC(const char *pass, int passlen,
         /* We are unlikely to ever use more than 256 blocks (5120 bits!)
          * but just in case...
          */
-        itmp[0] = (unsigned char)((i >> 24) & 0xff);
-        itmp[1] = (unsigned char)((i >> 16) & 0xff);
-        itmp[2] = (unsigned char)((i >> 8) & 0xff);
-        itmp[3] = (unsigned char)(i & 0xff);
+        itmp[0] = (uint8_t)((i >> 24) & 0xff);
+        itmp[1] = (uint8_t)((i >> 16) & 0xff);
+        itmp[2] = (uint8_t)((i >> 8) & 0xff);
+        itmp[3] = (uint8_t)(i & 0xff);
         if (!HMAC_CTX_copy(&hctx, &hctx_tpl)) {
             HMAC_CTX_cleanup(&hctx_tpl);
             return 0;
@@ -145,8 +145,8 @@ int PKCS5_PBKDF2_HMAC(const char *pass, int passlen,
 }
 
 int PKCS5_PBKDF2_HMAC_SHA1(const char *pass, int passlen,
-                           const unsigned char *salt, int saltlen, int iter,
-                           int keylen, unsigned char *out)
+                           const uint8_t *salt, int saltlen, int iter,
+                           int keylen, uint8_t *out)
 {
     return PKCS5_PBKDF2_HMAC(pass, passlen, salt, saltlen, iter, EVP_sha1(),
                              keylen, out);
@@ -210,7 +210,7 @@ int PKCS5_v2_PBKDF2_keyivgen(EVP_CIPHER_CTX *ctx, const char *pass, int passlen,
                              ASN1_TYPE *param,
                              const EVP_CIPHER *c, const EVP_MD *md, int en_de)
 {
-    unsigned char *salt, key[EVP_MAX_KEY_LENGTH];
+    uint8_t *salt, key[EVP_MAX_KEY_LENGTH];
     int saltlen, iter;
     int rv = 0;
     unsigned int keylen = 0;

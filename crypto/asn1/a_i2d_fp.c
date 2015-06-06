@@ -79,10 +79,10 @@ int ASN1_i2d_fp(i2d_of_void *i2d, FILE *out, void *x)
     return (ret);
 }
 
-int ASN1_i2d_bio(i2d_of_void *i2d, BIO *out, unsigned char *x)
+int ASN1_i2d_bio(i2d_of_void *i2d, BIO *out, uint8_t *x)
 {
     char *b;
-    unsigned char *p;
+    uint8_t *p;
     int i, j = 0, n, ret = 1;
 
     n = i2d(x, NULL);
@@ -92,7 +92,7 @@ int ASN1_i2d_bio(i2d_of_void *i2d, BIO *out, unsigned char *x)
         return (0);
     }
 
-    p = (unsigned char *)b;
+    p = (uint8_t *)b;
     i2d(x, &p);
 
     for (;;) {
@@ -129,7 +129,7 @@ int ASN1_item_i2d_fp(const ASN1_ITEM *it, FILE *out, void *x)
 
 int ASN1_item_i2d_bio(const ASN1_ITEM *it, BIO *out, void *x)
 {
-    unsigned char *b = NULL;
+    uint8_t *b = NULL;
     int i, j = 0, n, ret = 1;
 
     n = ASN1_item_i2d(x, &b, it);

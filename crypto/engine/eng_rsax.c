@@ -218,7 +218,7 @@ e_rsax_ctrl(ENGINE *e, int cmd, long i, void *p, void (*f)(void))
 
 #ifndef OPENSSL_NO_RSA
 
-typedef unsigned long long UINT64;
+typedef uint64_t UINT64;
 typedef unsigned short UINT16;
 
 /* Table t is interleaved in the following manner:
@@ -347,7 +347,7 @@ bn_extract_to_array_512(const BIGNUM *b, unsigned int n, UINT64 *array)
 {
     int i;
     UINT64 tmp;
-    unsigned char bn_buff[64];
+    uint8_t bn_buff[64];
 
     memset(bn_buff, 0, 64);
     if (BN_num_bytes(b) > 64) {
@@ -375,13 +375,13 @@ bn_extract_to_array_512(const BIGNUM *b, unsigned int n, UINT64 *array)
 static int
 interleaved_array_to_bn_512(BIGNUM *b, UINT64 *array)
 {
-    unsigned char tmp[64];
+    uint8_t tmp[64];
     int n = 8;
     int i;
 
     while (n-- > 0) {
         for (i = 7; i >= 0; i--) {
-            tmp[63 - (n * 8 + i)] = (unsigned char)(array[n] >> (8 * i));
+            tmp[63 - (n * 8 + i)] = (uint8_t)(array[n] >> (8 * i));
         }
     }
     BN_bin2bn(tmp, 64, b);

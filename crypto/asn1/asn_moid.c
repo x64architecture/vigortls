@@ -122,7 +122,7 @@ static int do_create(char *value, char *name)
         ostr = p + 1;
         if (!*ostr)
             return 0;
-        while (isspace((unsigned char)*ostr))
+        while (isspace((uint8_t)*ostr))
             ostr++;
     }
 
@@ -133,10 +133,10 @@ static int do_create(char *value, char *name)
 
     if (p) {
         ln = value;
-        while (isspace((unsigned char)*ln))
+        while (isspace((uint8_t)*ln))
             ln++;
         p--;
-        while (isspace((unsigned char)*p)) {
+        while (isspace((uint8_t)*p)) {
             if (p == ln)
                 return 0;
             p--;

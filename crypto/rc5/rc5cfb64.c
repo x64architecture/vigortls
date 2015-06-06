@@ -69,17 +69,17 @@
  * 64bit block we have used is contained in *num;
  */
 
-void RC5_32_cfb64_encrypt(const unsigned char *in, unsigned char *out,
+void RC5_32_cfb64_encrypt(const uint8_t *in, uint8_t *out,
                           long length, RC5_32_KEY *schedule,
-                          unsigned char *ivec, int *num, int encrypt)
+                          uint8_t *ivec, int *num, int encrypt)
 {
     register unsigned long v0, v1, t;
     register int n = *num;
     register long l = length;
     unsigned long ti[2];
-    unsigned char *iv, c, cc;
+    uint8_t *iv, c, cc;
 
-    iv = (unsigned char *)ivec;
+    iv = (uint8_t *)ivec;
     if (encrypt) {
         while (l--) {
             if (n == 0) {
@@ -88,12 +88,12 @@ void RC5_32_cfb64_encrypt(const unsigned char *in, unsigned char *out,
                 c2l(iv, v1);
                 ti[1] = v1;
                 RC5_32_encrypt((unsigned long *)ti, schedule);
-                iv = (unsigned char *)ivec;
+                iv = (uint8_t *)ivec;
                 t = ti[0];
                 l2c(t, iv);
                 t = ti[1];
                 l2c(t, iv);
-                iv = (unsigned char *)ivec;
+                iv = (uint8_t *)ivec;
             }
             c = *(in++) ^ iv[n];
             *(out++) = c;
@@ -108,12 +108,12 @@ void RC5_32_cfb64_encrypt(const unsigned char *in, unsigned char *out,
                 c2l(iv, v1);
                 ti[1] = v1;
                 RC5_32_encrypt((unsigned long *)ti, schedule);
-                iv = (unsigned char *)ivec;
+                iv = (uint8_t *)ivec;
                 t = ti[0];
                 l2c(t, iv);
                 t = ti[1];
                 l2c(t, iv);
-                iv = (unsigned char *)ivec;
+                iv = (uint8_t *)ivec;
             }
             cc = *(in++);
             c = iv[n];

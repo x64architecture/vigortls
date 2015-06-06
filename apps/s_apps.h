@@ -116,7 +116,7 @@
 #define PORT_STR "4433"
 #define PROTOCOL "tcp"
 
-int do_server(int port, int type, int *ret, int (*cb)(char *hostname, int s, unsigned char *context), unsigned char *context);
+int do_server(int port, int type, int *ret, int (*cb)(char *hostname, int s, uint8_t *context), uint8_t *context);
 #ifdef HEADER_X509_H
 int verify_callback(int ok, X509_STORE_CTX *ctx);
 #endif
@@ -127,7 +127,7 @@ int set_cert_key_stuff(SSL_CTX *ctx, X509 *cert, EVP_PKEY *key);
 int init_client(int *sock, char *server, char *port, int type, int af);
 int should_retry(int i);
 int extract_port(char *str, short *port_ptr);
-int extract_host_port(char *str, char **host_ptr, unsigned char *ip, char **p);
+int extract_host_port(char *str, char **host_ptr, uint8_t *ip, char **p);
 
 long bio_dump_callback(BIO *bio, int cmd, const char *argp,
                        int argi, long argl, long ret);
@@ -136,9 +136,9 @@ long bio_dump_callback(BIO *bio, int cmd, const char *argp,
 void apps_ssl_info_callback(const SSL *s, int where, int ret);
 void msg_cb(int write_p, int version, int content_type, const void *buf, size_t len, SSL *ssl, void *arg);
 void tlsext_cb(SSL *s, int client_server, int type,
-               unsigned char *data, int len,
+               uint8_t *data, int len,
                void *arg);
 #endif
 
-int generate_cookie_callback(SSL *ssl, unsigned char *cookie, unsigned int *cookie_len);
-int verify_cookie_callback(SSL *ssl, unsigned char *cookie, unsigned int cookie_len);
+int generate_cookie_callback(SSL *ssl, uint8_t *cookie, unsigned int *cookie_len);
+int verify_cookie_callback(SSL *ssl, uint8_t *cookie, unsigned int cookie_len);

@@ -595,7 +595,7 @@ int PKCS7_set_cipher(PKCS7 *p7, const EVP_CIPHER *cipher)
     return 1;
 }
 
-int PKCS7_stream(unsigned char ***boundary, PKCS7 *p7)
+int PKCS7_stream(uint8_t ***boundary, PKCS7 *p7)
 {
     ASN1_OCTET_STRING *os = NULL;
 

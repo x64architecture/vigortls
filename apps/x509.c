@@ -636,7 +636,7 @@ int x509_main(int argc, char **argv)
     }
 
     if (alias)
-        X509_alias_set1(x, (unsigned char *)alias, -1);
+        X509_alias_set1(x, (uint8_t *)alias, -1);
 
     if (clrtrust)
         X509_trust_clear(x);
@@ -694,7 +694,7 @@ int x509_main(int argc, char **argv)
                     BIO_printf(out, "%s\n", sk_OPENSSL_STRING_value(emlst, j));
                 X509_email_free(emlst);
             } else if (aliasout == i) {
-                unsigned char *alstr;
+                uint8_t *alstr;
                 alstr = X509_alias_get0(x, NULL);
                 if (alstr)
                     BIO_printf(out, "%s\n", alstr);
@@ -755,7 +755,7 @@ int x509_main(int argc, char **argv)
                 PEM_write_bio_PUBKEY(out, pkey);
                 EVP_PKEY_free(pkey);
             } else if (C == i) {
-                unsigned char *d;
+                uint8_t *d;
                 char *m;
                 int len;
 
@@ -776,15 +776,15 @@ int x509_main(int argc, char **argv)
                     goto end;
                 }
 
-                d = (unsigned char *)m;
+                d = (uint8_t *)m;
                 len = i2d_X509_NAME(X509_get_subject_name(x), &d);
-                print_array(out, "the_subject_name", len, (unsigned char *)m);
-                d = (unsigned char *)m;
+                print_array(out, "the_subject_name", len, (uint8_t *)m);
+                d = (uint8_t *)m;
                 len = i2d_X509_PUBKEY(X509_get_X509_PUBKEY(x), &d);
-                print_array(out, "the_public_key", len, (unsigned char *)m);
-                d = (unsigned char *)m;
+                print_array(out, "the_public_key", len, (uint8_t *)m);
+                d = (uint8_t *)m;
                 len = i2d_X509(x, &d);
-                print_array(out, "the_certificate", len, (unsigned char *)m);
+                print_array(out, "the_certificate", len, (uint8_t *)m);
                 free(m);
             } else if (text == i) {
                 X509_print_ex(out, x, nmflag, certflag);
@@ -799,7 +799,7 @@ int x509_main(int argc, char **argv)
             } else if (fingerprint == i) {
                 int j;
                 unsigned int n;
-                unsigned char md[EVP_MAX_MD_SIZE];
+                uint8_t md[EVP_MAX_MD_SIZE];
                 const EVP_MD *fdig = digest;
 
                 if (!fdig)
@@ -903,7 +903,7 @@ int x509_main(int argc, char **argv)
         NETSCAPE_X509 nx;
         ASN1_OCTET_STRING hdr;
 
-        hdr.data = (unsigned char *)NETSCAPE_CERT_HDR;
+        hdr.data = (uint8_t *)NETSCAPE_CERT_HDR;
         hdr.length = strlen(NETSCAPE_CERT_HDR);
         nx.header = &hdr;
         nx.cert = x;

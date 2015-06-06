@@ -47,7 +47,7 @@ static const struct poly1305_test poly1305_tests[] = {
     },
 };
 
-static unsigned char hex_digit(char h)
+static uint8_t hex_digit(char h)
 {
     if (h >= '0' && h <= '9')
         return h - '0';
@@ -59,19 +59,19 @@ static unsigned char hex_digit(char h)
         abort();
 }
 
-static void hex_decode(unsigned char *out, const char *hex)
+static void hex_decode(uint8_t *out, const char *hex)
 {
     size_t j = 0;
 
     while (*hex != 0) {
-        unsigned char v = hex_digit(*hex++);
+        uint8_t v = hex_digit(*hex++);
         v <<= 4;
         v |= hex_digit(*hex++);
         out[j++] = v;
     }
 }
 
-static void hexdump(unsigned char *a, size_t len)
+static void hexdump(uint8_t *a, size_t len)
 {
     size_t i;
 
@@ -83,12 +83,12 @@ int main()
 {
     static const unsigned num_tests = sizeof(poly1305_tests) / sizeof(struct poly1305_test);
     unsigned i;
-    unsigned char key[32], out[16], expected[16];
+    uint8_t key[32], out[16], expected[16];
     poly1305_state poly1305;
 
     for (i = 0; i < num_tests; i++) {
         const struct poly1305_test *test = &poly1305_tests[i];
-        unsigned char *in;
+        uint8_t *in;
         size_t inlen = strlen(test->inputhex);
 
         if (strlen(test->keyhex) != sizeof(key) * 2 || strlen(test->outhex) != sizeof(out) * 2 || (inlen & 1) == 1)

@@ -59,12 +59,12 @@
 #endif
 #include <openssl/rand.h>
 
-ECDSA_SIG *ECDSA_do_sign(const unsigned char *dgst, int dlen, EC_KEY *eckey)
+ECDSA_SIG *ECDSA_do_sign(const uint8_t *dgst, int dlen, EC_KEY *eckey)
 {
     return ECDSA_do_sign_ex(dgst, dlen, NULL, NULL, eckey);
 }
 
-ECDSA_SIG *ECDSA_do_sign_ex(const unsigned char *dgst, int dlen,
+ECDSA_SIG *ECDSA_do_sign_ex(const uint8_t *dgst, int dlen,
                             const BIGNUM *kinv, const BIGNUM *rp, EC_KEY *eckey)
 {
     ECDSA_DATA *ecdsa = ecdsa_check(eckey);
@@ -73,12 +73,12 @@ ECDSA_SIG *ECDSA_do_sign_ex(const unsigned char *dgst, int dlen,
     return ecdsa->meth->ecdsa_do_sign(dgst, dlen, kinv, rp, eckey);
 }
 
-int ECDSA_sign(int type, const unsigned char *dgst, int dlen, unsigned char *sig, unsigned int *siglen, EC_KEY *eckey)
+int ECDSA_sign(int type, const uint8_t *dgst, int dlen, uint8_t *sig, unsigned int *siglen, EC_KEY *eckey)
 {
     return ECDSA_sign_ex(type, dgst, dlen, sig, siglen, NULL, NULL, eckey);
 }
 
-int ECDSA_sign_ex(int type, const unsigned char *dgst, int dlen, unsigned char *sig, unsigned int *siglen, const BIGNUM *kinv, const BIGNUM *r,
+int ECDSA_sign_ex(int type, const uint8_t *dgst, int dlen, uint8_t *sig, unsigned int *siglen, const BIGNUM *kinv, const BIGNUM *r,
                   EC_KEY *eckey)
 {
     ECDSA_SIG *s;

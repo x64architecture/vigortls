@@ -64,12 +64,12 @@ ASN1_SEQUENCE(TS_MSG_IMPRINT) = {
     ASN1_SIMPLE(TS_MSG_IMPRINT, hashed_msg, ASN1_OCTET_STRING)
 } ASN1_SEQUENCE_END(TS_MSG_IMPRINT)
 
-TS_MSG_IMPRINT *d2i_TS_MSG_IMPRINT(TS_MSG_IMPRINT **a, const unsigned char **in, long len)
+TS_MSG_IMPRINT *d2i_TS_MSG_IMPRINT(TS_MSG_IMPRINT **a, const uint8_t **in, long len)
 {
     return (TS_MSG_IMPRINT *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, &TS_MSG_IMPRINT_it);
 }
 
-int i2d_TS_MSG_IMPRINT(const TS_MSG_IMPRINT *a, unsigned char **out)
+int i2d_TS_MSG_IMPRINT(const TS_MSG_IMPRINT *a, uint8_t **out)
 {
     return ASN1_item_i2d((ASN1_VALUE *)a, out, &TS_MSG_IMPRINT_it);
 }
@@ -116,12 +116,12 @@ ASN1_SEQUENCE(TS_REQ) = {
     ASN1_IMP_SEQUENCE_OF_OPT(TS_REQ, extensions, X509_EXTENSION, 0)
 } ASN1_SEQUENCE_END(TS_REQ)
 
-TS_REQ *d2i_TS_REQ(TS_REQ **a, const unsigned char **in, long len)
+TS_REQ *d2i_TS_REQ(TS_REQ **a, const uint8_t **in, long len)
 {
     return (TS_REQ *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, &TS_REQ_it);
 }
 
-int i2d_TS_REQ(const TS_REQ *a, unsigned char **out)
+int i2d_TS_REQ(const TS_REQ *a, uint8_t **out)
 {
     return ASN1_item_i2d((ASN1_VALUE *)a, out, &TS_REQ_it);
 }
@@ -165,12 +165,12 @@ ASN1_SEQUENCE(TS_ACCURACY) = {
     ASN1_IMP_OPT(TS_ACCURACY, micros, ASN1_INTEGER, 1)
 } ASN1_SEQUENCE_END(TS_ACCURACY)
 
-TS_ACCURACY *d2i_TS_ACCURACY(TS_ACCURACY **a, const unsigned char **in, long len)
+TS_ACCURACY *d2i_TS_ACCURACY(TS_ACCURACY **a, const uint8_t **in, long len)
 {
     return (TS_ACCURACY *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, &TS_ACCURACY_it);
 }
 
-int i2d_TS_ACCURACY(const TS_ACCURACY *a, unsigned char **out)
+int i2d_TS_ACCURACY(const TS_ACCURACY *a, uint8_t **out)
 {
     return ASN1_item_i2d((ASN1_VALUE *)a, out, &TS_ACCURACY_it);
 }
@@ -203,12 +203,12 @@ ASN1_SEQUENCE(TS_TST_INFO) = {
     ASN1_IMP_SEQUENCE_OF_OPT(TS_TST_INFO, extensions, X509_EXTENSION, 1)
 } ASN1_SEQUENCE_END(TS_TST_INFO)
 
-TS_TST_INFO *d2i_TS_TST_INFO(TS_TST_INFO **a, const unsigned char **in, long len)
+TS_TST_INFO *d2i_TS_TST_INFO(TS_TST_INFO **a, const uint8_t **in, long len)
 {
     return (TS_TST_INFO *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, &TS_TST_INFO_it);
 }
 
-int i2d_TS_TST_INFO(const TS_TST_INFO *a, unsigned char **out)
+int i2d_TS_TST_INFO(const TS_TST_INFO *a, uint8_t **out)
 {
     return ASN1_item_i2d((ASN1_VALUE *)a, out, &TS_TST_INFO_it);
 }
@@ -252,12 +252,12 @@ ASN1_SEQUENCE(TS_STATUS_INFO) = {
     ASN1_OPT(TS_STATUS_INFO, failure_info, ASN1_BIT_STRING)
 } ASN1_SEQUENCE_END(TS_STATUS_INFO)
 
-TS_STATUS_INFO *d2i_TS_STATUS_INFO(TS_STATUS_INFO **a, const unsigned char **in, long len)
+TS_STATUS_INFO *d2i_TS_STATUS_INFO(TS_STATUS_INFO **a, const uint8_t **in, long len)
 {
     return (TS_STATUS_INFO *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, &TS_STATUS_INFO_it);
 }
 
-int i2d_TS_STATUS_INFO(const TS_STATUS_INFO *a, unsigned char **out)
+int i2d_TS_STATUS_INFO(const TS_STATUS_INFO *a, uint8_t **out)
 {
     return ASN1_item_i2d((ASN1_VALUE *)a, out, &TS_STATUS_INFO_it);
 }
@@ -324,12 +324,12 @@ ASN1_SEQUENCE_cb(TS_RESP, ts_resp_cb) = {
     ASN1_OPT(TS_RESP, token, PKCS7),
 } ASN1_SEQUENCE_END_cb(TS_RESP, TS_RESP)
 
-TS_RESP *d2i_TS_RESP(TS_RESP **a, const unsigned char **in, long len)
+TS_RESP *d2i_TS_RESP(TS_RESP **a, const uint8_t **in, long len)
 {
     return (TS_RESP *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, &TS_RESP_it);
 }
 
-int i2d_TS_RESP(const TS_RESP *a, unsigned char **out)
+int i2d_TS_RESP(const TS_RESP *a, uint8_t **out)
 {
     return ASN1_item_i2d((ASN1_VALUE *)a, out, &TS_RESP_it);
 }
@@ -372,12 +372,12 @@ ASN1_SEQUENCE(ESS_ISSUER_SERIAL) = {
     ASN1_SIMPLE(ESS_ISSUER_SERIAL, serial, ASN1_INTEGER)
 } ASN1_SEQUENCE_END(ESS_ISSUER_SERIAL)
 
-ESS_ISSUER_SERIAL *d2i_ESS_ISSUER_SERIAL(ESS_ISSUER_SERIAL **a, const unsigned char **in, long len)
+ESS_ISSUER_SERIAL *d2i_ESS_ISSUER_SERIAL(ESS_ISSUER_SERIAL **a, const uint8_t **in, long len)
 {
     return (ESS_ISSUER_SERIAL *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, &ESS_ISSUER_SERIAL_it);
 }
 
-int i2d_ESS_ISSUER_SERIAL(const ESS_ISSUER_SERIAL *a, unsigned char **out)
+int i2d_ESS_ISSUER_SERIAL(const ESS_ISSUER_SERIAL *a, uint8_t **out)
 {
     return ASN1_item_i2d((ASN1_VALUE *)a, out, &ESS_ISSUER_SERIAL_it);
 }
@@ -402,12 +402,12 @@ ASN1_SEQUENCE(ESS_CERT_ID) = {
     ASN1_OPT(ESS_CERT_ID, issuer_serial, ESS_ISSUER_SERIAL)
 } ASN1_SEQUENCE_END(ESS_CERT_ID)
 
-ESS_CERT_ID *d2i_ESS_CERT_ID(ESS_CERT_ID **a, const unsigned char **in, long len)
+ESS_CERT_ID *d2i_ESS_CERT_ID(ESS_CERT_ID **a, const uint8_t **in, long len)
 {
     return (ESS_CERT_ID *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, &ESS_CERT_ID_it);
 }
 
-int i2d_ESS_CERT_ID(const ESS_CERT_ID *a, unsigned char **out)
+int i2d_ESS_CERT_ID(const ESS_CERT_ID *a, uint8_t **out)
 {
     return ASN1_item_i2d((ASN1_VALUE *)a, out, &ESS_CERT_ID_it);
 }
@@ -432,12 +432,12 @@ ASN1_SEQUENCE(ESS_SIGNING_CERT) = {
     ASN1_SEQUENCE_OF_OPT(ESS_SIGNING_CERT, policy_info, POLICYINFO)
 } ASN1_SEQUENCE_END(ESS_SIGNING_CERT)
 
-ESS_SIGNING_CERT *d2i_ESS_SIGNING_CERT(ESS_SIGNING_CERT **a, const unsigned char **in, long len)
+ESS_SIGNING_CERT *d2i_ESS_SIGNING_CERT(ESS_SIGNING_CERT **a, const uint8_t **in, long len)
 {
     return (ESS_SIGNING_CERT *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, &ESS_SIGNING_CERT_it);
 }
 
-int i2d_ESS_SIGNING_CERT(const ESS_SIGNING_CERT *a, unsigned char **out)
+int i2d_ESS_SIGNING_CERT(const ESS_SIGNING_CERT *a, uint8_t **out)
 {
     return ASN1_item_i2d((ASN1_VALUE *)a, out, &ESS_SIGNING_CERT_it);
 }
@@ -464,7 +464,7 @@ TS_TST_INFO *PKCS7_to_TS_TST_INFO(PKCS7 *token)
     PKCS7 *enveloped;
     ASN1_TYPE *tst_info_wrapper;
     ASN1_OCTET_STRING *tst_info_der;
-    const unsigned char *p;
+    const uint8_t *p;
 
     if (!PKCS7_type_is_signed(token)) {
         TSerr(TS_F_PKCS7_TO_TS_TST_INFO, TS_R_BAD_PKCS7_TYPE);

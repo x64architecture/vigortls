@@ -90,7 +90,7 @@ typedef struct {
     /* PSS/OAEP salt length */
     int saltlen;
     /* Temp buffer */
-    unsigned char *tbuf;
+    uint8_t *tbuf;
 } RSA_PKEY_CTX;
 
 static int pkey_rsa_init(EVP_PKEY_CTX *ctx)
@@ -153,8 +153,8 @@ static void pkey_rsa_cleanup(EVP_PKEY_CTX *ctx)
     free(rctx);
 }
 
-static int pkey_rsa_sign(EVP_PKEY_CTX *ctx, unsigned char *sig, size_t *siglen,
-                         const unsigned char *tbs, size_t tbslen)
+static int pkey_rsa_sign(EVP_PKEY_CTX *ctx, uint8_t *sig, size_t *siglen,
+                         const uint8_t *tbs, size_t tbslen)
 {
     int ret;
     RSA_PKEY_CTX *rctx = ctx->data;
@@ -213,8 +213,8 @@ static int pkey_rsa_sign(EVP_PKEY_CTX *ctx, unsigned char *sig, size_t *siglen,
 }
 
 static int pkey_rsa_verifyrecover(EVP_PKEY_CTX *ctx,
-                                  unsigned char *rout, size_t *routlen,
-                                  const unsigned char *sig, size_t siglen)
+                                  uint8_t *rout, size_t *routlen,
+                                  const uint8_t *sig, size_t siglen)
 {
     int ret;
     RSA_PKEY_CTX *rctx = ctx->data;
@@ -261,8 +261,8 @@ static int pkey_rsa_verifyrecover(EVP_PKEY_CTX *ctx,
 }
 
 static int pkey_rsa_verify(EVP_PKEY_CTX *ctx,
-                           const unsigned char *sig, size_t siglen,
-                           const unsigned char *tbs, size_t tbslen)
+                           const uint8_t *sig, size_t siglen,
+                           const uint8_t *tbs, size_t tbslen)
 {
     RSA_PKEY_CTX *rctx = ctx->data;
     RSA *rsa = ctx->pkey->pkey.rsa;
@@ -307,8 +307,8 @@ static int pkey_rsa_verify(EVP_PKEY_CTX *ctx,
 }
 
 static int pkey_rsa_encrypt(EVP_PKEY_CTX *ctx,
-                            unsigned char *out, size_t *outlen,
-                            const unsigned char *in, size_t inlen)
+                            uint8_t *out, size_t *outlen,
+                            const uint8_t *in, size_t inlen)
 {
     int ret;
     RSA_PKEY_CTX *rctx = ctx->data;
@@ -321,8 +321,8 @@ static int pkey_rsa_encrypt(EVP_PKEY_CTX *ctx,
 }
 
 static int pkey_rsa_decrypt(EVP_PKEY_CTX *ctx,
-                            unsigned char *out, size_t *outlen,
-                            const unsigned char *in, size_t inlen)
+                            uint8_t *out, size_t *outlen,
+                            const uint8_t *in, size_t inlen)
 {
     int ret;
     RSA_PKEY_CTX *rctx = ctx->data;

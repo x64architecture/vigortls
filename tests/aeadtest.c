@@ -95,7 +95,7 @@ static const char NAMES[6][NUM_TYPES] = {
     "TAG",
 };
 
-static unsigned char hex_digit(char h)
+static uint8_t hex_digit(char h)
 {
     if (h >= '0' && h <= '9')
         return h - '0';
@@ -108,12 +108,12 @@ static unsigned char hex_digit(char h)
 }
 
 static int run_test_case(const EVP_AEAD *aead,
-                         unsigned char bufs[NUM_TYPES][BUF_MAX],
+                         uint8_t bufs[NUM_TYPES][BUF_MAX],
                          const unsigned int lengths[NUM_TYPES],
                          unsigned int line_no)
 {
     EVP_AEAD_CTX ctx;
-    unsigned char out[BUF_MAX + EVP_AEAD_MAX_TAG_LENGTH], out2[BUF_MAX];
+    uint8_t out[BUF_MAX + EVP_AEAD_MAX_TAG_LENGTH], out2[BUF_MAX];
     size_t out_len, out_len2;
 
     if (!EVP_AEAD_CTX_init(&ctx, aead, bufs[KEY], lengths[KEY],
@@ -173,7 +173,7 @@ int main(int argc, char **argv)
     const EVP_AEAD *aead = NULL;
     unsigned int line_no = 0, num_tests = 0, j;
 
-    unsigned char bufs[NUM_TYPES][BUF_MAX];
+    uint8_t bufs[NUM_TYPES][BUF_MAX];
     unsigned int lengths[NUM_TYPES];
 
     if (argc != 3) {
@@ -210,7 +210,7 @@ int main(int argc, char **argv)
         char line[4096];
         unsigned int i, type_len = 0;
 
-        unsigned char *buf = NULL;
+        uint8_t *buf = NULL;
         unsigned int *buf_len = NULL;
 
         if (!fgets(line, sizeof(line), fp))
@@ -288,7 +288,7 @@ int main(int argc, char **argv)
 
         j = 0;
         for (; line[i] != 0 && line[i] != '\n'; i++) {
-            unsigned char v, v2;
+            uint8_t v, v2;
             v = hex_digit(line[i++]);
             if (line[i] == 0 || line[i] == '\n') {
                 fprintf(stderr, "Odd-length hex data"

@@ -82,12 +82,12 @@ ASN1_SEQUENCE_cb(PKCS8_PRIV_KEY_INFO, pkey_cb) = {
     ASN1_IMP_SET_OF_OPT(PKCS8_PRIV_KEY_INFO, attributes, X509_ATTRIBUTE, 0)
 } ASN1_SEQUENCE_END_cb(PKCS8_PRIV_KEY_INFO, PKCS8_PRIV_KEY_INFO)
 
-PKCS8_PRIV_KEY_INFO *d2i_PKCS8_PRIV_KEY_INFO(PKCS8_PRIV_KEY_INFO **a, const unsigned char **in, long len)
+PKCS8_PRIV_KEY_INFO *d2i_PKCS8_PRIV_KEY_INFO(PKCS8_PRIV_KEY_INFO **a, const uint8_t **in, long len)
 {
     return (PKCS8_PRIV_KEY_INFO *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, &PKCS8_PRIV_KEY_INFO_it);
 }
 
-int i2d_PKCS8_PRIV_KEY_INFO(PKCS8_PRIV_KEY_INFO *a, unsigned char **out)
+int i2d_PKCS8_PRIV_KEY_INFO(PKCS8_PRIV_KEY_INFO *a, uint8_t **out)
 {
     return ASN1_item_i2d((ASN1_VALUE *)a, out, &PKCS8_PRIV_KEY_INFO_it);
 }
@@ -104,9 +104,9 @@ void PKCS8_PRIV_KEY_INFO_free(PKCS8_PRIV_KEY_INFO *a)
 
 int PKCS8_pkey_set0(PKCS8_PRIV_KEY_INFO *priv, ASN1_OBJECT *aobj,
                     int version, int ptype, void *pval,
-                    unsigned char *penc, int penclen)
+                    uint8_t *penc, int penclen)
 {
-    unsigned char **ppenc = NULL;
+    uint8_t **ppenc = NULL;
     if (version >= 0) {
         if (!ASN1_INTEGER_set(priv->version, version))
             return 0;
@@ -136,7 +136,7 @@ int PKCS8_pkey_set0(PKCS8_PRIV_KEY_INFO *priv, ASN1_OBJECT *aobj,
 }
 
 int PKCS8_pkey_get0(ASN1_OBJECT **ppkalg,
-                    const unsigned char **pk, int *ppklen,
+                    const uint8_t **pk, int *ppklen,
                     X509_ALGOR **pa,
                     PKCS8_PRIV_KEY_INFO *p8)
 {

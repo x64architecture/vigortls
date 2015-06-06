@@ -578,7 +578,7 @@ static int cms_SignerInfo_content_sign(CMS_ContentInfo *cms,
 
     if (CMS_signed_get_attr_count(si) >= 0) {
         ASN1_OBJECT *ctype = cms->d.signedData->encapContentInfo->eContentType;
-        unsigned char md[EVP_MAX_MD_SIZE];
+        uint8_t md[EVP_MAX_MD_SIZE];
         unsigned int mdlen;
         if (!EVP_DigestFinal_ex(&mctx, md, &mdlen))
             goto err;
@@ -593,7 +593,7 @@ static int cms_SignerInfo_content_sign(CMS_ContentInfo *cms,
         if (!CMS_SignerInfo_sign(si))
             goto err;
     } else {
-        unsigned char *sig;
+        uint8_t *sig;
         unsigned int siglen;
         sig = malloc(EVP_PKEY_size(si->pkey));
         if (!sig) {
@@ -636,7 +636,7 @@ int CMS_SignerInfo_sign(CMS_SignerInfo *si)
 {
     EVP_MD_CTX mctx;
     EVP_PKEY_CTX *pctx;
-    unsigned char *abuf = NULL;
+    uint8_t *abuf = NULL;
     int alen;
     size_t siglen;
     const EVP_MD *md = NULL;
@@ -699,7 +699,7 @@ int CMS_SignerInfo_verify(CMS_SignerInfo *si)
 {
     EVP_MD_CTX mctx;
     EVP_PKEY_CTX *pctx;
-    unsigned char *abuf = NULL;
+    uint8_t *abuf = NULL;
     int alen, r = -1;
     const EVP_MD *md = NULL;
 
@@ -789,7 +789,7 @@ int CMS_SignerInfo_verify_content(CMS_SignerInfo *si, BIO *chain)
     /* If messageDigest found compare it */
 
     if (os) {
-        unsigned char mval[EVP_MAX_MD_SIZE];
+        uint8_t mval[EVP_MAX_MD_SIZE];
         unsigned int mlen;
         if (EVP_DigestFinal_ex(&mctx, mval, &mlen) <= 0) {
             CMSerr(CMS_F_CMS_SIGNERINFO_VERIFY_CONTENT,
@@ -825,7 +825,7 @@ err:
 
 int CMS_add_smimecap(CMS_SignerInfo *si, STACK_OF(X509_ALGOR) * algs)
 {
-    unsigned char *smder = NULL;
+    uint8_t *smder = NULL;
     int smderlen, r;
     smderlen = i2d_X509_ALGORS(algs, &smder);
     if (smderlen <= 0)

@@ -801,7 +801,7 @@ static const STREEBOG_LONG64 C16[12][8] = {
 };
 
 #define B(x, i, j)                                                                 \
-    (((STREEBOG_LONG64)(*(((const unsigned char *)(&x)) + i))) << (j * 8))
+    (((STREEBOG_LONG64)(*(((const uint8_t *)(&x)) + i))) << (j * 8))
 #define PULL64(x)                                                                  \
     (B(x, 0, 0) | B(x, 1, 1) | B(x, 2, 2) | B(x, 3, 3) | B(x, 4, 4) | B(x, 5, 5)   \
      | B(x, 6, 6) | B(x, 7, 7))
@@ -874,7 +874,7 @@ static inline void gN(STREEBOG_LONG64 *h, STREEBOG_LONG64 *m, STREEBOG_LONG64 *N
     h[7] ^= T[7] ^ K[7] ^ m[7];
 }
 
-static void streebog_single_block(STREEBOG_CTX *ctx, const unsigned char *in,
+static void streebog_single_block(STREEBOG_CTX *ctx, const uint8_t *in,
                                   size_t num)
 {
     STREEBOG_LONG64 M[8], l;
@@ -904,17 +904,17 @@ static void streebog_single_block(STREEBOG_CTX *ctx, const unsigned char *in,
             ctx->Sigma[i] += M[i];
 }
 
-static void streebog_block_data_order(STREEBOG_CTX *ctx, const unsigned char *in, size_t num)
+static void streebog_block_data_order(STREEBOG_CTX *ctx, const uint8_t *in, size_t num)
 {
     int i;
     for (i = 0; i < num; i++)
         streebog_single_block(ctx, in + i * STREEBOG_CBLOCK, 64 * 8);
 }
 
-int STREEBOG512_Final(unsigned char *md, STREEBOG_CTX *c)
+int STREEBOG512_Final(uint8_t *md, STREEBOG_CTX *c)
 {
     int n;
-    unsigned char *p = (unsigned char *)c->data;
+    uint8_t *p = (uint8_t *)c->data;
     STREEBOG_LONG64 Z[STREEBOG_LBLOCK] = {};
 
     if (c->num == STREEBOG_CBLOCK) {
@@ -944,23 +944,23 @@ int STREEBOG512_Final(unsigned char *md, STREEBOG_CTX *c)
                 STREEBOG_LONG64 t = c->h[4 + n];
 
 #if BYTE_ORDER == BIG_ENDIAN
-                *(md++) = (unsigned char)(t);
-                *(md++) = (unsigned char)(t >> 8);
-                *(md++) = (unsigned char)(t >> 16);
-                *(md++) = (unsigned char)(t >> 24);
-                *(md++) = (unsigned char)(t >> 32);
-                *(md++) = (unsigned char)(t >> 40);
-                *(md++) = (unsigned char)(t >> 48);
-                *(md++) = (unsigned char)(t >> 56);
+                *(md++) = (uint8_t)(t);
+                *(md++) = (uint8_t)(t >> 8);
+                *(md++) = (uint8_t)(t >> 16);
+                *(md++) = (uint8_t)(t >> 24);
+                *(md++) = (uint8_t)(t >> 32);
+                *(md++) = (uint8_t)(t >> 40);
+                *(md++) = (uint8_t)(t >> 48);
+                *(md++) = (uint8_t)(t >> 56);
 #else
-                *(md++) = (unsigned char)(t >> 56);
-                *(md++) = (unsigned char)(t >> 48);
-                *(md++) = (unsigned char)(t >> 40);
-                *(md++) = (unsigned char)(t >> 32);
-                *(md++) = (unsigned char)(t >> 24);
-                *(md++) = (unsigned char)(t >> 16);
-                *(md++) = (unsigned char)(t >> 8);
-                *(md++) = (unsigned char)(t);
+                *(md++) = (uint8_t)(t >> 56);
+                *(md++) = (uint8_t)(t >> 48);
+                *(md++) = (uint8_t)(t >> 40);
+                *(md++) = (uint8_t)(t >> 32);
+                *(md++) = (uint8_t)(t >> 24);
+                *(md++) = (uint8_t)(t >> 16);
+                *(md++) = (uint8_t)(t >> 8);
+                *(md++) = (uint8_t)(t);
 #endif
             }
             break;
@@ -969,23 +969,23 @@ int STREEBOG512_Final(unsigned char *md, STREEBOG_CTX *c)
                 STREEBOG_LONG64 t = c->h[n];
 
 #if BYTE_ORDER == BIG_ENDIAN
-                *(md++) = (unsigned char)(t);
-                *(md++) = (unsigned char)(t >> 8);
-                *(md++) = (unsigned char)(t >> 16);
-                *(md++) = (unsigned char)(t >> 24);
-                *(md++) = (unsigned char)(t >> 32);
-                *(md++) = (unsigned char)(t >> 40);
-                *(md++) = (unsigned char)(t >> 48);
-                *(md++) = (unsigned char)(t >> 56);
+                *(md++) = (uint8_t)(t);
+                *(md++) = (uint8_t)(t >> 8);
+                *(md++) = (uint8_t)(t >> 16);
+                *(md++) = (uint8_t)(t >> 24);
+                *(md++) = (uint8_t)(t >> 32);
+                *(md++) = (uint8_t)(t >> 40);
+                *(md++) = (uint8_t)(t >> 48);
+                *(md++) = (uint8_t)(t >> 56);
 #else
-                *(md++) = (unsigned char)(t >> 56);
-                *(md++) = (unsigned char)(t >> 48);
-                *(md++) = (unsigned char)(t >> 40);
-                *(md++) = (unsigned char)(t >> 32);
-                *(md++) = (unsigned char)(t >> 24);
-                *(md++) = (unsigned char)(t >> 16);
-                *(md++) = (unsigned char)(t >> 8);
-                *(md++) = (unsigned char)(t);
+                *(md++) = (uint8_t)(t >> 56);
+                *(md++) = (uint8_t)(t >> 48);
+                *(md++) = (uint8_t)(t >> 40);
+                *(md++) = (uint8_t)(t >> 32);
+                *(md++) = (uint8_t)(t >> 24);
+                *(md++) = (uint8_t)(t >> 16);
+                *(md++) = (uint8_t)(t >> 8);
+                *(md++) = (uint8_t)(t);
 #endif
             }
             break;
@@ -997,15 +997,15 @@ int STREEBOG512_Final(unsigned char *md, STREEBOG_CTX *c)
     return 1;
 }
 
-int STREEBOG256_Final(unsigned char *md, STREEBOG_CTX *c)
+int STREEBOG256_Final(uint8_t *md, STREEBOG_CTX *c)
 {
     return STREEBOG512_Final(md, c);
 }
 
 int STREEBOG512_Update(STREEBOG_CTX *c, const void *_data, size_t len)
 {
-    unsigned char *p = (unsigned char *)c->data;
-    const unsigned char *data = (const unsigned char *)_data;
+    uint8_t *p = (uint8_t *)c->data;
+    const uint8_t *data = (const uint8_t *)_data;
 
     if (len == 0)
         return 1;
@@ -1046,7 +1046,7 @@ int STREEBOG256_Update(STREEBOG_CTX *c, const void *data, size_t len)
     return STREEBOG512_Update(c, data, len);
 }
 
-void STREEBOG512_Transform(STREEBOG_CTX *c, const unsigned char *data)
+void STREEBOG512_Transform(STREEBOG_CTX *c, const uint8_t *data)
 {
     streebog_block_data_order(c, data, 1);
 }
@@ -1070,10 +1070,10 @@ int STREEBOG512_Init(STREEBOG_CTX *c)
     return 1;
 }
 
-unsigned char *STREEBOG256(const unsigned char *d, size_t n, unsigned char *md)
+uint8_t *STREEBOG256(const uint8_t *d, size_t n, uint8_t *md)
 {
     STREEBOG_CTX c;
-    static unsigned char m[STREEBOG256_LENGTH];
+    static uint8_t m[STREEBOG256_LENGTH];
 
     if (md == NULL)
         md = m;
@@ -1084,10 +1084,10 @@ unsigned char *STREEBOG256(const unsigned char *d, size_t n, unsigned char *md)
     return (md);
 }
 
-unsigned char *STREEBOG512(const unsigned char *d, size_t n, unsigned char *md)
+uint8_t *STREEBOG512(const uint8_t *d, size_t n, uint8_t *md)
 {
     STREEBOG_CTX c;
-    static unsigned char m[STREEBOG512_LENGTH];
+    static uint8_t m[STREEBOG512_LENGTH];
 
     if (md == NULL)
         md = m;

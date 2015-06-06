@@ -84,12 +84,12 @@ ASN1_SEQUENCE_cb(X509_PUBKEY, pubkey_cb) = {
     ASN1_SIMPLE(X509_PUBKEY, public_key, ASN1_BIT_STRING)
 } ASN1_SEQUENCE_END_cb(X509_PUBKEY, X509_PUBKEY)
 
-X509_PUBKEY *d2i_X509_PUBKEY(X509_PUBKEY **a, const unsigned char **in, long len)
+X509_PUBKEY *d2i_X509_PUBKEY(X509_PUBKEY **a, const uint8_t **in, long len)
 {
     return (X509_PUBKEY *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, &X509_PUBKEY_it);
 }
 
-int i2d_X509_PUBKEY(X509_PUBKEY *a, unsigned char **out)
+int i2d_X509_PUBKEY(X509_PUBKEY *a, uint8_t **out)
 {
     return ASN1_item_i2d((ASN1_VALUE *)a, out, &X509_PUBKEY_it);
 }
@@ -200,7 +200,7 @@ error:
  * and encode or decode as X509_PUBKEY
  */
 
-EVP_PKEY *d2i_PUBKEY(EVP_PKEY **a, const unsigned char **pp,
+EVP_PKEY *d2i_PUBKEY(EVP_PKEY **a, const uint8_t **pp,
                      long length)
 {
     X509_PUBKEY *xpk;
@@ -219,7 +219,7 @@ EVP_PKEY *d2i_PUBKEY(EVP_PKEY **a, const unsigned char **pp,
     return pktmp;
 }
 
-int i2d_PUBKEY(EVP_PKEY *a, unsigned char **pp)
+int i2d_PUBKEY(EVP_PKEY *a, uint8_t **pp)
 {
     X509_PUBKEY *xpk = NULL;
     int ret;
@@ -235,12 +235,12 @@ int i2d_PUBKEY(EVP_PKEY *a, unsigned char **pp)
 /* The following are equivalents but which return RSA and DSA
  * keys
  */
-RSA *d2i_RSA_PUBKEY(RSA **a, const unsigned char **pp,
+RSA *d2i_RSA_PUBKEY(RSA **a, const uint8_t **pp,
                     long length)
 {
     EVP_PKEY *pkey;
     RSA *key;
-    const unsigned char *q;
+    const uint8_t *q;
     q = *pp;
     pkey = d2i_PUBKEY(NULL, &q, length);
     if (!pkey)
@@ -257,7 +257,7 @@ RSA *d2i_RSA_PUBKEY(RSA **a, const unsigned char **pp,
     return key;
 }
 
-int i2d_RSA_PUBKEY(RSA *a, unsigned char **pp)
+int i2d_RSA_PUBKEY(RSA *a, uint8_t **pp)
 {
     EVP_PKEY *pktmp;
     int ret;
@@ -275,12 +275,12 @@ int i2d_RSA_PUBKEY(RSA *a, unsigned char **pp)
 }
 
 #ifndef OPENSSL_NO_DSA
-DSA *d2i_DSA_PUBKEY(DSA **a, const unsigned char **pp,
+DSA *d2i_DSA_PUBKEY(DSA **a, const uint8_t **pp,
                     long length)
 {
     EVP_PKEY *pkey;
     DSA *key;
-    const unsigned char *q;
+    const uint8_t *q;
     q = *pp;
     pkey = d2i_PUBKEY(NULL, &q, length);
     if (!pkey)
@@ -297,7 +297,7 @@ DSA *d2i_DSA_PUBKEY(DSA **a, const unsigned char **pp,
     return key;
 }
 
-int i2d_DSA_PUBKEY(DSA *a, unsigned char **pp)
+int i2d_DSA_PUBKEY(DSA *a, uint8_t **pp)
 {
     EVP_PKEY *pktmp;
     int ret;
@@ -315,11 +315,11 @@ int i2d_DSA_PUBKEY(DSA *a, unsigned char **pp)
 }
 #endif
 
-EC_KEY *d2i_EC_PUBKEY(EC_KEY **a, const unsigned char **pp, long length)
+EC_KEY *d2i_EC_PUBKEY(EC_KEY **a, const uint8_t **pp, long length)
 {
     EVP_PKEY *pkey;
     EC_KEY *key;
-    const unsigned char *q;
+    const uint8_t *q;
     q = *pp;
     pkey = d2i_PUBKEY(NULL, &q, length);
     if (!pkey)
@@ -336,7 +336,7 @@ EC_KEY *d2i_EC_PUBKEY(EC_KEY **a, const unsigned char **pp, long length)
     return (key);
 }
 
-int i2d_EC_PUBKEY(EC_KEY *a, unsigned char **pp)
+int i2d_EC_PUBKEY(EC_KEY *a, uint8_t **pp)
 {
     EVP_PKEY *pktmp;
     int ret;
@@ -354,7 +354,7 @@ int i2d_EC_PUBKEY(EC_KEY *a, unsigned char **pp)
 
 int X509_PUBKEY_set0_param(X509_PUBKEY *pub, ASN1_OBJECT *aobj,
                            int ptype, void *pval,
-                           unsigned char *penc, int penclen)
+                           uint8_t *penc, int penclen)
 {
     if (!X509_ALGOR_set0(pub->algor, aobj, ptype, pval))
         return 0;
@@ -371,7 +371,7 @@ int X509_PUBKEY_set0_param(X509_PUBKEY *pub, ASN1_OBJECT *aobj,
 }
 
 int X509_PUBKEY_get0_param(ASN1_OBJECT **ppkalg,
-                           const unsigned char **pk, int *ppklen,
+                           const uint8_t **pk, int *ppklen,
                            X509_ALGOR **pa,
                            X509_PUBKEY *pub)
 {

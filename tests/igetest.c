@@ -58,7 +58,7 @@
 #define TEST_SIZE 128
 #define BIG_TEST_SIZE 10240
 
-static void hexdump(FILE *f, const char *title, const unsigned char *s, int l)
+static void hexdump(FILE *f, const char *title, const uint8_t *s, int l)
 {
     int n = 0;
 
@@ -74,10 +74,10 @@ static void hexdump(FILE *f, const char *title, const unsigned char *s, int l)
 #define MAX_VECTOR_SIZE 64
 
 struct ige_test {
-    const unsigned char key[16];
-    const unsigned char iv[32];
-    const unsigned char in[MAX_VECTOR_SIZE];
-    const unsigned char out[MAX_VECTOR_SIZE];
+    const uint8_t key[16];
+    const uint8_t iv[32];
+    const uint8_t in[MAX_VECTOR_SIZE];
+    const uint8_t out[MAX_VECTOR_SIZE];
     const size_t length;
     const int encrypt;
 };
@@ -126,8 +126,8 @@ static int run_test_vectors(void)
     for (n = 0; n < sizeof(ige_test_vectors) / sizeof(ige_test_vectors[0]); ++n) {
         const struct ige_test *const v = &ige_test_vectors[n];
         AES_KEY key;
-        unsigned char buf[MAX_VECTOR_SIZE];
-        unsigned char iv[AES_BLOCK_SIZE * 2];
+        uint8_t buf[MAX_VECTOR_SIZE];
+        uint8_t iv[AES_BLOCK_SIZE * 2];
 
         assert(v->length <= MAX_VECTOR_SIZE);
 
@@ -171,15 +171,15 @@ static int run_test_vectors(void)
 
 int main(int argc, char **argv)
 {
-    unsigned char rkey[16];
-    unsigned char rkey2[16];
+    uint8_t rkey[16];
+    uint8_t rkey2[16];
     AES_KEY key;
     AES_KEY key2;
-    unsigned char plaintext[BIG_TEST_SIZE];
-    unsigned char ciphertext[BIG_TEST_SIZE];
-    unsigned char checktext[BIG_TEST_SIZE];
-    unsigned char iv[AES_BLOCK_SIZE * 4];
-    unsigned char saved_iv[AES_BLOCK_SIZE * 4];
+    uint8_t plaintext[BIG_TEST_SIZE];
+    uint8_t ciphertext[BIG_TEST_SIZE];
+    uint8_t checktext[BIG_TEST_SIZE];
+    uint8_t iv[AES_BLOCK_SIZE * 4];
+    uint8_t saved_iv[AES_BLOCK_SIZE * 4];
     int err = 0;
     unsigned int n;
     unsigned matches;

@@ -78,8 +78,8 @@ int pem_check_suffix(const char *pem_str, const char *suffix);
 EVP_PKEY *PEM_read_bio_PrivateKey(BIO *bp, EVP_PKEY **x, pem_password_cb *cb, void *u)
 {
     char *nm = NULL;
-    const unsigned char *p = NULL;
-    unsigned char *data = NULL;
+    const uint8_t *p = NULL;
+    uint8_t *data = NULL;
     long len;
     int slen;
     EVP_PKEY *ret = NULL;
@@ -147,7 +147,7 @@ err:
 }
 
 int PEM_write_bio_PrivateKey(BIO *bp, EVP_PKEY *x, const EVP_CIPHER *enc,
-                             unsigned char *kstr, int klen,
+                             uint8_t *kstr, int klen,
                              pem_password_cb *cb, void *u)
 {
     char pem_str[80];
@@ -164,8 +164,8 @@ int PEM_write_bio_PrivateKey(BIO *bp, EVP_PKEY *x, const EVP_CIPHER *enc,
 EVP_PKEY *PEM_read_bio_Parameters(BIO *bp, EVP_PKEY **x)
 {
     char *nm = NULL;
-    const unsigned char *p = NULL;
-    unsigned char *data = NULL;
+    const uint8_t *p = NULL;
+    uint8_t *data = NULL;
     long len;
     int slen;
     EVP_PKEY *ret = NULL;
@@ -228,7 +228,7 @@ EVP_PKEY *PEM_read_PrivateKey(FILE *fp, EVP_PKEY **x, pem_password_cb *cb, void 
 }
 
 int PEM_write_PrivateKey(FILE *fp, EVP_PKEY *x, const EVP_CIPHER *enc,
-                         unsigned char *kstr, int klen,
+                         uint8_t *kstr, int klen,
                          pem_password_cb *cb, void *u)
 {
     BIO *b;

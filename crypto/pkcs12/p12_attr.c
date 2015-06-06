@@ -61,7 +61,7 @@
 
 /* Add a local keyid to a safebag */
 
-int PKCS12_add_localkeyid(PKCS12_SAFEBAG *bag, unsigned char *name,
+int PKCS12_add_localkeyid(PKCS12_SAFEBAG *bag, uint8_t *name,
                           int namelen)
 {
     if (X509at_add1_attr_by_NID(&bag->attrib, NID_localKeyID,
@@ -75,8 +75,8 @@ int PKCS12_add_localkeyid(PKCS12_SAFEBAG *bag, unsigned char *name,
 
 int PKCS8_add_keyusage(PKCS8_PRIV_KEY_INFO *p8, int usage)
 {
-    unsigned char us_val;
-    us_val = (unsigned char)usage;
+    uint8_t us_val;
+    us_val = (uint8_t)usage;
     if (X509at_add1_attr_by_NID(&p8->attributes, NID_key_usage,
                                 V_ASN1_BIT_STRING, &us_val, 1))
         return 1;
@@ -90,14 +90,14 @@ int PKCS12_add_friendlyname_asc(PKCS12_SAFEBAG *bag, const char *name,
                                 int namelen)
 {
     if (X509at_add1_attr_by_NID(&bag->attrib, NID_friendlyName,
-                                MBSTRING_ASC, (unsigned char *)name, namelen))
+                                MBSTRING_ASC, (uint8_t *)name, namelen))
         return 1;
     else
         return 0;
 }
 
 int PKCS12_add_friendlyname_uni(PKCS12_SAFEBAG *bag,
-                                const unsigned char *name, int namelen)
+                                const uint8_t *name, int namelen)
 {
     if (X509at_add1_attr_by_NID(&bag->attrib, NID_friendlyName,
                                 MBSTRING_BMP, name, namelen))
@@ -110,7 +110,7 @@ int PKCS12_add_CSPName_asc(PKCS12_SAFEBAG *bag, const char *name,
                            int namelen)
 {
     if (X509at_add1_attr_by_NID(&bag->attrib, NID_ms_csp_name,
-                                MBSTRING_ASC, (unsigned char *)name, namelen))
+                                MBSTRING_ASC, (uint8_t *)name, namelen))
         return 1;
     else
         return 0;

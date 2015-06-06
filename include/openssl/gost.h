@@ -72,16 +72,16 @@ typedef struct gost2814789_key_st {
 } GOST2814789_KEY;
 
 int Gost2814789_set_sbox(GOST2814789_KEY *key, int nid);
-int Gost2814789_set_key(GOST2814789_KEY *key, const unsigned char *userKey,
+int Gost2814789_set_key(GOST2814789_KEY *key, const uint8_t *userKey,
                         const int bits);
-void Gost2814789_ecb_encrypt(const unsigned char *in, unsigned char *out,
+void Gost2814789_ecb_encrypt(const uint8_t *in, uint8_t *out,
                              GOST2814789_KEY *key, const int enc);
-void Gost2814789_cfb64_encrypt(const unsigned char *in, unsigned char *out,
+void Gost2814789_cfb64_encrypt(const uint8_t *in, uint8_t *out,
                                size_t length, GOST2814789_KEY *key,
-                               unsigned char *ivec, int *num, const int enc);
-void Gost2814789_cnt_encrypt(const unsigned char *in, unsigned char *out,
+                               uint8_t *ivec, int *num, const int enc);
+void Gost2814789_cnt_encrypt(const uint8_t *in, uint8_t *out,
                              size_t length, GOST2814789_KEY *key,
-                             unsigned char *ivec, unsigned char *cnt_buf, int *num);
+                             uint8_t *ivec, uint8_t *cnt_buf, int *num);
 
 typedef struct {
     ASN1_OCTET_STRING *iv;
@@ -96,21 +96,21 @@ DECLARE_ASN1_FUNCTIONS(GOST_CIPHER_PARAMS)
 
 typedef struct GOST2814789IMITstate_st {
     GOST2814789IMIT_LONG Nl, Nh;
-    unsigned char data[GOST2814789IMIT_CBLOCK];
+    uint8_t data[GOST2814789IMIT_CBLOCK];
     unsigned int num;
 
     GOST2814789_KEY cipher;
-    unsigned char mac[GOST2814789IMIT_CBLOCK];
+    uint8_t mac[GOST2814789IMIT_CBLOCK];
 } GOST2814789IMIT_CTX;
 
 /* Note, also removed second parameter and removed dctx->cipher setting */
 int GOST2814789IMIT_Init(GOST2814789IMIT_CTX *c, int nid);
 int GOST2814789IMIT_Update(GOST2814789IMIT_CTX *c, const void *data, size_t len);
-int GOST2814789IMIT_Final(unsigned char *md, GOST2814789IMIT_CTX *c);
-void GOST2814789IMIT_Transform(GOST2814789IMIT_CTX *c, const unsigned char *data);
-unsigned char *GOST2814789IMIT(const unsigned char *d, size_t n, unsigned char *md,
-                               int nid, const unsigned char *key,
-                               const unsigned char *iv);
+int GOST2814789IMIT_Final(uint8_t *md, GOST2814789IMIT_CTX *c);
+void GOST2814789IMIT_Transform(GOST2814789IMIT_CTX *c, const uint8_t *data);
+uint8_t *GOST2814789IMIT(const uint8_t *d, size_t n, uint8_t *md,
+                               int nid, const uint8_t *key,
+                               const uint8_t *iv);
 
 #define GOSTR341194_LONG unsigned int
 
@@ -124,16 +124,16 @@ typedef struct GOSTR341194state_st {
     unsigned int num;
 
     GOST2814789_KEY cipher;
-    unsigned char H[GOSTR341194_CBLOCK];
-    unsigned char S[GOSTR341194_CBLOCK];
+    uint8_t H[GOSTR341194_CBLOCK];
+    uint8_t S[GOSTR341194_CBLOCK];
 } GOSTR341194_CTX;
 
 /* Note, also removed second parameter and removed dctx->cipher setting */
 int GOSTR341194_Init(GOSTR341194_CTX *c, int nid);
 int GOSTR341194_Update(GOSTR341194_CTX *c, const void *data, size_t len);
-int GOSTR341194_Final(unsigned char *md, GOSTR341194_CTX *c);
-void GOSTR341194_Transform(GOSTR341194_CTX *c, const unsigned char *data);
-unsigned char *GOSTR341194(const unsigned char *d, size_t n, unsigned char *md,
+int GOSTR341194_Final(uint8_t *md, GOSTR341194_CTX *c);
+void GOSTR341194_Transform(GOSTR341194_CTX *c, const uint8_t *data);
+uint8_t *GOSTR341194(const uint8_t *d, size_t n, uint8_t *md,
                            int nid);
 
 
@@ -142,7 +142,7 @@ unsigned char *GOSTR341194(const unsigned char *d, size_t n, unsigned char *md,
 #define STREEBOG_LONG64 unsigned long
 #define U64(C) C##UL
 #else
-#define STREEBOG_LONG64 unsigned long long
+#define STREEBOG_LONG64 uint64_t
 #define U64(C) C##ULL
 #endif
 
@@ -162,15 +162,15 @@ typedef struct STREEBOGstate_st {
 
 int STREEBOG256_Init(STREEBOG_CTX *c);
 int STREEBOG256_Update(STREEBOG_CTX *c, const void *data, size_t len);
-int STREEBOG256_Final(unsigned char *md, STREEBOG_CTX *c);
-void STREEBOG256_Transform(STREEBOG_CTX *c, const unsigned char *data);
-unsigned char *STREEBOG256(const unsigned char *d, size_t n, unsigned char *md);
+int STREEBOG256_Final(uint8_t *md, STREEBOG_CTX *c);
+void STREEBOG256_Transform(STREEBOG_CTX *c, const uint8_t *data);
+uint8_t *STREEBOG256(const uint8_t *d, size_t n, uint8_t *md);
 
 int STREEBOG512_Init(STREEBOG_CTX *c);
 int STREEBOG512_Update(STREEBOG_CTX *c, const void *data, size_t len);
-int STREEBOG512_Final(unsigned char *md, STREEBOG_CTX *c);
-void STREEBOG512_Transform(STREEBOG_CTX *c, const unsigned char *data);
-unsigned char *STREEBOG512(const unsigned char *d, size_t n, unsigned char *md);
+int STREEBOG512_Final(uint8_t *md, STREEBOG_CTX *c);
+void STREEBOG512_Transform(STREEBOG_CTX *c, const uint8_t *data);
+uint8_t *STREEBOG512(const uint8_t *d, size_t n, uint8_t *md);
 
 typedef struct gost_key_st GOST_KEY;
 GOST_KEY *GOST_KEY_new(void);

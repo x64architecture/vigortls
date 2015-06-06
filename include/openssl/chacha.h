@@ -24,6 +24,7 @@
 #endif
 
 #include <stddef.h>
+#include <stdint.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -31,19 +32,19 @@ extern "C" {
 
 typedef struct {
     unsigned int input[16];
-    unsigned char ks[64];
-    unsigned char unused;
+    uint8_t ks[64];
+    uint8_t unused;
 } ChaCha_ctx;
 
-void ChaCha_set_key(ChaCha_ctx *ctx, const unsigned char *key,
+void ChaCha_set_key(ChaCha_ctx *ctx, const uint8_t *key,
                     unsigned int keybits);
-void ChaCha_set_iv(ChaCha_ctx *ctx, const unsigned char *iv,
-                   const unsigned char *counter);
-void ChaCha(ChaCha_ctx *ctx, unsigned char *out, const unsigned char *in,
+void ChaCha_set_iv(ChaCha_ctx *ctx, const uint8_t *iv,
+                   const uint8_t *counter);
+void ChaCha(ChaCha_ctx *ctx, uint8_t *out, const uint8_t *in,
             size_t inlen);
 
-void CRYPTO_chacha_20(unsigned char *out, const unsigned char *in, size_t inlen,
-                      const unsigned char key[32], const unsigned char nonce[8], size_t counter);
+void CRYPTO_chacha_20(uint8_t *out, const uint8_t *in, size_t inlen,
+                      const uint8_t key[32], const uint8_t nonce[8], size_t counter);
 
 #ifdef __cplusplus
 }

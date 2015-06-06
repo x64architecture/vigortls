@@ -75,7 +75,7 @@ const char *BF_options(void)
 #endif
 }
 
-void BF_ecb_encrypt(const unsigned char *in, unsigned char *out,
+void BF_ecb_encrypt(const uint8_t *in, uint8_t *out,
                     const BF_KEY *key, int encrypt)
 {
     BF_LONG l, d[2];

@@ -78,12 +78,12 @@ ASN1_SEQUENCE(X509_ATTRIBUTE) = {
     ASN1_SET_OF(X509_ATTRIBUTE, set, ASN1_ANY)
 } ASN1_SEQUENCE_END(X509_ATTRIBUTE)
 
-X509_ATTRIBUTE *d2i_X509_ATTRIBUTE(X509_ATTRIBUTE **a, const unsigned char **in, long len)
+X509_ATTRIBUTE *d2i_X509_ATTRIBUTE(X509_ATTRIBUTE **a, const uint8_t **in, long len)
 {
     return (X509_ATTRIBUTE *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, &X509_ATTRIBUTE_it);
 }
 
-int i2d_X509_ATTRIBUTE(X509_ATTRIBUTE *a, unsigned char **out)
+int i2d_X509_ATTRIBUTE(X509_ATTRIBUTE *a, uint8_t **out)
 {
     return ASN1_item_i2d((ASN1_VALUE *)a, out, &X509_ATTRIBUTE_it);
 }

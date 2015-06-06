@@ -356,8 +356,8 @@ int chopup_args(ARGS *arg, char *buf, int *argc, char **argv[]);
 int dump_cert_text(BIO *out, X509 *x);
 void print_name(BIO *out, const char *title, X509_NAME *nm, unsigned long lflags);
 #endif
-void print_bignum_var(BIO *, BIGNUM *, const char*, int, unsigned char *);
-void print_array(BIO *, const char *, int, const unsigned char *);
+void print_bignum_var(BIO *, BIGNUM *, const char*, int, uint8_t *);
+void print_array(BIO *, const char *, int, const uint8_t *);
 int set_cert_ex(unsigned long *flags, const char *arg);
 int set_name_ex(unsigned long *flags, const char *arg);
 int set_ext_copy(int *copy_type, const char *arg);
@@ -429,7 +429,7 @@ X509_NAME *parse_name(char *str, long chtype, int multirdn);
 int args_verify(char ***pargs, int *pargc,
                 int *badarg, X509_VERIFY_PARAM **pm);
 void policies_print(BIO *out, X509_STORE_CTX *ctx);
-int bio_to_mem(unsigned char **out, int maxlen, BIO *in);
+int bio_to_mem(uint8_t **out, int maxlen, BIO *in);
 int pkey_ctrl_string(EVP_PKEY_CTX *ctx, char *value);
 int init_gen_str(EVP_PKEY_CTX **pctx,
                  const char *algname, ENGINE *e, int do_param);
@@ -441,7 +441,7 @@ int do_X509_CRL_sign(X509_CRL *x, EVP_PKEY *pkey, const EVP_MD *md,
                      STACK_OF(OPENSSL_STRING) * sigopts);
 
 #ifndef OPENSSL_NO_NEXTPROTONEG
-unsigned char *next_protos_parse(unsigned short *outlen, const char *in);
+uint8_t *next_protos_parse(unsigned short *outlen, const char *in);
 #endif
 
 #define FORMAT_UNDEF 0

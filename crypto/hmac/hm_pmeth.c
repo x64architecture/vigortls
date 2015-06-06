@@ -156,7 +156,7 @@ static int hmac_signctx_init(EVP_PKEY_CTX *ctx, EVP_MD_CTX *mctx)
     return 1;
 }
 
-static int hmac_signctx(EVP_PKEY_CTX *ctx, unsigned char *sig, size_t *siglen,
+static int hmac_signctx(EVP_PKEY_CTX *ctx, uint8_t *sig, size_t *siglen,
                         EVP_MD_CTX *mctx)
 {
     unsigned int hlen;
@@ -216,7 +216,7 @@ static int pkey_hmac_ctrl_str(EVP_PKEY_CTX *ctx,
         return pkey_hmac_ctrl(ctx, EVP_PKEY_CTRL_SET_MAC_KEY, -1, p);
     }
     if (strcmp(type, "hexkey") == 0) {
-        unsigned char *key;
+        uint8_t *key;
         int r;
         long keylen;
         key = string_to_hex(value, &keylen);

@@ -64,7 +64,7 @@
  * the second.  The second 12 bits will come from the 3rd and half the 4th
  * byte.
  */
-void DES_ofb_encrypt(const unsigned char *in, unsigned char *out, int numbits,
+void DES_ofb_encrypt(const uint8_t *in, uint8_t *out, int numbits,
                      long length, DES_key_schedule *schedule, DES_cblock *ivec)
 {
     uint32_t d0, d1, vv0, vv1, v0, v1, n = (numbits + 7) / 8;
@@ -72,7 +72,7 @@ void DES_ofb_encrypt(const unsigned char *in, unsigned char *out, int numbits,
     register long l = length;
     register int num = numbits;
     uint32_t ti[2];
-    unsigned char *iv;
+    uint8_t *iv;
 
     if (num > 64)
         return;

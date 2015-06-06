@@ -331,12 +331,12 @@ ASN1_SEQUENCE_ref(X509_CRL, crl_cb, CRYPTO_LOCK_X509_CRL) = {
     ASN1_SIMPLE(X509_CRL, signature, ASN1_BIT_STRING)
 } ASN1_SEQUENCE_END_ref(X509_CRL, X509_CRL)
 
-X509_REVOKED *d2i_X509_REVOKED(X509_REVOKED **a, const unsigned char **in, long len)
+X509_REVOKED *d2i_X509_REVOKED(X509_REVOKED **a, const uint8_t **in, long len)
 {
     return (X509_REVOKED *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, &X509_REVOKED_it);
 }
 
-int i2d_X509_REVOKED(X509_REVOKED *a, unsigned char **out)
+int i2d_X509_REVOKED(X509_REVOKED *a, uint8_t **out)
 {
     return ASN1_item_i2d((ASN1_VALUE *)a, out, &X509_REVOKED_it);
 }
@@ -351,12 +351,12 @@ void X509_REVOKED_free(X509_REVOKED *a)
     ASN1_item_free((ASN1_VALUE *)a, &X509_REVOKED_it);
 }
 
-X509_CRL_INFO *d2i_X509_CRL_INFO(X509_CRL_INFO **a, const unsigned char **in, long len)
+X509_CRL_INFO *d2i_X509_CRL_INFO(X509_CRL_INFO **a, const uint8_t **in, long len)
 {
     return (X509_CRL_INFO *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, &X509_CRL_INFO_it);
 }
 
-int i2d_X509_CRL_INFO(X509_CRL_INFO *a, unsigned char **out)
+int i2d_X509_CRL_INFO(X509_CRL_INFO *a, uint8_t **out)
 {
     return ASN1_item_i2d((ASN1_VALUE *)a, out, &X509_CRL_INFO_it);
 }
@@ -371,12 +371,12 @@ void X509_CRL_INFO_free(X509_CRL_INFO *a)
     ASN1_item_free((ASN1_VALUE *)a, &X509_CRL_INFO_it);
 }
 
-X509_CRL *d2i_X509_CRL(X509_CRL **a, const unsigned char **in, long len)
+X509_CRL *d2i_X509_CRL(X509_CRL **a, const uint8_t **in, long len)
 {
     return (X509_CRL *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, &X509_CRL_it);
 }
 
-int i2d_X509_CRL(X509_CRL *a, unsigned char **out)
+int i2d_X509_CRL(X509_CRL *a, uint8_t **out)
 {
     return ASN1_item_i2d((ASN1_VALUE *)a, out, &X509_CRL_it);
 }

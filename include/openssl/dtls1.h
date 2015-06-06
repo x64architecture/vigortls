@@ -107,7 +107,7 @@ extern "C" {
 typedef struct dtls1_bitmap_st {
     unsigned long map;            /* track 32 packets on 32-bit systems
                        and 64 - on 64-bit systems */
-    unsigned char max_seq_num[8]; /* max record number seen so far,
+    uint8_t max_seq_num[8]; /* max record number seen so far,
                        64-bit value in big-endian
                        encoding */
 } DTLS1_BITMAP;
@@ -120,7 +120,7 @@ struct dtls1_retransmit_state {
 };
 
 struct hm_header_st {
-    unsigned char type;
+    uint8_t type;
     unsigned long msg_len;
     unsigned short seq;
     unsigned long frag_off;
@@ -130,7 +130,7 @@ struct hm_header_st {
 };
 
 struct ccs_header_st {
-    unsigned char type;
+    uint8_t type;
     unsigned short seq;
 };
 
@@ -154,14 +154,14 @@ typedef struct record_pqueue_st {
 
 typedef struct hm_fragment_st {
     struct hm_header_st msg_header;
-    unsigned char *fragment;
-    unsigned char *reassembly;
+    uint8_t *fragment;
+    uint8_t *reassembly;
 } hm_fragment;
 
 typedef struct dtls1_state_st {
     unsigned int send_cookie;
-    unsigned char cookie[DTLS1_COOKIE_LENGTH];
-    unsigned char rcvd_cookie[DTLS1_COOKIE_LENGTH];
+    uint8_t cookie[DTLS1_COOKIE_LENGTH];
+    uint8_t rcvd_cookie[DTLS1_COOKIE_LENGTH];
     unsigned int cookie_len;
 
     /*
@@ -185,7 +185,7 @@ typedef struct dtls1_state_st {
     unsigned short handshake_read_seq;
 
     /* save last sequence number for retransmissions */
-    unsigned char last_write_sequence[8];
+    uint8_t last_write_sequence[8];
 
     /* Received handshake records (processed and unprocessed) */
     record_pqueue unprocessed_rcds;
@@ -222,9 +222,9 @@ typedef struct dtls1_state_st {
 
     /* storage for Alert/Handshake protocol data received but not
      * yet processed by ssl3_read_bytes: */
-    unsigned char alert_fragment[DTLS1_AL_HEADER_LENGTH];
+    uint8_t alert_fragment[DTLS1_AL_HEADER_LENGTH];
     unsigned int alert_fragment_len;
-    unsigned char handshake_fragment[DTLS1_HM_HEADER_LENGTH];
+    uint8_t handshake_fragment[DTLS1_HM_HEADER_LENGTH];
     unsigned int handshake_fragment_len;
 
     unsigned int retransmitting;
@@ -237,7 +237,7 @@ typedef struct dtls1_state_st {
 } DTLS1_STATE;
 
 typedef struct dtls1_record_data_st {
-    unsigned char *packet;
+    uint8_t *packet;
     unsigned int packet_length;
     SSL3_BUFFER rbuf;
     SSL3_RECORD rrec;

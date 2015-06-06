@@ -184,7 +184,7 @@ STACK_OF(X509_EXTENSION) * X509_REQ_get_extensions(X509_REQ *req)
     X509_ATTRIBUTE *attr;
     ASN1_TYPE *ext = NULL;
     int idx, *pnid;
-    const unsigned char *p;
+    const uint8_t *p;
 
     if ((req == NULL) || (req->req_info == NULL) || !ext_nids)
         return (NULL);
@@ -212,7 +212,7 @@ int X509_REQ_add_extensions_nid(X509_REQ *req, STACK_OF(X509_EXTENSION) *exts, i
 {
     int extlen;
     int rv = 0;
-    unsigned char *ext = NULL;
+    uint8_t *ext = NULL;
     /* Generate encoding of extensions */
     extlen = ASN1_item_i2d((ASN1_VALUE *)exts, &ext, ASN1_ITEM_rptr(X509_EXTENSIONS));
     if (extlen <= 0)
@@ -265,7 +265,7 @@ int X509_REQ_add1_attr(X509_REQ *req, X509_ATTRIBUTE *attr)
 
 int X509_REQ_add1_attr_by_OBJ(X509_REQ *req,
                               const ASN1_OBJECT *obj, int type,
-                              const unsigned char *bytes, int len)
+                              const uint8_t *bytes, int len)
 {
     if (X509at_add1_attr_by_OBJ(&req->req_info->attributes, obj,
                                 type, bytes, len))
@@ -275,7 +275,7 @@ int X509_REQ_add1_attr_by_OBJ(X509_REQ *req,
 
 int X509_REQ_add1_attr_by_NID(X509_REQ *req,
                               int nid, int type,
-                              const unsigned char *bytes, int len)
+                              const uint8_t *bytes, int len)
 {
     if (X509at_add1_attr_by_NID(&req->req_info->attributes, nid,
                                 type, bytes, len))
@@ -285,7 +285,7 @@ int X509_REQ_add1_attr_by_NID(X509_REQ *req,
 
 int X509_REQ_add1_attr_by_txt(X509_REQ *req,
                               const char *attrname, int type,
-                              const unsigned char *bytes, int len)
+                              const uint8_t *bytes, int len)
 {
     if (X509at_add1_attr_by_txt(&req->req_info->attributes, attrname,
                                 type, bytes, len))

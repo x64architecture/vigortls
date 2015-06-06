@@ -70,8 +70,8 @@
 static int long_new(ASN1_VALUE **pval, const ASN1_ITEM *it);
 static void long_free(ASN1_VALUE **pval, const ASN1_ITEM *it);
 
-static int long_i2c(ASN1_VALUE **pval, unsigned char *cont, int *putype, const ASN1_ITEM *it);
-static int long_c2i(ASN1_VALUE **pval, const unsigned char *cont, int len, int utype, char *free_cont, const ASN1_ITEM *it);
+static int long_i2c(ASN1_VALUE **pval, uint8_t *cont, int *putype, const ASN1_ITEM *it);
+static int long_c2i(ASN1_VALUE **pval, const uint8_t *cont, int len, int utype, char *free_cont, const ASN1_ITEM *it);
 static int long_print(BIO *out, ASN1_VALUE **pval, const ASN1_ITEM *it, int indent, const ASN1_PCTX *pctx);
 
 static ASN1_PRIMITIVE_FUNCS long_pf = {
@@ -103,7 +103,7 @@ static void long_free(ASN1_VALUE **pval, const ASN1_ITEM *it)
     *(long *)pval = it->size;
 }
 
-static int long_i2c(ASN1_VALUE **pval, unsigned char *cont, int *putype, const ASN1_ITEM *it)
+static int long_i2c(ASN1_VALUE **pval, uint8_t *cont, int *putype, const ASN1_ITEM *it)
 {
     long ltmp;
     unsigned long utmp;
@@ -138,7 +138,7 @@ static int long_i2c(ASN1_VALUE **pval, unsigned char *cont, int *putype, const A
         if (pad)
             *cont++ = (ltmp < 0) ? 0xff : 0;
         for (i = clen - 1; i >= 0; i--) {
-            cont[i] = (unsigned char)(utmp & 0xff);
+            cont[i] = (uint8_t)(utmp & 0xff);
             if (ltmp < 0)
                 cont[i] ^= 0xff;
             utmp >>= 8;
@@ -147,7 +147,7 @@ static int long_i2c(ASN1_VALUE **pval, unsigned char *cont, int *putype, const A
     return clen + pad;
 }
 
-static int long_c2i(ASN1_VALUE **pval, const unsigned char *cont, int len,
+static int long_c2i(ASN1_VALUE **pval, const uint8_t *cont, int len,
                     int utype, char *free_cont, const ASN1_ITEM *it)
 {
     int neg, i;

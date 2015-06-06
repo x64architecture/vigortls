@@ -59,7 +59,7 @@
 #include <openssl/cast.h>
 #include "cast_lcl.h"
 
-void CAST_ecb_encrypt(const unsigned char *in, unsigned char *out,
+void CAST_ecb_encrypt(const uint8_t *in, uint8_t *out,
                       const CAST_KEY *ks, int enc)
 {
     CAST_LONG l, d[2];

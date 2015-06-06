@@ -132,11 +132,11 @@ int ASN1_UTCTIME_set_string(ASN1_UTCTIME *s, const char *str)
 
     t.type = V_ASN1_UTCTIME;
     t.length = strlen(str);
-    t.data = (unsigned char *)str;
+    t.data = (uint8_t *)str;
     if (ASN1_UTCTIME_check(&t)) {
         if (s != NULL) {
             if (!ASN1_STRING_set((ASN1_STRING *)s,
-                                 (unsigned char *)str, t.length))
+                                 (uint8_t *)str, t.length))
                 return 0;
             s->type = V_ASN1_UTCTIME;
         }
@@ -183,7 +183,7 @@ ASN1_UTCTIME *ASN1_UTCTIME_adj(ASN1_UTCTIME *s, time_t t,
             goto err;
         }
         free(s->data);
-        s->data = (unsigned char *)p;
+        s->data = (uint8_t *)p;
     }
 
     snprintf(p, len, "%02d%02d%02d%02d%02d%02dZ", ts->tm_year % 100,

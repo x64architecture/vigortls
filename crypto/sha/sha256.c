@@ -185,7 +185,7 @@ static void sha256_block_data_order(SHA256_CTX *ctx, const void *in, size_t num)
     unsigned int a, b, c, d, e, f, g, h, s0, s1, T1, T2;
     SHA_LONG X[16], l;
     int i;
-    const unsigned char *data = in;
+    const uint8_t *data = in;
 
     while (num--) {
 
@@ -268,7 +268,7 @@ static void sha256_block_data_order(SHA256_CTX *ctx, const void *in, size_t num)
     unsigned int a, b, c, d, e, f, g, h, s0, s1, T1;
     SHA_LONG X[16];
     int i;
-    const unsigned char *data = in;
+    const uint8_t *data = in;
 
     while (num--) {
 

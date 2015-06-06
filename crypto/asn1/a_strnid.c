@@ -124,7 +124,7 @@ int ASN1_STRING_set_default_mask_asc(const char *p)
  * corresponding OID. For example certificates and certificate requests.
  */
 
-ASN1_STRING *ASN1_STRING_set_by_NID(ASN1_STRING **out, const unsigned char *in,
+ASN1_STRING *ASN1_STRING_set_by_NID(ASN1_STRING **out, const uint8_t *in,
                                     int inlen, int inform, int nid)
 {
     ASN1_STRING_TABLE *tbl;

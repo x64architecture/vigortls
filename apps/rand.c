@@ -143,7 +143,7 @@ int rand_main(int argc, char **argv)
     }
 
     while (num > 0) {
-        unsigned char buf[4096];
+        uint8_t buf[4096];
         int chunk;
 
         chunk = num;

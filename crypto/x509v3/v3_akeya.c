@@ -68,12 +68,12 @@ ASN1_SEQUENCE(AUTHORITY_KEYID) = {
     ASN1_IMP_OPT(AUTHORITY_KEYID, serial, ASN1_INTEGER, 2)
 } ASN1_SEQUENCE_END(AUTHORITY_KEYID)
 
-AUTHORITY_KEYID *d2i_AUTHORITY_KEYID(AUTHORITY_KEYID **a, const unsigned char **in, long len)
+AUTHORITY_KEYID *d2i_AUTHORITY_KEYID(AUTHORITY_KEYID **a, const uint8_t **in, long len)
 {
     return (AUTHORITY_KEYID *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, &AUTHORITY_KEYID_it);
 }
 
-int i2d_AUTHORITY_KEYID(AUTHORITY_KEYID *a, unsigned char **out)
+int i2d_AUTHORITY_KEYID(AUTHORITY_KEYID *a, uint8_t **out)
 {
     return ASN1_item_i2d((ASN1_VALUE *)a, out, &AUTHORITY_KEYID_it);
 }

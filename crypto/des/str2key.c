@@ -63,7 +63,7 @@ void DES_string_to_key(const char *str, DES_cblock *key)
 {
     DES_key_schedule ks;
     int i, length;
-    register unsigned char j;
+    register uint8_t j;
 
     memset(key, 0, 8);
     length = strlen(str);
@@ -92,7 +92,7 @@ void DES_string_to_key(const char *str, DES_cblock *key)
 #else
     DES_set_key_unchecked(key, &ks);
 #endif
-    DES_cbc_cksum((const unsigned char *)str, key, length, &ks, key);
+    DES_cbc_cksum((const uint8_t *)str, key, length, &ks, key);
     vigortls_zeroize(&ks, sizeof(ks));
     DES_set_odd_parity(key);
 }
@@ -101,7 +101,7 @@ void DES_string_to_2keys(const char *str, DES_cblock *key1, DES_cblock *key2)
 {
     DES_key_schedule ks;
     int i, length;
-    register unsigned char j;
+    register uint8_t j;
 
     memset(key1, 0, 8);
     memset(key2, 0, 8);
@@ -149,7 +149,7 @@ void DES_string_to_2keys(const char *str, DES_cblock *key1, DES_cblock *key2)
 #else
     DES_set_key_unchecked(key1, &ks);
 #endif
-    DES_cbc_cksum((const unsigned char *)str, key1, length, &ks, key1);
+    DES_cbc_cksum((const uint8_t *)str, key1, length, &ks, key1);
 #ifdef EXPERIMENTAL_STR_TO_STRONG_KEY
     if (DES_is_weak_key(key2))
         (*key2)[7] ^= 0xF0;
@@ -157,7 +157,7 @@ void DES_string_to_2keys(const char *str, DES_cblock *key1, DES_cblock *key2)
 #else
     DES_set_key_unchecked(key2, &ks);
 #endif
-    DES_cbc_cksum((const unsigned char *)str, key2, length, &ks, key2);
+    DES_cbc_cksum((const uint8_t *)str, key2, length, &ks, key2);
     vigortls_zeroize(&ks, sizeof(ks));
     DES_set_odd_parity(key1);
     DES_set_odd_parity(key2);

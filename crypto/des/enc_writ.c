@@ -86,13 +86,13 @@ int DES_enc_write(int fd, const void *_buf, int len, DES_key_schedule *sched,
     extern unsigned long time();
     extern int write();
 #endif
-    const unsigned char *buf = _buf;
+    const uint8_t *buf = _buf;
     long rnum;
     int i, j, k, outnum;
-    static unsigned char *outbuf = NULL;
-    unsigned char shortbuf[8];
-    unsigned char *p;
-    const unsigned char *cp;
+    static uint8_t *outbuf = NULL;
+    uint8_t shortbuf[8];
+    uint8_t *p;
+    const uint8_t *cp;
     static int start = 1;
 
     if (outbuf == NULL) {

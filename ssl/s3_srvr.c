@@ -814,7 +814,7 @@ int ssl3_get_client_hello(SSL *s)
     unsigned int cookie_len;
     long n;
     unsigned long id;
-    unsigned char *p, *d;
+    uint8_t *p, *d;
     SSL_CIPHER *c;
     STACK_OF(SSL_CIPHER) *ciphers = NULL;
 
@@ -836,7 +836,7 @@ int ssl3_get_client_hello(SSL *s)
     if (!ok)
         return ((int)n);
     s->first_packet = 0;
-    d = p = (unsigned char *)s->init_msg;
+    d = p = (uint8_t *)s->init_msg;
 
     if (2 > n)
         goto truncated;
@@ -1057,7 +1057,7 @@ int ssl3_get_client_hello(SSL *s)
      * SessionTicket processing to use it in key derivation.
      */
     {
-        unsigned char *pos;
+        uint8_t *pos;
         pos = s->s3->server_random;
         if (RAND_bytes(pos, SSL3_RANDOM_SIZE) <= 0) {
             SSLerr(SSL_F_SSL3_SEND_CLIENT_KEY_EXCHANGE, ERR_R_INTERNAL_ERROR);
@@ -1190,13 +1190,13 @@ err:
 
 int ssl3_send_server_hello(SSL *s)
 {
-    unsigned char *buf;
-    unsigned char *p, *d;
+    uint8_t *buf;
+    uint8_t *p, *d;
     unsigned long l;
     int sl;
 
     if (s->state == SSL3_ST_SW_SRVR_HELLO_A) {
-        buf = (unsigned char *)s->init_buf->data;
+        buf = (uint8_t *)s->init_buf->data;
         /* Do the message type and length last */
         d = p = ssl_handshake_start(s);
 
@@ -1274,20 +1274,20 @@ int ssl3_send_server_done(SSL *s)
 
 int ssl3_send_server_key_exchange(SSL *s)
 {
-    unsigned char *q;
+    uint8_t *q;
     int j, num;
-    unsigned char md_buf[MD5_DIGEST_LENGTH + SHA_DIGEST_LENGTH];
+    uint8_t md_buf[MD5_DIGEST_LENGTH + SHA_DIGEST_LENGTH];
     unsigned int u;
     DH *dh = NULL, *dhp;
     EC_KEY *ecdh = NULL, *ecdhp;
-    unsigned char *encodedPoint = NULL;
+    uint8_t *encodedPoint = NULL;
     int encodedlen = 0;
     int curve_id = 0;
     BN_CTX *bn_ctx = NULL;
 
     EVP_PKEY *pkey;
     const EVP_MD *md = NULL;
-    unsigned char *p, *d;
+    uint8_t *p, *d;
     int al, i;
     unsigned long type;
     int n;
@@ -1513,7 +1513,7 @@ int ssl3_send_server_key_exchange(SSL *s)
             p += 1;
             *p = encodedlen;
             p += 1;
-            memcpy((unsigned char *)p, (unsigned char *)encodedPoint, encodedlen);
+            memcpy((uint8_t *)p, (uint8_t *)encodedPoint, encodedlen);
             free(encodedPoint);
             encodedPoint = NULL;
             p += encodedlen;
@@ -1594,7 +1594,7 @@ err:
 
 int ssl3_send_certificate_request(SSL *s)
 {
-    unsigned char *p, *d;
+    uint8_t *p, *d;
     int i, j, nl, off, n;
     STACK_OF(X509_NAME) *sk = NULL;
     X509_NAME *name;
@@ -1633,7 +1633,7 @@ int ssl3_send_certificate_request(SSL *s)
                     SSLerr(SSL_F_SSL3_SEND_CERTIFICATE_REQUEST, ERR_R_BUF_LIB);
                     goto err;
                 }
-                p = (unsigned char *)&(buf->data[4 + n]);
+                p = (uint8_t *)&(buf->data[4 + n]);
                 if (!(s->options & SSL_OP_NETSCAPE_CA_DN_BUG)) {
                     s2n(j, p);
                     i2d_X509_NAME(name, &p);
@@ -1669,7 +1669,7 @@ int ssl3_get_client_key_exchange(SSL *s)
     int i, al, ok;
     long n;
     unsigned long alg_k;
-    unsigned char *d, *p;
+    uint8_t *d, *p;
     RSA *rsa = NULL;
     EVP_PKEY *pkey = NULL;
     BIGNUM *pub = NULL;
@@ -1686,14 +1686,14 @@ int ssl3_get_client_key_exchange(SSL *s)
                                    SSL3_MT_CLIENT_KEY_EXCHANGE, 2048, &ok);
     if (!ok)
         return ((int)n);
-    d = p = (unsigned char *)s->init_msg;
+    d = p = (uint8_t *)s->init_msg;
 
     alg_k = s->s3->tmp.new_cipher->algorithm_mkey;
 
     if (alg_k & SSL_kRSA) {
-        unsigned char rand_premaster_secret[SSL_MAX_MASTER_KEY_LENGTH];
+        uint8_t rand_premaster_secret[SSL_MAX_MASTER_KEY_LENGTH];
         int decrypt_len;
-        unsigned char decrypt_good, version_good;
+        uint8_t decrypt_good, version_good;
         size_t j;
         
         pkey = s->cert->pkeys[SSL_PKEY_RSA_ENC].privatekey;
@@ -1772,7 +1772,7 @@ int ssl3_get_client_key_exchange(SSL *s)
          * support the requested protocol version. If
          * SSL_OP_TLS_ROLLBACK_BUG is set, tolerate such clients. */
         if (s->options & SSL_OP_TLS_ROLLBACK_BUG) {
-            unsigned char workaround_good;
+            uint8_t workaround_good;
             workaround_good = constant_time_eq_8(p[0], (unsigned)(s->version >> 8));
             workaround_good &= constant_time_eq_8(p[1], (unsigned)(s->version & 0xff));
             version_good |= workaround_good;
@@ -1945,7 +1945,7 @@ int ssl3_get_client_key_exchange(SSL *s)
              * p is pointing to somewhere in the buffer
              * currently, so set it to the start.
              */
-            p = (unsigned char *)s->init_buf->data;
+            p = (uint8_t *)s->init_buf->data;
         }
 
         /* Compute the shared pre-master secret */
@@ -1978,7 +1978,7 @@ int ssl3_get_client_key_exchange(SSL *s)
         int ret = 0;
         EVP_PKEY_CTX *pkey_ctx;
         EVP_PKEY *client_pub_pkey = NULL, *pk = NULL;
-        unsigned char premaster_secret[32], *start;
+        uint8_t premaster_secret[32], *start;
         size_t outlen = 32, inlen;
         unsigned long alg_a;
         int Ttag, Tclass;
@@ -2008,7 +2008,7 @@ int ssl3_get_client_key_exchange(SSL *s)
         if (2 > n)
             goto truncated;
         /* Decrypt session key */
-        if (ASN1_get_object((const unsigned char **)&p, &Tlen, &Ttag, &Tclass, n) 
+        if (ASN1_get_object((const uint8_t **)&p, &Tlen, &Ttag, &Tclass, n) 
             != V_ASN1_CONSTRUCTED || Ttag != V_ASN1_SEQUENCE || Tclass != V_ASN1_UNIVERSAL) {
             SSLerr(SSL_F_SSL3_GET_CLIENT_KEY_EXCHANGE, SSL_R_DECRYPTION_FAILED);
             goto gerr;
@@ -2057,7 +2057,7 @@ err:
 int ssl3_get_cert_verify(SSL *s)
 {
     EVP_PKEY *pkey = NULL;
-    unsigned char *p;
+    uint8_t *p;
     int al, ok, ret = 0;
     long n;
     int type = 0, i, j;
@@ -2112,7 +2112,7 @@ int ssl3_get_cert_verify(SSL *s)
     }
 
     /* we now have a signature that we need to verify */
-    p = (unsigned char *)s->init_msg;
+    p = (uint8_t *)s->init_msg;
     /*
      * Check for broken implementations of GOST ciphersuites.
      *
@@ -2215,7 +2215,7 @@ int ssl3_get_cert_verify(SSL *s)
             goto f_err;
         }
     } else if (pkey->type == NID_id_GostR3410_94 || pkey->type == NID_id_GostR3410_2001) {
-        unsigned char signature[64];
+        uint8_t signature[64];
         int idx;
         EVP_PKEY_CTX *pctx;
 
@@ -2270,7 +2270,7 @@ int ssl3_get_client_certificate(SSL *s)
     int i, ok, al, ret = -1;
     X509 *x = NULL;
     unsigned long l, nc, llen, n;
-    const unsigned char *p, *q;
+    const uint8_t *p, *q;
     STACK_OF(X509) *sk = NULL;
 
     n = s->method->ssl_get_message(s, SSL3_ST_SR_CERT_A, SSL3_ST_SR_CERT_B, -1,
@@ -2305,7 +2305,7 @@ int ssl3_get_client_certificate(SSL *s)
         SSLerr(SSL_F_SSL3_GET_CLIENT_CERTIFICATE, SSL_R_WRONG_MESSAGE_TYPE);
         goto f_err;
     }
-    p = (const unsigned char *)s->init_msg;
+    p = (const uint8_t *)s->init_msg;
 
     if ((sk = sk_X509_new_null()) == NULL) {
         SSLerr(SSL_F_SSL3_GET_CLIENT_CERTIFICATE, ERR_R_MALLOC_FAILURE);
@@ -2434,19 +2434,19 @@ int ssl3_send_server_certificate(SSL *s)
 /* send a new session ticket (not necessarily for a new session) */
 int ssl3_send_newsession_ticket(SSL *s)
 {
-    unsigned char *senc = NULL;
+    uint8_t *senc = NULL;
     EVP_CIPHER_CTX ctx;
     HMAC_CTX hctx;
 
     if (s->state == SSL3_ST_SW_SESSION_TICKET_A) {
-        unsigned char *p, *macstart;
-        const unsigned char *const_p;
+        uint8_t *p, *macstart;
+        const uint8_t *const_p;
         int len, slen_full, slen;
         SSL_SESSION *sess;
         unsigned int hlen;
         SSL_CTX *tctx = s->initial_ctx;
-        unsigned char iv[EVP_MAX_IV_LENGTH];
-        unsigned char key_name[16];
+        uint8_t iv[EVP_MAX_IV_LENGTH];
+        uint8_t key_name[16];
 
         /* get session encoding length */
         slen_full = i2d_SSL_SESSION(s->session, NULL);
@@ -2583,7 +2583,7 @@ err:
 int ssl3_send_cert_status(SSL *s)
 {
     if (s->state == SSL3_ST_SW_CERT_STATUS_A) {
-        unsigned char *p;
+        uint8_t *p;
         /*
          * Grow buffer if need be: the length calculation is as
          * follows 1 (message type) + 3 (message length) +
@@ -2593,7 +2593,7 @@ int ssl3_send_cert_status(SSL *s)
         if (!BUF_MEM_grow(s->init_buf, 8 + s->tlsext_ocsp_resplen))
             return (-1);
 
-        p = (unsigned char *)s->init_buf->data;
+        p = (uint8_t *)s->init_buf->data;
 
         /* do the header */
         *(p++) = SSL3_MT_CERTIFICATE_STATUS;
@@ -2624,7 +2624,7 @@ int ssl3_get_next_proto(SSL *s)
     int ok;
     int proto_len, padding_len;
     long n;
-    const unsigned char *p;
+    const uint8_t *p;
 
     /*
      * Clients cannot send a NextProtocol message if we didn't see the
@@ -2656,7 +2656,7 @@ int ssl3_get_next_proto(SSL *s)
         return (0);
     /* The body must be > 1 bytes long */
 
-    p = (unsigned char *)s->init_msg;
+    p = (uint8_t *)s->init_msg;
 
     /*
      * The payload looks like:

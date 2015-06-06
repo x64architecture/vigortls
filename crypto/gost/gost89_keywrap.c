@@ -59,15 +59,15 @@
 #include "gost_locl.h"
 
 static void key_diversify_crypto_pro(GOST2814789_KEY *ctx,
-                                     const unsigned char *inputKey,
-                                     const unsigned char *ukm,
-                                     unsigned char *outputKey)
+                                     const uint8_t *inputKey,
+                                     const uint8_t *ukm,
+                                     uint8_t *outputKey)
 {
 
     unsigned long k, s1, s2;
     int i, mask;
-    unsigned char S[8];
-    unsigned char *p;
+    uint8_t S[8];
+    uint8_t *p;
     memcpy(outputKey, inputKey, 32);
     for (i = 0; i < 8; i++) {
         /* Make array of integers from key */
@@ -91,12 +91,12 @@ static void key_diversify_crypto_pro(GOST2814789_KEY *ctx,
     }
 }
 
-int gost_key_wrap_crypto_pro(int nid, const unsigned char *keyExchangeKey,
-                             const unsigned char *ukm, const unsigned char *sessionKey,
-                             unsigned char *wrappedKey)
+int gost_key_wrap_crypto_pro(int nid, const uint8_t *keyExchangeKey,
+                             const uint8_t *ukm, const uint8_t *sessionKey,
+                             uint8_t *wrappedKey)
 {
     GOST2814789_KEY ctx;
-    unsigned char kek_ukm[32];
+    uint8_t kek_ukm[32];
 
     Gost2814789_set_sbox(&ctx, nid);
     key_diversify_crypto_pro(&ctx, keyExchangeKey, ukm, kek_ukm);
@@ -110,11 +110,11 @@ int gost_key_wrap_crypto_pro(int nid, const unsigned char *keyExchangeKey,
     return 1;
 }
 
-int gost_key_unwrap_crypto_pro(int nid, const unsigned char *keyExchangeKey,
-                               const unsigned char *wrappedKey,
-                               unsigned char *sessionKey)
+int gost_key_unwrap_crypto_pro(int nid, const uint8_t *keyExchangeKey,
+                               const uint8_t *wrappedKey,
+                               uint8_t *sessionKey)
 {
-    unsigned char kek_ukm[32], cek_mac[4];
+    uint8_t kek_ukm[32], cek_mac[4];
     GOST2814789_KEY ctx;
 
     Gost2814789_set_sbox(&ctx, nid);

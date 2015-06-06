@@ -82,7 +82,7 @@ int PKCS7_add_attrib_smimecap(PKCS7_SIGNER_INFO *si, STACK_OF(X509_ALGOR) * cap)
 STACK_OF(X509_ALGOR) * PKCS7_get_smimecap(PKCS7_SIGNER_INFO *si)
 {
     ASN1_TYPE *cap;
-    const unsigned char *p;
+    const uint8_t *p;
 
     cap = PKCS7_get_signed_attribute(si, NID_SMIMECapabilities);
     if (!cap || (cap->type != V_ASN1_SEQUENCE))
@@ -147,7 +147,7 @@ int PKCS7_add0_attrib_signing_time(PKCS7_SIGNER_INFO *si, ASN1_TIME *t)
 }
 
 int PKCS7_add1_attrib_digest(PKCS7_SIGNER_INFO *si,
-                             const unsigned char *md, int mdlen)
+                             const uint8_t *md, int mdlen)
 {
     ASN1_OCTET_STRING *os;
     os = ASN1_OCTET_STRING_new();

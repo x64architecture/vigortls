@@ -260,7 +260,7 @@ static char *md5crypt(const char *passwd, const char *magic, const char *salt)
 {
     /* "$apr1$..salt..$.......md5hash..........\0" */
     static char out_buf[6 + 9 + 24 + 2];
-    unsigned char buf[MD5_DIGEST_LENGTH];
+    uint8_t buf[MD5_DIGEST_LENGTH];
     char *salt_out;
     int n;
     unsigned int i;
@@ -322,7 +322,7 @@ static char *md5crypt(const char *passwd, const char *magic, const char *salt)
     {
         /* transform buf into output string */
 
-        unsigned char buf_perm[sizeof buf];
+        uint8_t buf_perm[sizeof buf];
         int dest, source;
         char *output;
 
@@ -374,7 +374,7 @@ static int do_passwd(int passed_salt, char **salt_p, char **salt_malloc_p, char 
                 if (*salt_malloc_p == NULL)
                     goto end;
             }
-            if (RAND_bytes((unsigned char *)*salt_p, 2) <= 0)
+            if (RAND_bytes((uint8_t *)*salt_p, 2) <= 0)
                 goto end;
             (*salt_p)[0] = cov_2char[(*salt_p)[0] & 0x3f]; /* 6 bits */
             (*salt_p)[1] = cov_2char[(*salt_p)[1] & 0x3f]; /* 6 bits */
@@ -395,7 +395,7 @@ static int do_passwd(int passed_salt, char **salt_p, char **salt_malloc_p, char 
                 if (*salt_malloc_p == NULL)
                     goto end;
             }
-            if (RAND_bytes((unsigned char *)*salt_p, 8) <= 0)
+            if (RAND_bytes((uint8_t *)*salt_p, 8) <= 0)
                 goto end;
 
             for (i = 0; i < 8; i++)

@@ -61,7 +61,7 @@
 
 /* Following functions are various bit meshing routines used in
  * GOST R 34.11-94 algorithms */
-static void swap_bytes(unsigned char *w, unsigned char *k)
+static void swap_bytes(uint8_t *w, uint8_t *k)
 {
     int i, j;
     for (i = 0; i < 4; i++)
@@ -70,9 +70,9 @@ static void swap_bytes(unsigned char *w, unsigned char *k)
 }
 
 /* was A_A */
-static void circle_xor8(const unsigned char *w, unsigned char *k)
+static void circle_xor8(const uint8_t *w, uint8_t *k)
 {
-    unsigned char buf[8];
+    uint8_t buf[8];
     int i;
 
     memcpy(buf, w, 8);
@@ -82,7 +82,7 @@ static void circle_xor8(const unsigned char *w, unsigned char *k)
 }
 
 /* was R_R */
-static void transform_3(unsigned char *data)
+static void transform_3(uint8_t *data)
 {
     unsigned short int acc;
     acc = (data[0] ^ data[2] ^ data[4] ^ data[6] ^ data[24] ^ data[30])
@@ -93,7 +93,7 @@ static void transform_3(unsigned char *data)
 }
 
 /* Adds blocks of N bytes modulo 2**(8*n). Returns carry*/
-static int add_blocks(int n, unsigned char *left, const unsigned char *right)
+static int add_blocks(int n, uint8_t *left, const uint8_t *right)
 {
     int i;
     int carry = 0;
@@ -108,8 +108,8 @@ static int add_blocks(int n, unsigned char *left, const unsigned char *right)
 }
 
 /* Xor two sequences of bytes */
-static void xor_blocks(unsigned char *result, const unsigned char *a,
-                       const unsigned char *b, size_t len)
+static void xor_blocks(uint8_t *result, const uint8_t *a,
+                       const uint8_t *b, size_t len)
 {
     size_t i;
     for (i = 0; i < len; i++)
@@ -120,9 +120,9 @@ static void xor_blocks(unsigned char *result, const unsigned char *a,
  * 	Calculate H(i+1) = Hash(Hi,Mi)
  * 	Where H and M are 32 bytes long
  */
-static int hash_step(GOSTR341194_CTX *c, unsigned char *H, const unsigned char *M)
+static int hash_step(GOSTR341194_CTX *c, uint8_t *H, const uint8_t *M)
 {
-    unsigned char U[32], W[32], V[32], S[32], Key[32];
+    uint8_t U[32], W[32], V[32], S[32], Key[32];
     int i;
 
     /* Compute first key */
@@ -195,7 +195,7 @@ int GOSTR341194_Init(GOSTR341194_CTX *c, int nid)
     return Gost2814789_set_sbox(&c->cipher, nid);
 }
 
-static void GOSTR341194_block_data_order(GOSTR341194_CTX *ctx, const unsigned char *p,
+static void GOSTR341194_block_data_order(GOSTR341194_CTX *ctx, const uint8_t *p,
                                          size_t num)
 {
     int i;
@@ -218,10 +218,10 @@ static void GOSTR341194_block_data_order(GOSTR341194_CTX *ctx, const unsigned ch
 
 #include "md32_common.h"
 
-int GOSTR341194_Final(unsigned char *md, GOSTR341194_CTX *c)
+int GOSTR341194_Final(uint8_t *md, GOSTR341194_CTX *c)
 {
-    unsigned char *p = (unsigned char *)c->data;
-    unsigned char T[32];
+    uint8_t *p = (uint8_t *)c->data;
+    uint8_t T[32];
 
     if (c->num > 0) {
         memset(p + c->num, 0, 32);
@@ -241,11 +241,11 @@ int GOSTR341194_Final(unsigned char *md, GOSTR341194_CTX *c)
     return 1;
 }
 
-unsigned char *GOSTR341194(const unsigned char *d, size_t n, unsigned char *md,
+uint8_t *GOSTR341194(const uint8_t *d, size_t n, uint8_t *md,
                            int nid)
 {
     GOSTR341194_CTX c;
-    static unsigned char m[GOSTR341194_LENGTH];
+    static uint8_t m[GOSTR341194_LENGTH];
 
     if (md == NULL)
         md = m;

@@ -58,14 +58,14 @@
 
 #include "des_locl.h"
 
-void DES_pcbc_encrypt(const unsigned char *input, unsigned char *output,
+void DES_pcbc_encrypt(const uint8_t *input, uint8_t *output,
                       long length, DES_key_schedule *schedule, DES_cblock *ivec,
                       int enc)
 {
     uint32_t sin0, sin1, xor0, xor1, tout0, tout1;
     uint32_t tin[2];
-    const unsigned char *in;
-    unsigned char *out, *iv;
+    const uint8_t *in;
+    uint8_t *out, *iv;
 
     in = input;
     out = output;

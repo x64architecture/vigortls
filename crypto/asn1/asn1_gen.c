@@ -143,10 +143,10 @@ ASN1_TYPE *ASN1_generate_v3(char *str, X509V3_CTX *cnf)
 
     int i, len;
 
-    unsigned char *orig_der = NULL, *new_der = NULL;
-    const unsigned char *cpy_start;
-    unsigned char *p;
-    const unsigned char *cp;
+    uint8_t *orig_der = NULL, *new_der = NULL;
+    const uint8_t *cpy_start;
+    uint8_t *p;
+    const uint8_t *cp;
     int cpy_len;
     long hdr_len;
     int hdr_constructed = 0, hdr_tag, hdr_class;
@@ -430,7 +430,7 @@ static ASN1_TYPE *asn1_multi(int utype, const char *section, X509V3_CTX *cnf)
     ASN1_TYPE *ret = NULL;
     STACK_OF(ASN1_TYPE) *sk = NULL;
     STACK_OF(CONF_VALUE) *sect = NULL;
-    unsigned char *der = NULL;
+    uint8_t *der = NULL;
     int derlen;
     int i;
     sk = sk_ASN1_TYPE_new_null();
@@ -603,7 +603,7 @@ static ASN1_TYPE *asn1_str2type(const char *str, int format, int utype)
 
     CONF_VALUE vtmp;
 
-    unsigned char *rdata;
+    uint8_t *rdata;
     long rdlen;
 
     int no_unused = 1;
@@ -703,7 +703,7 @@ static ASN1_TYPE *asn1_str2type(const char *str, int format, int utype)
                 goto bad_form;
             }
 
-            if (ASN1_mbstring_copy(&atmp->value.asn1_string, (unsigned char *)str,
+            if (ASN1_mbstring_copy(&atmp->value.asn1_string, (uint8_t *)str,
                                    -1, format, ASN1_tag2bit(utype)) <= 0) {
                 ASN1err(ASN1_F_ASN1_STR2TYPE, ERR_R_MALLOC_FAILURE);
                 goto bad_str;

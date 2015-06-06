@@ -240,7 +240,7 @@ SRTP_PROTECTION_PROFILE *SSL_get_selected_srtp_profile(SSL *s)
 
 /* Note: this function returns 0 length if there are no
    profiles specified */
-int ssl_add_clienthello_use_srtp_ext(SSL *s, unsigned char *p, int *len,
+int ssl_add_clienthello_use_srtp_ext(SSL *s, uint8_t *p, int *len,
                                      int maxlen)
 {
     int ct = 0;
@@ -281,7 +281,7 @@ int ssl_add_clienthello_use_srtp_ext(SSL *s, unsigned char *p, int *len,
     return 0;
 }
 
-int ssl_parse_clienthello_use_srtp_ext(SSL *s, unsigned char *d, int len,
+int ssl_parse_clienthello_use_srtp_ext(SSL *s, uint8_t *d, int len,
                                        int *al)
 {
     SRTP_PROTECTION_PROFILE *cprof, *sprof;
@@ -378,7 +378,7 @@ done:
     return ret;
 }
 
-int ssl_add_serverhello_use_srtp_ext(SSL *s, unsigned char *p, int *len,
+int ssl_add_serverhello_use_srtp_ext(SSL *s, uint8_t *p, int *len,
                                      int maxlen)
 {
     if (p) {
@@ -402,7 +402,7 @@ int ssl_add_serverhello_use_srtp_ext(SSL *s, unsigned char *p, int *len,
     return 0;
 }
 
-int ssl_parse_serverhello_use_srtp_ext(SSL *s, unsigned char *d, int len,
+int ssl_parse_serverhello_use_srtp_ext(SSL *s, uint8_t *d, int len,
                                        int *al)
 {
     STACK_OF(SRTP_PROTECTION_PROFILE) * clnt;

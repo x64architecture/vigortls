@@ -85,7 +85,7 @@ static int query_command(const char *data, char *digest, const EVP_MD *md,
 static TS_REQ *create_query(BIO *data_bio, char *digest, const EVP_MD *md,
                             const char *policy, int no_nonce, int cert);
 static int create_digest(BIO *input, char *digest, const EVP_MD *md,
-                         unsigned char **md_value);
+                         uint8_t **md_value);
 static ASN1_INTEGER *create_nonce(int bits);
 
 /* Reply related functions. */
@@ -483,7 +483,7 @@ static TS_REQ *create_query(BIO *data_bio, char *digest, const EVP_MD *md,
     int len;
     TS_MSG_IMPRINT *msg_imprint = NULL;
     X509_ALGOR *algo = NULL;
-    unsigned char *data = NULL;
+    uint8_t *data = NULL;
     ASN1_OBJECT *policy_obj = NULL;
     ASN1_INTEGER *nonce_asn1 = NULL;
 
@@ -555,7 +555,7 @@ err:
 }
 
 static int create_digest(BIO *input, char *digest, const EVP_MD *md,
-                         unsigned char **md_value)
+                         uint8_t **md_value)
 {
     int md_value_len;
 
@@ -565,7 +565,7 @@ static int create_digest(BIO *input, char *digest, const EVP_MD *md,
     if (input) {
         /* Digest must be computed from an input file. */
         EVP_MD_CTX md_ctx;
-        unsigned char buffer[4096];
+        uint8_t buffer[4096];
         int length;
 
         *md_value = malloc(md_value_len);
@@ -599,7 +599,7 @@ err:
 
 static ASN1_INTEGER *create_nonce(int bits)
 {
-    unsigned char buf[20];
+    uint8_t buf[20];
     ASN1_INTEGER *nonce = NULL;
     int len = (bits - 1) / 8 + 1;
     int i;

@@ -543,20 +543,20 @@ err:
  */
 
 static int MOD_EXP_CTIME_COPY_TO_PREBUF(const BIGNUM *b, int top,
-                                        unsigned char *buf, int idx, int width)
+                                        uint8_t *buf, int idx, int width)
 {
     size_t i, j;
 
     if (top > b->top)
         top = b->top; /* this works because 'buf' is explicitly zeroed */
     for (i = 0, j = idx; i < top * sizeof b->d[0]; i++, j += width) {
-        buf[j] = ((unsigned char *)b->d)[i];
+        buf[j] = ((uint8_t *)b->d)[i];
     }
 
     return 1;
 }
 
-static int MOD_EXP_CTIME_COPY_FROM_PREBUF(BIGNUM *b, int top, unsigned char *buf,
+static int MOD_EXP_CTIME_COPY_FROM_PREBUF(BIGNUM *b, int top, uint8_t *buf,
                                           int idx, int width)
 {
     size_t i, j;
@@ -565,7 +565,7 @@ static int MOD_EXP_CTIME_COPY_FROM_PREBUF(BIGNUM *b, int top, unsigned char *buf
         return 0;
 
     for (i = 0, j = idx; i < top * sizeof b->d[0]; i++, j += width) {
-        ((unsigned char *)b->d)[i] = buf[j];
+        ((uint8_t *)b->d)[i] = buf[j];
     }
 
     b->top = top;
@@ -575,7 +575,7 @@ static int MOD_EXP_CTIME_COPY_FROM_PREBUF(BIGNUM *b, int top, unsigned char *buf
 
 /* Given a pointer value, compute the next address that is a cache line multiple. */
 #define MOD_EXP_CTIME_ALIGN(x_)            \
-    ((unsigned char *)(x_)                 \
+    ((uint8_t *)(x_)                 \
      + (MOD_EXP_CTIME_MIN_CACHE_LINE_WIDTH \
         - (((size_t)(x_)) & (MOD_EXP_CTIME_MIN_CACHE_LINE_MASK))))
 
@@ -594,9 +594,9 @@ int BN_mod_exp_mont_consttime(BIGNUM *rr, const BIGNUM *a, const BIGNUM *p,
     BN_MONT_CTX *mont = NULL;
 
     int numPowers;
-    unsigned char *powerbufFree = NULL;
+    uint8_t *powerbufFree = NULL;
     int powerbufLen = 0;
-    unsigned char *powerbuf = NULL;
+    uint8_t *powerbuf = NULL;
     BIGNUM tmp, am;
 
     bn_check_top(a);

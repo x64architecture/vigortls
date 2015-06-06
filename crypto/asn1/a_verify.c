@@ -77,7 +77,7 @@ int ASN1_verify(i2d_of_void *i2d, X509_ALGOR *a, ASN1_BIT_STRING *signature,
 {
     EVP_MD_CTX ctx;
     const EVP_MD *type;
-    unsigned char *p, *buf_in = NULL;
+    uint8_t *p, *buf_in = NULL;
     int ret = -1, i, inl;
 
     EVP_MD_CTX_init(&ctx);
@@ -103,7 +103,7 @@ int ASN1_verify(i2d_of_void *i2d, X509_ALGOR *a, ASN1_BIT_STRING *signature,
 
     i2d(data, &p);
     if (!EVP_VerifyInit_ex(&ctx, type, NULL)
-        || !EVP_VerifyUpdate(&ctx, (unsigned char *)buf_in, inl)) {
+        || !EVP_VerifyUpdate(&ctx, (uint8_t *)buf_in, inl)) {
         ASN1err(ASN1_F_ASN1_VERIFY, ERR_R_EVP_LIB);
         ret = 0;
         goto err;
@@ -112,7 +112,7 @@ int ASN1_verify(i2d_of_void *i2d, X509_ALGOR *a, ASN1_BIT_STRING *signature,
     vigortls_zeroize(buf_in, (unsigned int)inl);
     free(buf_in);
 
-    if (EVP_VerifyFinal(&ctx, (unsigned char *)signature->data,
+    if (EVP_VerifyFinal(&ctx, (uint8_t *)signature->data,
                         (unsigned int)signature->length, pkey) <= 0) {
         ASN1err(ASN1_F_ASN1_VERIFY, ERR_R_EVP_LIB);
         ret = 0;
@@ -133,7 +133,7 @@ int ASN1_item_verify(const ASN1_ITEM *it, X509_ALGOR *a,
                      ASN1_BIT_STRING *signature, void *asn, EVP_PKEY *pkey)
 {
     EVP_MD_CTX ctx;
-    unsigned char *buf_in = NULL;
+    uint8_t *buf_in = NULL;
     int ret = -1, inl;
 
     int mdnid, pknid;

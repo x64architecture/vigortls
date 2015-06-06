@@ -112,7 +112,7 @@
 #include "ssl_locl.h"
 
 /* Add the client's renegotiation binding */
-int ssl_add_clienthello_renegotiate_ext(SSL *s, unsigned char *p, int *len,
+int ssl_add_clienthello_renegotiate_ext(SSL *s, uint8_t *p, int *len,
                                         int maxlen)
 {
     if (p) {
@@ -137,7 +137,7 @@ int ssl_add_clienthello_renegotiate_ext(SSL *s, unsigned char *p, int *len,
 
 /* Parse the client's renegotiation binding and abort if it's not
    right */
-int ssl_parse_clienthello_renegotiate_ext(SSL *s, unsigned char *d, int len,
+int ssl_parse_clienthello_renegotiate_ext(SSL *s, uint8_t *d, int len,
                                           int *al)
 {
     int ilen;
@@ -182,7 +182,7 @@ int ssl_parse_clienthello_renegotiate_ext(SSL *s, unsigned char *d, int len,
 }
 
 /* Add the server's renegotiation binding */
-int ssl_add_serverhello_renegotiate_ext(SSL *s, unsigned char *p, int *len,
+int ssl_add_serverhello_renegotiate_ext(SSL *s, uint8_t *p, int *len,
                                         int maxlen)
 {
     if (p) {
@@ -211,7 +211,7 @@ int ssl_add_serverhello_renegotiate_ext(SSL *s, unsigned char *p, int *len,
 
 /* Parse the server's renegotiation binding and abort if it's not
    right */
-int ssl_parse_serverhello_renegotiate_ext(SSL *s, unsigned char *d, int len,
+int ssl_parse_serverhello_renegotiate_ext(SSL *s, uint8_t *d, int len,
                                           int *al)
 {
     int expected_len = s->s3->previous_client_finished_len + s->s3->previous_server_finished_len;

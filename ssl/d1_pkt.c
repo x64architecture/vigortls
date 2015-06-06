@@ -123,7 +123,7 @@
 #include "pqueue.h"
 
 /* mod 128 saturating subtract of two 64-bit values in big-endian order */
-static int satsub64be(const unsigned char *v1, const unsigned char *v2)
+static int satsub64be(const uint8_t *v1, const uint8_t *v2)
 {
     int ret, sat, brw, i;
 
@@ -173,14 +173,14 @@ static int satsub64be(const unsigned char *v1, const unsigned char *v2)
         return brw + (ret & 0xFF);
 }
 
-static int have_handshake_fragment(SSL *s, int type, unsigned char *buf,
+static int have_handshake_fragment(SSL *s, int type, uint8_t *buf,
                                    int len, int peek);
 static int dtls1_record_replay_check(SSL *s, DTLS1_BITMAP *bitmap);
 static void dtls1_record_bitmap_update(SSL *s, DTLS1_BITMAP *bitmap);
 static DTLS1_BITMAP *dtls1_get_bitmap(SSL *s, SSL3_RECORD *rr,
                                       unsigned int *is_next_epoch);
 static int dtls1_buffer_record(SSL *s, record_pqueue *q,
-                               unsigned char *priority);
+                               uint8_t *priority);
 static int dtls1_process_record(SSL *s);
 
 /* copy buffered record into SSL structure */
@@ -204,7 +204,7 @@ static int dtls1_copy_record(SSL *s, pitem *item)
 }
 
 static int dtls1_buffer_record(SSL *s, record_pqueue *queue,
-                               unsigned char *priority)
+                               uint8_t *priority)
 {
     DTLS1_RECORD_DATA *rdata;
     pitem *item;
@@ -316,7 +316,7 @@ static int dtls1_process_record(SSL *s)
     SSL_SESSION *sess;
     SSL3_RECORD *rr;
     unsigned int mac_size, orig_len;
-    unsigned char md[EVP_MAX_MD_SIZE];
+    uint8_t md[EVP_MAX_MD_SIZE];
 
     rr = &(s->s3->rrec);
     sess = s->session;
@@ -361,8 +361,8 @@ static int dtls1_process_record(SSL *s)
     /* r->length is now the compressed data plus mac */
     if ((sess != NULL) && (s->enc_read_ctx != NULL) && (EVP_MD_CTX_md(s->read_hash) != NULL)) {
         /* s->read_hash != NULL => mac_size != -1 */
-        unsigned char *mac = NULL;
-        unsigned char mac_tmp[EVP_MAX_MD_SIZE];
+        uint8_t *mac = NULL;
+        uint8_t mac_tmp[EVP_MAX_MD_SIZE];
         mac_size = EVP_MD_CTX_size(s->read_hash);
         OPENSSL_assert(mac_size <= EVP_MAX_MD_SIZE);
 
@@ -452,7 +452,7 @@ int dtls1_get_record(SSL *s)
     int ssl_major, ssl_minor;
     int i, n;
     SSL3_RECORD *rr;
-    unsigned char *p = NULL;
+    uint8_t *p = NULL;
     unsigned short version;
     DTLS1_BITMAP *bitmap;
     unsigned int is_next_epoch;
@@ -631,7 +631,7 @@ again:
  *     Application data protocol
  *             none of our business
  */
-int dtls1_read_bytes(SSL *s, int type, unsigned char *buf, int len, int peek)
+int dtls1_read_bytes(SSL *s, int type, uint8_t *buf, int len, int peek)
 {
     int al, i, j, ret;
     unsigned int n;
@@ -779,7 +779,7 @@ start:
      */
     {
         unsigned int k, dest_maxlen = 0;
-        unsigned char *dest = NULL;
+        uint8_t *dest = NULL;
         unsigned int *dest_len = NULL;
 
         if (rr->type == SSL3_RT_HANDSHAKE) {
@@ -1122,15 +1122,15 @@ int dtls1_write_app_data_bytes(SSL *s, int type, const void *buf_, int len)
 
 /* this only happens when a client hello is received and a handshake
  * is started. */
-static int have_handshake_fragment(SSL *s, int type, unsigned char *buf,
+static int have_handshake_fragment(SSL *s, int type, uint8_t *buf,
                                    int len, int peek)
 {
 
     if ((type == SSL3_RT_HANDSHAKE) && (s->d1->handshake_fragment_len > 0))
     /* (partially) satisfy request from storage */
     {
-        unsigned char *src = s->d1->handshake_fragment;
-        unsigned char *dst = buf;
+        uint8_t *src = s->d1->handshake_fragment;
+        uint8_t *dst = buf;
         unsigned int k, n;
 
         /* peek == 0 */
@@ -1163,10 +1163,10 @@ int dtls1_write_bytes(SSL *s, int type, const void *buf, int len)
     return i;
 }
 
-int do_dtls1_write(SSL *s, int type, const unsigned char *buf,
+int do_dtls1_write(SSL *s, int type, const uint8_t *buf,
                    unsigned int len)
 {
-    unsigned char *p, *pseq;
+    uint8_t *p, *pseq;
     int i, mac_size, clear = 0;
     int prefix_len = 0;
     SSL3_RECORD *wr;
@@ -1237,7 +1237,7 @@ int do_dtls1_write(SSL *s, int type, const unsigned char *buf,
     wr->data = p + bs;
     /* make room for IV in case of CBC */
     wr->length = (int)len;
-    wr->input = (unsigned char *)buf;
+    wr->input = (uint8_t *)buf;
 
     /* we now 'read' from wr->input, wr->length bytes into
      * wr->data */
@@ -1318,7 +1318,7 @@ static int dtls1_record_replay_check(SSL *s, DTLS1_BITMAP *bitmap)
 {
     int cmp;
     unsigned int shift;
-    const unsigned char *seq = s->s3->read_sequence;
+    const uint8_t *seq = s->s3->read_sequence;
 
     cmp = satsub64be(seq, bitmap->max_seq_num);
     if (cmp > 0) {
@@ -1339,7 +1339,7 @@ static void dtls1_record_bitmap_update(SSL *s, DTLS1_BITMAP *bitmap)
 {
     int cmp;
     unsigned int shift;
-    const unsigned char *seq = s->s3->read_sequence;
+    const uint8_t *seq = s->s3->read_sequence;
 
     cmp = satsub64be(seq, bitmap->max_seq_num);
     if (cmp > 0) {
@@ -1360,8 +1360,8 @@ int dtls1_dispatch_alert(SSL *s)
 {
     int i, j;
     void (*cb)(const SSL *ssl, int type, int val) = NULL;
-    unsigned char buf[DTLS1_AL_HEADER_LENGTH];
-    unsigned char *ptr = &buf[0];
+    uint8_t buf[DTLS1_AL_HEADER_LENGTH];
+    uint8_t *ptr = &buf[0];
 
     s->s3->alert_dispatch = 0;
 
@@ -1426,7 +1426,7 @@ static DTLS1_BITMAP *dtls1_get_bitmap(SSL *s, SSL3_RECORD *rr,
 
 void dtls1_reset_seq_numbers(SSL *s, int rw)
 {
-    unsigned char *seq;
+    uint8_t *seq;
     unsigned int seq_bytes = sizeof(s->s3->read_sequence);
 
     if (rw & SSL3_CC_READ) {

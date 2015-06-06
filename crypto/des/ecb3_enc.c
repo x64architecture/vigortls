@@ -64,8 +64,8 @@ void DES_ecb3_encrypt(const_DES_cblock *input, DES_cblock *output,
 {
     uint32_t l0, l1;
     uint32_t ll[2];
-    const unsigned char *in = &(*input)[0];
-    unsigned char *out = &(*output)[0];
+    const uint8_t *in = &(*input)[0];
+    uint8_t *out = &(*output)[0];
 
     c2l(in, l0);
     c2l(in, l1);

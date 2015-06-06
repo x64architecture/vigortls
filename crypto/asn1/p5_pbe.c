@@ -71,12 +71,12 @@ ASN1_SEQUENCE(PBEPARAM) = {
     ASN1_SIMPLE(PBEPARAM, iter, ASN1_INTEGER)
 } ASN1_SEQUENCE_END(PBEPARAM)
 
-PBEPARAM *d2i_PBEPARAM(PBEPARAM **a, const unsigned char **in, long len)
+PBEPARAM *d2i_PBEPARAM(PBEPARAM **a, const uint8_t **in, long len)
 {
     return (PBEPARAM *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, &PBEPARAM_it);
 }
 
-int i2d_PBEPARAM(PBEPARAM *a, unsigned char **out)
+int i2d_PBEPARAM(PBEPARAM *a, uint8_t **out)
 {
     return ASN1_item_i2d((ASN1_VALUE *)a, out, &PBEPARAM_it);
 }
@@ -94,11 +94,11 @@ void PBEPARAM_free(PBEPARAM *a)
 /* Set an algorithm identifier for a PKCS#5 PBE algorithm */
 
 int PKCS5_pbe_set0_algor(X509_ALGOR * algor, int alg, int iter,
-                         const unsigned char *salt, int saltlen)
+                         const uint8_t *salt, int saltlen)
 {
     PBEPARAM *pbe = NULL;
     ASN1_STRING *pbe_str = NULL;
-    unsigned char *sstr;
+    uint8_t *sstr;
 
     pbe = PBEPARAM_new();
     if (!pbe) {
@@ -143,7 +143,7 @@ err:
 /* Return an algorithm identifier for a PKCS#5 PBE algorithm */
 
 X509_ALGOR *PKCS5_pbe_set(int alg, int iter,
-                          const unsigned char *salt, int saltlen)
+                          const uint8_t *salt, int saltlen)
 {
     X509_ALGOR *ret;
     ret = X509_ALGOR_new();

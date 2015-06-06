@@ -58,14 +58,14 @@
 
 #include "des_locl.h"
 
-uint32_t DES_cbc_cksum(const unsigned char *in, DES_cblock *output, long length,
+uint32_t DES_cbc_cksum(const uint8_t *in, DES_cblock *output, long length,
                        DES_key_schedule *schedule, const_DES_cblock *ivec)
 {
     uint32_t tout0, tout1, tin0, tin1;
     register long l = length;
     uint32_t tin[2];
-    unsigned char *out = &(*output)[0];
-    const unsigned char *iv = &(*ivec)[0];
+    uint8_t *out = &(*output)[0];
+    const uint8_t *iv = &(*ivec)[0];
 
     c2l(iv, tout0);
     c2l(iv, tout1);

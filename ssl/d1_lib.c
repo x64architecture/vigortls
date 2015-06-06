@@ -448,11 +448,11 @@ int dtls1_listen(SSL *s, struct sockaddr *client)
     return 1;
 }
 
-void dtls1_build_sequence_number(unsigned char *dst, unsigned char *seq,
+void dtls1_build_sequence_number(uint8_t *dst, uint8_t *seq,
                                  unsigned short epoch)
 {
-    unsigned char dtlsseq[SSL3_SEQUENCE_SIZE];
-    unsigned char *p;
+    uint8_t dtlsseq[SSL3_SEQUENCE_SIZE];
+    uint8_t *p;
 
     p = dtlsseq;
     s2n(epoch, p);
@@ -462,7 +462,7 @@ void dtls1_build_sequence_number(unsigned char *dst, unsigned char *seq,
 
 static void dtls1_set_handshake_header(SSL *s, int htype, unsigned long len)
 {
-    unsigned char *p = (unsigned char *)s->init_buf->data;
+    uint8_t *p = (uint8_t *)s->init_buf->data;
     dtls1_set_message_header(s, p, htype, len, 0, len);
     s->init_num = (int)len + DTLS1_HM_HEADER_LENGTH;
     s->init_off = 0;

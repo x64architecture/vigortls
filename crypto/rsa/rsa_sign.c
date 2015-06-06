@@ -69,14 +69,14 @@
 /* Size of an SSL signature: MD5+SHA1 */
 #define SSL_SIG_LENGTH 36
 
-int RSA_sign(int type, const unsigned char *m, unsigned int m_len,
-             unsigned char *sigret, unsigned int *siglen, RSA *rsa)
+int RSA_sign(int type, const uint8_t *m, unsigned int m_len,
+             uint8_t *sigret, unsigned int *siglen, RSA *rsa)
 {
     X509_SIG sig;
     ASN1_TYPE parameter;
     int i, j, ret = 1;
-    unsigned char *p, *tmps = NULL;
-    const unsigned char *s = NULL;
+    uint8_t *p, *tmps = NULL;
+    const uint8_t *s = NULL;
     X509_ALGOR algor;
     ASN1_OCTET_STRING digest;
     if ((rsa->flags & RSA_FLAG_SIGN_VER) && rsa->meth->rsa_sign) {
@@ -107,7 +107,7 @@ int RSA_sign(int type, const unsigned char *m, unsigned int m_len,
         sig.algor->parameter = &parameter;
 
         sig.digest = &digest;
-        sig.digest->data = (unsigned char *)m; /* TMP UGLY CAST */
+        sig.digest->data = (uint8_t *)m; /* TMP UGLY CAST */
         sig.digest->length = m_len;
 
         i = i2d_X509_SIG(&sig, NULL);
@@ -140,14 +140,14 @@ int RSA_sign(int type, const unsigned char *m, unsigned int m_len,
     return (ret);
 }
 
-int int_rsa_verify(int dtype, const unsigned char *m,
+int int_rsa_verify(int dtype, const uint8_t *m,
                    unsigned int m_len,
-                   unsigned char *rm, size_t *prm_len,
-                   const unsigned char *sigbuf, size_t siglen,
+                   uint8_t *rm, size_t *prm_len,
+                   const uint8_t *sigbuf, size_t siglen,
                    RSA *rsa)
 {
     int i, ret = 0, sigtype;
-    unsigned char *s;
+    uint8_t *s;
     X509_SIG *sig = NULL;
 
     if (siglen != (unsigned int)RSA_size(rsa)) {
@@ -198,7 +198,7 @@ int int_rsa_verify(int dtype, const unsigned char *m,
         else
             ret = 1;
     } else {
-        const unsigned char *p = s;
+        const uint8_t *p = s;
         sig = d2i_X509_SIG(NULL, &p, (long)i);
 
         if (sig == NULL)
@@ -249,8 +249,8 @@ err:
     return (ret);
 }
 
-int RSA_verify(int dtype, const unsigned char *m, unsigned int m_len,
-               const unsigned char *sigbuf, unsigned int siglen,
+int RSA_verify(int dtype, const uint8_t *m, unsigned int m_len,
+               const uint8_t *sigbuf, unsigned int siglen,
                RSA *rsa)
 {
 

@@ -117,8 +117,8 @@ static void pkey_ec_cleanup(EVP_PKEY_CTX *ctx)
     }
 }
 
-static int pkey_ec_sign(EVP_PKEY_CTX *ctx, unsigned char *sig, size_t *siglen,
-                        const unsigned char *tbs, size_t tbslen)
+static int pkey_ec_sign(EVP_PKEY_CTX *ctx, uint8_t *sig, size_t *siglen,
+                        const uint8_t *tbs, size_t tbslen)
 {
     int ret, type;
     unsigned int sltmp;
@@ -147,8 +147,8 @@ static int pkey_ec_sign(EVP_PKEY_CTX *ctx, unsigned char *sig, size_t *siglen,
 }
 
 static int pkey_ec_verify(EVP_PKEY_CTX *ctx,
-                          const unsigned char *sig, size_t siglen,
-                          const unsigned char *tbs, size_t tbslen)
+                          const uint8_t *sig, size_t siglen,
+                          const uint8_t *tbs, size_t tbslen)
 {
     int ret, type;
     EC_PKEY_CTX *dctx = ctx->data;
@@ -164,7 +164,7 @@ static int pkey_ec_verify(EVP_PKEY_CTX *ctx,
     return ret;
 }
 
-static int pkey_ec_derive(EVP_PKEY_CTX *ctx, unsigned char *key, size_t *keylen)
+static int pkey_ec_derive(EVP_PKEY_CTX *ctx, uint8_t *key, size_t *keylen)
 {
     int ret;
     size_t outlen;

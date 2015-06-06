@@ -89,10 +89,10 @@
     }
 
 #undef l2c
-#define l2c(l, c) (*((c)++) = (unsigned char)(((l)) & 0xff),        \
-                   *((c)++) = (unsigned char)(((l) >> 8L) & 0xff),  \
-                   *((c)++) = (unsigned char)(((l) >> 16L) & 0xff), \
-                   *((c)++) = (unsigned char)(((l) >> 24L) & 0xff))
+#define l2c(l, c) (*((c)++) = (uint8_t)(((l)) & 0xff),        \
+                   *((c)++) = (uint8_t)(((l) >> 8L) & 0xff),  \
+                   *((c)++) = (uint8_t)(((l) >> 16L) & 0xff), \
+                   *((c)++) = (uint8_t)(((l) >> 24L) & 0xff))
 
 /* NOTE - c is not incremented as per l2c */
 #undef l2cn
@@ -101,21 +101,21 @@
         c += n;                                                   \
         switch (n) {                                              \
             case 8:                                               \
-                *(--(c)) = (unsigned char)(((l2) >> 24L) & 0xff); \
+                *(--(c)) = (uint8_t)(((l2) >> 24L) & 0xff); \
             case 7:                                               \
-                *(--(c)) = (unsigned char)(((l2) >> 16L) & 0xff); \
+                *(--(c)) = (uint8_t)(((l2) >> 16L) & 0xff); \
             case 6:                                               \
-                *(--(c)) = (unsigned char)(((l2) >> 8L) & 0xff);  \
+                *(--(c)) = (uint8_t)(((l2) >> 8L) & 0xff);  \
             case 5:                                               \
-                *(--(c)) = (unsigned char)(((l2)) & 0xff);        \
+                *(--(c)) = (uint8_t)(((l2)) & 0xff);        \
             case 4:                                               \
-                *(--(c)) = (unsigned char)(((l1) >> 24L) & 0xff); \
+                *(--(c)) = (uint8_t)(((l1) >> 24L) & 0xff); \
             case 3:                                               \
-                *(--(c)) = (unsigned char)(((l1) >> 16L) & 0xff); \
+                *(--(c)) = (uint8_t)(((l1) >> 16L) & 0xff); \
             case 2:                                               \
-                *(--(c)) = (unsigned char)(((l1) >> 8L) & 0xff);  \
+                *(--(c)) = (uint8_t)(((l1) >> 8L) & 0xff);  \
             case 1:                                               \
-                *(--(c)) = (unsigned char)(((l1)) & 0xff);        \
+                *(--(c)) = (uint8_t)(((l1)) & 0xff);        \
         }                                                         \
     }
 
@@ -150,21 +150,21 @@
         c += n;                                                  \
         switch (n) {                                             \
             case 8:                                              \
-                *(--(c)) = (unsigned char)(((l2)) & 0xff);       \
+                *(--(c)) = (uint8_t)(((l2)) & 0xff);       \
             case 7:                                              \
-                *(--(c)) = (unsigned char)(((l2) >> 8) & 0xff);  \
+                *(--(c)) = (uint8_t)(((l2) >> 8) & 0xff);  \
             case 6:                                              \
-                *(--(c)) = (unsigned char)(((l2) >> 16) & 0xff); \
+                *(--(c)) = (uint8_t)(((l2) >> 16) & 0xff); \
             case 5:                                              \
-                *(--(c)) = (unsigned char)(((l2) >> 24) & 0xff); \
+                *(--(c)) = (uint8_t)(((l2) >> 24) & 0xff); \
             case 4:                                              \
-                *(--(c)) = (unsigned char)(((l1)) & 0xff);       \
+                *(--(c)) = (uint8_t)(((l1)) & 0xff);       \
             case 3:                                              \
-                *(--(c)) = (unsigned char)(((l1) >> 8) & 0xff);  \
+                *(--(c)) = (uint8_t)(((l1) >> 8) & 0xff);  \
             case 2:                                              \
-                *(--(c)) = (unsigned char)(((l1) >> 16) & 0xff); \
+                *(--(c)) = (uint8_t)(((l1) >> 16) & 0xff); \
             case 1:                                              \
-                *(--(c)) = (unsigned char)(((l1) >> 24) & 0xff); \
+                *(--(c)) = (uint8_t)(((l1) >> 24) & 0xff); \
         }                                                        \
     }
 
@@ -175,10 +175,10 @@
                    l |= ((unsigned long)(*((c)++))))
 
 #undef l2n
-#define l2n(l, c) (*((c)++) = (unsigned char)(((l) >> 24L) & 0xff), \
-                   *((c)++) = (unsigned char)(((l) >> 16L) & 0xff), \
-                   *((c)++) = (unsigned char)(((l) >> 8L) & 0xff),  \
-                   *((c)++) = (unsigned char)(((l)) & 0xff))
+#define l2n(l, c) (*((c)++) = (uint8_t)(((l) >> 24L) & 0xff), \
+                   *((c)++) = (uint8_t)(((l) >> 16L) & 0xff), \
+                   *((c)++) = (uint8_t)(((l) >> 8L) & 0xff),  \
+                   *((c)++) = (uint8_t)(((l)) & 0xff))
 
 #define C_RC2(n)                                          \
     t = (x0 + (x1 & ~x3) + (x2 & x3) + *(p0++)) & 0xffff; \

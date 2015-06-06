@@ -89,12 +89,12 @@ ASN1_BROKEN_SEQUENCE(NETSCAPE_ENCRYPTED_PKEY) = {
 
 DECLARE_ASN1_FUNCTIONS_const(NETSCAPE_ENCRYPTED_PKEY)
 DECLARE_ASN1_ENCODE_FUNCTIONS_const(NETSCAPE_ENCRYPTED_PKEY, NETSCAPE_ENCRYPTED_PKEY)
-NETSCAPE_ENCRYPTED_PKEY *d2i_NETSCAPE_ENCRYPTED_PKEY(NETSCAPE_ENCRYPTED_PKEY **a, const unsigned char **in, long len)
+NETSCAPE_ENCRYPTED_PKEY *d2i_NETSCAPE_ENCRYPTED_PKEY(NETSCAPE_ENCRYPTED_PKEY **a, const uint8_t **in, long len)
 {
     return (NETSCAPE_ENCRYPTED_PKEY *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, &NETSCAPE_ENCRYPTED_PKEY_it);
 }
 
-int i2d_NETSCAPE_ENCRYPTED_PKEY(const NETSCAPE_ENCRYPTED_PKEY *a, unsigned char **out)
+int i2d_NETSCAPE_ENCRYPTED_PKEY(const NETSCAPE_ENCRYPTED_PKEY *a, uint8_t **out)
 {
     return ASN1_item_i2d((ASN1_VALUE *)a, out, &NETSCAPE_ENCRYPTED_PKEY_it);
 }
@@ -117,12 +117,12 @@ ASN1_SEQUENCE(NETSCAPE_PKEY) = {
 
 DECLARE_ASN1_FUNCTIONS_const(NETSCAPE_PKEY)
 DECLARE_ASN1_ENCODE_FUNCTIONS_const(NETSCAPE_PKEY, NETSCAPE_PKEY)
-NETSCAPE_PKEY *d2i_NETSCAPE_PKEY(NETSCAPE_PKEY **a, const unsigned char **in, long len)
+NETSCAPE_PKEY *d2i_NETSCAPE_PKEY(NETSCAPE_PKEY **a, const uint8_t **in, long len)
 {
     return (NETSCAPE_PKEY *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, &NETSCAPE_PKEY_it);
 }
 
-int i2d_NETSCAPE_PKEY(const NETSCAPE_PKEY *a, unsigned char **out)
+int i2d_NETSCAPE_PKEY(const NETSCAPE_PKEY *a, uint8_t **out)
 {
     return ASN1_item_i2d((ASN1_VALUE *)a, out, &NETSCAPE_PKEY_it);
 }
@@ -141,13 +141,13 @@ static RSA *d2i_RSA_NET_2(RSA **a, ASN1_OCTET_STRING *os,
                           int (*cb)(char *buf, int len, const char *prompt,int verify),
                           int sgckey);
 
-int i2d_Netscape_RSA(const RSA *a, unsigned char **pp,
+int i2d_Netscape_RSA(const RSA *a, uint8_t **pp,
                      int (*cb)(char *buf, int len, const char *prompt, int verify))
 {
     return i2d_RSA_NET(a, pp, cb, 0);
 }
 
-int i2d_RSA_NET(const RSA *a, unsigned char **pp,
+int i2d_RSA_NET(const RSA *a, uint8_t **pp,
                 int (*cb)(char *buf, int len, const char *prompt, int verify),
                 int sgckey)
 {
@@ -155,8 +155,8 @@ int i2d_RSA_NET(const RSA *a, unsigned char **pp,
     int rsalen, pkeylen, olen;
     NETSCAPE_PKEY *pkey = NULL;
     NETSCAPE_ENCRYPTED_PKEY *enckey = NULL;
-    unsigned char buf[256], *zz;
-    unsigned char key[EVP_MAX_KEY_LENGTH];
+    uint8_t buf[256], *zz;
+    uint8_t key[EVP_MAX_KEY_LENGTH];
     EVP_CIPHER_CTX ctx;
     EVP_CIPHER_CTX_init(&ctx);
 
@@ -263,19 +263,19 @@ err:
     return (ret);
 }
 
-RSA *d2i_Netscape_RSA(RSA **a, const unsigned char **pp, long length,
+RSA *d2i_Netscape_RSA(RSA **a, const uint8_t **pp, long length,
                       int (*cb)(char *buf, int len, const char *prompt,
                                 int verify))
 {
     return d2i_RSA_NET(a, pp, length, cb, 0);
 }
 
-RSA *d2i_RSA_NET(RSA **a, const unsigned char **pp, long length,
+RSA *d2i_RSA_NET(RSA **a, const uint8_t **pp, long length,
                  int (*cb)(char *buf, int len, const char *prompt, int verify),
                  int sgckey)
 {
     RSA *ret = NULL;
-    const unsigned char *p;
+    const uint8_t *p;
     NETSCAPE_ENCRYPTED_PKEY *enckey = NULL;
 
     p = *pp;
@@ -316,9 +316,9 @@ static RSA *d2i_RSA_NET_2(RSA **a, ASN1_OCTET_STRING *os,
     NETSCAPE_PKEY *pkey = NULL;
     RSA *ret = NULL;
     int i, j;
-    unsigned char buf[256];
-    const unsigned char *zz;
-    unsigned char key[EVP_MAX_KEY_LENGTH];
+    uint8_t buf[256];
+    const uint8_t *zz;
+    uint8_t key[EVP_MAX_KEY_LENGTH];
     EVP_CIPHER_CTX ctx;
     EVP_CIPHER_CTX_init(&ctx);
 

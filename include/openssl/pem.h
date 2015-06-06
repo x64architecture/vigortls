@@ -168,7 +168,7 @@ typedef struct pem_ctx_st {
     struct {
         int cipher;
         /* unused, and wrong size
-       unsigned char iv[8]; */
+       uint8_t iv[8]; */
     } DEK_info;
 
     PEM_USER *originator;
@@ -186,13 +186,13 @@ typedef struct pem_ctx_st {
 
     EVP_CIPHER *dec;    /* date encryption cipher */
     int key_len;        /* key length */
-    unsigned char *key; /* key */
+    uint8_t *key; /* key */
     /* unused, and wrong size
-       unsigned char iv[8]; */
+       uint8_t iv[8]; */
 
     int data_enc; /* is the data encrypted */
     int data_len;
-    unsigned char *data;
+    uint8_t *data;
 } PEM_CTX;
 
 /* These macros make the PEM_read/PEM_write functions easier to maintain and
@@ -219,13 +219,13 @@ typedef struct pem_ctx_st {
     }
 
 #define IMPLEMENT_PEM_write_cb_fp(name, type, str, asn1)                                                                        \
-    int PEM_write_##name(FILE *fp, type *x, const EVP_CIPHER *enc, unsigned char *kstr, int klen, pem_password_cb *cb, void *u) \
+    int PEM_write_##name(FILE *fp, type *x, const EVP_CIPHER *enc, uint8_t *kstr, int klen, pem_password_cb *cb, void *u) \
     {                                                                                                                           \
         return PEM_ASN1_write((i2d_of_void *)i2d_##asn1, str, fp, x, enc, kstr, klen, cb, u);                                   \
     }
 
 #define IMPLEMENT_PEM_write_cb_fp_const(name, type, str, asn1)                                                                  \
-    int PEM_write_##name(FILE *fp, type *x, const EVP_CIPHER *enc, unsigned char *kstr, int klen, pem_password_cb *cb, void *u) \
+    int PEM_write_##name(FILE *fp, type *x, const EVP_CIPHER *enc, uint8_t *kstr, int klen, pem_password_cb *cb, void *u) \
     {                                                                                                                           \
         return PEM_ASN1_write((i2d_of_void *)i2d_##asn1, str, fp, x, enc, kstr, klen, cb, u);                                   \
     }
@@ -249,13 +249,13 @@ typedef struct pem_ctx_st {
     }
 
 #define IMPLEMENT_PEM_write_cb_bio(name, type, str, asn1)                                                                          \
-    int PEM_write_bio_##name(BIO *bp, type *x, const EVP_CIPHER *enc, unsigned char *kstr, int klen, pem_password_cb *cb, void *u) \
+    int PEM_write_bio_##name(BIO *bp, type *x, const EVP_CIPHER *enc, uint8_t *kstr, int klen, pem_password_cb *cb, void *u) \
     {                                                                                                                              \
         return PEM_ASN1_write_bio((i2d_of_void *)i2d_##asn1, str, bp, x, enc, kstr, klen, cb, u);                                  \
     }
 
 #define IMPLEMENT_PEM_write_cb_bio_const(name, type, str, asn1)                                                                    \
-    int PEM_write_bio_##name(BIO *bp, type *x, const EVP_CIPHER *enc, unsigned char *kstr, int klen, pem_password_cb *cb, void *u) \
+    int PEM_write_bio_##name(BIO *bp, type *x, const EVP_CIPHER *enc, uint8_t *kstr, int klen, pem_password_cb *cb, void *u) \
     {                                                                                                                              \
         return PEM_ASN1_write_bio((i2d_of_void *)i2d_##asn1, str, bp, (void *)x, enc, kstr, klen, cb, u);                          \
     }
@@ -305,7 +305,7 @@ typedef struct pem_ctx_st {
 
 #define DECLARE_PEM_write_cb_fp(name, type)                        \
     int PEM_write_##name(FILE *fp, type *x, const EVP_CIPHER *enc, \
-                         unsigned char *kstr, int klen, pem_password_cb *cb, void *u);
+                         uint8_t *kstr, int klen, pem_password_cb *cb, void *u);
 
 #define DECLARE_PEM_read_bio(name, type) \
     type *PEM_read_bio_##name(BIO *bp, type **x, pem_password_cb *cb, void *u);
@@ -318,7 +318,7 @@ typedef struct pem_ctx_st {
 
 #define DECLARE_PEM_write_cb_bio(name, type)                          \
     int PEM_write_bio_##name(BIO *bp, type *x, const EVP_CIPHER *enc, \
-                             unsigned char *kstr, int klen, pem_password_cb *cb, void *u);
+                             uint8_t *kstr, int klen, pem_password_cb *cb, void *u);
 
 
 #define DECLARE_PEM_write(name, type) \
@@ -358,47 +358,47 @@ typedef int pem_password_cb(char *buf, int size, int rwflag);
 #endif
 
 int PEM_get_EVP_CIPHER_INFO(char *header, EVP_CIPHER_INFO *cipher);
-int PEM_do_header(EVP_CIPHER_INFO *cipher, unsigned char *data, long *len,
+int PEM_do_header(EVP_CIPHER_INFO *cipher, uint8_t *data, long *len,
                   pem_password_cb *callback, void *u);
 
 int PEM_read_bio(BIO *bp, char **name, char **header,
-                 unsigned char **data, long *len);
-int PEM_write_bio(BIO *bp, const char *name, char *hdr, unsigned char *data,
+                 uint8_t **data, long *len);
+int PEM_write_bio(BIO *bp, const char *name, char *hdr, uint8_t *data,
                   long len);
-int PEM_bytes_read_bio(unsigned char **pdata, long *plen, char **pnm, const char *name, BIO *bp,
+int PEM_bytes_read_bio(uint8_t **pdata, long *plen, char **pnm, const char *name, BIO *bp,
                        pem_password_cb *cb, void *u);
 void *PEM_ASN1_read_bio(d2i_of_void *d2i, const char *name, BIO *bp,
                         void **x, pem_password_cb *cb, void *u);
 int PEM_ASN1_write_bio(i2d_of_void *i2d, const char *name, BIO *bp, void *x,
-                       const EVP_CIPHER *enc, unsigned char *kstr, int klen,
+                       const EVP_CIPHER *enc, uint8_t *kstr, int klen,
                        pem_password_cb *cb, void *u);
 
 STACK_OF(X509_INFO) * PEM_X509_INFO_read_bio(BIO *bp, STACK_OF(X509_INFO) * sk, pem_password_cb * cb, void *u);
 int PEM_X509_INFO_write_bio(BIO *bp, X509_INFO *xi, EVP_CIPHER *enc,
-                            unsigned char *kstr, int klen, pem_password_cb *cd, void *u);
+                            uint8_t *kstr, int klen, pem_password_cb *cd, void *u);
 
 int PEM_read(FILE *fp, char **name, char **header,
-             unsigned char **data, long *len);
-int PEM_write(FILE *fp, char *name, char *hdr, unsigned char *data, long len);
+             uint8_t **data, long *len);
+int PEM_write(FILE *fp, char *name, char *hdr, uint8_t *data, long len);
 void *PEM_ASN1_read(d2i_of_void *d2i, const char *name, FILE *fp, void **x,
                     pem_password_cb *cb, void *u);
 int PEM_ASN1_write(i2d_of_void *i2d, const char *name, FILE *fp,
-                   void *x, const EVP_CIPHER *enc, unsigned char *kstr,
+                   void *x, const EVP_CIPHER *enc, uint8_t *kstr,
                    int klen, pem_password_cb *callback, void *u);
 STACK_OF(X509_INFO) * PEM_X509_INFO_read(FILE *fp, STACK_OF(X509_INFO) * sk,
                                          pem_password_cb * cb, void *u);
 
 int PEM_SealInit(PEM_ENCODE_SEAL_CTX *ctx, EVP_CIPHER *type,
-                 EVP_MD *md_type, unsigned char **ek, int *ekl,
-                 unsigned char *iv, EVP_PKEY **pubk, int npubk);
-void PEM_SealUpdate(PEM_ENCODE_SEAL_CTX *ctx, unsigned char *out, int *outl,
-                    unsigned char *in, int inl);
-int PEM_SealFinal(PEM_ENCODE_SEAL_CTX *ctx, unsigned char *sig, int *sigl,
-                  unsigned char *out, int *outl, EVP_PKEY *priv);
+                 EVP_MD *md_type, uint8_t **ek, int *ekl,
+                 uint8_t *iv, EVP_PKEY **pubk, int npubk);
+void PEM_SealUpdate(PEM_ENCODE_SEAL_CTX *ctx, uint8_t *out, int *outl,
+                    uint8_t *in, int inl);
+int PEM_SealFinal(PEM_ENCODE_SEAL_CTX *ctx, uint8_t *sig, int *sigl,
+                  uint8_t *out, int *outl, EVP_PKEY *priv);
 
 void PEM_SignInit(EVP_MD_CTX *ctx, EVP_MD *type);
-void PEM_SignUpdate(EVP_MD_CTX *ctx, unsigned char *d, unsigned int cnt);
-int PEM_SignFinal(EVP_MD_CTX *ctx, unsigned char *sigret,
+void PEM_SignUpdate(EVP_MD_CTX *ctx, uint8_t *d, unsigned int cnt);
+int PEM_SignFinal(EVP_MD_CTX *ctx, uint8_t *sigret,
                   unsigned int *siglen, EVP_PKEY *pkey);
 
 int PEM_def_callback(char *buf, int num, int w, void *key);
@@ -465,8 +465,8 @@ int PEM_write_PKCS8PrivateKey(FILE *fp, EVP_PKEY *x, const EVP_CIPHER *enc,
 EVP_PKEY *PEM_read_bio_Parameters(BIO *bp, EVP_PKEY **x);
 int PEM_write_bio_Parameters(BIO *bp, EVP_PKEY *x);
 
-EVP_PKEY *b2i_PrivateKey(const unsigned char **in, long length);
-EVP_PKEY *b2i_PublicKey(const unsigned char **in, long length);
+EVP_PKEY *b2i_PrivateKey(const uint8_t **in, long length);
+EVP_PKEY *b2i_PublicKey(const uint8_t **in, long length);
 EVP_PKEY *b2i_PrivateKey_bio(BIO *in);
 EVP_PKEY *b2i_PublicKey_bio(BIO *in);
 int i2b_PrivateKey_bio(BIO *out, EVP_PKEY *pk);

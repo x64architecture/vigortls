@@ -85,13 +85,13 @@ static char *ret[] = {
     "57edf4a22be3c955ac49da2e2107b67a",
 };
 
-static char *pt(unsigned char *md);
+static char *pt(uint8_t *md);
 int main(int argc, char *argv[])
 {
     int i, err = 0;
     char **P, **R;
     char *p;
-    unsigned char md[MD5_DIGEST_LENGTH];
+    uint8_t md[MD5_DIGEST_LENGTH];
 
     P = test;
     R = ret;
@@ -114,7 +114,7 @@ int main(int argc, char *argv[])
     return (0);
 }
 
-static char *pt(unsigned char *md)
+static char *pt(uint8_t *md)
 {
     int i;
     static char buf[80];

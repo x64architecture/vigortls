@@ -78,7 +78,7 @@ typedef struct
     size_t payload_length; /* AAD length in decrypt case */
     union {
         unsigned int tls_ver;
-        unsigned char tls_aad[16]; /* 13 used */
+        uint8_t tls_aad[16]; /* 13 used */
     } aux;
 } EVP_AES_HMAC_SHA1;
 
@@ -93,26 +93,26 @@ typedef struct
 extern unsigned int OPENSSL_ia32cap_P[2];
 #define AESNI_CAPABLE (1 << (57 - 32))
 
-int aesni_set_encrypt_key(const unsigned char *userKey, int bits,
+int aesni_set_encrypt_key(const uint8_t *userKey, int bits,
                           AES_KEY *key);
-int aesni_set_decrypt_key(const unsigned char *userKey, int bits,
+int aesni_set_decrypt_key(const uint8_t *userKey, int bits,
                           AES_KEY *key);
 
-void aesni_cbc_encrypt(const unsigned char *in,
-                       unsigned char *out,
+void aesni_cbc_encrypt(const uint8_t *in,
+                       uint8_t *out,
                        size_t length,
                        const AES_KEY *key,
-                       unsigned char *ivec, int enc);
+                       uint8_t *ivec, int enc);
 
 void aesni_cbc_sha1_enc(const void *inp, void *out, size_t blocks,
-                        const AES_KEY *key, unsigned char iv[16],
+                        const AES_KEY *key, uint8_t iv[16],
                         SHA_CTX *ctx, const void *in0);
 
 #define data(ctx) ((EVP_AES_HMAC_SHA1 *)(ctx)->cipher_data)
 
 static int aesni_cbc_hmac_sha1_init_key(EVP_CIPHER_CTX *ctx,
-                                        const unsigned char *inkey,
-                                        const unsigned char *iv, int enc)
+                                        const uint8_t *inkey,
+                                        const uint8_t *iv, int enc)
 {
     EVP_AES_HMAC_SHA1 *key = data(ctx);
     int ret;
@@ -141,7 +141,7 @@ void sha1_block_data_order(void *c, const void *p, size_t len);
 
 static void sha1_update(SHA_CTX *c, const void *data, size_t len)
 {
-    const unsigned char *ptr = data;
+    const uint8_t *ptr = data;
     size_t res;
 
     if ((res = c->num)) {
@@ -175,8 +175,8 @@ static void sha1_update(SHA_CTX *c, const void *data, size_t len)
 #endif
 #define SHA1_Update sha1_update
 
-static int aesni_cbc_hmac_sha1_cipher(EVP_CIPHER_CTX *ctx, unsigned char *out,
-                                      const unsigned char *in, size_t len)
+static int aesni_cbc_hmac_sha1_cipher(EVP_CIPHER_CTX *ctx, uint8_t *out,
+                                      const uint8_t *in, size_t len)
 {
     EVP_AES_HMAC_SHA1 *key = data(ctx);
     unsigned int l;
@@ -247,7 +247,7 @@ static int aesni_cbc_hmac_sha1_cipher(EVP_CIPHER_CTX *ctx, unsigned char *out,
     } else {
         union {
             unsigned int u[SHA_DIGEST_LENGTH / sizeof(unsigned int)];
-            unsigned char c[32 + SHA_DIGEST_LENGTH];
+            uint8_t c[32 + SHA_DIGEST_LENGTH];
         } mac, *pmac;
 
         /* arrange cache line alignment */
@@ -263,7 +263,7 @@ static int aesni_cbc_hmac_sha1_cipher(EVP_CIPHER_CTX *ctx, unsigned char *out,
             int ret = 1;
             union {
                 unsigned int u[SHA_LBLOCK];
-                unsigned char c[SHA_CBLOCK];
+                uint8_t c[SHA_CBLOCK];
             } *data = (void *)key->md.data;
 
             if ((key->aux.tls_aad[plen - 4] << 8 | key->aux.tls_aad[plen - 3])
@@ -312,9 +312,9 @@ static int aesni_cbc_hmac_sha1_cipher(EVP_CIPHER_CTX *ctx, unsigned char *out,
             bitlen = BSWAP(bitlen);
 #else
             mac.c[0] = 0;
-            mac.c[1] = (unsigned char)(bitlen >> 16);
-            mac.c[2] = (unsigned char)(bitlen >> 8);
-            mac.c[3] = (unsigned char)bitlen;
+            mac.c[1] = (uint8_t)(bitlen >> 16);
+            mac.c[2] = (uint8_t)(bitlen >> 8);
+            mac.c[3] = (uint8_t)bitlen;
             bitlen = mac.u[0];
 #endif
 
@@ -329,7 +329,7 @@ static int aesni_cbc_hmac_sha1_cipher(EVP_CIPHER_CTX *ctx, unsigned char *out,
                 mask = (j - inp_len) >> (sizeof(j) * 8 - 8);
                 c &= mask;
                 c |= 0x80 & ~mask & ~((inp_len - j) >> (sizeof(j) * 8 - 8));
-                data->c[res++] = (unsigned char)c;
+                data->c[res++] = (uint8_t)c;
 
                 if (res != SHA_CBLOCK)
                     continue;
@@ -382,10 +382,10 @@ static int aesni_cbc_hmac_sha1_cipher(EVP_CIPHER_CTX *ctx, unsigned char *out,
 #else
             for (i = 0; i < 5; i++) {
                 res = pmac->u[i];
-                pmac->c[4 * i + 0] = (unsigned char)(res >> 24);
-                pmac->c[4 * i + 1] = (unsigned char)(res >> 16);
-                pmac->c[4 * i + 2] = (unsigned char)(res >> 8);
-                pmac->c[4 * i + 3] = (unsigned char)res;
+                pmac->c[4 * i + 0] = (uint8_t)(res >> 24);
+                pmac->c[4 * i + 1] = (uint8_t)(res >> 16);
+                pmac->c[4 * i + 2] = (uint8_t)(res >> 8);
+                pmac->c[4 * i + 3] = (uint8_t)res;
             }
 #endif
             len += SHA_DIGEST_LENGTH;
@@ -416,7 +416,7 @@ static int aesni_cbc_hmac_sha1_cipher(EVP_CIPHER_CTX *ctx, unsigned char *out,
             len -= inp_len;
 #if 1
             {
-                unsigned char *p = out + len - 1 - maxpad - SHA_DIGEST_LENGTH;
+                uint8_t *p = out + len - 1 - maxpad - SHA_DIGEST_LENGTH;
                 size_t off = out - p;
                 unsigned int c, cmask;
 
@@ -465,7 +465,7 @@ static int aesni_cbc_hmac_sha1_ctrl(EVP_CIPHER_CTX *ctx, int type, int arg, void
     switch (type) {
         case EVP_CTRL_AEAD_SET_MAC_KEY: {
             unsigned int i;
-            unsigned char hmac_key[64];
+            uint8_t hmac_key[64];
 
             memset(hmac_key, 0, sizeof(hmac_key));
 
@@ -492,7 +492,7 @@ static int aesni_cbc_hmac_sha1_ctrl(EVP_CIPHER_CTX *ctx, int type, int arg, void
             return 1;
         }
         case EVP_CTRL_AEAD_TLS1_AAD: {
-            unsigned char *p = ptr;
+            uint8_t *p = ptr;
             unsigned int len = p[arg - 2] << 8 | p[arg - 1];
 
             if (ctx->encrypt) {

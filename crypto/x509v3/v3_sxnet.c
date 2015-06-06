@@ -94,12 +94,12 @@ ASN1_SEQUENCE(SXNETID) = {
     ASN1_SIMPLE(SXNETID, user, ASN1_OCTET_STRING)
 } ASN1_SEQUENCE_END(SXNETID)
 
-SXNETID *d2i_SXNETID(SXNETID **a, const unsigned char **in, long len)
+SXNETID *d2i_SXNETID(SXNETID **a, const uint8_t **in, long len)
 {
     return (SXNETID *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, &SXNETID_it);
 }
 
-int i2d_SXNETID(SXNETID *a, unsigned char **out)
+int i2d_SXNETID(SXNETID *a, uint8_t **out)
 {
     return ASN1_item_i2d((ASN1_VALUE *)a, out, &SXNETID_it);
 }
@@ -119,12 +119,12 @@ ASN1_SEQUENCE(SXNET) = {
     ASN1_SEQUENCE_OF(SXNET, ids, SXNETID)
 } ASN1_SEQUENCE_END(SXNET)
 
-SXNET *d2i_SXNET(SXNET **a, const unsigned char **in, long len)
+SXNET *d2i_SXNET(SXNET **a, const uint8_t **in, long len)
 {
     return (SXNET *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, &SXNET_it);
 }
 
-int i2d_SXNET(SXNET *a, unsigned char **out)
+int i2d_SXNET(SXNET *a, uint8_t **out)
 {
     return ASN1_item_i2d((ASN1_VALUE *)a, out, &SXNET_it);
 }
@@ -247,7 +247,7 @@ int SXNET_add_id_INTEGER(SXNET **psx, ASN1_INTEGER *zone, char *user,
     if (userlen == -1)
         userlen = strlen(user);
 
-    if (!ASN1_OCTET_STRING_set(id->user, (unsigned char *)user, userlen))
+    if (!ASN1_OCTET_STRING_set(id->user, (uint8_t *)user, userlen))
         goto err;
     if (!sk_SXNETID_push(sx->ids, id))
         goto err;

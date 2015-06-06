@@ -90,8 +90,8 @@ STACK_OF(X509_INFO) * PEM_X509_INFO_read_bio(BIO *bp, STACK_OF(X509_INFO) * sk, 
     X509_INFO *xi = NULL;
     char *name = NULL, *header = NULL;
     void *pp;
-    unsigned char *data = NULL;
-    const unsigned char *p;
+    uint8_t *data = NULL;
+    const uint8_t *p;
     long len, error = 0;
     int ok = 0;
     STACK_OF(X509_INFO) *ret = NULL;
@@ -281,14 +281,14 @@ err:
 
 /* A TJH addition */
 int PEM_X509_INFO_write_bio(BIO *bp, X509_INFO *xi, EVP_CIPHER *enc,
-                            unsigned char *kstr, int klen, pem_password_cb *cb, void *u)
+                            uint8_t *kstr, int klen, pem_password_cb *cb, void *u)
 {
     EVP_CIPHER_CTX ctx;
     int i, ret = 0;
-    unsigned char *data = NULL;
+    uint8_t *data = NULL;
     const char *objstr = NULL;
     char buf[PEM_BUFSIZE];
-    unsigned char *iv = NULL;
+    uint8_t *iv = NULL;
 
     if (enc != NULL) {
         objstr = OBJ_nid2sn(EVP_CIPHER_nid(enc));
@@ -312,7 +312,7 @@ int PEM_X509_INFO_write_bio(BIO *bp, X509_INFO *xi, EVP_CIPHER *enc,
 
             /* copy from weirdo names into more normal things */
             iv = xi->enc_cipher.iv;
-            data = (unsigned char *)xi->enc_data;
+            data = (uint8_t *)xi->enc_data;
             i = xi->enc_len;
 
             /* we take the encryption data from the

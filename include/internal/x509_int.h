@@ -65,7 +65,7 @@ struct X509_name_st {
     int modified;               /* true if 'bytes' needs to be built */
     BUF_MEM *bytes;
 /*      unsigned long hash; Keep the hash around for lookups */
-    unsigned char *canon_enc;
+    uint8_t *canon_enc;
     int canon_enclen;
 } /* X509_NAME */ ;
 

@@ -126,7 +126,7 @@
 int verify_depth = 0;
 int verify_error = X509_V_OK;
 int verify_return_error = 0;
-unsigned char cookie_secret[COOKIE_SECRET_LENGTH];
+uint8_t cookie_secret[COOKIE_SECRET_LENGTH];
 int cookie_initialized = 0;
 
 int verify_callback(int ok, X509_STORE_CTX *ctx)
@@ -365,7 +365,7 @@ void msg_cb(int write_p, int version, int content_type, const void *buf, size_t 
             str_details1 = ", ???";
 
             if (len == 2) {
-                switch (((const unsigned char *)buf)[0]) {
+                switch (((const uint8_t *)buf)[0]) {
                     case 1:
                         str_details1 = ", warning";
                         break;
@@ -375,7 +375,7 @@ void msg_cb(int write_p, int version, int content_type, const void *buf, size_t 
                 }
 
                 str_details2 = " ???";
-                switch (((const unsigned char *)buf)[1]) {
+                switch (((const uint8_t *)buf)[1]) {
                     case 0:
                         str_details2 = " close_notify";
                         break;
@@ -472,7 +472,7 @@ void msg_cb(int write_p, int version, int content_type, const void *buf, size_t 
             str_details1 = "???";
 
             if (len > 0) {
-                switch (((const unsigned char *)buf)[0]) {
+                switch (((const uint8_t *)buf)[0]) {
                     case 0:
                         str_details1 = ", HelloRequest";
                         break;
@@ -521,7 +521,7 @@ void msg_cb(int write_p, int version, int content_type, const void *buf, size_t 
         for (i = 0; i < num; i++) {
             if (i % 16 == 0 && i > 0)
                 BIO_printf(bio, "\n   ");
-            BIO_printf(bio, " %02x", ((const unsigned char *)buf)[i]);
+            BIO_printf(bio, " %02x", ((const uint8_t *)buf)[i]);
         }
         if (i < len)
             BIO_printf(bio, " ...");
@@ -531,7 +531,7 @@ void msg_cb(int write_p, int version, int content_type, const void *buf, size_t 
 }
 
 void tlsext_cb(SSL *s, int client_server, int type,
-               unsigned char *data, int len,
+               uint8_t *data, int len,
                void *arg)
 {
     BIO *bio = arg;
@@ -637,9 +637,9 @@ void tlsext_cb(SSL *s, int client_server, int type,
     (void)BIO_flush(bio);
 }
 
-int generate_cookie_callback(SSL *ssl, unsigned char *cookie, unsigned int *cookie_len)
+int generate_cookie_callback(SSL *ssl, uint8_t *cookie, unsigned int *cookie_len)
 {
-    unsigned char *buffer, result[EVP_MAX_MD_SIZE];
+    uint8_t *buffer, result[EVP_MAX_MD_SIZE];
     unsigned int length, resultlength;
     union {
         struct sockaddr sa;
@@ -714,9 +714,9 @@ int generate_cookie_callback(SSL *ssl, unsigned char *cookie, unsigned int *cook
     return 1;
 }
 
-int verify_cookie_callback(SSL *ssl, unsigned char *cookie, unsigned int cookie_len)
+int verify_cookie_callback(SSL *ssl, uint8_t *cookie, unsigned int cookie_len)
 {
-    unsigned char *buffer, result[EVP_MAX_MD_SIZE];
+    uint8_t *buffer, result[EVP_MAX_MD_SIZE];
     unsigned int length, resultlength;
     union {
         struct sockaddr sa;

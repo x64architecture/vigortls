@@ -137,7 +137,7 @@ int rsautl_main(int argc, char **argv)
     char *engine = NULL, *infile = NULL, *outfile = NULL, *keyfile = NULL;
     char *passinarg = NULL, *passin = NULL, *prog;
     char rsa_mode = RSA_VERIFY, key_type = KEY_PRIVKEY;
-    unsigned char *rsa_in = NULL, *rsa_out = NULL, pad = RSA_PKCS1_PADDING;
+    uint8_t *rsa_in = NULL, *rsa_out = NULL, pad = RSA_PKCS1_PADDING;
     int rsa_inlen, keyformat = FORMAT_PEM, keysize, ret = 1;
     int rsa_outlen = 0, hexdump = 0, asn1parse = 0, need_priv = 0, rev = 0;
     OPTION_CHOICE o;
@@ -289,7 +289,7 @@ int rsautl_main(int argc, char **argv)
     }
     if (rev) {
         int i;
-        unsigned char ctmp;
+        uint8_t ctmp;
         for (i = 0; i < rsa_inlen / 2; i++) {
             ctmp = rsa_in[i];
             rsa_in[i] = rsa_in[rsa_inlen - 1 - i];

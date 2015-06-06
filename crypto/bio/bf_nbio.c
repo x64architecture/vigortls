@@ -125,7 +125,7 @@ static int nbiof_read(BIO *b, char *out, int outl)
 {
     int ret = 0;
     int num;
-    unsigned char n;
+    uint8_t n;
 
     if (out == NULL)
         return (0);
@@ -156,7 +156,7 @@ static int nbiof_write(BIO *b, const char *in, int inl)
     NBIO_TEST *nt;
     int ret = 0;
     int num;
-    unsigned char n;
+    uint8_t n;
 
     if ((in == NULL) || (inl <= 0))
         return (0);

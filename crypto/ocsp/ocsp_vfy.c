@@ -187,7 +187,7 @@ static int ocsp_find_signer(X509 **psigner, OCSP_BASICRESP *bs, STACK_OF(X509) *
 static X509 *ocsp_find_signer_sk(STACK_OF(X509) * certs, OCSP_RESPID * id)
 {
     int i;
-    unsigned char tmphash[SHA_DIGEST_LENGTH], *keyhash;
+    uint8_t tmphash[SHA_DIGEST_LENGTH], *keyhash;
     X509 *x;
 
     /* Easy if lookup by name */
@@ -295,7 +295,7 @@ static int ocsp_match_issuerid(X509 *cert, OCSP_CERTID *cid,
         const EVP_MD *dgst;
         X509_NAME *iname;
         int mdlen;
-        unsigned char md[EVP_MAX_MD_SIZE];
+        uint8_t md[EVP_MAX_MD_SIZE];
         if (!(dgst = EVP_get_digestbyobj(cid->hashAlgorithm->algorithm))) {
             OCSPerr(OCSP_F_OCSP_MATCH_ISSUERID, OCSP_R_UNKNOWN_MESSAGE_DIGEST);
             return -1;

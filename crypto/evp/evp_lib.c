@@ -189,7 +189,7 @@ int EVP_CIPHER_CTX_block_size(const EVP_CIPHER_CTX *ctx)
     return ctx->cipher->block_size;
 }
 
-int EVP_Cipher(EVP_CIPHER_CTX *ctx, unsigned char *out, const unsigned char *in, unsigned int inl)
+int EVP_Cipher(EVP_CIPHER_CTX *ctx, uint8_t *out, const uint8_t *in, unsigned int inl)
 {
     return ctx->cipher->do_cipher(ctx, out, in, inl);
 }

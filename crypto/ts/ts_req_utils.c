@@ -115,7 +115,7 @@ X509_ALGOR *TS_MSG_IMPRINT_get_algo(TS_MSG_IMPRINT *a)
     return a->hash_algo;
 }
 
-int TS_MSG_IMPRINT_set_msg(TS_MSG_IMPRINT *a, unsigned char *d, int len)
+int TS_MSG_IMPRINT_set_msg(TS_MSG_IMPRINT *a, uint8_t *d, int len)
 {
     return ASN1_OCTET_STRING_set(a->hashed_msg, d, len);
 }

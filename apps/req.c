@@ -1149,7 +1149,7 @@ static int auto_info(X509_REQ *req, STACK_OF(CONF_VALUE) *dn_sk,
             mval = -1;
         } else
             mval = 0;
-        if (!X509_NAME_add_entry_by_txt(subj, type, chtype, (unsigned char *)v->value, -1,
+        if (!X509_NAME_add_entry_by_txt(subj, type, chtype, (uint8_t *)v->value, -1,
                                         -1, mval))
             return 0;
     }
@@ -1161,7 +1161,7 @@ static int auto_info(X509_REQ *req, STACK_OF(CONF_VALUE) *dn_sk,
     if (attribs) {
         for (i = 0; i < sk_CONF_VALUE_num(attr_sk); i++) {
             v = sk_CONF_VALUE_value(attr_sk, i);
-            if (!X509_REQ_add1_attr_by_txt(req, v->name, chtype, (unsigned char *)v->value,
+            if (!X509_REQ_add1_attr_by_txt(req, v->name, chtype, (uint8_t *)v->value,
                                            -1))
                 return 0;
         }
@@ -1213,7 +1213,7 @@ start:
         goto start;
     }
 
-    if (!X509_NAME_add_entry_by_NID(n, nid, chtype, (unsigned char *)buf, -1, -1, mval))
+    if (!X509_NAME_add_entry_by_NID(n, nid, chtype, (uint8_t *)buf, -1, -1, mval))
         goto err;
     ret = 1;
 err:
@@ -1267,7 +1267,7 @@ start:
         goto start;
     }
 
-    if (!X509_REQ_add1_attr_by_NID(req, nid, chtype, (unsigned char *)buf, -1)) {
+    if (!X509_REQ_add1_attr_by_NID(req, nid, chtype, (uint8_t *)buf, -1)) {
         BIO_printf(bio_err, "Error adding attribute\n");
         ERR_print_errors(bio_err);
         goto err;

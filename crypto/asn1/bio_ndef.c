@@ -87,15 +87,15 @@ typedef struct ndef_aux_st {
     /* Output BIO */
     BIO *out;
     /* Boundary where content is inserted */
-    unsigned char **boundary;
+    uint8_t **boundary;
     /* DER buffer start */
-    unsigned char *derbuf;
+    uint8_t *derbuf;
 } NDEF_SUPPORT;
 
-static int ndef_prefix(BIO *b, unsigned char **pbuf, int *plen, void *parg);
-static int ndef_prefix_free(BIO *b, unsigned char **pbuf, int *plen, void *parg);
-static int ndef_suffix(BIO *b, unsigned char **pbuf, int *plen, void *parg);
-static int ndef_suffix_free(BIO *b, unsigned char **pbuf, int *plen, void *parg);
+static int ndef_prefix(BIO *b, uint8_t **pbuf, int *plen, void *parg);
+static int ndef_prefix_free(BIO *b, uint8_t **pbuf, int *plen, void *parg);
+static int ndef_suffix(BIO *b, uint8_t **pbuf, int *plen, void *parg);
+static int ndef_suffix_free(BIO *b, uint8_t **pbuf, int *plen, void *parg);
 
 BIO *BIO_new_NDEF(BIO *out, ASN1_VALUE *val, const ASN1_ITEM *it)
 {
@@ -150,10 +150,10 @@ err:
     return NULL;
 }
 
-static int ndef_prefix(BIO *b, unsigned char **pbuf, int *plen, void *parg)
+static int ndef_prefix(BIO *b, uint8_t **pbuf, int *plen, void *parg)
 {
     NDEF_SUPPORT *ndef_aux;
-    unsigned char *p;
+    uint8_t *p;
     int derlen;
 
     if (!parg)
@@ -175,7 +175,7 @@ static int ndef_prefix(BIO *b, unsigned char **pbuf, int *plen, void *parg)
     return 1;
 }
 
-static int ndef_prefix_free(BIO *b, unsigned char **pbuf, int *plen, void *parg)
+static int ndef_prefix_free(BIO *b, uint8_t **pbuf, int *plen, void *parg)
 {
     NDEF_SUPPORT *ndef_aux;
 
@@ -193,7 +193,7 @@ static int ndef_prefix_free(BIO *b, unsigned char **pbuf, int *plen, void *parg)
     return 1;
 }
 
-static int ndef_suffix_free(BIO *b, unsigned char **pbuf, int *plen, void *parg)
+static int ndef_suffix_free(BIO *b, uint8_t **pbuf, int *plen, void *parg)
 {
     NDEF_SUPPORT **pndef_aux = (NDEF_SUPPORT **)parg;
     if (!ndef_prefix_free(b, pbuf, plen, parg))
@@ -203,10 +203,10 @@ static int ndef_suffix_free(BIO *b, unsigned char **pbuf, int *plen, void *parg)
     return 1;
 }
 
-static int ndef_suffix(BIO *b, unsigned char **pbuf, int *plen, void *parg)
+static int ndef_suffix(BIO *b, uint8_t **pbuf, int *plen, void *parg)
 {
     NDEF_SUPPORT *ndef_aux;
-    unsigned char *p;
+    uint8_t *p;
     int derlen;
     const ASN1_AUX *aux;
     ASN1_STREAM_ARG sarg;

@@ -62,7 +62,7 @@
 #include <openssl/rand.h>
 #include <openssl/bn.h>
 
-DSA_SIG *DSA_do_sign(const unsigned char *dgst, int dlen, DSA *dsa)
+DSA_SIG *DSA_do_sign(const uint8_t *dgst, int dlen, DSA *dsa)
 {
     return dsa->meth->dsa_do_sign(dgst, dlen, dsa);
 }

@@ -67,7 +67,7 @@ typedef struct _pqueue {
     int count;
 } pqueue_s;
 
-pitem *pitem_new(unsigned char *prio64be, void *data)
+pitem *pitem_new(uint8_t *prio64be, void *data)
 {
     pitem *item = malloc(sizeof(pitem));
     if (item == NULL)
@@ -145,7 +145,7 @@ pitem *pqueue_pop(pqueue_s *pq)
     return item;
 }
 
-pitem *pqueue_find(pqueue_s *pq, unsigned char *prio64be)
+pitem *pqueue_find(pqueue_s *pq, uint8_t *prio64be)
 {
     pitem *next;
     pitem *found = NULL;

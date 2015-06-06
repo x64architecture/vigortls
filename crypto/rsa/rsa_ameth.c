@@ -70,7 +70,7 @@
 
 static int rsa_pub_encode(X509_PUBKEY *pk, const EVP_PKEY *pkey)
 {
-    unsigned char *penc = NULL;
+    uint8_t *penc = NULL;
     int penclen;
     penclen = i2d_RSAPublicKey(pkey->pkey.rsa, &penc);
     if (penclen <= 0)
@@ -85,7 +85,7 @@ static int rsa_pub_encode(X509_PUBKEY *pk, const EVP_PKEY *pkey)
 
 static int rsa_pub_decode(EVP_PKEY *pkey, X509_PUBKEY *pubkey)
 {
-    const unsigned char *p;
+    const uint8_t *p;
     int pklen;
     RSA *rsa = NULL;
     if (!X509_PUBKEY_get0_param(NULL, &p, &pklen, NULL, pubkey))
@@ -107,7 +107,7 @@ static int rsa_pub_cmp(const EVP_PKEY *a, const EVP_PKEY *b)
 }
 
 static int old_rsa_priv_decode(EVP_PKEY *pkey,
-                               const unsigned char **pder, int derlen)
+                               const uint8_t **pder, int derlen)
 {
     RSA *rsa;
     if (!(rsa = d2i_RSAPrivateKey(NULL, pder, derlen))) {
@@ -118,14 +118,14 @@ static int old_rsa_priv_decode(EVP_PKEY *pkey,
     return 1;
 }
 
-static int old_rsa_priv_encode(const EVP_PKEY *pkey, unsigned char **pder)
+static int old_rsa_priv_encode(const EVP_PKEY *pkey, uint8_t **pder)
 {
     return i2d_RSAPrivateKey(pkey->pkey.rsa, pder);
 }
 
 static int rsa_priv_encode(PKCS8_PRIV_KEY_INFO *p8, const EVP_PKEY *pkey)
 {
-    unsigned char *rk = NULL;
+    uint8_t *rk = NULL;
     int rklen;
     rklen = i2d_RSAPrivateKey(pkey->pkey.rsa, &rk);
 
@@ -145,7 +145,7 @@ static int rsa_priv_encode(PKCS8_PRIV_KEY_INFO *p8, const EVP_PKEY *pkey)
 
 static int rsa_priv_decode(EVP_PKEY *pkey, PKCS8_PRIV_KEY_INFO *p8)
 {
-    const unsigned char *p;
+    const uint8_t *p;
     int pklen;
     if (!PKCS8_pkey_get0(NULL, &p, &pklen, NULL, p8))
         return 0;
@@ -180,7 +180,7 @@ static int do_rsa_print(BIO *bp, const RSA *x, int off, int priv)
 {
     char *str;
     const char *s;
-    unsigned char *m = NULL;
+    uint8_t *m = NULL;
     int ret = 0, mod_len = 0;
     size_t buf_len = 0;
 

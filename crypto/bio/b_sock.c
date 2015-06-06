@@ -71,7 +71,7 @@
 #include <openssl/buffer.h>
 #include <openssl/err.h>
 
-int BIO_get_host_ip(const char *str, unsigned char *ip)
+int BIO_get_host_ip(const char *str, uint8_t *ip)
 {
     int i;
     int err = 1;
@@ -198,7 +198,7 @@ int BIO_get_accept_socket(char *host, int bind_mode)
         struct sockaddr_in6 sa_in6;
     } server, client;
     int s = INVALID_SOCKET, cs, addrlen;
-    unsigned char ip[4];
+    uint8_t ip[4];
     unsigned short port;
     char *str = NULL, *e;
     char *h, *p;
@@ -410,10 +410,10 @@ int BIO_accept(int sock, char **addr)
         *addr = p;
     }
     snprintf(*addr, 24, "%d.%d.%d.%d:%d",
-             (unsigned char)(l >> 24L) & 0xff,
-             (unsigned char)(l >> 16L) & 0xff,
-             (unsigned char)(l >> 8L) & 0xff,
-             (unsigned char)(l) & 0xff,
+             (uint8_t)(l >> 24L) & 0xff,
+             (uint8_t)(l >> 16L) & 0xff,
+             (uint8_t)(l >> 8L) & 0xff,
+             (uint8_t)(l) & 0xff,
              port);
 end:
     return (ret);

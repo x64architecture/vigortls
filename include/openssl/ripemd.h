@@ -61,6 +61,7 @@
 
 #include <openssl/opensslconf.h>
 #include <stddef.h>
+#include <stdint.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -92,10 +93,10 @@ typedef struct RIPEMD160state_st {
 
 int RIPEMD160_Init(RIPEMD160_CTX *c);
 int RIPEMD160_Update(RIPEMD160_CTX *c, const void *data, size_t len);
-int RIPEMD160_Final(unsigned char *md, RIPEMD160_CTX *c);
-unsigned char *RIPEMD160(const unsigned char *d, size_t n,
-                         unsigned char *md);
-void RIPEMD160_Transform(RIPEMD160_CTX *c, const unsigned char *b);
+int RIPEMD160_Final(uint8_t *md, RIPEMD160_CTX *c);
+uint8_t *RIPEMD160(const uint8_t *d, size_t n,
+                         uint8_t *md);
+void RIPEMD160_Transform(RIPEMD160_CTX *c, const uint8_t *b);
 #ifdef __cplusplus
 }
 #endif

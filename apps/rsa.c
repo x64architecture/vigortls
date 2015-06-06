@@ -307,7 +307,7 @@ int rsa_main(int argc, char **argv)
             i = i2d_RSAPrivateKey_bio(out, rsa);
     }
     else if (outformat == FORMAT_NETSCAPE) {
-        unsigned char *p, *pp;
+        uint8_t *p, *pp;
         int size;
 
         i = 1;

@@ -623,12 +623,12 @@ end:
 
 int ssl3_client_hello(SSL *s)
 {
-    unsigned char *buf;
-    unsigned char *p, *d;
+    uint8_t *buf;
+    uint8_t *p, *d;
     int i;
     unsigned long l;
 
-    buf = (unsigned char *)s->init_buf->data;
+    buf = (uint8_t *)s->init_buf->data;
     if (s->state == SSL3_ST_CW_CLNT_HELLO_A) {
         SSL_SESSION *sess = s->session;
         if ((sess == NULL) || (sess->ssl_version != s->version)
@@ -780,7 +780,7 @@ int ssl3_get_server_hello(SSL *s)
 {
     STACK_OF(SSL_CIPHER) * sk;
     const SSL_CIPHER *c;
-    unsigned char *p, *d, *q;
+    uint8_t *p, *d, *q;
     int i, al, ok;
     unsigned int j, cipherid;
     uint16_t cipher_value;
@@ -814,7 +814,7 @@ int ssl3_get_server_hello(SSL *s)
         goto f_err;
     }
 
-    d = p = (unsigned char *)s->init_msg;
+    d = p = (uint8_t *)s->init_msg;
 
     if (2 > n)
         goto truncated;
@@ -998,8 +998,8 @@ int ssl3_get_server_certificate(SSL *s)
     int al, i, ok, ret = -1;
     unsigned long n, nc, llen, l;
     X509 *x = NULL;
-    const unsigned char *q, *p;
-    unsigned char *d;
+    const uint8_t *q, *p;
+    uint8_t *d;
     STACK_OF(X509) *sk = NULL;
     SESS_CERT *sc;
     EVP_PKEY *pkey = NULL;
@@ -1021,7 +1021,7 @@ int ssl3_get_server_certificate(SSL *s)
                SSL_R_BAD_MESSAGE_TYPE);
         goto f_err;
     }
-    p = d = (unsigned char *)s->init_msg;
+    p = d = (uint8_t *)s->init_msg;
 
     if ((sk = sk_X509_new_null()) == NULL) {
         SSLerr(SSL_F_SSL3_GET_SERVER_CERTIFICATE,
@@ -1153,9 +1153,9 @@ err:
 
 int ssl3_get_key_exchange(SSL *s)
 {
-    unsigned char *q, md_buf[EVP_MAX_MD_SIZE * 2];
+    uint8_t *q, md_buf[EVP_MAX_MD_SIZE * 2];
     EVP_MD_CTX md_ctx;
-    unsigned char *param, *p;
+    uint8_t *param, *p;
     int al, i, j, param_len, ok;
     long n, alg_k, alg_a;
     EVP_PKEY *pkey = NULL;
@@ -1195,7 +1195,7 @@ int ssl3_get_key_exchange(SSL *s)
         return (1);
     }
 
-    param = p = (unsigned char *)s->init_msg;
+    param = p = (uint8_t *)s->init_msg;
     if (s->session->sess_cert != NULL) {
         RSA_free(s->session->sess_cert->peer_rsa_tmp);
         s->session->sess_cert->peer_rsa_tmp = NULL;
@@ -1596,8 +1596,8 @@ int ssl3_get_certificate_request(SSL *s)
     unsigned long n, nc, l;
     unsigned int llen, ctype_num, i;
     X509_NAME *xn = NULL;
-    const unsigned char *p, *q;
-    unsigned char *d;
+    const uint8_t *p, *q;
+    uint8_t *d;
     STACK_OF(X509_NAME) *ca_sk = NULL;
 
     n = s->method->ssl_get_message(s, SSL3_ST_CR_CERT_REQ_A,
@@ -1639,7 +1639,7 @@ int ssl3_get_certificate_request(SSL *s)
         }
     }
 
-    p = d = (unsigned char *)s->init_msg;
+    p = d = (uint8_t *)s->init_msg;
 
     if ((ca_sk = sk_X509_NAME_new(ca_dn_cmp)) == NULL) {
         SSLerr(SSL_F_SSL3_GET_CERTIFICATE_REQUEST,
@@ -1781,8 +1781,8 @@ int ssl3_get_new_session_ticket(SSL *s)
 {
     int ok, al, ret = 0, ticklen;
     long n;
-    const unsigned char *p;
-    unsigned char *d;
+    const uint8_t *p;
+    uint8_t *d;
 
     n = s->method->ssl_get_message(s,
             SSL3_ST_CR_SESSION_TICKET_A,
@@ -1802,7 +1802,7 @@ int ssl3_get_new_session_ticket(SSL *s)
         goto f_err;
     }
 
-    p = d = (unsigned char *)s->init_msg;
+    p = d = (uint8_t *)s->init_msg;
     n2l(p, s->session->tlsext_tick_lifetime_hint);
     n2s(p, ticklen);
     /* ticket_lifetime_hint + ticket_length + ticket */
@@ -1852,7 +1852,7 @@ int ssl3_get_cert_status(SSL *s)
 {
     int ok, al;
     unsigned long resplen, n;
-    const unsigned char *p;
+    const uint8_t *p;
 
     n = s->method->ssl_get_message(s, SSL3_ST_CR_CERT_STATUS_A,
                                    SSL3_ST_CR_CERT_STATUS_B, SSL3_MT_CERTIFICATE_STATUS,
@@ -1867,7 +1867,7 @@ int ssl3_get_cert_status(SSL *s)
                SSL_R_LENGTH_MISMATCH);
         goto f_err;
     }
-    p = (unsigned char *)s->init_msg;
+    p = (uint8_t *)s->init_msg;
     if (*p++ != TLSEXT_STATUSTYPE_ocsp) {
         al = SSL_AD_DECODE_ERROR;
         SSLerr(SSL_F_SSL3_GET_CERT_STATUS,
@@ -1935,15 +1935,15 @@ int ssl3_get_server_done(SSL *s)
 
 int ssl3_send_client_key_exchange(SSL *s)
 {
-    unsigned char *p;
+    uint8_t *p;
     int n;
     unsigned long alg_k;
-    unsigned char *q;
+    uint8_t *q;
     EVP_PKEY *pkey = NULL;
     EC_KEY *clnt_ecdh = NULL;
     const EC_POINT *srvr_ecpoint = NULL;
     EVP_PKEY *srvr_pub_pkey = NULL;
-    unsigned char *encodedPoint = NULL;
+    uint8_t *encodedPoint = NULL;
     int encoded_pt_len = 0;
     BN_CTX *bn_ctx = NULL;
 
@@ -1954,7 +1954,7 @@ int ssl3_send_client_key_exchange(SSL *s)
 
         if (alg_k & SSL_kRSA) {
             RSA *rsa;
-            unsigned char tmp_buf[SSL_MAX_MASTER_KEY_LENGTH];
+            uint8_t tmp_buf[SSL_MAX_MASTER_KEY_LENGTH];
 
             if (s->session->sess_cert == NULL) {
                 /* We should always have a server
@@ -2230,7 +2230,7 @@ int ssl3_send_client_key_exchange(SSL *s)
                 p += 1;
 
                 /* copy the point */
-                memcpy((unsigned char *)p, encodedPoint, n);
+                memcpy((uint8_t *)p, encodedPoint, n);
                 /* increment n to account for length field */
                 n += 1;
             }
@@ -2248,7 +2248,7 @@ int ssl3_send_client_key_exchange(SSL *s)
             size_t msglen;
             unsigned int md_len;
             int keytype;
-            unsigned char premaster_secret[32], shared_ukm[32],
+            uint8_t premaster_secret[32], shared_ukm[32],
             tmp[256];
             EVP_MD_CTX *ukm_hash;
             EVP_PKEY *pub_key;
@@ -2370,8 +2370,8 @@ err:
 
 int ssl3_send_client_verify(SSL *s)
 {
-    unsigned char *p;
-    unsigned char data[MD5_DIGEST_LENGTH + SHA_DIGEST_LENGTH];
+    uint8_t *p;
+    uint8_t data[MD5_DIGEST_LENGTH + SHA_DIGEST_LENGTH];
     EVP_PKEY *pkey;
     EVP_PKEY_CTX *pctx = NULL;
     EVP_MD_CTX mctx;
@@ -2456,7 +2456,7 @@ int ssl3_send_client_verify(SSL *s)
             s2n(j, p);
             n = j + 2;
         } else if (pkey->type == NID_id_GostR3410_94 || pkey->type == NID_id_GostR3410_2001) {
-            unsigned char signbuf[64];
+            uint8_t signbuf[64];
             int i;
             size_t sigsize = 64;
             s->method->ssl3_enc->cert_verify_mac(s,
@@ -2636,12 +2636,12 @@ err:
 int ssl3_send_next_proto(SSL *s)
 {
     unsigned int len, padding_len;
-    unsigned char *d;
+    uint8_t *d;
 
     if (s->state == SSL3_ST_CW_NEXT_PROTO_A) {
         len = s->next_proto_negotiated_len;
         padding_len = 32 - ((len + 2) % 32);
-        d = (unsigned char *)s->init_buf->data;
+        d = (uint8_t *)s->init_buf->data;
         d[4] = len;
         memcpy(d + 5, s->next_proto_negotiated, len);
         d[5 + len] = padding_len;

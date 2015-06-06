@@ -80,9 +80,9 @@ static char *TS_get_status_text(STACK_OF(ASN1_UTF8STRING) * text);
 static int TS_check_policy(ASN1_OBJECT *req_oid, TS_TST_INFO *tst_info);
 static int TS_compute_imprint(BIO *data, TS_TST_INFO *tst_info,
                               X509_ALGOR **md_alg,
-                              unsigned char **imprint, unsigned *imprint_len);
+                              uint8_t **imprint, unsigned *imprint_len);
 static int TS_check_imprints(X509_ALGOR *algor_a,
-                             unsigned char *imprint_a, unsigned len_a,
+                             uint8_t *imprint_a, unsigned len_a,
                              TS_TST_INFO *tst_info);
 static int TS_check_nonces(const ASN1_INTEGER *a, TS_TST_INFO *tst_info);
 static int TS_check_signer_name(GENERAL_NAME *tsa_name, X509 *signer);
@@ -291,7 +291,7 @@ err:
 static ESS_SIGNING_CERT *ESS_get_signing_cert(PKCS7_SIGNER_INFO *si)
 {
     ASN1_TYPE *attr;
-    const unsigned char *p;
+    const uint8_t *p;
     attr = PKCS7_get_signed_attribute(si,
                                       NID_id_smime_aa_signingCertificate);
     if (!attr)
@@ -407,7 +407,7 @@ static int int_TS_RESP_verify_token(TS_VERIFY_CTX *ctx,
     X509 *signer = NULL;
     GENERAL_NAME *tsa_name = TS_TST_INFO_get_tsa(tst_info);
     X509_ALGOR *md_alg = NULL;
-    unsigned char *imprint = NULL;
+    uint8_t *imprint = NULL;
     unsigned imprint_len = 0;
     int ret = 0;
 
@@ -564,13 +564,13 @@ static int TS_check_policy(ASN1_OBJECT *req_oid, TS_TST_INFO *tst_info)
 
 static int TS_compute_imprint(BIO *data, TS_TST_INFO *tst_info,
                               X509_ALGOR **md_alg,
-                              unsigned char **imprint, unsigned *imprint_len)
+                              uint8_t **imprint, unsigned *imprint_len)
 {
     TS_MSG_IMPRINT *msg_imprint = TS_TST_INFO_get_msg_imprint(tst_info);
     X509_ALGOR *md_alg_resp = TS_MSG_IMPRINT_get_algo(msg_imprint);
     const EVP_MD *md;
     EVP_MD_CTX md_ctx;
-    unsigned char buffer[4096];
+    uint8_t buffer[4096];
     int length;
 
     *md_alg = NULL;
@@ -615,7 +615,7 @@ err:
 }
 
 static int TS_check_imprints(X509_ALGOR *algor_a,
-                             unsigned char *imprint_a, unsigned len_a,
+                             uint8_t *imprint_a, unsigned len_a,
                              TS_TST_INFO *tst_info)
 {
     TS_MSG_IMPRINT *b = TS_TST_INFO_get_msg_imprint(tst_info);

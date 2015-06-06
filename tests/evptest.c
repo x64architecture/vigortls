@@ -58,7 +58,7 @@
 #include <openssl/err.h>
 #include <openssl/conf.h>
 
-static void hexdump(FILE *f, const char *title, const unsigned char *s, int l)
+static void hexdump(FILE *f, const char *title, const uint8_t *s, int l)
 {
     int n = 0;
 
@@ -71,9 +71,9 @@ static void hexdump(FILE *f, const char *title, const unsigned char *s, int l)
     fprintf(f, "\n");
 }
 
-static int convert(unsigned char *s)
+static int convert(uint8_t *s)
 {
-    unsigned char *d;
+    uint8_t *d;
 
     for (d = s; *s; s += 2, ++d) {
         unsigned int n;
@@ -86,7 +86,7 @@ static int convert(unsigned char *s)
             fprintf(stderr, "sscanf failed!");
             exit(4);
         }
-        *d = (unsigned char)n;
+        *d = (uint8_t)n;
     }
     return s - d;
 }
@@ -103,11 +103,11 @@ static char *sstrsep(char **string, const char *delim)
     isdelim[0] = 1;
 
     while (*delim) {
-        isdelim[(unsigned char)(*delim)] = 1;
+        isdelim[(uint8_t)(*delim)] = 1;
         delim++;
     }
 
-    while (!isdelim[(unsigned char)(**string)]) {
+    while (!isdelim[(uint8_t)(**string)]) {
         (*string)++;
     }
 
@@ -119,9 +119,9 @@ static char *sstrsep(char **string, const char *delim)
     return token;
 }
 
-static unsigned char *ustrsep(char **p, const char *sep)
+static uint8_t *ustrsep(char **p, const char *sep)
 {
-    return (unsigned char *)sstrsep(p, sep);
+    return (uint8_t *)sstrsep(p, sep);
 }
 
 static int test1_exit(int ec)
@@ -130,16 +130,16 @@ static int test1_exit(int ec)
     return (0); /* To keep some compilers quiet */
 }
 
-static void test1(const EVP_CIPHER *c, const unsigned char *key, int kn,
-                  const unsigned char *iv, int in,
-                  const unsigned char *plaintext, int pn,
-                  const unsigned char *ciphertext, int cn,
-                  const unsigned char *aad, int an,
-                  const unsigned char *tag,int tn,
+static void test1(const EVP_CIPHER *c, const uint8_t *key, int kn,
+                  const uint8_t *iv, int in,
+                  const uint8_t *plaintext, int pn,
+                  const uint8_t *ciphertext, int cn,
+                  const uint8_t *aad, int an,
+                  const uint8_t *tag,int tn,
                   int encdec)
 {
     EVP_CIPHER_CTX ctx;
-    unsigned char out[4096];
+    uint8_t out[4096];
     int outl, outl2, mode;
 
     printf("Testing cipher %s%s\n", EVP_CIPHER_name(c),
@@ -247,7 +247,7 @@ static void test1(const EVP_CIPHER *c, const unsigned char *key, int kn,
         }
 
         if (mode == EVP_CIPH_GCM_MODE || mode == EVP_CIPH_CCM_MODE) {
-            unsigned char rtag[16];
+            uint8_t rtag[16];
             /*
              * Note: EVP_CTRL_CCM_GET_TAG has same value as
              * EVP_CTRL_GCM_GET_TAG
@@ -361,12 +361,12 @@ static void test1(const EVP_CIPHER *c, const unsigned char *key, int kn,
     printf("\n");
 }
 
-static int test_cipher(const char *cipher, const unsigned char *key, int kn,
-                       const unsigned char *iv, int in,
-                       const unsigned char *plaintext, int pn,
-                       const unsigned char *ciphertext, int cn,
-                       const unsigned char *aad, int an,
-                       const unsigned char *tag,int tn,
+static int test_cipher(const char *cipher, const uint8_t *key, int kn,
+                       const uint8_t *iv, int in,
+                       const uint8_t *plaintext, int pn,
+                       const uint8_t *ciphertext, int cn,
+                       const uint8_t *aad, int an,
+                       const uint8_t *tag,int tn,
                        int encdec)
 {
     const EVP_CIPHER *c;
@@ -381,12 +381,12 @@ static int test_cipher(const char *cipher, const unsigned char *key, int kn,
 }
 
 static int test_digest(const char *digest,
-                       const unsigned char *plaintext, int pn,
-                       const unsigned char *ciphertext, unsigned int cn)
+                       const uint8_t *plaintext, int pn,
+                       const uint8_t *ciphertext, unsigned int cn)
 {
     const EVP_MD *d;
     EVP_MD_CTX ctx;
-    unsigned char md[EVP_MAX_MD_SIZE];
+    uint8_t md[EVP_MAX_MD_SIZE];
     unsigned int mdn;
 
     d = EVP_get_digestbyname(digest);
@@ -470,8 +470,8 @@ int main(int argc, char **argv)
         char line[4096];
         char *p;
         char *cipher;
-        unsigned char *iv, *key, *plaintext, *ciphertext;
-        unsigned char *aad, *tag;
+        uint8_t *iv, *key, *plaintext, *ciphertext;
+        uint8_t *aad, *tag;
         int encdec;
         int kn, in, pn, cn;
         int an = 0;

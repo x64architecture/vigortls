@@ -370,12 +370,12 @@ ASN1_CHOICE_cb(DIST_POINT_NAME, dpn_cb) = {
     ASN1_IMP_SET_OF(DIST_POINT_NAME, name.relativename, X509_NAME_ENTRY, 1)
 } ASN1_CHOICE_END_cb(DIST_POINT_NAME, DIST_POINT_NAME, type)
 
-DIST_POINT_NAME *d2i_DIST_POINT_NAME(DIST_POINT_NAME **a, const unsigned char **in, long len)
+DIST_POINT_NAME *d2i_DIST_POINT_NAME(DIST_POINT_NAME **a, const uint8_t **in, long len)
 {
     return (DIST_POINT_NAME *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, &DIST_POINT_NAME_it);
 }
 
-int i2d_DIST_POINT_NAME(DIST_POINT_NAME *a, unsigned char **out)
+int i2d_DIST_POINT_NAME(DIST_POINT_NAME *a, uint8_t **out)
 {
     return ASN1_item_i2d((ASN1_VALUE *)a, out, &DIST_POINT_NAME_it);
 }
@@ -396,12 +396,12 @@ ASN1_SEQUENCE(DIST_POINT) = {
     ASN1_IMP_SEQUENCE_OF_OPT(DIST_POINT, CRLissuer, GENERAL_NAME, 2)
 } ASN1_SEQUENCE_END(DIST_POINT)
 
-DIST_POINT *d2i_DIST_POINT(DIST_POINT **a, const unsigned char **in, long len)
+DIST_POINT *d2i_DIST_POINT(DIST_POINT **a, const uint8_t **in, long len)
 {
     return (DIST_POINT *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, &DIST_POINT_it);
 }
 
-int i2d_DIST_POINT(DIST_POINT *a, unsigned char **out)
+int i2d_DIST_POINT(DIST_POINT *a, uint8_t **out)
 {
     return ASN1_item_i2d((ASN1_VALUE *)a, out, &DIST_POINT_it);
 }
@@ -419,12 +419,12 @@ void DIST_POINT_free(DIST_POINT *a)
 ASN1_ITEM_TEMPLATE(CRL_DIST_POINTS) = ASN1_EX_TEMPLATE_TYPE(ASN1_TFLG_SEQUENCE_OF, 0, CRLDistributionPoints, DIST_POINT)
 ASN1_ITEM_TEMPLATE_END(CRL_DIST_POINTS)
 
-CRL_DIST_POINTS *d2i_CRL_DIST_POINTS(CRL_DIST_POINTS **a, const unsigned char **in, long len)
+CRL_DIST_POINTS *d2i_CRL_DIST_POINTS(CRL_DIST_POINTS **a, const uint8_t **in, long len)
 {
     return (CRL_DIST_POINTS *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, &CRL_DIST_POINTS_it);
 }
 
-int i2d_CRL_DIST_POINTS(CRL_DIST_POINTS *a, unsigned char **out)
+int i2d_CRL_DIST_POINTS(CRL_DIST_POINTS *a, uint8_t **out)
 {
     return ASN1_item_i2d((ASN1_VALUE *)a, out, &CRL_DIST_POINTS_it);
 }
@@ -448,12 +448,12 @@ ASN1_SEQUENCE(ISSUING_DIST_POINT) = {
     ASN1_IMP_OPT(ISSUING_DIST_POINT, onlyattr, ASN1_FBOOLEAN, 5)
 } ASN1_SEQUENCE_END(ISSUING_DIST_POINT)
 
-ISSUING_DIST_POINT *d2i_ISSUING_DIST_POINT(ISSUING_DIST_POINT **a, const unsigned char **in, long len)
+ISSUING_DIST_POINT *d2i_ISSUING_DIST_POINT(ISSUING_DIST_POINT **a, const uint8_t **in, long len)
 {
     return (ISSUING_DIST_POINT *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, &ISSUING_DIST_POINT_it);
 }
 
-int i2d_ISSUING_DIST_POINT(ISSUING_DIST_POINT *a, unsigned char **out)
+int i2d_ISSUING_DIST_POINT(ISSUING_DIST_POINT *a, uint8_t **out)
 {
     return ASN1_item_i2d((ASN1_VALUE *)a, out, &ISSUING_DIST_POINT_it);
 }

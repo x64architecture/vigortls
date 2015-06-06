@@ -62,7 +62,7 @@
 #include <openssl/asn1.h>
 #include <openssl/err.h>
 
-static int traverse_string(const unsigned char *p, int len, int inform,
+static int traverse_string(const uint8_t *p, int len, int inform,
                            int (*rfunc)(unsigned long value, void *in), void *arg);
 static int in_utf8(unsigned long value, void *arg);
 static int out_utf8(unsigned long value, void *arg);
@@ -81,13 +81,13 @@ static int is_printable(unsigned long value);
  * The 'ncopy' form checks minimum and maximum size limits too.
  */
 
-int ASN1_mbstring_copy(ASN1_STRING **out, const unsigned char *in, int len,
+int ASN1_mbstring_copy(ASN1_STRING **out, const uint8_t *in, int len,
                        int inform, unsigned long mask)
 {
     return ASN1_mbstring_ncopy(out, in, len, inform, mask, 0, 0);
 }
 
-int ASN1_mbstring_ncopy(ASN1_STRING **out, const unsigned char *in, int len,
+int ASN1_mbstring_ncopy(ASN1_STRING **out, const uint8_t *in, int len,
                         int inform, unsigned long mask,
                         long minsize, long maxsize)
 {
@@ -96,7 +96,7 @@ int ASN1_mbstring_ncopy(ASN1_STRING **out, const unsigned char *in, int len,
     char free_out;
     int outform, outlen = 0;
     ASN1_STRING *dest;
-    unsigned char *p;
+    uint8_t *p;
     int nchar;
     int (*cpyfunc)(unsigned long, void *) = NULL;
     if (len == -1)
@@ -251,7 +251,7 @@ int ASN1_mbstring_ncopy(ASN1_STRING **out, const unsigned char *in, int len,
  * to an optional function along with a void * argument.
  */
 
-static int traverse_string(const unsigned char *p, int len, int inform,
+static int traverse_string(const uint8_t *p, int len, int inform,
                            int (*rfunc)(unsigned long value, void *in), void *arg)
 {
     unsigned long value;
@@ -334,10 +334,10 @@ static int type_str(unsigned long value, void *arg)
 
 static int cpy_asc(unsigned long value, void *arg)
 {
-    unsigned char **p, *q;
+    uint8_t **p, *q;
     p = arg;
     q = *p;
-    *q = (unsigned char)value;
+    *q = (uint8_t)value;
     (*p)++;
     return 1;
 }
@@ -346,11 +346,11 @@ static int cpy_asc(unsigned long value, void *arg)
 
 static int cpy_bmp(unsigned long value, void *arg)
 {
-    unsigned char **p, *q;
+    uint8_t **p, *q;
     p = arg;
     q = *p;
-    *q++ = (unsigned char)((value >> 8) & 0xff);
-    *q = (unsigned char)(value & 0xff);
+    *q++ = (uint8_t)((value >> 8) & 0xff);
+    *q = (uint8_t)(value & 0xff);
     *p += 2;
     return 1;
 }
@@ -359,13 +359,13 @@ static int cpy_bmp(unsigned long value, void *arg)
 
 static int cpy_univ(unsigned long value, void *arg)
 {
-    unsigned char **p, *q;
+    uint8_t **p, *q;
     p = arg;
     q = *p;
-    *q++ = (unsigned char)((value >> 24) & 0xff);
-    *q++ = (unsigned char)((value >> 16) & 0xff);
-    *q++ = (unsigned char)((value >> 8) & 0xff);
-    *q = (unsigned char)(value & 0xff);
+    *q++ = (uint8_t)((value >> 24) & 0xff);
+    *q++ = (uint8_t)((value >> 16) & 0xff);
+    *q++ = (uint8_t)((value >> 8) & 0xff);
+    *q = (uint8_t)(value & 0xff);
     *p += 4;
     return 1;
 }
@@ -374,7 +374,7 @@ static int cpy_univ(unsigned long value, void *arg)
 
 static int cpy_utf8(unsigned long value, void *arg)
 {
-    unsigned char **p;
+    uint8_t **p;
     int ret;
     p = arg;
     /* We already know there is enough room so pass 0xff as the length */

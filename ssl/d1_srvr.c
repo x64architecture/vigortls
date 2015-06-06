@@ -687,10 +687,10 @@ end:
 int dtls1_send_hello_verify_request(SSL *s)
 {
     unsigned int msg_len;
-    unsigned char *msg, *buf, *p;
+    uint8_t *msg, *buf, *p;
 
     if (s->state == DTLS1_ST_SW_HELLO_VERIFY_REQUEST_A) {
-        buf = (unsigned char *)s->init_buf->data;
+        buf = (uint8_t *)s->init_buf->data;
 
         msg = p = &(buf[DTLS1_HM_HEADER_LENGTH]);
         *(p++) = s->version >> 8;
@@ -703,7 +703,7 @@ int dtls1_send_hello_verify_request(SSL *s)
             return 0;
         }
 
-        *(p++) = (unsigned char)s->d1->cookie_len;
+        *(p++) = (uint8_t)s->d1->cookie_len;
         memcpy(p, s->d1->cookie, s->d1->cookie_len);
         p += s->d1->cookie_len;
         msg_len = p - msg;

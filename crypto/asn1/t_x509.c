@@ -230,11 +230,11 @@ err:
 
 int X509_ocspid_print(BIO *bp, X509 *x)
 {
-    unsigned char *der = NULL;
-    unsigned char *dertmp;
+    uint8_t *der = NULL;
+    uint8_t *dertmp;
     int derlen;
     int i;
-    unsigned char SHA1md[SHA_DIGEST_LENGTH];
+    uint8_t SHA1md[SHA_DIGEST_LENGTH];
 
     /* display the hash of the subject as it would appear
        in OCSP requests */
@@ -277,7 +277,7 @@ err:
 
 int X509_signature_dump(BIO *bp, const ASN1_STRING *sig, int indent)
 {
-    const unsigned char *s;
+    const uint8_t *s;
     int i, n;
 
     n = sig->length;

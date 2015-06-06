@@ -102,7 +102,7 @@ OCSP_CERTID *OCSP_cert_id_new(const EVP_MD *dgst,
     unsigned int i;
     X509_ALGOR *alg;
     OCSP_CERTID *cid = NULL;
-    unsigned char md[EVP_MAX_MD_SIZE];
+    uint8_t md[EVP_MAX_MD_SIZE];
 
     if (!(cid = OCSP_CERTID_new()))
         goto err;

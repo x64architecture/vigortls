@@ -71,8 +71,8 @@
 #undef BUFSIZE
 #define BUFSIZE 1024 * 8
 
-int do_fp(BIO *out, unsigned char *buf, BIO *bp, int sep, int binout, EVP_PKEY *key,
-          unsigned char *sigin, int siglen, const char *sig_name, const char *md_name,
+int do_fp(BIO *out, uint8_t *buf, BIO *bp, int sep, int binout, EVP_PKEY *key,
+          uint8_t *sigin, int siglen, const char *sig_name, const char *md_name,
           const char *file, BIO *bmd);
 
 typedef enum OPTION_choice {
@@ -148,7 +148,7 @@ int dgst_main(int argc, char **argv)
     OPTION_CHOICE o;
     int separator = 0, debug = 0, keyform = FORMAT_PEM, siglen = 0;
     int i, ret = 1, out_bin = -1, want_pub = 0, do_verify = 0, non_fips_allow = 0;
-    unsigned char *buf = NULL, *sigbuf = NULL;
+    uint8_t *buf = NULL, *sigbuf = NULL;
 #ifndef OPENSSL_NO_ENGINE
     char *engine = NULL;
     int engine_impl = 0;
@@ -346,7 +346,7 @@ int dgst_main(int argc, char **argv)
     }
 
     if (hmac_key) {
-        sigkey = EVP_PKEY_new_mac_key(EVP_PKEY_HMAC, impl, (unsigned char *)hmac_key, -1);
+        sigkey = EVP_PKEY_new_mac_key(EVP_PKEY_HMAC, impl, (uint8_t *)hmac_key, -1);
         if (!sigkey)
             goto end;
     }
@@ -474,8 +474,8 @@ end:
     return (ret);
 }
 
-int do_fp(BIO *out, unsigned char *buf, BIO *bp, int sep, int binout,
-          EVP_PKEY *key, unsigned char *sigin, int siglen,
+int do_fp(BIO *out, uint8_t *buf, BIO *bp, int sep, int binout,
+          EVP_PKEY *key, uint8_t *sigin, int siglen,
           const char *sig_name, const char *md_name,
           const char *file, BIO *bmd)
 {

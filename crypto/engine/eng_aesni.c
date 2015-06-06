@@ -109,20 +109,20 @@ void ENGINE_load_aesni(void)
 }
 
 #ifdef COMPILE_HW_AESNI
-int aesni_set_encrypt_key(const unsigned char *userKey, int bits,
+int aesni_set_encrypt_key(const uint8_t *userKey, int bits,
                           AES_KEY *key);
-int aesni_set_decrypt_key(const unsigned char *userKey, int bits,
+int aesni_set_decrypt_key(const uint8_t *userKey, int bits,
                           AES_KEY *key);
 
-void aesni_encrypt(const unsigned char *in, unsigned char *out,
+void aesni_encrypt(const uint8_t *in, uint8_t *out,
                    const AES_KEY *key);
-void aesni_decrypt(const unsigned char *in, unsigned char *out,
+void aesni_decrypt(const uint8_t *in, uint8_t *out,
                    const AES_KEY *key);
 
-void aesni_ecb_encrypt(const unsigned char *in, unsigned char *out,
+void aesni_ecb_encrypt(const uint8_t *in, uint8_t *out,
                        size_t length, const AES_KEY *key, int enc);
-void aesni_cbc_encrypt(const unsigned char *in, unsigned char *out,
-                       size_t length, const AES_KEY *key, unsigned char *ivec, int enc);
+void aesni_cbc_encrypt(const uint8_t *in, uint8_t *out,
+                       size_t length, const AES_KEY *key, uint8_t *ivec, int enc);
 
 /* Function for ENGINE detection and control */
 static int aesni_init(ENGINE *e);
@@ -145,8 +145,8 @@ static const char aesni_id[] = "aesni",
  * 128bit block we have used is contained in *num;
  */
 static void
-aesni_cfb128_encrypt(const unsigned char *in, unsigned char *out,
-                     unsigned int len, const void *key, unsigned char ivec[16], int *num,
+aesni_cfb128_encrypt(const uint8_t *in, uint8_t *out,
+                     unsigned int len, const void *key, uint8_t ivec[16], int *num,
                      int enc)
 {
     unsigned int n;
@@ -201,7 +201,7 @@ aesni_cfb128_encrypt(const unsigned char *in, unsigned char *out,
         if (16 % sizeof(size_t) == 0)
             do { /* always true actually */
                 while (n && len) {
-                    unsigned char c;
+                    uint8_t c;
                     *(out++) = ivec[n] ^ (c = *(in++));
                     ivec[n] = c;
                     --len;
@@ -222,7 +222,7 @@ aesni_cfb128_encrypt(const unsigned char *in, unsigned char *out,
                 if (len) {
                     aesni_encrypt(ivec, ivec, key);
                     while (len--) {
-                        unsigned char c;
+                        uint8_t c;
                         out[n] = ivec[n] ^ (c = in[n]);
                         ivec[n] = c;
                         ++n;
@@ -234,7 +234,7 @@ aesni_cfb128_encrypt(const unsigned char *in, unsigned char *out,
 /* the rest would be commonly eliminated by x86* compiler */
 #endif
         while (l < len) {
-            unsigned char c;
+            uint8_t c;
             if (n == 0) {
                 aesni_encrypt(ivec, ivec, key);
             }
@@ -252,8 +252,8 @@ aesni_cfb128_encrypt(const unsigned char *in, unsigned char *out,
  * 128bit block we have used is contained in *num;
  */
 static void
-aesni_ofb128_encrypt(const unsigned char *in, unsigned char *out,
-                     unsigned int len, const void *key, unsigned char ivec[16], int *num)
+aesni_ofb128_encrypt(const uint8_t *in, uint8_t *out,
+                     unsigned int len, const void *key, uint8_t ivec[16], int *num)
 {
     unsigned int n;
     size_t l = 0;
@@ -304,7 +304,7 @@ aesni_ofb128_encrypt(const unsigned char *in, unsigned char *out,
 }
 /* ===== Engine "management" functions ===== */
 
-typedef unsigned long long IA32CAP;
+typedef uint64_t IA32CAP;
 
 /* Prepare the ENGINE structure for registration */
 static int
@@ -401,8 +401,8 @@ typedef struct {
 } AESNI_KEY;
 
 static int
-aesni_init_key(EVP_CIPHER_CTX *ctx, const unsigned char *user_key,
-               const unsigned char *iv, int enc)
+aesni_init_key(EVP_CIPHER_CTX *ctx, const uint8_t *user_key,
+               const uint8_t *iv, int enc)
 {
     int ret;
     AES_KEY *key = AESNI_ALIGN(ctx->cipher_data);
@@ -421,8 +421,8 @@ aesni_init_key(EVP_CIPHER_CTX *ctx, const unsigned char *user_key,
 }
 
 static int
-aesni_cipher_ecb(EVP_CIPHER_CTX *ctx, unsigned char *out,
-                 const unsigned char *in, size_t inl)
+aesni_cipher_ecb(EVP_CIPHER_CTX *ctx, uint8_t *out,
+                 const uint8_t *in, size_t inl)
 {
     AES_KEY *key = AESNI_ALIGN(ctx->cipher_data);
 
@@ -431,8 +431,8 @@ aesni_cipher_ecb(EVP_CIPHER_CTX *ctx, unsigned char *out,
 }
 
 static int
-aesni_cipher_cbc(EVP_CIPHER_CTX *ctx, unsigned char *out,
-                 const unsigned char *in, size_t inl)
+aesni_cipher_cbc(EVP_CIPHER_CTX *ctx, uint8_t *out,
+                 const uint8_t *in, size_t inl)
 {
     AES_KEY *key = AESNI_ALIGN(ctx->cipher_data);
 
@@ -441,8 +441,8 @@ aesni_cipher_cbc(EVP_CIPHER_CTX *ctx, unsigned char *out,
 }
 
 static int
-aesni_cipher_cfb(EVP_CIPHER_CTX *ctx, unsigned char *out,
-                 const unsigned char *in, size_t inl)
+aesni_cipher_cfb(EVP_CIPHER_CTX *ctx, uint8_t *out,
+                 const uint8_t *in, size_t inl)
 {
     AES_KEY *key = AESNI_ALIGN(ctx->cipher_data);
 
@@ -452,8 +452,8 @@ aesni_cipher_cfb(EVP_CIPHER_CTX *ctx, unsigned char *out,
 }
 
 static int
-aesni_cipher_ofb(EVP_CIPHER_CTX *ctx, unsigned char *out,
-                 const unsigned char *in, size_t inl)
+aesni_cipher_ofb(EVP_CIPHER_CTX *ctx, uint8_t *out,
+                 const uint8_t *in, size_t inl)
 {
     AES_KEY *key = AESNI_ALIGN(ctx->cipher_data);
 

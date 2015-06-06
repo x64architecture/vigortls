@@ -121,7 +121,7 @@ int test_sqrt(BIO *bp, BN_CTX *ctx);
 int rand_neg(void);
 static int results = 0;
 
-static unsigned char lst[] = "\xC6\x4F\x43\x04\x2A\xEA\xCA\x6E\x58\x36\x80\x5B\xE8\xC9"
+static uint8_t lst[] = "\xC6\x4F\x43\x04\x2A\xEA\xCA\x6E\x58\x36\x80\x5B\xE8\xC9"
                              "\x9B\x04\x5D\x48\x36\xC2\xFD\x16\xC9\x64\xF0";
 
 static void message(BIO *out, char *m)

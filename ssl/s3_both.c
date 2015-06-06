@@ -135,7 +135,7 @@ int ssl3_do_write(SSL *s, int type)
     if (type == SSL3_RT_HANDSHAKE)
         /* should not be done for 'Hello Request's, but in that case
          * we'll ignore the result anyway */
-        ssl3_finish_mac(s, (unsigned char *)&s->init_buf->data[s->init_off], ret);
+        ssl3_finish_mac(s, (uint8_t *)&s->init_buf->data[s->init_off], ret);
 
     if (ret == s->init_num) {
         if (s->msg_callback)
@@ -151,7 +151,7 @@ int ssl3_do_write(SSL *s, int type)
 
 int ssl3_send_finished(SSL *s, int a, int b, const char *sender, int slen)
 {
-    unsigned char *p;
+    uint8_t *p;
     int i;
     unsigned long l;
 
@@ -212,7 +212,7 @@ int ssl3_get_finished(SSL *s, int a, int b)
 {
     int al, i, ok;
     long n;
-    unsigned char *p;
+    uint8_t *p;
 
 
     n = s->method->ssl_get_message(s, a, b, SSL3_MT_FINISHED, 64,
@@ -229,7 +229,7 @@ int ssl3_get_finished(SSL *s, int a, int b)
     }
     s->s3->change_cipher_spec = 0;
 
-    p = (unsigned char *)s->init_msg;
+    p = (uint8_t *)s->init_msg;
     i = s->s3->tmp.peer_finish_md_len;
 
     if (i != n) {
@@ -271,10 +271,10 @@ f_err:
  */
 int ssl3_send_change_cipher_spec(SSL *s, int a, int b)
 {
-    unsigned char *p;
+    uint8_t *p;
 
     if (s->state == a) {
-        p = (unsigned char *)s->init_buf->data;
+        p = (uint8_t *)s->init_buf->data;
         *p = SSL3_MT_CCS;
         s->init_num = 1;
         s->init_off = 0;
@@ -288,7 +288,7 @@ int ssl3_send_change_cipher_spec(SSL *s, int a, int b)
 
 unsigned long ssl3_output_cert_chain(SSL *s, X509 *x)
 {
-    unsigned char *p;
+    uint8_t *p;
     unsigned long l = 3 + SSL_HM_HEADER_LENGTH(s);
 
     if (!ssl_add_cert_chain(s, x, &l))
@@ -309,7 +309,7 @@ unsigned long ssl3_output_cert_chain(SSL *s, X509 *x)
  */
 long ssl3_get_message(SSL *s, int st1, int stn, int mt, long max, int *ok)
 {
-    unsigned char *p;
+    uint8_t *p;
     unsigned long l;
     long n;
     int i, al;
@@ -328,7 +328,7 @@ long ssl3_get_message(SSL *s, int st1, int stn, int mt, long max, int *ok)
         return s->init_num;
     }
 
-    p = (unsigned char *)s->init_buf->data;
+    p = (uint8_t *)s->init_buf->data;
 
     if (s->state == st1) /* s->init_num < 4 */
     {
@@ -420,7 +420,7 @@ long ssl3_get_message(SSL *s, int st1, int stn, int mt, long max, int *ok)
         ssl3_take_mac(s);
 
     /* Feed this message into MAC computation. */
-    ssl3_finish_mac(s, (unsigned char *)s->init_buf->data, s->init_num + 4);
+    ssl3_finish_mac(s, (uint8_t *)s->init_buf->data, s->init_num + 4);
     if (s->msg_callback)
         s->msg_callback(0, s->version, SSL3_RT_HANDSHAKE, s->init_buf->data,
                         (size_t)s->init_num + 4, s, s->msg_callback_arg);
@@ -524,7 +524,7 @@ int ssl_verify_alarm_type(long type)
 
 int ssl3_setup_read_buffer(SSL *s)
 {
-    unsigned char *p;
+    uint8_t *p;
     size_t len, align, headerlen;
 
     if (SSL_IS_DTLS(s))
@@ -556,7 +556,7 @@ err:
 
 int ssl3_setup_write_buffer(SSL *s)
 {
-    unsigned char *p;
+    uint8_t *p;
     size_t len, align, headerlen;
 
     if (SSL_IS_DTLS(s))

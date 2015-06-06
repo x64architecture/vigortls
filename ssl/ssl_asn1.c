@@ -108,7 +108,7 @@ IMPLEMENT_STATIC_ASN1_ENCODE_FUNCTIONS(SSL_SESSION_ASN1)
 /* Initialise OCTET STRING from buffer and length */
 
 static void ssl_session_oinit(ASN1_OCTET_STRING **dest, ASN1_OCTET_STRING *os,
-                              unsigned char *data, size_t len)
+                              uint8_t *data, size_t len)
 {
     os->data = data;
     os->length = len;
@@ -121,18 +121,18 @@ static void ssl_session_sinit(ASN1_OCTET_STRING **dest, ASN1_OCTET_STRING *os,
                               char *data)
 {
     if (data != NULL)
-        ssl_session_oinit(dest, os, (unsigned char *)data, strlen(data));
+        ssl_session_oinit(dest, os, (uint8_t *)data, strlen(data));
     else
         *dest = NULL;
 }
 
-int i2d_SSL_SESSION(SSL_SESSION *in, unsigned char **pp)
+int i2d_SSL_SESSION(SSL_SESSION *in, uint8_t **pp)
 {
 
     SSL_SESSION_ASN1 as;
 
     ASN1_OCTET_STRING cipher;
-    unsigned char cipher_data[2];
+    uint8_t cipher_data[2];
     ASN1_OCTET_STRING master_key, session_id, sid_ctx;
     ASN1_OCTET_STRING tlsext_hostname, tlsext_tick;
     long l;
@@ -149,8 +149,8 @@ int i2d_SSL_SESSION(SSL_SESSION *in, unsigned char **pp)
         l = in->cipher_id;
     else
         l = in->cipher->id;
-    cipher_data[0] = ((unsigned char)(l >> 8L)) & 0xff;
-    cipher_data[1] = ((unsigned char)(l)) & 0xff;
+    cipher_data[0] = ((uint8_t)(l >> 8L)) & 0xff;
+    cipher_data[1] = ((uint8_t)(l)) & 0xff;
 
     ssl_session_oinit(&as.cipher, &cipher, cipher_data, 2);
 
@@ -204,7 +204,7 @@ static int ssl_session_strndup(char **pdst, ASN1_OCTET_STRING *src)
 
 /* Copy an OCTET STRING, return error if it exceeds maximum length */
 
-static int ssl_session_memcpy(unsigned char *dst, unsigned int *pdstlen,
+static int ssl_session_memcpy(uint8_t *dst, unsigned int *pdstlen,
                               ASN1_OCTET_STRING *src, int maxlen)
 {
     if (src == NULL) {
@@ -218,12 +218,12 @@ static int ssl_session_memcpy(unsigned char *dst, unsigned int *pdstlen,
     return 1;
 }
 
-SSL_SESSION *d2i_SSL_SESSION(SSL_SESSION **a, const unsigned char **pp,
+SSL_SESSION *d2i_SSL_SESSION(SSL_SESSION **a, const uint8_t **pp,
                              long length)
 {
     long id;
     unsigned int tmpl;
-    const unsigned char *p = *pp;
+    const uint8_t *p = *pp;
     SSL_SESSION_ASN1 *as = NULL;
     SSL_SESSION *ret = NULL;
 

@@ -221,8 +221,8 @@ void BF_decrypt(BF_LONG *data, const BF_KEY *key)
 #endif
 }
 
-void BF_cbc_encrypt(const unsigned char *in, unsigned char *out, long length,
-                    const BF_KEY *schedule, unsigned char *ivec, int encrypt)
+void BF_cbc_encrypt(const uint8_t *in, uint8_t *out, long length,
+                    const BF_KEY *schedule, uint8_t *ivec, int encrypt)
 {
     register BF_LONG tin0, tin1;
     register BF_LONG tout0, tout1, xor0, xor1;

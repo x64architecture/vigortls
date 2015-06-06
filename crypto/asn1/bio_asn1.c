@@ -87,7 +87,7 @@ typedef struct BIO_ASN1_BUF_CTX_t {
     /* Internal state */
     asn1_bio_state_t state;
     /* Internal buffer */
-    unsigned char *buf;
+    uint8_t *buf;
     /* Size of buffer */
     int bufsize;
     /* Current position in buffer */
@@ -100,7 +100,7 @@ typedef struct BIO_ASN1_BUF_CTX_t {
     int asn1_class, asn1_tag;
     asn1_ps_func *prefix, *prefix_free, *suffix, *suffix_free;
     /* Extra buffer for prefix and suffix data */
-    unsigned char *ex_buf;
+    uint8_t *ex_buf;
     int ex_len;
     int ex_pos;
     void *ex_arg;
@@ -194,7 +194,7 @@ static int asn1_bio_write(BIO *b, const char *in, int inl)
 {
     BIO_ASN1_BUF_CTX *ctx;
     int wrmax, wrlen, ret;
-    unsigned char *p;
+    uint8_t *p;
     if (!in || (inl < 0) || (b->next_bio == NULL))
         return 0;
     ctx = (BIO_ASN1_BUF_CTX *)b->ptr;

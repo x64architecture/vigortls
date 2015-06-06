@@ -63,10 +63,10 @@
 #include <openssl/objects.h>
 #include <openssl/x509.h>
 
-int EVP_SealInit(EVP_CIPHER_CTX *ctx, const EVP_CIPHER *type, unsigned char **ek,
-                 int *ekl, unsigned char *iv, EVP_PKEY **pubk, int npubk)
+int EVP_SealInit(EVP_CIPHER_CTX *ctx, const EVP_CIPHER *type, uint8_t **ek,
+                 int *ekl, uint8_t *iv, EVP_PKEY **pubk, int npubk)
 {
-    unsigned char key[EVP_MAX_KEY_LENGTH];
+    uint8_t key[EVP_MAX_KEY_LENGTH];
     int i;
 
     if (type) {
@@ -97,16 +97,16 @@ int EVP_SealInit(EVP_CIPHER_CTX *ctx, const EVP_CIPHER *type, unsigned char **ek
 /* MACRO
 void EVP_SealUpdate(ctx,out,outl,in,inl)
 EVP_CIPHER_CTX *ctx;
-unsigned char *out;
+uint8_t *out;
 int *outl;
-unsigned char *in;
+uint8_t *in;
 int inl;
     {
     EVP_EncryptUpdate(ctx,out,outl,in,inl);
     }
 */
 
-int EVP_SealFinal(EVP_CIPHER_CTX *ctx, unsigned char *out, int *outl)
+int EVP_SealFinal(EVP_CIPHER_CTX *ctx, uint8_t *out, int *outl)
 {
     int i;
     i = EVP_EncryptFinal_ex(ctx, out, outl);

@@ -78,12 +78,12 @@ ASN1_SEQUENCE(PKEY_USAGE_PERIOD) = {
     ASN1_IMP_OPT(PKEY_USAGE_PERIOD, notAfter, ASN1_GENERALIZEDTIME, 1)
 } ASN1_SEQUENCE_END(PKEY_USAGE_PERIOD)
 
-PKEY_USAGE_PERIOD *d2i_PKEY_USAGE_PERIOD(PKEY_USAGE_PERIOD **a, const unsigned char **in, long len)
+PKEY_USAGE_PERIOD *d2i_PKEY_USAGE_PERIOD(PKEY_USAGE_PERIOD **a, const uint8_t **in, long len)
 {
     return (PKEY_USAGE_PERIOD *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, &PKEY_USAGE_PERIOD_it);
 }
 
-int i2d_PKEY_USAGE_PERIOD(PKEY_USAGE_PERIOD *a, unsigned char **out)
+int i2d_PKEY_USAGE_PERIOD(PKEY_USAGE_PERIOD *a, uint8_t **out)
 {
     return ASN1_item_i2d((ASN1_VALUE *)a, out, &PKEY_USAGE_PERIOD_it);
 }

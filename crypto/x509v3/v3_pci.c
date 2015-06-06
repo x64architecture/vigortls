@@ -103,7 +103,7 @@ static int process_pci_value(CONF_VALUE *val,
             return 0;
         }
     } else if (strcmp(val->name, "policy") == 0) {
-        unsigned char *tmp_data = NULL;
+        uint8_t *tmp_data = NULL;
         long val_len;
         if (!*policy) {
             *policy = ASN1_OCTET_STRING_new();
@@ -115,7 +115,7 @@ static int process_pci_value(CONF_VALUE *val,
             free_policy = 1;
         }
         if (strncmp(val->value, "hex:", 4) == 0) {
-            unsigned char *tmp_data2 = string_to_hex(val->value + 4, &val_len);
+            uint8_t *tmp_data2 = string_to_hex(val->value + 4, &val_len);
 
             if (!tmp_data2) {
                 X509V3err(X509V3_F_PROCESS_PCI_VALUE, X509V3_R_ILLEGAL_HEX_DIGIT);
@@ -142,7 +142,7 @@ static int process_pci_value(CONF_VALUE *val,
             }
             free(tmp_data2);
         } else if (strncmp(val->value, "file:", 5) == 0) {
-            unsigned char buf[2048];
+            uint8_t buf[2048];
             int n;
             BIO *b = BIO_new_file(val->value + 5, "r");
             if (!b) {

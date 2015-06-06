@@ -69,9 +69,9 @@
 #include "internal/asn1_int.h"
 #include "asn1_locl.h"
 
-int i2d_ASN1_OBJECT(ASN1_OBJECT *a, unsigned char **pp)
+int i2d_ASN1_OBJECT(ASN1_OBJECT *a, uint8_t **pp)
 {
-    unsigned char *p;
+    uint8_t *p;
     int objsize;
 
     if ((a == NULL) || (a->data == NULL))
@@ -90,7 +90,7 @@ int i2d_ASN1_OBJECT(ASN1_OBJECT *a, unsigned char **pp)
     return (objsize);
 }
 
-int a2d_ASN1_OBJECT(unsigned char *out, int olen, const char *buf, int num)
+int a2d_ASN1_OBJECT(uint8_t *out, int olen, const char *buf, int num)
 {
     int i, first, len = 0, c, use_bn;
     char ftmp[24], *tmp = ftmp;
@@ -179,11 +179,11 @@ int a2d_ASN1_OBJECT(unsigned char *out, int olen, const char *buf, int num)
                     goto err;
             }
             while (blsize--)
-                tmp[i++] = (unsigned char)BN_div_word(bl, 0x80L);
+                tmp[i++] = (uint8_t)BN_div_word(bl, 0x80L);
         } else {
 
             for (;;) {
-                tmp[i++] = (unsigned char)l & 0x7f;
+                tmp[i++] = (uint8_t)l & 0x7f;
                 l >>= 7L;
                 if (l == 0L)
                     break;
@@ -240,10 +240,10 @@ int i2a_ASN1_OBJECT(BIO *bp, ASN1_OBJECT *a)
     return (i);
 }
 
-ASN1_OBJECT *d2i_ASN1_OBJECT(ASN1_OBJECT **a, const unsigned char **pp,
+ASN1_OBJECT *d2i_ASN1_OBJECT(ASN1_OBJECT **a, const uint8_t **pp,
                              long length)
 {
-    const unsigned char *p;
+    const uint8_t *p;
     long len;
     int tag, xclass;
     int inf, i;
@@ -267,12 +267,12 @@ err:
     ASN1err(ASN1_F_D2I_ASN1_OBJECT, i);
     return (NULL);
 }
-ASN1_OBJECT *c2i_ASN1_OBJECT(ASN1_OBJECT **a, const unsigned char **pp,
+ASN1_OBJECT *c2i_ASN1_OBJECT(ASN1_OBJECT **a, const uint8_t **pp,
                              long len)
 {
     ASN1_OBJECT *ret = NULL;
-    const unsigned char *p;
-    unsigned char *data;
+    const uint8_t *p;
+    uint8_t *data;
     int i, length;
 
     /* Sanity check OID encoding.
@@ -303,7 +303,7 @@ ASN1_OBJECT *c2i_ASN1_OBJECT(ASN1_OBJECT **a, const unsigned char **pp,
 
     p = *pp;
     /* detach data from object */
-    data = (unsigned char *)ret->data;
+    data = (uint8_t *)ret->data;
     ret->data = NULL;
     /* once detached we can change it */
     if ((data == NULL) || (ret->length < length)) {
@@ -372,7 +372,7 @@ void ASN1_OBJECT_free(ASN1_OBJECT *a)
         free(a);
 }
 
-ASN1_OBJECT *ASN1_OBJECT_create(int nid, unsigned char *data, int len,
+ASN1_OBJECT *ASN1_OBJECT_create(int nid, uint8_t *data, int len,
                                 const char *sn, const char *ln)
 {
     ASN1_OBJECT o;

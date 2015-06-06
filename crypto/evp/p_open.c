@@ -65,10 +65,10 @@
 #include <openssl/rsa.h>
 
 int EVP_OpenInit(EVP_CIPHER_CTX *ctx, const EVP_CIPHER *type,
-                 const unsigned char *ek, int ekl, const unsigned char *iv,
+                 const uint8_t *ek, int ekl, const uint8_t *iv,
                  EVP_PKEY *priv)
 {
-    unsigned char *key = NULL;
+    uint8_t *key = NULL;
     int i, size = 0, ret = 0;
 
     if (type) {
@@ -109,7 +109,7 @@ err:
     return (ret);
 }
 
-int EVP_OpenFinal(EVP_CIPHER_CTX *ctx, unsigned char *out, int *outl)
+int EVP_OpenFinal(EVP_CIPHER_CTX *ctx, uint8_t *out, int *outl)
 {
     int i;
 

@@ -82,7 +82,7 @@ typedef struct bio_connect_st {
     char *param_port;
     int nbio;
 
-    unsigned char ip[4];
+    uint8_t ip[4];
     unsigned short port;
 
     struct sockaddr_in them;
@@ -458,7 +458,7 @@ static long conn_ctrl(BIO *b, int cmd, long num, void *ptr)
                     data->param_port = strdup(ptr);
                 } else if (num == 2) {
                     char buf[16];
-                    unsigned char *p = ptr;
+                    uint8_t *p = ptr;
 
                     snprintf(buf, sizeof buf, "%d.%d.%d.%d",
                              p[0], p[1], p[2], p[3]);

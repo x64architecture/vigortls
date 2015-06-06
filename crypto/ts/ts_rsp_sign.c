@@ -883,7 +883,7 @@ err:
 static int ESS_add_signing_cert(PKCS7_SIGNER_INFO *si, ESS_SIGNING_CERT *sc)
 {
     ASN1_STRING *seq = NULL;
-    unsigned char *p, *pp = NULL;
+    uint8_t *p, *pp = NULL;
     int len;
 
     len = i2d_ESS_SIGNING_CERT(sc, NULL);

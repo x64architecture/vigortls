@@ -71,10 +71,10 @@
 #ifndef NO_ASN1_OLD
 
 int ASN1_digest(i2d_of_void *i2d, const EVP_MD *type, char *data,
-                unsigned char *md, unsigned int *len)
+                uint8_t *md, unsigned int *len)
 {
     int i;
-    unsigned char *str, *p;
+    uint8_t *str, *p;
 
     i = i2d(data, NULL);
     if ((str = malloc(i)) == NULL) {
@@ -93,10 +93,10 @@ int ASN1_digest(i2d_of_void *i2d, const EVP_MD *type, char *data,
 #endif
 
 int ASN1_item_digest(const ASN1_ITEM *it, const EVP_MD *type, void *asn,
-                     unsigned char *md, unsigned int *len)
+                     uint8_t *md, unsigned int *len)
 {
     int i;
-    unsigned char *str = NULL;
+    uint8_t *str = NULL;
 
     i = ASN1_item_i2d(asn, &str, it);
     if (!str)

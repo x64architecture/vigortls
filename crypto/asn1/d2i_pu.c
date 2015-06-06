@@ -69,7 +69,7 @@
 #include <openssl/objects.h>
 #include <openssl/rsa.h>
 
-EVP_PKEY *d2i_PublicKey(int type, EVP_PKEY **a, const unsigned char **pp,
+EVP_PKEY *d2i_PublicKey(int type, EVP_PKEY **a, const uint8_t **pp,
                         long length)
 {
     EVP_PKEY *ret;
@@ -90,7 +90,7 @@ EVP_PKEY *d2i_PublicKey(int type, EVP_PKEY **a, const unsigned char **pp,
     switch (EVP_PKEY_id(ret)) {
         case EVP_PKEY_RSA:
             if ((ret->pkey.rsa = d2i_RSAPublicKey(NULL,
-                                                  (const unsigned char **)pp, length)) == NULL) /* TMP UGLY CAST */
+                                                  (const uint8_t **)pp, length)) == NULL) /* TMP UGLY CAST */
             {
                 ASN1err(ASN1_F_D2I_PUBLICKEY, ERR_R_ASN1_LIB);
                 goto err;
@@ -99,7 +99,7 @@ EVP_PKEY *d2i_PublicKey(int type, EVP_PKEY **a, const unsigned char **pp,
 #ifndef OPENSSL_NO_DSA
         case EVP_PKEY_DSA:
             if (!d2i_DSAPublicKey(&(ret->pkey.dsa),
-                                  (const unsigned char **)pp, length)) /* TMP UGLY CAST */
+                                  (const uint8_t **)pp, length)) /* TMP UGLY CAST */
             {
                 ASN1err(ASN1_F_D2I_PUBLICKEY, ERR_R_ASN1_LIB);
                 goto err;
@@ -108,7 +108,7 @@ EVP_PKEY *d2i_PublicKey(int type, EVP_PKEY **a, const unsigned char **pp,
 #endif
         case EVP_PKEY_EC:
             if (!o2i_ECPublicKey(&(ret->pkey.ec),
-                                 (const unsigned char **)pp, length)) {
+                                 (const uint8_t **)pp, length)) {
                 ASN1err(ASN1_F_D2I_PUBLICKEY, ERR_R_ASN1_LIB);
                 goto err;
             }

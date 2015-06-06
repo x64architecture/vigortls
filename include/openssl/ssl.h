@@ -354,7 +354,7 @@ typedef struct srtp_protection_profile_st {
 
 DECLARE_STACK_OF(SRTP_PROTECTION_PROFILE)
 
-typedef int (*tls_session_ticket_ext_cb_fn)(SSL *s, const unsigned char *data,
+typedef int (*tls_session_ticket_ext_cb_fn)(SSL *s, const uint8_t *data,
                                             int len, void *arg);
 typedef int (*tls_session_secret_cb_fn)(SSL *s, void *secret, int *secret_len,
                                         STACK_OF(SSL_CIPHER) * peer_ciphers, SSL_CIPHER * *cipher, void *arg);
@@ -396,15 +396,15 @@ struct ssl_method_st {
     int (*ssl_renegotiate_check)(SSL *s);
     long (*ssl_get_message)(SSL *s, int st1, int stn, int mt,
                             long max, int *ok);
-    int (*ssl_read_bytes)(SSL *s, int type, unsigned char *buf,
+    int (*ssl_read_bytes)(SSL *s, int type, uint8_t *buf,
                           int len, int peek);
     int (*ssl_write_bytes)(SSL *s, int type, const void *buf_, int len);
     int (*ssl_dispatch_alert)(SSL *s);
     long (*ssl_ctrl)(SSL *s, int cmd, long larg, void *parg);
     long (*ssl_ctx_ctrl)(SSL_CTX *ctx, int cmd, long larg, void *parg);
     /* XXX - remove get_cipher_by_char and put_cipher_by_char. */
-    const SSL_CIPHER *(*get_cipher_by_char)(const unsigned char *ptr);
-    int (*put_cipher_by_char)(const SSL_CIPHER *cipher, unsigned char *ptr);
+    const SSL_CIPHER *(*get_cipher_by_char)(const uint8_t *ptr);
+    int (*put_cipher_by_char)(const SSL_CIPHER *cipher, uint8_t *ptr);
     int (*ssl_pending)(const SSL *s);
     int (*num_ciphers)(void);
     const SSL_CIPHER *(*get_cipher)(unsigned ncipher);
@@ -445,15 +445,15 @@ struct ssl_session_st {
                  * being kept in here? */
 
     int master_key_length;
-    unsigned char master_key[SSL_MAX_MASTER_KEY_LENGTH];
+    uint8_t master_key[SSL_MAX_MASTER_KEY_LENGTH];
     /* session_id - valid? */
     unsigned int session_id_length;
-    unsigned char session_id[SSL_MAX_SSL_SESSION_ID_LENGTH];
+    uint8_t session_id[SSL_MAX_SSL_SESSION_ID_LENGTH];
     /* this is used to determine whether the session is being reused in
      * the appropriate context. It is up to the application to set this,
      * via SSL_new */
     unsigned int sid_ctx_length;
-    unsigned char sid_ctx[SSL_MAX_SID_CTX_LENGTH];
+    uint8_t sid_ctx[SSL_MAX_SID_CTX_LENGTH];
 
     /* Used to indicate that session resumption is not allowed.
      * Applications can also set this bit for a new session via
@@ -490,11 +490,11 @@ struct ssl_session_st {
     struct ssl_session_st *prev, *next;
     char *tlsext_hostname;
     size_t tlsext_ecpointformatlist_length;
-    unsigned char *tlsext_ecpointformatlist; /* peer's list */
+    uint8_t *tlsext_ecpointformatlist; /* peer's list */
     size_t tlsext_ellipticcurvelist_length;
-    unsigned char *tlsext_ellipticcurvelist; /* peer's list */
+    uint8_t *tlsext_ellipticcurvelist; /* peer's list */
     /* RFC4507 info */
-    unsigned char *tlsext_tick;     /* Session ticket */
+    uint8_t *tlsext_tick;     /* Session ticket */
     size_t tlsext_ticklen;          /* Session ticket length */
     long tlsext_tick_lifetime_hint; /* Session lifetime hint in seconds */
     long flags;
@@ -668,7 +668,7 @@ typedef struct ssl_aead_ctx_st SSL_AEAD_CTX;
  * supposed to be fixed at 16 bytes so the id will be padded after the callback
  * returns in this case. It is also an error for the callback to set the size to
  * zero. */
-typedef int (*GEN_SESSION_CB)(const SSL *ssl, unsigned char *id,
+typedef int (*GEN_SESSION_CB)(const SSL *ssl, uint8_t *id,
                               unsigned int *id_len);
 
 typedef struct ssl_comp_st SSL_COMP;
@@ -721,7 +721,7 @@ struct ssl_ctx_st {
     int (*new_session_cb)(struct ssl_st *ssl, SSL_SESSION *sess);
     void (*remove_session_cb)(struct ssl_ctx_st *ctx, SSL_SESSION *sess);
     SSL_SESSION *(*get_session_cb)(struct ssl_st *ssl,
-                                   unsigned char *data, int len, int *copy);
+                                   uint8_t *data, int len, int *copy);
 
     struct {
         int sess_connect;             /* SSL new conn - started */
@@ -760,11 +760,11 @@ struct ssl_ctx_st {
     int (*client_cert_cb)(SSL *ssl, X509 **x509, EVP_PKEY **pkey);
 
     /* cookie generate callback */
-    int (*app_gen_cookie_cb)(SSL *ssl, unsigned char *cookie,
+    int (*app_gen_cookie_cb)(SSL *ssl, uint8_t *cookie,
                              unsigned int *cookie_len);
 
     /* verify cookie callback */
-    int (*app_verify_cookie_cb)(SSL *ssl, unsigned char *cookie,
+    int (*app_verify_cookie_cb)(SSL *ssl, uint8_t *cookie,
                                 unsigned int cookie_len);
 
     CRYPTO_EX_DATA ex_data;
@@ -797,7 +797,7 @@ struct ssl_ctx_st {
 
     int verify_mode;
     unsigned int sid_ctx_length;
-    unsigned char sid_ctx[SSL_MAX_SID_CTX_LENGTH];
+    uint8_t sid_ctx[SSL_MAX_SID_CTX_LENGTH];
     int (*default_verify_callback)(int ok, X509_STORE_CTX *ctx); /* called 'verify_callback' in the SSL */
 
     /* Default generate session ID callback. */
@@ -823,12 +823,12 @@ struct ssl_ctx_st {
     int (*tlsext_servername_callback)(SSL *, int *, void *);
     void *tlsext_servername_arg;
     /* RFC 4507 session ticket keys */
-    unsigned char tlsext_tick_key_name[16];
-    unsigned char tlsext_tick_hmac_key[16];
-    unsigned char tlsext_tick_aes_key[16];
+    uint8_t tlsext_tick_key_name[16];
+    uint8_t tlsext_tick_hmac_key[16];
+    uint8_t tlsext_tick_aes_key[16];
     /* Callback to support customisation of ticket key setting */
-    int (*tlsext_ticket_key_cb)(SSL *ssl, unsigned char *name,
-                                unsigned char *iv, EVP_CIPHER_CTX *ectx, HMAC_CTX *hctx, int enc);
+    int (*tlsext_ticket_key_cb)(SSL *ssl, uint8_t *name,
+                                uint8_t *iv, EVP_CIPHER_CTX *ectx, HMAC_CTX *hctx, int enc);
 
     /* certificate status request info */
     /* Callback for status request */
@@ -840,13 +840,13 @@ struct ssl_ctx_st {
 
     /* For a server, this contains a callback function by which the set of
      * advertised protocols can be provided. */
-    int (*next_protos_advertised_cb)(SSL *s, const unsigned char **buf,
+    int (*next_protos_advertised_cb)(SSL *s, const uint8_t **buf,
                                      unsigned int *len, void *arg);
     void *next_protos_advertised_cb_arg;
     /* For a client, this contains a callback function that selects the
      * next protocol from the list provided by the server. */
-    int (*next_proto_select_cb)(SSL *s, unsigned char **out,
-                                unsigned char *outlen, const unsigned char *in,
+    int (*next_proto_select_cb)(SSL *s, uint8_t **out,
+                                uint8_t *outlen, const uint8_t *in,
                                 unsigned int inlen, void *arg);
     void *next_proto_select_cb_arg;
 
@@ -864,13 +864,13 @@ struct ssl_ctx_st {
      *       wire-format.
      *   inlen: the length of in.
      */
-    int (*alpn_select_cb)(SSL *s, const unsigned char **out,
-        unsigned char *outlen, const unsigned char *in, unsigned int inlen,
+    int (*alpn_select_cb)(SSL *s, const uint8_t **out,
+        uint8_t *outlen, const uint8_t *in, unsigned int inlen,
         void *arg);
     void *alpn_select_cb_arg;
 
     /* Client list of supported protocols in wire format. */
-    unsigned char *alpn_client_proto_list;
+    uint8_t *alpn_client_proto_list;
     unsigned int alpn_client_proto_list_len;
 
     /* SRTP profiles we are willing to do from RFC 5764 */
@@ -925,10 +925,10 @@ void SSL_CTX_sess_set_remove_cb(SSL_CTX *ctx,
 void (*SSL_CTX_sess_get_remove_cb(SSL_CTX *ctx))(struct ssl_ctx_st *ctx,
                                                  SSL_SESSION *sess);
 void SSL_CTX_sess_set_get_cb(SSL_CTX *ctx,
-                             SSL_SESSION *(*get_session_cb)(struct ssl_st *ssl, unsigned char *data,
+                             SSL_SESSION *(*get_session_cb)(struct ssl_st *ssl, uint8_t *data,
                                                             int len, int *copy));
 SSL_SESSION *(*SSL_CTX_sess_get_get_cb(SSL_CTX *ctx))(struct ssl_st *ssl,
-                                                      unsigned char *Data, int len, int *copy);
+                                                      uint8_t *Data, int len, int *copy);
 void SSL_CTX_set_info_callback(SSL_CTX *ctx, void (*cb)(const SSL *ssl,
                                                         int type, int val));
 void (*SSL_CTX_get_info_callback(SSL_CTX *ctx))(const SSL *ssl, int type,
@@ -941,38 +941,38 @@ int (*SSL_CTX_get_client_cert_cb(SSL_CTX *ctx))(SSL *ssl, X509 **x509,
 int SSL_CTX_set_client_cert_engine(SSL_CTX *ctx, ENGINE *e);
 #endif
 void SSL_CTX_set_cookie_generate_cb(SSL_CTX *ctx,
-                                    int (*app_gen_cookie_cb)(SSL *ssl, unsigned char *cookie,
+                                    int (*app_gen_cookie_cb)(SSL *ssl, uint8_t *cookie,
                                                              unsigned int *cookie_len));
 void SSL_CTX_set_cookie_verify_cb(SSL_CTX *ctx,
-                                  int (*app_verify_cookie_cb)(SSL *ssl, unsigned char *cookie,
+                                  int (*app_verify_cookie_cb)(SSL *ssl, uint8_t *cookie,
                                                               unsigned int cookie_len));
 void
 SSL_CTX_set_next_protos_advertised_cb(SSL_CTX *s, int (*cb)(SSL *ssl,
-                                                            const unsigned char **out, unsigned int *outlen, void *arg),
+                                                            const uint8_t **out, unsigned int *outlen, void *arg),
                                       void *arg);
 void SSL_CTX_set_next_proto_select_cb(SSL_CTX *s, int (*cb)(SSL *ssl,
-                                                            unsigned char **out, unsigned char *outlen, const unsigned char *in,
+                                                            uint8_t **out, uint8_t *outlen, const uint8_t *in,
                                                             unsigned int inlen, void *arg),
                                       void *arg);
 
-int SSL_select_next_proto(unsigned char **out, unsigned char *outlen,
-                          const unsigned char *in, unsigned int inlen, const unsigned char *client,
+int SSL_select_next_proto(uint8_t **out, uint8_t *outlen,
+                          const uint8_t *in, unsigned int inlen, const uint8_t *client,
                           unsigned int client_len);
-void SSL_get0_next_proto_negotiated(const SSL *s, const unsigned char **data,
+void SSL_get0_next_proto_negotiated(const SSL *s, const uint8_t **data,
                                     unsigned int *len);
 
 #define OPENSSL_NPN_UNSUPPORTED 0
 #define OPENSSL_NPN_NEGOTIATED 1
 #define OPENSSL_NPN_NO_OVERLAP 2
 
-int SSL_CTX_set_alpn_protos(SSL_CTX *ctx, const unsigned char *protos,
+int SSL_CTX_set_alpn_protos(SSL_CTX *ctx, const uint8_t *protos,
                             unsigned int protos_len);
-int SSL_set_alpn_protos(SSL *ssl, const unsigned char *protos,
+int SSL_set_alpn_protos(SSL *ssl, const uint8_t *protos,
                         unsigned int protos_len);
 void SSL_CTX_set_alpn_select_cb(SSL_CTX *ctx,
-                                int (*cb)(SSL *ssl, const unsigned char **out, unsigned char *outlen,
-const unsigned char *in, unsigned int inlen, void *arg), void *arg);
-void SSL_get0_alpn_selected(const SSL *ssl, const unsigned char **data,
+                                int (*cb)(SSL *ssl, const uint8_t **out, uint8_t *outlen,
+const uint8_t *in, unsigned int inlen, void *arg), void *arg);
+void SSL_get0_alpn_selected(const SSL *ssl, const uint8_t **data,
                             unsigned int *len);
 
 #define SSL_NOTHING 1
@@ -1044,7 +1044,7 @@ struct ssl_st {
     int init_off;      /* amount read/written */
 
     /* used internally to point at a raw packet */
-    unsigned char *packet;
+    uint8_t *packet;
     unsigned int packet_length;
 
     struct ssl3_state_st *s3;  /* SSLv3 variables */
@@ -1093,7 +1093,7 @@ struct ssl_st {
     /* the session_id_context is used to ensure sessions are only reused
      * in the appropriate context */
     unsigned int sid_ctx_length;
-    unsigned char sid_ctx[SSL_MAX_SID_CTX_LENGTH];
+    uint8_t sid_ctx[SSL_MAX_SID_CTX_LENGTH];
 
     /* This can also be in the session once a session is established */
     SSL_SESSION *session;
@@ -1133,7 +1133,7 @@ struct ssl_st {
     unsigned int max_send_fragment;
     /* TLS extension debug callback */
     void (*tlsext_debug_cb)(SSL *s, int client_server, int type,
-                            unsigned char *data, int len, void *arg);
+                            uint8_t *data, int len, void *arg);
     void *tlsext_debug_arg;
     char *tlsext_hostname;
     int servername_done; /* no further mod of servername
@@ -1150,15 +1150,15 @@ struct ssl_st {
     STACK_OF(OCSP_RESPID) * tlsext_ocsp_ids;
     X509_EXTENSIONS *tlsext_ocsp_exts;
     /* OCSP response received or to be sent */
-    unsigned char *tlsext_ocsp_resp;
+    uint8_t *tlsext_ocsp_resp;
     int tlsext_ocsp_resplen;
 
     /* RFC4507 session ticket expected to be received or sent */
     int tlsext_ticket_expected;
     size_t tlsext_ecpointformatlist_length;
-    unsigned char *tlsext_ecpointformatlist; /* our list */
+    uint8_t *tlsext_ecpointformatlist; /* our list */
     size_t tlsext_ellipticcurvelist_length;
-    unsigned char *tlsext_ellipticcurvelist; /* our list */
+    uint8_t *tlsext_ellipticcurvelist; /* our list */
 
     /* TLS Session Ticket extension override */
     TLS_SESSION_TICKET_EXT *tlsext_session_ticket;
@@ -1180,8 +1180,8 @@ struct ssl_st {
      * For a server, this is the client's selected_protocol from
      * NextProtocol and is set when handling the NextProtocol message,
      * before the Finished message. */
-    unsigned char *next_proto_negotiated;
-    unsigned char next_proto_negotiated_len;
+    uint8_t *next_proto_negotiated;
+    uint8_t next_proto_negotiated_len;
 
 #define session_ctx initial_ctx
 
@@ -1197,7 +1197,7 @@ struct ssl_st {
     unsigned int tlsext_hb_seq;     /* HeartbeatRequest sequence number */
 
     /* Client list of supported protocols in wire format. */
-    unsigned char *alpn_client_proto_list;
+    uint8_t *alpn_client_proto_list;
     unsigned int alpn_client_proto_list_len;
 
     int renegotiate; /* 1 if we are renegotiating.
@@ -1544,11 +1544,11 @@ void SSL_set_verify(SSL *s, int mode,
                     int (*callback)(int ok, X509_STORE_CTX *ctx));
 void SSL_set_verify_depth(SSL *s, int depth);
 int SSL_use_RSAPrivateKey(SSL *ssl, RSA *rsa);
-int SSL_use_RSAPrivateKey_ASN1(SSL *ssl, unsigned char *d, long len);
+int SSL_use_RSAPrivateKey_ASN1(SSL *ssl, uint8_t *d, long len);
 int SSL_use_PrivateKey(SSL *ssl, EVP_PKEY *pkey);
-int SSL_use_PrivateKey_ASN1(int pk, SSL *ssl, const unsigned char *d, long len);
+int SSL_use_PrivateKey_ASN1(int pk, SSL *ssl, const uint8_t *d, long len);
 int SSL_use_certificate(SSL *ssl, X509 *x);
-int SSL_use_certificate_ASN1(SSL *ssl, const unsigned char *d, int len);
+int SSL_use_certificate_ASN1(SSL *ssl, const uint8_t *d, int len);
 
 int SSL_use_RSAPrivateKey_file(SSL *ssl, const char *file, int type);
 int SSL_use_PrivateKey_file(SSL *ssl, const char *file, int type);
@@ -1575,25 +1575,25 @@ long SSL_SESSION_set_timeout(SSL_SESSION *s, long t);
 void SSL_copy_session_id(SSL *to, const SSL *from);
 X509 *SSL_SESSION_get0_peer(SSL_SESSION *s);
 int
-SSL_SESSION_set1_id_context(SSL_SESSION *s, const unsigned char *sid_ctx,
+SSL_SESSION_set1_id_context(SSL_SESSION *s, const uint8_t *sid_ctx,
                             unsigned int sid_ctx_len);
 
 SSL_SESSION *SSL_SESSION_new(void);
-const unsigned char *SSL_SESSION_get_id(const SSL_SESSION *s,
+const uint8_t *SSL_SESSION_get_id(const SSL_SESSION *s,
                                         unsigned int *len);
 unsigned int SSL_SESSION_get_compress_id(const SSL_SESSION *s);
 int SSL_SESSION_print_fp(FILE *fp, const SSL_SESSION *ses);
 int SSL_SESSION_print(BIO *fp, const SSL_SESSION *ses);
 void SSL_SESSION_free(SSL_SESSION *ses);
-int i2d_SSL_SESSION(SSL_SESSION *in, unsigned char **pp);
+int i2d_SSL_SESSION(SSL_SESSION *in, uint8_t **pp);
 int SSL_set_session(SSL *to, SSL_SESSION *session);
 int SSL_CTX_add_session(SSL_CTX *s, SSL_SESSION *c);
 int SSL_CTX_remove_session(SSL_CTX *, SSL_SESSION *c);
 int SSL_CTX_set_generate_session_id(SSL_CTX *, GEN_SESSION_CB);
 int SSL_set_generate_session_id(SSL *, GEN_SESSION_CB);
-int SSL_has_matching_session_id(const SSL *ssl, const unsigned char *id,
+int SSL_has_matching_session_id(const SSL *ssl, const uint8_t *id,
                                 unsigned int id_len);
-SSL_SESSION *d2i_SSL_SESSION(SSL_SESSION **a, const unsigned char **pp,
+SSL_SESSION *d2i_SSL_SESSION(SSL_SESSION **a, const uint8_t **pp,
                              long length);
 
 #ifdef HEADER_X509_H
@@ -1610,11 +1610,11 @@ void SSL_CTX_set_verify(SSL_CTX *ctx, int mode,
 void SSL_CTX_set_verify_depth(SSL_CTX *ctx, int depth);
 void SSL_CTX_set_cert_verify_callback(SSL_CTX *ctx, int (*cb)(X509_STORE_CTX *, void *), void *arg);
 int SSL_CTX_use_RSAPrivateKey(SSL_CTX *ctx, RSA *rsa);
-int SSL_CTX_use_RSAPrivateKey_ASN1(SSL_CTX *ctx, const unsigned char *d, long len);
+int SSL_CTX_use_RSAPrivateKey_ASN1(SSL_CTX *ctx, const uint8_t *d, long len);
 int SSL_CTX_use_PrivateKey(SSL_CTX *ctx, EVP_PKEY *pkey);
-int SSL_CTX_use_PrivateKey_ASN1(int pk, SSL_CTX *ctx, const unsigned char *d, long len);
+int SSL_CTX_use_PrivateKey_ASN1(int pk, SSL_CTX *ctx, const uint8_t *d, long len);
 int SSL_CTX_use_certificate(SSL_CTX *ctx, X509 *x);
-int SSL_CTX_use_certificate_ASN1(SSL_CTX *ctx, int len, const unsigned char *d);
+int SSL_CTX_use_certificate_ASN1(SSL_CTX *ctx, int len, const uint8_t *d);
 
 void SSL_CTX_set_default_passwd_cb(SSL_CTX *ctx, pem_password_cb *cb);
 void SSL_CTX_set_default_passwd_cb_userdata(SSL_CTX *ctx, void *u);
@@ -1622,10 +1622,10 @@ void SSL_CTX_set_default_passwd_cb_userdata(SSL_CTX *ctx, void *u);
 int SSL_CTX_check_private_key(const SSL_CTX *ctx);
 int SSL_check_private_key(const SSL *ctx);
 
-int SSL_CTX_set_session_id_context(SSL_CTX *ctx, const unsigned char *sid_ctx, unsigned int sid_ctx_len);
+int SSL_CTX_set_session_id_context(SSL_CTX *ctx, const uint8_t *sid_ctx, unsigned int sid_ctx_len);
 
 SSL *SSL_new(SSL_CTX *ctx);
-int SSL_set_session_id_context(SSL *ssl, const unsigned char *sid_ctx, unsigned int sid_ctx_len);
+int SSL_set_session_id_context(SSL *ssl, const uint8_t *sid_ctx, unsigned int sid_ctx_len);
 
 int SSL_CTX_set_purpose(SSL_CTX *s, int purpose);
 int SSL_set_purpose(SSL *s, int purpose);

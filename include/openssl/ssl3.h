@@ -319,14 +319,14 @@ typedef struct ssl3_record_st {
     /*r */ int type;                 /* type of record */
     /*rw*/ unsigned int length;      /* How many bytes available */
     /*r */ unsigned int off;         /* read/write offset into 'buf' */
-    /*rw*/ unsigned char *data;      /* pointer to the record data */
-    /*rw*/ unsigned char *input;     /* where the decode bytes are */
+    /*rw*/ uint8_t *data;      /* pointer to the record data */
+    /*rw*/ uint8_t *input;     /* where the decode bytes are */
     /*r */ unsigned long epoch;      /* epoch number, needed by DTLS1 */
-    /*r */ unsigned char seq_num[8]; /* sequence number, needed by DTLS1 */
+    /*r */ uint8_t seq_num[8]; /* sequence number, needed by DTLS1 */
 } SSL3_RECORD;
 
 typedef struct ssl3_buffer_st {
-    unsigned char *buf; /* at least SSL3_RT_MAX_PACKET_SIZE bytes,
+    uint8_t *buf; /* at least SSL3_RT_MAX_PACKET_SIZE bytes,
                              * see ssl3_setup_buffers() */
     size_t len;         /* buffer size */
     int offset;         /* where to 'copy from' */
@@ -377,15 +377,15 @@ typedef struct ssl3_state_st {
     long flags;
     int delay_buf_pop_ret;
 
-    unsigned char read_sequence[SSL3_SEQUENCE_SIZE];
+    uint8_t read_sequence[SSL3_SEQUENCE_SIZE];
     int read_mac_secret_size;
-    unsigned char read_mac_secret[EVP_MAX_MD_SIZE];
-    unsigned char write_sequence[SSL3_SEQUENCE_SIZE];
+    uint8_t read_mac_secret[EVP_MAX_MD_SIZE];
+    uint8_t write_sequence[SSL3_SEQUENCE_SIZE];
     int write_mac_secret_size;
-    unsigned char write_mac_secret[EVP_MAX_MD_SIZE];
+    uint8_t write_mac_secret[EVP_MAX_MD_SIZE];
 
-    unsigned char server_random[SSL3_RANDOM_SIZE];
-    unsigned char client_random[SSL3_RANDOM_SIZE];
+    uint8_t server_random[SSL3_RANDOM_SIZE];
+    uint8_t client_random[SSL3_RANDOM_SIZE];
 
     /* flags for countermeasure against known-IV weakness */
     int need_empty_fragments;
@@ -402,9 +402,9 @@ typedef struct ssl3_state_st {
 
     /* storage for Alert/Handshake protocol data received but not
      * yet processed by ssl3_read_bytes: */
-    unsigned char alert_fragment[2];
+    uint8_t alert_fragment[2];
     unsigned int alert_fragment_len;
-    unsigned char handshake_fragment[4];
+    uint8_t handshake_fragment[4];
     unsigned int handshake_fragment_len;
 
     /* partial write - check the numbers match */
@@ -412,7 +412,7 @@ typedef struct ssl3_state_st {
     int wpend_tot;     /* number bytes written */
     int wpend_type;
     int wpend_ret; /* number of bytes submitted */
-    const unsigned char *wpend_buf;
+    const uint8_t *wpend_buf;
 
     /* used during startup, digest all incoming/outgoing packets */
     BIO *handshake_buffer;
@@ -432,7 +432,7 @@ typedef struct ssl3_state_st {
     /* we allow one fatal and one warning alert to be outstanding,
      * send close alert via the warning alert */
     int alert_dispatch;
-    unsigned char send_alert[2];
+    uint8_t send_alert[2];
 
     /* This flag is set when we should renegotiate ASAP, basically when
      * there is no more data in the read or write buffers */
@@ -444,12 +444,12 @@ typedef struct ssl3_state_st {
 
     struct {
         /* actually only needs to be 16+20 */
-        unsigned char cert_verify_md[EVP_MAX_MD_SIZE * 2];
+        uint8_t cert_verify_md[EVP_MAX_MD_SIZE * 2];
 
         /* actually only need to be 16+20 for SSLv3 and 12 for TLS */
-        unsigned char finish_md[EVP_MAX_MD_SIZE * 2];
+        uint8_t finish_md[EVP_MAX_MD_SIZE * 2];
         int finish_md_len;
-        unsigned char peer_finish_md[EVP_MAX_MD_SIZE * 2];
+        uint8_t peer_finish_md[EVP_MAX_MD_SIZE * 2];
         int peer_finish_md_len;
 
         unsigned long message_size;
@@ -475,7 +475,7 @@ typedef struct ssl3_state_st {
         int use_rsa_tmp;
 
         int key_block_length;
-        unsigned char *key_block;
+        uint8_t *key_block;
 
         const EVP_CIPHER *new_sym_enc;
         const EVP_AEAD *new_aead;
@@ -486,10 +486,10 @@ typedef struct ssl3_state_st {
     } tmp;
 
     /* Connection binding to prevent renegotiation attacks */
-    unsigned char previous_client_finished[EVP_MAX_MD_SIZE];
-    unsigned char previous_client_finished_len;
-    unsigned char previous_server_finished[EVP_MAX_MD_SIZE];
-    unsigned char previous_server_finished_len;
+    uint8_t previous_client_finished[EVP_MAX_MD_SIZE];
+    uint8_t previous_client_finished_len;
+    uint8_t previous_server_finished[EVP_MAX_MD_SIZE];
+    uint8_t previous_server_finished_len;
     int send_connection_binding; /* TODOEKR */
 
     /* Set if we saw the Next Protocol Negotiation extension from our peer.
@@ -507,7 +507,7 @@ typedef struct ssl3_state_st {
      * protocol that the server selected once the ServerHello has been
      * processed.
      */
-    unsigned char *alpn_selected;
+    uint8_t *alpn_selected;
     unsigned int alpn_selected_len;
 
     /* This is set to true if we believe that this is a version of Safari

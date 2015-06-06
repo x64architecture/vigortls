@@ -324,10 +324,10 @@ void BN_init(BIGNUM *);
 void BN_clear_free(BIGNUM *a);
 BIGNUM *BN_copy(BIGNUM *a, const BIGNUM *b);
 void BN_swap(BIGNUM *a, BIGNUM *b);
-BIGNUM *BN_bin2bn(const unsigned char *s, int len, BIGNUM *ret);
-int BN_bn2bin(const BIGNUM *a, unsigned char *to);
-BIGNUM *BN_mpi2bn(const unsigned char *s, int len, BIGNUM *ret);
-int BN_bn2mpi(const BIGNUM *a, unsigned char *to);
+BIGNUM *BN_bin2bn(const uint8_t *s, int len, BIGNUM *ret);
+int BN_bn2bin(const BIGNUM *a, uint8_t *to);
+BIGNUM *BN_mpi2bn(const uint8_t *s, int len, BIGNUM *ret);
+int BN_bn2mpi(const BIGNUM *a, uint8_t *to);
 int BN_sub(BIGNUM *r, const BIGNUM *a, const BIGNUM *b);
 int BN_usub(BIGNUM *r, const BIGNUM *a, const BIGNUM *b);
 int BN_uadd(BIGNUM *r, const BIGNUM *a, const BIGNUM *b);
@@ -626,21 +626,21 @@ BIGNUM *bn_dup_expand(const BIGNUM *a, int words); /* unused */
 #ifdef BN_DEBUG_RAND
 /* To avoid "make update" cvs wars due to BN_DEBUG, use some tricks */
 #ifndef RAND_pseudo_bytes
-int RAND_pseudo_bytes(unsigned char *buf, int num);
+int RAND_pseudo_bytes(uint8_t *buf, int num);
 #define BN_DEBUG_TRIX
 #endif
 #define bn_pollute(a)                                                                                                        \
     do {                                                                                                                     \
         const BIGNUM *_bnum1 = (a);                                                                                          \
         if (_bnum1->top < _bnum1->dmax) {                                                                                    \
-            unsigned char _tmp_char;                                                                                         \
+            uint8_t _tmp_char;                                                                                         \
             /* We cast away const without the compiler knowing, any                                                          \
              * *genuinely* constant variables that aren't mutable                                                            \
              * wouldn't be constructed with top!=dmax. */                                                                    \
             BN_ULONG *_not_const;                                                                                            \
             memcpy(&_not_const, &_bnum1->d, sizeof(BN_ULONG *));                                                             \
             RAND_pseudo_bytes(&_tmp_char, 1);                                                                                \
-            memset((unsigned char *)(_not_const + _bnum1->top), _tmp_char, (_bnum1->dmax - _bnum1->top) * sizeof(BN_ULONG)); \
+            memset((uint8_t *)(_not_const + _bnum1->top), _tmp_char, (_bnum1->dmax - _bnum1->top) * sizeof(BN_ULONG)); \
         }                                                                                                                    \
     } while (0)
 #ifdef BN_DEBUG_TRIX

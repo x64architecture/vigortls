@@ -160,23 +160,23 @@ SSL3_ENC_METHOD ssl3_undef_enc_method = {
      * library bug.
      */
     .enc = (int (*)(SSL *, int))ssl_undefined_function,
-    .mac = (int (*)(SSL *, unsigned char *, int))ssl_undefined_function,
+    .mac = (int (*)(SSL *, uint8_t *, int))ssl_undefined_function,
     .setup_key_block = ssl_undefined_function,
-    .generate_master_secret = (int (*)(SSL *, unsigned char *, unsigned char *,
+    .generate_master_secret = (int (*)(SSL *, uint8_t *, uint8_t *,
                                        int))ssl_undefined_function,
     .change_cipher_state = (int (*)(SSL *, int))ssl_undefined_function,
     .final_finish_mac = (int (*)(SSL *, const char *, int,
-                                 unsigned char *))ssl_undefined_function,
+                                 uint8_t *))ssl_undefined_function,
     .finish_mac_length = 0,
-    .cert_verify_mac = (int (*)(SSL *, int, unsigned char *))ssl_undefined_function,
+    .cert_verify_mac = (int (*)(SSL *, int, uint8_t *))ssl_undefined_function,
     .client_finished_label = NULL,
     .client_finished_label_len = 0,
     .server_finished_label = NULL,
     .server_finished_label_len = 0,
     .alert_value = (int (*)(int))ssl_undefined_function,
     .export_keying_material = (int (*)(
-        SSL *, unsigned char *, size_t, const char *, size_t,
-        const unsigned char *, size_t, int use_context))ssl_undefined_function,
+        SSL *, uint8_t *, size_t, const char *, size_t,
+        const uint8_t *, size_t, int use_context))ssl_undefined_function,
     .enc_flags = 0,
 };
 
@@ -356,7 +356,7 @@ err:
     return (NULL);
 }
 
-int SSL_CTX_set_session_id_context(SSL_CTX *ctx, const unsigned char *sid_ctx,
+int SSL_CTX_set_session_id_context(SSL_CTX *ctx, const uint8_t *sid_ctx,
                                    unsigned int sid_ctx_len)
 {
     if (sid_ctx_len > sizeof ctx->sid_ctx) {
@@ -370,7 +370,7 @@ int SSL_CTX_set_session_id_context(SSL_CTX *ctx, const unsigned char *sid_ctx,
     return (1);
 }
 
-int SSL_set_session_id_context(SSL *ssl, const unsigned char *sid_ctx,
+int SSL_set_session_id_context(SSL *ssl, const uint8_t *sid_ctx,
                                unsigned int sid_ctx_len)
 {
     if (sid_ctx_len > SSL_MAX_SID_CTX_LENGTH) {
@@ -400,7 +400,7 @@ int SSL_set_generate_session_id(SSL *ssl, GEN_SESSION_CB cb)
     return (1);
 }
 
-int SSL_has_matching_session_id(const SSL *ssl, const unsigned char *id,
+int SSL_has_matching_session_id(const SSL *ssl, const uint8_t *id,
                                 unsigned int id_len)
 {
     /*
@@ -1271,11 +1271,11 @@ char *SSL_get_shared_ciphers(const SSL *s, char *buf, int len)
 }
 
 int ssl_cipher_list_to_bytes(SSL *s, STACK_OF(SSL_CIPHER) *sk,
-                             unsigned char *p)
+                             uint8_t *p)
 {
     int i;
     SSL_CIPHER *c;
-    unsigned char *q;
+    uint8_t *q;
 
     if (sk == NULL)
         return (0);
@@ -1302,7 +1302,7 @@ int ssl_cipher_list_to_bytes(SSL *s, STACK_OF(SSL_CIPHER) *sk,
     return (p - q);
 }
 
-STACK_OF(SSL_CIPHER) *ssl_bytes_to_cipher_list(SSL *s, unsigned char *p, int num)
+STACK_OF(SSL_CIPHER) *ssl_bytes_to_cipher_list(SSL *s, uint8_t *p, int num)
 {
     const SSL_CIPHER *c;
     STACK_OF(SSL_CIPHER) *sk = NULL;
@@ -1417,13 +1417,13 @@ int SSL_get_servername_type(const SSL *s)
  * OPENSSL_NPN_NEGOTIATED if a common protocol was found, or
  * OPENSSL_NPN_NO_OVERLAP if the fallback case was reached.
  */
-int SSL_select_next_proto(unsigned char **out, unsigned char *outlen,
-                          const unsigned char *server, unsigned int server_len,
-                          const unsigned char *client,
+int SSL_select_next_proto(uint8_t **out, uint8_t *outlen,
+                          const uint8_t *server, unsigned int server_len,
+                          const uint8_t *client,
                           unsigned int client_len)
 {
     unsigned int i, j;
-    const unsigned char *result;
+    const uint8_t *result;
     int status = OPENSSL_NPN_UNSUPPORTED;
 
     /*
@@ -1450,7 +1450,7 @@ int SSL_select_next_proto(unsigned char **out, unsigned char *outlen,
     status = OPENSSL_NPN_NO_OVERLAP;
 
 found:
-    *out = (unsigned char *)result + 1;
+    *out = (uint8_t *)result + 1;
     *outlen = result[0];
     return (status);
 }
@@ -1464,7 +1464,7 @@ found:
  * from this function need not be a member of the list of supported protocols
  * provided by the callback.
  */
-void SSL_get0_next_proto_negotiated(const SSL *s, const unsigned char **data,
+void SSL_get0_next_proto_negotiated(const SSL *s, const uint8_t **data,
                                     unsigned *len)
 {
     *data = s->next_proto_negotiated;
@@ -1487,7 +1487,7 @@ void SSL_get0_next_proto_negotiated(const SSL *s, const unsigned char **data,
  * Otherwise, no such extension will be included in the ServerHello.
  */
 void SSL_CTX_set_next_protos_advertised_cb(
-    SSL_CTX *ctx, int (*cb)(SSL *ssl, const unsigned char **out,
+    SSL_CTX *ctx, int (*cb)(SSL *ssl, const uint8_t **out,
                             unsigned int *outlen, void *arg),
     void *arg)
 {
@@ -1507,9 +1507,9 @@ void SSL_CTX_set_next_protos_advertised_cb(
  * callback returns a value other than SSL_TLSEXT_ERR_OK.
  */
 void SSL_CTX_set_next_proto_select_cb(SSL_CTX *ctx,
-                                      int (*cb)(SSL *s, unsigned char **out,
-                                                unsigned char *outlen,
-                                                const unsigned char *in,
+                                      int (*cb)(SSL *s, uint8_t **out,
+                                                uint8_t *outlen,
+                                                const uint8_t *in,
                                                 unsigned int inlen, void *arg),
                                       void *arg)
 {
@@ -1522,7 +1522,7 @@ void SSL_CTX_set_next_proto_select_cb(SSL_CTX *ctx,
  * protocols, which must be in wire-format (i.e. a series of non-empty,
  * 8-bit length-prefixed strings). Returns 0 on success.
  */
-int SSL_CTX_set_alpn_protos(SSL_CTX *ctx, const unsigned char *protos,
+int SSL_CTX_set_alpn_protos(SSL_CTX *ctx, const uint8_t *protos,
                             unsigned int protos_len)
 {
     free(ctx->alpn_client_proto_list);
@@ -1539,7 +1539,7 @@ int SSL_CTX_set_alpn_protos(SSL_CTX *ctx, const unsigned char *protos,
  * protocols, which must be in wire-format (i.e. a series of non-empty,
  * 8-bit length-prefixed strings). Returns 0 on success.
  */
-int SSL_set_alpn_protos(SSL *ssl, const unsigned char *protos,
+int SSL_set_alpn_protos(SSL *ssl, const uint8_t *protos,
                         unsigned int protos_len)
 {
     free(ssl->alpn_client_proto_list);
@@ -1557,8 +1557,8 @@ int SSL_set_alpn_protos(SSL *ssl, const unsigned char *protos,
  * client's list of offered protocols.
  */
 void SSL_CTX_set_alpn_select_cb(SSL_CTX *ctx,
-                                int (*cb)(SSL *ssl, const unsigned char **out, unsigned char *outlen,
-                                          const unsigned char *in, unsigned int inlen, void *arg),
+                                int (*cb)(SSL *ssl, const uint8_t **out, uint8_t *outlen,
+                                          const uint8_t *in, unsigned int inlen, void *arg),
                                 void *arg)
 {
     ctx->alpn_select_cb = cb;
@@ -1571,7 +1571,7 @@ void SSL_CTX_set_alpn_select_cb(SSL_CTX *ctx,
  * leading length-prefix byte). If the server didn't respond with* a negotiated
  * protocol then len will be zero.
  */
-void SSL_get0_alpn_selected(const SSL *ssl, const unsigned char **data,
+void SSL_get0_alpn_selected(const SSL *ssl, const uint8_t **data,
                             unsigned int *len)
 {
     *data = NULL;
@@ -1583,9 +1583,9 @@ void SSL_get0_alpn_selected(const SSL *ssl, const unsigned char **data,
     }
 }
 
-int SSL_export_keying_material(SSL *s, unsigned char *out, size_t olen,
+int SSL_export_keying_material(SSL *s, uint8_t *out, size_t olen,
                                const char *label, size_t llen,
-                               const unsigned char *p, size_t plen,
+                               const uint8_t *p, size_t plen,
                                int use_context)
 {
     if (s->version < TLS1_VERSION)
@@ -2863,9 +2863,9 @@ void ssl_clear_hash_ctx(EVP_MD_CTX **hash)
 }
 
 /* Retrieve handshake hashes */
-int ssl_handshake_hash(SSL *s, unsigned char *out, int outlen)
+int ssl_handshake_hash(SSL *s, uint8_t *out, int outlen)
 {
-    unsigned char *p = out;
+    uint8_t *p = out;
     int idx, ret = 0;
     long mask;
     EVP_MD_CTX ctx;

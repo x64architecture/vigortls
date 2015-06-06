@@ -63,17 +63,17 @@
  * used.  The extra state information to record how much of the
  * 64bit block we have used is contained in *num;
  */
-void CAST_ofb64_encrypt(const unsigned char *in, unsigned char *out,
-                        long length, const CAST_KEY *schedule, unsigned char *ivec,
+void CAST_ofb64_encrypt(const uint8_t *in, uint8_t *out,
+                        long length, const CAST_KEY *schedule, uint8_t *ivec,
                         int *num)
 {
     register CAST_LONG v0, v1, t;
     register int n = *num;
     register long l = length;
-    unsigned char d[8];
+    uint8_t d[8];
     register char *dp;
     CAST_LONG ti[2];
-    unsigned char *iv;
+    uint8_t *iv;
     int save = 0;
 
     iv = ivec;

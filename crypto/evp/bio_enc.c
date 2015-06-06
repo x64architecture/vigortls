@@ -184,7 +184,7 @@ static int enc_read(BIO *b, char *out, int outl)
             if (!BIO_should_retry(b->next_bio)) {
                 ctx->cont = i;
                 i = EVP_CipherFinal_ex(&(ctx->cipher),
-                                       (unsigned char *)ctx->buf,
+                                       (uint8_t *)ctx->buf,
                                        &(ctx->buf_len));
                 ctx->ok = i;
                 ctx->buf_off = 0;
@@ -194,8 +194,8 @@ static int enc_read(BIO *b, char *out, int outl)
             }
         } else {
             EVP_CipherUpdate(&(ctx->cipher),
-                             (unsigned char *)ctx->buf, &ctx->buf_len,
-                             (unsigned char *)&(ctx->buf[BUF_OFFSET]), i);
+                             (uint8_t *)ctx->buf, &ctx->buf_len,
+                             (uint8_t *)&(ctx->buf[BUF_OFFSET]), i);
             ctx->cont = 1;
             /* Note: it is possible for EVP_CipherUpdate to
              * decrypt zero bytes because this is or looks like
@@ -253,8 +253,8 @@ static int enc_write(BIO *b, const char *in, int inl)
     while (inl > 0) {
         n = (inl > ENC_BLOCK_SIZE) ? ENC_BLOCK_SIZE : inl;
         EVP_CipherUpdate(&(ctx->cipher),
-                         (unsigned char *)ctx->buf, &ctx->buf_len,
-                         (unsigned char *)in, n);
+                         (uint8_t *)ctx->buf, &ctx->buf_len,
+                         (uint8_t *)in, n);
         inl -= n;
         in += n;
 
@@ -323,7 +323,7 @@ static long enc_ctrl(BIO *b, int cmd, long num, void *ptr)
                 ctx->finished = 1;
                 ctx->buf_off = 0;
                 ret = EVP_CipherFinal_ex(&(ctx->cipher),
-                                         (unsigned char *)ctx->buf,
+                                         (uint8_t *)ctx->buf,
                                          &(ctx->buf_len));
                 ctx->ok = (int)ret;
                 if (ret <= 0)
@@ -398,8 +398,8 @@ EVP_CIPHER_ctx *c;
     }
 */
 
-void BIO_set_cipher(BIO *b, const EVP_CIPHER *c, const unsigned char *k,
-                    const unsigned char *i, int e)
+void BIO_set_cipher(BIO *b, const EVP_CIPHER *c, const uint8_t *k,
+                    const uint8_t *i, int e)
 {
     BIO_ENC_CTX *ctx;
 

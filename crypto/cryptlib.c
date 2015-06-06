@@ -603,7 +603,7 @@ unsigned long *OPENSSL_ia32cap_loc(void)
 
 #if defined(OPENSSL_CPUID_OBJ) && !defined(OPENSSL_NO_ASM) && !defined(I386_ONLY)
 #define OPENSSL_CPUID_SETUP
-typedef unsigned long long IA32CAP;
+typedef uint64_t IA32CAP;
 void OPENSSL_cpuid_setup(void)
 {
     static int trigger = 0;
@@ -660,9 +660,9 @@ void OpenSSLDie(const char *file, int line, const char *assertion)
 int CRYPTO_memcmp(const void *in_a, const void *in_b, size_t len)
 {
     size_t i;
-    const unsigned char *a = in_a;
-    const unsigned char *b = in_b;
-    unsigned char x = 0;
+    const uint8_t *a = in_a;
+    const uint8_t *b = in_b;
+    uint8_t x = 0;
 
     for (i = 0; i < len; i++)
         x |= a[i] ^ b[i];

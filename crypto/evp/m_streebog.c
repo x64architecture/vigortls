@@ -66,7 +66,7 @@ static int update256(EVP_MD_CTX *ctx, const void *data, size_t count)
     return STREEBOG256_Update(ctx->md_data, data, count);
 }
 
-static int final256(EVP_MD_CTX *ctx, unsigned char *md)
+static int final256(EVP_MD_CTX *ctx, uint8_t *md)
 {
     return STREEBOG256_Final(md, ctx->md_data);
 }
@@ -81,7 +81,7 @@ static int update512(EVP_MD_CTX *ctx, const void *data, size_t count)
     return STREEBOG512_Update(ctx->md_data, data, count);
 }
 
-static int final512(EVP_MD_CTX *ctx, unsigned char *md)
+static int final512(EVP_MD_CTX *ctx, uint8_t *md)
 {
     return STREEBOG512_Final(md, ctx->md_data);
 }

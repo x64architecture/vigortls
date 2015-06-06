@@ -131,7 +131,7 @@ int ASN1_sign(i2d_of_void *i2d, X509_ALGOR *algor1, X509_ALGOR *algor2,
               const EVP_MD *type)
 {
     EVP_MD_CTX ctx;
-    unsigned char *p, *buf_in = NULL, *buf_out = NULL;
+    uint8_t *p, *buf_in = NULL, *buf_out = NULL;
     int i, inl = 0, outl = 0, outll = 0;
     X509_ALGOR *a;
 
@@ -178,8 +178,8 @@ int ASN1_sign(i2d_of_void *i2d, X509_ALGOR *algor1, X509_ALGOR *algor2,
 
     i2d(data, &p);
     if (!EVP_SignInit_ex(&ctx, type, NULL)
-        || !EVP_SignUpdate(&ctx, (unsigned char *)buf_in, inl)
-        || !EVP_SignFinal(&ctx, (unsigned char *)buf_out,
+        || !EVP_SignUpdate(&ctx, (uint8_t *)buf_in, inl)
+        || !EVP_SignFinal(&ctx, (uint8_t *)buf_out,
                           (unsigned int *)&outl, pkey)) {
         outl = 0;
         ASN1err(ASN1_F_ASN1_SIGN, ERR_R_EVP_LIB);
@@ -228,7 +228,7 @@ int ASN1_item_sign_ctx(const ASN1_ITEM *it,
 {
     const EVP_MD *type;
     EVP_PKEY *pkey;
-    unsigned char *buf_in = NULL, *buf_out = NULL;
+    uint8_t *buf_in = NULL, *buf_out = NULL;
     size_t inl = 0, outl = 0, outll = 0;
     int signid, paramtype;
     int rv;

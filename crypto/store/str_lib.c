@@ -1182,10 +1182,10 @@ void STORE_OBJECT_free(STORE_OBJECT *data)
 }
 
 struct STORE_attr_info_st {
-    unsigned char set[(STORE_ATTR_TYPE_NUM + 8) / 8];
+    uint8_t set[(STORE_ATTR_TYPE_NUM + 8) / 8];
     union {
         char *cstring;
-        unsigned char *sha1string;
+        uint8_t *sha1string;
         X509_NAME *dn;
         BIGNUM *number;
         void *any;
@@ -1254,7 +1254,7 @@ char *STORE_ATTR_INFO_get0_cstr(STORE_ATTR_INFO *attrs, STORE_ATTR_TYPES code)
              STORE_R_NO_VALUE);
     return NULL;
 }
-unsigned char *STORE_ATTR_INFO_get0_sha1str(STORE_ATTR_INFO *attrs,
+uint8_t *STORE_ATTR_INFO_get0_sha1str(STORE_ATTR_INFO *attrs,
                                             STORE_ATTR_TYPES code)
 {
     if (!attrs) {
@@ -1313,7 +1313,7 @@ int STORE_ATTR_INFO_set_cstr(STORE_ATTR_INFO *attrs, STORE_ATTR_TYPES code,
     return 0;
 }
 int STORE_ATTR_INFO_set_sha1str(STORE_ATTR_INFO *attrs, STORE_ATTR_TYPES code,
-                                unsigned char *sha1str, size_t sha1str_size)
+                                uint8_t *sha1str, size_t sha1str_size)
 {
     if (!attrs) {
         STOREerr(STORE_F_STORE_ATTR_INFO_SET_SHA1STR,
@@ -1321,7 +1321,7 @@ int STORE_ATTR_INFO_set_sha1str(STORE_ATTR_INFO *attrs, STORE_ATTR_TYPES code,
         return 0;
     }
     if (!ATTR_IS_SET(attrs, code)) {
-        if ((attrs->values[code].sha1string = (unsigned char *)BUF_memdup(sha1str,
+        if ((attrs->values[code].sha1string = (uint8_t *)BUF_memdup(sha1str,
                                                                           sha1str_size)))
             return 1;
         STOREerr(STORE_F_STORE_ATTR_INFO_SET_SHA1STR,
@@ -1383,7 +1383,7 @@ int STORE_ATTR_INFO_modify_cstr(STORE_ATTR_INFO *attrs, STORE_ATTR_TYPES code,
     return STORE_ATTR_INFO_set_cstr(attrs, code, cstr, cstr_size);
 }
 int STORE_ATTR_INFO_modify_sha1str(STORE_ATTR_INFO *attrs, STORE_ATTR_TYPES code,
-                                   unsigned char *sha1str, size_t sha1str_size)
+                                   uint8_t *sha1str, size_t sha1str_size)
 {
     if (!attrs) {
         STOREerr(STORE_F_STORE_ATTR_INFO_MODIFY_SHA1STR,
@@ -1558,7 +1558,7 @@ int STORE_parse_attrs_endp(void *handle)
 }
 
 static int attr_info_compare_compute_range(
-    const unsigned char *abits, const unsigned char *bbits,
+    const uint8_t *abits, const uint8_t *bbits,
     unsigned int *alowp, unsigned int *ahighp,
     unsigned int *blowp, unsigned int *bhighp)
 {
@@ -1688,7 +1688,7 @@ int STORE_ATTR_INFO_in_range(STORE_ATTR_INFO *a, STORE_ATTR_INFO *b)
 
 int STORE_ATTR_INFO_in(STORE_ATTR_INFO *a, STORE_ATTR_INFO *b)
 {
-    unsigned char *abits, *bbits;
+    uint8_t *abits, *bbits;
     int i;
 
     if (a == b)

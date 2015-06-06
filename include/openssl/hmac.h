@@ -75,7 +75,7 @@ typedef struct hmac_ctx_st {
     EVP_MD_CTX i_ctx;
     EVP_MD_CTX o_ctx;
     unsigned int key_length;
-    unsigned char key[HMAC_MAX_MD_CBLOCK];
+    uint8_t key[HMAC_MAX_MD_CBLOCK];
     int key_init;
 } HMAC_CTX;
 
@@ -90,10 +90,10 @@ int HMAC_Init(HMAC_CTX *ctx, const void *key, int len,
               const EVP_MD *md); /* deprecated */
 int HMAC_Init_ex(HMAC_CTX *ctx, const void *key, int len,
                  const EVP_MD *md, ENGINE *impl);
-int HMAC_Update(HMAC_CTX *ctx, const unsigned char *data, size_t len);
-int HMAC_Final(HMAC_CTX *ctx, unsigned char *md, unsigned int *len);
-unsigned char *HMAC(const EVP_MD *evp_md, const void *key, int key_len,
-                    const unsigned char *d, size_t n, unsigned char *md,
+int HMAC_Update(HMAC_CTX *ctx, const uint8_t *data, size_t len);
+int HMAC_Final(HMAC_CTX *ctx, uint8_t *md, unsigned int *len);
+uint8_t *HMAC(const EVP_MD *evp_md, const void *key, int key_len,
+                    const uint8_t *d, size_t n, uint8_t *md,
                     unsigned int *md_len);
 int HMAC_CTX_copy(HMAC_CTX *dctx, HMAC_CTX *sctx);
 

@@ -67,7 +67,7 @@
  * Date: 11 Feb 1996 06:45:03 GMT
  */
 
-void RC2_ecb_encrypt(const unsigned char *in, unsigned char *out, RC2_KEY *ks,
+void RC2_ecb_encrypt(const uint8_t *in, uint8_t *out, RC2_KEY *ks,
                      int encrypt)
 {
     unsigned long l, d[2];

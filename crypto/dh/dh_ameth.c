@@ -72,7 +72,7 @@ static void int_dh_free(EVP_PKEY *pkey)
 
 static int dh_pub_decode(EVP_PKEY *pkey, X509_PUBKEY *pubkey)
 {
-    const unsigned char *p, *pm;
+    const uint8_t *p, *pm;
     int pklen, pmlen;
     int ptype;
     void *pval;
@@ -127,7 +127,7 @@ static int dh_pub_encode(X509_PUBKEY *pk, const EVP_PKEY *pkey)
 {
     DH *dh;
     int ptype;
-    unsigned char *penc = NULL;
+    uint8_t *penc = NULL;
     int penclen;
     ASN1_STRING *str;
     ASN1_INTEGER *pub_key = NULL;
@@ -177,7 +177,7 @@ err:
 
 static int dh_priv_decode(EVP_PKEY *pkey, PKCS8_PRIV_KEY_INFO *p8)
 {
-    const unsigned char *p, *pm;
+    const uint8_t *p, *pm;
     int pklen, pmlen;
     int ptype;
     void *pval;
@@ -229,7 +229,7 @@ static int dh_priv_encode(PKCS8_PRIV_KEY_INFO *p8, const EVP_PKEY *pkey)
 {
     ASN1_STRING *params = NULL;
     ASN1_INTEGER *prkey = NULL;
-    unsigned char *dp = NULL;
+    uint8_t *dp = NULL;
     int dplen;
 
     params = ASN1_STRING_new();
@@ -281,7 +281,7 @@ static void update_buflen(const BIGNUM *b, size_t *pbuflen)
 }
 
 static int dh_param_decode(EVP_PKEY *pkey,
-                           const unsigned char **pder, int derlen)
+                           const uint8_t **pder, int derlen)
 {
     DH *dh;
     if (!(dh = d2i_DHparams(NULL, pder, derlen))) {
@@ -292,7 +292,7 @@ static int dh_param_decode(EVP_PKEY *pkey,
     return 1;
 }
 
-static int dh_param_encode(const EVP_PKEY *pkey, unsigned char **pder)
+static int dh_param_encode(const EVP_PKEY *pkey, uint8_t **pder)
 {
     return i2d_DHparams(pkey->pkey.dh, pder);
 }
@@ -300,7 +300,7 @@ static int dh_param_encode(const EVP_PKEY *pkey, unsigned char **pder)
 static int do_dh_print(BIO *bp, const DH *x, int indent,
                        ASN1_PCTX *ctx, int ptype)
 {
-    unsigned char *m = NULL;
+    uint8_t *m = NULL;
     int reason = ERR_R_BUF_LIB, ret = 0;
     size_t buf_len = 0;
 

@@ -67,7 +67,7 @@ static int update(EVP_MD_CTX *ctx, const void *data, size_t count)
     return GOSTR341194_Update(ctx->md_data, data, count);
 }
 
-static int final(EVP_MD_CTX *ctx, unsigned char *md)
+static int final(EVP_MD_CTX *ctx, uint8_t *md)
 {
     return GOSTR341194_Final(md, ctx->md_data);
 }

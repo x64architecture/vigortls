@@ -84,7 +84,7 @@ int RIPEMD160_Init(RIPEMD160_CTX *c)
 #endif
 void ripemd160_block_data_order(RIPEMD160_CTX *ctx, const void *p, size_t num)
 {
-    const unsigned char *data = p;
+    const uint8_t *data = p;
     register unsigned MD32_REG_T A, B, C, D, E;
     unsigned MD32_REG_T a, b, c, d, e, l;
 #ifndef MD32_XARRAY

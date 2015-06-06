@@ -130,7 +130,7 @@ static int md_read(BIO *b, char *out, int outl)
     ret = BIO_read(b->next_bio, out, outl);
     if (b->init) {
         if (ret > 0) {
-            if (EVP_DigestUpdate(ctx, (unsigned char *)out,
+            if (EVP_DigestUpdate(ctx, (uint8_t *)out,
                                  (unsigned int)ret) <= 0)
                 return (-1);
         }
@@ -153,7 +153,7 @@ static int md_write(BIO *b, const char *in, int inl)
         ret = BIO_write(b->next_bio, in, inl);
     if (b->init) {
         if (ret > 0) {
-            if (!EVP_DigestUpdate(ctx, (const unsigned char *)in,
+            if (!EVP_DigestUpdate(ctx, (const uint8_t *)in,
                                   (unsigned int)ret)) {
                 BIO_clear_retry_flags(b);
                 return 0;
@@ -252,7 +252,7 @@ static int md_gets(BIO *bp, char *buf, int size)
     ctx = bp->ptr;
     if (size < ctx->digest->md_size)
         return (0);
-    if (EVP_DigestFinal_ex(ctx, (unsigned char *)buf, &ret) <= 0)
+    if (EVP_DigestFinal_ex(ctx, (uint8_t *)buf, &ret) <= 0)
         return -1;
 
     return ((int)ret);

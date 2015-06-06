@@ -81,7 +81,7 @@ void fcrypt_body(uint32_t *out, DES_key_schedule *ks, uint32_t Eswap0,
 {
     uint32_t l, r, t, u;
 #ifdef DES_PTR
-    register const unsigned char *des_SP = (const unsigned char *)DES_SPtrans;
+    register const uint8_t *des_SP = (const uint8_t *)DES_SPtrans;
 #endif
     uint32_t *s;
     register int j;

@@ -56,14 +56,14 @@
 
 /* Internal representation of GOST substitution blocks */
 typedef struct {
-    unsigned char k8[16];
-    unsigned char k7[16];
-    unsigned char k6[16];
-    unsigned char k5[16];
-    unsigned char k4[16];
-    unsigned char k3[16];
-    unsigned char k2[16];
-    unsigned char k1[16];
+    uint8_t k8[16];
+    uint8_t k7[16];
+    uint8_t k6[16];
+    uint8_t k5[16];
+    uint8_t k4[16];
+    uint8_t k3[16];
+    uint8_t k2[16];
+    uint8_t k1[16];
 } gost_subst_block;
 
 #if defined(__i386) || defined(__i386__) || defined(__x86_64) || defined(__x86_64__)
@@ -75,26 +75,26 @@ typedef struct {
      l |= (((unsigned long)(*((c)++))) << 16),                                     \
      l |= (((unsigned long)(*((c)++))) << 24))
 #define l2c(l, c)                                                                  \
-    (*((c)++) = (unsigned char)(((l)) & 0xff),                                     \
-     *((c)++) = (unsigned char)(((l) >> 8) & 0xff),                                \
-     *((c)++) = (unsigned char)(((l) >> 16) & 0xff),                               \
-     *((c)++) = (unsigned char)(((l) >> 24) & 0xff))
+    (*((c)++) = (uint8_t)(((l)) & 0xff),                                     \
+     *((c)++) = (uint8_t)(((l) >> 8) & 0xff),                                \
+     *((c)++) = (uint8_t)(((l) >> 16) & 0xff),                               \
+     *((c)++) = (uint8_t)(((l) >> 24) & 0xff))
 #endif
 
-extern void Gost2814789_encrypt(const unsigned char *in, unsigned char *out,
+extern void Gost2814789_encrypt(const uint8_t *in, uint8_t *out,
                                 const GOST2814789_KEY *key);
-extern void Gost2814789_decrypt(const unsigned char *in, unsigned char *out,
+extern void Gost2814789_decrypt(const uint8_t *in, uint8_t *out,
                                 const GOST2814789_KEY *key);
 extern void Gost2814789_cryptopro_key_mesh(GOST2814789_KEY *key);
 
 /* GOST 28147-89 key wrapping */
-extern int gost_key_unwrap_crypto_pro(int nid, const unsigned char *keyExchangeKey,
-                                      const unsigned char *wrappedKey,
-                                      unsigned char *sessionKey);
-extern int gost_key_wrap_crypto_pro(int nid, const unsigned char *keyExchangeKey,
-                                    const unsigned char *ukm,
-                                    const unsigned char *sessionKey,
-                                    unsigned char *wrappedKey);
+extern int gost_key_unwrap_crypto_pro(int nid, const uint8_t *keyExchangeKey,
+                                      const uint8_t *wrappedKey,
+                                      uint8_t *sessionKey);
+extern int gost_key_wrap_crypto_pro(int nid, const uint8_t *keyExchangeKey,
+                                    const uint8_t *ukm,
+                                    const uint8_t *sessionKey,
+                                    uint8_t *wrappedKey);
 /* Pkey part */
 extern int gost2001_compute_public(GOST_KEY *ec);
 extern ECDSA_SIG *gost2001_do_sign(BIGNUM *md, GOST_KEY *eckey);
@@ -102,8 +102,8 @@ extern int gost2001_do_verify(BIGNUM *md, ECDSA_SIG *sig, GOST_KEY *ec);
 extern int gost2001_keygen(GOST_KEY *ec);
 extern int VKO_compute_key(BIGNUM *X, BIGNUM *Y, const GOST_KEY *pkey,
                            GOST_KEY *priv_key, const BIGNUM *ukm);
-extern BIGNUM *GOST_le2bn(const unsigned char *buf, size_t len, BIGNUM *bn);
-extern int GOST_bn2le(BIGNUM *bn, unsigned char *buf, int len);
+extern BIGNUM *GOST_le2bn(const uint8_t *buf, size_t len, BIGNUM *bn);
+extern int GOST_bn2le(BIGNUM *bn, uint8_t *buf, int len);
 
 /* GOST R 34.10 parameters */
 extern int GostR3410_get_md_digest(int nid);

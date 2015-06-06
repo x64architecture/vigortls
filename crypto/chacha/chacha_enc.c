@@ -24,24 +24,24 @@
 
 #include "chacha.c"
 
-void ChaCha_set_key(ChaCha_ctx *ctx, const unsigned char *key,
+void ChaCha_set_key(ChaCha_ctx *ctx, const uint8_t *key,
                     uint32_t keybits)
 {
     chacha_keysetup((chacha_ctx *)ctx, key, keybits);
     ctx->unused = 0;
 }
 
-void ChaCha_set_iv(ChaCha_ctx *ctx, const unsigned char *iv,
-                   const unsigned char *counter)
+void ChaCha_set_iv(ChaCha_ctx *ctx, const uint8_t *iv,
+                   const uint8_t *counter)
 {
     chacha_ivsetup((chacha_ctx *)ctx, iv, counter);
     ctx->unused = 0;
 }
 
-void ChaCha(ChaCha_ctx *ctx, unsigned char *out, const unsigned char *in,
+void ChaCha(ChaCha_ctx *ctx, uint8_t *out, const uint8_t *in,
             size_t inlen)
 {
-    unsigned char *k;
+    uint8_t *k;
     int i, l;
 
     /* Consume remaining keystream, if there is any left. */
@@ -57,8 +57,8 @@ void ChaCha(ChaCha_ctx *ctx, unsigned char *out, const unsigned char *in,
     chacha_encrypt_bytes((chacha_ctx *)ctx, in, out, (uint32_t)inlen);
 }
 
-void CRYPTO_chacha_20(unsigned char *out, const unsigned char *in, size_t inlen,
-                      const unsigned char key[32], const unsigned char nonce[8],
+void CRYPTO_chacha_20(uint8_t *out, const uint8_t *in, size_t inlen,
+                      const uint8_t key[32], const uint8_t nonce[8],
                       size_t counter)
 {
     struct chacha_ctx ctx;

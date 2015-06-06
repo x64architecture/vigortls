@@ -213,27 +213,27 @@ int npn_client = 0;
 int npn_server = 0;
 int npn_server_reject = 0;
 
-static int cb_client_npn(SSL *s, unsigned char **out, unsigned char *outlen,
-                         const unsigned char *in, unsigned int inlen, void *arg)
+static int cb_client_npn(SSL *s, uint8_t **out, uint8_t *outlen,
+                         const uint8_t *in, unsigned int inlen, void *arg)
 {
     /*
      * This callback only returns the protocol string, rather than a length
      * prefixed set. We assume that NEXT_PROTO_STRING is a one element list
      * and remove the first byte to chop off the length prefix.
      */
-    *out = (unsigned char *)NEXT_PROTO_STRING + 1;
+    *out = (uint8_t *)NEXT_PROTO_STRING + 1;
     *outlen = sizeof(NEXT_PROTO_STRING) - 2;
     return (SSL_TLSEXT_ERR_OK);
 }
 
-static int cb_server_npn(SSL *s, const unsigned char **data, unsigned int *len, void *arg)
+static int cb_server_npn(SSL *s, const uint8_t **data, unsigned int *len, void *arg)
 {
-    *data = (const unsigned char *)NEXT_PROTO_STRING;
+    *data = (const uint8_t *)NEXT_PROTO_STRING;
     *len = sizeof(NEXT_PROTO_STRING) - 1;
     return (SSL_TLSEXT_ERR_OK);
 }
 
-static int cb_server_rejects_npn(SSL *s, const unsigned char **data, unsigned int *len,
+static int cb_server_rejects_npn(SSL *s, const uint8_t **data, unsigned int *len,
                                  void *arg)
 {
     return (SSL_TLSEXT_ERR_NOACK);
@@ -241,9 +241,9 @@ static int cb_server_rejects_npn(SSL *s, const unsigned char **data, unsigned in
 
 static int verify_npn(SSL *client, SSL *server)
 {
-    const unsigned char *client_s;
+    const uint8_t *client_s;
     unsigned int client_len;
-    const unsigned char *server_s;
+    const uint8_t *server_s;
     unsigned int server_len;
 
     SSL_get0_next_proto_negotiated(client, &client_s, &client_len);
@@ -285,7 +285,7 @@ static int verify_npn(SSL *client, SSL *server)
 static const char *alpn_client;
 static const char *alpn_server;
 static const char *alpn_expected;
-static unsigned char *alpn_selected;
+static uint8_t *alpn_selected;
 
 /*
  * next_protos_parse parses a comma separated list of strings into a string
@@ -296,10 +296,10 @@ static unsigned char *alpn_selected;
  *
  *   returns: a malloced buffer or NULL on failure.
  */
-static unsigned char *next_protos_parse(unsigned short *outlen, const char *in)
+static uint8_t *next_protos_parse(unsigned short *outlen, const char *in)
 {
     size_t i, len, start = 0;
-    unsigned char *out;
+    uint8_t *out;
 
     len = strlen(in);
     if (len >= 65535)
@@ -323,10 +323,10 @@ static unsigned char *next_protos_parse(unsigned short *outlen, const char *in)
     return (out);
 }
 
-static int cb_server_alpn(SSL *s, const unsigned char **out, unsigned char *outlen,
-                          const unsigned char *in, unsigned int inlen, void *arg)
+static int cb_server_alpn(SSL *s, const uint8_t **out, uint8_t *outlen,
+                          const uint8_t *in, unsigned int inlen, void *arg)
 {
-    unsigned char *protos;
+    uint8_t *protos;
     unsigned short protos_len;
 
     if ((protos = next_protos_parse(&protos_len, alpn_server)) == NULL) {
@@ -336,7 +336,7 @@ static int cb_server_alpn(SSL *s, const unsigned char **out, unsigned char *outl
         abort();
     }
 
-    if (SSL_select_next_proto((unsigned char **)out, outlen, protos,
+    if (SSL_select_next_proto((uint8_t **)out, outlen, protos,
                               protos_len, in, inlen) != OPENSSL_NPN_NEGOTIATED)
     {
         free(protos);
@@ -360,7 +360,7 @@ static int cb_server_alpn(SSL *s, const unsigned char **out, unsigned char *outl
 
 static int verify_alpn(SSL *client, SSL *server)
 {
-    const unsigned char *client_proto, *server_proto;
+    const uint8_t *client_proto, *server_proto;
     unsigned int client_proto_len = 0, server_proto_len = 0;
 
     SSL_get0_alpn_selected(client, &client_proto, &client_proto_len);
@@ -882,7 +882,7 @@ int main(int argc, char *argv[])
 
     if (alpn_client != NULL) {
         unsigned short alpn_len;
-        unsigned char *alpn = next_protos_parse(&alpn_len, alpn_client);
+        uint8_t *alpn = next_protos_parse(&alpn_len, alpn_client);
 
         if (alpn == NULL) {
             BIO_printf(bio_err, "Error parsing -alpn_client argument\n");
@@ -2078,7 +2078,7 @@ static void free_tmp_rsa(void)
  */
 static DH *get_dh512()
 {
-    static unsigned char dh512_p[] = {
+    static uint8_t dh512_p[] = {
         0xCB, 0xC8, 0xE1, 0x86, 0xD0, 0x1F, 0x94, 0x17, 0xA6, 0x99, 0xF0, 0xC6,
         0x1F, 0x0D, 0xAC, 0xB6, 0x25, 0x3E, 0x06, 0x39, 0xCA, 0x72, 0x04, 0xB0,
         0x6E, 0xDA, 0xC0, 0x61, 0xE6, 0x7A, 0x77, 0x25, 0xE8, 0x3B, 0xB9, 0x5F,
@@ -2086,7 +2086,7 @@ static DH *get_dh512()
         0xE1, 0xF1, 0x13, 0x4F, 0x59, 0x1A, 0xD2, 0x57, 0xC0, 0x26, 0x21, 0x33,
         0x02, 0xC5, 0xAE, 0x23,
     };
-    static unsigned char dh512_g[] = {
+    static uint8_t dh512_g[] = {
         0x02,
     };
     DH *dh;
@@ -2104,7 +2104,7 @@ static DH *get_dh512()
 
 static DH *get_dh1024()
 {
-    static unsigned char dh1024_p[] = {
+    static uint8_t dh1024_p[] = {
         0xF8, 0x81, 0x89, 0x7D, 0x14, 0x24, 0xC5, 0xD1, 0xE6, 0xF7, 0xBF, 0x3A,
         0xE4, 0x90, 0xF4, 0xFC, 0x73, 0xFB, 0x34, 0xB5, 0xFA, 0x4C, 0x56, 0xA2,
         0xEA, 0xA7, 0xE9, 0xC0, 0xC0, 0xCE, 0x89, 0xE1, 0xFA, 0x63, 0x3F, 0xB0,
@@ -2117,7 +2117,7 @@ static DH *get_dh1024()
         0x71, 0x33, 0x09, 0x15, 0xFD, 0xDD, 0x23, 0x87, 0x07, 0x5E, 0x89, 0xAB,
         0x6B, 0x7C, 0x5F, 0xEC, 0xA6, 0x24, 0xDC, 0x53,
     };
-    static unsigned char dh1024_g[] = {
+    static uint8_t dh1024_g[] = {
         0x02,
     };
     DH *dh;
@@ -2135,7 +2135,7 @@ static DH *get_dh1024()
 
 static DH *get_dh1024dsa()
 {
-    static unsigned char dh1024_p[] = {
+    static uint8_t dh1024_p[] = {
         0xC8, 0x00, 0xF7, 0x08, 0x07, 0x89, 0x4D, 0x90, 0x53, 0xF3, 0xD5, 0x00,
         0x21, 0x1B, 0xF7, 0x31, 0xA6, 0xA2, 0xDA, 0x23, 0x9A, 0xC7, 0x87, 0x19,
         0x3B, 0x47, 0xB6, 0x8C, 0x04, 0x6F, 0xFF, 0xC6, 0x9B, 0xB8, 0x65, 0xD2,
@@ -2148,7 +2148,7 @@ static DH *get_dh1024dsa()
         0x61, 0xCF, 0x3F, 0xD6, 0x13, 0xF1, 0x5F, 0xBC, 0xCF, 0xBC, 0x26, 0x9E,
         0xBC, 0x0B, 0xBD, 0xAB, 0x5D, 0xC9, 0x54, 0x39,
     };
-    static unsigned char dh1024_g[] = {
+    static uint8_t dh1024_g[] = {
         0x3B, 0x40, 0x86, 0xE7, 0xF3, 0x6C, 0xDE, 0x67, 0x1C, 0xCC, 0x80, 0x05,
         0x5A, 0xDF, 0xFE, 0xBD, 0x20, 0x27, 0x74, 0x6C, 0x24, 0xC9, 0x03, 0xF3,
         0xE1, 0x8D, 0xC3, 0x7D, 0x98, 0x27, 0x40, 0x08, 0xB8, 0x8C, 0x6A, 0xE9,

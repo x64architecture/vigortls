@@ -64,18 +64,18 @@
 #include <openssl/rand.h>
 #include <openssl/rsa.h>
 
-int RSA_padding_add_SSLv23(unsigned char *to, int tlen,
-                           const unsigned char *from, int flen)
+int RSA_padding_add_SSLv23(uint8_t *to, int tlen,
+                           const uint8_t *from, int flen)
 {
     int i, j;
-    unsigned char *p;
+    uint8_t *p;
 
     if (flen > (tlen - 11)) {
         RSAerr(RSA_F_RSA_PADDING_ADD_SSLV23, RSA_R_DATA_TOO_LARGE_FOR_KEY_SIZE);
         return (0);
     }
 
-    p = (unsigned char *)to;
+    p = (uint8_t *)to;
 
     *(p++) = 0;
     *(p++) = 2; /* Public Key BT (Block Type) */
@@ -102,11 +102,11 @@ int RSA_padding_add_SSLv23(unsigned char *to, int tlen,
     return (1);
 }
 
-int RSA_padding_check_SSLv23(unsigned char *to, int tlen,
-                             const unsigned char *from, int flen, int num)
+int RSA_padding_check_SSLv23(uint8_t *to, int tlen,
+                             const uint8_t *from, int flen, int num)
 {
     int i, j, k;
-    const unsigned char *p;
+    const uint8_t *p;
 
     p = from;
     if (flen < 10) {

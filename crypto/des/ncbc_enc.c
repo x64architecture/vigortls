@@ -64,10 +64,10 @@
 #include "des_locl.h"
 
 #ifdef CBC_ENC_C__DONT_UPDATE_IV
-void DES_cbc_encrypt(const unsigned char *in, unsigned char *out, long length,
+void DES_cbc_encrypt(const uint8_t *in, uint8_t *out, long length,
                      DES_key_schedule *_schedule, DES_cblock *ivec, int enc)
 #else
-void DES_ncbc_encrypt(const unsigned char *in, unsigned char *out, long length,
+void DES_ncbc_encrypt(const uint8_t *in, uint8_t *out, long length,
                       DES_key_schedule *_schedule, DES_cblock *ivec, int enc)
 #endif
 {
@@ -75,7 +75,7 @@ void DES_ncbc_encrypt(const unsigned char *in, unsigned char *out, long length,
     uint32_t tout0, tout1, xor0, xor1;
     register long l = length;
     uint32_t tin[2];
-    unsigned char *iv;
+    uint8_t *iv;
 
     iv = &(*ivec)[0];
 

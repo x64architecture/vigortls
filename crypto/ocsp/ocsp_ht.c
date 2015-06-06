@@ -71,7 +71,7 @@
 
 struct ocsp_req_ctx_st {
     int state;              /* Current I/O state */
-    unsigned char *iobuf;   /* Line buffer */
+    uint8_t *iobuf;   /* Line buffer */
     int iobuflen;           /* Line buffer length */
     BIO *io;                /* BIO to perform I/O with */
     BIO *mem;               /* Memory BIO response is built into */
@@ -192,7 +192,7 @@ static int parse_http_line1(char *line)
     char *p, *q, *r;
     /* Skip to first white space (passed protocol info) */
 
-    for (p = line; *p && !isspace((unsigned char)*p); p++)
+    for (p = line; *p && !isspace((uint8_t)*p); p++)
         continue;
     if (!*p) {
         OCSPerr(OCSP_F_PARSE_HTTP_LINE1,
@@ -201,7 +201,7 @@ static int parse_http_line1(char *line)
     }
 
     /* Skip past white space to start of response code */
-    while (*p && isspace((unsigned char)*p))
+    while (*p && isspace((uint8_t)*p))
         p++;
 
     if (!*p) {
@@ -211,7 +211,7 @@ static int parse_http_line1(char *line)
     }
 
     /* Find end of response code: first whitespace after start of code */
-    for (q = p; *q && !isspace((unsigned char)*q); q++)
+    for (q = p; *q && !isspace((uint8_t)*q); q++)
         continue;
 
     if (!*q) {
@@ -230,7 +230,7 @@ static int parse_http_line1(char *line)
         return 0;
 
     /* Skip over any leading white space in message */
-    while (*q && isspace((unsigned char)*q))
+    while (*q && isspace((uint8_t)*q))
         q++;
 
     if (*q) {
@@ -238,7 +238,7 @@ static int parse_http_line1(char *line)
          * CRLF) */
 
         /* We know q has a non white space character so this is OK */
-        for (r = q + strlen(q) - 1; isspace((unsigned char)*r); r--)
+        for (r = q + strlen(q) - 1; isspace((uint8_t)*r); r--)
             *r = 0;
     }
     if (retcode != 200) {
@@ -256,7 +256,7 @@ static int parse_http_line1(char *line)
 int OCSP_sendreq_nbio(OCSP_RESPONSE **presp, OCSP_REQ_CTX *rctx)
 {
     int i, n;
-    const unsigned char *p;
+    const uint8_t *p;
 next_io:
     if (!(rctx->state & OHS_NOREAD)) {
         n = BIO_read(rctx->io, rctx->iobuf, rctx->iobuflen);

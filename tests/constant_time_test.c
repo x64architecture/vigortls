@@ -45,14 +45,15 @@
 
 #include <limits.h>
 #include <stdio.h>
+#include <stdint.h>
 #include <stdlib.h>
 
 #include <constant_time_locl.h>
 
 static const unsigned int CONSTTIME_TRUE = (unsigned)(~0);
 static const unsigned int CONSTTIME_FALSE = 0;
-static const unsigned char CONSTTIME_TRUE_8 = 0xff;
-static const unsigned char CONSTTIME_FALSE_8 = 0;
+static const uint8_t CONSTTIME_TRUE_8 = 0xff;
+static const uint8_t CONSTTIME_FALSE_8 = 0;
 
 static int test_binary_op(unsigned int (*op)(unsigned int a, unsigned int b),
                           const char *op_name, unsigned int a, unsigned int b, int is_true)
@@ -73,10 +74,10 @@ static int test_binary_op(unsigned int (*op)(unsigned int a, unsigned int b),
     return 0;
 }
 
-static int test_binary_op_8(unsigned char (*op)(unsigned int a, unsigned int b),
+static int test_binary_op_8(uint8_t (*op)(unsigned int a, unsigned int b),
                             const char *op_name, unsigned int a, unsigned int b, int is_true)
 {
-    unsigned char c = op(a, b);
+    uint8_t c = op(a, b);
     if (is_true && c != CONSTTIME_TRUE_8) {
         fprintf(stderr, "Test failed for %s(%du, %du): expected %u "
                         "(TRUE), got %u\n",
@@ -112,7 +113,7 @@ static int test_is_zero(unsigned int a)
 
 static int test_is_zero_8(unsigned int a)
 {
-    unsigned char c = constant_time_is_zero_8(a);
+    uint8_t c = constant_time_is_zero_8(a);
     if (a == 0 && c != CONSTTIME_TRUE_8) {
         fprintf(stderr, "Test failed for constant_time_is_zero(%du): "
                         "expected %u (TRUE), got %u\n",
@@ -147,9 +148,9 @@ static int test_select(unsigned int a, unsigned int b)
     return 0;
 }
 
-static int test_select_8(unsigned char a, unsigned char b)
+static int test_select_8(uint8_t a, uint8_t b)
 {
-    unsigned char selected = constant_time_select_8(CONSTTIME_TRUE_8, a, b);
+    uint8_t selected = constant_time_select_8(CONSTTIME_TRUE_8, a, b);
     if (selected != a) {
         fprintf(stderr, "Test failed for constant_time_select(%u, %u,"
                         "%u): expected %u(first value), got %u\n",
@@ -204,7 +205,7 @@ static int test_eq_int(int a, int b)
 
 static int test_eq_int_8(int a, int b)
 {
-    unsigned char equal = constant_time_eq_int_8(a, b);
+    uint8_t equal = constant_time_eq_int_8(a, b);
     if (a == b && equal != CONSTTIME_TRUE_8) {
         fprintf(stderr, "Test failed for constant_time_eq_int_8(%d, %d): "
                         "expected %u(TRUE), got %u\n",
@@ -223,7 +224,7 @@ static unsigned int test_values[] = { 0, 1, 1024, 12345, 32000, UINT_MAX / 2 - 1
                                       UINT_MAX / 2, UINT_MAX / 2 + 1, UINT_MAX - 1,
                                       UINT_MAX };
 
-static unsigned char test_values_8[] = { 0, 1, 2, 20, 32, 127, 128, 129, 255 };
+static uint8_t test_values_8[] = { 0, 1, 2, 20, 32, 127, 128, 129, 255 };
 
 static int signed_test_values[] = { 0, 1, -1, 1024, -1024, 12345, -12345,
                                     32000, -32000, INT_MAX, INT_MIN, INT_MAX - 1,
@@ -233,7 +234,7 @@ int main(int argc, char *argv[])
 {
     unsigned int a, b, i, j;
     int c, d;
-    unsigned char e, f;
+    uint8_t e, f;
     int num_failed = 0, num_all = 0;
     fprintf(stdout, "Testing constant time operations...\n");
 

@@ -69,12 +69,12 @@ ASN1_SEQUENCE(NETSCAPE_SPKAC) = {
     ASN1_SIMPLE(NETSCAPE_SPKAC, challenge, ASN1_IA5STRING)
 } ASN1_SEQUENCE_END(NETSCAPE_SPKAC)
 
-NETSCAPE_SPKAC *d2i_NETSCAPE_SPKAC(NETSCAPE_SPKAC **a, const unsigned char **in, long len)
+NETSCAPE_SPKAC *d2i_NETSCAPE_SPKAC(NETSCAPE_SPKAC **a, const uint8_t **in, long len)
 {
     return (NETSCAPE_SPKAC *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, &NETSCAPE_SPKAC_it);
 }
 
-int i2d_NETSCAPE_SPKAC(NETSCAPE_SPKAC *a, unsigned char **out)
+int i2d_NETSCAPE_SPKAC(NETSCAPE_SPKAC *a, uint8_t **out)
 {
     return ASN1_item_i2d((ASN1_VALUE *)a, out, &NETSCAPE_SPKAC_it);
 }
@@ -95,12 +95,12 @@ ASN1_SEQUENCE(NETSCAPE_SPKI) = {
     ASN1_SIMPLE(NETSCAPE_SPKI, signature, ASN1_BIT_STRING)
 } ASN1_SEQUENCE_END(NETSCAPE_SPKI)
 
-NETSCAPE_SPKI *d2i_NETSCAPE_SPKI(NETSCAPE_SPKI **a, const unsigned char **in, long len)
+NETSCAPE_SPKI *d2i_NETSCAPE_SPKI(NETSCAPE_SPKI **a, const uint8_t **in, long len)
 {
     return (NETSCAPE_SPKI *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, &NETSCAPE_SPKI_it);
 }
 
-int i2d_NETSCAPE_SPKI(NETSCAPE_SPKI *a, unsigned char **out)
+int i2d_NETSCAPE_SPKI(NETSCAPE_SPKI *a, uint8_t **out)
 {
     return ASN1_item_i2d((ASN1_VALUE *)a, out, &NETSCAPE_SPKI_it);
 }

@@ -68,7 +68,7 @@
     for (i = 0; i <= inl; i += bl)
 
 #define BLOCK_CIPHER_func_ecb(cname, cprefix, kstruct, ksched)                                                                \
-    static int cname##_ecb_cipher(EVP_CIPHER_CTX *ctx, unsigned char *out, const unsigned char *in, size_t inl)               \
+    static int cname##_ecb_cipher(EVP_CIPHER_CTX *ctx, uint8_t *out, const uint8_t *in, size_t inl)               \
     {                                                                                                                         \
         BLOCK_CIPHER_ecb_loop() cprefix##_ecb_encrypt(in + i, out + i, &((kstruct *)ctx->cipher_data)->ksched, ctx->encrypt); \
         return 1;                                                                                                             \
@@ -77,7 +77,7 @@
 #define EVP_MAXCHUNK ((size_t)1 << (sizeof(long) * 8 - 2))
 
 #define BLOCK_CIPHER_func_ofb(cname, cprefix, cbits, kstruct, ksched)                                                                \
-    static int cname##_ofb_cipher(EVP_CIPHER_CTX *ctx, unsigned char *out, const unsigned char *in, size_t inl)                      \
+    static int cname##_ofb_cipher(EVP_CIPHER_CTX *ctx, uint8_t *out, const uint8_t *in, size_t inl)                      \
     {                                                                                                                                \
         while (inl >= EVP_MAXCHUNK) {                                                                                                \
             cprefix##_ofb##cbits##_encrypt(in, out, (long)EVP_MAXCHUNK, &((kstruct *)ctx->cipher_data)->ksched, ctx->iv, &ctx->num); \
@@ -91,7 +91,7 @@
     }
 
 #define BLOCK_CIPHER_func_cbc(cname, cprefix, kstruct, ksched)                                                                 \
-    static int cname##_cbc_cipher(EVP_CIPHER_CTX *ctx, unsigned char *out, const unsigned char *in, size_t inl)                \
+    static int cname##_cbc_cipher(EVP_CIPHER_CTX *ctx, uint8_t *out, const uint8_t *in, size_t inl)                \
     {                                                                                                                          \
         while (inl >= EVP_MAXCHUNK) {                                                                                          \
             cprefix##_cbc_encrypt(in, out, (long)EVP_MAXCHUNK, &((kstruct *)ctx->cipher_data)->ksched, ctx->iv, ctx->encrypt); \
@@ -105,7 +105,7 @@
     }
 
 #define BLOCK_CIPHER_func_cfb(cname, cprefix, cbits, kstruct, ksched)                                                                                                                                             \
-    static int cname##_cfb##cbits##_cipher(EVP_CIPHER_CTX *ctx, unsigned char *out, const unsigned char *in, size_t inl)                                                                                          \
+    static int cname##_cfb##cbits##_cipher(EVP_CIPHER_CTX *ctx, uint8_t *out, const uint8_t *in, size_t inl)                                                                                          \
     {                                                                                                                                                                                                             \
         size_t chunk = EVP_MAXCHUNK;                                                                                                                                                                              \
         if (cbits == 1)                                                                                                                                                                                           \
@@ -246,22 +246,22 @@ int PKCS5_v2_PBKDF2_keyivgen(EVP_CIPHER_CTX *ctx, const char *pass, int passlen,
 
 /* EVP_AEAD represents a specific AEAD algorithm. */
 struct evp_aead_st {
-    unsigned char key_len;
-    unsigned char nonce_len;
-    unsigned char overhead;
-    unsigned char max_tag_len;
+    uint8_t key_len;
+    uint8_t nonce_len;
+    uint8_t overhead;
+    uint8_t max_tag_len;
 
-    int (*init)(struct evp_aead_ctx_st *, const unsigned char *key,
+    int (*init)(struct evp_aead_ctx_st *, const uint8_t *key,
                 size_t key_len, size_t tag_len);
     void (*cleanup)(struct evp_aead_ctx_st *);
 
-    int (*seal)(const struct evp_aead_ctx_st *ctx, unsigned char *out,
-                size_t *out_len, size_t max_out_len, const unsigned char *nonce,
-                size_t nonce_len, const unsigned char *in, size_t in_len,
-                const unsigned char *ad, size_t ad_len);
+    int (*seal)(const struct evp_aead_ctx_st *ctx, uint8_t *out,
+                size_t *out_len, size_t max_out_len, const uint8_t *nonce,
+                size_t nonce_len, const uint8_t *in, size_t in_len,
+                const uint8_t *ad, size_t ad_len);
 
-    int (*open)(const struct evp_aead_ctx_st *ctx, unsigned char *out,
-                size_t *out_len, size_t max_out_len, const unsigned char *nonce,
-                size_t nonce_len, const unsigned char *in, size_t in_len,
-                const unsigned char *ad, size_t ad_len);
+    int (*open)(const struct evp_aead_ctx_st *ctx, uint8_t *out,
+                size_t *out_len, size_t max_out_len, const uint8_t *nonce,
+                size_t nonce_len, const uint8_t *in, size_t in_len,
+                const uint8_t *ad, size_t ad_len);
 };

@@ -222,7 +222,7 @@ int EVP_DigestUpdate(EVP_MD_CTX *ctx, const void *data, size_t count)
 }
 
 /* The caller can assume that this removes any secret data from the context */
-int EVP_DigestFinal(EVP_MD_CTX *ctx, unsigned char *md, unsigned int *size)
+int EVP_DigestFinal(EVP_MD_CTX *ctx, uint8_t *md, unsigned int *size)
 {
     int ret;
     ret = EVP_DigestFinal_ex(ctx, md, size);
@@ -231,7 +231,7 @@ int EVP_DigestFinal(EVP_MD_CTX *ctx, unsigned char *md, unsigned int *size)
 }
 
 /* The caller can assume that this removes any secret data from the context */
-int EVP_DigestFinal_ex(EVP_MD_CTX *ctx, unsigned char *md, unsigned int *size)
+int EVP_DigestFinal_ex(EVP_MD_CTX *ctx, uint8_t *md, unsigned int *size)
 {
     int ret;
 
@@ -255,7 +255,7 @@ int EVP_MD_CTX_copy(EVP_MD_CTX *out, const EVP_MD_CTX *in)
 
 int EVP_MD_CTX_copy_ex(EVP_MD_CTX *out, const EVP_MD_CTX *in)
 {
-    unsigned char *tmp_buf;
+    uint8_t *tmp_buf;
     if ((in == NULL) || (in->digest == NULL)) {
         EVPerr(EVP_F_EVP_MD_CTX_COPY_EX, EVP_R_INPUT_NOT_INITIALIZED);
         return 0;
@@ -306,7 +306,7 @@ int EVP_MD_CTX_copy_ex(EVP_MD_CTX *out, const EVP_MD_CTX *in)
 }
 
 int EVP_Digest(const void *data, size_t count,
-               unsigned char *md, unsigned int *size, const EVP_MD *type, ENGINE *impl)
+               uint8_t *md, unsigned int *size, const EVP_MD *type, ENGINE *impl)
 {
     EVP_MD_CTX ctx;
     int ret;

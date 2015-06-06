@@ -124,7 +124,7 @@ int CMS_set_detached(CMS_ContentInfo *cms, int detached);
 DECLARE_PEM_rw_const(CMS, CMS_ContentInfo)
 #endif
 
-    int CMS_stream(unsigned char ***boundary, CMS_ContentInfo *cms);
+    int CMS_stream(uint8_t ***boundary, CMS_ContentInfo *cms);
 CMS_ContentInfo *d2i_CMS_bio(BIO *bp, CMS_ContentInfo **cms);
 int i2d_CMS_bio(BIO *bp, CMS_ContentInfo *cms);
 
@@ -153,15 +153,15 @@ CMS_ContentInfo *CMS_digest_create(BIO *in, const EVP_MD *md,
                                    unsigned int flags);
 
 int CMS_EncryptedData_decrypt(CMS_ContentInfo *cms,
-                              const unsigned char *key, size_t keylen,
+                              const uint8_t *key, size_t keylen,
                               BIO *dcont, BIO *out, unsigned int flags);
 
 CMS_ContentInfo *CMS_EncryptedData_encrypt(BIO *in, const EVP_CIPHER *cipher,
-                                           const unsigned char *key, size_t keylen,
+                                           const uint8_t *key, size_t keylen,
                                            unsigned int flags);
 
 int CMS_EncryptedData_set1_key(CMS_ContentInfo *cms, const EVP_CIPHER *ciph,
-                               const unsigned char *key, size_t keylen);
+                               const uint8_t *key, size_t keylen);
 
 int CMS_verify(CMS_ContentInfo *cms, STACK_OF(X509) * certs,
                X509_STORE * store, BIO * dcont, BIO * out, unsigned int flags);
@@ -181,10 +181,10 @@ int CMS_decrypt(CMS_ContentInfo *cms, EVP_PKEY *pkey, X509 *cert,
 
 int CMS_decrypt_set1_pkey(CMS_ContentInfo *cms, EVP_PKEY *pk, X509 *cert);
 int CMS_decrypt_set1_key(CMS_ContentInfo *cms,
-                         unsigned char *key, size_t keylen,
-                         unsigned char *id, size_t idlen);
+                         uint8_t *key, size_t keylen,
+                         uint8_t *id, size_t idlen);
 int CMS_decrypt_set1_password(CMS_ContentInfo *cms,
-                              unsigned char *pass, ssize_t passlen);
+                              uint8_t *pass, ssize_t passlen);
 
 STACK_OF(CMS_RecipientInfo) * CMS_get0_RecipientInfos(CMS_ContentInfo *cms);
 int CMS_RecipientInfo_type(CMS_RecipientInfo *ri);
@@ -201,8 +201,8 @@ int CMS_RecipientInfo_ktri_get0_signer_id(CMS_RecipientInfo *ri,
                                           X509_NAME **issuer, ASN1_INTEGER **sno);
 
 CMS_RecipientInfo *CMS_add0_recipient_key(CMS_ContentInfo *cms, int nid,
-                                          unsigned char *key, size_t keylen,
-                                          unsigned char *id, size_t idlen,
+                                          uint8_t *key, size_t keylen,
+                                          uint8_t *id, size_t idlen,
                                           ASN1_GENERALIZEDTIME *date,
                                           ASN1_OBJECT *otherTypeId,
                                           ASN1_TYPE *otherType);
@@ -215,18 +215,18 @@ int CMS_RecipientInfo_kekri_get0_id(CMS_RecipientInfo *ri,
                                     ASN1_TYPE **pothertype);
 
 int CMS_RecipientInfo_set0_key(CMS_RecipientInfo *ri,
-                               unsigned char *key, size_t keylen);
+                               uint8_t *key, size_t keylen);
 
 int CMS_RecipientInfo_kekri_id_cmp(CMS_RecipientInfo *ri,
-                                   const unsigned char *id, size_t idlen);
+                                   const uint8_t *id, size_t idlen);
 
 int CMS_RecipientInfo_set0_password(CMS_RecipientInfo *ri,
-                                    unsigned char *pass,
+                                    uint8_t *pass,
                                     ssize_t passlen);
 
 CMS_RecipientInfo *CMS_add0_recipient_password(CMS_ContentInfo *cms,
                                                int iter, int wrap_nid, int pbe_nid,
-                                               unsigned char *pass,
+                                               uint8_t *pass,
                                                ssize_t passlen,
                                                const EVP_CIPHER *kekciph);
 
@@ -316,7 +316,7 @@ void *CMS_unsigned_get0_data_by_OBJ(CMS_SignerInfo *si, ASN1_OBJECT *oid,
 #ifdef HEADER_X509V3_H
 
 int CMS_get1_ReceiptRequest(CMS_SignerInfo *si, CMS_ReceiptRequest **prr);
-CMS_ReceiptRequest *CMS_ReceiptRequest_create0(unsigned char *id, int idlen,
+CMS_ReceiptRequest *CMS_ReceiptRequest_create0(uint8_t *id, int idlen,
                                                int allorfirst,
                                                STACK_OF(GENERAL_NAMES) * receiptList,
                                                STACK_OF(GENERAL_NAMES) * receiptsTo);

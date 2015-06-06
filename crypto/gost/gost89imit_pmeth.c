@@ -64,7 +64,7 @@
 
 struct gost_mac_pmeth_data {
     EVP_MD *md;
-    unsigned char key[32];
+    uint8_t key[32];
     unsigned key_set : 1;
 };
 
@@ -103,7 +103,7 @@ static int pkey_gost_mac_copy(EVP_PKEY_CTX *dst, EVP_PKEY_CTX *src)
 static int pkey_gost_mac_keygen(EVP_PKEY_CTX *ctx, EVP_PKEY *pkey)
 {
     struct gost_mac_pmeth_data *data = EVP_PKEY_CTX_get_data(ctx);
-    unsigned char *keydata;
+    uint8_t *keydata;
 
     if (!data->key_set) {
         GOSTerr(GOST_F_PKEY_GOST_MAC_KEYGEN, GOST_R_MAC_KEY_NOT_SET);
@@ -179,7 +179,7 @@ static int pkey_gost_mac_ctrl_str(EVP_PKEY_CTX *ctx, const char *type,
         return pkey_gost_mac_ctrl(ctx, EVP_PKEY_CTRL_SET_MAC_KEY, strlen(value), p);
     }
     if (strcmp(type, "hexkey") == 0) {
-        unsigned char *key;
+        uint8_t *key;
         int r;
         long keylen;
         key = string_to_hex(value, &keylen);
@@ -197,7 +197,7 @@ static int pkey_gost_mac_signctx_init(EVP_PKEY_CTX *ctx, EVP_MD_CTX *mctx)
     return 1;
 }
 
-static int pkey_gost_mac_signctx(EVP_PKEY_CTX *ctx, unsigned char *sig,
+static int pkey_gost_mac_signctx(EVP_PKEY_CTX *ctx, uint8_t *sig,
                                  size_t *siglen, EVP_MD_CTX *mctx)
 {
     unsigned int tmpsiglen = *siglen; /* for platforms where sizeof(int)!=sizeof(size_t)*/

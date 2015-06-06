@@ -207,14 +207,14 @@ static int ssl_servername_cb(SSL *s, int *ad, void *arg)
 
 /* This the context that we pass to next_proto_cb */
 typedef struct tlsextnextprotoctx_st {
-    unsigned char *data;
+    uint8_t *data;
     unsigned short len;
     int status;
 } tlsextnextprotoctx;
 
 static tlsextnextprotoctx next_proto;
 
-static int next_proto_cb(SSL *s, unsigned char **out, unsigned char *outlen, const unsigned char *in, unsigned int inlen, void *arg)
+static int next_proto_cb(SSL *s, uint8_t **out, uint8_t *outlen, const uint8_t *in, unsigned int inlen, void *arg)
 {
     tlsextnextprotoctx *ctx = arg;
 
@@ -711,7 +711,7 @@ int s_client_main(int argc, char **argv)
 
     if (alpn_in) {
         unsigned short alpn_len;
-        unsigned char *alpn = next_protos_parse(&alpn_len, alpn_in);
+        uint8_t *alpn = next_protos_parse(&alpn_len, alpn_in);
 
         if (alpn == NULL) {
             BIO_printf(bio_err, "Error parsing -alpn argument\n");
@@ -1270,7 +1270,7 @@ static void print_stuff(BIO *bio, SSL *s, int full)
     const SSL_CIPHER *c;
     X509_NAME *xn;
     int j, i;
-    unsigned char *exportedkeymat;
+    uint8_t *exportedkeymat;
 
     if (full) {
         int got_a_chain = 0;
@@ -1365,7 +1365,7 @@ static void print_stuff(BIO *bio, SSL *s, int full)
                SSL_get_secure_renegotiation_support(s) ? "" : " NOT");
 
     {
-        const unsigned char *proto;
+        const uint8_t *proto;
         unsigned int proto_len;
         SSL_get0_alpn_selected(s, &proto, &proto_len);
         if (proto_len > 0) {
@@ -1408,7 +1408,7 @@ static void print_stuff(BIO *bio, SSL *s, int full)
 
 static int ocsp_resp_cb(SSL *s, void *arg)
 {
-    const unsigned char *p;
+    const uint8_t *p;
     int len;
     OCSP_RESPONSE *rsp;
     len = SSL_get_tlsext_status_ocsp_resp(s, &p);

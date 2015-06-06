@@ -63,10 +63,10 @@
 
 /* Cheap and nasty Unicode stuff */
 
-unsigned char *OPENSSL_asc2uni(const char *asc, int asclen, unsigned char **uni, int *unilen)
+uint8_t *OPENSSL_asc2uni(const char *asc, int asclen, uint8_t **uni, int *unilen)
 {
     int ulen, i;
-    unsigned char *unitmp;
+    uint8_t *unitmp;
     if (asclen == -1)
         asclen = strlen(asc);
     ulen = asclen * 2 + 2;
@@ -86,7 +86,7 @@ unsigned char *OPENSSL_asc2uni(const char *asc, int asclen, unsigned char **uni,
     return unitmp;
 }
 
-char *OPENSSL_uni2asc(unsigned char *uni, int unilen)
+char *OPENSSL_uni2asc(uint8_t *uni, int unilen)
 {
     int asclen, i;
     char *asctmp;

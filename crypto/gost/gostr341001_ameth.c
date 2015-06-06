@@ -75,7 +75,7 @@ static void pkey_free_gost01(EVP_PKEY *key)
 /* Parses GOST algorithm parameters from X509_ALGOR and
  * modifies pkey setting NID and parameters
  */
-static int decode_gost01_algor_params(EVP_PKEY *pkey, const unsigned char **p,
+static int decode_gost01_algor_params(EVP_PKEY *pkey, const uint8_t **p,
                                       int len)
 {
     int param_nid = NID_undef, digest_nid = NID_undef;
@@ -174,8 +174,8 @@ static int pkey_bits_gost01(const EVP_PKEY *pk)
 static int pub_decode_gost01(EVP_PKEY *pk, X509_PUBKEY *pub)
 {
     X509_ALGOR *palg = NULL;
-    const unsigned char *pubkey_buf = NULL;
-    const unsigned char *p;
+    const uint8_t *pubkey_buf = NULL;
+    const uint8_t *p;
     ASN1_OBJECT *palgobj = NULL;
     int pub_len;
     BIGNUM *X, *Y;
@@ -224,7 +224,7 @@ static int pub_encode_gost01(X509_PUBKEY *pub, const EVP_PKEY *pk)
     ASN1_OCTET_STRING *octet = NULL;
     ASN1_STRING *params = NULL;
     void *pval = NULL;
-    unsigned char *buf = NULL, *sptr;
+    uint8_t *buf = NULL, *sptr;
     int key_size, ret = 0;
     const EC_POINT *pub_key;
     BIGNUM *X = NULL, *Y = NULL;
@@ -378,7 +378,7 @@ static int priv_print_gost01(BIO *out, const EVP_PKEY *pkey, int indent,
 
 static int priv_decode_gost01(EVP_PKEY *pk, PKCS8_PRIV_KEY_INFO *p8inf)
 {
-    const unsigned char *pkey_buf = NULL, *p = NULL;
+    const uint8_t *pkey_buf = NULL, *p = NULL;
     int priv_len = 0;
     BIGNUM *pk_num = NULL;
     int ret = 0;
@@ -403,7 +403,7 @@ static int priv_decode_gost01(EVP_PKEY *pk, PKCS8_PRIV_KEY_INFO *p8inf)
     p = pkey_buf;
     if (V_ASN1_OCTET_STRING == *p) {
         /* New format - Little endian octet string */
-        unsigned char rev_buf[32];
+        uint8_t rev_buf[32];
         int i;
         ASN1_OCTET_STRING *s = d2i_ASN1_OCTET_STRING(NULL, &p, priv_len);
         if (s == NULL || s->length != 32) {
@@ -457,7 +457,7 @@ static int priv_encode_gost01(PKCS8_PRIV_KEY_INFO *p8, const EVP_PKEY *pk)
     ASN1_OBJECT *algobj =
         OBJ_nid2obj(GostR3410_get_pk_digest(GOST_KEY_get_digest(pk->pkey.gost)));
     ASN1_STRING *params = encode_gost01_algor_params(pk);
-    unsigned char *priv_buf = NULL;
+    uint8_t *priv_buf = NULL;
     int priv_len;
     ASN1_INTEGER *asn1key = NULL;
 
@@ -475,7 +475,7 @@ static int priv_encode_gost01(PKCS8_PRIV_KEY_INFO *p8, const EVP_PKEY *pk)
                            priv_len);
 }
 
-static int param_encode_gost01(const EVP_PKEY *pkey, unsigned char **pder)
+static int param_encode_gost01(const EVP_PKEY *pkey, uint8_t **pder)
 {
     ASN1_STRING *params = encode_gost01_algor_params(pkey);
     int len;
@@ -488,7 +488,7 @@ static int param_encode_gost01(const EVP_PKEY *pkey, unsigned char **pder)
     return len;
 }
 
-static int param_decode_gost01(EVP_PKEY *pkey, const unsigned char **pder,
+static int param_decode_gost01(EVP_PKEY *pkey, const uint8_t **pder,
                                int derlen)
 {
     ASN1_OBJECT *obj = NULL;

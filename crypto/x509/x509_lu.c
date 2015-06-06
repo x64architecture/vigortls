@@ -142,7 +142,7 @@ int X509_LOOKUP_by_issuer_serial(X509_LOOKUP *ctx, int type, X509_NAME *name,
 }
 
 int X509_LOOKUP_by_fingerprint(X509_LOOKUP *ctx, int type,
-                               unsigned char *bytes, int len, X509_OBJECT *ret)
+                               uint8_t *bytes, int len, X509_OBJECT *ret)
 {
     if ((ctx->method == NULL) || (ctx->method->get_by_fingerprint == NULL))
         return X509_LU_FAIL;

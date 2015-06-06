@@ -292,7 +292,7 @@ static int cms_RecipientInfo_ktri_encrypt(CMS_ContentInfo *cms,
     CMS_KeyTransRecipientInfo *ktri;
     CMS_EncryptedContentInfo *ec;
     EVP_PKEY_CTX *pctx = NULL;
-    unsigned char *ek = NULL;
+    uint8_t *ek = NULL;
     size_t eklen;
 
     int ret = 0;
@@ -352,7 +352,7 @@ static int cms_RecipientInfo_ktri_decrypt(CMS_ContentInfo *cms,
 {
     CMS_KeyTransRecipientInfo *ktri = ri->d.ktri;
     EVP_PKEY_CTX *pctx = NULL;
-    unsigned char *ek = NULL;
+    uint8_t *ek = NULL;
     size_t eklen;
     int ret = 0;
     CMS_EncryptedContentInfo *ec;
@@ -419,7 +419,7 @@ err:
 /* Key Encrypted Key (KEK) RecipientInfo routines */
 
 int CMS_RecipientInfo_kekri_id_cmp(CMS_RecipientInfo *ri,
-                                   const unsigned char *id, size_t idlen)
+                                   const uint8_t *id, size_t idlen)
 {
     ASN1_OCTET_STRING tmp_os;
     CMS_KEKRecipientInfo *kekri;
@@ -430,7 +430,7 @@ int CMS_RecipientInfo_kekri_id_cmp(CMS_RecipientInfo *ri,
     kekri = ri->d.kekri;
     tmp_os.type = V_ASN1_OCTET_STRING;
     tmp_os.flags = 0;
-    tmp_os.data = (unsigned char *)id;
+    tmp_os.data = (uint8_t *)id;
     tmp_os.length = (int)idlen;
     return ASN1_OCTET_STRING_cmp(&tmp_os, kekri->kekid->keyIdentifier);
 }
@@ -455,8 +455,8 @@ static size_t aes_wrap_keylen(int nid)
 }
 
 CMS_RecipientInfo *CMS_add0_recipient_key(CMS_ContentInfo *cms, int nid,
-                                          unsigned char *key, size_t keylen,
-                                          unsigned char *id, size_t idlen,
+                                          uint8_t *key, size_t keylen,
+                                          uint8_t *id, size_t idlen,
                                           ASN1_GENERALIZEDTIME *date,
                                           ASN1_OBJECT *otherTypeId,
                                           ASN1_TYPE *otherType)
@@ -590,7 +590,7 @@ int CMS_RecipientInfo_kekri_get0_id(CMS_RecipientInfo *ri,
 }
 
 int CMS_RecipientInfo_set0_key(CMS_RecipientInfo *ri,
-                               unsigned char *key, size_t keylen)
+                               uint8_t *key, size_t keylen)
 {
     CMS_KEKRecipientInfo *kekri;
     if (ri->type != CMS_RECIPINFO_KEK) {
@@ -612,7 +612,7 @@ static int cms_RecipientInfo_kekri_encrypt(CMS_ContentInfo *cms,
     CMS_EncryptedContentInfo *ec;
     CMS_KEKRecipientInfo *kekri;
     AES_KEY actx;
-    unsigned char *wkey = NULL;
+    uint8_t *wkey = NULL;
     int wkeylen;
     int r = 0;
 
@@ -667,7 +667,7 @@ static int cms_RecipientInfo_kekri_decrypt(CMS_ContentInfo *cms,
     CMS_EncryptedContentInfo *ec;
     CMS_KEKRecipientInfo *kekri;
     AES_KEY actx;
-    unsigned char *ukey = NULL;
+    uint8_t *ukey = NULL;
     int ukeylen;
     int r = 0, wrap_nid;
 

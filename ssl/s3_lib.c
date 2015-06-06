@@ -1914,8 +1914,8 @@ SSL3_ENC_METHOD SSLv3_enc_data = {
     .server_finished_label_len = 4,
     .alert_value = ssl3_alert_code,
     .export_keying_material = (int (*)(
-        SSL *, unsigned char *, size_t, const char *, size_t,
-        const unsigned char *, size_t, int use_context))ssl_undefined_function,
+        SSL *, uint8_t *, size_t, const char *, size_t,
+        const uint8_t *, size_t, int use_context))ssl_undefined_function,
     .enc_flags = 0,
     .hhlen = SSL3_HM_HEADER_LENGTH,
     .set_handshake_header = ssl3_set_handshake_header,
@@ -1971,7 +1971,7 @@ int ssl3_pending(const SSL *s)
 
 void ssl3_set_handshake_header(SSL *s, int htype, unsigned long len)
 {
-    unsigned char *p = (unsigned char *)s->init_buf->data;
+    uint8_t *p = (uint8_t *)s->init_buf->data;
     *(p++) = htype;
     l2n3(len, p);
     s->init_num = (int)len + SSL3_HM_HEADER_LENGTH;
@@ -2024,7 +2024,7 @@ void ssl3_free(SSL *s)
 
 void ssl3_clear(SSL *s)
 {
-    unsigned char *rp, *wp;
+    uint8_t *rp, *wp;
     size_t rlen, wlen;
     int init_extra;
 
@@ -2217,7 +2217,7 @@ long ssl3_ctrl(SSL *s, int cmd, long larg, void *parg)
             break;
 
         case SSL_CTRL_GET_TLSEXT_STATUS_REQ_OCSP_RESP:
-            *(unsigned char **)parg = s->tlsext_ocsp_resp;
+            *(uint8_t **)parg = s->tlsext_ocsp_resp;
             return s->tlsext_ocsp_resplen;
 
         case SSL_CTRL_SET_TLSEXT_STATUS_REQ_OCSP_RESP:
@@ -2285,7 +2285,7 @@ long ssl3_callback_ctrl(SSL *s, int cmd, void (*fp)(void))
             s->cert->ecdh_tmp_cb = (EC_KEY * (*)(SSL *, int, int))fp;
             break;
         case SSL_CTRL_SET_TLSEXT_DEBUG_CB:
-            s->tlsext_debug_cb = (void (*)(SSL *, int, int, unsigned char *, int, void *))fp;
+            s->tlsext_debug_cb = (void (*)(SSL *, int, int, uint8_t *, int, void *))fp;
             break;
         default:
             break;
@@ -2368,7 +2368,7 @@ long ssl3_ctx_ctrl(SSL_CTX *ctx, int cmd, long larg, void *parg)
             break;
         case SSL_CTRL_SET_TLSEXT_TICKET_KEYS:
         case SSL_CTRL_GET_TLSEXT_TICKET_KEYS: {
-            unsigned char *keys = parg;
+            uint8_t *keys = parg;
             if (!keys)
                 return 48;
             if (larg != 48) {
@@ -2447,7 +2447,7 @@ long ssl3_ctx_callback_ctrl(SSL_CTX *ctx, int cmd, void (*fp)(void))
             break;
 
         case SSL_CTRL_SET_TLSEXT_TICKET_KEY_CB:
-            ctx->tlsext_ticket_key_cb = (int (*)(SSL *, unsigned char *, unsigned char *, EVP_CIPHER_CTX *,
+            ctx->tlsext_ticket_key_cb = (int (*)(SSL *, uint8_t *, uint8_t *, EVP_CIPHER_CTX *,
                                                  HMAC_CTX *, int))fp;
             break;
 
@@ -2540,7 +2540,7 @@ SSL_CIPHER *ssl3_choose_cipher(SSL *s, STACK_OF(SSL_CIPHER) * clnt,
     return (ret);
 }
 
-int ssl3_get_req_cert_type(SSL *s, unsigned char *p)
+int ssl3_get_req_cert_type(SSL *s, uint8_t *p)
 {
     int ret = 0;
     unsigned long alg_k;

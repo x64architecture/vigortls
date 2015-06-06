@@ -85,7 +85,7 @@ PKCS12 *PKCS12_create(char *pass, char *name, EVP_PKEY *pkey, X509 *cert,
     STACK_OF(PKCS12_SAFEBAG) *bags = NULL;
     PKCS12_SAFEBAG *bag = NULL;
     int i;
-    unsigned char keyid[EVP_MAX_MD_SIZE];
+    uint8_t keyid[EVP_MAX_MD_SIZE];
     unsigned int keyidlen = 0;
 
     /* Set defaults */
@@ -187,7 +187,7 @@ PKCS12_SAFEBAG *PKCS12_add_cert(STACK_OF(PKCS12_SAFEBAG) * *pbags, X509 * cert)
     PKCS12_SAFEBAG *bag = NULL;
     char *name;
     int namelen = -1;
-    unsigned char *keyid;
+    uint8_t *keyid;
     int keyidlen = -1;
 
     /* Add user certificate */

@@ -50,7 +50,7 @@
 #define ALIGN32
 #endif
 
-#define ALIGNPTR(p, N) ((unsigned char *)p + N - (size_t)p % N)
+#define ALIGNPTR(p, N) ((uint8_t *)p + N - (size_t)p % N)
 #define P256_LIMBS (256 / BN_BITS2)
 
 typedef unsigned short u16;
@@ -555,7 +555,7 @@ static void ecp_nistz256_windowed_mul(const EC_GROUP *group, P256_POINT *r,
 {
     int i, j;
     unsigned int index;
-    unsigned char(*p_str)[33] = NULL;
+    uint8_t(*p_str)[33] = NULL;
     const unsigned int window_size = 5;
     const unsigned int mask = (1 << (window_size + 1)) - 1;
     unsigned int wvalue;
@@ -570,7 +570,7 @@ static void ecp_nistz256_windowed_mul(const EC_GROUP *group, P256_POINT *r,
         ECerr(EC_F_ECP_NISTZ256_WINDOWED_MUL, ERR_R_MALLOC_FAILURE);
         goto err;
     }
-    p_str = reallocarray(NULL, (num * 33), sizeof(unsigned char));
+    p_str = reallocarray(NULL, (num * 33), sizeof(uint8_t));
     if (p_str == NULL) {
         ECerr(EC_F_ECP_NISTZ256_WINDOWED_MUL, ERR_R_MALLOC_FAILURE);
         goto err;
@@ -733,7 +733,7 @@ static int ecp_nistz256_mult_precompute(EC_GROUP *group, BN_CTX *ctx)
     size_t w;
 
     PRECOMP256_ROW *preComputedTable = NULL;
-    unsigned char *precomp_storage = NULL;
+    uint8_t *precomp_storage = NULL;
 
     /* if there is an old EC_PRE_COMP object, throw it away */
     EC_EX_DATA_free_data(&group->extra_data, ecp_nistz256_pre_comp_dup, ecp_nistz256_pre_comp_free,
@@ -875,10 +875,10 @@ void ecp_nistz256_avx2_from_mont(void *RESULTx4, const void *Ax4);
 void ecp_nistz256_avx2_set1(void *RESULTx4);
 int ecp_nistz_avx2_eligible(void);
 
-static void booth_recode_w7(unsigned char *sign, unsigned char *digit,
-                            unsigned char in)
+static void booth_recode_w7(uint8_t *sign, uint8_t *digit,
+                            uint8_t in)
 {
-    unsigned char s, d;
+    uint8_t s, d;
 
     s = ~((in >> 7) - 1);
     d = (1 << 8) - in - 1;
@@ -892,17 +892,17 @@ static void booth_recode_w7(unsigned char *sign, unsigned char *digit,
 /* ecp_nistz256_avx2_mul_g performs multiplication by G, using only the
  * precomputed table. It does 4 affine point additions in parallel,
  * significantly speeding up point multiplication for a fixed value. */
-static void ecp_nistz256_avx2_mul_g(P256_POINT *r, unsigned char p_str[33],
+static void ecp_nistz256_avx2_mul_g(P256_POINT *r, uint8_t p_str[33],
                                     const P256_POINT_AFFINE (*preComputedTable)[64])
 {
     const unsigned int window_size = 7;
     const unsigned int mask = (1 << (window_size + 1)) - 1;
     unsigned int wvalue;
     /* Using 4 windows at a time */
-    unsigned char sign0, digit0;
-    unsigned char sign1, digit1;
-    unsigned char sign2, digit2;
-    unsigned char sign3, digit3;
+    uint8_t sign0, digit0;
+    uint8_t sign1, digit1;
+    uint8_t sign2, digit2;
+    uint8_t sign3, digit3;
     unsigned int index = 0;
     BN_ULONG tmp[P256_LIMBS];
     int i;
@@ -1074,7 +1074,7 @@ static int ecp_nistz256_points_mul(const EC_GROUP *group, EC_POINT *r,
 {
     int i = 0, ret = 0, no_precomp_for_generator = 0, p_is_infinity = 0;
     size_t j;
-    unsigned char p_str[33] = { 0 };
+    uint8_t p_str[33] = { 0 };
     const PRECOMP256_ROW *preComputedTable = NULL;
     const EC_PRE_COMP *pre_comp = NULL;
     const EC_POINT *generator = NULL;
@@ -1390,7 +1390,7 @@ static void ecp_nistz256_pre_comp_clear_free(void *pre_)
 
     if (pre->precomp_storage) {
         vigortls_zeroize(pre->precomp,
-                         32 * sizeof(unsigned char) * ((size_t)1 << pre->w) * 2 * 37);
+                         32 * sizeof(uint8_t) * ((size_t)1 << pre->w) * 2 * 37);
         free(pre->precomp_storage);
     }
     vigortls_zeroize(pre, sizeof *pre);

@@ -66,18 +66,18 @@
 
 #include "../constant_time_locl.h"
 
-int RSA_padding_add_PKCS1_type_1(unsigned char *to, int tlen,
-                                 const unsigned char *from, int flen)
+int RSA_padding_add_PKCS1_type_1(uint8_t *to, int tlen,
+                                 const uint8_t *from, int flen)
 {
     int j;
-    unsigned char *p;
+    uint8_t *p;
 
     if (flen > (tlen - RSA_PKCS1_PADDING_SIZE)) {
         RSAerr(RSA_F_RSA_PADDING_ADD_PKCS1_TYPE_1, RSA_R_DATA_TOO_LARGE_FOR_KEY_SIZE);
         return (0);
     }
 
-    p = (unsigned char *)to;
+    p = (uint8_t *)to;
 
     *(p++) = 0;
     *(p++) = 1; /* Private Key BT (Block Type) */
@@ -91,11 +91,11 @@ int RSA_padding_add_PKCS1_type_1(unsigned char *to, int tlen,
     return (1);
 }
 
-int RSA_padding_check_PKCS1_type_1(unsigned char *to, int tlen,
-                                   const unsigned char *from, int flen, int num)
+int RSA_padding_check_PKCS1_type_1(uint8_t *to, int tlen,
+                                   const uint8_t *from, int flen, int num)
 {
     int i, j;
-    const unsigned char *p;
+    const uint8_t *p;
 
     p = from;
     if ((num != (flen + 1)) || (*(p++) != 01)) {
@@ -139,18 +139,18 @@ int RSA_padding_check_PKCS1_type_1(unsigned char *to, int tlen,
     return (j);
 }
 
-int RSA_padding_add_PKCS1_type_2(unsigned char *to, int tlen,
-                                 const unsigned char *from, int flen)
+int RSA_padding_add_PKCS1_type_2(uint8_t *to, int tlen,
+                                 const uint8_t *from, int flen)
 {
     int i, j;
-    unsigned char *p;
+    uint8_t *p;
 
     if (flen > (tlen - 11)) {
         RSAerr(RSA_F_RSA_PADDING_ADD_PKCS1_TYPE_2, RSA_R_DATA_TOO_LARGE_FOR_KEY_SIZE);
         return (0);
     }
 
-    p = (unsigned char *)to;
+    p = (uint8_t *)to;
 
     *(p++) = 0;
     *(p++) = 2; /* Public Key BT (Block Type) */
@@ -175,12 +175,12 @@ int RSA_padding_add_PKCS1_type_2(unsigned char *to, int tlen,
     return (1);
 }
 
-int RSA_padding_check_PKCS1_type_2(unsigned char *to, int tlen,
-                                   const unsigned char *from, int flen, int num)
+int RSA_padding_check_PKCS1_type_2(uint8_t *to, int tlen,
+                                   const uint8_t *from, int flen, int num)
 {
     int i;
     /* |em| is the encoded message, zero-padded to exactly |num| bytes */
-    unsigned char *em = NULL;
+    uint8_t *em = NULL;
     unsigned int good, found_zero_byte;
     int zero_index = 0, msg_index, mlen = -1;
 

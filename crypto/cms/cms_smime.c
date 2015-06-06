@@ -64,7 +64,7 @@
 
 static int cms_copy_content(BIO *out, BIO *in, unsigned int flags)
 {
-    unsigned char buf[4096];
+    uint8_t buf[4096];
     int r = 0, i;
     BIO *tmpout = NULL;
 
@@ -211,7 +211,7 @@ CMS_ContentInfo *CMS_digest_create(BIO *in, const EVP_MD *md,
 }
 
 int CMS_EncryptedData_decrypt(CMS_ContentInfo *cms,
-                              const unsigned char *key, size_t keylen,
+                              const uint8_t *key, size_t keylen,
                               BIO *dcont, BIO *out, unsigned int flags)
 {
     BIO *cont;
@@ -236,7 +236,7 @@ int CMS_EncryptedData_decrypt(CMS_ContentInfo *cms,
 }
 
 CMS_ContentInfo *CMS_EncryptedData_encrypt(BIO *in, const EVP_CIPHER *cipher,
-                                           const unsigned char *key, size_t keylen,
+                                           const uint8_t *key, size_t keylen,
                                            unsigned int flags)
 {
     CMS_ContentInfo *cms;
@@ -623,8 +623,8 @@ int CMS_decrypt_set1_pkey(CMS_ContentInfo *cms, EVP_PKEY *pk, X509 *cert)
 }
 
 int CMS_decrypt_set1_key(CMS_ContentInfo *cms,
-                         unsigned char *key, size_t keylen,
-                         unsigned char *id, size_t idlen)
+                         uint8_t *key, size_t keylen,
+                         uint8_t *id, size_t idlen)
 {
     STACK_OF(CMS_RecipientInfo) * ris;
     CMS_RecipientInfo *ri;
@@ -658,7 +658,7 @@ int CMS_decrypt_set1_key(CMS_ContentInfo *cms,
 }
 
 int CMS_decrypt_set1_password(CMS_ContentInfo *cms,
-                              unsigned char *pass, ssize_t passlen)
+                              uint8_t *pass, ssize_t passlen)
 {
     STACK_OF(CMS_RecipientInfo) * ris;
     CMS_RecipientInfo *ri;

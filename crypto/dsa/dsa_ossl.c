@@ -67,9 +67,9 @@
 #include <openssl/rand.h>
 #include <openssl/sha.h>
 
-static DSA_SIG *dsa_do_sign(const unsigned char *dgst, int dlen, DSA *dsa);
+static DSA_SIG *dsa_do_sign(const uint8_t *dgst, int dlen, DSA *dsa);
 static int dsa_sign_setup(DSA *dsa, BN_CTX *ctx_in, BIGNUM **kinvp, BIGNUM **rp);
-static int dsa_do_verify(const unsigned char *dgst, int dgst_len, DSA_SIG *sig,
+static int dsa_do_verify(const uint8_t *dgst, int dgst_len, DSA_SIG *sig,
                          DSA *dsa);
 static int dsa_init(DSA *dsa);
 static int dsa_finish(DSA *dsa);
@@ -128,7 +128,7 @@ const DSA_METHOD *DSA_OpenSSL(void)
     return &openssl_dsa_meth;
 }
 
-static DSA_SIG *dsa_do_sign(const unsigned char *dgst, int dlen, DSA *dsa)
+static DSA_SIG *dsa_do_sign(const uint8_t *dgst, int dlen, DSA *dsa)
 {
     BIGNUM *kinv = NULL, *r = NULL, *s = NULL;
     BIGNUM m;
@@ -301,7 +301,7 @@ err:
     return (ret);
 }
 
-static int dsa_do_verify(const unsigned char *dgst, int dgst_len, DSA_SIG *sig,
+static int dsa_do_verify(const uint8_t *dgst, int dgst_len, DSA_SIG *sig,
                          DSA *dsa)
 {
     BN_CTX *ctx;

@@ -108,7 +108,7 @@ static int newpass_p12(PKCS12 *p12, char *oldpass, char *newpass)
     int i, bagnid, pbe_nid = 0, pbe_iter = 0, pbe_saltlen = 0;
     PKCS7 *p7, *p7new;
     ASN1_OCTET_STRING *p12_data_tmp = NULL, *macnew = NULL;
-    unsigned char mac[EVP_MAX_MD_SIZE];
+    uint8_t mac[EVP_MAX_MD_SIZE];
     unsigned int maclen;
 
     if (!(asafes = PKCS12_unpack_authsafes(p12)))

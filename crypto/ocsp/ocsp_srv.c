@@ -233,7 +233,7 @@ int OCSP_basic_sign(OCSP_BASICRESP *brsp,
 
     rid = brsp->tbsResponseData->responderId;
     if (flags & OCSP_RESPID_KEY) {
-        unsigned char md[SHA_DIGEST_LENGTH];
+        uint8_t md[SHA_DIGEST_LENGTH];
         X509_pubkey_digest(signer, EVP_sha1(), md, NULL);
         if (!(rid->value.byKey = ASN1_OCTET_STRING_new()))
             goto err;

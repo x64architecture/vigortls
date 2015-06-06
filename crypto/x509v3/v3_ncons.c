@@ -205,7 +205,7 @@ static int do_i2r_name_constraints(const X509V3_EXT_METHOD *method,
 static int print_nc_ipadd(BIO *bp, ASN1_OCTET_STRING *ip)
 {
     int i, len;
-    unsigned char *p;
+    uint8_t *p;
     p = ip->data;
     len = ip->length;
     BIO_puts(bp, "IP:");

@@ -73,7 +73,7 @@ http://www.cs.technion.ac.il/users/wwwb/cgi-bin/tr-get.cgi/1998/CS/CS0928.ps.gz
 #ifndef OPENSSL_NO_DESCBCM
 #include "des_locl.h"
 
-void DES_ede3_cbcm_encrypt(const unsigned char *in, unsigned char *out, long length,
+void DES_ede3_cbcm_encrypt(const uint8_t *in, uint8_t *out, long length,
                            DES_key_schedule *ks1, DES_key_schedule *ks2,
                            DES_key_schedule *ks3, DES_cblock *ivec1,
                            DES_cblock *ivec2, int enc)
@@ -82,7 +82,7 @@ void DES_ede3_cbcm_encrypt(const unsigned char *in, unsigned char *out, long len
     uint32_t tout0, tout1, xor0, xor1, m0, m1;
     register long l = length;
     uint32_t tin[2];
-    unsigned char *iv1, *iv2;
+    uint8_t *iv1, *iv2;
 
     iv1 = &(*ivec1)[0];
     iv2 = &(*ivec2)[0];

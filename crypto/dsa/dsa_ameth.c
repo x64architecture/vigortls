@@ -70,7 +70,7 @@
 
 static int dsa_pub_decode(EVP_PKEY *pkey, X509_PUBKEY *pubkey)
 {
-    const unsigned char *p, *pm;
+    const uint8_t *p, *pm;
     int pklen, pmlen;
     int ptype;
     void *pval;
@@ -130,7 +130,7 @@ static int dsa_pub_encode(X509_PUBKEY *pk, const EVP_PKEY *pkey)
 {
     DSA *dsa;
     int ptype;
-    unsigned char *penc = NULL;
+    uint8_t *penc = NULL;
     int penclen;
     ASN1_STRING *str = NULL;
     ASN1_INTEGER *pubint = NULL;
@@ -180,7 +180,7 @@ err:
 
 static int dsa_priv_decode(EVP_PKEY *pkey, PKCS8_PRIV_KEY_INFO *p8)
 {
-    const unsigned char *p, *pm;
+    const uint8_t *p, *pm;
     int pklen, pmlen;
     int ptype;
     void *pval;
@@ -223,7 +223,7 @@ static int dsa_priv_decode(EVP_PKEY *pkey, PKCS8_PRIV_KEY_INFO *p8)
 
         privkey = t2->value.integer;
     } else {
-        const unsigned char *q = p;
+        const uint8_t *q = p;
         if (!(privkey = d2i_ASN1_INTEGER(NULL, &p, pklen)))
             goto decerr;
         if (privkey->type == V_ASN1_NEG_INTEGER) {
@@ -285,7 +285,7 @@ static int dsa_priv_encode(PKCS8_PRIV_KEY_INFO *p8, const EVP_PKEY *pkey)
 {
     ASN1_STRING *params = NULL;
     ASN1_INTEGER *prkey = NULL;
-    unsigned char *dp = NULL;
+    uint8_t *dp = NULL;
     int dplen;
 
     if (!pkey->pkey.dsa || !pkey->pkey.dsa->priv_key) {
@@ -404,7 +404,7 @@ static void update_buflen(const BIGNUM *b, size_t *pbuflen)
 
 static int do_dsa_print(BIO *bp, const DSA *x, int off, int ptype)
 {
-    unsigned char *m = NULL;
+    uint8_t *m = NULL;
     int ret = 0;
     size_t buf_len = 0;
     const char *ktype = NULL;
@@ -465,7 +465,7 @@ err:
 }
 
 static int dsa_param_decode(EVP_PKEY *pkey,
-                            const unsigned char **pder, int derlen)
+                            const uint8_t **pder, int derlen)
 {
     DSA *dsa;
     if (!(dsa = d2i_DSAparams(NULL, pder, derlen))) {
@@ -476,7 +476,7 @@ static int dsa_param_decode(EVP_PKEY *pkey,
     return 1;
 }
 
-static int dsa_param_encode(const EVP_PKEY *pkey, unsigned char **pder)
+static int dsa_param_encode(const EVP_PKEY *pkey, uint8_t **pder)
 {
     return i2d_DSAparams(pkey->pkey.dsa, pder);
 }
@@ -500,7 +500,7 @@ static int dsa_priv_print(BIO *bp, const EVP_PKEY *pkey, int indent,
 }
 
 static int old_dsa_priv_decode(EVP_PKEY *pkey,
-                               const unsigned char **pder, int derlen)
+                               const uint8_t **pder, int derlen)
 {
     DSA *dsa;
     if (!(dsa = d2i_DSAPrivateKey(NULL, pder, derlen))) {
@@ -511,7 +511,7 @@ static int old_dsa_priv_decode(EVP_PKEY *pkey,
     return 1;
 }
 
-static int old_dsa_priv_encode(const EVP_PKEY *pkey, unsigned char **pder)
+static int old_dsa_priv_encode(const EVP_PKEY *pkey, uint8_t **pder)
 {
     return i2d_DSAPrivateKey(pkey->pkey.dsa, pder);
 }
@@ -521,7 +521,7 @@ static int dsa_sig_print(BIO *bp, const X509_ALGOR *sigalg,
                          int indent, ASN1_PCTX *pctx)
 {
     DSA_SIG *dsa_sig;
-    const unsigned char *p;
+    const uint8_t *p;
     if (!sig) {
         if (BIO_puts(bp, "\n") <= 0)
             return 0;
@@ -533,7 +533,7 @@ static int dsa_sig_print(BIO *bp, const X509_ALGOR *sigalg,
     if (dsa_sig) {
         int rv = 0;
         size_t buf_len = 0;
-        unsigned char *m = NULL;
+        uint8_t *m = NULL;
         update_buflen(dsa_sig->r, &buf_len);
         update_buflen(dsa_sig->s, &buf_len);
         m = malloc(buf_len + 10);

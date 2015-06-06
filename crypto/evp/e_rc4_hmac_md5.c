@@ -82,8 +82,8 @@ void rc4_md5_enc(RC4_KEY *key, const void *in0, void *out,
 #define data(ctx) ((EVP_RC4_HMAC_MD5 *)(ctx)->cipher_data)
 
 static int rc4_hmac_md5_init_key(EVP_CIPHER_CTX *ctx,
-                                 const unsigned char *inkey,
-                                 const unsigned char *iv, int enc)
+                                 const uint8_t *inkey,
+                                 const uint8_t *iv, int enc)
 {
     EVP_RC4_HMAC_MD5 *key = data(ctx);
 
@@ -108,8 +108,8 @@ static int rc4_hmac_md5_init_key(EVP_CIPHER_CTX *ctx,
 #define md5_off 0
 #endif
 
-static int rc4_hmac_md5_cipher(EVP_CIPHER_CTX *ctx, unsigned char *out,
-                               const unsigned char *in, size_t len)
+static int rc4_hmac_md5_cipher(EVP_CIPHER_CTX *ctx, uint8_t *out,
+                               const uint8_t *in, size_t len)
 {
     EVP_RC4_HMAC_MD5 *key = data(ctx);
 #if defined(STITCHED_CALL)
@@ -167,7 +167,7 @@ static int rc4_hmac_md5_cipher(EVP_CIPHER_CTX *ctx, unsigned char *out,
             RC4(&key->ks, len - rc4_off, in + rc4_off, out + rc4_off);
         }
     } else {
-        unsigned char mac[MD5_DIGEST_LENGTH];
+        uint8_t mac[MD5_DIGEST_LENGTH];
 #if defined(STITCHED_CALL)
         /* digest has to "fall behind" */
         if (md5_off > rc4_off)
@@ -224,7 +224,7 @@ static int rc4_hmac_md5_ctrl(EVP_CIPHER_CTX *ctx, int type, int arg, void *ptr)
     switch (type) {
         case EVP_CTRL_AEAD_SET_MAC_KEY: {
             unsigned int i;
-            unsigned char hmac_key[64];
+            uint8_t hmac_key[64];
 
             memset(hmac_key, 0, sizeof(hmac_key));
 
@@ -249,7 +249,7 @@ static int rc4_hmac_md5_ctrl(EVP_CIPHER_CTX *ctx, int type, int arg, void *ptr)
             return 1;
         }
         case EVP_CTRL_AEAD_TLS1_AAD: {
-            unsigned char *p = ptr;
+            uint8_t *p = ptr;
             unsigned int len = p[arg - 2] << 8 | p[arg - 1];
 
             if (!ctx->encrypt) {

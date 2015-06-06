@@ -69,10 +69,10 @@
 #include <stdcompat.h>
 
 int PEM_SealInit(PEM_ENCODE_SEAL_CTX *ctx, EVP_CIPHER *type, EVP_MD *md_type,
-                 unsigned char **ek, int *ekl, unsigned char *iv, EVP_PKEY **pubk,
+                 uint8_t **ek, int *ekl, uint8_t *iv, EVP_PKEY **pubk,
                  int npubk)
 {
-    unsigned char key[EVP_MAX_KEY_LENGTH];
+    uint8_t key[EVP_MAX_KEY_LENGTH];
     int ret = -1;
     int i, j, max = 0;
     char *s = NULL;
@@ -105,7 +105,7 @@ int PEM_SealInit(PEM_ENCODE_SEAL_CTX *ctx, EVP_CIPHER *type, EVP_MD *md_type,
 
     /* base64 encode the keys */
     for (i = 0; i < npubk; i++) {
-        j = EVP_EncodeBlock((unsigned char *)s, ek[i],
+        j = EVP_EncodeBlock((uint8_t *)s, ek[i],
                             RSA_size(pubk[i]->pkey.rsa));
         ekl[i] = j;
         memcpy(ek[i], s, j + 1);
@@ -118,10 +118,10 @@ err:
     return (ret);
 }
 
-void PEM_SealUpdate(PEM_ENCODE_SEAL_CTX *ctx, unsigned char *out, int *outl,
-                    unsigned char *in, int inl)
+void PEM_SealUpdate(PEM_ENCODE_SEAL_CTX *ctx, uint8_t *out, int *outl,
+                    uint8_t *in, int inl)
 {
-    unsigned char buffer[1600];
+    uint8_t buffer[1600];
     int i, j;
 
     *outl = 0;
@@ -142,10 +142,10 @@ void PEM_SealUpdate(PEM_ENCODE_SEAL_CTX *ctx, unsigned char *out, int *outl,
     }
 }
 
-int PEM_SealFinal(PEM_ENCODE_SEAL_CTX *ctx, unsigned char *sig, int *sigl,
-                  unsigned char *out, int *outl, EVP_PKEY *priv)
+int PEM_SealFinal(PEM_ENCODE_SEAL_CTX *ctx, uint8_t *sig, int *sigl,
+                  uint8_t *out, int *outl, EVP_PKEY *priv)
 {
-    unsigned char *s = NULL;
+    uint8_t *s = NULL;
     int ret = 0, j;
     unsigned int i;
 
@@ -156,7 +156,7 @@ int PEM_SealFinal(PEM_ENCODE_SEAL_CTX *ctx, unsigned char *sig, int *sigl,
     i = RSA_size(priv->pkey.rsa);
     if (i < 100)
         i = 100;
-    s = (unsigned char *)reallocarray(NULL, i, 2);
+    s = (uint8_t *)reallocarray(NULL, i, 2);
     if (s == NULL) {
         PEMerr(PEM_F_PEM_SEALFINAL, ERR_R_MALLOC_FAILURE);
         goto err;

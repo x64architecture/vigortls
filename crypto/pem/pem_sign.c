@@ -70,16 +70,16 @@ void PEM_SignInit(EVP_MD_CTX *ctx, EVP_MD *type)
     EVP_DigestInit_ex(ctx, type, NULL);
 }
 
-void PEM_SignUpdate(EVP_MD_CTX *ctx, unsigned char *data,
+void PEM_SignUpdate(EVP_MD_CTX *ctx, uint8_t *data,
                     unsigned int count)
 {
     EVP_DigestUpdate(ctx, data, count);
 }
 
-int PEM_SignFinal(EVP_MD_CTX *ctx, unsigned char *sigret, unsigned int *siglen,
+int PEM_SignFinal(EVP_MD_CTX *ctx, uint8_t *sigret, unsigned int *siglen,
                   EVP_PKEY *pkey)
 {
-    unsigned char *m;
+    uint8_t *m;
     int i, ret = 0;
     unsigned int m_len;
 

@@ -64,15 +64,15 @@
 #include "evp_locl.h"
 #include <openssl/idea.h>
 
-static int idea_init_key(EVP_CIPHER_CTX *ctx, const unsigned char *key,
-                         const unsigned char *iv, int enc);
+static int idea_init_key(EVP_CIPHER_CTX *ctx, const uint8_t *key,
+                         const uint8_t *iv, int enc);
 
 /* NB idea_ecb_encrypt doesn't take an 'encrypt' argument so we treat it as a special
  * case
  */
 
-static int idea_ecb_cipher(EVP_CIPHER_CTX *ctx, unsigned char *out,
-                           const unsigned char *in, size_t inl)
+static int idea_ecb_cipher(EVP_CIPHER_CTX *ctx, uint8_t *out,
+                           const uint8_t *in, size_t inl)
 {
     BLOCK_CIPHER_ecb_loop()
         idea_ecb_encrypt(in + i, out + i, ctx->cipher_data);
@@ -94,8 +94,8 @@ BLOCK_CIPHER_func_cbc(idea, idea, EVP_IDEA_KEY, ks)
                               0, idea_init_key, NULL,
                               EVP_CIPHER_set_asn1_iv, EVP_CIPHER_get_asn1_iv, NULL)
 
-                static int idea_init_key(EVP_CIPHER_CTX *ctx, const unsigned char *key,
-                                         const unsigned char *iv, int enc)
+                static int idea_init_key(EVP_CIPHER_CTX *ctx, const uint8_t *key,
+                                         const uint8_t *iv, int enc)
 {
     if (!enc) {
         if (EVP_CIPHER_CTX_mode(ctx) == EVP_CIPH_OFB_MODE)
@@ -110,7 +110,7 @@ BLOCK_CIPHER_func_cbc(idea, idea, EVP_IDEA_KEY, ks)
 
         idea_set_encrypt_key(key, &tmp);
         idea_set_decrypt_key(&tmp, ctx->cipher_data);
-        vigortls_zeroize((unsigned char *)&tmp,
+        vigortls_zeroize((uint8_t *)&tmp,
                          sizeof(IDEA_KEY_SCHEDULE));
     }
     return 1;

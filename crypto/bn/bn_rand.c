@@ -119,7 +119,7 @@
 
 static int bnrand(int pseudorand, BIGNUM *rnd, int bits, int top, int bottom)
 {
-    unsigned char *buf = NULL;
+    uint8_t *buf = NULL;
     int ret = 0, bit, bytes, mask;
 
     if (rnd == NULL) {
@@ -156,7 +156,7 @@ static int bnrand(int pseudorand, BIGNUM *rnd, int bits, int top, int bottom)
         /* generate patterns that are more likely to trigger BN
            library bugs */
         int i;
-        unsigned char c;
+        uint8_t c;
 
         for (i = 0; i < bytes; i++) {
             if (RAND_bytes(&c, 1) <= 0)

@@ -178,17 +178,17 @@
 #include "timeouts.h"
 
 static RSA *tmp_rsa_cb(SSL *s, int is_export, int keylength);
-static int sv_body(char *hostname, int s, unsigned char *context);
-static int www_body(char *hostname, int s, unsigned char *context);
+static int sv_body(char *hostname, int s, uint8_t *context);
+static int www_body(char *hostname, int s, uint8_t *context);
 static void close_accept_socket(void);
 static int init_ssl_connection(SSL *s);
 static void print_stats(BIO *bp, SSL_CTX *ctx);
-static int generate_session_id(const SSL *ssl, unsigned char *id,
+static int generate_session_id(const SSL *ssl, uint8_t *id,
                                unsigned int *id_len);
 static DH *load_dh_param(const char *dhfile);
 static DH *get_dh512(void);
 
-static unsigned char dh512_p[] = {
+static uint8_t dh512_p[] = {
     0xDA, 0x58, 0x3C, 0x16, 0xD9, 0x85, 0x22, 0x89, 0xD0, 0xE4, 0xAF, 0x75,
     0x6F, 0x4C, 0xCA, 0x92, 0xDD, 0x4B, 0xE5, 0x33, 0xB8, 0x04, 0xFB, 0x0F,
     0xED, 0x94, 0xEF, 0x9C, 0x8A, 0x44, 0x03, 0xED, 0x57, 0x46, 0x50, 0xD3,
@@ -196,7 +196,7 @@ static unsigned char dh512_p[] = {
     0xE2, 0x18, 0xF4, 0xDD, 0x1E, 0x08, 0x4C, 0xF6, 0xD8, 0x00, 0x3E, 0x7C,
     0x47, 0x74, 0xE8, 0x33,
 };
-static unsigned char dh512_g[] = {
+static uint8_t dh512_g[] = {
     0x02,
 };
 
@@ -350,7 +350,7 @@ static int cert_status_cb(SSL *s, void *arg)
     BIO *err = srctx->err;
     char *host, *port, *path;
     int use_ssl;
-    unsigned char *rspder = NULL;
+    uint8_t *rspder = NULL;
     int rspderlen;
     STACK_OF(OPENSSL_STRING) *aia = NULL;
     X509 *x = NULL;
@@ -454,11 +454,11 @@ err:
 
 /* This is the context that we pass to next_proto_cb */
 typedef struct tlsextnextprotoctx_st {
-    unsigned char *data;
+    uint8_t *data;
     unsigned int len;
 } tlsextnextprotoctx;
 
-static int next_proto_cb(SSL *s, const unsigned char **data, unsigned int *len, void *arg)
+static int next_proto_cb(SSL *s, const uint8_t **data, unsigned int *len, void *arg)
 {
     tlsextnextprotoctx *next_proto = arg;
 
@@ -469,12 +469,12 @@ static int next_proto_cb(SSL *s, const unsigned char **data, unsigned int *len, 
 }
 
 typedef struct tlsextalpnctx_st {
-    unsigned char *data;
+    uint8_t *data;
     unsigned int len;
 } tlsextalpnctx;
 
-static int alpn_cb(SSL *s, const unsigned char **out, unsigned char *outlen,
-                   const unsigned char *in, unsigned int inlen, void *arg)
+static int alpn_cb(SSL *s, const uint8_t **out, uint8_t *outlen,
+                   const uint8_t *in, unsigned int inlen, void *arg)
 {
     tlsextalpnctx *alpn_ctx = arg;
 
@@ -492,7 +492,7 @@ static int alpn_cb(SSL *s, const unsigned char **out, unsigned char *outlen,
         BIO_write(bio_s_out, "\n", 1);
     }
 
-    if (SSL_select_next_proto((unsigned char**)out, outlen, alpn_ctx->data,
+    if (SSL_select_next_proto((uint8_t**)out, outlen, alpn_ctx->data,
         alpn_ctx->len, in, inlen) != OPENSSL_NPN_NEGOTIATED)
             return SSL_TLSEXT_ERR_NOACK;
 
@@ -659,7 +659,7 @@ int s_server_main(int argc, char *argv[])
     STACK_OF(OPENSSL_STRING) *ssl_args = NULL;
     short port = PORT;
     char *CApath = NULL, *CAfile = NULL;
-    unsigned char *context = NULL;
+    uint8_t *context = NULL;
     char *dhfile = NULL, *prog;
     char *named_curve = NULL;
     int bugs = 0;
@@ -732,7 +732,7 @@ int s_server_main(int argc, char *argv[])
                                verify_depth);
                 break;
             case OPT_CONTEXT:
-                context = (unsigned char *)opt_arg();
+                context = (uint8_t *)opt_arg();
                 break;
             case OPT_CERT:
                 s_cert_file = opt_arg();
@@ -1316,7 +1316,7 @@ static void print_stats(BIO *bio, SSL_CTX *ssl_ctx)
                SSL_CTX_sess_get_cache_size(ssl_ctx));
 }
 
-static int sv_body(char *hostname, int s, unsigned char *context)
+static int sv_body(char *hostname, int s, uint8_t *context)
 {
     char *buf = NULL;
     int ret = 1;
@@ -1637,9 +1637,9 @@ static int init_ssl_connection(SSL *con)
     X509 *peer;
     long verify_error;
     char buf[BUFSIZ];
-    const unsigned char *next_proto_neg;
+    const uint8_t *next_proto_neg;
     unsigned next_proto_neg_len;
-    unsigned char *exportedkeymat;
+    uint8_t *exportedkeymat;
 
     i = SSL_accept(con);
     if (i <= 0) {
@@ -1740,7 +1740,7 @@ err:
     return (ret);
 }
 
-static int www_body(char *hostname, int s, unsigned char *context)
+static int www_body(char *hostname, int s, uint8_t *context)
 {
     char *buf = NULL;
     int ret = 1;
@@ -2101,7 +2101,7 @@ static RSA *tmp_rsa_cb(SSL *s, int is_export, int keylength)
 }
 
 #define MAX_SESSION_ID_ATTEMPTS 10
-static int generate_session_id(const SSL *ssl, unsigned char *id,
+static int generate_session_id(const SSL *ssl, uint8_t *id,
                                unsigned int *id_len)
 {
     unsigned int count = 0;

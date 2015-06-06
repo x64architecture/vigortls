@@ -111,7 +111,7 @@ int main(int argc, char *argv[])
     BN_CTX *ctx;
     BIO *out = NULL;
     int i, ret;
-    unsigned char c;
+    uint8_t c;
     BIGNUM *r_mont, *r_mont_const, *r_recp, *r_simple, *a, *b, *m;
 
     ERR_load_BN_strings();

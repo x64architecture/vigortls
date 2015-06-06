@@ -148,7 +148,7 @@ int ecparam_main(int argc, char **argv)
     point_conversion_form_t form = POINT_CONVERSION_UNCOMPRESSED;
     char *curve_name = NULL;
     char *engine = NULL, *infile = NULL, *outfile = NULL, *prog;
-    unsigned char *buffer = NULL;
+    uint8_t *buffer = NULL;
     OPTION_CHOICE o;
     int asn1_flag = OPENSSL_EC_NAMED_CURVE, new_asn1_flag = 0;
     int informat = FORMAT_PEM, outformat = FORMAT_PEM, noout = 0, C = 0, ret = 1;

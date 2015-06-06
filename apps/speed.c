@@ -455,9 +455,9 @@ int speed_main(int argc, char **argv)
     int dsa_doit[DSA_NUM], rsa_doit[RSA_NUM];
     int ret = 1, i, j, k, misalign = MAX_MISALIGNMENT + 1;
     long c[ALGOR_NUM][SIZE_NUM], count = 0, save_count = 0;
-    unsigned char *buf_malloc = NULL, *buf2_malloc = NULL;
-    unsigned char *buf = NULL, *buf2 = NULL;
-    unsigned char md[EVP_MAX_MD_SIZE];
+    uint8_t *buf_malloc = NULL, *buf2_malloc = NULL;
+    uint8_t *buf = NULL, *buf2 = NULL;
+    uint8_t md[EVP_MAX_MD_SIZE];
     const char *stnerr = NULL;
 #ifndef NO_FORK
     int multi = 0;
@@ -467,16 +467,16 @@ int speed_main(int argc, char **argv)
     long rsa_count;
 #endif
 #ifndef OPENSSL_NO_MDC2
-    unsigned char mdc2[MDC2_DIGEST_LENGTH];
+    uint8_t mdc2[MDC2_DIGEST_LENGTH];
 #endif
-    unsigned char md5[MD5_DIGEST_LENGTH];
-    unsigned char hmac[MD5_DIGEST_LENGTH];
-    unsigned char sha[SHA_DIGEST_LENGTH];
-    unsigned char sha256[SHA256_DIGEST_LENGTH];
-    unsigned char sha512[SHA512_DIGEST_LENGTH];
-    unsigned char whirlpool[WHIRLPOOL_DIGEST_LENGTH];
+    uint8_t md5[MD5_DIGEST_LENGTH];
+    uint8_t hmac[MD5_DIGEST_LENGTH];
+    uint8_t sha[SHA_DIGEST_LENGTH];
+    uint8_t sha256[SHA256_DIGEST_LENGTH];
+    uint8_t sha512[SHA512_DIGEST_LENGTH];
+    uint8_t whirlpool[WHIRLPOOL_DIGEST_LENGTH];
 #ifndef OPENSSL_NO_RIPEMD
-    unsigned char rmd160[RIPEMD160_DIGEST_LENGTH];
+    uint8_t rmd160[RIPEMD160_DIGEST_LENGTH];
 #endif
     RC4_KEY rc4_ks;
 #ifndef OPENSSL_NO_RC5
@@ -497,32 +497,32 @@ int speed_main(int argc, char **argv)
 #ifndef OPENSSL_NO_CAST
     CAST_KEY cast_ks;
 #endif
-    static const unsigned char key16[16] = {
+    static const uint8_t key16[16] = {
         0x12, 0x34, 0x56, 0x78, 0x9a, 0xbc, 0xde, 0xf0,
         0x34, 0x56, 0x78, 0x9a, 0xbc, 0xde, 0xf0, 0x12
     };
-    static const unsigned char key24[24] = {
+    static const uint8_t key24[24] = {
         0x12, 0x34, 0x56, 0x78, 0x9a, 0xbc, 0xde, 0xf0, 0x34, 0x56, 0x78, 0x9a,
         0xbc, 0xde, 0xf0, 0x12, 0x56, 0x78, 0x9a, 0xbc, 0xde, 0xf0, 0x12, 0x34
     };
-    static const unsigned char key32[32] = {
+    static const uint8_t key32[32] = {
         0x12, 0x34, 0x56, 0x78, 0x9a, 0xbc, 0xde, 0xf0, 0x34, 0x56, 0x78,
         0x9a, 0xbc, 0xde, 0xf0, 0x12, 0x56, 0x78, 0x9a, 0xbc, 0xde, 0xf0,
         0x12, 0x34, 0x78, 0x9a, 0xbc, 0xde, 0xf0, 0x12, 0x34, 0x56
     };
-    static const unsigned char ckey24[24] = { 0x12, 0x34, 0x56, 0x78, 0x9a, 0xbc,
+    static const uint8_t ckey24[24] = { 0x12, 0x34, 0x56, 0x78, 0x9a, 0xbc,
                                               0xde, 0xf0, 0x34, 0x56, 0x78, 0x9a,
                                               0xbc, 0xde, 0xf0, 0x12, 0x56, 0x78,
                                               0x9a, 0xbc, 0xde, 0xf0, 0x12, 0x34 };
-    static const unsigned char ckey32[32] = { 0x12, 0x34, 0x56, 0x78, 0x9a, 0xbc, 0xde,
+    static const uint8_t ckey32[32] = { 0x12, 0x34, 0x56, 0x78, 0x9a, 0xbc, 0xde,
                                               0xf0, 0x34, 0x56, 0x78, 0x9a, 0xbc, 0xde,
                                               0xf0, 0x12, 0x56, 0x78, 0x9a, 0xbc, 0xde,
                                               0xf0, 0x12, 0x34, 0x78, 0x9a, 0xbc, 0xde,
                                               0xf0, 0x12, 0x34, 0x56 };
     CAMELLIA_KEY camellia_ks1, camellia_ks2, camellia_ks3;
 #define MAX_BLOCK_SIZE 128
-    unsigned char DES_iv[8];
-    unsigned char iv[2 * MAX_BLOCK_SIZE / 8];
+    uint8_t DES_iv[8];
+    uint8_t iv[2 * MAX_BLOCK_SIZE / 8];
 #ifndef OPENSSL_NO_DES
     static DES_cblock key = { 0x12, 0x34, 0x56, 0x78, 0x9a, 0xbc, 0xde, 0xf0 };
     static DES_cblock key2 = { 0x34, 0x56, 0x78, 0x9a, 0xbc, 0xde, 0xf0, 0x12 };
@@ -537,7 +537,7 @@ int speed_main(int argc, char **argv)
     RSA *rsa_key[RSA_NUM];
     long rsa_c[RSA_NUM][2];
     static unsigned int rsa_bits[RSA_NUM] = { 512, 1024, 2048, 3072, 4096, 7680, 15360 };
-    static unsigned char *rsa_data[RSA_NUM] = { test512,  test1024, test2048, test3072,
+    static uint8_t *rsa_data[RSA_NUM] = { test512,  test1024, test2048, test3072,
                                                 test4096, test7680, test15360 };
     static int rsa_data_length[RSA_NUM] = { sizeof(test512),  sizeof(test1024),
                                             sizeof(test2048), sizeof(test3072),
@@ -572,13 +572,13 @@ int speed_main(int argc, char **argv)
     };
     static int test_curves_bits[EC_NUM] = { 160, 192, 224, 256, 384, 521, 163, 233,
                                             283, 409, 571, 163, 233, 283, 409, 571 };
-    unsigned char ecdsasig[256];
+    uint8_t ecdsasig[256];
     unsigned int ecdsasiglen;
     EC_KEY *ecdsa[EC_NUM];
     long ecdsa_c[EC_NUM][2];
     int ecdsa_doit[EC_NUM];
     EC_KEY *ecdh_a[EC_NUM], *ecdh_b[EC_NUM];
-    unsigned char secret_a[MAX_ECDH_SIZE], secret_b[MAX_ECDH_SIZE];
+    uint8_t secret_a[MAX_ECDH_SIZE], secret_b[MAX_ECDH_SIZE];
     int secret_size_a, secret_size_b;
     int ecdh_checks = 0;
     int secret_idx = 0;
@@ -794,7 +794,7 @@ int speed_main(int argc, char **argv)
 
 #ifndef OPENSSL_NO_RSA
     for (i = 0; i < RSA_NUM; i++) {
-        const unsigned char *p;
+        const uint8_t *p;
 
         p = rsa_data[i];
         rsa_key[i] = d2i_RSAPrivateKey(NULL, &p, rsa_data_length[i]);
@@ -1090,7 +1090,7 @@ int speed_main(int argc, char **argv)
         HMAC_CTX hctx;
 
         HMAC_CTX_init(&hctx);
-        HMAC_Init_ex(&hctx, (unsigned char *)"This is a key...", 16, EVP_md5(), NULL);
+        HMAC_Init_ex(&hctx, (uint8_t *)"This is a key...", 16, EVP_md5(), NULL);
 
         for (j = 0; j < SIZE_NUM; j++) {
             print_message(names[D_HMAC], c[D_HMAC][j], lengths[j]);
@@ -1263,7 +1263,7 @@ int speed_main(int argc, char **argv)
     }
     if (doit[D_GHASH]) {
         GCM128_CONTEXT *ctx = CRYPTO_gcm128_new(&aes_ks1, (block128_f)AES_encrypt);
-        CRYPTO_gcm128_setiv(ctx, (unsigned char *)"0123456789ab", 12);
+        CRYPTO_gcm128_setiv(ctx, (uint8_t *)"0123456789ab", 12);
 
         for (j = 0; j < SIZE_NUM; j++) {
             print_message(names[D_GHASH], c[D_GHASH][j], lengths[j]);
@@ -1909,11 +1909,11 @@ static char *sstrsep(char **string, const char *delim)
     isdelim[0] = 1;
 
     while (*delim) {
-        isdelim[(unsigned char)(*delim)] = 1;
+        isdelim[(uint8_t)(*delim)] = 1;
         delim++;
     }
 
-    while (!isdelim[(unsigned char)(**string)]) {
+    while (!isdelim[(uint8_t)(**string)]) {
         (*string)++;
     }
 

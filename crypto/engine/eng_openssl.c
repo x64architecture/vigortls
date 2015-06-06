@@ -211,14 +211,14 @@ static int test_cipher_nids[] = { NID_rc4, NID_rc4_40 };
 static int test_cipher_nids_number = 2;
 
 typedef struct {
-    unsigned char key[TEST_RC4_KEY_SIZE];
+    uint8_t key[TEST_RC4_KEY_SIZE];
     RC4_KEY ks;
 } TEST_RC4_KEY;
 
 #define test(ctx) ((TEST_RC4_KEY *)(ctx)->cipher_data)
 static int
-test_rc4_init_key(EVP_CIPHER_CTX *ctx, const unsigned char *key,
-                  const unsigned char *iv, int enc)
+test_rc4_init_key(EVP_CIPHER_CTX *ctx, const uint8_t *key,
+                  const uint8_t *iv, int enc)
 {
 #ifdef TEST_ENG_OPENSSL_RC4_P_INIT
     fprintf(stderr, "(TEST_ENG_OPENSSL_RC4) test_init_key() called\n");
@@ -230,8 +230,8 @@ test_rc4_init_key(EVP_CIPHER_CTX *ctx, const unsigned char *key,
 }
 
 static int
-test_rc4_cipher(EVP_CIPHER_CTX *ctx, unsigned char *out,
-                const unsigned char *in, size_t inl)
+test_rc4_cipher(EVP_CIPHER_CTX *ctx, uint8_t *out,
+                const uint8_t *in, size_t inl)
 {
 #ifdef TEST_ENG_OPENSSL_RC4_P_CIPHER
     fprintf(stderr, "(TEST_ENG_OPENSSL_RC4) test_cipher() called\n");
@@ -319,7 +319,7 @@ test_sha1_update(EVP_MD_CTX *ctx, const void *data, size_t count)
 }
 
 static int
-test_sha1_final(EVP_MD_CTX *ctx, unsigned char *md)
+test_sha1_final(EVP_MD_CTX *ctx, uint8_t *md)
 {
 #ifdef TEST_ENG_OPENSSL_SHA_P_FINAL
     fprintf(stderr, "(TEST_ENG_OPENSSL_SHA) test_sha1_final() called\n");

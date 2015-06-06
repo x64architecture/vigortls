@@ -70,8 +70,8 @@ static EVP_PKEY_CTX *init_ctx(int *pkeysize, char *keyfile, int keyform, int key
 
 static int setup_peer(EVP_PKEY_CTX *ctx, int peerform, const char *file);
 
-static int do_keyop(EVP_PKEY_CTX *ctx, int pkey_op, unsigned char *out, size_t *poutlen,
-                    unsigned char *in, size_t inlen);
+static int do_keyop(EVP_PKEY_CTX *ctx, int pkey_op, uint8_t *out, size_t *poutlen,
+                    uint8_t *in, size_t inlen);
 
 typedef enum OPTION_choice {
     OPT_ERR = -1,
@@ -136,7 +136,7 @@ int pkeyutl_main(int argc, char **argv)
     EVP_PKEY_CTX *ctx = NULL;
     char *infile = NULL, *outfile = NULL, *sigfile = NULL, *passinarg = NULL;
     char hexdump = 0, asn1parse = 0, rev = 0, *prog;
-    unsigned char *buf_in = NULL, *buf_out = NULL, *sig = NULL;
+    uint8_t *buf_in = NULL, *buf_out = NULL, *sig = NULL;
     OPTION_CHOICE o;
     int buf_inlen = 0, siglen = -1, keyform = FORMAT_PEM, peerform = FORMAT_PEM;
     int keysize = -1, pkey_op = EVP_PKEY_OP_SIGN, key_type = KEY_PRIVKEY;
@@ -286,7 +286,7 @@ int pkeyutl_main(int argc, char **argv)
         }
         if (rev) {
             size_t i;
-            unsigned char ctmp;
+            uint8_t ctmp;
             size_t l = (size_t)buf_inlen;
             for (i = 0; i < l / 2; i++) {
                 ctmp = buf_in[i];
@@ -448,8 +448,8 @@ static int setup_peer(EVP_PKEY_CTX *ctx, int peerform, const char *file)
     return ret;
 }
 
-static int do_keyop(EVP_PKEY_CTX *ctx, int pkey_op, unsigned char *out, size_t *poutlen,
-                    unsigned char *in, size_t inlen)
+static int do_keyop(EVP_PKEY_CTX *ctx, int pkey_op, uint8_t *out, size_t *poutlen,
+                    uint8_t *in, size_t inlen)
 {
     int rv = 0;
     switch (pkey_op) {

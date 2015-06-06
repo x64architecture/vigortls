@@ -182,7 +182,7 @@ X509_NAME_ENTRY *X509_NAME_delete_entry(X509_NAME *name, int loc)
 }
 
 int X509_NAME_add_entry_by_OBJ(X509_NAME *name, ASN1_OBJECT *obj, int type,
-                               unsigned char *bytes, int len, int loc, int set)
+                               uint8_t *bytes, int len, int loc, int set)
 {
     X509_NAME_ENTRY *ne;
     int ret;
@@ -195,7 +195,7 @@ int X509_NAME_add_entry_by_OBJ(X509_NAME *name, ASN1_OBJECT *obj, int type,
 }
 
 int X509_NAME_add_entry_by_NID(X509_NAME *name, int nid, int type,
-                               unsigned char *bytes, int len, int loc, int set)
+                               uint8_t *bytes, int len, int loc, int set)
 {
     X509_NAME_ENTRY *ne;
     int ret;
@@ -208,7 +208,7 @@ int X509_NAME_add_entry_by_NID(X509_NAME *name, int nid, int type,
 }
 
 int X509_NAME_add_entry_by_txt(X509_NAME *name, const char *field, int type,
-                               const unsigned char *bytes, int len, int loc, int set)
+                               const uint8_t *bytes, int len, int loc, int set)
 {
     X509_NAME_ENTRY *ne;
     int ret;
@@ -279,7 +279,7 @@ err:
 }
 
 X509_NAME_ENTRY *X509_NAME_ENTRY_create_by_txt(X509_NAME_ENTRY **ne,
-                                               const char *field, int type, const unsigned char *bytes, int len)
+                                               const char *field, int type, const uint8_t *bytes, int len)
 {
     ASN1_OBJECT *obj;
     X509_NAME_ENTRY *nentry;
@@ -297,7 +297,7 @@ X509_NAME_ENTRY *X509_NAME_ENTRY_create_by_txt(X509_NAME_ENTRY **ne,
 }
 
 X509_NAME_ENTRY *X509_NAME_ENTRY_create_by_NID(X509_NAME_ENTRY **ne, int nid,
-                                               int type, unsigned char *bytes, int len)
+                                               int type, uint8_t *bytes, int len)
 {
     ASN1_OBJECT *obj;
     X509_NAME_ENTRY *nentry;
@@ -313,7 +313,7 @@ X509_NAME_ENTRY *X509_NAME_ENTRY_create_by_NID(X509_NAME_ENTRY **ne, int nid,
 }
 
 X509_NAME_ENTRY *X509_NAME_ENTRY_create_by_OBJ(X509_NAME_ENTRY **ne,
-                                               ASN1_OBJECT *obj, int type, const unsigned char *bytes, int len)
+                                               ASN1_OBJECT *obj, int type, const uint8_t *bytes, int len)
 {
     X509_NAME_ENTRY *ret;
 
@@ -349,7 +349,7 @@ int X509_NAME_ENTRY_set_object(X509_NAME_ENTRY *ne, ASN1_OBJECT *obj)
 }
 
 int X509_NAME_ENTRY_set_data(X509_NAME_ENTRY *ne, int type,
-                             const unsigned char *bytes, int len)
+                             const uint8_t *bytes, int len)
 {
     int i;
 

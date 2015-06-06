@@ -121,8 +121,8 @@ static void pkey_dsa_cleanup(EVP_PKEY_CTX *ctx)
         free(dctx);
 }
 
-static int pkey_dsa_sign(EVP_PKEY_CTX *ctx, unsigned char *sig, size_t *siglen,
-                         const unsigned char *tbs, size_t tbslen)
+static int pkey_dsa_sign(EVP_PKEY_CTX *ctx, uint8_t *sig, size_t *siglen,
+                         const uint8_t *tbs, size_t tbslen)
 {
     int ret, type;
     unsigned int sltmp;
@@ -143,8 +143,8 @@ static int pkey_dsa_sign(EVP_PKEY_CTX *ctx, unsigned char *sig, size_t *siglen,
 }
 
 static int pkey_dsa_verify(EVP_PKEY_CTX *ctx,
-                           const unsigned char *sig, size_t siglen,
-                           const unsigned char *tbs, size_t tbslen)
+                           const uint8_t *sig, size_t siglen,
+                           const uint8_t *tbs, size_t tbslen)
 {
     int ret, type;
     DSA_PKEY_CTX *dctx = ctx->data;

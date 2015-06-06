@@ -65,11 +65,11 @@
 #include <openssl/rand.h>
 #include <openssl/rsa.h>
 
-int RSA_padding_add_X931(unsigned char *to, int tlen,
-                         const unsigned char *from, int flen)
+int RSA_padding_add_X931(uint8_t *to, int tlen,
+                         const uint8_t *from, int flen)
 {
     int j;
-    unsigned char *p;
+    uint8_t *p;
 
     /* Absolute minimum amount of padding is 1 header nibble, 1 padding
      * nibble and 2 trailer bytes: but 1 hash if is already in 'from'.
@@ -82,7 +82,7 @@ int RSA_padding_add_X931(unsigned char *to, int tlen,
         return -1;
     }
 
-    p = (unsigned char *)to;
+    p = (uint8_t *)to;
 
     /* If no padding start and end nibbles are in one byte */
     if (j == 0)
@@ -101,11 +101,11 @@ int RSA_padding_add_X931(unsigned char *to, int tlen,
     return (1);
 }
 
-int RSA_padding_check_X931(unsigned char *to, int tlen,
-                           const unsigned char *from, int flen, int num)
+int RSA_padding_check_X931(uint8_t *to, int tlen,
+                           const uint8_t *from, int flen, int num)
 {
     int i = 0, j;
-    const unsigned char *p;
+    const uint8_t *p;
 
     p = from;
     if ((num != flen) || ((*p != 0x6A) && (*p != 0x6B))) {
@@ -116,7 +116,7 @@ int RSA_padding_check_X931(unsigned char *to, int tlen,
     if (*p++ == 0x6B) {
         j = flen - 3;
         for (i = 0; i < j; i++) {
-            unsigned char c = *p++;
+            uint8_t c = *p++;
             if (c == 0xBA)
                 break;
             if (c != 0xBB) {

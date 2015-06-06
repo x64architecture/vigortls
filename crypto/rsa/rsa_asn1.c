@@ -103,12 +103,12 @@ ASN1_SEQUENCE(RSA_PSS_PARAMS) = {
     ASN1_EXP_OPT(RSA_PSS_PARAMS, trailerField, ASN1_INTEGER, 3)
 } ASN1_SEQUENCE_END(RSA_PSS_PARAMS)
 
-RSA_PSS_PARAMS *d2i_RSA_PSS_PARAMS(RSA_PSS_PARAMS **a, const unsigned char **in, long len)
+RSA_PSS_PARAMS *d2i_RSA_PSS_PARAMS(RSA_PSS_PARAMS **a, const uint8_t **in, long len)
 {
     return (RSA_PSS_PARAMS *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, &RSA_PSS_PARAMS_it);
 }
 
-int i2d_RSA_PSS_PARAMS(RSA_PSS_PARAMS *a, unsigned char **out)
+int i2d_RSA_PSS_PARAMS(RSA_PSS_PARAMS *a, uint8_t **out)
 {
     return ASN1_item_i2d((ASN1_VALUE *)a, out, &RSA_PSS_PARAMS_it);
 }
@@ -123,22 +123,22 @@ void RSA_PSS_PARAMS_free(RSA_PSS_PARAMS *a)
     ASN1_item_free((ASN1_VALUE *)a, &RSA_PSS_PARAMS_it);
 }
 
-RSA *d2i_RSAPrivateKey(RSA **a, const unsigned char **in, long len)
+RSA *d2i_RSAPrivateKey(RSA **a, const uint8_t **in, long len)
 {
     return (RSA *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, &RSAPrivateKey_it);
 }
 
-int i2d_RSAPrivateKey(const RSA *a, unsigned char **out)
+int i2d_RSAPrivateKey(const RSA *a, uint8_t **out)
 {
     return ASN1_item_i2d((ASN1_VALUE *)a, out, &RSAPrivateKey_it);
 }
 
-RSA *d2i_RSAPublicKey(RSA **a, const unsigned char **in, long len)
+RSA *d2i_RSAPublicKey(RSA **a, const uint8_t **in, long len)
 {
     return (RSA *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, &RSAPublicKey_it);
 }
 
-int i2d_RSAPublicKey(const RSA *a, unsigned char **out)
+int i2d_RSAPublicKey(const RSA *a, uint8_t **out)
 {
     return ASN1_item_i2d((ASN1_VALUE *)a, out, &RSAPublicKey_it);
 }

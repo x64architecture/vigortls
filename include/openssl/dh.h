@@ -92,7 +92,7 @@ struct dh_method {
     const char *name;
     /* Methods here */
     int (*generate_key)(DH *dh);
-    int (*compute_key)(unsigned char *key, const BIGNUM *pub_key, DH *dh);
+    int (*compute_key)(uint8_t *key, const BIGNUM *pub_key, DH *dh);
     int (*bn_mod_exp)(const DH *dh, BIGNUM *r, const BIGNUM *a,
                       const BIGNUM *p, const BIGNUM *m, BN_CTX *ctx,
                       BN_MONT_CTX *m_ctx); /* Can be null */
@@ -121,7 +121,7 @@ struct dh_st {
     /* Place holders if we want to do X9.42 DH */
     BIGNUM *q;
     BIGNUM *j;
-    unsigned char *seed;
+    uint8_t *seed;
     int seedlen;
     BIGNUM *counter;
 
@@ -150,9 +150,9 @@ struct dh_st {
 #define DH_CHECK_P_NOT_STRONG_PRIME DH_CHECK_P_NOT_SAFE_PRIME
 
 #define d2i_DHparams_fp(fp, x) (DH *) ASN1_d2i_fp((char *(*)())DH_new, \
-                                                  (char *(*)())d2i_DHparams, (fp), (unsigned char **)(x))
+                                                  (char *(*)())d2i_DHparams, (fp), (uint8_t **)(x))
 #define i2d_DHparams_fp(fp, x) ASN1_i2d_fp(i2d_DHparams, (fp), \
-                                           (unsigned char *)(x))
+                                           (uint8_t *)(x))
 #define d2i_DHparams_bio(bp, x) ASN1_d2i_bio_of(DH, DH_new, d2i_DHparams, bp, x)
 #define i2d_DHparams_bio(bp, x) ASN1_i2d_bio_of_const(DH, i2d_DHparams, bp, x)
 
@@ -186,9 +186,9 @@ int DH_generate_parameters_ex(DH *dh, int prime_len, int generator, BN_GENCB *cb
 int DH_check(const DH *dh, int *codes);
 int DH_check_pub_key(const DH *dh, const BIGNUM *pub_key, int *codes);
 int DH_generate_key(DH *dh);
-int DH_compute_key(unsigned char *key, const BIGNUM *pub_key, DH *dh);
-DH *d2i_DHparams(DH **a, const unsigned char **pp, long length);
-int i2d_DHparams(const DH *a, unsigned char **pp);
+int DH_compute_key(uint8_t *key, const BIGNUM *pub_key, DH *dh);
+DH *d2i_DHparams(DH **a, const uint8_t **pp, long length);
+int i2d_DHparams(const DH *a, uint8_t **pp);
 int DHparams_print_fp(FILE *fp, const DH *x);
 int DHparams_print(BIO *bp, const DH *x);
 

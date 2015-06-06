@@ -68,12 +68,12 @@
 DECLARE_ASN1_ITEM(CMS_ReceiptRequest)
 DECLARE_ASN1_ITEM(CMS_Receipt)
 
-CMS_ReceiptRequest *d2i_CMS_ReceiptRequest(CMS_ReceiptRequest **a, const unsigned char **in, long len)
+CMS_ReceiptRequest *d2i_CMS_ReceiptRequest(CMS_ReceiptRequest **a, const uint8_t **in, long len)
 {
     return (CMS_ReceiptRequest *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, &CMS_ReceiptRequest_it);
 }
 
-int i2d_CMS_ReceiptRequest(CMS_ReceiptRequest *a, unsigned char **out)
+int i2d_CMS_ReceiptRequest(CMS_ReceiptRequest *a, uint8_t **out)
 {
     return ASN1_item_i2d((ASN1_VALUE **)a, out, &CMS_ReceiptRequest_it);
 }
@@ -112,7 +112,7 @@ int CMS_get1_ReceiptRequest(CMS_SignerInfo *si, CMS_ReceiptRequest **prr)
     return 1;
 }
 
-CMS_ReceiptRequest *CMS_ReceiptRequest_create0(unsigned char *id, int idlen,
+CMS_ReceiptRequest *CMS_ReceiptRequest_create0(uint8_t *id, int idlen,
                                                int allorfirst,
                                                STACK_OF(GENERAL_NAMES) * receiptList,
                                                STACK_OF(GENERAL_NAMES) * receiptsTo)
@@ -156,7 +156,7 @@ err:
 
 int CMS_add1_ReceiptRequest(CMS_SignerInfo *si, CMS_ReceiptRequest *rr)
 {
-    unsigned char *rrder = NULL;
+    uint8_t *rrder = NULL;
     int rrderlen, r = 0;
 
     rrderlen = i2d_CMS_ReceiptRequest(rr, &rrder);
@@ -205,7 +205,7 @@ void CMS_ReceiptRequest_get0_values(CMS_ReceiptRequest *rr,
 /* Digest a SignerInfo structure for msgSigDigest attribute processing */
 
 static int cms_msgSigDigest(CMS_SignerInfo *si,
-                            unsigned char *dig, unsigned int *diglen)
+                            uint8_t *dig, unsigned int *diglen)
 {
     const EVP_MD *md;
     md = EVP_get_digestbyobj(si->digestAlgorithm->algorithm);
@@ -221,7 +221,7 @@ static int cms_msgSigDigest(CMS_SignerInfo *si,
 
 int cms_msgSigDigest_add1(CMS_SignerInfo *dest, CMS_SignerInfo *src)
 {
-    unsigned char dig[EVP_MAX_MD_SIZE];
+    uint8_t dig[EVP_MAX_MD_SIZE];
     unsigned int diglen;
     if (!cms_msgSigDigest(src, dig, &diglen)) {
         CMSerr(CMS_F_CMS_MSGSIGDIGEST_ADD1, CMS_R_MSGSIGDIGEST_ERROR);
@@ -246,7 +246,7 @@ int cms_Receipt_verify(CMS_ContentInfo *cms, CMS_ContentInfo *req_cms)
     CMS_SignerInfo *si, *osi = NULL;
     ASN1_OCTET_STRING *msig, **pcont;
     ASN1_OBJECT *octype;
-    unsigned char dig[EVP_MAX_MD_SIZE];
+    uint8_t dig[EVP_MAX_MD_SIZE];
     unsigned int diglen;
 
     /* Get SignerInfos, also checks SignedData content type */

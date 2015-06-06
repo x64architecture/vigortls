@@ -75,7 +75,7 @@ char *X509_NAME_oneline(X509_NAME *a, char *buf, int len)
     int n, lold, l, l1, l2, num, j, type;
     const char *s;
     char *p;
-    unsigned char *q;
+    uint8_t *q;
     BUF_MEM *b = NULL;
     static const char hex[17] = "0123456789ABCDEF";
     int gs_doit[4];

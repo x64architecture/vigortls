@@ -63,7 +63,7 @@ static const struct chacha_test chacha_tests[] = {
     },
 };
 
-static unsigned char hex_digit(char h)
+static uint8_t hex_digit(char h)
 {
     if (h >= '0' && h <= '9')
         return h - '0';
@@ -75,19 +75,19 @@ static unsigned char hex_digit(char h)
         abort();
 }
 
-static void hex_decode(unsigned char *out, const char *hex)
+static void hex_decode(uint8_t *out, const char *hex)
 {
     size_t j = 0;
 
     while (*hex != 0) {
-        unsigned char v = hex_digit(*hex++);
+        uint8_t v = hex_digit(*hex++);
         v <<= 4;
         v |= hex_digit(*hex++);
         out[j++] = v;
     }
 }
 
-static void hexdump(unsigned char *a, size_t len)
+static void hexdump(uint8_t *a, size_t len)
 {
     size_t i;
 
@@ -108,15 +108,15 @@ int main()
 {
     static const unsigned num_tests = sizeof(chacha_tests) / sizeof(struct chacha_test);
     unsigned i;
-    unsigned char key_bytes[32 + 16];
-    unsigned char nonce_bytes[8 + 16] = { 0 };
+    uint8_t key_bytes[32 + 16];
+    uint8_t nonce_bytes[8 + 16] = { 0 };
 
-    unsigned char *key = misalign(key_bytes);
-    unsigned char *nonce = misalign(nonce_bytes);
+    uint8_t *key = misalign(key_bytes);
+    uint8_t *nonce = misalign(nonce_bytes);
 
     for (i = 0; i < num_tests; i++) {
         const struct chacha_test *test = &chacha_tests[i];
-        unsigned char *expected, *out_bytes, *zero_bytes, *out, *zeros;
+        uint8_t *expected, *out_bytes, *zero_bytes, *out, *zeros;
         size_t len = strlen(test->outhex);
 
         if (strlen(test->keyhex) != 32 * 2 || strlen(test->noncehex) != 8 * 2 || (len & 1) == 1)
