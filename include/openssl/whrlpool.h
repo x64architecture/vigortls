@@ -3,6 +3,7 @@
 
 #include <openssl/opensslconf.h>
 #include <stddef.h>
+#include <stdint.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -14,20 +15,20 @@ extern "C" {
 
 typedef struct {
     union {
-        unsigned char c[WHIRLPOOL_DIGEST_LENGTH];
+        uint8_t c[WHIRLPOOL_DIGEST_LENGTH];
         /* double q is here to ensure 64-bit alignment */
         double q[WHIRLPOOL_DIGEST_LENGTH / sizeof(double)];
     } H;
-    unsigned char data[WHIRLPOOL_BBLOCK / 8];
-    unsigned int bitoff;
+    uint8_t data[WHIRLPOOL_BBLOCK / 8];
+    uint32_t bitoff;
     size_t bitlen[WHIRLPOOL_COUNTER / sizeof(size_t)];
 } WHIRLPOOL_CTX;
 
 int WHIRLPOOL_Init(WHIRLPOOL_CTX *c);
 int WHIRLPOOL_Update(WHIRLPOOL_CTX *c, const void *inp, size_t bytes);
 void WHIRLPOOL_BitUpdate(WHIRLPOOL_CTX *c, const void *inp, size_t bits);
-int WHIRLPOOL_Final(unsigned char *md, WHIRLPOOL_CTX *c);
-unsigned char *WHIRLPOOL(const void *inp, size_t bytes, unsigned char *md);
+int WHIRLPOOL_Final(uint8_t *md, WHIRLPOOL_CTX *c);
+uint8_t *WHIRLPOOL(const void *inp, size_t bytes, uint8_t *md);
 
 #ifdef __cplusplus
 }

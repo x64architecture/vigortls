@@ -68,7 +68,7 @@ int WHIRLPOOL_Update(WHIRLPOOL_CTX *c, const void *_inp, size_t bytes)
      * is large enough for not to care about excessive
      * calls to WHIRLPOOL_BitUpdate... */
     size_t chunk = ((size_t)1) << (sizeof(size_t) * 8 - 4);
-    const unsigned char *inp = _inp;
+    const uint8_t *inp = _inp;
 
     while (bytes >= chunk) {
         WHIRLPOOL_BitUpdate(c, inp, chunk * 8);
@@ -87,7 +87,7 @@ void WHIRLPOOL_BitUpdate(WHIRLPOOL_CTX *c, const void *_inp, size_t bits)
     unsigned int bitoff = c->bitoff,
                  bitrem = bitoff % 8,
                  inpgap = (8 - (unsigned int)bits % 8) & 7;
-    const unsigned char *inp = _inp;
+    const uint8_t *inp = _inp;
 
     /* This 256-bit increment procedure relies on the size_t
      * being natural size of CPU register, so that we don't
@@ -147,7 +147,7 @@ reconsider:
         */
         while (bits) {
             unsigned int byteoff = bitoff / 8;
-            unsigned char b;
+            uint8_t b;
 
 #ifndef OPENSSL_SMALL_FOOTPRINT
             if (bitrem == inpgap) {
@@ -205,12 +205,12 @@ reconsider:
     }
 }
 
-int WHIRLPOOL_Final(unsigned char *md, WHIRLPOOL_CTX *c)
+int WHIRLPOOL_Final(uint8_t *md, WHIRLPOOL_CTX *c)
 {
     unsigned int bitoff = c->bitoff,
                  byteoff = bitoff / 8;
     size_t i, j, v;
-    unsigned char *p;
+    uint8_t *p;
 
     bitoff %= 8;
     if (bitoff)
@@ -233,7 +233,7 @@ int WHIRLPOOL_Final(unsigned char *md, WHIRLPOOL_CTX *c)
     p = &c->data[WHIRLPOOL_BBLOCK / 8 - 1]; /* last byte in c->data */
     for (i = 0; i < WHIRLPOOL_COUNTER / sizeof(size_t); i++)
         for (v = c->bitlen[i], j = 0; j < sizeof(size_t); j++, v >>= 8)
-            *p-- = (unsigned char)(v & 0xff);
+            *p-- = (uint8_t)(v & 0xff);
 
     whirlpool_block(c, c->data, 1);
 
@@ -245,10 +245,10 @@ int WHIRLPOOL_Final(unsigned char *md, WHIRLPOOL_CTX *c)
     return (0);
 }
 
-unsigned char *WHIRLPOOL(const void *inp, size_t bytes, unsigned char *md)
+uint8_t *WHIRLPOOL(const void *inp, size_t bytes, uint8_t *md)
 {
     WHIRLPOOL_CTX ctx;
-    static unsigned char m[WHIRLPOOL_DIGEST_LENGTH];
+    static uint8_t m[WHIRLPOOL_DIGEST_LENGTH];
 
     if (md == NULL)
         md = m;

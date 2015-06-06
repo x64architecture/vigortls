@@ -39,17 +39,16 @@
 #include <string.h>
 #include <machine/endian.h>
 
-typedef unsigned char u8;
 #if defined(__arch64__)
-typedef unsigned long u64;
+typedef uint32_t u64;
 #else
-typedef unsigned long long u64;
+typedef uint64_t u64;
 #endif
 
 #define ROUNDS 10
 
 #define STRICT_ALIGNMENT
-#if defined(__i386) || defined(__i386__) || defined(__x86_64) || defined(__x86_64__) || defined(_M_IX86) || defined(_M_AMD64) || defined(_M_X64)
+#if defined(VIGORTLS_X86) || defined(VIGORTLS_X86_64)
 /* Well, formally there're couple of other architectures, which permit
  * unaligned loads, specifically those not crossing cache lines, IA-64
  * and PowerPC... */
@@ -57,12 +56,12 @@ typedef unsigned long long u64;
 #endif
 
 #undef SMALL_REGISTER_BANK
-#if defined(__i386) || defined(__i386__) || defined(_M_IX86)
+#if defined(VIGORTLS_X86)
 #define SMALL_REGISTER_BANK
 #if !defined(OPENSSL_NO_ASM)
 #ifndef OPENSSL_SMALL_FOOTPRINT
-#define OPENSSL_SMALL_FOOTPRINT /* it appears that for elder non-MMX \
-              CPUs this is actually faster! */
+#define OPENSSL_SMALL_FOOTPRINT /* it appears that for elder non-MMX
+                                 * CPUs this is actually faster! */
 #endif
 #define GO_FOR_MMX(ctx, inp, num)                               \
     do {                                                        \
@@ -76,30 +75,19 @@ typedef unsigned long long u64;
 #endif
 #endif
 
-#undef ROTATE
-#if defined(__GNUC__) && __GNUC__ >= 2
-#if defined(__x86_64) || defined(__x86_64__)
-#define ROTATE(a, n) ({ u64 ret; __asm__ ("rolq %1,%0"    \
-                   : "=r"(ret) : "J"(n),"0"(a) : "cc"); ret; })
-#elif defined(__ia64) || defined(__ia64__)
 #if BYTE_ORDER == LITTLE_ENDIAN
-#define ROTATE(a, n) ({ u64 ret; __asm__ ("shrp %0=%1,%1,%2"    \
-                   : "=r"(ret) : "r"(a),"M"(64-(n))); ret; })
+static inline u64 ROTATE(u64 a, unsigned int n)
+{
+    return ((a << n) | (a >> (64 - n)));
+}
 #elif BYTE_ORDER == BIG_ENDIAN
-#define ROTATE(a, n) ({ u64 ret; __asm__ ("shrp %0=%1,%1,%2"    \
-                   : "=r"(ret) : "r"(a),"M"(n)); ret; })
-#endif
-#endif
+static inline u64 ROTATE(u64 a, unsigned int n)
+{
+    return ((a >> n) | (a << (64 - n)));
+}
 #endif
 
 #if defined(OPENSSL_SMALL_FOOTPRINT)
-#if !defined(ROTATE)
-#if BYTE_ORDER == LITTLE_ENDIAN /* little-endians have to rotate left */
-#define ROTATE(i, n) ((i) << (n) ^ (i) >> (64 - n))
-#elif BYTE_ORDER == BIG_ENDIAN /* big-endians have to rotate right */
-#define ROTATE(i, n) ((i) >> (n) ^ (i) << (64 - n))
-#endif
-#endif
 #if defined(ROTATE) && !defined(STRICT_ALIGNMENT)
 #define STRICT_ALIGNMENT /* ensure smallest table size */
 #endif
@@ -174,7 +162,7 @@ typedef unsigned long long u64;
 #endif
 
 static const union {
-    u8 c[(256 * N + ROUNDS) * sizeof(u64)];
+    uint8_t c[(256 * N + ROUNDS) * sizeof(u64)];
     u64 q[(256 * N + ROUNDS)];
 } Cx = { { /* Note endian-neutral representation:-) */
            LL(0x18, 0x18, 0x60, 0x18, 0xc0, 0x78, 0x30, 0xd8),
@@ -449,10 +437,10 @@ static const union {
 void whirlpool_block(WHIRLPOOL_CTX *ctx, const void *inp, size_t n)
 {
     int r;
-    const u8 *p = inp;
+    const uint8_t *p = inp;
     union {
         u64 q[8];
-        u8 c[64];
+        uint8_t c[64];
     } S, K, *H = (void *)ctx->H.q;
 
 #ifdef GO_FOR_MMX
