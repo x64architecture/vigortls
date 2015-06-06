@@ -212,7 +212,10 @@ static void dgram_adjust_rcv_timeout(BIO *b)
         /* Adjust socket timeout if next handhake message timer
          * will expire earlier.
          */
-        if ((data->socket_timeout.tv_sec == 0 && data->socket_timeout.tv_usec == 0) || (data->socket_timeout.tv_sec > timeleft.tv_sec) || (data->socket_timeout.tv_sec == timeleft.tv_sec && data->socket_timeout.tv_usec >= timeleft.tv_usec)) {
+        if ((data->socket_timeout.tv_sec == 0 && data->socket_timeout.tv_usec == 0)
+            || (data->socket_timeout.tv_sec > timeleft.tv_sec)
+            || (data->socket_timeout.tv_sec == timeleft.tv_sec
+                && data->socket_timeout.tv_usec >= timeleft.tv_usec)) {
             if (setsockopt(b->num, SOL_SOCKET, SO_RCVTIMEO, &timeleft,
                            sizeof(struct timeval)) < 0) {
                 perror("setsockopt");
@@ -309,10 +312,13 @@ static long dgram_ctrl(BIO *b, int cmd, long num, void *ptr)
     int *ip;
     struct sockaddr *to = NULL;
     bio_dgram_data *data = NULL;
+#ifdef IP_MTU
+    socklen_t sockopt_len; /* assume that system supporting IP_MTU is
+                            * modern enough to define socklen_t */
+#endif
 #if (defined(IP_MTU_DISCOVER) || defined(IP_MTU))
     int sockopt_val = 0;
-    socklen_t sockopt_len; /* assume that system supporting IP_MTU is
-                 * modern enough to define socklen_t */
+
     socklen_t addr_len;
     union {
         struct sockaddr sa;
@@ -409,7 +415,7 @@ static long dgram_ctrl(BIO *b, int cmd, long num, void *ptr)
             break;
 #endif
         case BIO_CTRL_DGRAM_QUERY_MTU:
-#if defined(IP_MTU)
+#ifdef IP_MTU
             addr_len = (socklen_t)sizeof(addr);
             memset((void *)&addr, 0, sizeof(addr));
             if (getsockname(b->num, &addr.sa, &addr_len) < 0) {
@@ -424,21 +430,21 @@ static long dgram_ctrl(BIO *b, int cmd, long num, void *ptr)
                         ret = 0;
                     } else {
                         /* we assume that the transport protocol is UDP and no
-                 * IP options are used.
-                 */
+                         * IP options are used.
+                         */
                         data->mtu = sockopt_val - 8 - 20;
                         ret = data->mtu;
                     }
                     break;
-#if defined(IPV6_MTU)
+#ifdef IPV6_MTU
                 case AF_INET6:
                     if ((ret = getsockopt(b->num, IPPROTO_IPV6, IPV6_MTU, (void *)&sockopt_val,
                                           &sockopt_len)) < 0 || sockopt_val < 0) {
                         ret = 0;
                     } else {
                         /* we assume that the transport protocol is UDP and no
-                 * IPV6 options are used.
-                 */
+                         * IPV6 options are used.
+                         */
                         data->mtu = sockopt_val - 8 - 40;
                         ret = data->mtu;
                     }
