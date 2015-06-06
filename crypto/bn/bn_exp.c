@@ -117,16 +117,22 @@
 #include "bn_lcl.h"
 
 #ifdef _WIN32
-# include <malloc.h>
-# ifndef alloca
-#  define alloca _alloca
-# endif
+#include <malloc.h>
+#ifndef alloca
+#define alloca _alloca
+#endif
 #elif defined(__GNUC__)
-# ifndef alloca
-#  define alloca(s) __builtin_alloca((s))
-# endif
+#ifndef alloca
+#define alloca(s) __builtin_alloca((s))
+#endif
 #elif defined(__sun)
-# include <alloca.h>
+#include <alloca.h>
+#endif
+
+#undef RSAZ_ENABLED
+#if defined(OPENSSL_BN_ASM_MONT) && defined(VIGORTLS_X86_64)
+#include "rsaz_exp.h"
+#define RSAZ_ENABLED
 #endif
 
 /* maximum precomputation table size for *variable* sliding windows */
@@ -191,36 +197,36 @@ int BN_mod_exp(BIGNUM *r, const BIGNUM *a, const BIGNUM *p, const BIGNUM *m,
     bn_check_top(p);
     bn_check_top(m);
 
-    /*
-     * For even modulus  m = 2^k*m_odd,  it might make sense to compute
-     * a^p mod m_odd  and  a^p mod 2^k  separately (with Montgomery
-     * exponentiation for the odd part), using appropriate exponent
-     * reductions, and combine the results using the CRT.
-     *
-     * For now, we use Montgomery only if the modulus is odd; otherwise,
-     * exponentiation using the reciprocal-based quick remaindering
-     * algorithm is used.
-     *
-     * (Timing obtained with expspeed.c [computations  a^p mod m
-     * where  a, p, m  are of the same length: 256, 512, 1024, 2048,
-     * 4096, 8192 bits], compared to the running time of the
-     * standard algorithm:
-     *
-     *   BN_mod_exp_mont   33 .. 40 %  [AMD K6-2, Linux, debug configuration]
-         *                     55 .. 77 %  [UltraSparc processor, but
-     *                                  debug-solaris-sparcv8-gcc conf.]
-     *
-     *   BN_mod_exp_recp   50 .. 70 %  [AMD K6-2, Linux, debug configuration]
-     *                     62 .. 118 % [UltraSparc, debug-solaris-sparcv8-gcc]
-     *
-     * On the Sparc, BN_mod_exp_recp was faster than BN_mod_exp_mont
-     * at 2048 and more bits, but at 512 and 1024 bits, it was
-     * slower even than the standard algorithm!
-     *
-     * "Real" timings [linux-elf, solaris-sparcv9-gcc configurations]
-     * should be obtained when the new Montgomery reduction code
-     * has been integrated into OpenSSL.)
-     */
+/*
+ * For even modulus  m = 2^k*m_odd,  it might make sense to compute
+ * a^p mod m_odd  and  a^p mod 2^k  separately (with Montgomery
+ * exponentiation for the odd part), using appropriate exponent
+ * reductions, and combine the results using the CRT.
+ *
+ * For now, we use Montgomery only if the modulus is odd; otherwise,
+ * exponentiation using the reciprocal-based quick remaindering
+ * algorithm is used.
+ *
+ * (Timing obtained with expspeed.c [computations  a^p mod m
+ * where  a, p, m  are of the same length: 256, 512, 1024, 2048,
+ * 4096, 8192 bits], compared to the running time of the
+ * standard algorithm:
+ *
+ *   BN_mod_exp_mont   33 .. 40 %  [AMD K6-2, Linux, debug configuration]
+     *                     55 .. 77 %  [UltraSparc processor, but
+ *                                  debug-solaris-sparcv8-gcc conf.]
+ *
+ *   BN_mod_exp_recp   50 .. 70 %  [AMD K6-2, Linux, debug configuration]
+ *                     62 .. 118 % [UltraSparc, debug-solaris-sparcv8-gcc]
+ *
+ * On the Sparc, BN_mod_exp_recp was faster than BN_mod_exp_mont
+ * at 2048 and more bits, but at 512 and 1024 bits, it was
+ * slower even than the standard algorithm!
+ *
+ * "Real" timings [linux-elf, solaris-sparcv9-gcc configurations]
+ * should be obtained when the new Montgomery reduction code
+ * has been integrated into OpenSSL.)
+ */
 
 #define MONT_MUL_MOD
 #define MONT_EXP_WORD
@@ -258,8 +264,8 @@ int BN_mod_exp(BIGNUM *r, const BIGNUM *a, const BIGNUM *p, const BIGNUM *m,
     return (ret);
 }
 
-int BN_mod_exp_recp(BIGNUM *r, const BIGNUM *a, const BIGNUM *p,
-                    const BIGNUM *m, BN_CTX *ctx)
+int BN_mod_exp_recp(BIGNUM *r, const BIGNUM *a, const BIGNUM *p, const BIGNUM *m,
+                    BN_CTX *ctx)
 {
     int i, j, bits, ret = 0, wstart, wend, window, wvalue;
     int start = 1;
@@ -314,8 +320,8 @@ int BN_mod_exp_recp(BIGNUM *r, const BIGNUM *a, const BIGNUM *p,
             goto err; /* 2 */
         j = 1 << (window - 1);
         for (i = 1; i < j; i++) {
-            if (((val[i] = BN_CTX_get(ctx)) == NULL) ||
-                !BN_mod_mul_reciprocal(val[i], val[i - 1], aa, &recp, ctx))
+            if (((val[i] = BN_CTX_get(ctx)) == NULL)
+                || !BN_mod_mul_reciprocal(val[i], val[i - 1], aa, &recp, ctx))
                 goto err;
         }
     }
@@ -386,8 +392,8 @@ err:
     return (ret);
 }
 
-int BN_mod_exp_mont(BIGNUM *rr, const BIGNUM *a, const BIGNUM *p,
-                    const BIGNUM *m, BN_CTX *ctx, BN_MONT_CTX *in_mont)
+int BN_mod_exp_mont(BIGNUM *rr, const BIGNUM *a, const BIGNUM *p, const BIGNUM *m,
+                    BN_CTX *ctx, BN_MONT_CTX *in_mont)
 {
     int i, j, bits, ret = 0, wstart, wend, window, wvalue;
     int start = 1;
@@ -455,7 +461,8 @@ int BN_mod_exp_mont(BIGNUM *rr, const BIGNUM *a, const BIGNUM *p,
             goto err; /* 2 */
         j = 1 << (window - 1);
         for (i = 1; i < j; i++) {
-            if (((val[i] = BN_CTX_get(ctx)) == NULL) || !BN_mod_mul_montgomery(val[i], val[i - 1], d, mont, ctx))
+            if (((val[i] = BN_CTX_get(ctx)) == NULL)
+                || !BN_mod_mul_montgomery(val[i], val[i - 1], d, mont, ctx))
                 goto err;
         }
     }
@@ -535,7 +542,8 @@ err:
  * used to transfer a BIGNUM from/to that table.
  */
 
-static int MOD_EXP_CTIME_COPY_TO_PREBUF(const BIGNUM *b, int top, unsigned char *buf, int idx, int width)
+static int MOD_EXP_CTIME_COPY_TO_PREBUF(const BIGNUM *b, int top,
+                                        unsigned char *buf, int idx, int width)
 {
     size_t i, j;
 
@@ -548,7 +556,8 @@ static int MOD_EXP_CTIME_COPY_TO_PREBUF(const BIGNUM *b, int top, unsigned char 
     return 1;
 }
 
-static int MOD_EXP_CTIME_COPY_FROM_PREBUF(BIGNUM *b, int top, unsigned char *buf, int idx, int width)
+static int MOD_EXP_CTIME_COPY_FROM_PREBUF(BIGNUM *b, int top, unsigned char *buf,
+                                          int idx, int width)
 {
     size_t i, j;
 
@@ -565,8 +574,10 @@ static int MOD_EXP_CTIME_COPY_FROM_PREBUF(BIGNUM *b, int top, unsigned char *buf
 }
 
 /* Given a pointer value, compute the next address that is a cache line multiple. */
-#define MOD_EXP_CTIME_ALIGN(x_) \
-    ((unsigned char *)(x_) + (MOD_EXP_CTIME_MIN_CACHE_LINE_WIDTH - (((size_t)(x_)) & (MOD_EXP_CTIME_MIN_CACHE_LINE_MASK))))
+#define MOD_EXP_CTIME_ALIGN(x_)            \
+    ((unsigned char *)(x_)                 \
+     + (MOD_EXP_CTIME_MIN_CACHE_LINE_WIDTH \
+        - (((size_t)(x_)) & (MOD_EXP_CTIME_MIN_CACHE_LINE_MASK))))
 
 /*
  * This variant of BN_mod_exp_mont() uses fixed windows and the special
@@ -619,6 +630,34 @@ int BN_mod_exp_mont_consttime(BIGNUM *rr, const BIGNUM *a, const BIGNUM *p,
             goto err;
     }
 
+#ifdef RSAZ_ENABLED
+    /*
+     * If the size of the operands allow it, perform the optimized
+     * RSAZ exponentiation. For further information see
+     * crypto/bn/rsaz_exp.c and accompanying assembly modules.
+     */
+    if ((16 == a->top) && (16 == p->top) && (BN_num_bits(m) == 1024)
+        && rsaz_avx2_eligible()) {
+        if (bn_wexpand(rr, 16) == NULL)
+            goto err;
+        RSAZ_1024_mod_exp_avx2(rr->d, a->d, p->d, m->d, mont->RR.d, mont->n0[0]);
+        rr->top = 16;
+        rr->neg = 0;
+        bn_correct_top(rr);
+        ret = 1;
+        goto err;
+    } else if ((8 == a->top) && (8 == p->top) && (BN_num_bits(m) == 512)) {
+        if (bn_wexpand(rr, 8) == NULL)
+            goto err;
+        RSAZ_512_mod_exp(rr->d, a->d, p->d, m->d, mont->n0[0], mont->RR.d);
+        rr->top = 8;
+        rr->neg = 0;
+        bn_correct_top(rr);
+        ret = 1;
+        goto err;
+    }
+#endif
+
     /* Get the window size to use with size of p. */
     window = BN_window_bits_for_ctime_exponent_size(bits);
 #if defined(OPENSSL_BN_ASM_MONT5)
@@ -634,14 +673,16 @@ int BN_mod_exp_mont_consttime(BIGNUM *rr, const BIGNUM *a, const BIGNUM *p,
      * of am, am itself and tmp.
      */
     numPowers = 1 << window;
-    powerbufLen += sizeof(m->d[0]) * (top * numPowers +
-                          ((2 * top) > numPowers ? (2 * top) : numPowers));
+    powerbufLen
+        += sizeof(m->d[0])
+           * (top * numPowers + ((2 * top) > numPowers ? (2 * top) : numPowers));
 #ifdef alloca
     if (powerbufLen < 3072)
         powerbufFree = alloca(powerbufLen + MOD_EXP_CTIME_MIN_CACHE_LINE_WIDTH);
     else
 #endif
-        if ((powerbufFree = malloc(powerbufLen + MOD_EXP_CTIME_MIN_CACHE_LINE_WIDTH)) == NULL)
+        if ((powerbufFree
+             = malloc(powerbufLen + MOD_EXP_CTIME_MIN_CACHE_LINE_WIDTH)) == NULL)
         goto err;
 
     powerbuf = MOD_EXP_CTIME_ALIGN(powerbufFree);
@@ -681,7 +722,7 @@ int BN_mod_exp_mont_consttime(BIGNUM *rr, const BIGNUM *a, const BIGNUM *p,
         goto err;
 
 #if defined(OPENSSL_BN_ASM_MONT5)
-    /* 
+    /*
      * This optimization uses ideas from http://eprint.iacr.org/2011/239,
      * specifically optimization of cache-timing attack countermeasures
      * and pre-computation optimization.
@@ -695,15 +736,13 @@ int BN_mod_exp_mont_consttime(BIGNUM *rr, const BIGNUM *a, const BIGNUM *p,
         void bn_mul_mont_gather5(BN_ULONG * rp, const BN_ULONG *ap,
                                  const void *table, const BN_ULONG *np,
                                  const BN_ULONG *n0, int num, int power);
-        void bn_scatter5(const BN_ULONG *inp, size_t num,
-                         void *table, size_t power);
-        void bn_gather5(BN_ULONG * out, size_t num,
-                        void *table, size_t power);
-        void bn_power5(BN_ULONG *rp, const BN_ULONG *ap,
-                       const void *table, const BN_ULONG *np,
-                       const BN_ULONG *n0, int num, int power);
+        void bn_scatter5(const BN_ULONG *inp, size_t num, void *table,
+                         size_t power);
+        void bn_gather5(BN_ULONG * out, size_t num, void *table, size_t power);
+        void bn_power5(BN_ULONG * rp, const BN_ULONG *ap, const void *table,
+                       const BN_ULONG *np, const BN_ULONG *n0, int num, int power);
         int bn_get_bits5(const BN_ULONG *ap, int off);
-        int bn_from_montgomery(BN_ULONG *rp, const BN_ULONG *ap,
+        int bn_from_montgomery(BN_ULONG * rp, const BN_ULONG *ap,
                                const BN_ULONG *not_used, const BN_ULONG *np,
                                const BN_ULONG *n0, int num);
 
@@ -821,7 +860,8 @@ int BN_mod_exp_mont_consttime(BIGNUM *rr, const BIGNUM *a, const BIGNUM *p,
                 /* Calculate a^i = a^(i-1) * a */
                 if (!BN_mod_mul_montgomery(&tmp, &am, &tmp, mont, ctx))
                     goto err;
-                if (!MOD_EXP_CTIME_COPY_TO_PREBUF(&tmp, top, powerbuf, i, numPowers))
+                if (!MOD_EXP_CTIME_COPY_TO_PREBUF(&tmp, top, powerbuf, i,
+                                                  numPowers))
                     goto err;
             }
         }
@@ -847,7 +887,8 @@ int BN_mod_exp_mont_consttime(BIGNUM *rr, const BIGNUM *a, const BIGNUM *p,
             }
 
             /* Fetch the appropriate pre-computed value from the pre-buf */
-            if (!MOD_EXP_CTIME_COPY_FROM_PREBUF(&am, top, powerbuf, wvalue, numPowers))
+            if (!MOD_EXP_CTIME_COPY_FROM_PREBUF(&am, top, powerbuf, wvalue,
+                                                numPowers))
                 goto err;
 
             /* Multiply the result into the intermediate result */
@@ -872,8 +913,8 @@ err:
     return (ret);
 }
 
-int BN_mod_exp_mont_word(BIGNUM *rr, BN_ULONG a, const BIGNUM *p,
-                         const BIGNUM *m, BN_CTX *ctx, BN_MONT_CTX *in_mont)
+int BN_mod_exp_mont_word(BIGNUM *rr, BN_ULONG a, const BIGNUM *p, const BIGNUM *m,
+                         BN_CTX *ctx, BN_MONT_CTX *in_mont)
 {
     BN_MONT_CTX *mont = NULL;
     int b, bits, ret = 0;
@@ -881,9 +922,10 @@ int BN_mod_exp_mont_word(BIGNUM *rr, BN_ULONG a, const BIGNUM *p,
     BN_ULONG w, next_w;
     BIGNUM *d, *r, *t;
     BIGNUM *swap_tmp;
-#define BN_MOD_MUL_WORD(r, w, m)                            \
-    (BN_mul_word(r, (w)) && (/* BN_ucmp(r, (m)) < 0 ? 1 :*/ \
-                             (BN_mod(t, r, m, ctx) && (swap_tmp = r, r = t, t = swap_tmp, 1))))
+#define BN_MOD_MUL_WORD(r, w, m)        \
+    (BN_mul_word(r, (w))                \
+     && (/* BN_ucmp(r, (m)) < 0 ? 1 :*/ \
+         (BN_mod(t, r, m, ctx) && (swap_tmp = r, r = t, t = swap_tmp, 1))))
 /*
  * BN_MOD_MUL_WORD is only used with 'w' large,
  * so the BN_ucmp test is probably more overhead
@@ -1023,8 +1065,8 @@ err:
 }
 
 /* The old fallback, simple version :-) */
-int BN_mod_exp_simple(BIGNUM *r, const BIGNUM *a, const BIGNUM *p,
-                      const BIGNUM *m, BN_CTX *ctx)
+int BN_mod_exp_simple(BIGNUM *r, const BIGNUM *a, const BIGNUM *p, const BIGNUM *m,
+                      BN_CTX *ctx)
 {
     int i, j, bits, ret = 0, wstart, wend, window, wvalue;
     int start = 1;
@@ -1065,7 +1107,8 @@ int BN_mod_exp_simple(BIGNUM *r, const BIGNUM *a, const BIGNUM *p,
             goto err; /* 2 */
         j = 1 << (window - 1);
         for (i = 1; i < j; i++) {
-            if (((val[i] = BN_CTX_get(ctx)) == NULL) || !BN_mod_mul(val[i], val[i - 1], d, m, ctx))
+            if (((val[i] = BN_CTX_get(ctx)) == NULL)
+                || !BN_mod_mul(val[i], val[i - 1], d, m, ctx))
                 goto err;
         }
     }
