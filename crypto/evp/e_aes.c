@@ -893,7 +893,7 @@ aes_gcm_tls_cipher(EVP_CIPHER_CTX *ctx, uint8_t *out,
         CRYPTO_gcm128_tag(&gctx->gcm, ctx->buf, EVP_GCM_TLS_TAG_LEN);
 
         /* If tag mismatch wipe buffer */
-        if (memcmp(ctx->buf, in + len, EVP_GCM_TLS_TAG_LEN)) {
+        if (CRYPTO_memcmp(ctx->buf, in + len, EVP_GCM_TLS_TAG_LEN) != 0) {
             vigortls_zeroize(out, len);
             goto err;
         }
@@ -1253,7 +1253,7 @@ aes_ccm_cipher(EVP_CIPHER_CTX *ctx, uint8_t *out,
 
             uint8_t tag[16];
             if (CRYPTO_ccm128_tag(ccm, tag, cctx->M)) {
-                if (!memcmp(tag, ctx->buf, cctx->M))
+                if (CRYPTO_memcmp(tag, ctx->buf, cctx->M) == 0)
                     rv = len;
             }
         }

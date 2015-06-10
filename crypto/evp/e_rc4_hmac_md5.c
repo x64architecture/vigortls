@@ -205,7 +205,7 @@ static int rc4_hmac_md5_cipher(EVP_CIPHER_CTX *ctx, uint8_t *out,
             MD5_Update(&key->md, mac, MD5_DIGEST_LENGTH);
             MD5_Final(mac, &key->md);
 
-            if (memcmp(out + plen, mac, MD5_DIGEST_LENGTH))
+            if (CRYPTO_memcmp(out + plen, mac, MD5_DIGEST_LENGTH) != 0)
                 return 0;
         } else {
             MD5_Update(&key->md, out + md5_off, len - md5_off);

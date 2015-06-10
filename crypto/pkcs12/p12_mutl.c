@@ -123,7 +123,7 @@ int PKCS12_verify_mac(PKCS12 *p12, const char *pass, int passlen)
         return 0;
     }
     if ((maclen != (unsigned int)p12->mac->dinfo->digest->length)
-        || memcmp(mac, p12->mac->dinfo->digest->data, maclen))
+        || CRYPTO_memcmp(mac, p12->mac->dinfo->digest->data, maclen))
         return 0;
     return 1;
 }
