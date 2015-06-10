@@ -512,7 +512,8 @@ struct ssl_session_st {
 #define SSL_OP_SAFARI_ECDHE_ECDSA_BUG 0x00000040L
 #define SSL_OP_SSLEAY_080_CLIENT_DH_BUG 0x00000080L
 #define SSL_OP_TLS_D5_BUG 0x00000100L
-#define SSL_OP_TLS_BLOCK_PADDING_BUG 0x00000200L
+/* Removed, kept for compatiability */
+#define SSL_OP_TLS_BLOCK_PADDING_BUG 0x0L
 
 /* Hasn't done anything since OpenSSL 0.9.7h, retained for compatibility */
 #define SSL_OP_MSIE_SSLV2_RSA_PADDING 0x0
