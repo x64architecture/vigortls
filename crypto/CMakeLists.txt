@@ -99,7 +99,6 @@ add_subdirectory(pem)
 add_subdirectory(pkcs7)
 add_subdirectory(pkcs12)
 add_subdirectory(poly1305)
-add_subdirectory(pqueue)
 add_subdirectory(rand)
 add_subdirectory(rc2)
 add_subdirectory(rc4)
@@ -168,7 +167,6 @@ add_library(
     $<TARGET_OBJECTS:pkcs7>
     $<TARGET_OBJECTS:pkcs12>
     $<TARGET_OBJECTS:poly1305>
-    $<TARGET_OBJECTS:pqueue>
     $<TARGET_OBJECTS:rand>
     $<TARGET_OBJECTS:rc2>
     $<TARGET_OBJECTS:rc4>

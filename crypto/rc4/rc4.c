@@ -110,9 +110,6 @@ void RC4_set_key(RC4_KEY *key, int len, const uint8_t *data)
 
 const char *RC4_options(void)
 {
-    if (sizeof(RC4_INT) == 1)
-        return ("rc4(ptr,char)");
-    else
-        return ("rc4(ptr,int)");
+    return ("rc4(ptr,int)");
 }
 

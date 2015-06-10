@@ -1,5 +1,7 @@
 include_directories (../crypto .. ../include)
 
+add_subdirectory(pqueue)
+
 add_library(
     ssl
 
@@ -42,5 +44,7 @@ add_library(
     t1_meth.c
     t1_reneg.c
     t1_srvr.c
+
+    $<TARGET_OBJECTS:pqueue>
 )
-target_link_libraries (ssl crypto)
+target_link_libraries(ssl crypto)

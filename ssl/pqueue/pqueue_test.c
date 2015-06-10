@@ -92,30 +92,38 @@ static void pqueue_test(pqueue pq)
 {
     pitem *iter, *item;
     char *buf;
-    char buf2[49];
     char *expected;
-    buf2[0] = '\0';
+    int size, len = 0;
 
-    if (asprintf(&expected, "%s%s%s",
-                 prio1_expected, prio2_expected, prio3_expected) == -1)
-        exit(-1);
+    size = asprintf(&expected, "%s%s%s", prio1_expected, prio2_expected, prio3_expected);
+    
+    if (size == -1)
+        goto err;
+
+    if ((buf = malloc(size)) == NULL)
+        goto err;
 
     iter = pqueue_iterator(pq);
     for (item = pqueue_next(&iter); item != NULL; item = pqueue_next(&iter)) {
-        if (asprintf(&buf, "%02x%02x%02x%02x%02x%02x%02x%02x",
-                     item->priority[0], item->priority[1],
-                     item->priority[2], item->priority[3],
-                     item->priority[4], item->priority[5],
-                     item->priority[6], item->priority[7]) == -1)
-            exit(-1);
-
-        strlcat(buf2, buf, sizeof(buf2));
+        len += snprintf(buf + len, size,
+                        "%02x%02x%02x%02x%02x%02x%02x%02x",
+                        item->priority[0], item->priority[1],
+                        item->priority[2], item->priority[3],
+                        item->priority[4], item->priority[5],
+                        item->priority[6], item->priority[7]);
+        if (len == -1)
+            goto err;
     }
 
-    if (strcmp(expected, buf2) != 0) {
-        printf("expected: %s\nresult:   %s\n", expected, buf2);
-        exit(-1);
+    if (strcmp(expected, buf) != 0) {
+        printf("expected: %s\nresult:   %s\n", expected, buf);
+        goto err;
     }
+
+    return;
+
+err:
+    exit(-1);
 }
 
 int main(void)

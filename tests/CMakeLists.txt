@@ -16,12 +16,23 @@ function(
 
 endfunction(add_test_suite)
 
-add_executable(ssltest ssltest.c)
-add_executable(evptest evptest.c)
-add_executable(aeadtest aeadtest.c)
-target_link_libraries(aeadtest crypto ssl)
-target_link_libraries(evptest crypto)
-target_link_libraries(ssltest crypto ssl)
+function(
+    build_ssl_test
+
+    testname
+
+    sources
+)
+
+    add_executable(${testname} ${sources})
+
+    target_link_libraries(${testname} crypto ssl)
+
+endfunction(build_ssl_test)
+
+build_ssl_test(ssltest ssltest.c)
+build_ssl_test(evptest evptest.c)
+build_ssl_test(aeadtest aeadtest.c)
 
 set(AEADTDIR "${PROJECT_SOURCE_DIR}/tests/data/aead")
 add_test(aes-128-gcm_aead ./aeadtest aes-128-gcm ${AEADTDIR}/aes_128_gcm_tests.txt)
@@ -52,7 +63,6 @@ add_test_suite(igetest igetest.c)
 add_test_suite(md5test md5test.c)
 add_test_suite(mdc2test mdc2test.c)
 add_test_suite(poly1305test poly1305test.c)
-add_test_suite(pq_test pq_test.c)
 add_test_suite(randtest randtest.c)
 add_test_suite(rc2test rc2test.c)
 add_test_suite(rc4test rc4test.c)
