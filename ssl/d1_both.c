@@ -816,6 +816,20 @@ again:
     /* parse the message fragment header */
     dtls1_get_message_header(wire, &msg_hdr);
 
+    len = msg_hdr.msg_len;
+    frag_off = msg_hdr.frag_off;
+    frag_len = msg_hdr.frag_len;
+
+    /*
+     * We must have at least frag_len bytes left in the record to be read.
+     * Fragments must not span records.
+     */
+    if (frag_len > s->s3->rrec.length) {
+        al = SSL3_AD_ILLEGAL_PARAMETER;
+        SSLerr(SSL_F_DTLS1_GET_MESSAGE_FRAGMENT, SSL_R_BAD_LENGTH);
+        goto f_err;
+    }
+
     /*
      * if this is a future (or stale) message it gets buffered
      * (or dropped)--no further processing at this time
@@ -824,10 +838,6 @@ again:
      */
     if (msg_hdr.seq != s->d1->handshake_read_seq && !(s->d1->listen && msg_hdr.seq == 1))
         return dtls1_process_out_of_seq_message(s, &msg_hdr, ok);
-
-    len = msg_hdr.msg_len;
-    frag_off = msg_hdr.frag_off;
-    frag_len = msg_hdr.frag_len;
 
     if (frag_len && frag_len < len)
         return dtls1_reassemble_fragment(s, &msg_hdr, ok);
@@ -857,15 +867,14 @@ again:
     if ((al = dtls1_preprocess_fragment(s, &msg_hdr, max)))
         goto f_err;
 
-    /* XDTLS:  ressurect this when restart is in place */
-    s->state = stn;
-
     if (frag_len > 0) {
         uint8_t *p = (uint8_t *)s->init_buf->data + DTLS1_HM_HEADER_LENGTH;
 
-        i = s->method->ssl_read_bytes(s, SSL3_RT_HANDSHAKE, &p[frag_off], frag_len,
-                                      0);
-        /* XDTLS:  fix this--message fragments cannot span multiple packets */
+        i = s->method->ssl_read_bytes(s, SSL3_RT_HANDSHAKE, &p[frag_off], frag_len, 0);
+        /*
+         * This shouldn't ever fail due to NBIO because we already checked
+         * that we have enough data in the record
+         */
         if (i <= 0) {
             s->rwstate = SSL_READING;
             *ok = 0;
@@ -885,6 +894,7 @@ again:
     }
 
     *ok = 1;
+    s->state = stn;
 
     /*
      * Note that s->init_num is *not* used as current offset in
