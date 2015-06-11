@@ -125,7 +125,7 @@ int GOST_KEY_check_key(const GOST_KEY *key)
         goto err;
 
     /* testing whether the pub_key is on the elliptic curve */
-    if (!EC_POINT_is_on_curve(key->group, key->pub_key, ctx)) {
+    if (EC_POINT_is_on_curve(key->group, key->pub_key, ctx) <= 0) {
         GOSTerr(GOST_F_GOST_KEY_CHECK_KEY, EC_R_POINT_IS_NOT_ON_CURVE);
         goto err;
     }

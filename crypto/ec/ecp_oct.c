@@ -388,7 +388,7 @@ int ec_GFp_simple_oct2point(const EC_GROUP *group, EC_POINT *point,
             goto err;
     }
 
-    if (!EC_POINT_is_on_curve(group, point, ctx)) /* test required by X9.62 */
+    if (EC_POINT_is_on_curve(group, point, ctx) <= 0) /* test required by X9.62 */
     {
         ECerr(EC_F_EC_GFP_SIMPLE_OCT2POINT, EC_R_POINT_IS_NOT_ON_CURVE);
         goto err;

@@ -297,7 +297,7 @@ static void prime_field_tests(void)
         ABORT;
     if (!EC_POINT_set_compressed_coordinates_GFp(group, Q, x, 1, ctx))
         ABORT;
-    if (!EC_POINT_is_on_curve(group, Q, ctx)) {
+    if (EC_POINT_is_on_curve(group, Q, ctx) <= 0) {
         if (!EC_POINT_get_affine_coordinates_GFp(group, Q, x, y, ctx))
             ABORT;
         fprintf(stderr, "Point is not on curve: x = 0x");
@@ -407,7 +407,7 @@ static void prime_field_tests(void)
         ABORT;
     if (!EC_POINT_set_affine_coordinates_GFp(group, P, x, y, ctx))
         ABORT;
-    if (!EC_POINT_is_on_curve(group, P, ctx))
+    if (EC_POINT_is_on_curve(group, P, ctx) <= 0)
         ABORT;
     if (!BN_hex2bn(&z, "0100000000000000000001F4C8F927AED3CA752257"))
         ABORT;
@@ -456,7 +456,7 @@ static void prime_field_tests(void)
         ABORT;
     if (!EC_POINT_set_compressed_coordinates_GFp(group, P, x, 1, ctx))
         ABORT;
-    if (!EC_POINT_is_on_curve(group, P, ctx))
+    if (EC_POINT_is_on_curve(group, P, ctx) <= 0)
         ABORT;
     if (!BN_hex2bn(&z, "FFFFFFFFFFFFFFFFFFFFFFFF99DEF836146BC9B1B4D22831"))
         ABORT;
@@ -505,7 +505,7 @@ static void prime_field_tests(void)
         ABORT;
     if (!EC_POINT_set_compressed_coordinates_GFp(group, P, x, 0, ctx))
         ABORT;
-    if (!EC_POINT_is_on_curve(group, P, ctx))
+    if (EC_POINT_is_on_curve(group, P, ctx) <= 0)
         ABORT;
     if (!BN_hex2bn(&z, "FFFFFFFFFFFFFFFFFFFFFFFFFFFF16A2E0B8F03E13DD29455C5C2A3D"))
         ABORT;
@@ -554,7 +554,7 @@ static void prime_field_tests(void)
         ABORT;
     if (!EC_POINT_set_compressed_coordinates_GFp(group, P, x, 1, ctx))
         ABORT;
-    if (!EC_POINT_is_on_curve(group, P, ctx))
+    if (EC_POINT_is_on_curve(group, P, ctx) <= 0)
         ABORT;
     if (!BN_hex2bn(&z, "FFFFFFFF00000000FFFFFFFFFFFFFFFFBCE6FAADA7179E"
                        "84F3B9CAC2FC632551"))
@@ -608,7 +608,7 @@ static void prime_field_tests(void)
         ABORT;
     if (!EC_POINT_set_compressed_coordinates_GFp(group, P, x, 1, ctx))
         ABORT;
-    if (!EC_POINT_is_on_curve(group, P, ctx))
+    if (EC_POINT_is_on_curve(group, P, ctx) <= 0)
         ABORT;
     if (!BN_hex2bn(&z, "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF"
                        "FFC7634D81F4372DDF581A0DB248B0A77AECEC196ACCC52973"))
@@ -667,7 +667,7 @@ static void prime_field_tests(void)
         ABORT;
     if (!EC_POINT_set_compressed_coordinates_GFp(group, P, x, 0, ctx))
         ABORT;
-    if (!EC_POINT_is_on_curve(group, P, ctx))
+    if (EC_POINT_is_on_curve(group, P, ctx) <= 0)
         ABORT;
     if (!BN_hex2bn(&z, "1FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF"
                        "FFFFFFFFFFFFFFFFFFFFA51868783BF2F966B7FCC0148F709A5D03BB5"
@@ -711,7 +711,7 @@ static void prime_field_tests(void)
         ABORT;
     if (!EC_POINT_dbl(group, P, P, ctx))
         ABORT;
-    if (!EC_POINT_is_on_curve(group, P, ctx))
+    if (EC_POINT_is_on_curve(group, P, ctx) <= 0)
         ABORT;
     if (!EC_POINT_invert(group, Q, ctx))
         ABORT; /* P = -2Q */
@@ -829,7 +829,7 @@ static void prime_field_tests(void)
         ABORT;                                                                                         \
     if (!EC_POINT_set_compressed_coordinates_GF2m(group, P, x, _y_bit, ctx))                           \
         ABORT;                                                                                         \
-    if (!EC_POINT_is_on_curve(group, P, ctx))                                                          \
+    if (EC_POINT_is_on_curve(group, P, ctx) <= 0)                                                      \
         ABORT;                                                                                         \
     if (!BN_hex2bn(&z, _order))                                                                        \
         ABORT;                                                                                         \
@@ -857,7 +857,7 @@ static void prime_field_tests(void)
         ABORT;                                                                                         \
     if (!EC_POINT_set_affine_coordinates_GF2m(group, P, x, y, ctx))                                    \
         ABORT;                                                                                         \
-    if (!EC_POINT_is_on_curve(group, P, ctx))                                                          \
+    if (EC_POINT_is_on_curve(group, P, ctx) <= 0)                                                      \
         ABORT;                                                                                         \
     if (!BN_hex2bn(&z, _order))                                                                        \
         ABORT;                                                                                         \
@@ -992,7 +992,7 @@ static void char2_field_tests(void)
     if (!EC_POINT_set_affine_coordinates_GF2m(group, Q, x, y, ctx))
         ABORT;
 #endif
-    if (!EC_POINT_is_on_curve(group, Q, ctx)) {
+    if (EC_POINT_is_on_curve(group, Q, ctx) <= 0) {
 /* Change test based on whether binary point compression is enabled or not. */
 #ifdef OPENSSL_EC_BIN_PT_COMP
         if (!EC_POINT_get_affine_coordinates_GF2m(group, Q, x, y, ctx))
@@ -1230,7 +1230,7 @@ static void char2_field_tests(void)
         ABORT;
     if (!EC_POINT_dbl(group, P, P, ctx))
         ABORT;
-    if (!EC_POINT_is_on_curve(group, P, ctx))
+    if (EC_POINT_is_on_curve(group, P, ctx) <= 0)
         ABORT;
     if (!EC_POINT_invert(group, Q, ctx))
         ABORT; /* P = -2Q */

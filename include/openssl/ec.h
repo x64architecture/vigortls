@@ -600,11 +600,14 @@ int EC_POINT_invert(const EC_GROUP *group, EC_POINT *a, BN_CTX *ctx);
  */
 int EC_POINT_is_at_infinity(const EC_GROUP *group, const EC_POINT *p);
 
-/** Checks whether the point is on the curve
- *  \param  group  underlying EC_GROUP object
- *  \param  point  EC_POINT object to check
- *  \param  ctx    BN_CTX object (optional)
- *  \return 1 if point if on the curve and 0 otherwise
+/**
+ * @brief Check whether an EC_POINT is on the curve or not.
+ * @note The return value for this function should *NOT* be
+ *       treated as a boolean.
+ * @returns
+ *  1: If the point is *on* the curve
+ *  0: If the point is *not on* the curve
+ * -1: An error occurred
  */
 int EC_POINT_is_on_curve(const EC_GROUP *group, const EC_POINT *point, BN_CTX *ctx);
 
