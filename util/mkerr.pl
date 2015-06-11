@@ -1,4 +1,4 @@
-#!/usr/local/bin/perl -w
+#!/usr/bin/env perl
 
 my $config = "crypto/err/openssl.ec";
 my $hprefix = "openssl/";
@@ -651,8 +651,8 @@ EOF
 /* BEGIN ERROR CODES */
 #ifndef OPENSSL_NO_ERR
 
-# define ERR_FUNC(func) ERR_PACK($pack_errcode,func,0)
-# define ERR_REASON(reason) ERR_PACK($pack_errcode,0,reason)
+# define ERR_FUNC(func) ERR_PACK($pack_errcode, func, 0)
+# define ERR_REASON(reason) ERR_PACK($pack_errcode, 0, reason)
 
 static ERR_STRING_DATA ${lib}_str_functs[] = {
 EOF
@@ -666,13 +666,13 @@ EOF
 		}
 #		print OUT "{ERR_PACK($pack_errcode,$i,0),\t\"$fn\"},\n";
 		if(length($i) + length($fn) > 58) {
-			print OUT "    {ERR_FUNC($i),\n     \"$fn\"},\n";
+			print OUT "    { ERR_FUNC($i),\n     \"$fn\" },\n";
 		} else {
-			print OUT "    {ERR_FUNC($i), \"$fn\"},\n";
+			print OUT "    { ERR_FUNC($i), \"$fn\" },\n";
 		}
 	}
 	print OUT <<"EOF";
-    {0, NULL}
+    { 0, NULL }
 };
 
 static ERR_STRING_DATA ${lib}_str_reasons[] = {
@@ -689,14 +689,14 @@ EOF
 			$rn =~ tr/_[A-Z]/ [a-z]/;
 		}
 		if(length($i) + length($rn) > 56) {
-			print OUT "    {${rstr},\n     \"$rn\"},\n";
+			print OUT "    { ${rstr},\n     \"$rn\" },\n";
 		} else {
-			print OUT "    {${rstr}, \"$rn\"},\n";
+			print OUT "    { ${rstr}, \"$rn\" },\n";
 		}
 	}
 if($static) {
 	print OUT <<"EOF";
-    {0, NULL}
+    { 0, NULL }
 };
 
 #endif
@@ -815,4 +815,3 @@ if($errcount) {
 	print STDERR "There were errors, failing...\n\n";
 	exit $errcount;
 }
-

@@ -16,7 +16,7 @@ L X509      include/openssl/x509.h             crypto/x509/x509_err.c
 L ASN1      include/openssl/asn1.h             crypto/asn1/asn1_err.c
 L CONF      include/openssl/conf.h             crypto/conf/conf_err.c
 L CRYPTO    include/openssl/crypto.h           crypto/cpt_err.c
-L EC        include/openssl/ec/ec.h            crypto/ec/ec_err.c
+L EC        include/openssl/ec.h               crypto/ec/ec_err.c
 L SSL       include/openssl/ssl.h              ssl/ssl_err.c
 L BIO       include/openssl/bio.h              crypto/bio/bio_err.c
 L PKCS7     include/openssl/pkcs7.h            crypto/pkcs7/pkcs7err.c
@@ -27,10 +27,9 @@ L DSO       include/openssl/dso.h              crypto/dso/dso_err.c
 L ENGINE    include/openssl/engine.h           crypto/engine/eng_err.c
 L OCSP      include/openssl/ocsp.h             crypto/ocsp/ocsp_err.c
 L UI        include/openssl/ui.h               crypto/ui/ui_err.c
-L COMP      include/openssl/comp.h             crypto/comp/comp_err.c
 L ECDSA     include/openssl/ecdsa.h            crypto/ecdsa/ecs_err.c
 L ECDH      include/openssl/ecdh.h             crypto/ecdh/ech_err.c
-L STORE     include/openssl/store.h            crypto/store/str_err.c
+#L STORE     include/openssl/store.h            crypto/store/str_err.c
 L TS        include/openssl/ts.h               crypto/ts/ts_err.c
 L HMAC      include/openssl/hmac.h             crypto/hmac/hmac_err.c
 L CMS       include/openssl/cms.h              crypto/cms/cms_err.c
