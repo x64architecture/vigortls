@@ -299,7 +299,7 @@ static int ssl3_get_record(SSL *s)
         extra = 0;
 
     if (extra && !s->s3->init_extra) {
-        /* An application error: SLS_OP_MICROSOFT_BIG_SSLV3_BUFFER
+        /* An application error: SSL_OP_MICROSOFT_BIG_SSLV3_BUFFER
          * set after ssl3_setup_buffers() was done */
         SSLerr(SSL_F_SSL3_GET_RECORD, ERR_R_INTERNAL_ERROR);
         return -1;
@@ -339,9 +339,9 @@ again:
             goto err;
         }
 
-        if (rr->length > s->s3->rbuf.len - SSL3_RT_HEADER_LENGTH) {
+        if (rr->length > SSL3_RT_MAX_ENCRYPTED_LENGTH + extra) {
             al = SSL_AD_RECORD_OVERFLOW;
-            SSLerr(SSL_F_SSL3_GET_RECORD, SSL_R_PACKET_LENGTH_TOO_LONG);
+            SSLerr(SSL_F_SSL3_GET_RECORD, SSL_R_ENCRYPTED_LENGTH_TOO_LONG);
             goto f_err;
         }
 
@@ -376,13 +376,6 @@ again:
 
     /* We now have - encrypted [ MAC [ compressed [ plain ] ] ]
      * rr->length bytes of encrypted compressed stuff. */
-
-    /* check is not needed I believe */
-    if (rr->length > SSL3_RT_MAX_ENCRYPTED_LENGTH + extra) {
-        al = SSL_AD_RECORD_OVERFLOW;
-        SSLerr(SSL_F_SSL3_GET_RECORD, SSL_R_ENCRYPTED_LENGTH_TOO_LONG);
-        goto f_err;
-    }
 
     /* decrypt in place in 'rr->input' */
     rr->data = rr->input;
