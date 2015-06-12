@@ -102,19 +102,26 @@
 /* Maximum number of iterations before BN_GF2m_mod_solve_quad_arr should fail. */
 #define MAX_ITERATIONS 50
 
-static const BN_ULONG SQR_tb[16] = { 0, 1, 4, 5, 16, 17, 20, 21,
-                                     64, 65, 68, 69, 80, 81, 84, 85 };
+static const BN_ULONG SQR_tb[16] = { 0, 1, 4, 5, 16, 17, 20, 21, 64, 65, 68, 69, 80, 81, 84, 85 };
 /* Platform-specific macros to accelerate squaring. */
 #ifdef VIGORTLS_64_BIT
-#define SQR1(w) \
-    SQR_tb[(w) >> 60 & 0xF] << 56 | SQR_tb[(w) >> 56 & 0xF] << 48 | SQR_tb[(w) >> 52 & 0xF] << 40 | SQR_tb[(w) >> 48 & 0xF] << 32 | SQR_tb[(w) >> 44 & 0xF] << 24 | SQR_tb[(w) >> 40 & 0xF] << 16 | SQR_tb[(w) >> 36 & 0xF] << 8 | SQR_tb[(w) >> 32 & 0xF]
-#define SQR0(w) \
-    SQR_tb[(w) >> 28 & 0xF] << 56 | SQR_tb[(w) >> 24 & 0xF] << 48 | SQR_tb[(w) >> 20 & 0xF] << 40 | SQR_tb[(w) >> 16 & 0xF] << 32 | SQR_tb[(w) >> 12 & 0xF] << 24 | SQR_tb[(w) >> 8 & 0xF] << 16 | SQR_tb[(w) >> 4 & 0xF] << 8 | SQR_tb[(w)&0xF]
+#define SQR1(w)                                                         \
+    SQR_tb[(w) >> 60 & 0xF] << 56 | SQR_tb[(w) >> 56 & 0xF] << 48       \
+        | SQR_tb[(w) >> 52 & 0xF] << 40 | SQR_tb[(w) >> 48 & 0xF] << 32 \
+        | SQR_tb[(w) >> 44 & 0xF] << 24 | SQR_tb[(w) >> 40 & 0xF] << 16 \
+        | SQR_tb[(w) >> 36 & 0xF] << 8 | SQR_tb[(w) >> 32 & 0xF]
+#define SQR0(w)                                                         \
+    SQR_tb[(w) >> 28 & 0xF] << 56 | SQR_tb[(w) >> 24 & 0xF] << 48       \
+        | SQR_tb[(w) >> 20 & 0xF] << 40 | SQR_tb[(w) >> 16 & 0xF] << 32 \
+        | SQR_tb[(w) >> 12 & 0xF] << 24 | SQR_tb[(w) >> 8 & 0xF] << 16  \
+        | SQR_tb[(w) >> 4 & 0xF] << 8 | SQR_tb[(w)&0xF]
 #else
-#define SQR1(w) \
-    SQR_tb[(w) >> 28 & 0xF] << 24 | SQR_tb[(w) >> 24 & 0xF] << 16 | SQR_tb[(w) >> 20 & 0xF] << 8 | SQR_tb[(w) >> 16 & 0xF]
-#define SQR0(w) \
-    SQR_tb[(w) >> 12 & 0xF] << 24 | SQR_tb[(w) >> 8 & 0xF] << 16 | SQR_tb[(w) >> 4 & 0xF] << 8 | SQR_tb[(w)&0xF]
+#define SQR1(w)                                                   \
+    SQR_tb[(w) >> 28 & 0xF] << 24 | SQR_tb[(w) >> 24 & 0xF] << 16 \
+        | SQR_tb[(w) >> 20 & 0xF] << 8 | SQR_tb[(w) >> 16 & 0xF]
+#define SQR0(w)                                                  \
+    SQR_tb[(w) >> 12 & 0xF] << 24 | SQR_tb[(w) >> 8 & 0xF] << 16 \
+        | SQR_tb[(w) >> 4 & 0xF] << 8 | SQR_tb[(w)&0xF]
 #endif
 
 #if !defined(OPENSSL_BN_ASM_GF2m)
@@ -123,7 +130,8 @@ static const BN_ULONG SQR_tb[16] = { 0, 1, 4, 5, 16, 17, 20, 21,
  * The caller MUST ensure that the variables have the right amount
  * of space allocated.
  */
-static void bn_GF2m_mul_1x1(BN_ULONG *r1, BN_ULONG *r0, const BN_ULONG a, const BN_ULONG b)
+static void bn_GF2m_mul_1x1(BN_ULONG *r1, BN_ULONG *r0, const BN_ULONG a,
+                            const BN_ULONG b)
 {
 #ifdef VIGORTLS_32_BIT
     register BN_ULONG h, l, s;
@@ -289,7 +297,8 @@ static void bn_GF2m_mul_1x1(BN_ULONG *r1, BN_ULONG *r0, const BN_ULONG a, const 
  * The caller MUST ensure that the variables have the right amount
  * of space allocated.
  */
-static void bn_GF2m_mul_2x2(BN_ULONG *r, const BN_ULONG a1, const BN_ULONG a0, const BN_ULONG b1, const BN_ULONG b0)
+static void bn_GF2m_mul_2x2(BN_ULONG *r, const BN_ULONG a1, const BN_ULONG a0,
+                            const BN_ULONG b1, const BN_ULONG b0)
 {
     BN_ULONG m1, m0;
     /* r[3] = h1, r[2] = h0; r[1] = l1; r[0] = l0 */
@@ -301,7 +310,8 @@ static void bn_GF2m_mul_2x2(BN_ULONG *r, const BN_ULONG a1, const BN_ULONG a0, c
     r[1] = r[3] ^ r[2] ^ r[0] ^ m1 ^ m0; /* l1 ^= l0 ^ h0 ^ m0; */
 }
 #else
-void bn_GF2m_mul_2x2(BN_ULONG *r, BN_ULONG a1, BN_ULONG a0, BN_ULONG b1, BN_ULONG b0);
+void bn_GF2m_mul_2x2(BN_ULONG *r, BN_ULONG a1, BN_ULONG a0, BN_ULONG b1,
+                     BN_ULONG b0);
 #endif
 
 /* Add polynomials a and b and store result in r; r could be a or b, a and b
@@ -461,7 +471,8 @@ int BN_GF2m_mod(BIGNUM *r, const BIGNUM *a, const BIGNUM *p)
 /* Compute the product of two polynomials a and b, reduce modulo p, and store
  * the result in r.  r could be a or b; a could be b.
  */
-int BN_GF2m_mod_mul_arr(BIGNUM *r, const BIGNUM *a, const BIGNUM *b, const int p[], BN_CTX *ctx)
+int BN_GF2m_mod_mul_arr(BIGNUM *r, const BIGNUM *a, const BIGNUM *b, const int p[],
+                        BN_CTX *ctx)
 {
     int zlen, i, j, k, ret = 0;
     BIGNUM *s;
@@ -515,7 +526,8 @@ err:
  * function is only provided for convenience; for best performance, use the
  * BN_GF2m_mod_mul_arr function.
  */
-int BN_GF2m_mod_mul(BIGNUM *r, const BIGNUM *a, const BIGNUM *b, const BIGNUM *p, BN_CTX *ctx)
+int BN_GF2m_mod_mul(BIGNUM *r, const BIGNUM *a, const BIGNUM *b, const BIGNUM *p,
+                    BN_CTX *ctx)
 {
     int ret = 0;
     const int max = BN_num_bits(p) + 1;
@@ -657,8 +669,8 @@ int BN_GF2m_mod_inv(BIGNUM *r, const BIGNUM *a, const BIGNUM *p, BN_CTX *ctx)
 #else
     {
         int i;
-        int ubits = BN_num_bits(u),
-        int vbits = BN_num_bits(v), /* v is copy of p */
+        int ubits = BN_num_bits(u);
+        int vbits = BN_num_bits(v); /* v is copy of p */
         int top = p->top;
         BN_ULONG *udp, *bdp, *vdp, *cdp;
 
@@ -787,7 +799,8 @@ err:
 /* Divide y by x, reduce modulo p, and store the result in r. r could be x
  * or y, x could equal y.
  */
-int BN_GF2m_mod_div(BIGNUM *r, const BIGNUM *y, const BIGNUM *x, const BIGNUM *p, BN_CTX *ctx)
+int BN_GF2m_mod_div(BIGNUM *r, const BIGNUM *y, const BIGNUM *x, const BIGNUM *p,
+                    BN_CTX *ctx)
 {
     BIGNUM *xinv = NULL;
     int ret = 0;
@@ -819,7 +832,8 @@ err:
  *     Chang-Shantz, S.  "From Euclid's GCD to Montgomery Multiplication to
  *     the Great Divide".
  */
-int BN_GF2m_mod_div(BIGNUM *r, const BIGNUM *y, const BIGNUM *x, const BIGNUM *p, BN_CTX *ctx)
+int BN_GF2m_mod_div(BIGNUM *r, const BIGNUM *y, const BIGNUM *x, const BIGNUM *p,
+                    BN_CTX *ctx)
 {
     BIGNUM *a, *b, *u, *v;
     int ret = 0;
@@ -907,7 +921,8 @@ err:
  * function is only provided for convenience; for best performance, use the
  * BN_GF2m_mod_div function.
  */
-int BN_GF2m_mod_div_arr(BIGNUM *r, const BIGNUM *yy, const BIGNUM *xx, const int p[], BN_CTX *ctx)
+int BN_GF2m_mod_div_arr(BIGNUM *r, const BIGNUM *yy, const BIGNUM *xx,
+                        const int p[], BN_CTX *ctx)
 {
     BIGNUM *field;
     int ret = 0;
@@ -933,7 +948,8 @@ err:
  * the result in r.  r could be a.
  * Uses simple square-and-multiply algorithm A.5.1 from IEEE P1363.
  */
-int BN_GF2m_mod_exp_arr(BIGNUM *r, const BIGNUM *a, const BIGNUM *b, const int p[], BN_CTX *ctx)
+int BN_GF2m_mod_exp_arr(BIGNUM *r, const BIGNUM *a, const BIGNUM *b, const int p[],
+                        BN_CTX *ctx)
 {
     int ret = 0, i, n;
     BIGNUM *u;
@@ -979,7 +995,8 @@ err:
  * function is only provided for convenience; for best performance, use the
  * BN_GF2m_mod_exp_arr function.
  */
-int BN_GF2m_mod_exp(BIGNUM *r, const BIGNUM *a, const BIGNUM *b, const BIGNUM *p, BN_CTX *ctx)
+int BN_GF2m_mod_exp(BIGNUM *r, const BIGNUM *a, const BIGNUM *b, const BIGNUM *p,
+                    BN_CTX *ctx)
 {
     int ret = 0;
     const int max = BN_num_bits(p) + 1;
@@ -1065,7 +1082,8 @@ err:
 /* Find r such that r^2 + r = a mod p.  r could be a. If no r exists returns 0.
  * Uses algorithms A.4.7 and A.4.6 from IEEE P1363.
  */
-int BN_GF2m_mod_solve_quad_arr(BIGNUM *r, const BIGNUM *a_, const int p[], BN_CTX *ctx)
+int BN_GF2m_mod_solve_quad_arr(BIGNUM *r, const BIGNUM *a_, const int p[],
+                               BN_CTX *ctx)
 {
     int ret = 0, count = 0, j;
     BIGNUM *a, *z, *rho, *w, *w2, *tmp;
@@ -1165,7 +1183,8 @@ err:
 
 /* Find r such that r^2 + r = a mod p.  r could be a. If no r exists returns 0.
  *
- * This function calls down to the BN_GF2m_mod_solve_quad_arr implementation; this wrapper
+ * This function calls down to the BN_GF2m_mod_solve_quad_arr implementation; this
+ *wrapper
  * function is only provided for convenience; for best performance, use the
  * BN_GF2m_mod_solve_quad_arr function.
  */
