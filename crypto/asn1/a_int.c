@@ -568,6 +568,10 @@ int ASN1_INTEGER_set(ASN1_INTEGER *a, long v)
     return ASN1_INTEGER_set_int64(a, v);
 }
 
+#if INT64_MAX != LONG_MAX
+#error
+#endif
+
 long ASN1_INTEGER_get(const ASN1_INTEGER *a)
 {
     int i;
@@ -577,7 +581,7 @@ long ASN1_INTEGER_get(const ASN1_INTEGER *a)
     i = ASN1_INTEGER_get_int64(&r, a);
     if (i == 0)
         return -1;
-    if (r > LONG_MAX || r < LONG_MIN)
+    if (r > INT64_MAX || r < INT64_MIN)
         return -1;
     return (long)r;
 }
@@ -620,7 +624,7 @@ long ASN1_ENUMERATED_get(ASN1_ENUMERATED *a)
     i = ASN1_ENUMERATED_get_int64(&r, a);
     if (i == 0)
         return -1;
-    if (r > LONG_MAX || r < LONG_MIN)
+    if (r > INT64_MAX || r < INT64_MIN)
         return -1;
     return (long)r;
 }

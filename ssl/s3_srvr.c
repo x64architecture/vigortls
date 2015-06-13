@@ -1746,7 +1746,8 @@ int ssl3_get_client_key_exchange(SSL *s)
          * case that the decrypt fails. See
          * https://tools.ietf.org/html/rfc5246#section-7.4.7.1 */
 
-        RAND_bytes(rand_premaster_secret, sizeof(rand_premaster_secret));
+        if (RAND_bytes(rand_premaster_secret, sizeof(rand_premaster_secret)) <= 0)
+            goto err;
         decrypt_len = RSA_private_decrypt((int)n, p, p, rsa, RSA_PKCS1_PADDING);
         ERR_clear_error();
 

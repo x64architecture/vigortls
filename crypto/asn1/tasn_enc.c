@@ -597,8 +597,8 @@ static int asn1_ex_i2c(ASN1_VALUE **pval, uint8_t *cout, int *putype,
         case V_ASN1_ENUMERATED:
         case V_ASN1_NEG_ENUMERATED:
             /* These are all have the same content format
-         * as ASN1_INTEGER
-         */
+             * as ASN1_INTEGER
+             */
             return i2c_ASN1_INTEGER((ASN1_INTEGER *)*pval,
                                     cout ? &cout : NULL);
             break;

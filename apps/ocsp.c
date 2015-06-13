@@ -240,7 +240,6 @@ int ocsp_main(int argc, char **argv)
     char *rsignfile = NULL, *rkeyfile = NULL;
     char *sign_certfile = NULL, *verify_certfile = NULL, *rcertfile = NULL;
     char *signfile = NULL, *keyfile = NULL;
-    char *thost = NULL, *tport = NULL, *tpath = NULL;
     int accept_count = -1, add_nonce = 1, noverify = 0, use_ssl = -1;
     int vpmtouched = 0, i, ignore_err = 0, nmin = 0, ndays = -1;
     int req_text = 0, resp_text = 0, req_timeout = -1, ret = 1;
@@ -277,16 +276,10 @@ int ocsp_main(int argc, char **argv)
                 req_timeout = atoi(opt_arg());
                 break;
             case OPT_URL:
-                    free(thost);
-                    free(tport);
-                    free(tpath);
                 if (!OCSP_parse_url(opt_arg(), &host, &port, &path, &use_ssl)) {
                     BIO_printf(bio_err, "%s Error parsing URL\n", prog);
                     goto end;
                 }
-                thost = host;
-                tport = port;
-                tpath = path;
                 break;
             case OPT_HOST:
                 host = opt_arg();
@@ -719,10 +712,6 @@ end:
     sk_X509_pop_free(sign_other, X509_free);
     sk_X509_pop_free(verify_other, X509_free);
     sk_CONF_VALUE_pop_free(headers, X509V3_conf_free);
-
-    free(thost);
-    free(tport);
-    free(tpath);
 
     return (ret);
 }

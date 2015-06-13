@@ -272,6 +272,9 @@ err:
     free(*ppath);
     free(*pport);
     free(*phost);
+	*phost = NULL;
+	*pport = NULL;
+	*ppath = NULL;
     return 0;
 }
 

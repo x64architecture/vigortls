@@ -88,12 +88,12 @@ static void pqueue_print(pqueue pq)
     }
 }
 
-static void pqueue_test(pqueue pq)
+static int pqueue_test(pqueue pq)
 {
     pitem *iter, *item;
-    char *buf;
-    char *expected;
-    int size, len = 0;
+    char *buf = NULL;
+    char *expected = NULL;
+    int ret = 0, size, len = 0;
 
     size = asprintf(&expected, "%s%s%s", prio1_expected, prio2_expected, prio3_expected);
     
@@ -120,16 +120,19 @@ static void pqueue_test(pqueue pq)
         goto err;
     }
 
-    return;
+    ret = 1;
 
 err:
-    exit(-1);
+    free(buf);
+    free(expected);
+    return ret;
 }
 
 int main(void)
 {
     pitem *item;
     pqueue pq;
+    int ret = 1;
 
     pq = pqueue_new();
 
@@ -153,11 +156,14 @@ int main(void)
 
     pqueue_print(pq);
 
-    pqueue_test(pq);
+    if (!pqueue_test(pq))
+        ret = 1;
 
     for (item = pqueue_pop(pq); item != NULL; item = pqueue_pop(pq))
         pitem_free(item);
 
+    ret = 0;
+
     pqueue_free(pq);
-    return 0;
+    return ret;
 }

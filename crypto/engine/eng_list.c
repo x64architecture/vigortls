@@ -87,7 +87,8 @@ engine_list_cleanup(void)
     ENGINE *iterator = engine_list_head;
 
     while (iterator != NULL) {
-        ENGINE_remove(iterator);
+        if (!ENGINE_remove(iterator))
+            continue;
         iterator = engine_list_head;
     }
     return;

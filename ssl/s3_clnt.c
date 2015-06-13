@@ -2306,7 +2306,8 @@ int ssl3_send_client_key_exchange(SSL *s)
 
             EVP_PKEY_encrypt_init(pkey_ctx);
             /* Generate session key. */
-            RAND_bytes(premaster_secret, 32);
+            if (RAND_bytes(premaster_secret, 32) <= 0)
+                goto err;
             /*
              * If we have client certificate, use its secret
              * as peer key.
