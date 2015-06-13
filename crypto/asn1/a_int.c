@@ -568,10 +568,6 @@ int ASN1_INTEGER_set(ASN1_INTEGER *a, long v)
     return ASN1_INTEGER_set_int64(a, v);
 }
 
-#if INT64_MAX != LONG_MAX
-#error
-#endif
-
 long ASN1_INTEGER_get(const ASN1_INTEGER *a)
 {
     int i;
