@@ -160,8 +160,8 @@ static size_t i2c_ibuf(const uint8_t *b, size_t blen, int neg,
 
     if (pad)
         *(p++) = pb;
-    if (blen == 0)
-        *(p++) = 0;
+    if (b == NULL || blen == 0)
+        *p = 0;
     else if (!neg)
         memcpy(p, b, blen);
     else {
