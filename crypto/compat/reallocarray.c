@@ -18,36 +18,56 @@
 #include <stdint.h>
 #include <stdlib.h>
 
+#include <openssl/opensslconf.h>
+
 #ifndef __has_builtin
   #define __has_builtin(x) 0
 #endif
 
-#if __has_builtin(__builtin_umull_overflow) || (defined(__GNUC__) && __GNUC__ >= 5)
+#if __has_builtin(__builtin_umul_overflow) || __GNUC__ >= 5
+
+static inline int reallocarray_umul(size_t newmem, size_t size, size_t *prod)
+{
+#ifdef VIGORTLS_32_BIT
+    return __builtin_umul_overflow(size, newmem, prod);
+#else
+    return __builtin_umull_overflow(size, newmem, prod);
+#endif
+}
+
+#else /* __has_builtin(__builtin_umull_overflow) || __GNUC__ >= 5 */
+
+#if !defined(OPENSSL_NO_ASM) && \
+        (defined(VIGORTLS_X86) || defined(VIGORTLS_X86_64))
+
+extern int reallocarray_umul(size_t newmem, size_t size, size_t *prod);
+
+#else /* !OPENSSL_NO_ASM && (VIGORTLS_X86 || VIGORTLS_X86_64) */
+
+#define SQRT_SIZE_MAX ((size_t)1 << (sizeof(size_t) * 4))
+
+static inline int reallocarray_umul(size_t newmem, size_t size, size_t *prod)
+{
+    if ((size | newmem) > SQRT_SIZE_MAX /* fast test */
+        && size && newmem > SIZE_MAX / size)
+        return 1;
+
+    *prod = (size * newmem);
+
+    return 0;
+}
+
+#endif /* !OPENSSL_NO_ASM && (VIGORTLS_X86 || VIGORTLS_X86_64) */
+
+#endif /* __has_builtin(__builtin_umull_overflow) || __GNUC__ >= 5 */
 
 void *reallocarray(void *ptr, size_t newmem, size_t size)
 {
     size_t prod;
-    if (__builtin_umull_overflow(size, newmem, &prod)) {
+    if (reallocarray_umul(size, newmem, &prod)) {
         errno = ENOMEM;
         return NULL;
     }
 
     return realloc(ptr, prod);
 }
-
-#else
-
-#define SQRT_SIZE_MAX ((size_t)1 << (sizeof(size_t) * 4))
-
-void *reallocarray(void *ptr, size_t newmem, size_t size)
-{
-    if ((size | newmem) > SQRT_SIZE_MAX /* fast test */
-        && size && newmem > SIZE_MAX / size) {
-        errno = ENOMEM;
-        return NULL;
-    }
-
-    return realloc(ptr, size * newmem);
-}
-
-#endif

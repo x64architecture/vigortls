@@ -18,13 +18,20 @@ if (NOT HAVE_VASPRINTF OR NOT HAVE_ASPRINTF)
     )
 endif()
 
+if (${ARCH} STREQUAL "x86_64")
+    set(ARCHS reallocarray-x86_64.${ASM_EXT})
+elseif (${ARCH} STREQUAL "x86")
+    set(ARCHS reallocarray-x86.${ASM_EXT})
+endif()
 if (NOT HAVE_REALLOCARRAY)
     set(
-        COMPAT_SOURCES 
+        COMPAT_SOURCES
 
         ${COMPAT_SOURCES}
         reallocarray.c
+        ${ARCHS}
     )
+
 endif()
 
 if (NOT HAVE_SNPRINTF)
@@ -79,3 +86,5 @@ add_library(
 
     ${COMPAT_SOURCES}
 )
+perlasm(reallocarray-x86.${ASM_EXT} asm/reallocarray-x86.pl)
+perlasm(reallocarray-x86_64.${ASM_EXT} asm/reallocarray-x86_64.pl)
