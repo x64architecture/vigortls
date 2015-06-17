@@ -1802,13 +1802,8 @@ int ssl3_get_client_key_exchange(SSL *s)
             goto truncated;
         n2s(p, i);
         if (n != i + 2) {
-            if (!(s->options & SSL_OP_SSLEAY_080_CLIENT_DH_BUG)) {
-                SSLerr(SSL_F_SSL3_GET_CLIENT_KEY_EXCHANGE, SSL_R_DH_PUBLIC_VALUE_LENGTH_IS_WRONG);
-                goto err;
-            } else {
-                p -= 2;
-                i = (int)n;
-            }
+            SSLerr(SSL_F_SSL3_GET_CLIENT_KEY_EXCHANGE, SSL_R_DH_PUBLIC_VALUE_LENGTH_IS_WRONG);
+            goto err;
         }
 
         if (n == 0L) {
