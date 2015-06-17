@@ -147,8 +147,6 @@
  * OTHERWISE.
  */
 
-#define REUSE_CIPHER_BUG
-
 #include <stdio.h>
 #include <openssl/buffer.h>
 #include <openssl/rand.h>
@@ -1123,28 +1121,7 @@ int ssl3_get_client_hello(SSL *s)
         }
         s->s3->tmp.new_cipher = c;
     } else {
-/* 
- * Session-id reuse
- * FIXME: Once SSL3 is removed (its broken) remove this code
- */
-#ifdef REUSE_CIPHER_BUG
-        STACK_OF(SSL_CIPHER) * sk;
-        SSL_CIPHER *nc = NULL;
-
-        if (s->options & SSL_OP_NETSCAPE_DEMO_CIPHER_CHANGE_BUG) {
-            sk = s->session->ciphers;
-            for (i = 0; i < sk_SSL_CIPHER_num(sk); i++) {
-                c = sk_SSL_CIPHER_value(sk, i);
-                if (c->algorithm_enc & SSL_eNULL)
-                    nc = c;
-            }
-            if (nc != NULL)
-                s->s3->tmp.new_cipher = nc;
-            else
-                s->s3->tmp.new_cipher = s->session->cipher;
-        } else
-#endif
-            s->s3->tmp.new_cipher = s->session->cipher;
+        s->s3->tmp.new_cipher = s->session->cipher;
     }
 
     if (!SSL_USE_SIGALGS(s) || !(s->verify_mode & SSL_VERIFY_PEER)) {
