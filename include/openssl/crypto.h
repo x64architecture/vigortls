@@ -501,7 +501,7 @@ void CRYPTO_mem_leaks_cb(CRYPTO_MEM_LEAK_CB *cb);
 void OpenSSLDie(const char *file, int line, const char *assertion);
 #define OPENSSL_assert(e) (void)((e) ? 0 : (OpenSSLDie(__FILE__, __LINE__, #e), 1))
 
-unsigned long *OPENSSL_ia32cap_loc(void);
+unsigned int *OPENSSL_ia32cap_loc(void);
 #define OPENSSL_ia32cap (*(OPENSSL_ia32cap_loc()))
 
 /* CRYPTO_memcmp returns zero iff the |len| bytes at |a| and |b| are equal. It

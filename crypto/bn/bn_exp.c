@@ -112,6 +112,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include <openssl/opensslconf.h>
 #include <openssl/err.h>
 
 #include "bn_lcl.h"

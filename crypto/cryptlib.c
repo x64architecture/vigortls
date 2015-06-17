@@ -118,6 +118,7 @@
 #include <string.h>
 #include <unistd.h>
 
+#include <openssl/opensslconf.h>
 #include <openssl/buffer.h>
 #include <openssl/crypto.h>
 #include <openssl/err.h>
@@ -579,7 +580,7 @@ const char *CRYPTO_get_lock_name(int type)
         return (sk_OPENSSL_STRING_value(app_locks, type - CRYPTO_NUM_LOCKS));
 }
 
-#if defined(__i386) || defined(__i386__) || defined(_M_IX86) || defined(__INTEL__) || defined(__x86_64) || defined(__x86_64__) || defined(_M_AMD64) || defined(_M_X64)
+#if defined(VIGORTLS_X86) || defined(VIGORTLS_X86_64)
 
 /* This value must be initialized to zero in order to work around a 
  * bug in libtool or the linker on OS X.
@@ -588,17 +589,10 @@ const char *CRYPTO_get_lock_name(int type)
  * becomes a "common symbol". In a library, linking on OS X will fail
  * to resolve common symbols. By initializing the value to zero, it
  * becomes a "data symbol", which isn't affected. */
-unsigned int OPENSSL_ia32cap_P[2] = { 0 };
-unsigned long *OPENSSL_ia32cap_loc(void)
+extern unsigned int OPENSSL_ia32cap_P[4];
+unsigned int *OPENSSL_ia32cap_loc(void)
 {
-    if (sizeof(long) == 4)
-        /*
-         * If 32-bit application pulls address of OPENSSL_ia32cap_P[0]
-         * clear second element to maintain the illusion that vector
-         * is 32-bit.
-         */
-        OPENSSL_ia32cap_P[1] = 0;
-    return (unsigned long *)OPENSSL_ia32cap_P;
+    return OPENSSL_ia32cap_P;
 }
 
 #if defined(OPENSSL_CPUID_OBJ) && !defined(OPENSSL_NO_ASM) && !defined(I386_ONLY)
@@ -607,7 +601,7 @@ typedef uint64_t IA32CAP;
 void OPENSSL_cpuid_setup(void)
 {
     static int trigger = 0;
-    IA32CAP OPENSSL_ia32_cpuid(void);
+    IA32CAP OPENSSL_ia32_cpuid(unsigned int *);
     IA32CAP vec;
 
     if (trigger)
@@ -615,7 +609,7 @@ void OPENSSL_cpuid_setup(void)
 
     trigger = 1;
 
-    vec = OPENSSL_ia32_cpuid();
+    vec = OPENSSL_ia32_cpuid(OPENSSL_ia32cap_P);
 
     /*
      * |(1<<10) sets a reserved bit to signal that variable
@@ -635,8 +629,9 @@ unsigned long *OPENSSL_ia32cap_loc(void)
 #endif
 
 #if !defined(OPENSSL_CPUID_SETUP) && !defined(OPENSSL_CPUID_OBJ)
-void OPENSSL_cpuid_setup(void)
+void OPENSSL_cpuid_setup(unsigned int *)
 {
+    return;
 }
 #endif
 
