@@ -1719,13 +1719,9 @@ int ssl3_get_certificate_request(SSL *s)
         q = p;
 
         if ((xn = d2i_X509_NAME(NULL, &q, l)) == NULL) {
-            else {
-                ssl3_send_alert(s, SSL3_AL_FATAL,
-                                SSL_AD_DECODE_ERROR);
-                SSLerr(SSL_F_SSL3_GET_CERTIFICATE_REQUEST,
-                       ERR_R_ASN1_LIB);
-                goto err;
-            }
+            ssl3_send_alert(s, SSL3_AL_FATAL, SSL_AD_DECODE_ERROR);
+            SSLerr(SSL_F_SSL3_GET_CERTIFICATE_REQUEST, ERR_R_ASN1_LIB);
+            goto err;
         }
 
         if (q != (p + l)) {
