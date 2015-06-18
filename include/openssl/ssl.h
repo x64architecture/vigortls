@@ -478,8 +478,8 @@ struct ssl_session_st {
 
     const SSL_CIPHER *cipher;
     unsigned long cipher_id; /* when ASN.1 loaded, this
-                     * needs to be used to load
-                     * the 'cipher' structure */
+                              * needs to be used to load
+                              * the 'cipher' structure */
 
     STACK_OF(SSL_CIPHER) * ciphers; /* shared ciphers? */
 
@@ -492,7 +492,7 @@ struct ssl_session_st {
     size_t tlsext_ecpointformatlist_length;
     uint8_t *tlsext_ecpointformatlist; /* peer's list */
     size_t tlsext_ellipticcurvelist_length;
-    uint8_t *tlsext_ellipticcurvelist; /* peer's list */
+    uint16_t *tlsext_ellipticcurvelist; /* peer's list */
     /* RFC4507 info */
     uint8_t *tlsext_tick;     /* Session ticket */
     size_t tlsext_ticklen;          /* Session ticket length */
@@ -1150,7 +1150,7 @@ struct ssl_st {
     size_t tlsext_ecpointformatlist_length;
     uint8_t *tlsext_ecpointformatlist; /* our list */
     size_t tlsext_ellipticcurvelist_length;
-    uint8_t *tlsext_ellipticcurvelist; /* our list */
+    uint16_t *tlsext_ellipticcurvelist; /* our list */
 
     /* TLS Session Ticket extension override */
     TLS_SESSION_TICKET_EXT *tlsext_session_ticket;

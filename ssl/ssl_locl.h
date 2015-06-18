@@ -838,8 +838,8 @@ int ssl_check_srvr_ecc_cert_and_alg(X509 *x, SSL *s);
 
 SSL_COMP *ssl3_comp_find(STACK_OF(SSL_COMP) * sk, int n);
 
-int tls1_ec_curve_id2nid(int curve_id);
-int tls1_ec_nid2curve_id(int nid);
+int tls1_ec_curve_id2nid(uint16_t curve_id);
+uint16_t tls1_ec_nid2curve_id(int nid);
 int tls1_check_curve(SSL *s, const uint8_t *p, size_t len);
 int tls1_get_shared_curve(SSL *s);
 
