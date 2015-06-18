@@ -1,4 +1,4 @@
-include_directories (../crypto .. ../include)
+include_directories (../crypto ../crypto/bytestring ../include)
 
 add_subdirectory(pqueue)
 

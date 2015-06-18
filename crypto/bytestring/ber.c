@@ -1,4 +1,5 @@
-/* Copyright (c) 2014, Google Inc.
+/*
+ * Copyright (c) 2014, Google Inc.
  *
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -10,7 +11,8 @@
  * SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
  * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION
  * OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN
- * CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE. */
+ * CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+ */
 
 #include <string.h>
 
@@ -23,11 +25,14 @@
  * input could otherwise cause the stack to overflow. */
 static const unsigned kMaxDepth = 2048;
 
-/* cbs_find_ber walks an ASN.1 structure in |orig_in| and sets |*ber_found|
- * depending on whether an indefinite length element was found. The value of
- * |in| is not changed. It returns one on success (i.e. |*ber_found| was set)
- * and zero on error. */
-static int cbs_find_ber(CBS *orig_in, char *ber_found, unsigned depth)
+/*
+ * cbs_find_indefinite walks an ASN.1 structure in |orig_in| and sets
+ * |*indefinite_found| depending on whether an indefinite length element was
+ * found. The value of |orig_in| is not modified.
+ *
+ * Returns one on success (i.e. |*indefinite_found| was set) and zero on error.
+ */
+static int cbs_find_indefinite(CBS *orig_in, char *indefinite_found, unsigned depth)
 {
     CBS in;
 
@@ -35,7 +40,7 @@ static int cbs_find_ber(CBS *orig_in, char *ber_found, unsigned depth)
         return 0;
 
     CBS_init(&in, CBS_data(orig_in), CBS_len(orig_in));
-    *ber_found = 0;
+    *indefinite_found = 0;
 
     while (CBS_len(&in) > 0) {
         CBS contents;
@@ -47,16 +52,18 @@ static int cbs_find_ber(CBS *orig_in, char *ber_found, unsigned depth)
 
         if (CBS_len(&contents) == header_len && header_len > 0
             && CBS_data(&contents)[header_len - 1] == 0x80) {
-            *ber_found = 1;
+            *indefinite_found = 1;
             return 1;
         }
         if (tag & CBS_ASN1_CONSTRUCTED) {
             if (!CBS_skip(&contents, header_len) ||
-                !cbs_find_ber(&contents, ber_found, depth + 1))
+                !cbs_find_indefinite(&contents, indefinite_found,
+                                     depth + 1))
                 return 0;
         }
     }
 
+    *indefinite_found = 0;
     return 1;
 }
 
@@ -78,14 +85,15 @@ static char is_eoc(size_t header_len, CBS *contents)
            && memcmp(CBS_data(contents), "\x00\x00", 2) == 0;
 }
 
-/* cbs_convert_ber reads BER data from |in| and writes DER data to |out|. If
+/* cbs_convert_indefinite reads data with DER encoding (but relaxed to allow
+ * indefinite form) from |in| and writes definite form DER data to |out|. If
  * |squash_header| is set then the top-level of elements from |in| will not
  * have their headers written. This is used when concatenating the fragments of
  * an indefinite length, primitive value. If |looking_for_eoc| is set then any
  * EOC elements found will cause the function to return after consuming it.
  * It returns one on success and zero on error. */
-static int cbs_convert_ber(CBS *in, CBB *out, char squash_header,
-                           char looking_for_eoc, unsigned int depth)
+static int cbs_convert_indefinite(CBS *in, CBB *out, char squash_header,
+                                  char looking_for_eoc, unsigned int depth)
 {
     if (depth > kMaxDepth)
         return 0;
@@ -155,8 +163,8 @@ static int cbs_convert_ber(CBS *in, CBB *out, char squash_header,
                     out_contents = &out_contents_storage;
                 }
 
-                if (!cbs_convert_ber(in, out_contents, squash_child_headers,
-                                     1 /* looking for eoc */, depth + 1))
+                if (!cbs_convert_indefinite(in, out_contents, squash_child_headers,
+                                            1 /* looking for eoc */, depth + 1))
                     return 0;
 
                 if (out_contents != out && !CBB_flush(out))
@@ -177,9 +185,9 @@ static int cbs_convert_ber(CBS *in, CBB *out, char squash_header,
             return 0;
 
         if (tag & CBS_ASN1_CONSTRUCTED) {
-            if (!cbs_convert_ber(&contents, out_contents,
-                                 0 /* don't squash header */,
-                                 0 /* not looking for eoc */, depth + 1))
+            if (!cbs_convert_indefinite(&contents, out_contents,
+                                        0 /* don't squash header */,
+                                        0 /* not looking for eoc */, depth + 1))
                 return 0;
         } else {
             if (!CBB_add_bytes(out_contents, CBS_data(&contents),
@@ -194,7 +202,7 @@ static int cbs_convert_ber(CBS *in, CBB *out, char squash_header,
     return looking_for_eoc == 0;
 }
 
-int CBS_asn1_ber_to_der(CBS *in, uint8_t **out, size_t *out_len)
+int CBS_asn1_indefinite_to_definite(CBS *in, uint8_t **out, size_t *out_len)
 {
     CBB cbb;
 
@@ -203,7 +211,7 @@ int CBS_asn1_ber_to_der(CBS *in, uint8_t **out, size_t *out_len)
      * time we hope that there aren't any and thus we can quickly return.
      */
     char conversion_needed;
-    if (!cbs_find_ber(in, &conversion_needed, 0))
+    if (!cbs_find_indefinite(in, &conversion_needed, 0))
         return 0;
 
     if (!conversion_needed) {
@@ -213,7 +221,7 @@ int CBS_asn1_ber_to_der(CBS *in, uint8_t **out, size_t *out_len)
     }
 
     CBB_init(&cbb, CBS_len(in));
-    if (!cbs_convert_ber(in, &cbb, 0, 0, 0)) {
+    if (!cbs_convert_indefinite(in, &cbb, 0, 0, 0)) {
         CBB_cleanup(&cbb);
         return 0;
     }

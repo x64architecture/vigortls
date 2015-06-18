@@ -41,7 +41,6 @@ add_test(chacha20-poly1305_aead ./aeadtest chacha20-poly1305 ${AEADTDIR}/chacha2
 add_test_suite(aes_wrap aes_wrap.c)
 add_test_suite(bftest bftest.c)
 add_test_suite(bntest bntest.c)
-add_test_suite(bytestringtest bytestringtest.c)
 add_test_suite(casttest casttest.c)
 add_test_suite(chachatest chachatest.c)
 add_test_suite(consttimetest constant_time_test.c)
