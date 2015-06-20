@@ -16,7 +16,6 @@ add_library(
     eng_list.c
     eng_openssl.c
     eng_pkey.c
-    eng_rsax.c
     eng_table.c
     tb_asnmth.c
     tb_cipher.c

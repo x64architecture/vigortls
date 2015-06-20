@@ -64,10 +64,6 @@ ENGINE_load_builtin_engines(void)
 {
     /* Some ENGINEs need this */
     OPENSSL_cpuid_setup();
-
-#ifndef OPENSSL_NO_RSAX
-    ENGINE_load_rsax();
-#endif
     ENGINE_load_dynamic();
     ENGINE_register_all_complete();
 }
