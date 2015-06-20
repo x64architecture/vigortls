@@ -64,6 +64,5 @@ ENGINE_load_builtin_engines(void)
 {
     /* Some ENGINEs need this */
     OPENSSL_cpuid_setup();
-    ENGINE_load_dynamic();
     ENGINE_register_all_complete();
 }

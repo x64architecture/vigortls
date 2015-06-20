@@ -81,8 +81,7 @@ static ENGINE *engine_list_tail = NULL;
 /* This cleanup function is only needed internally. If it should be called, we
  * register it with the "ENGINE_cleanup()" stack to be called during cleanup. */
 
-static void
-engine_list_cleanup(void)
+static void engine_list_cleanup(void)
 {
     ENGINE *iterator = engine_list_head;
 
@@ -96,8 +95,7 @@ engine_list_cleanup(void)
 
 /* These static functions starting with a lower case "engine_" always
  * take place when CRYPTO_LOCK_ENGINE has been locked up. */
-static int
-engine_list_add(ENGINE *e)
+static int engine_list_add(ENGINE *e)
 {
     int conflict = 0;
     ENGINE *iterator = NULL;
@@ -149,8 +147,7 @@ engine_list_add(ENGINE *e)
     return 1;
 }
 
-static int
-engine_list_remove(ENGINE *e)
+static int engine_list_remove(ENGINE *e)
 {
     ENGINE *iterator;
 
@@ -183,8 +180,7 @@ engine_list_remove(ENGINE *e)
 }
 
 /* Get the first/last "ENGINE" type available. */
-ENGINE *
-ENGINE_get_first(void)
+ENGINE *ENGINE_get_first(void)
 {
     ENGINE *ret;
 
@@ -198,8 +194,7 @@ ENGINE_get_first(void)
     return ret;
 }
 
-ENGINE *
-ENGINE_get_last(void)
+ENGINE *ENGINE_get_last(void)
 {
     ENGINE *ret;
 
@@ -214,8 +209,7 @@ ENGINE_get_last(void)
 }
 
 /* Iterate to the next/previous "ENGINE" type (NULL = end of the list). */
-ENGINE *
-ENGINE_get_next(ENGINE *e)
+ENGINE *ENGINE_get_next(ENGINE *e)
 {
     ENGINE *ret = NULL;
 
@@ -237,8 +231,7 @@ ENGINE_get_next(ENGINE *e)
     return ret;
 }
 
-ENGINE *
-ENGINE_get_prev(ENGINE *e)
+ENGINE *ENGINE_get_prev(ENGINE *e)
 {
     ENGINE *ret = NULL;
 
@@ -261,8 +254,7 @@ ENGINE_get_prev(ENGINE *e)
 }
 
 /* Add another "ENGINE" type into the list. */
-int
-ENGINE_add(ENGINE *e)
+int ENGINE_add(ENGINE *e)
 {
     int to_return = 1;
 
@@ -286,8 +278,7 @@ ENGINE_add(ENGINE *e)
 }
 
 /* Remove an existing "ENGINE" type from the array. */
-int
-ENGINE_remove(ENGINE *e)
+int ENGINE_remove(ENGINE *e)
 {
     int to_return = 1;
 
@@ -306,8 +297,7 @@ ENGINE_remove(ENGINE *e)
     return to_return;
 }
 
-static void
-engine_cpy(ENGINE *dest, const ENGINE *src)
+static void engine_cpy(ENGINE *dest, const ENGINE *src)
 {
     dest->id = src->id;
     dest->name = src->name;
@@ -337,11 +327,9 @@ engine_cpy(ENGINE *dest, const ENGINE *src)
     dest->flags = src->flags;
 }
 
-ENGINE *
-ENGINE_by_id(const char *id)
+ENGINE *ENGINE_by_id(const char *id)
 {
     ENGINE *iterator;
-    char *load_dir = NULL;
 
     if (id == NULL) {
         ENGINEerr(ENGINE_F_ENGINE_BY_ID,
@@ -371,32 +359,12 @@ ENGINE_by_id(const char *id)
     }
     CRYPTO_w_unlock(CRYPTO_LOCK_ENGINE);
 
-    /* EEK! Experimental code starts */
-    if (iterator)
-        return iterator;
-    /* Prevent infinite recusrion if we're looking for the dynamic engine. */
-    if (strcmp(id, "dynamic")) {
-        load_dir = ENGINESDIR;
-        iterator = ENGINE_by_id("dynamic");
-        if (!iterator || !ENGINE_ctrl_cmd_string(iterator, "ID", id, 0) ||
-            !ENGINE_ctrl_cmd_string(iterator, "DIR_LOAD", "2", 0) ||
-            !ENGINE_ctrl_cmd_string(iterator, "DIR_ADD", load_dir, 0) ||
-            !ENGINE_ctrl_cmd_string(iterator, "LIST_ADD", "1", 0) ||
-            !ENGINE_ctrl_cmd_string(iterator, "LOAD", NULL, 0))
-            goto notfound;
-        return iterator;
-    }
-
-notfound:
-    ENGINE_free(iterator);
-    ENGINEerr(ENGINE_F_ENGINE_BY_ID, ENGINE_R_NO_SUCH_ENGINE);
-    ERR_asprintf_error_data("id=%s", id);
-    return NULL;
-/* EEK! Experimental code ends */
+    if (iterator == NULL)
+        ENGINEerr(ENGINE_F_ENGINE_BY_ID, ENGINE_R_NO_SUCH_ENGINE);
+    return iterator;
 }
 
-int
-ENGINE_up_ref(ENGINE *e)
+int ENGINE_up_ref(ENGINE *e)
 {
     if (e == NULL) {
         ENGINEerr(ENGINE_F_ENGINE_UP_REF, ERR_R_PASSED_NULL_PARAMETER);
