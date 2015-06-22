@@ -359,8 +359,10 @@ ENGINE *ENGINE_by_id(const char *id)
     }
     CRYPTO_w_unlock(CRYPTO_LOCK_ENGINE);
 
-    if (iterator == NULL)
+    if (iterator == NULL) {
         ENGINEerr(ENGINE_F_ENGINE_BY_ID, ENGINE_R_NO_SUCH_ENGINE);
+        ERR_asprintf_error_data("id=%s", id);
+    }
     return iterator;
 }
 

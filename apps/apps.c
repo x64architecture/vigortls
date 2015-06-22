@@ -1154,21 +1154,6 @@ end:
 }
 
 #ifndef OPENSSL_NO_ENGINE
-/* Try to load an engine in a shareable library */
-static ENGINE *try_load_engine(const char *engine, int debug)
-{
-    ENGINE *e = ENGINE_by_id("dynamic");
-    if (e) {
-        if (!ENGINE_ctrl_cmd_string(e, "SO_PATH", engine, 0)
-            || !ENGINE_ctrl_cmd_string(e, "LOAD", NULL, 0)) {
-
-            ENGINE_free(e);
-            e = NULL;
-        }
-    }
-    return e;
-}
-
 ENGINE *setup_engine(const char *engine, int debug)
 {
     ENGINE *e = NULL;
@@ -1179,8 +1164,7 @@ ENGINE *setup_engine(const char *engine, int debug)
             ENGINE_register_all_complete();
             return NULL;
         }
-        if ((e = ENGINE_by_id(engine)) == NULL
-            && (e = try_load_engine(engine, debug)) == NULL) {
+        if ((e = ENGINE_by_id(engine)) == NULL) {
             BIO_printf(bio_err, "invalid engine \"%s\"\n", engine);
             ERR_print_errors(bio_err);
             return NULL;
