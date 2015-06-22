@@ -552,9 +552,16 @@ struct ssl_session_st {
 
 #define SSL_OP_CRYPTOPRO_TLSEXT_BUG 0x80000000L
 
-/* SSL_OP_ALL: various bug workarounds that should be rather harmless.
- *             This used to be 0x000FFFFFL before 0.9.7. */
-#define SSL_OP_ALL 0x80000374L
+/* SSL_OP_ALL: various bug workarounds that should be rather harmless. */
+#define SSL_OP_ALL \
+   (SSL_OP_LEGACY_SERVER_CONNECT      | \
+    SSL_OP_TLSEXT_PADDING             | \
+    SSL_OP_MICROSOFT_BIG_SSLV3_BUFFER | \
+    SSL_OP_SAFARI_ECDHE_ECDSA_BUG     | \
+    SSL_OP_TLS_D5_BUG                 | \
+    SSL_OP_TLS_BLOCK_PADDING_BUG      | \
+    SSL_OP_CRYPTOPRO_TLSEXT_BUG)
+    
 
 /* Obsolete flags kept for compatibility. */
 #define SSL_OP_ALLOW_UNSAFE_LEGACY_RENEGOTIATION  0x0
