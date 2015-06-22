@@ -503,10 +503,11 @@ struct ssl_session_st {
 #endif
 
 /* Allow initial connection to servers that don't support RI */
-#define SSL_OP_LEGACY_SERVER_CONNECT 0x00000004L
+#define SSL_OP_LEGACY_SERVER_CONNECT      0x00000004L
+#define SSL_OP_TLSEXT_PADDING             0x00000010L
 #define SSL_OP_MICROSOFT_BIG_SSLV3_BUFFER 0x00000020L
-#define SSL_OP_SAFARI_ECDHE_ECDSA_BUG 0x00000040L
-#define SSL_OP_TLS_D5_BUG 0x00000100L
+#define SSL_OP_SAFARI_ECDHE_ECDSA_BUG     0x00000040L
+#define SSL_OP_TLS_D5_BUG                 0x00000100L
 
 /* Disable SSL 3.0/TLS 1.0 CBC vulnerability workaround that was added
  * in OpenSSL 0.9.6d.  Usually (depending on the application protocol)
