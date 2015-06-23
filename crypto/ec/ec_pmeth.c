@@ -237,7 +237,9 @@ static int pkey_ec_ctrl_str(EVP_PKEY_CTX *ctx,
 {
     if (strcmp(type, "ec_paramgen_curve") == 0) {
         int nid;
-        nid = OBJ_sn2nid(value);
+        nid = EC_curve_nist2nid(value);
+        if (nid == NID_undef)
+            nid = OBJ_sn2nid(value);
         if (nid == NID_undef)
             nid = OBJ_ln2nid(value);
         if (nid == NID_undef) {
