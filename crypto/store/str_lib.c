@@ -1321,12 +1321,14 @@ int STORE_ATTR_INFO_set_sha1str(STORE_ATTR_INFO *attrs, STORE_ATTR_TYPES code,
         return 0;
     }
     if (!ATTR_IS_SET(attrs, code)) {
-        if ((attrs->values[code].sha1string = (uint8_t *)BUF_memdup(sha1str,
-                                                                          sha1str_size)))
-            return 1;
-        STOREerr(STORE_F_STORE_ATTR_INFO_SET_SHA1STR,
-                 ERR_R_MALLOC_FAILURE);
-        return 0;
+        attrs->values[code].sha1string = malloc(sha1str_size);
+        if (attrs->values[code].sha1string == NULL) {
+            STOREerr(STORE_F_STORE_ATTR_INFO_SET_SHA1STR,
+                     ERR_R_MALLOC_FAILURE);
+            return 0;
+        }
+        memcpy(attrs->values[code].sha1string, sha1str, sha1str_size);
+        return 1;
     }
     STOREerr(STORE_F_STORE_ATTR_INFO_SET_SHA1STR, STORE_R_ALREADY_HAS_A_VALUE);
     return 0;

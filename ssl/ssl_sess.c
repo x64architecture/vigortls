@@ -275,23 +275,28 @@ SSL_SESSION *ssl_session_dup(SSL_SESSION *src, int ticket)
     }
     if (src->tlsext_ecpointformatlist) {
         dest->tlsext_ecpointformatlist =
-            BUF_memdup(src->tlsext_ecpointformatlist,
-                       src->tlsext_ecpointformatlist_length);
+            malloc(src->tlsext_ecpointformatlist_length);
         if (dest->tlsext_ecpointformatlist == NULL)
             goto err;
+        memcpy(dest->tlsext_ecpointformatlist,
+               dest->tlsext_ecpointformatlist,
+               src->tlsext_ecpointformatlist_length);
     }
     if (src->tlsext_ellipticcurvelist) {
         dest->tlsext_ellipticcurvelist =
-            BUF_memdup(src->tlsext_ellipticcurvelist,
-                       src->tlsext_ellipticcurvelist_length);
+            malloc(src->tlsext_ellipticcurvelist_length);
         if (dest->tlsext_ellipticcurvelist == NULL)
             goto err;
+        memcpy(dest->tlsext_ecpointformatlist,
+               src->tlsext_ellipticcurvelist,
+               src->tlsext_ellipticcurvelist_length);
     }
 
     if (ticket != 0) {
-        dest->tlsext_tick = BUF_memdup(src->tlsext_tick, src->tlsext_ticklen);
-        if(dest->tlsext_tick == NULL)
+        dest->tlsext_tick = malloc(src->tlsext_ticklen);
+        if (dest->tlsext_tick == NULL)
             goto err;
+        memcpy(dest->tlsext_tick, src->tlsext_tick, src->tlsext_ticklen);
     } else {
         dest->tlsext_tick_lifetime_hint = 0;
         dest->tlsext_ticklen = 0;
