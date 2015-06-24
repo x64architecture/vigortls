@@ -48,3 +48,7 @@ add_library(
     $<TARGET_OBJECTS:pqueue>
 )
 target_link_libraries(ssl crypto)
+
+install(TARGETS ssl
+        LIBRARY DESTINATION lib
+        ARCHIVE DESTINATION lib)

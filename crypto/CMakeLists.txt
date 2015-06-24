@@ -185,5 +185,9 @@ if (WIN32)
 	target_link_libraries(crypto Ws2_32)
 endif()
 
+install(TARGETS crypto
+        LIBRARY DESTINATION lib
+        ARCHIVE DESTINATION lib)
+
 perlasm(x86_64cpuid.${ASM_EXT} x86_64cpuid.pl)
 perlasm(x86cpuid.${ASM_EXT} x86cpuid.pl)
