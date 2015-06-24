@@ -60,6 +60,8 @@ if(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
     add_definitions(-D_GNU_SOURCE)
 endif()
 
+install(DIRECTORY include/openssl DESTINATION /usr/include)
+
 add_subdirectory(crypto)
 add_subdirectory(ssl)
 add_subdirectory(apps)
