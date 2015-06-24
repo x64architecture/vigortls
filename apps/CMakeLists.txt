@@ -1,4 +1,4 @@
-include_directories (.. ../include ${CMAKE_CURRENT_BINARY_DIR})
+include_directories (../include ${CMAKE_CURRENT_BINARY_DIR})
 
 configure_file(buildinf.h.cmake buildinf.h)
 

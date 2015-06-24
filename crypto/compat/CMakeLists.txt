@@ -1,5 +1,3 @@
-include_directories(${CMAKE_CURRENT_BINARY_DIR} .. ../../include .)
-
 if (WIN32)
     set(
         COMPAT_SOURCES

@@ -2,5 +2,5 @@
 
 const char *AES_options(void)
 {
-    return "aes(unrolled)";
+    return "aes(partial)";
 }
