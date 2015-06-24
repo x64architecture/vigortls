@@ -52,7 +52,6 @@ add_library(
     m_gost2814789.c
     m_gostr341194.c
     m_md5.c
-    m_mdc2.c
     m_null.c
     m_ripemd.c
     m_sha1.c

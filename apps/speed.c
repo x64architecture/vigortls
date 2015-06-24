@@ -97,9 +97,6 @@
 #endif
 #include <openssl/aes.h>
 #include <openssl/camellia.h>
-#ifndef OPENSSL_NO_MDC2
-#include <openssl/mdc2.h>
-#endif
 #include <openssl/md5.h>
 #include <openssl/hmac.h>
 #include <openssl/evp.h>
@@ -176,7 +173,7 @@ static void print_result(int alg, int run_no, int count, double time_used);
 static int do_multi(int multi);
 #endif
 
-#define ALGOR_NUM 28
+#define ALGOR_NUM 27
 #define SIZE_NUM 5
 #define PRIME_NUM 3
 #define RSA_NUM 7
@@ -187,7 +184,7 @@ static int do_multi(int multi);
 #define MISALIGN 64
 
 static const char *names[ALGOR_NUM] = {
-    "mdc2", "md5", "hmac(md5)", "sha1", "rmd160", "rc4", "des cbc",
+    "md5", "hmac(md5)", "sha1", "rmd160", "rc4", "des cbc",
     "des ede3", "idea cbc", "seed cbc", "rc2 cbc", "rc5-32/12 cbc", "blowfish cbc",
     "cast cbc", "aes-128 cbc", "aes-192 cbc", "aes-256 cbc", "camellia-128 cbc",
     "camellia-192 cbc", "camellia-256 cbc", "evp", "sha256", "sha512", "whirlpool",
@@ -281,7 +278,6 @@ OPTIONS speed_options[] = {
     { NULL },
 };
 
-#define D_MDC2 0
 #define D_MD5 1
 #define D_HMAC 2
 #define D_SHA1 3
@@ -313,9 +309,6 @@ OPTIONS speed_options[] = {
 #define D_CBC_512_THREEFISH 29
 #define D_CBC_1024_THREEFISH 30
 OPT_PAIR doit_choices[] = {
-#ifndef OPENSSL_NO_MDC2
-    { "mdc2", D_MDC2 },
-#endif
     { "md5", D_MD5 },
     { "hmac", D_HMAC },
     { "sha1", D_SHA1 },
@@ -465,9 +458,6 @@ int speed_main(int argc, char **argv)
 /* What follows are the buffers and key material. */
 #if !defined(OPENSSL_NO_RSA) || !defined(OPENSSL_NO_DSA)
     long rsa_count;
-#endif
-#ifndef OPENSSL_NO_MDC2
-    uint8_t mdc2[MDC2_DIGEST_LENGTH];
 #endif
     uint8_t md5[MD5_DIGEST_LENGTH];
     uint8_t hmac[MD5_DIGEST_LENGTH];
@@ -857,7 +847,6 @@ int speed_main(int argc, char **argv)
         d = Time_F(STOP);
     } while (d < 3);
     save_count = count;
-    c[D_MDC2][0] = count / 10;
     c[D_MD5][0] = count;
     c[D_HMAC][0] = count;
     c[D_SHA1][0] = count;
@@ -894,7 +883,6 @@ int speed_main(int argc, char **argv)
         l0 = (long)lengths[0];
         l1 = (long)lengths[i];
 
-        c[D_MDC2][i] = c[D_MDC2][0] * 4 * l0 / l1;
         c[D_MD5][i] = c[D_MD5][0] * 4 * l0 / l1;
         c[D_HMAC][i] = c[D_HMAC][0] * 4 * l0 / l1;
         c[D_SHA1][i] = c[D_SHA1][0] * 4 * l0 / l1;
@@ -1061,19 +1049,6 @@ int speed_main(int argc, char **argv)
     signal(SIGALRM, sig_done);
 #endif
 #endif /* SIGALRM */
-#ifndef OPENSSL_NO_MDC2
-    if (doit[D_MDC2]) {
-        for (j = 0; j < SIZE_NUM; j++) {
-            print_message(names[D_MDC2], c[D_MDC2][j], lengths[j]);
-            Time_F(START);
-            for (count = 0, run = 1; COND(c[D_MDC2][j]); count++)
-                EVP_Digest(buf, (unsigned long)lengths[j], &(mdc2[0]), NULL, EVP_mdc2(),
-                           NULL);
-            d = Time_F(STOP);
-            print_result(D_MDC2, j, count, d);
-        }
-    }
-#endif
 
     if (doit[D_MD5]) {
         for (j = 0; j < SIZE_NUM; j++) {

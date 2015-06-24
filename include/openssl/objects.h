@@ -82,11 +82,6 @@
 #define NID_pkcs 2
 #define OBJ_pkcs OBJ_rsadsi, 1L
 
-#define SN_md2 "MD2"
-#define LN_md2 "md2"
-#define NID_md2 3
-#define OBJ_md2 OBJ_rsadsi, 2L, 2L
-
 #define SN_md5 "MD5"
 #define LN_md5 "md5"
 #define NID_md5 4
@@ -101,20 +96,10 @@
 #define NID_rsaEncryption 6
 #define OBJ_rsaEncryption OBJ_pkcs, 1L, 1L
 
-#define SN_md2WithRSAEncryption "RSA-MD2"
-#define LN_md2WithRSAEncryption "md2WithRSAEncryption"
-#define NID_md2WithRSAEncryption 7
-#define OBJ_md2WithRSAEncryption OBJ_pkcs, 1L, 2L
-
 #define SN_md5WithRSAEncryption "RSA-MD5"
 #define LN_md5WithRSAEncryption "md5WithRSAEncryption"
 #define NID_md5WithRSAEncryption 8
 #define OBJ_md5WithRSAEncryption OBJ_pkcs, 1L, 4L
-
-#define SN_pbeWithMD2AndDES_CBC "PBE-MD2-DES"
-#define LN_pbeWithMD2AndDES_CBC "pbeWithMD2AndDES-CBC"
-#define NID_pbeWithMD2AndDES_CBC 9
-#define OBJ_pbeWithMD2AndDES_CBC OBJ_pkcs, 5L, 1L
 
 #define SN_pbeWithMD5AndDES_CBC "PBE-MD5-DES"
 #define LN_pbeWithMD5AndDES_CBC "pbeWithMD5AndDES-CBC"
@@ -518,17 +503,6 @@
 #define LN_bf_ofb64 "bf-ofb"
 #define NID_bf_ofb64 94
 
-#define SN_mdc2 "MDC2"
-#define LN_mdc2 "mdc2"
-#define NID_mdc2 95
-#define OBJ_mdc2 2L, 5L, 8L, 3L, 101L
-/* An alternative?            1L,3L,14L,3L,2L,19L */
-
-#define SN_mdc2WithRSA "RSA-MDC2"
-#define LN_mdc2WithRSA "mdc2withRSA"
-#define NID_mdc2WithRSA 96
-#define OBJ_mdc2WithRSA 2L, 5L, 8L, 3L, 100L
-
 #define SN_rc4_40 "RC4-40"
 #define LN_rc4_40 "rc4-40"
 #define NID_rc4_40 97
@@ -889,11 +863,6 @@
 #define LN_SMIMECapabilities "S/MIME Capabilities"
 #define NID_SMIMECapabilities 167
 #define OBJ_SMIMECapabilities OBJ_pkcs9, 15L
-
-#define SN_pbeWithMD2AndRC2_CBC "PBE-MD2-RC2-64"
-#define LN_pbeWithMD2AndRC2_CBC "pbeWithMD2AndRC2-CBC"
-#define NID_pbeWithMD2AndRC2_CBC 168
-#define OBJ_pbeWithMD2AndRC2_CBC OBJ_pkcs, 5L, 4L
 
 #define SN_pbeWithMD5AndRC2_CBC "PBE-MD5-RC2-64"
 #define LN_pbeWithMD5AndRC2_CBC "pbeWithMD5AndRC2-CBC"

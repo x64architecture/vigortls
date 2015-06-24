@@ -91,7 +91,6 @@ add_subdirectory(hmac)
 add_subdirectory(idea)
 add_subdirectory(lhash)
 add_subdirectory(md5)
-add_subdirectory(mdc2)
 add_subdirectory(modes)
 add_subdirectory(objects)
 add_subdirectory(ocsp)
@@ -159,7 +158,6 @@ add_library(
     $<TARGET_OBJECTS:idea>
     $<TARGET_OBJECTS:lhash>
     $<TARGET_OBJECTS:md5>
-    $<TARGET_OBJECTS:mdc2>
     $<TARGET_OBJECTS:modes>
     $<TARGET_OBJECTS:objects>
     $<TARGET_OBJECTS:ocsp>

@@ -1,13 +1,10 @@
 undef		0
 rsadsi		1
 pkcs		2
-md2		3
 md5		4
 rc4		5
 rsaEncryption		6
-md2WithRSAEncryption		7
 md5WithRSAEncryption		8
-pbeWithMD2AndDES_CBC		9
 pbeWithMD5AndDES_CBC		10
 X500		11
 X509		12
@@ -93,8 +90,6 @@ bf_cbc		91
 bf_ecb		92
 bf_cfb64		93
 bf_ofb64		94
-mdc2		95
-mdc2WithRSA		96
 rc4_40		97
 rc2_40_cbc		98
 givenName		99
@@ -165,7 +160,6 @@ id_qt_cps		164
 id_qt_unotice		165
 rc2_64_cbc		166
 SMIMECapabilities		167
-pbeWithMD2AndRC2_CBC		168
 pbeWithMD5AndRC2_CBC		169
 pbeWithSHA1AndDES_CBC		170
 ms_ext_req		171
@@ -254,7 +248,6 @@ id_smime_cti_ets_proofOfDelivery		253
 id_smime_cti_ets_proofOfSender		254
 id_smime_cti_ets_proofOfApproval		255
 id_smime_cti_ets_proofOfCreation		256
-md4		257
 id_pkix_mod		258
 id_qt		259
 id_it		260
@@ -393,7 +386,6 @@ Domain		392
 joint_iso_ccitt		393
 selected_attribute_types		394
 clearance		395
-md4WithRSAEncryption		396
 ac_proxying		397
 sinfo_access		398
 id_aca_encAttrs		399

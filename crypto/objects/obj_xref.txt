@@ -2,16 +2,13 @@
 # Links signatures OIDs to their corresponding public key algorithms
 # and digests.
 
-md2WithRSAEncryption	md2	rsaEncryption
 md5WithRSAEncryption	md5	rsaEncryption
 shaWithRSAEncryption	sha	rsaEncryption
 sha1WithRSAEncryption	sha1	rsaEncryption
-md4WithRSAEncryption	md4	rsaEncryption
 sha256WithRSAEncryption sha256	rsaEncryption
 sha384WithRSAEncryption	sha384	rsaEncryption
 sha512WithRSAEncryption	sha512	rsaEncryption
 sha224WithRSAEncryption	sha224	rsaEncryption
-mdc2WithRSA		mdc2	rsaEncryption
 ripemd160WithRSA	ripemd160 rsaEncryption
 # For PSS the digest algorithm can vary and depends on the included
 # AlgorithmIdentifier. The digest "undef" indicates the public key

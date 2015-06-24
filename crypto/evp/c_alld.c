@@ -75,9 +75,6 @@ void OpenSSL_add_all_digests(void)
     EVP_add_digest_alias(SN_dsaWithSHA1, "dss1");
 #endif
     EVP_add_digest(EVP_ecdsa());
-#if !defined(OPENSSL_NO_MDC2) && !defined(OPENSSL_NO_DES)
-    EVP_add_digest(EVP_mdc2());
-#endif
 #ifndef OPENSSL_NO_GOST
     EVP_add_digest(EVP_gostr341194());
     EVP_add_digest(EVP_gost2814789imit());

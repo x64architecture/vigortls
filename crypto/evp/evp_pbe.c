@@ -84,8 +84,6 @@ typedef struct
 } EVP_PBE_CTL;
 
 static const EVP_PBE_CTL builtin_pbe[] = {
-    { EVP_PBE_TYPE_OUTER, NID_pbeWithMD2AndDES_CBC,
-      NID_des_cbc, NID_md2, PKCS5_PBE_keyivgen },
     { EVP_PBE_TYPE_OUTER, NID_pbeWithMD5AndDES_CBC,
       NID_des_cbc, NID_md5, PKCS5_PBE_keyivgen },
     { EVP_PBE_TYPE_OUTER, NID_pbeWithSHA1AndRC2_CBC,
@@ -107,8 +105,6 @@ static const EVP_PBE_CTL builtin_pbe[] = {
       NID_rc2_40_cbc, NID_sha1, PKCS12_PBE_keyivgen },
 
     { EVP_PBE_TYPE_OUTER, NID_pbes2, -1, -1, PKCS5_v2_PBE_keyivgen },
-    { EVP_PBE_TYPE_OUTER, NID_pbeWithMD2AndRC2_CBC,
-      NID_rc2_64_cbc, NID_md2, PKCS5_PBE_keyivgen },
     { EVP_PBE_TYPE_OUTER, NID_pbeWithMD5AndRC2_CBC,
       NID_rc2_64_cbc, NID_md5, PKCS5_PBE_keyivgen },
     { EVP_PBE_TYPE_OUTER, NID_pbeWithSHA1AndDES_CBC,

@@ -54,7 +54,7 @@ B<openssl> B<x509>
 [B<-text>]
 [B<-certopt option>]
 [B<-C>]
-[B<-md2|-md5|-sha1|-mdc2>]
+[B<-md5|-sha1>]
 [B<-clrext>]
 [B<-extfile filename>]
 [B<-extensions section>]
@@ -100,7 +100,7 @@ if this option is not specified.
 This specifies the output filename to write to or standard output by
 default.
 
-=item B<-md2|-md5|-sha1|-mdc2>
+=item B<-md5|-sha1>
 
 the digest to use. This affects any signing or display option that uses a message
 digest, such as the B<-fingerprint>, B<-signkey> and B<-CA> options. If not

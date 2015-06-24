@@ -560,16 +560,6 @@
 #define NID_rsaEncryption		6
 #define OBJ_rsaEncryption		OBJ_pkcs1,1L
 
-#define SN_md2WithRSAEncryption		"RSA-MD2"
-#define LN_md2WithRSAEncryption		"md2WithRSAEncryption"
-#define NID_md2WithRSAEncryption		7
-#define OBJ_md2WithRSAEncryption		OBJ_pkcs1,2L
-
-#define SN_md4WithRSAEncryption		"RSA-MD4"
-#define LN_md4WithRSAEncryption		"md4WithRSAEncryption"
-#define NID_md4WithRSAEncryption		396
-#define OBJ_md4WithRSAEncryption		OBJ_pkcs1,3L
-
 #define SN_md5WithRSAEncryption		"RSA-MD5"
 #define LN_md5WithRSAEncryption		"md5WithRSAEncryption"
 #define NID_md5WithRSAEncryption		8
@@ -627,20 +617,10 @@
 #define NID_pkcs5		187
 #define OBJ_pkcs5		OBJ_pkcs,5L
 
-#define SN_pbeWithMD2AndDES_CBC		"PBE-MD2-DES"
-#define LN_pbeWithMD2AndDES_CBC		"pbeWithMD2AndDES-CBC"
-#define NID_pbeWithMD2AndDES_CBC		9
-#define OBJ_pbeWithMD2AndDES_CBC		OBJ_pkcs5,1L
-
 #define SN_pbeWithMD5AndDES_CBC		"PBE-MD5-DES"
 #define LN_pbeWithMD5AndDES_CBC		"pbeWithMD5AndDES-CBC"
 #define NID_pbeWithMD5AndDES_CBC		10
 #define OBJ_pbeWithMD5AndDES_CBC		OBJ_pkcs5,3L
-
-#define SN_pbeWithMD2AndRC2_CBC		"PBE-MD2-RC2-64"
-#define LN_pbeWithMD2AndRC2_CBC		"pbeWithMD2AndRC2-CBC"
-#define NID_pbeWithMD2AndRC2_CBC		168
-#define OBJ_pbeWithMD2AndRC2_CBC		OBJ_pkcs5,4L
 
 #define SN_pbeWithMD5AndRC2_CBC		"PBE-MD5-RC2-64"
 #define LN_pbeWithMD5AndRC2_CBC		"pbeWithMD5AndRC2-CBC"
@@ -1131,16 +1111,6 @@
 #define LN_safeContentsBag		"safeContentsBag"
 #define NID_safeContentsBag		155
 #define OBJ_safeContentsBag		OBJ_pkcs12_BagIds,6L
-
-#define SN_md2		"MD2"
-#define LN_md2		"md2"
-#define NID_md2		3
-#define OBJ_md2		OBJ_rsadsi,2L,2L
-
-#define SN_md4		"MD4"
-#define LN_md4		"md4"
-#define NID_md4		257
-#define OBJ_md4		OBJ_rsadsi,2L,4L
 
 #define SN_md5		"MD5"
 #define LN_md5		"md5"
@@ -2278,16 +2248,6 @@
 #define LN_rsa		"rsa"
 #define NID_rsa		19
 #define OBJ_rsa		OBJ_X500algorithms,1L,1L
-
-#define SN_mdc2WithRSA		"RSA-MDC2"
-#define LN_mdc2WithRSA		"mdc2WithRSA"
-#define NID_mdc2WithRSA		96
-#define OBJ_mdc2WithRSA		OBJ_X500algorithms,3L,100L
-
-#define SN_mdc2		"MDC2"
-#define LN_mdc2		"mdc2"
-#define NID_mdc2		95
-#define OBJ_mdc2		OBJ_X500algorithms,3L,101L
 
 #define SN_id_ce		"id-ce"
 #define NID_id_ce		81

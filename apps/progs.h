@@ -202,9 +202,6 @@ FUNCTION functions[] = {
     { FT_md, "sha256", dgst_main},
     { FT_md, "sha384", dgst_main},
     { FT_md, "sha512", dgst_main},
-#ifndef OPENSSL_NO_MDC2
-    { FT_md, "mdc2", dgst_main},
-#endif
 #ifndef OPENSSL_NO_RMD160
     { FT_md, "rmd160", dgst_main},
 #endif

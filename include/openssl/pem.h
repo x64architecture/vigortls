@@ -97,13 +97,10 @@ extern "C" {
 #define PEM_DEK_DES_EDE 50
 #define PEM_DEK_DES_ECB 60
 #define PEM_DEK_RSA 70
-#define PEM_DEK_RSA_MD2 80
 #define PEM_DEK_RSA_MD5 90
 
-#define PEM_MD_MD2 NID_md2
 #define PEM_MD_MD5 NID_md5
 #define PEM_MD_SHA NID_sha
-#define PEM_MD_MD2_RSA NID_md2WithRSAEncryption
 #define PEM_MD_MD5_RSA NID_md5WithRSAEncryption
 #define PEM_MD_SHA_RSA NID_sha1WithRSAEncryption
 
