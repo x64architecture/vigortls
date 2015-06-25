@@ -77,3 +77,6 @@ target_link_libraries(openssl crypto ssl)
 if (WIN32)
 	target_link_libraries(openssl ws2_32 wsock32)
 endif()
+
+install(TARGETS openssl
+        RUNTIME DESTINATION bin)
