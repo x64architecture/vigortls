@@ -220,7 +220,8 @@ int CBS_asn1_indefinite_to_definite(CBS *in, uint8_t **out, size_t *out_len)
         return 1;
     }
 
-    CBB_init(&cbb, CBS_len(in));
+    if (!CBB_init(&cbb, CBS_len(in)))
+        return 0;
     if (!cbs_convert_indefinite(in, &cbb, 0, 0, 0)) {
         CBB_cleanup(&cbb);
         return 0;
