@@ -173,7 +173,7 @@ static void print_result(int alg, int run_no, int count, double time_used);
 static int do_multi(int multi);
 #endif
 
-#define ALGOR_NUM 27
+#define ALGOR_NUM 28
 #define SIZE_NUM 5
 #define PRIME_NUM 3
 #define RSA_NUM 7
