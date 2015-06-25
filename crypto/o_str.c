@@ -2,10 +2,8 @@
 
 #include <ctype.h>
 #include <stddef.h>
+#include <string.h>
 #include <strings.h>
-
-int OPENSSL_strcasecmp(const char *str1, const char *str2);
-int OPENSSL_strncasecmp(const char *str1, const char *str2, size_t n);
 
 int OPENSSL_strncasecmp(const char *str1, const char *str2, size_t n)
 {

@@ -123,7 +123,6 @@ static int pqueue_test(pqueue pq)
     ret = 1;
 
 err:
-    free(buf);
     free(expected);
     return ret;
 }

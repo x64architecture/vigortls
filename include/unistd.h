@@ -28,6 +28,10 @@
 #define sleep(x) Sleep(1000 * x)
 #define getpid() GetCurrentThreadId()
 
+#define R_OK 4
+#define W_OK 2
+#define F_OK 0
+
 int issetugid(void);
 
 #endif /* VIGORTLS_UNISTD_H */

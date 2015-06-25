@@ -468,7 +468,6 @@ uint8_t *next_protos_parse(unsigned short *outlen, const char *in);
 #define SERIAL_RAND_BITS 64
 
 int app_isdir(const char *);
-int access(const char *, int flag);
 
 #define TM_START 0
 #define TM_STOP 1
