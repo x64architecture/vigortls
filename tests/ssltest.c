@@ -200,7 +200,6 @@ struct app_verify_arg {
     char *proxy_cond;
 };
 
-static DH *get_dh512(void);
 static DH *get_dh1024(void);
 static DH *get_dh1024dsa(void);
 
@@ -778,8 +777,7 @@ int main(int argc, char *argv[])
             dh = get_dh1024dsa();
         } else if (dhe1024)
             dh = get_dh1024();
-        else
-            dh = get_dh512();
+
         SSL_CTX_set_tmp_dh(s_ctx, dh);
         DH_free(dh);
     }
@@ -2071,36 +2069,10 @@ static void free_tmp_rsa(void)
 }
 
 /* These DH parameters have been generated as follows:
- *    $ openssl dhparam -C -noout 512
  *    $ openssl dhparam -C -noout 1024
  *    $ openssl dhparam -C -noout -dsaparam 1024
- * (The third function has been renamed to avoid name conflicts.)
+ * (The second function has been renamed to avoid name conflicts.)
  */
-static DH *get_dh512()
-{
-    static uint8_t dh512_p[] = {
-        0xCB, 0xC8, 0xE1, 0x86, 0xD0, 0x1F, 0x94, 0x17, 0xA6, 0x99, 0xF0, 0xC6,
-        0x1F, 0x0D, 0xAC, 0xB6, 0x25, 0x3E, 0x06, 0x39, 0xCA, 0x72, 0x04, 0xB0,
-        0x6E, 0xDA, 0xC0, 0x61, 0xE6, 0x7A, 0x77, 0x25, 0xE8, 0x3B, 0xB9, 0x5F,
-        0x9A, 0xB6, 0xB5, 0xFE, 0x99, 0x0B, 0xA1, 0x93, 0x4E, 0x35, 0x33, 0xB8,
-        0xE1, 0xF1, 0x13, 0x4F, 0x59, 0x1A, 0xD2, 0x57, 0xC0, 0x26, 0x21, 0x33,
-        0x02, 0xC5, 0xAE, 0x23,
-    };
-    static uint8_t dh512_g[] = {
-        0x02,
-    };
-    DH *dh;
-
-    if ((dh = DH_new()) == NULL)
-        return (NULL);
-    dh->p = BN_bin2bn(dh512_p, sizeof(dh512_p), NULL);
-    dh->g = BN_bin2bn(dh512_g, sizeof(dh512_g), NULL);
-    if ((dh->p == NULL) || (dh->g == NULL)) {
-        DH_free(dh);
-        return (NULL);
-    }
-    return (dh);
-}
 
 static DH *get_dh1024()
 {

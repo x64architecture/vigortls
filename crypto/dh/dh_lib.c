@@ -218,3 +218,8 @@ int DH_size(const DH *dh)
 {
     return (BN_num_bytes(dh->p));
 }
+
+unsigned int DH_num_bits(const DH *dh)
+{
+    return BN_num_bits(dh->p);
+}
