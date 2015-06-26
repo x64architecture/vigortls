@@ -7,7 +7,8 @@ include(CTest)
 include(CMake/ConfigureChecks.cmake)
 include(CMake/GenDeps.cmake)
 
-if (CMAKE_COMPILER_IS_GNUCC OR ${CMAKE_C_COMPILER_ID} STREQUAL "Clang")
+if (CMAKE_COMPILER_IS_GNUCC OR ${CMAKE_C_COMPILER_ID} STREQUAL "Clang"
+    OR ${CMAKE_C_COMPILER_ID} STREQUAL "Intel")
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Werror -g -std=c99")
     set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS} -O3")
 elseif(MSVC)
@@ -15,7 +16,7 @@ elseif(MSVC)
   set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS} /MT /Ox /O2 /Ob2")
   add_definitions(-D_CRT_SECURE_NO_WARNINGS -D_CRT_NONSTDC_NO_DEPRECATE -D_WINSOCK_DEPRECATED_NO_WARNINGS -Dinline=__inline)
 else()
-    message(FATAL_ERROR "Unsupported compiler:" ${CMAKE_C_COMPILER})
+    message(FATAL_ERROR "Unsupported compiler:" ${CMAKE_C_COMPILER_ID})
 endif()
 
 if (${CMAKE_SYSTEM_PROCESSOR} STREQUAL "x86_64")
