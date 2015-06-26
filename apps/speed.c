@@ -278,36 +278,34 @@ OPTIONS speed_options[] = {
     { NULL },
 };
 
-#define D_MD5 1
-#define D_HMAC 2
-#define D_SHA1 3
-#define D_RMD160 4
-#define D_RC4 5
-#define D_CBC_DES 6
-#define D_EDE3_DES 7
-#define D_CBC_IDEA 8
-#define D_CBC_SEED 9
-#define D_CBC_RC2 10
-#define D_CBC_RC5 11
-#define D_CBC_BF 12
-#define D_CBC_CAST 13
-#define D_CBC_128_AES 14
-#define D_CBC_192_AES 15
-#define D_CBC_256_AES 16
-#define D_CBC_128_CML 17
-#define D_CBC_192_CML 18
-#define D_CBC_256_CML 19
-#define D_EVP 20
-#define D_SHA256 21
-#define D_SHA512 22
-#define D_WHIRLPOOL 23
-#define D_IGE_128_AES 24
-#define D_IGE_192_AES 25
-#define D_IGE_256_AES 26
-#define D_GHASH 27
-#define D_CBC_256_THREEFISH 28
-#define D_CBC_512_THREEFISH 29
-#define D_CBC_1024_THREEFISH 30
+#define D_MD5 0
+#define D_HMAC 1
+#define D_SHA1 2
+#define D_RMD160 3
+#define D_RC4 4
+#define D_CBC_DES 5
+#define D_EDE3_DES 6
+#define D_CBC_IDEA 7
+#define D_CBC_SEED 8
+#define D_CBC_RC2 9
+#define D_CBC_RC5 10
+#define D_CBC_BF 11
+#define D_CBC_CAST 12
+#define D_CBC_128_AES 13
+#define D_CBC_192_AES 14
+#define D_CBC_256_AES 15
+#define D_CBC_128_CML 16
+#define D_CBC_192_CML 17
+#define D_CBC_256_CML 18
+#define D_EVP 19
+#define D_SHA256 20
+#define D_SHA512 21
+#define D_WHIRLPOOL 22
+#define D_IGE_128_AES 23
+#define D_IGE_192_AES 24
+#define D_IGE_256_AES 25
+#define D_GHASH 26
+
 OPT_PAIR doit_choices[] = {
     { "md5", D_MD5 },
     { "hmac", D_HMAC },
