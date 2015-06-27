@@ -2035,8 +2035,6 @@ void ssl3_clear(SSL *s)
     EC_KEY_free(s->s3->tmp.ecdh);
     s->s3->tmp.ecdh = NULL;
 
-    s->s3->is_probably_safari = 0;
-
     rp = s->s3->rbuf.buf;
     wp = s->s3->wbuf.buf;
     rlen = s->s3->rbuf.len;
@@ -2528,11 +2526,6 @@ SSL_CIPHER *ssl3_choose_cipher(SSL *s, STACK_OF(SSL_CIPHER) * clnt,
             continue;
         ii = sk_SSL_CIPHER_find(allow, c);
         if (ii >= 0) {
-            if ((alg_k & SSL_kECDHE) && (alg_a & SSL_aECDSA) && s->s3->is_probably_safari) {
-                if (!ret)
-                    ret = sk_SSL_CIPHER_value(allow, ii);
-                continue;
-            }
             ret = sk_SSL_CIPHER_value(allow, ii);
             break;
         }

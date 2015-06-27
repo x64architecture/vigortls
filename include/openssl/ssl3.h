@@ -498,11 +498,6 @@ typedef struct ssl3_state_st {
      */
     uint8_t *alpn_selected;
     unsigned int alpn_selected_len;
-
-    /* This is set to true if we believe that this is a version of Safari
-     * running on OS X 10.6 or newer. We wish to know this because Safari
-     * on 10.8 .. 10.8.3 has broken ECDHE-ECDSA support. */
-    char is_probably_safari;
 } SSL3_STATE;
 
 #endif
