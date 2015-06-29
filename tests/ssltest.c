@@ -426,7 +426,6 @@ static void sv_usage(void)
     fprintf(stderr, " -reuse        - use session-id reuse\n");
     fprintf(stderr, " -num <val>    - number of connections to perform\n");
     fprintf(stderr, " -bytes <val>  - number of bytes to swap between client/server\n");
-    fprintf(stderr, " -dhe1024      - use 1024 bit key (safe prime) for DHE\n");
     fprintf(stderr, " -dhe1024dsa   - use 1024 bit key (with 160-bit subprime) for DHE\n");
     fprintf(stderr, " -no_dhe       - disable DHE\n");
     fprintf(stderr, " -no_ecdhe     - disable ECDHE\n");
@@ -559,7 +558,7 @@ int main(int argc, char *argv[])
     int number = 1, reuse = 0;
     long bytes = 256L;
     DH *dh;
-    int dhe1024 = 0, dhe1024dsa = 0;
+    int dhe1024dsa = 0;
     EC_KEY *ecdh = NULL;
     int no_dhe = 0;
     int no_ecdhe = 0;
@@ -599,9 +598,7 @@ int main(int argc, char *argv[])
             debug = 1;
         else if (strcmp(*argv, "-reuse") == 0)
             reuse = 1;
-        else if (strcmp(*argv, "-dhe1024") == 0) {
-            dhe1024 = 1;
-        } else if (strcmp(*argv, "-dhe1024dsa") == 0) {
+        else if (strcmp(*argv, "-dhe1024dsa") == 0) {
             dhe1024dsa = 1;
         } else if (strcmp(*argv, "-no_dhe") == 0)
             no_dhe = 1;
@@ -775,7 +772,7 @@ int main(int argc, char *argv[])
             /* use SSL_OP_SINGLE_DH_USE to avoid small subgroup attacks */
             SSL_CTX_set_options(s_ctx, SSL_OP_SINGLE_DH_USE);
             dh = get_dh1024dsa();
-        } else if (dhe1024)
+        } else
             dh = get_dh1024();
 
         SSL_CTX_set_tmp_dh(s_ctx, dh);
