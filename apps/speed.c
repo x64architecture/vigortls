@@ -156,7 +156,7 @@
 #endif
 
 #undef BUFSIZE
-#define BUFSIZE (1024 * 8 + 1)
+#define BUFSIZE (1024 * 8 + 64)
 #define MAX_MISALIGNMENT 63
 
 static volatile int run = 0;
@@ -173,7 +173,7 @@ static void print_result(int alg, int run_no, int count, double time_used);
 static int do_multi(int multi);
 #endif
 
-#define ALGOR_NUM 28
+#define ALGOR_NUM 29
 #define SIZE_NUM 5
 #define PRIME_NUM 3
 #define RSA_NUM 7
@@ -188,7 +188,7 @@ static const char *names[ALGOR_NUM] = {
     "des ede3", "idea cbc", "seed cbc", "rc2 cbc", "rc5-32/12 cbc", "blowfish cbc",
     "cast cbc", "aes-128 cbc", "aes-192 cbc", "aes-256 cbc", "camellia-128 cbc",
     "camellia-192 cbc", "camellia-256 cbc", "evp", "sha256", "sha512", "whirlpool",
-    "aes-128 ige", "aes-192 ige", "aes-256 ige", "ghash",
+    "aes-128 ige", "aes-192 ige", "aes-256 ige", "ghash", "chacha20 poly1305",
 };
 
 static double results[ALGOR_NUM][SIZE_NUM];
@@ -305,6 +305,7 @@ OPTIONS speed_options[] = {
 #define D_IGE_192_AES 24
 #define D_IGE_256_AES 25
 #define D_GHASH 26
+#define D_CHACHA20_POLY1305 27
 
 OPT_PAIR doit_choices[] = {
     { "md5", D_MD5 },
@@ -319,6 +320,9 @@ OPT_PAIR doit_choices[] = {
     { "ripemd160", D_RMD160 },
 #endif
     { "rc4", D_RC4 },
+#if !defined(OPENSSL_NO_CHACHA) && !defined(OPENSSL_NO_POLY1305)
+    { "chacha20-poly1305", D_CHACHA20_POLY1305 },
+#endif
 #ifndef OPENSSL_NO_DES
     { "des-cbc", D_CBC_DES },
     { "des-ede3", D_EDE3_DES },
@@ -871,9 +875,7 @@ int speed_main(int argc, char **argv)
     c[D_IGE_192_AES][0] = count;
     c[D_IGE_256_AES][0] = count;
     c[D_GHASH][0] = count;
-    c[D_CBC_256_THREEFISH][0] = count;
-    c[D_CBC_512_THREEFISH][0] = count;
-    c[D_CBC_1024_THREEFISH][0] = count;
+    c[D_CHACHA20_POLY1305[0] = count;
 
     for (i = 1; i < SIZE_NUM; i++) {
         long l0, l1;
@@ -909,9 +911,6 @@ int speed_main(int argc, char **argv)
         c[D_IGE_128_AES][i] = c[D_IGE_128_AES][i - 1] * l0 / l1;
         c[D_IGE_192_AES][i] = c[D_IGE_192_AES][i - 1] * l0 / l1;
         c[D_IGE_256_AES][i] = c[D_IGE_256_AES][i - 1] * l0 / l1;
-        c[D_CBC_256_THREEFISH][i] = c[D_CBC_256_THREEFISH][i - 1] * l0 / l1;
-        c[D_CBC_512_THREEFISH][i] = c[D_CBC_512_THREEFISH][i - 1] * l0 / l1;
-        c[D_CBC_1024_THREEFISH][i] = c[D_CBC_1024_THREEFISH][i - 1] * l0 / l1;
     }
 
 #ifndef OPENSSL_NO_RSA
@@ -1248,6 +1247,31 @@ int speed_main(int argc, char **argv)
         }
         CRYPTO_gcm128_release(ctx);
     }
+#if !defined(OPENSSL_NO_CHACHA) && !defined(OPENSSL_NO_POLY1305)
+    if (doit[D_CHACHA20_POLY1305]) {
+        const EVP_AEAD *aead = EVP_aead_chacha20_poly1305();
+        static const unsigned char nonce[32] = { 0 };
+        size_t nonce_len;
+        size_t out_len;
+        EVP_AEAD_CTX ctx;
+
+        EVP_AEAD_CTX_init(&ctx, aead, key32, EVP_AEAD_key_length(aead),
+                          EVP_AEAD_DEFAULT_TAG_LENGTH, NULL);
+        nonce_len = EVP_AEAD_nonce_length(aead);
+
+        for (j = 0; j < SIZE_NUM; j++) {
+            print_message(names[D_CHACHA20_POLY1305], c[D_CHACHA20_POLY1305][j],
+                          lengths[j]);
+            Time_F(START);
+            for (count = 0, run = 1; COND(c[D_CHACHA20_POLY1305][j]); count++)
+                EVP_AEAD_CTX_seal(&ctx, buf, &out_len, BUFSIZE, nonce, nonce_len, buf,
+                                  lengths[j], NULL, 0);
+            d = Time_F(STOP);
+            print_result(D_CHACHA20_POLY1305, j, count, d);
+        }
+        EVP_AEAD_CTX_cleanup(&ctx);
+    }
+#endif
     if (doit[D_CBC_128_CML]) {
         for (j = 0; j < SIZE_NUM; j++) {
             print_message(names[D_CBC_128_CML], c[D_CBC_128_CML][j], lengths[j]);
