@@ -1,2 +1,3 @@
 build/
 crypto/objects/obj_mac.h
+*.DS_Store
