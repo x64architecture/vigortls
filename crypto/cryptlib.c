@@ -114,7 +114,9 @@
  * SUN MICROSYSTEMS, INC., and contributed to the OpenSSL project.
  */
 
+#include <limits.h>
 #include <stdlib.h>
+#include <stdint.h>
 #include <string.h>
 #include <unistd.h>
 
@@ -399,9 +401,9 @@ void CRYPTO_THREADID_set_pointer(CRYPTO_THREADID *id, void *ptr)
 {
     memset(id, 0, sizeof(*id));
     id->ptr = ptr;
-#if LONG_MAX >= INTPTR_MAX
+#if ULONG_MAX >= UINTPTR_MAX
     /*s u 'ptr' can be embedded in 'val' without loss of uniqueness */
-    id->val = (unsigned long)id->ptr;
+    id->val = (uintptr_t)id->ptr;
 #else
     {
         SHA256_CTX ctx;
@@ -589,7 +591,7 @@ const char *CRYPTO_get_lock_name(int type)
  * becomes a "common symbol". In a library, linking on OS X will fail
  * to resolve common symbols. By initializing the value to zero, it
  * becomes a "data symbol", which isn't affected. */
-extern unsigned int OPENSSL_ia32cap_P[4];
+unsigned int OPENSSL_ia32cap_P[4] = { 0 };
 unsigned int *OPENSSL_ia32cap_loc(void)
 {
     return OPENSSL_ia32cap_P;
@@ -622,7 +624,7 @@ void OPENSSL_cpuid_setup(void)
 #endif
 
 #else
-unsigned long *OPENSSL_ia32cap_loc(void)
+unsigned int *OPENSSL_ia32cap_loc(void)
 {
     return NULL;
 }
