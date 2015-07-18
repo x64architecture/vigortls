@@ -556,7 +556,6 @@ struct ssl_session_st {
    (SSL_OP_LEGACY_SERVER_CONNECT      | \
     SSL_OP_TLSEXT_PADDING             | \
     SSL_OP_MICROSOFT_BIG_SSLV3_BUFFER | \
-    SSL_OP_TLS_BLOCK_PADDING_BUG      | \
     SSL_OP_CRYPTOPRO_TLSEXT_BUG)
     
 

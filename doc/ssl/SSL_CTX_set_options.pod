@@ -78,7 +78,7 @@ this breaks this server so 16 bytes is the way to go.
 
 =item SSL_OP_NETSCAPE_REUSE_CIPHER_CHANGE_BUG
 
-As of OpenSSL 0.9.8q and 1.0.0c, this option has no effect.
+This option has no effect.
 
 =item SSL_OP_SSLREF2_REUSE_CERT_TYPE_BUG
 
@@ -94,7 +94,7 @@ This Option has no effect.
 
 =item SSL_OP_SSLEAY_080_CLIENT_DH_BUG
 
-...
+This option has no effect.
 
 =item SSL_OP_TLS_D5_BUG
 
@@ -102,7 +102,7 @@ This option has no effect.
 
 =item SSL_OP_TLS_BLOCK_PADDING_BUG
 
-...
+This option has no effect.
 
 =item SSL_OP_DONT_INSERT_EMPTY_FRAGMENTS
 
