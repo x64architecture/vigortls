@@ -1910,7 +1910,7 @@
 
 #define SN_des_cfb64		"DES-CFB"
 #define LN_des_cfb64		"des-cfb"
-#define NID_des_cfb64		30
+#define NID_des_cfb64		949
 #define OBJ_des_cfb64		OBJ_algorithm,9L
 
 #define SN_rsaSignature		"rsaSignature"
@@ -2710,11 +2710,11 @@
 
 #define SN_des_cfb1		"DES-CFB1"
 #define LN_des_cfb1		"des-cfb1"
-#define NID_des_cfb1		656
+#define NID_des_cfb1		950
 
 #define SN_des_cfb8		"DES-CFB8"
 #define LN_des_cfb8		"des-cfb8"
-#define NID_des_cfb8		657
+#define NID_des_cfb8		951
 
 #define SN_des_ede3_cfb1		"DES-EDE3-CFB1"
 #define LN_des_ede3_cfb1		"des-ede3-cfb1"

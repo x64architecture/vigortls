@@ -1,48 +1,10 @@
 include_directories(../../include)
-
-if (${ARCH} STREQUAL "x86")
-    set(
-        DES_ARCH_SOURCES
-        
-        crypt586.${ASM_EXT}
-        des-586.${ASM_EXT}
-    )
-else()
-    set(
-        DES_ARCH_SOURCES
-
-        des_enc.c
-        fcrypt_b.c
-    )
-endif()
   
 add_library(
     des
 
     OBJECT
 
-    ${DES_ARCH_SOURCES}
-
-    cbc_cksm.c
-    cbc_enc.c
     cfb64ede.c
-    cfb64enc.c
-    cfb_enc.c
-    ecb3_enc.c
-    ecb_enc.c
-    ede_cbcm_enc.c
-    enc_read.c
-    enc_writ.c
-    fcrypt.c
-    ofb64ede.c
-    ofb64enc.c
-    ofb_enc.c
-    pcbc_enc.c
-    qud_cksm.c
-    rand_key.c
-    set_key.c
-    str2key.c
-    xcbc_enc.c
+    des.c
 )
-perlasm(crypt586.${ASM_EXT} asm/crypt586.pl)
-perlasm(des-586.${ASM_EXT} asm/des-586.pl)

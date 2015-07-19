@@ -36,7 +36,6 @@ add_library(
     e_chacha.c
     e_chacha20poly1305.c
     e_des.c
-    e_des3.c
     e_gost2814789.c
     e_idea.c
     e_null.c
@@ -45,7 +44,6 @@ add_library(
     e_rc4.c
     e_rc4_hmac_md5.c
     e_rc5.c
-    e_xcbc_d.c
     m_dss.c
     m_dss1.c
     m_ecdsa.c

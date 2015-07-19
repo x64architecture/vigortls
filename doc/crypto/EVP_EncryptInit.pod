@@ -281,7 +281,7 @@ All algorithms have a fixed key length unless otherwise stated.
 
 Null cipher: does nothing.
 
-=item EVP_des_cbc(void), EVP_des_ecb(void), EVP_des_cfb(void), EVP_des_ofb(void)
+=item EVP_des_cbc(void), EVP_des_ecb(void), EVP_des_ofb(void)
 
 DES in CBC, ECB, CFB and OFB modes respectively. 
 

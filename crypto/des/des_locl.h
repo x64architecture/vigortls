@@ -1,4 +1,3 @@
-/* crypto/des/des_locl.h */
 /* Copyright (C) 1995-1997 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -55,26 +54,6 @@
  * copied and put under another distribution licence
  * [including the GNU Public Licence.]
  */
-
-#ifndef HEADER_DES_LOCL_H
-#define HEADER_DES_LOCL_H
-
-#include <openssl/opensslconf.h>
-
-#include <stdio.h>
-#include <stdint.h>
-#include <stdlib.h>
-#include <string.h>
-#include <math.h>
-
-#include <openssl/des.h>
-
-#define ITERATIONS 16
-#define HALF_ITERATIONS 8
-
-/* used in des_read and des_write */
-#define MAXWRITE (1024 * 16)
-#define BSIZE (MAXWRITE + 4)
 
 #define c2l(c, l)                                                   \
     (l = ((uint32_t)(*((c)++))), l |= ((uint32_t)(*((c)++))) << 8L, \
@@ -154,194 +133,13 @@ static inline uint32_t ROTATE(uint32_t a, unsigned int n)
     return ((a >> n) + (a << (32 - n)));
 }
 
-/* Don't worry about the LOAD_DATA() stuff, that is used by
- * fcrypt() to add it's little bit to the front */
-
-#ifdef DES_FCRYPT
-
-#define LOAD_DATA_tmp(R, S, u, t, E0, E1)   \
-    {                                       \
-        uint32_t tmp;                       \
-        LOAD_DATA(R, S, u, t, E0, E1, tmp); \
-    }
-
-#define LOAD_DATA(R, S, u, t, E0, E1, tmp) \
-    t = R ^ (R >> 16L);                    \
-    u = t & E0;                            \
-    t &= E1;                               \
-    tmp = (u << 16);                       \
-    u ^= R ^ s[S];                         \
-    u ^= tmp;                              \
-    tmp = (t << 16);                       \
-    t ^= R ^ s[S + 1];                     \
-    t ^= tmp
-#else
-#define LOAD_DATA_tmp(a, b, c, d, e, f) LOAD_DATA(a, b, c, d, e, f, g)
-#define LOAD_DATA(R, S, u, t, E0, E1, tmp) \
-    u = R ^ s[S];                          \
-    t = R ^ s[S + 1]
-#endif
-
-/* The changes to this macro may help or hinder, depending on the
- * compiler and the architecture.  gcc2 always seems to do well :-).
- * Inspired by Dana How <how@isl.stanford.edu>
- * DO NOT use the alternative version on machines with 8 byte longs.
- * It does not seem to work on the Alpha, even when uint32_t is 4
- * bytes, probably an issue of accessing non-word aligned objects :-( */
-#ifdef DES_PTR
-
-/* It recently occurred to me that 0^0^0^0^0^0^0 == 0, so there
- * is no reason to not xor all the sub items together.  This potentially
- * saves a register since things can be xored directly into L */
-
-#if defined(DES_RISC1) || defined(DES_RISC2)
-#ifdef DES_RISC1
-#define D_ENCRYPT(LL, R, S)                             \
-    {                                                   \
-        unsigned int u1, u2, u3;                        \
-        LOAD_DATA(R, S, u, t, E0, E1, u1);              \
-        u2 = (int)u >> 8L;                              \
-        u1 = (int)u & 0xfc;                             \
-        u2 &= 0xfc;                                     \
-        t = ROTATE(t, 4);                               \
-        u >>= 16L;                                      \
-        LL ^= *(const uint32_t *)(des_SP + u1);         \
-        LL ^= *(const uint32_t *)(des_SP + 0x200 + u2); \
-        u3 = (int)(u >> 8L);                            \
-        u1 = (int)u & 0xfc;                             \
-        u3 &= 0xfc;                                     \
-        LL ^= *(const uint32_t *)(des_SP + 0x400 + u1); \
-        LL ^= *(const uint32_t *)(des_SP + 0x600 + u3); \
-        u2 = (int)t >> 8L;                              \
-        u1 = (int)t & 0xfc;                             \
-        u2 &= 0xfc;                                     \
-        t >>= 16L;                                      \
-        LL ^= *(const uint32_t *)(des_SP + 0x100 + u1); \
-        LL ^= *(const uint32_t *)(des_SP + 0x300 + u2); \
-        u3 = (int)t >> 8L;                              \
-        u1 = (int)t & 0xfc;                             \
-        u3 &= 0xfc;                                     \
-        LL ^= *(const uint32_t *)(des_SP + 0x500 + u1); \
-        LL ^= *(const uint32_t *)(des_SP + 0x700 + u3); \
-    }
-#endif
-#ifdef DES_RISC2
-#define D_ENCRYPT(LL, R, S)                             \
-    {                                                   \
-        unsigned int u1, u2, s1, s2;                    \
-        LOAD_DATA(R, S, u, t, E0, E1, u1);              \
-        u2 = (int)u >> 8L;                              \
-        u1 = (int)u & 0xfc;                             \
-        u2 &= 0xfc;                                     \
-        t = ROTATE(t, 4);                               \
-        LL ^= *(const uint32_t *)(des_SP + u1);         \
-        LL ^= *(const uint32_t *)(des_SP + 0x200 + u2); \
-        s1 = (int)(u >> 16L);                           \
-        s2 = (int)(u >> 24L);                           \
-        s1 &= 0xfc;                                     \
-        s2 &= 0xfc;                                     \
-        LL ^= *(const uint32_t *)(des_SP + 0x400 + s1); \
-        LL ^= *(const uint32_t *)(des_SP + 0x600 + s2); \
-        u2 = (int)t >> 8L;                              \
-        u1 = (int)t & 0xfc;                             \
-        u2 &= 0xfc;                                     \
-        LL ^= *(const uint32_t *)(des_SP + 0x100 + u1); \
-        LL ^= *(const uint32_t *)(des_SP + 0x300 + u2); \
-        s1 = (int)(t >> 16L);                           \
-        s2 = (int)(t >> 24L);                           \
-        s1 &= 0xfc;                                     \
-        s2 &= 0xfc;                                     \
-        LL ^= *(const uint32_t *)(des_SP + 0x500 + s1); \
-        LL ^= *(const uint32_t *)(des_SP + 0x700 + s2); \
-    }
-#endif
-#else
-#define D_ENCRYPT(LL, R, S)                                                \
-    {                                                                      \
-        LOAD_DATA_tmp(R, S, u, t, E0, E1);                                 \
-        t = ROTATE(t, 4);                                                  \
-        LL ^= *(const uint32_t *)(des_SP + ((u)&0xfc))                     \
-              ^ *(const uint32_t *)(des_SP + 0x200 + ((u >> 8L) & 0xfc))   \
-              ^ *(const uint32_t *)(des_SP + 0x400 + ((u >> 16L) & 0xfc))  \
-              ^ *(const uint32_t *)(des_SP + 0x600 + ((u >> 24L) & 0xfc))  \
-              ^ *(const uint32_t *)(des_SP + 0x100 + ((t)&0xfc))           \
-              ^ *(const uint32_t *)(des_SP + 0x300 + ((t >> 8L) & 0xfc))   \
-              ^ *(const uint32_t *)(des_SP + 0x500 + ((t >> 16L) & 0xfc))  \
-              ^ *(const uint32_t *)(des_SP + 0x700 + ((t >> 24L) & 0xfc)); \
-    }
-#endif
-
-#else /* original version */
-
-#if defined(DES_RISC1) || defined(DES_RISC2)
-#ifdef DES_RISC1
-#define D_ENCRYPT(LL, R, S)                \
-    {                                      \
-        unsigned int u1, u2, u3;           \
-        LOAD_DATA(R, S, u, t, E0, E1, u1); \
-        u >>= 2L;                          \
-        t = ROTATE(t, 6);                  \
-        u2 = (int)u >> 8L;                 \
-        u1 = (int)u & 0x3f;                \
-        u2 &= 0x3f;                        \
-        u >>= 16L;                         \
-        LL ^= DES_SPtrans[0][u1];          \
-        LL ^= DES_SPtrans[2][u2];          \
-        u3 = (int)u >> 8L;                 \
-        u1 = (int)u & 0x3f;                \
-        u3 &= 0x3f;                        \
-        LL ^= DES_SPtrans[4][u1];          \
-        LL ^= DES_SPtrans[6][u3];          \
-        u2 = (int)t >> 8L;                 \
-        u1 = (int)t & 0x3f;                \
-        u2 &= 0x3f;                        \
-        t >>= 16L;                         \
-        LL ^= DES_SPtrans[1][u1];          \
-        LL ^= DES_SPtrans[3][u2];          \
-        u3 = (int)t >> 8L;                 \
-        u1 = (int)t & 0x3f;                \
-        u3 &= 0x3f;                        \
-        LL ^= DES_SPtrans[5][u1];          \
-        LL ^= DES_SPtrans[7][u3];          \
-    }
-#endif
-#ifdef DES_RISC2
-#define D_ENCRYPT(LL, R, S)                \
-    {                                      \
-        unsigned int u1, u2, s1, s2;       \
-        LOAD_DATA(R, S, u, t, E0, E1, u1); \
-        u >>= 2L;                          \
-        t = ROTATE(t, 6);                  \
-        u2 = (int)u >> 8L;                 \
-        u1 = (int)u & 0x3f;                \
-        u2 &= 0x3f;                        \
-        LL ^= DES_SPtrans[0][u1];          \
-        LL ^= DES_SPtrans[2][u2];          \
-        s1 = (int)u >> 16L;                \
-        s2 = (int)u >> 24L;                \
-        s1 &= 0x3f;                        \
-        s2 &= 0x3f;                        \
-        LL ^= DES_SPtrans[4][s1];          \
-        LL ^= DES_SPtrans[6][s2];          \
-        u2 = (int)t >> 8L;                 \
-        u1 = (int)t & 0x3f;                \
-        u2 &= 0x3f;                        \
-        LL ^= DES_SPtrans[1][u1];          \
-        LL ^= DES_SPtrans[3][u2];          \
-        s1 = (int)t >> 16;                 \
-        s2 = (int)t >> 24L;                \
-        s1 &= 0x3f;                        \
-        s2 &= 0x3f;                        \
-        LL ^= DES_SPtrans[5][s1];          \
-        LL ^= DES_SPtrans[7][s2];          \
-    }
-#endif
-
-#else
+#define LOAD_DATA(R, S, u, t, E0, E1) \
+  u = R ^ s[S];                       \
+  t = R ^ s[S + 1]
 
 #define D_ENCRYPT(LL, R, S)                                                        \
     {                                                                              \
-        LOAD_DATA_tmp(R, S, u, t, E0, E1);                                         \
+        LOAD_DATA(R, S, u, t, E0, E1);                                             \
         t = ROTATE(t, 4);                                                          \
         LL ^= DES_SPtrans[0][(u >> 2L) & 0x3f] ^ DES_SPtrans[2][(u >> 10L) & 0x3f] \
               ^ DES_SPtrans[4][(u >> 18L) & 0x3f]                                  \
@@ -351,8 +149,6 @@ static inline uint32_t ROTATE(uint32_t a, unsigned int n)
               ^ DES_SPtrans[5][(t >> 18L) & 0x3f]                                  \
               ^ DES_SPtrans[7][(t >> 26L) & 0x3f];                                 \
     }
-#endif
-#endif
 
 /* IP and FP
      * The problem is more of a geometric problem that random bit fiddling.
@@ -413,13 +209,3 @@ static inline uint32_t ROTATE(uint32_t a, unsigned int n)
         PERM_OP(r, l, tt, 16, 0x0000ffffL); \
         PERM_OP(l, r, tt, 4, 0x0f0f0f0fL);  \
     }
-
-extern const uint32_t DES_SPtrans[8][64];
-
-void fcrypt_body(uint32_t *out, DES_key_schedule *ks, uint32_t Eswap0,
-                 uint32_t Eswap1);
-
-#ifdef OPENSSL_SMALL_FOOTPRINT
-#undef DES_UNROLL
-#endif
-#endif

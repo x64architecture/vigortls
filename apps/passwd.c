@@ -1,7 +1,5 @@
-/* apps/passwd.c */
 
-
-#if !defined(OPENSSL_NO_DES) || !defined(NO_MD5CRYPT_1)
+#if !defined(NO_MD5CRYPT_1)
 
 #include <assert.h>
 #include <string.h>
@@ -12,16 +10,12 @@
 #include <openssl/err.h>
 #include <openssl/evp.h>
 #include <openssl/rand.h>
-#ifndef OPENSSL_NO_DES
-#include <openssl/des.h>
-#endif
 #ifndef NO_MD5CRYPT_1
 #include <openssl/md5.h>
 #endif
 #include <stdcompat.h>
 
 static unsigned const char cov_2char[64] = {
-    /* from crypto/des/fcrypt.c */
     0x2E, 0x2F, 0x30, 0x31, 0x32, 0x33, 0x34, 0x35,
     0x36, 0x37, 0x38, 0x39, 0x41, 0x42, 0x43, 0x44,
     0x45, 0x46, 0x47, 0x48, 0x49, 0x4A, 0x4B, 0x4C,
@@ -62,9 +56,6 @@ OPTIONS passwd_options[] = {
 #ifndef NO_MD5CRYPT_1
     { "apr1", OPT_APR1, '-', "MD5-based password algorithm, Apache variant" },
     { "1", OPT_1, '-', "MD5-based password algorithm" },
-#endif
-#ifndef OPENSSL_NO_DES
-    { "crypt", OPT_CRYPT, '-', "Standard Unix password algorithm (default)" },
 #endif
     { "salt", OPT_SALT, 's', "Use provided salt" },
     { "stdin", OPT_STDIN, '-', "Read passwords from stdin" },
@@ -151,10 +142,8 @@ int passwd_main(int argc, char **argv)
         goto opthelp;
     }
 
-#ifdef OPENSSL_NO_DES
     if (usecrypt)
         goto opthelp;
-#endif
 #ifdef NO_MD5CRYPT_1
     if (use1 || useapr1)
         goto opthelp;
@@ -367,24 +356,6 @@ static int do_passwd(int passed_salt, char **salt_p, char **salt_malloc_p, char 
 
     /* first make sure we have a salt */
     if (!passed_salt) {
-#ifndef OPENSSL_NO_DES
-        if (usecrypt) {
-            if (*salt_malloc_p == NULL) {
-                *salt_p = *salt_malloc_p = malloc(3);
-                if (*salt_malloc_p == NULL)
-                    goto end;
-            }
-            if (RAND_bytes((uint8_t *)*salt_p, 2) <= 0)
-                goto end;
-            (*salt_p)[0] = cov_2char[(*salt_p)[0] & 0x3f]; /* 6 bits */
-            (*salt_p)[1] = cov_2char[(*salt_p)[1] & 0x3f]; /* 6 bits */
-            (*salt_p)[2] = 0;
-#ifdef CHARSET_EBCDIC
-            ascii2ebcdic(*salt_p, *salt_p, 2); /* des_crypt will convert back
-                                                * to ASCII */
-#endif
-        }
-#endif /* !OPENSSL_NO_DES */
 
 #ifndef NO_MD5CRYPT_1
         if (use1 || useapr1) {
@@ -417,10 +388,6 @@ static int do_passwd(int passed_salt, char **salt_p, char **salt_malloc_p, char 
     assert(strlen(passwd) <= pw_maxlen);
 
 /* now compute password hash */
-#ifndef OPENSSL_NO_DES
-    if (usecrypt)
-        hash = DES_crypt(passwd, *salt_p);
-#endif
 #ifndef NO_MD5CRYPT_1
     if (use1 || useapr1)
         hash = md5crypt(passwd, (use1 ? "1" : "apr1"), *salt_p);

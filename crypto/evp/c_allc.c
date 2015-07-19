@@ -67,33 +67,13 @@ void OpenSSL_add_all_ciphers(void)
 {
 
 #ifndef OPENSSL_NO_DES
-    EVP_add_cipher(EVP_des_cfb());
-    EVP_add_cipher(EVP_des_cfb1());
-    EVP_add_cipher(EVP_des_cfb8());
-    EVP_add_cipher(EVP_des_ede_cfb());
-    EVP_add_cipher(EVP_des_ede3_cfb());
-    EVP_add_cipher(EVP_des_ede3_cfb1());
-    EVP_add_cipher(EVP_des_ede3_cfb8());
-
-    EVP_add_cipher(EVP_des_ofb());
-    EVP_add_cipher(EVP_des_ede_ofb());
-    EVP_add_cipher(EVP_des_ede3_ofb());
-
-    EVP_add_cipher(EVP_desx_cbc());
-    EVP_add_cipher_alias(SN_desx_cbc, "DESX");
-    EVP_add_cipher_alias(SN_desx_cbc, "desx");
 
     EVP_add_cipher(EVP_des_cbc());
     EVP_add_cipher_alias(SN_des_cbc, "DES");
     EVP_add_cipher_alias(SN_des_cbc, "des");
-    EVP_add_cipher(EVP_des_ede_cbc());
     EVP_add_cipher(EVP_des_ede3_cbc());
     EVP_add_cipher_alias(SN_des_ede3_cbc, "DES3");
     EVP_add_cipher_alias(SN_des_ede3_cbc, "des3");
-
-    EVP_add_cipher(EVP_des_ecb());
-    EVP_add_cipher(EVP_des_ede());
-    EVP_add_cipher(EVP_des_ede3());
 #endif
 
     EVP_add_cipher(EVP_rc4());

@@ -804,9 +804,9 @@ int speed_main(int argc, char **argv)
 #endif
 
 #ifndef OPENSSL_NO_DES
-    DES_set_key_unchecked(&key, &sch);
-    DES_set_key_unchecked(&key2, &sch2);
-    DES_set_key_unchecked(&key3, &sch3);
+    DES_set_key(&key, &sch);
+    DES_set_key(&key2, &sch2);
+    DES_set_key(&key3, &sch3);
 #endif
     AES_set_encrypt_key(key16, 128, &aes_ks1);
     AES_set_encrypt_key(key24, 192, &aes_ks2);

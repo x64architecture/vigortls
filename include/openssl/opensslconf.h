@@ -25,6 +25,5 @@
 
 #undef BF_PTR
 
-#define DES_PTR
 #define DES_RISC1
 #define DES_UNROLL

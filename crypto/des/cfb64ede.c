@@ -1,4 +1,3 @@
-/* crypto/des/cfb64ede.c */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -56,6 +55,10 @@
  * [including the GNU Public Licence.]
  */
 
+#include <string.h>
+
+#include <openssl/des.h>
+
 #include "des_locl.h"
 
 /* The input and output encrypted as though 64bit cfb mode is being
@@ -63,10 +66,10 @@
  * 64bit block we have used is contained in *num;
  */
 
-void DES_ede3_cfb64_encrypt(const uint8_t *in, uint8_t *out,
-                            long length, DES_key_schedule *ks1,
-                            DES_key_schedule *ks2, DES_key_schedule *ks3,
-                            DES_cblock *ivec, int *num, int enc)
+void DES_ede3_cfb64_encrypt(const uint8_t *in, uint8_t *out, long length,
+                            DES_key_schedule *ks1, DES_key_schedule *ks2,
+                            DES_key_schedule *ks3, DES_cblock *ivec, int *num,
+                            int enc)
 {
     uint32_t v0, v1;
     register long l = length;
@@ -130,8 +133,9 @@ void DES_ede3_cfb64_encrypt(const uint8_t *in, uint8_t *out,
  */
 
 void DES_ede3_cfb_encrypt(const uint8_t *in, uint8_t *out, int numbits,
-                          long length, DES_key_schedule *ks1, DES_key_schedule *ks2,
-                          DES_key_schedule *ks3, DES_cblock *ivec, int enc)
+                          long length, DES_key_schedule *ks1,
+                          DES_key_schedule *ks2, DES_key_schedule *ks3,
+                          DES_cblock *ivec, int enc)
 {
     uint32_t d0, d1, v0, v1;
     register unsigned long l = length, n = ((unsigned int)numbits + 7) / 8;

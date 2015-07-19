@@ -193,12 +193,6 @@
 #define NID_des_ecb 29
 #define OBJ_des_ecb OBJ_algorithm, 6L
 
-#define SN_des_cfb64 "DES-CFB"
-#define LN_des_cfb64 "des-cfb"
-#define NID_des_cfb64 30
-/* IV + num */
-#define OBJ_des_cfb64 OBJ_algorithm, 9L
-
 #define SN_des_cbc "DES-CBC"
 #define LN_des_cbc "des-cbc"
 #define NID_des_cbc 31

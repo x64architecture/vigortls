@@ -25,7 +25,6 @@ pkcs7_encrypted		26
 pkcs3		27
 dhKeyAgreement		28
 des_ecb		29
-des_cfb64		30
 des_cbc		31
 des_ede_ecb		32
 des_ede3_ecb		33
@@ -645,8 +644,6 @@ aes_256_cfb1		652
 aes_128_cfb8		653
 aes_192_cfb8		654
 aes_256_cfb8		655
-des_cfb1		656
-des_cfb8		657
 des_ede3_cfb1		658
 des_ede3_cfb8		659
 streetAddress		660
@@ -938,3 +935,6 @@ id_tc26_gost3410_2012_256		945
 id_tc26_gost3410_2012_512		946
 id_tc26_signwithdigest_gost3410_2012_256		947
 id_tc26_signwithdigest_gost3410_2012_512		948
+des_cfb64		949
+des_cfb1		950
+des_cfb8		951

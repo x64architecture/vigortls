@@ -78,18 +78,6 @@ const EVP_CIPHER *EVP_bf_cfb(void)
 #endif
 
 #ifndef OPENSSL_NO_DES
-#undef EVP_des_cfb
-const EVP_CIPHER *EVP_des_cfb(void);
-const EVP_CIPHER *EVP_des_cfb(void)
-{
-    return EVP_des_cfb64();
-}
-#undef EVP_des_ede3_cfb
-const EVP_CIPHER *EVP_des_ede3_cfb(void);
-const EVP_CIPHER *EVP_des_ede3_cfb(void)
-{
-    return EVP_des_ede3_cfb64();
-}
 #undef EVP_des_ede_cfb
 const EVP_CIPHER *EVP_des_ede_cfb(void);
 const EVP_CIPHER *EVP_des_ede_cfb(void)
