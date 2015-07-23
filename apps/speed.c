@@ -875,7 +875,7 @@ int speed_main(int argc, char **argv)
     c[D_IGE_192_AES][0] = count;
     c[D_IGE_256_AES][0] = count;
     c[D_GHASH][0] = count;
-    c[D_CHACHA20_POLY1305[0] = count;
+    c[D_CHACHA20_POLY1305][0] = count;
 
     for (i = 1; i < SIZE_NUM; i++) {
         long l0, l1;
