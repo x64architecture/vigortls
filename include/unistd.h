@@ -29,6 +29,7 @@
 #define getpid() GetCurrentThreadId()
 
 #define R_OK 4
+#define X_OK 3
 #define W_OK 2
 #define F_OK 0
 
