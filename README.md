@@ -7,7 +7,7 @@ Some new features added:
 *   ChaCha20-Poly1305 Support
 *   Support for GOST in the EVP interface
 
-[![Build Status](https://secure.travis-ci.org/vigortls/vigortls.png)](https://travis-ci.org/vigortls/vigortls)
+[![Build Status](https://secure.travis-ci.org/vigortls/vigortls.svg)](https://travis-ci.org/vigortls/vigortls)
 
 Goal
 ====
