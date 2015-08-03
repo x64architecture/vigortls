@@ -10,7 +10,11 @@ function(
 
     add_executable(${testname} ${sources})
 
-    add_test(${testname} ./${testname})
+    add_test(
+        NAME ${testname}
+        COMMAND ${testname}
+        WORKING_DIRECTORY "${PROJECT_SOURCE_DIR}/tests/data"
+    )
 
     target_link_libraries(${testname} crypto)
 
@@ -38,8 +42,9 @@ set(AEADTDIR "${PROJECT_SOURCE_DIR}/tests/data/aead")
 add_test(aes-128-gcm_aead ./aeadtest aes-128-gcm ${AEADTDIR}/aes_128_gcm_tests.txt)
 add_test(aes-256-gcm_aead ./aeadtest aes-256-gcm ${AEADTDIR}/aes_256_gcm_tests.txt)
 add_test(chacha20-poly1305_aead ./aeadtest chacha20-poly1305 ${AEADTDIR}/chacha20_poly1305_tests.txt)
+add_test(evptest ./evptest ${PROJECT_SOURCE_DIR}/tests/data/evptests.txt)
 add_test_suite(aes_wrap aes_wrap.c)
-add_test_suite(bftest bftest.c)
+add_test_suite(blowfishtest bftest.c)
 add_test_suite(bntest bntest.c)
 add_test_suite(casttest casttest.c)
 add_test_suite(chachatest chachatest.c)
@@ -52,7 +57,6 @@ add_test_suite(ecdhtest ecdhtest.c)
 add_test_suite(ecdsatest ecdsatest.c)
 add_test_suite(ectest ectest.c)
 add_test_suite(enginetest enginetest.c)
-add_test(evptest ./evptest ${PROJECT_SOURCE_DIR}/tests/data/evptests.txt)
 add_test_suite(exptest exptest.c)
 add_test_suite(gcm128test gcm128test.c)
 add_test_suite(gosttest gostr2814789t.c)
@@ -73,3 +77,4 @@ if (NOT WIN32)
 add_test(ssltest ${CMAKE_CURRENT_SOURCE_DIR}/ssltest.sh ${CMAKE_CURRENT_BINARY_DIR}/../apps ${CMAKE_CURRENT_SOURCE_DIR})
 endif()
 add_test_suite(wptest wptest.c)
+add_test_suite(verify_extra_test verify_extra_test.c)

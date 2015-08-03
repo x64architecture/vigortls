@@ -30,7 +30,6 @@ add_library(
     evp_pkey.c
     e_aes.c
     e_aes_cbc_hmac_sha1.c
-    e_bf.c
     e_camellia.c
     e_cast.c
     e_chacha.c

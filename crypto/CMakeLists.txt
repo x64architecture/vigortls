@@ -65,7 +65,7 @@ endif()
 
 add_subdirectory(aes)
 add_subdirectory(asn1)
-add_subdirectory(bf)
+add_subdirectory(blowfish)
 add_subdirectory(bio)
 add_subdirectory(bn)
 add_subdirectory(buffer)
@@ -131,7 +131,7 @@ add_library(
 
     $<TARGET_OBJECTS:aes>
     $<TARGET_OBJECTS:asn1>
-    $<TARGET_OBJECTS:bf>
+    $<TARGET_OBJECTS:blowfish>
     $<TARGET_OBJECTS:bio>
     $<TARGET_OBJECTS:bn>
     $<TARGET_OBJECTS:buffer>

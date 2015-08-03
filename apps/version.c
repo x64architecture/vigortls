@@ -116,9 +116,6 @@ int version_main(int argc, char **argv)
 #ifndef OPENSSL_NO_IDEA
         printf("%s ", idea_options());
 #endif
-#ifndef OPENSSL_NO_BF
-        printf("%s ", BF_options());
-#endif
         printf("\n");
     }
     if (cflags)

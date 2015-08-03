@@ -462,59 +462,6 @@ static int test(void)
         err = 1;
     }
 
-    printf("testing blowfish in cfb64 mode\n");
-
-    BF_set_key(&key, 16, cbc_key);
-    memset(cbc_in, 0, 40);
-    memset(cbc_out, 0, 40);
-    memcpy(iv, cbc_iv, 8);
-    n = 0;
-    BF_cfb64_encrypt((uint8_t *)cbc_data, cbc_out, (long)13,
-                     &key, iv, &n, BF_ENCRYPT);
-    BF_cfb64_encrypt((uint8_t *)&(cbc_data[13]), &(cbc_out[13]), len - 13,
-                     &key, iv, &n, BF_ENCRYPT);
-    if (memcmp(cbc_out, cfb64_ok, (int)len) != 0) {
-        err = 1;
-        printf("BF_cfb64_encrypt encrypt error\n");
-        for (i = 0; i < (int)len; i++)
-            printf("0x%02X,", cbc_out[i]);
-    }
-    n = 0;
-    memcpy(iv, cbc_iv, 8);
-    BF_cfb64_encrypt(cbc_out, cbc_in, 17,
-                     &key, iv, &n, BF_DECRYPT);
-    BF_cfb64_encrypt(&(cbc_out[17]), &(cbc_in[17]), len - 17,
-                     &key, iv, &n, BF_DECRYPT);
-    if (memcmp(cbc_in, cbc_data, (int)len) != 0) {
-        printf("BF_cfb64_encrypt decrypt error\n");
-        err = 1;
-    }
-
-    printf("testing blowfish in ofb64\n");
-
-    BF_set_key(&key, 16, cbc_key);
-    memset(cbc_in, 0, 40);
-    memset(cbc_out, 0, 40);
-    memcpy(iv, cbc_iv, 8);
-    n = 0;
-    BF_ofb64_encrypt((uint8_t *)cbc_data, cbc_out, (long)13, &key, iv, &n);
-    BF_ofb64_encrypt((uint8_t *)&(cbc_data[13]),
-                     &(cbc_out[13]), len - 13, &key, iv, &n);
-    if (memcmp(cbc_out, ofb64_ok, (int)len) != 0) {
-        err = 1;
-        printf("BF_ofb64_encrypt encrypt error\n");
-        for (i = 0; i < (int)len; i++)
-            printf("0x%02X,", cbc_out[i]);
-    }
-    n = 0;
-    memcpy(iv, cbc_iv, 8);
-    BF_ofb64_encrypt(cbc_out, cbc_in, 17, &key, iv, &n);
-    BF_ofb64_encrypt(&(cbc_out[17]), &(cbc_in[17]), len - 17, &key, iv, &n);
-    if (memcmp(cbc_in, cbc_data, (int)len) != 0) {
-        printf("BF_ofb64_encrypt decrypt error\n");
-        err = 1;
-    }
-
     return (err);
 }
 #endif
