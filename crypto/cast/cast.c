@@ -1,4 +1,3 @@
-/* crypto/cast/c_skey.c */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -53,13 +52,259 @@
  * The licence and distribution terms for any publically available version or
  * derivative of this code cannot be changed.  i.e. this code cannot simply be
  * copied and put under another distribution licence
- * [including the GNU Public Licence.]
+ * [including the GNU Public Licence.].
  */
 
-#include <openssl/crypto.h>
 #include <openssl/cast.h>
-#include "cast_lcl.h"
-#include "cast_s.h"
+
+#include "../macros.h"
+
+void CAST_ecb_encrypt(const uint8_t *in, uint8_t *out,
+                      const CAST_KEY *ks, int enc)
+{
+    uint32_t l, d[2];
+
+    n2l(in, l);
+    d[0] = l;
+    n2l(in, l);
+    d[1] = l;
+    if (enc)
+        CAST_encrypt(d, ks);
+    else
+        CAST_decrypt(d, ks);
+    l = d[0];
+    l2n(l, out);
+    l = d[1];
+    l2n(l, out);
+    l = d[0] = d[1] = 0;
+}
+
+extern const uint32_t CAST_S_table0[256];
+extern const uint32_t CAST_S_table1[256];
+extern const uint32_t CAST_S_table2[256];
+extern const uint32_t CAST_S_table3[256];
+extern const uint32_t CAST_S_table4[256];
+extern const uint32_t CAST_S_table5[256];
+extern const uint32_t CAST_S_table6[256];
+extern const uint32_t CAST_S_table7[256];
+
+static inline uint32_t ROTL(uint32_t a, unsigned int n)
+{
+    return ((a << n) | (a >> (32 - n)));
+}
+
+#define E_CAST(n, key, L, R, OP1, OP2, OP3)                                       \
+    {                                                                             \
+        uint32_t a, b, c, d;                                                      \
+        t = (key[n * 2] OP1 R) & 0xffffffff;                                      \
+        t = ROTL(t, (key[n * 2 + 1]));                                            \
+        a = CAST_S_table0[(t >> 8) & 0xff];                                       \
+        b = CAST_S_table1[(t)&0xff];                                              \
+        c = CAST_S_table2[(t >> 24) & 0xff];                                      \
+        d = CAST_S_table3[(t >> 16) & 0xff];                                      \
+        L ^= (((((a OP2 b)&0xffffffffL)OP3 c) & 0xffffffffL)OP1 d) & 0xffffffffL; \
+    }
+
+void CAST_encrypt(uint32_t *data, const CAST_KEY *key)
+{
+    uint32_t l, r, t;
+    const uint32_t *k;
+
+    k = &(key->data[0]);
+    l = data[0];
+    r = data[1];
+
+    E_CAST(0, k, l, r, +, ^, -);
+    E_CAST(1, k, r, l, ^, -, +);
+    E_CAST(2, k, l, r, -, +, ^);
+    E_CAST(3, k, r, l, +, ^, -);
+    E_CAST(4, k, l, r, ^, -, +);
+    E_CAST(5, k, r, l, -, +, ^);
+    E_CAST(6, k, l, r, +, ^, -);
+    E_CAST(7, k, r, l, ^, -, +);
+    E_CAST(8, k, l, r, -, +, ^);
+    E_CAST(9, k, r, l, +, ^, -);
+    E_CAST(10, k, l, r, ^, -, +);
+    E_CAST(11, k, r, l, -, +, ^);
+    if (!key->short_key) {
+        E_CAST(12, k, l, r, +, ^, -);
+        E_CAST(13, k, r, l, ^, -, +);
+        E_CAST(14, k, l, r, -, +, ^);
+        E_CAST(15, k, r, l, +, ^, -);
+    }
+
+    data[1] = l & 0xffffffffL;
+    data[0] = r & 0xffffffffL;
+}
+
+void CAST_decrypt(uint32_t *data, const CAST_KEY *key)
+{
+    uint32_t l, r, t;
+    const uint32_t *k;
+
+    k = &(key->data[0]);
+    l = data[0];
+    r = data[1];
+
+    if (!key->short_key) {
+        E_CAST(15, k, l, r, +, ^, -);
+        E_CAST(14, k, r, l, -, +, ^);
+        E_CAST(13, k, l, r, ^, -, +);
+        E_CAST(12, k, r, l, +, ^, -);
+    }
+    E_CAST(11, k, l, r, -, +, ^);
+    E_CAST(10, k, r, l, ^, -, +);
+    E_CAST(9, k, l, r, +, ^, -);
+    E_CAST(8, k, r, l, -, +, ^);
+    E_CAST(7, k, l, r, ^, -, +);
+    E_CAST(6, k, r, l, +, ^, -);
+    E_CAST(5, k, l, r, -, +, ^);
+    E_CAST(4, k, r, l, ^, -, +);
+    E_CAST(3, k, l, r, +, ^, -);
+    E_CAST(2, k, r, l, -, +, ^);
+    E_CAST(1, k, l, r, ^, -, +);
+    E_CAST(0, k, r, l, +, ^, -);
+
+    data[1] = l & 0xffffffffL;
+    data[0] = r & 0xffffffffL;
+}
+
+void CAST_cbc_encrypt(const uint8_t *in, uint8_t *out, long length,
+                      const CAST_KEY *ks, uint8_t *iv, int enc)
+{
+    uint32_t tin0, tin1;
+    uint32_t tout0, tout1, xor0, xor1;
+    long l = length;
+    uint32_t tin[2];
+
+    if (enc) {
+        n2l(iv, tout0);
+        n2l(iv, tout1);
+        iv -= 8;
+        for (l -= 8; l >= 0; l -= 8) {
+            n2l(in, tin0);
+            n2l(in, tin1);
+            tin0 ^= tout0;
+            tin1 ^= tout1;
+            tin[0] = tin0;
+            tin[1] = tin1;
+            CAST_encrypt(tin, ks);
+            tout0 = tin[0];
+            tout1 = tin[1];
+            l2n(tout0, out);
+            l2n(tout1, out);
+        }
+        if (l != -8) {
+            n2ln(in, tin0, tin1, l + 8);
+            tin0 ^= tout0;
+            tin1 ^= tout1;
+            tin[0] = tin0;
+            tin[1] = tin1;
+            CAST_encrypt(tin, ks);
+            tout0 = tin[0];
+            tout1 = tin[1];
+            l2n(tout0, out);
+            l2n(tout1, out);
+        }
+        l2n(tout0, iv);
+        l2n(tout1, iv);
+    } else {
+        n2l(iv, xor0);
+        n2l(iv, xor1);
+        iv -= 8;
+        for (l -= 8; l >= 0; l -= 8) {
+            n2l(in, tin0);
+            n2l(in, tin1);
+            tin[0] = tin0;
+            tin[1] = tin1;
+            CAST_decrypt(tin, ks);
+            tout0 = tin[0] ^ xor0;
+            tout1 = tin[1] ^ xor1;
+            l2n(tout0, out);
+            l2n(tout1, out);
+            xor0 = tin0;
+            xor1 = tin1;
+        }
+        if (l != -8) {
+            n2l(in, tin0);
+            n2l(in, tin1);
+            tin[0] = tin0;
+            tin[1] = tin1;
+            CAST_decrypt(tin, ks);
+            tout0 = tin[0] ^ xor0;
+            tout1 = tin[1] ^ xor1;
+            l2nn(tout0, tout1, out, l + 8);
+            xor0 = tin0;
+            xor1 = tin1;
+        }
+        l2n(xor0, iv);
+        l2n(xor1, iv);
+    }
+    tin0 = tin1 = tout0 = tout1 = xor0 = xor1 = 0;
+    tin[0] = tin[1] = 0;
+}
+
+/* The input and output encrypted as though 64bit cfb mode is being
+ * used.  The extra state information to record how much of the
+ * 64bit block we have used is contained in *num;
+ */
+
+void CAST_cfb64_encrypt(const uint8_t *in, uint8_t *out,
+                        long length, const CAST_KEY *schedule, uint8_t *ivec,
+                        int *num, int enc)
+{
+    uint32_t v0, v1, t;
+    int n = *num;
+    long l = length;
+    uint32_t ti[2];
+    uint8_t *iv, c, cc;
+
+    iv = ivec;
+    if (enc) {
+        while (l--) {
+            if (n == 0) {
+                n2l(iv, v0);
+                ti[0] = v0;
+                n2l(iv, v1);
+                ti[1] = v1;
+                CAST_encrypt((uint32_t *)ti, schedule);
+                iv = ivec;
+                t = ti[0];
+                l2n(t, iv);
+                t = ti[1];
+                l2n(t, iv);
+                iv = ivec;
+            }
+            c = *(in++) ^ iv[n];
+            *(out++) = c;
+            iv[n] = c;
+            n = (n + 1) & 0x07;
+        }
+    } else {
+        while (l--) {
+            if (n == 0) {
+                n2l(iv, v0);
+                ti[0] = v0;
+                n2l(iv, v1);
+                ti[1] = v1;
+                CAST_encrypt((uint32_t *)ti, schedule);
+                iv = ivec;
+                t = ti[0];
+                l2n(t, iv);
+                t = ti[1];
+                l2n(t, iv);
+                iv = ivec;
+            }
+            cc = *(in++);
+            c = iv[n];
+            iv[n] = cc;
+            *(out++) = c ^ cc;
+            n = (n + 1) & 0x07;
+        }
+    }
+    v0 = v1 = ti[0] = ti[1] = t = c = cc = 0;
+    *num = n;
+}
 
 #define CAST_exp(l, A, a, n)     \
     A[n / 4] = l;                \
@@ -72,13 +317,14 @@
 #define S5 CAST_S_table5
 #define S6 CAST_S_table6
 #define S7 CAST_S_table7
+
 void CAST_set_key(CAST_KEY *key, int len, const uint8_t *data)
 {
-    CAST_LONG x[16];
-    CAST_LONG z[16];
-    CAST_LONG k[32];
-    CAST_LONG X[4], Z[4];
-    CAST_LONG l, *K;
+    uint32_t x[16];
+    uint32_t z[16];
+    uint32_t k[32];
+    uint32_t X[4], Z[4];
+    uint32_t l, *K;
     int i;
 
     for (i = 0; i < 16; i++)

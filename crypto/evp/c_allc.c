@@ -100,17 +100,6 @@ void OpenSSL_add_all_ciphers(void)
     EVP_add_cipher_alias(SN_rc2_cbc, "rc2");
 #endif
 
-#ifndef OPENSSL_NO_CAST
-    EVP_add_cipher(EVP_cast5_ecb());
-    EVP_add_cipher(EVP_cast5_cfb());
-    EVP_add_cipher(EVP_cast5_ofb());
-    EVP_add_cipher(EVP_cast5_cbc());
-    EVP_add_cipher_alias(SN_cast5_cbc, "CAST");
-    EVP_add_cipher_alias(SN_cast5_cbc, "cast");
-    EVP_add_cipher_alias(SN_cast5_cbc, "CAST-cbc");
-    EVP_add_cipher_alias(SN_cast5_cbc, "cast-cbc");
-#endif
-
 #ifndef OPENSSL_NO_RC5
     EVP_add_cipher(EVP_rc5_32_12_16_ecb());
     EVP_add_cipher(EVP_rc5_32_12_16_cfb());
