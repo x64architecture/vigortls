@@ -108,16 +108,10 @@ size_t CRYPTO_cts128_encrypt(const uint8_t *in, uint8_t *out, size_t len,
     in += len;
     out += len;
 
-#if defined(CBC_HANDLES_TRUNCATED_IO)
-    memcpy(tmp.c, out - 16, 16);
-    (*cbc)(in, out - 16, residue, key, ivec, 1);
-    memcpy(out, tmp.c, residue);
-#else
     memset(tmp.c, 0, sizeof(tmp));
     memcpy(tmp.c, in, residue);
     memcpy(out, out - 16, residue);
     (*cbc)(tmp.c, out - 16, 16, key, ivec, 1);
-#endif
     return len + residue;
 }
 
@@ -147,13 +141,9 @@ size_t CRYPTO_nistcts128_encrypt(const uint8_t *in, uint8_t *out, size_t len,
     in += len;
     out += len;
 
-#if defined(CBC_HANDLES_TRUNCATED_IO)
-    (*cbc)(in, out - 16 + residue, residue, key, ivec, 1);
-#else
     memset(tmp.c, 0, sizeof(tmp));
     memcpy(tmp.c, in, residue);
     (*cbc)(tmp.c, out - 16 + residue, 16, key, ivec, 1);
-#endif
     return len + residue;
 }
 
@@ -278,12 +268,8 @@ size_t CRYPTO_cts128_decrypt(const uint8_t *in, uint8_t *out, size_t len,
     (*cbc)(in, tmp.c, 16, key, tmp.c + 16, 0);
 
     memcpy(tmp.c, in + 16, residue);
-#if defined(CBC_HANDLES_TRUNCATED_IO)
-    (*cbc)(tmp.c, out, 16 + residue, key, ivec, 0);
-#else
     (*cbc)(tmp.c, tmp.c, 32, key, ivec, 0);
     memcpy(out, tmp.c, 16 + residue);
-#endif
     return 16 + len + residue;
 }
 
@@ -321,11 +307,7 @@ size_t CRYPTO_nistcts128_decrypt(const uint8_t *in, uint8_t *out, size_t len,
     (*cbc)(in + residue, tmp.c, 16, key, tmp.c + 16, 0);
 
     memcpy(tmp.c, in, residue);
-#if defined(CBC_HANDLES_TRUNCATED_IO)
-    (*cbc)(tmp.c, out, 16 + residue, key, ivec, 0);
-#else
     (*cbc)(tmp.c, tmp.c, 32, key, ivec, 0);
     memcpy(out, tmp.c, 16 + residue);
-#endif
     return 16 + len + residue;
 }
