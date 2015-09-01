@@ -293,10 +293,6 @@ err:
         ASN1_OCTET_STRING_free(policy);
         policy = NULL;
     }
-    if (pci) {
-        PROXY_CERT_INFO_EXTENSION_free(pci);
-        pci = NULL;
-    }
 end:
     sk_CONF_VALUE_pop_free(vals, X509V3_conf_free);
     return pci;
