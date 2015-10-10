@@ -383,7 +383,6 @@ int ssl_get_new_session(SSL *s, int session)
 
     if (session) {
         switch (s->version) {
-            case SSL3_VERSION:
             case TLS1_VERSION:
             case TLS1_1_VERSION:
             case TLS1_2_VERSION:

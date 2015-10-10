@@ -547,9 +547,6 @@ typedef enum OPTION_choice {
     OPT_WWW,
     OPT_UPPER_WWW,
     OPT_HTTP,
-#ifndef OPENSSL_NO_SSL3
-    OPT_SSL3,
-#endif
     OPT_TLS1_2,
     OPT_TLS1_1,
     OPT_TLS1,
@@ -602,9 +599,6 @@ OPTIONS s_server_options[] = {
     { "nocert", OPT_NOCERT, '-', "Don't use any certificates (Anon-DH)" },
     { "quiet", OPT_QUIET, '-', "No server output" },
     { "no_tmp_rsa", OPT_NO_TMP_RSA, '-', "Do not generate a tmp RSA key" },
-#ifndef OPENSSL_NO_SSL3
-    { "ssl3", OPT_SSL3, '-', "Just talk SSLv3" },
-#endif
     { "tls1_2", OPT_TLS1_2, '-', "just talk TLSv1.2" },
     { "tls1_1", OPT_TLS1_1, '-', "Just talk TLSv1.1" },
     { "tls1", OPT_TLS1, '-', "Just talk TLSv1" },
@@ -863,11 +857,6 @@ int s_server_main(int argc, char *argv[])
             case OPT_HTTP:
                 www = 3;
                 break;
-#ifndef OPENSSL_NO_SSL3
-            case OPT_SSL3:
-                meth = SSLv3_server_method();
-                break;
-#endif
             case OPT_TLS1_2:
                 meth = TLSv1_2_server_method();
                 break;

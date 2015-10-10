@@ -161,50 +161,6 @@
 #include "ssl_locl.h"
 #include "../crypto/constant_time_locl.h"
 
-static const SSL_METHOD *ssl3_get_server_method(int ver);
-
-const SSL_METHOD SSLv3_server_method_data = {
-    .version = SSL3_VERSION,
-    .ssl_new = ssl3_new,
-    .ssl_clear = ssl3_clear,
-    .ssl_free = ssl3_free,
-    .ssl_accept = ssl3_accept,
-    .ssl_connect = ssl_undefined_function,
-    .ssl_read = ssl3_read,
-    .ssl_peek = ssl3_peek,
-    .ssl_write = ssl3_write,
-    .ssl_shutdown = ssl3_shutdown,
-    .ssl_renegotiate = ssl3_renegotiate,
-    .ssl_renegotiate_check = ssl3_renegotiate_check,
-    .ssl_get_message = ssl3_get_message,
-    .ssl_read_bytes = ssl3_read_bytes,
-    .ssl_write_bytes = ssl3_write_bytes,
-    .ssl_dispatch_alert = ssl3_dispatch_alert,
-    .ssl_ctrl = ssl3_ctrl,
-    .ssl_ctx_ctrl = ssl3_ctx_ctrl,
-    .ssl_pending = ssl3_pending,
-    .num_ciphers = ssl3_num_ciphers,
-    .get_cipher = ssl3_get_cipher,
-    .get_ssl_method = ssl3_get_server_method,
-    .get_timeout = ssl3_default_timeout,
-    .ssl3_enc = &SSLv3_enc_data,
-    .ssl_version = ssl_undefined_void_function,
-    .ssl_callback_ctrl = ssl3_callback_ctrl,
-    .ssl_ctx_callback_ctrl = ssl3_ctx_callback_ctrl,
-};
-
-const SSL_METHOD *SSLv3_server_method(void)
-{
-    return &SSLv3_server_method_data;
-}
-
-static const SSL_METHOD *ssl3_get_server_method(int ver)
-{
-    if (ver == SSL3_VERSION)
-        return (SSLv3_server_method());
-    return (NULL);
-}
-
 int ssl3_accept(SSL *s)
 {
     unsigned long alg_k;

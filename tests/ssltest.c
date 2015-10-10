@@ -430,7 +430,6 @@ static void sv_usage(void)
     fprintf(stderr, " -no_dhe       - disable DHE\n");
     fprintf(stderr, " -no_ecdhe     - disable ECDHE\n");
     fprintf(stderr, " -dtls1        - use DTLSv1\n");
-    fprintf(stderr, " -ssl3         - use SSLv3\n");
     fprintf(stderr, " -tls1         - use TLSv1\n");
     fprintf(stderr, " -CApath arg   - PEM format directory of CA's\n");
     fprintf(stderr, " -CAfile arg   - PEM format file of CA's\n");
@@ -542,7 +541,7 @@ int main(int argc, char *argv[])
     int badop = 0;
     int bio_pair = 0;
     int force = 0;
-    int tls1 = 0, ssl2 = 0, ssl3 = 0, dtls1 = 0, ret = 1;
+    int tls1 = 0, dtls1 = 0, ret = 1;
     int client_auth = 0;
     int server_auth = 0, i;
     struct app_verify_arg app_verify_arg = { APP_CALLBACK_STRING, 0, 0, NULL, NULL };
@@ -606,10 +605,6 @@ int main(int argc, char *argv[])
             no_ecdhe = 1;
         else if (strcmp(*argv, "-dtls1") == 0)
             dtls1 = 1;
-        else if (strcmp(*argv, "-ssl2") == 0)
-            ssl2 = 1;
-        else if (strcmp(*argv, "-ssl3") == 0)
-            ssl3 = 1;
         else if (strcmp(*argv, "-tls1") == 0)
             tls1 = 1;
         else if (strncmp(*argv, "-num", 4) == 0) {
@@ -723,11 +718,11 @@ int main(int argc, char *argv[])
         goto end;
     }
 
-    if (!dtls1 && !ssl2 && !ssl3 && !tls1 && number > 1 && !reuse && !force) {
+    if (!dtls1 && !tls1 && number > 1 && !reuse && !force) {
         fprintf(stderr,
                 "This case cannot work.  Use -f to perform "
                 "the test anyway (and\n-d to see what happens), "
-                "or add one of -dtls1, -ssl2, -ssl3, -tls1, -reuse\n"
+                "or add one of -dtls1, -tls1, -reuse\n"
                 "to avoid protocol mismatch.\n");
         exit(1);
     }
@@ -750,8 +745,6 @@ int main(int argc, char *argv[])
         meth = DTLSv1_method();
     else if (tls1)
         meth = TLSv1_method();
-    else if (ssl3)
-        meth = SSLv3_method();
     else
         meth = SSLv23_method();
 
@@ -2151,7 +2144,7 @@ static int do_test_cipherlist(void)
     const SSL_CIPHER *ci, *tci = NULL;
 
     fprintf(stderr, "testing SSLv3 cipher list order: ");
-    meth = SSLv3_method();
+    meth = SSLv23_method();
     tci = NULL;
     while ((ci = meth->get_cipher(i++)) != NULL) {
         if (tci != NULL) {

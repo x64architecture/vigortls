@@ -155,8 +155,6 @@ const SSL_METHOD *SSLv23_server_method(void)
 
 static const SSL_METHOD *ssl23_get_server_method(int ver)
 {
-    if (ver == SSL3_VERSION)
-        return (SSLv3_server_method());
     if (ver == TLS1_VERSION)
         return (TLSv1_server_method());
     if (ver == TLS1_1_VERSION)
@@ -544,10 +542,9 @@ int ssl23_get_client_hello(SSL *s)
             s->method = TLSv1_2_server_method();
         else if (s->version == TLS1_1_VERSION)
             s->method = TLSv1_1_server_method();
-        else if (s->version == TLS1_VERSION)
-            s->method = TLSv1_server_method();
         else
-            s->method = SSLv3_server_method();
+            s->method = TLSv1_server_method();
+
         s->handshake_func = s->method->ssl_accept;
     }
 

@@ -265,7 +265,6 @@ typedef enum OPTION_choice {
     OPT_SHOWCERTS,
     OPT_NBIO_TEST,
     OPT_STATE,
-    OPT_SSL3,
     OPT_TLS1_2,
     OPT_TLS1_1,
     OPT_TLS1,
@@ -314,7 +313,6 @@ OPTIONS s_client_options[] = {
     { "quiet", OPT_QUIET, '-', "No s_client output" },
     { "ign_eof", OPT_IGN_EOF, '-', "Ignore input eof (default when -quiet)" },
     { "no_ign_eof", OPT_NO_IGN_EOF, '-', "Don't ignore input eof" },
-    { "ssl3", OPT_SSL3, '-', "Just use SSLv3" },
     { "tls1_2", OPT_TLS1_2, '-', "Just use TLSv1.2" },
     { "tls1_1", OPT_TLS1_1, '-', "Just use TLSv1.1" },
     { "tls1", OPT_TLS1, '-', "Just use TLSv1" },
@@ -541,9 +539,6 @@ int s_client_main(int argc, char **argv)
             break;
         case OPT_STATE:
             state = 1;
-            break;
-        case OPT_SSL3:
-            meth = SSLv3_client_method();
             break;
         case OPT_TLS1_2:
             meth = TLSv1_2_client_method();

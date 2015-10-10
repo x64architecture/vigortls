@@ -24,7 +24,6 @@ add_library(
     s3_clnt.c
     s3_enc.c
     s3_lib.c
-    s3_meth.c
     s3_pkt.c
     s3_srvr.c
     ssl_algs.c

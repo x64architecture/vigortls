@@ -98,8 +98,6 @@ const SSL_METHOD *SSLv23_method(void)
 
 static const SSL_METHOD *ssl23_get_method(int ver)
 {
-    if (ver == SSL3_VERSION)
-        return (SSLv3_method());
     if (ver == TLS1_VERSION)
         return (TLSv1_method());
     if (ver == TLS1_1_VERSION)

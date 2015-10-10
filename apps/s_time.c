@@ -116,7 +116,6 @@ typedef enum OPTION_choice {
     OPT_BUGS,
     OPT_VERIFY,
     OPT_TIME,
-    OPT_SSL3,
     OPT_WWW
 } OPTION_CHOICE;
 
@@ -135,7 +134,6 @@ OPTIONS s_time_options[] = {
     { "verify", OPT_VERIFY, 'p', "Turn on peer certificate verification, set depth" },
     { "time", OPT_TIME, 'p', "Sf seconds to collect data, default" SECONDSSTR },
     { "www", OPT_WWW, 's', "Fetch specified page from the site" },
-    { "ssl3", OPT_SSL3, '-', "Just use SSLv3" },
     { NULL }
 };
 
@@ -218,9 +216,6 @@ int s_time_main(int argc, char **argv)
                     BIO_printf(bio_err, "%s: -www option too long\n", prog);
                     goto end;
                 }
-                break;
-            case OPT_SSL3:
-                meth = SSLv3_client_method();
                 break;
         }
     }

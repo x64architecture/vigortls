@@ -66,7 +66,6 @@ typedef enum OPTION_choice {
     OPT_ERR = -1,
     OPT_EOF = 0,
     OPT_HELP,
-    OPT_SSL3,
     OPT_TLS1,
     OPT_V,
     OPT_UPPER_V
@@ -77,9 +76,6 @@ OPTIONS ciphers_options[] = {
     { "v", OPT_V, '-', "Verbose listing of the SSL/TLS ciphers" },
     { "V", OPT_UPPER_V, '-', "Even more verbose" },
     { "tls1", OPT_TLS1, '-', "TLS1 mode" },
-#ifndef OPENSSL_NO_SSL3
-    { "ssl3", OPT_SSL3, '-', "SSL3 mode" },
-#endif
     { NULL }
 };
 
@@ -112,11 +108,6 @@ int ciphers_main(int argc, char **argv)
                 break;
             case OPT_UPPER_V:
                 verbose = Verbose = 1;
-                break;
-            case OPT_SSL3:
-#ifndef OPENSSL_NO_SSL3
-                meth = SSLv3_client_method();
-#endif
                 break;
             case OPT_TLS1:
                 meth = TLSv1_client_method();

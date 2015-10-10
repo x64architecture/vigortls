@@ -2363,8 +2363,6 @@ const char *ssl_version_string(int ver)
             return (SSL_TXT_DTLS1_BAD);
         case DTLS1_VERSION:
             return (SSL_TXT_DTLS1);
-        case SSL3_VERSION:
-            return (SSL_TXT_SSLV3);
         case TLS1_VERSION:
             return (SSL_TXT_TLSV1);
         case TLS1_1_VERSION:

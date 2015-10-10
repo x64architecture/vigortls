@@ -156,8 +156,6 @@ const SSL_METHOD *SSLv23_client_method(void)
 
 static const SSL_METHOD *ssl23_get_client_method(int ver)
 {
-    if (ver == SSL3_VERSION)
-        return (SSLv3_client_method());
     if (ver == TLS1_VERSION)
         return (TLSv1_client_method());
     if (ver == TLS1_1_VERSION)
@@ -466,10 +464,7 @@ static int ssl23_get_server_hello(SSL *s)
         || (p[0] == SSL3_RT_ALERT && p[3] == 0 && p[4] == 2))) {
         /* we have sslv3 or tls1 (server hello or alert) */
 
-        if ((p[2] == SSL3_VERSION_MINOR) && !(s->options & SSL_OP_NO_SSLv3)) {
-            s->version = SSL3_VERSION;
-            s->method = SSLv3_client_method();
-        } else if ((p[2] == TLS1_VERSION_MINOR) && !(s->options & SSL_OP_NO_TLSv1)) {
+        if ((p[2] == TLS1_VERSION_MINOR) && !(s->options & SSL_OP_NO_TLSv1)) {
             s->version = TLS1_VERSION;
             s->method = TLSv1_client_method();
         } else if ((p[2] == TLS1_1_VERSION_MINOR) && !(s->options & SSL_OP_NO_TLSv1_1)) {
