@@ -293,7 +293,7 @@ static int ssl23_client_hello(SSL *s)
          * Do the record header (5 bytes) and handshake
          * message header (4 bytes) last
          */
-        d = p = &(buf[9]);
+        d = p = &(buf[SSL3_RT_HEADER_LENGTH + SSL3_HM_HEADER_LENGTH]);
 
         *(p++) = version_major;
         *(p++) = version_minor;
@@ -342,7 +342,7 @@ static int ssl23_client_hello(SSL *s)
         l = p - d;
 
         /* fill in 4-byte handshake header */
-        d = &(buf[5]);
+        d = &(buf[SSL3_RT_HEADER_LENGTH]);
         *(d++) = SSL3_MT_CLIENT_HELLO;
         l2n3(l, d);
 
@@ -372,7 +372,8 @@ static int ssl23_client_hello(SSL *s)
         s->init_num = p - buf;
         s->init_off = 0;
 
-        ssl3_finish_mac(s, &(buf[5]), s->init_num - 5);
+        ssl3_finish_mac(s, &(buf[SSL3_RT_HEADER_LENGTH]),
+            s->init_num - SSL3_RT_HEADER_LENGTH);
 
         s->state = SSL23_ST_CW_CLNT_HELLO_B;
         s->init_off = 0;
