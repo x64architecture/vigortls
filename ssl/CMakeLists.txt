@@ -16,7 +16,6 @@ add_library(
     d1_srvr.c
     s23_clnt.c
     s23_lib.c
-    s23_meth.c
     s23_pkt.c
     s23_srvr.c
     s3_both.c
