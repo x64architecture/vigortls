@@ -340,14 +340,11 @@ void msg_cb(int write_p, int version, int content_type, const void *buf, size_t 
         case DTLS1_VERSION:
             str_version = "DTLS 1.0 ";
             break;
-        case DTLS1_BAD_VER:
-            str_version = "DTLS 1.0 (bad) ";
-            break;
         default:
             str_version = "???";
     }
 
-    if (version == SSL3_VERSION || version == TLS1_VERSION || version == TLS1_1_VERSION || version == TLS1_2_VERSION || version == DTLS1_VERSION || version == DTLS1_BAD_VER) {
+    if (version == SSL3_VERSION || version == TLS1_VERSION || version == TLS1_1_VERSION || version == TLS1_2_VERSION || version == DTLS1_VERSION) {
         switch (content_type) {
             case 20:
                 str_content_type = "ChangeCipherSpec";

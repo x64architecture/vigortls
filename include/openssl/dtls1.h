@@ -82,8 +82,6 @@ extern "C" {
 #define DTLS_MAX_VERSION DTLS1_VERSION
 #define DTLS1_VERSION_MAJOR 0xFE
 
-#define DTLS1_BAD_VER 0x0100
-
 /* lengths of messages */
 #define DTLS1_COOKIE_LENGTH 256
 

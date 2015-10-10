@@ -250,8 +250,8 @@ SSL_SESSION *d2i_SSL_SESSION(SSL_SESSION **a, const uint8_t **pp,
     }
 
     if ((as->ssl_version >> 8) != SSL3_VERSION_MAJOR
-        && (as->ssl_version >> 8) != DTLS1_VERSION_MAJOR
-        && as->ssl_version != DTLS1_BAD_VER) {
+        && (as->ssl_version >> 8) != DTLS1_VERSION_MAJOR)
+    {
         SSLerr(SSL_F_D2I_SSL_SESSION, SSL_R_UNSUPPORTED_SSL_VERSION);
         goto err;
     }

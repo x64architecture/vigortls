@@ -953,9 +953,6 @@ start:
 
         dtls1_get_ccs_header(rr->data, &ccs_hdr);
 
-        if (s->version == DTLS1_BAD_VER)
-            ccs_hdr_len = 3;
-
         /* 'Change Cipher Spec' is just a single byte, so we know
          * exactly what the record payload has to look like */
         /* XDTLS: check that epoch is consistent */
@@ -986,10 +983,6 @@ start:
 
         /* do this whenever CCS is processed */
         dtls1_reset_seq_numbers(s, SSL3_CC_READ);
-
-        if (s->version == DTLS1_BAD_VER)
-            s->d1->handshake_read_seq++;
-
 
         goto start;
     }

@@ -2359,8 +2359,6 @@ SSL_METHOD *ssl_bad_method(int ver)
 const char *ssl_version_string(int ver)
 {
     switch (ver) {
-        case DTLS1_BAD_VER:
-            return (SSL_TXT_DTLS1_BAD);
         case DTLS1_VERSION:
             return (SSL_TXT_DTLS1);
         case TLS1_VERSION:

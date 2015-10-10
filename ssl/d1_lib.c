@@ -237,10 +237,7 @@ void dtls1_clear(SSL *s)
     }
 
     ssl3_clear(s);
-    if (s->options & SSL_OP_CISCO_ANYCONNECT)
-        s->client_version = s->version = DTLS1_BAD_VER;
-    else
-        s->version = DTLS1_VERSION;
+    s->version = DTLS1_VERSION;
 }
 
 long dtls1_ctrl(SSL *s, int cmd, long larg, void *parg)

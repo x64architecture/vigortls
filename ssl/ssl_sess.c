@@ -386,7 +386,6 @@ int ssl_get_new_session(SSL *s, int session)
             case TLS1_VERSION:
             case TLS1_1_VERSION:
             case TLS1_2_VERSION:
-            case DTLS1_BAD_VER:
             case DTLS1_VERSION:
                 ss->ssl_version = s->version;
                 ss->session_id_length = SSL3_SSL_SESSION_ID_LENGTH;
