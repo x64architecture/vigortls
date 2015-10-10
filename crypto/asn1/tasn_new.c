@@ -264,7 +264,7 @@ int asn1_primitive_new(ASN1_VALUE **pval, const ASN1_ITEM *it)
     }
 
     if (!it || (it->itype == ASN1_ITYPE_MSTRING))
-        utype = -1;
+        utype = V_ASN1_UNDEF;
     else
         utype = it->utype;
     switch (utype) {
@@ -282,10 +282,10 @@ int asn1_primitive_new(ASN1_VALUE **pval, const ASN1_ITEM *it)
 
         case V_ASN1_ANY:
             typ = malloc(sizeof(ASN1_TYPE));
-            if (!typ)
-                return 0;
-            typ->value.ptr = NULL;
-            typ->type = -1;
+            if (typ != NULL) {
+                typ->value.ptr = NULL;
+                typ->type = V_ASN1_UNDEF;
+            }
             *pval = (ASN1_VALUE *)typ;
             break;
 
@@ -313,7 +313,7 @@ static void asn1_primitive_clear(ASN1_VALUE **pval, const ASN1_ITEM *it)
         return;
     }
     if (!it || (it->itype == ASN1_ITYPE_MSTRING))
-        utype = -1;
+        utype = V_ASN1_UNDEF;
     else
         utype = it->utype;
     if (utype == V_ASN1_BOOLEAN)
