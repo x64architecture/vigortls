@@ -2350,12 +2350,6 @@ int ssl_undefined_const_function(const SSL *s)
     return (0);
 }
 
-SSL_METHOD *ssl_bad_method(int ver)
-{
-    SSLerr(SSL_F_SSL_BAD_METHOD, ERR_R_SHOULD_NOT_HAVE_BEEN_CALLED);
-    return (NULL);
-}
-
 const char *ssl_version_string(int ver)
 {
     switch (ver) {
@@ -2834,21 +2828,6 @@ void SSL_set_msg_callback(SSL *ssl,
                                      void *arg))
 {
     SSL_callback_ctrl(ssl, SSL_CTRL_SET_MSG_CALLBACK, (void (*)(void))cb);
-}
-
-/*
- * Allocates new EVP_MD_CTX and sets pointer to it into given pointer
- * variable, freeing EVP_MD_CTX previously stored in that variable, if
- * any. If EVP_MD pointer is passed, initializes ctx with this md
- * Returns newly allocated ctx;
- */
-EVP_MD_CTX *ssl_replace_hash(EVP_MD_CTX **hash, const EVP_MD *md)
-{
-    ssl_clear_hash_ctx(hash);
-    *hash = EVP_MD_CTX_create();
-    if (*hash != NULL && md != NULL)
-        EVP_DigestInit_ex(*hash, md, NULL);
-    return (*hash);
 }
 
 void ssl_clear_hash_ctx(EVP_MD_CTX **hash)

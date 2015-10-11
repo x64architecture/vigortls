@@ -584,14 +584,12 @@ struct ssl_aead_ctx_st {
 extern SSL3_ENC_METHOD ssl3_undef_enc_method;
 extern SSL_CIPHER ssl3_ciphers[];
 
-SSL_METHOD *ssl_bad_method(int ver);
 const char *ssl_version_string(int ver);
 
+extern SSL3_ENC_METHOD DTLSv1_enc_data;
 extern SSL3_ENC_METHOD TLSv1_enc_data;
 extern SSL3_ENC_METHOD TLSv1_1_enc_data;
 extern SSL3_ENC_METHOD TLSv1_2_enc_data;
-extern SSL3_ENC_METHOD SSLv3_enc_data;
-extern SSL3_ENC_METHOD DTLSv1_enc_data;
 
 void ssl_clear_cipher_ctx(SSL *s);
 int ssl_clear_bad_session(SSL *s);
@@ -601,7 +599,6 @@ int ssl_cert_inst(CERT **o);
 void ssl_cert_free(CERT *c);
 SESS_CERT *ssl_sess_cert_new(void);
 void ssl_sess_cert_free(SESS_CERT *sc);
-int ssl_set_peer_cert_type(SESS_CERT *c, int type);
 int ssl_get_new_session(SSL *s, int session);
 int ssl_get_prev_session(SSL *s, uint8_t *session, int len,
                          const uint8_t *limit);
@@ -645,14 +642,10 @@ int ssl3_send_server_certificate(SSL *s);
 int ssl3_send_newsession_ticket(SSL *s);
 int ssl3_send_cert_status(SSL *s);
 int ssl3_get_finished(SSL *s, int state_a, int state_b);
-int ssl3_setup_key_block(SSL *s);
 int ssl3_send_change_cipher_spec(SSL *s, int state_a, int state_b);
-int ssl3_change_cipher_state(SSL *s, int which);
 void ssl3_cleanup_key_block(SSL *s);
 int ssl3_do_write(SSL *s, int type);
 int ssl3_send_alert(SSL *s, int level, int desc);
-int ssl3_generate_master_secret(SSL *s, uint8_t *out, uint8_t *p,
-                                int len);
 int ssl3_get_req_cert_type(SSL *s, uint8_t *p);
 long ssl3_get_message(SSL *s, int st1, int stn, int mt, long max, int *ok);
 int ssl3_send_finished(SSL *s, int a, int b, const char *sender, int slen);
@@ -667,12 +660,7 @@ int ssl3_renegotiate_check(SSL *ssl);
 int ssl3_dispatch_alert(SSL *s);
 int ssl3_read_bytes(SSL *s, int type, uint8_t *buf, int len, int peek);
 int ssl3_write_bytes(SSL *s, int type, const void *buf, int len);
-int ssl3_final_finish_mac(SSL *s, const char *sender, int slen,
-                          uint8_t *p);
-int ssl3_cert_verify_mac(SSL *s, int md_nid, uint8_t *p);
 void ssl3_finish_mac(SSL *s, const uint8_t *buf, int len);
-int ssl3_enc(SSL *s, int send_data);
-int n_ssl3_mac(SSL *ssl, uint8_t *md, int send_data);
 void ssl3_free_digest_list(SSL *s);
 unsigned long ssl3_output_cert_chain(SSL *s, X509 *x);
 SSL_CIPHER *ssl3_choose_cipher(SSL *ssl, STACK_OF(SSL_CIPHER) * clnt,
@@ -700,7 +688,6 @@ int ssl3_pending(const SSL *s);
 
 void ssl3_record_sequence_increment(uint8_t *seq);
 int ssl3_do_change_cipher_spec(SSL *ssl);
-long ssl3_default_timeout(void);
 
 void ssl3_set_handshake_header(SSL *s, int htype, unsigned long len);
 int ssl3_handshake_write(SSL *s);
@@ -830,7 +817,6 @@ int tls1_export_keying_material(SSL *s, uint8_t *out, size_t olen,
                                 const uint8_t *p, size_t plen,
                                 int use_context);
 int tls1_alert_code(int code);
-int ssl3_alert_code(int code);
 int ssl_ok(SSL *s);
 
 int ssl_check_srvr_ecc_cert_and_alg(X509 *x, SSL *s);
@@ -866,7 +852,6 @@ int tls12_get_sigandhash(uint8_t *p, const EVP_PKEY *pk,
 int tls12_get_sigid(const EVP_PKEY *pk);
 const EVP_MD *tls12_get_hash(uint8_t hash_alg);
 
-EVP_MD_CTX *ssl_replace_hash(EVP_MD_CTX **hash, const EVP_MD *md);
 void ssl_clear_hash_ctx(EVP_MD_CTX **hash);
 int ssl_add_serverhello_renegotiate_ext(SSL *s, uint8_t *p, int *len,
                                         int maxlen);
@@ -896,8 +881,6 @@ int ssl_handshake_hash(SSL *s, uint8_t *out, int outlen);
 /* s3_cbc.c */
 void ssl3_cbc_copy_mac(uint8_t *out, const SSL3_RECORD *rec,
                        unsigned md_size, unsigned orig_len);
-int ssl3_cbc_remove_padding(const SSL *s, SSL3_RECORD *rec, unsigned block_size,
-                            unsigned mac_size);
 int tls1_cbc_remove_padding(const SSL *s, SSL3_RECORD *rec, unsigned block_size,
                             unsigned mac_size);
 char ssl3_cbc_record_digest_supported(const EVP_MD_CTX *ctx);

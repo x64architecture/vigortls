@@ -1899,38 +1899,6 @@ SSL_CIPHER ssl3_ciphers[] = {
     /* end of list */
 };
 
-SSL3_ENC_METHOD SSLv3_enc_data = {
-    .enc = ssl3_enc,
-    .mac = n_ssl3_mac,
-    .setup_key_block = ssl3_setup_key_block,
-    .generate_master_secret = ssl3_generate_master_secret,
-    .change_cipher_state = ssl3_change_cipher_state,
-    .final_finish_mac = ssl3_final_finish_mac,
-    .finish_mac_length = MD5_DIGEST_LENGTH + SHA_DIGEST_LENGTH,
-    .cert_verify_mac = ssl3_cert_verify_mac,
-    .client_finished_label = SSL3_MD_CLIENT_FINISHED_CONST,
-    .client_finished_label_len = 4,
-    .server_finished_label = SSL3_MD_SERVER_FINISHED_CONST,
-    .server_finished_label_len = 4,
-    .alert_value = ssl3_alert_code,
-    .export_keying_material = (int (*)(
-        SSL *, uint8_t *, size_t, const char *, size_t,
-        const uint8_t *, size_t, int use_context))ssl_undefined_function,
-    .enc_flags = 0,
-    .hhlen = SSL3_HM_HEADER_LENGTH,
-    .set_handshake_header = ssl3_set_handshake_header,
-    .do_write = ssl3_handshake_write,
-};
-
-long ssl3_default_timeout(void)
-{
-    /*
-     * 2 hours, the 24 hours mentioned in the SSLv3 spec
-     * is way too long for http, the cache would over fill
-     */
-    return (60 * 60 * 2);
-}
-
 int ssl3_num_ciphers(void)
 {
     return (SSL3_NUM_CIPHERS);

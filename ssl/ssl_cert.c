@@ -361,12 +361,6 @@ void ssl_sess_cert_free(SESS_CERT *sc)
     free(sc);
 }
 
-int ssl_set_peer_cert_type(SESS_CERT *sc, int type)
-{
-    sc->peer_cert_type = type;
-    return (1);
-}
-
 int ssl_verify_cert_chain(SSL *s, STACK_OF(X509) * sk)
 {
     X509_STORE_CTX ctx;
