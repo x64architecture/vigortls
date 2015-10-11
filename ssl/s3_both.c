@@ -135,7 +135,7 @@ int ssl3_do_write(SSL *s, int type)
     if (type == SSL3_RT_HANDSHAKE)
         /* should not be done for 'Hello Request's, but in that case
          * we'll ignore the result anyway */
-        ssl3_finish_mac(s, (uint8_t *)&s->init_buf->data[s->init_off], ret);
+        tls1_finish_mac(s, (uint8_t *)&s->init_buf->data[s->init_off], ret);
 
     if (ret == s->init_num) {
         if (s->msg_callback)
@@ -412,7 +412,7 @@ long ssl3_get_message(SSL *s, int st1, int stn, int mt, long max, int *ok)
         ssl3_take_mac(s);
 
     /* Feed this message into MAC computation. */
-    ssl3_finish_mac(s, (uint8_t *)s->init_buf->data, s->init_num + 4);
+    tls1_finish_mac(s, (uint8_t *)s->init_buf->data, s->init_num + 4);
     if (s->msg_callback)
         s->msg_callback(0, s->version, SSL3_RT_HANDSHAKE, s->init_buf->data,
                         (size_t)s->init_num + 4, s, s->msg_callback_arg);

@@ -259,7 +259,7 @@ int dtls1_connect(SSL *s)
                 s->shutdown = 0;
 
                 /* every DTLS ClientHello resets Finished MAC */
-                ssl3_init_finished_mac(s);
+                tls1_init_finished_mac(s);
 
                 dtls1_start_timer(s);
                 ret = ssl3_client_hello(s);

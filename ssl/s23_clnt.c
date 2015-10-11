@@ -176,7 +176,7 @@ int ssl23_connect(SSL *s)
                     goto end;
                 }
 
-                ssl3_init_finished_mac(s);
+                tls1_init_finished_mac(s);
 
                 s->state = SSL23_ST_CW_CLNT_HELLO_A;
                 s->ctx->stats.sess_connect++;
@@ -372,7 +372,7 @@ static int ssl23_client_hello(SSL *s)
         s->init_num = p - buf;
         s->init_off = 0;
 
-        ssl3_finish_mac(s, &(buf[SSL3_RT_HEADER_LENGTH]),
+        tls1_finish_mac(s, &(buf[SSL3_RT_HEADER_LENGTH]),
             s->init_num - SSL3_RT_HEADER_LENGTH);
 
         s->state = SSL23_ST_CW_CLNT_HELLO_B;

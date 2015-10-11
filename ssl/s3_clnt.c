@@ -236,7 +236,7 @@ int ssl3_connect(SSL *s)
 
                 /* don't push the buffering BIO quite yet */
 
-                ssl3_init_finished_mac(s);
+                tls1_init_finished_mac(s);
 
                 s->state = SSL3_ST_CW_CLNT_HELLO_A;
                 s->ctx->stats.sess_connect++;
@@ -905,7 +905,7 @@ int ssl3_get_server_hello(SSL *s)
      * Don't digest cached records if no sigalgs: we may need them for
      * client authentication.
      */
-    if (!SSL_USE_SIGALGS(s) && !ssl3_digest_cached_records(s)) {
+    if (!SSL_USE_SIGALGS(s) && !tls1_digest_cached_records(s)) {
         al = SSL_AD_INTERNAL_ERROR;
         goto f_err;
     }
@@ -1573,7 +1573,7 @@ int ssl3_get_certificate_request(SSL *s)
          * as we wont be doing client auth.
          */
         if (s->s3->handshake_buffer) {
-            if (!ssl3_digest_cached_records(s))
+            if (!tls1_digest_cached_records(s))
                 goto err;
         }
         return (1);
@@ -2396,7 +2396,7 @@ int ssl3_send_client_verify(SSL *s)
             }
             s2n(u, p);
             n = u + 4;
-            if (!ssl3_digest_cached_records(s))
+            if (!tls1_digest_cached_records(s))
                 goto err;
         } else if (pkey->type == EVP_PKEY_RSA) {
             s->method->ssl3_enc->cert_verify_mac(

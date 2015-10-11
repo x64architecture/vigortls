@@ -244,7 +244,7 @@ int ssl3_accept(SSL *s)
                         goto end;
                     }
 
-                    ssl3_init_finished_mac(s);
+                    tls1_init_finished_mac(s);
                     s->state = SSL3_ST_SR_CLNT_HELLO_A;
                     s->ctx->stats.sess_accept++;
                 } else if (!s->s3->send_connection_binding) {
@@ -278,7 +278,7 @@ int ssl3_accept(SSL *s)
                 s->state = SSL3_ST_SW_FLUSH;
                 s->init_num = 0;
 
-                ssl3_init_finished_mac(s);
+                tls1_init_finished_mac(s);
                 break;
 
             case SSL3_ST_SW_HELLO_REQ_C:
@@ -385,7 +385,7 @@ int ssl3_accept(SSL *s)
                     s->s3->tmp.cert_request = 0;
                     s->state = SSL3_ST_SW_SRVR_DONE_A;
                     if (s->s3->handshake_buffer)
-                        if (!ssl3_digest_cached_records(s))
+                        if (!tls1_digest_cached_records(s))
                             return (-1);
                 } else {
                     s->s3->tmp.cert_request = 1;
@@ -475,7 +475,7 @@ int ssl3_accept(SSL *s)
                         return (-1);
                     }
                     s->s3->flags |= TLS1_FLAGS_KEEP_HANDSHAKE;
-                    if (!ssl3_digest_cached_records(s))
+                    if (!tls1_digest_cached_records(s))
                         return (-1);
                 } else {
                     int offset = 0;
@@ -492,7 +492,7 @@ int ssl3_accept(SSL *s)
                      * But it is next step
                      */
                     if (s->s3->handshake_buffer)
-                        if (!ssl3_digest_cached_records(s))
+                        if (!tls1_digest_cached_records(s))
                             return (-1);
                     for (dgst_num = 0; dgst_num < SSL_MAX_DIGEST; dgst_num++)
                         if (s->s3->handshake_dgst[dgst_num]) {
@@ -1032,7 +1032,7 @@ int ssl3_get_client_hello(SSL *s)
     }
 
     if (!SSL_USE_SIGALGS(s) || !(s->verify_mode & SSL_VERIFY_PEER)) {
-        if (!ssl3_digest_cached_records(s)) {
+        if (!tls1_digest_cached_records(s)) {
             al = SSL_AD_INTERNAL_ERROR;
             goto f_err;
         }
@@ -2226,7 +2226,7 @@ int ssl3_get_client_certificate(SSL *s)
             goto f_err;
         }
         /* No client certificate so digest cached records */
-        if (s->s3->handshake_buffer && !ssl3_digest_cached_records(s)) {
+        if (s->s3->handshake_buffer && !tls1_digest_cached_records(s)) {
             al = SSL_AD_INTERNAL_ERROR;
             goto f_err;
         }

@@ -255,7 +255,7 @@ int dtls1_accept(SSL *s)
                             goto end;
                         }
 
-                    ssl3_init_finished_mac(s);
+                    tls1_init_finished_mac(s);
                     s->state = SSL3_ST_SR_CLNT_HELLO_A;
                     s->ctx->stats.sess_accept++;
                 } else {
@@ -280,7 +280,7 @@ int dtls1_accept(SSL *s)
                 s->state = SSL3_ST_SW_FLUSH;
                 s->init_num = 0;
 
-                ssl3_init_finished_mac(s);
+                tls1_init_finished_mac(s);
                 break;
 
             case SSL3_ST_SW_HELLO_REQ_C:
@@ -335,7 +335,7 @@ int dtls1_accept(SSL *s)
                 s->s3->tmp.next_state = SSL3_ST_SR_CLNT_HELLO_A;
 
                 /* HelloVerifyRequest resets Finished MAC */
-                ssl3_init_finished_mac(s);
+                tls1_init_finished_mac(s);
                 break;
 
 

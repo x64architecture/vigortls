@@ -165,7 +165,7 @@ int ssl23_accept(SSL *s)
                     s->init_buf = buf;
                 }
 
-                ssl3_init_finished_mac(s);
+                tls1_init_finished_mac(s);
 
                 s->state = SSL23_ST_SR_CLNT_HELLO_A;
                 s->ctx->stats.sess_accept++;
@@ -389,7 +389,7 @@ int ssl23_get_client_hello(SSL *s)
         if (j != n + 2)
             return -1;
 
-        ssl3_finish_mac(s, s->packet + 2, s->packet_length - 2);
+        tls1_finish_mac(s, s->packet + 2, s->packet_length - 2);
         if (s->msg_callback)
             s->msg_callback(0, SSL2_VERSION, 0, s->packet + 2, s->packet_length - 2,
                             s, s->msg_callback_arg);

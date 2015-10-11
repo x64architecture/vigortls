@@ -637,7 +637,7 @@ STACK_OF(SSL_CIPHER) * ssl_get_ciphers_by_id(SSL *s);
 int ssl_verify_alarm_type(long type);
 void ssl_load_ciphers(void);
 
-void ssl3_init_finished_mac(SSL *s);
+void tls1_init_finished_mac(SSL *s);
 int ssl3_send_server_certificate(SSL *s);
 int ssl3_send_newsession_ticket(SSL *s);
 int ssl3_send_cert_status(SSL *s);
@@ -660,8 +660,8 @@ int ssl3_renegotiate_check(SSL *ssl);
 int ssl3_dispatch_alert(SSL *s);
 int ssl3_read_bytes(SSL *s, int type, uint8_t *buf, int len, int peek);
 int ssl3_write_bytes(SSL *s, int type, const void *buf, int len);
-void ssl3_finish_mac(SSL *s, const uint8_t *buf, int len);
-void ssl3_free_digest_list(SSL *s);
+void tls1_finish_mac(SSL *s, const uint8_t *buf, int len);
+void tls1_free_digest_list(SSL *s);
 unsigned long ssl3_output_cert_chain(SSL *s, X509 *x);
 SSL_CIPHER *ssl3_choose_cipher(SSL *ssl, STACK_OF(SSL_CIPHER) * clnt,
                                STACK_OF(SSL_CIPHER) * srvr);
@@ -670,7 +670,7 @@ int ssl3_setup_read_buffer(SSL *s);
 int ssl3_setup_write_buffer(SSL *s);
 int ssl3_release_read_buffer(SSL *s);
 int ssl3_release_write_buffer(SSL *s);
-int ssl3_digest_cached_records(SSL *s);
+int tls1_digest_cached_records(SSL *s);
 int ssl3_new(SSL *s);
 void ssl3_free(SSL *s);
 int ssl3_accept(SSL *s);
@@ -686,7 +686,7 @@ long ssl3_callback_ctrl(SSL *s, int cmd, void (*fp)(void));
 long ssl3_ctx_callback_ctrl(SSL_CTX *s, int cmd, void (*fp)(void));
 int ssl3_pending(const SSL *s);
 
-void ssl3_record_sequence_increment(uint8_t *seq);
+void tls1_record_sequence_increment(uint8_t *seq);
 int ssl3_do_change_cipher_spec(SSL *ssl);
 
 void ssl3_set_handshake_header(SSL *s, int htype, unsigned long len);
