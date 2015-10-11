@@ -268,19 +268,8 @@ int ssl23_get_client_hello(SSL *s)
                         s->version = TLS1_VERSION;
                         /* type=2; */ /* done later to survive restarts */
                         s->state = SSL23_ST_SR_CLNT_HELLO_B;
-                    } else if (!(s->options & SSL_OP_NO_SSLv3)) {
-                        s->version = SSL3_VERSION;
-                        /* type=2; */
-                        s->state = SSL23_ST_SR_CLNT_HELLO_B;
-                    } else if (!(s->options & SSL_OP_NO_SSLv2)) {
-                        type = 1;
                     }
-                } else if (!(s->options & SSL_OP_NO_SSLv3)) {
-                    s->version = SSL3_VERSION;
-                    /* type=2; */
-                    s->state = SSL23_ST_SR_CLNT_HELLO_B;
-                } else if (!(s->options & SSL_OP_NO_SSLv2))
-                    type = 1;
+                }
             }
         } else if ((p[0] == SSL3_RT_HANDSHAKE)
             && (p[1] == SSL3_VERSION_MAJOR)
@@ -323,18 +312,11 @@ int ssl23_get_client_hello(SSL *s)
                 } else if (!(s->options & SSL_OP_NO_TLSv1)) {
                     s->version = TLS1_VERSION;
                     type = 3;
-                } else if (!(s->options & SSL_OP_NO_SSLv3)) {
-                    s->version = SSL3_VERSION;
-                    type = 3;
                 }
             } else {
-                /* client requests SSL 3.0 */
-                if (!(s->options & SSL_OP_NO_SSLv3)) {
-                    s->version = SSL3_VERSION;
-                    type = 3;
-                } else if (!(s->options & SSL_OP_NO_TLSv1)) {
+                if (!(s->options & SSL_OP_NO_TLSv1)) {
                     /* we won't be able to use TLS of course,
-           * but this will send an appropriate alert */
+                     * but this will send an appropriate alert */
                     s->version = TLS1_VERSION;
                     type = 3;
                 }

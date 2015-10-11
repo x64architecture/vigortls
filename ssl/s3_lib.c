@@ -2031,7 +2031,7 @@ void ssl3_clear(SSL *s)
     s->s3->total_renegotiations = 0;
     s->s3->num_renegotiations = 0;
     s->s3->in_read_app_data = 0;
-    s->version = SSL3_VERSION;
+    s->version = TLS1_VERSION;
 
     free(s->next_proto_negotiated);
     s->next_proto_negotiated = NULL;
@@ -2211,10 +2211,6 @@ long ssl3_ctrl(SSL *s, int cmd, long larg, void *parg)
                     return s->version == TLS1_1_VERSION;
                 if (!(s->options & SSL_OP_NO_TLSv1))
                     return s->version == TLS1_VERSION;
-                if (!(s->options & SSL_OP_NO_SSLv3))
-                    return s->version == SSL3_VERSION;
-                if (!(s->options & SSL_OP_NO_SSLv2))
-                    return s->version == SSL2_VERSION;
             }
             return 0; /* Unexpected state; fail closed. */
 
@@ -2522,24 +2518,19 @@ int ssl3_get_req_cert_type(SSL *s, uint8_t *p)
         p[ret++] = SSL3_CT_RSA_FIXED_DH;
         p[ret++] = SSL3_CT_DSS_FIXED_DH;
     }
-    if ((s->version == SSL3_VERSION) && (alg_k & (SSL_kDHE | SSL_kDHd | SSL_kDHr))) {
-        p[ret++] = SSL3_CT_RSA_EPHEMERAL_DH;
-        p[ret++] = SSL3_CT_DSS_EPHEMERAL_DH;
-    }
     p[ret++] = SSL3_CT_RSA_SIGN;
     p[ret++] = SSL3_CT_DSS_SIGN;
-    if ((alg_k & (SSL_kECDHr | SSL_kECDHe)) && (s->version >= TLS1_VERSION)) {
+    if ((alg_k & (SSL_kECDHr | SSL_kECDHe))) {
         p[ret++] = TLS_CT_RSA_FIXED_ECDH;
         p[ret++] = TLS_CT_ECDSA_FIXED_ECDH;
     }
 
     /*
-   * ECDSA certs can be used with RSA cipher suites as well
-   * so we don't need to check for SSL_kECDH or SSL_kECDHE
-   */
-    if (s->version >= TLS1_VERSION) {
-        p[ret++] = TLS_CT_ECDSA_SIGN;
-    }
+     * ECDSA certs can be used with RSA cipher suites as well
+     * so we don't need to check for SSL_kECDH or SSL_kECDHE
+     */
+    p[ret++] = TLS_CT_ECDSA_SIGN;
+
     return (ret);
 }
 

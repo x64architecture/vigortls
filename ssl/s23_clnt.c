@@ -256,9 +256,6 @@ static int ssl23_client_hello(SSL *s)
     if ((options & SSL_OP_NO_TLSv1_1) && (options & mask) != mask)
         version = TLS1_VERSION;
     mask &= ~SSL_OP_NO_TLSv1;
-    if ((options & SSL_OP_NO_TLSv1) && (options & mask) != mask)
-        version = SSL3_VERSION;
-    mask &= ~SSL_OP_NO_SSLv3;
 
     buf = (uint8_t *)s->init_buf->data;
     if (s->state == SSL23_ST_CW_CLNT_HELLO_A) {
@@ -277,9 +274,6 @@ static int ssl23_client_hello(SSL *s)
         } else if (version == TLS1_VERSION) {
             version_major = TLS1_VERSION_MAJOR;
             version_minor = TLS1_VERSION_MINOR;
-        } else if (version == SSL3_VERSION) {
-            version_major = SSL3_VERSION_MAJOR;
-            version_minor = SSL3_VERSION_MINOR;
         } else {
             SSLerr(SSL_F_SSL23_CLIENT_HELLO, SSL_R_NO_PROTOCOLS_AVAILABLE);
             return (-1);

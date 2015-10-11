@@ -1049,7 +1049,6 @@ start:
      */
     if (s->server && SSL_is_init_finished(s)
         && !s->s3->send_connection_binding
-        && (s->version > SSL3_VERSION)
         && (s->s3->handshake_fragment_len >= 4)
         && (s->s3->handshake_fragment[0] == SSL3_MT_CLIENT_HELLO)
         && (s->session != NULL) && (s->session->cipher != NULL)) {
@@ -1296,10 +1295,6 @@ int ssl3_send_alert(SSL *s, int level, int desc)
 {
     /* Map tls/ssl alert value to correct one */
     desc = s->method->ssl3_enc->alert_value(desc);
-    if (s->version == SSL3_VERSION && desc == SSL_AD_PROTOCOL_VERSION) {
-        /* SSL 3.0 does not have protocol_version alerts */
-        desc = SSL_AD_HANDSHAKE_FAILURE;
-    }
     if (desc < 0)
         return -1;
     /* If a fatal one, remove from cache */

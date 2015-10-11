@@ -943,13 +943,12 @@ int ssl3_get_client_hello(SSL *s)
     }
 
     /* TLS extensions*/
-    if (s->version >= SSL3_VERSION) {
-        if (!ssl_parse_clienthello_tlsext(s, &p, d, n, &al)) {
-            /* 'al' set by ssl_parse_clienthello_tlsext */
-            SSLerr(SSL_F_SSL3_GET_CLIENT_HELLO, SSL_R_PARSE_TLSEXT);
-            goto f_err;
-        }
+    if (!ssl_parse_clienthello_tlsext(s, &p, d, n, &al)) {
+       /* 'al' set by ssl_parse_clienthello_tlsext */
+       SSLerr(SSL_F_SSL3_GET_CLIENT_HELLO, SSL_R_PARSE_TLSEXT);
+       goto f_err;
     }
+
     if (ssl_check_clienthello_tlsext_early(s) <= 0) {
         SSLerr(SSL_F_SSL3_GET_CLIENT_HELLO, SSL_R_CLIENTHELLO_TLSEXT);
         goto err;
@@ -970,7 +969,7 @@ int ssl3_get_client_hello(SSL *s)
         }
     }
 
-    if (!s->hit && s->version >= TLS1_VERSION && s->tls_session_secret_cb) {
+    if (!s->hit && s->tls_session_secret_cb) {
         SSL_CIPHER *pref_cipher = NULL;
 
         s->session->master_key_length = sizeof(s->session->master_key);
@@ -1051,11 +1050,9 @@ int ssl3_get_client_hello(SSL *s)
      */
 
     /* Handles TLS extensions that we couldn't check earlier */
-    if (s->version >= SSL3_VERSION) {
-        if (ssl_check_clienthello_tlsext_late(s) <= 0) {
-            SSLerr(SSL_F_SSL3_GET_CLIENT_HELLO, SSL_R_CLIENTHELLO_TLSEXT);
-            goto err;
-        }
+    if (ssl_check_clienthello_tlsext_late(s) <= 0) {
+        SSLerr(SSL_F_SSL3_GET_CLIENT_HELLO, SSL_R_CLIENTHELLO_TLSEXT);
+        goto err;
     }
 
     if (ret < 0)
@@ -1580,18 +1577,16 @@ int ssl3_get_client_key_exchange(SSL *s)
         rsa = pkey->pkey.rsa;
 
         /* TLS and [incidentally] DTLS{0xFEFF} */
-        if (s->version > SSL3_VERSION) {
-            if (2 > n)
-                goto truncated;
-            n2s(p, i);
-            if (n != i + 2) {
-                al = SSL_AD_DECODE_ERROR;
-                SSLerr(SSL_F_SSL3_GET_CLIENT_KEY_EXCHANGE,
-                       SSL_R_TLS_RSA_ENCRYPTED_VALUE_LENGTH_IS_WRONG);
-                goto f_err;
-            } else
-                n = i;
-        }
+        if (2 > n)
+            goto truncated;
+        n2s(p, i);
+        if (n != i + 2) {
+           al = SSL_AD_DECODE_ERROR;
+           SSLerr(SSL_F_SSL3_GET_CLIENT_KEY_EXCHANGE,
+           SSL_R_TLS_RSA_ENCRYPTED_VALUE_LENGTH_IS_WRONG);
+           goto f_err;
+        } else
+            n = i;
 
         if (p + 2 - d > n) /* needed in the SSL3 case */
             goto truncated;
@@ -2157,7 +2152,7 @@ int ssl3_get_client_certificate(SSL *s)
          * If tls asked for a client cert,
          * the client must return a 0 list.
          */
-        if ((s->version > SSL3_VERSION) && s->s3->tmp.cert_request) {
+        if (s->s3->tmp.cert_request) {
             SSLerr(SSL_F_SSL3_GET_CLIENT_CERTIFICATE,
                    SSL_R_TLS_PEER_DID_NOT_RESPOND_WITH_CERTIFICATE_LIST);
             al = SSL_AD_UNEXPECTED_MESSAGE;
@@ -2212,14 +2207,9 @@ int ssl3_get_client_certificate(SSL *s)
     }
 
     if (sk_X509_num(sk) <= 0) {
-        /* TLS does not mind 0 certs returned */
-        if (s->version == SSL3_VERSION) {
-            al = SSL_AD_HANDSHAKE_FAILURE;
-            SSLerr(SSL_F_SSL3_GET_CLIENT_CERTIFICATE, SSL_R_NO_CERTIFICATES_RETURNED);
-            goto f_err;
-        }
         /* Fail for TLS only if we required a certificate */
-        else if ((s->verify_mode & SSL_VERIFY_PEER) && (s->verify_mode & SSL_VERIFY_FAIL_IF_NO_PEER_CERT)) {
+        if ((s->verify_mode & SSL_VERIFY_PEER)
+            && (s->verify_mode & SSL_VERIFY_FAIL_IF_NO_PEER_CERT)) {
             SSLerr(SSL_F_SSL3_GET_CLIENT_CERTIFICATE,
                    SSL_R_PEER_DID_NOT_RETURN_A_CERTIFICATE);
             al = SSL_AD_HANDSHAKE_FAILURE;

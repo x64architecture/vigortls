@@ -620,10 +620,6 @@ uint8_t *ssl_add_clienthello_tlsext(SSL *s, uint8_t *p, uint8_t *limit)
         }
     }
 
-    /* don't add extensions for SSLv3 unless doing secure renegotiation */
-    if (s->client_version == SSL3_VERSION && !s->s3->send_connection_binding)
-        return p;
-
     ret += 2;
 
     if (ret >= limit)
@@ -916,10 +912,6 @@ uint8_t *ssl_add_serverhello_tlsext(SSL *s, uint8_t *p,
     using_ecc = (alg_k & (SSL_kECDHE | SSL_kECDHr | SSL_kECDHe) ||
         alg_a & SSL_aECDSA) &&
         s->session->tlsext_ecpointformatlist != NULL;
-
-    /* don't add extensions for SSLv3, unless doing secure renegotiation */
-    if (s->version == SSL3_VERSION && !s->s3->send_connection_binding)
-        return p;
 
     ret += 2;
     if (ret >= limit)
@@ -1964,7 +1956,7 @@ int tls1_process_ticket(SSL *s, uint8_t *session_id, int len,
      */
     if (SSL_get_options(s) & SSL_OP_NO_TICKET)
         return 0;
-    if ((s->version <= SSL3_VERSION) || !limit)
+    if (!limit)
         return 0;
     if (p >= limit)
         return -1;
