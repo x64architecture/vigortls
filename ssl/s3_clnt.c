@@ -2034,7 +2034,7 @@ int ssl3_send_client_key_exchange(SSL *s)
             s->session->master_key_length
                 = s->method->ssl3_enc->generate_master_secret(s, s->session->master_key, p, n);
             /* Clean up. */
-            memset(p, 0, n);
+            vigortls_zeroize(p, 0, n);
 
             /* Send off the data. */
             n = BN_num_bytes(dh_clnt->pub_key);
@@ -2172,7 +2172,8 @@ int ssl3_send_client_key_exchange(SSL *s)
             s->session->master_key_length
                 = s->method->ssl3_enc->generate_master_secret(s, s->session->master_key, p, n);
 
-            memset(p, 0, n); /* clean up */
+            /* clean up */
+            vigortls_zeroize(p, 0, n);
 
             if (ecdh_clnt_cert) {
                 /* Send empty client key exch message. */
