@@ -350,8 +350,7 @@ SSL *SSL_new(SSL_CTX *ctx)
 
     return (s);
 err:
-    if (s != NULL)
-        free(s);
+    SSL_free(s);
     SSLerr(SSL_F_SSL_NEW, ERR_R_MALLOC_FAILURE);
     return (NULL);
 }
