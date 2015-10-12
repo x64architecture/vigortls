@@ -58,6 +58,10 @@
 
 /* Internal ASN1 structures and functions: not for application use */
 
+char *gentime_string_from_tm(struct tm *tm);
+char *utctime_string_from_tm(struct tm *tm);
+int asn1_time_parse(const char *, size_t, struct tm *, int);
+
 /* Method to handle CRL access.
  * In general a CRL could be very large (several Mb) and can consume large
  * amounts of resources if stored in memory by multiple processes.

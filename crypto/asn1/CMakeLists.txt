@@ -28,6 +28,7 @@ add_library(
     a_strex.c
     a_strnid.c
     a_time.c
+    a_time_tm.c
     a_type.c
     a_utctm.c
     a_utf8.c
