@@ -131,7 +131,6 @@ int main(void)
 {
     pitem *item;
     pqueue pq;
-    int ret = 1;
 
     pq = pqueue_new();
 
@@ -156,13 +155,12 @@ int main(void)
     pqueue_print(pq);
 
     if (!pqueue_test(pq))
-        ret = 1;
+        return 1;
 
     for (item = pqueue_pop(pq); item != NULL; item = pqueue_pop(pq))
         pitem_free(item);
 
-    ret = 0;
-
     pqueue_free(pq);
-    return ret;
+
+    return 0;
 }
