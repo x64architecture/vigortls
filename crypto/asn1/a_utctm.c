@@ -147,43 +147,29 @@ ASN1_UTCTIME *ASN1_UTCTIME_adj(ASN1_UTCTIME *s, time_t t, int offset_day,
     return ret;
 }
 
-int ASN1_UTCTIME_cmp_time_t(const ASN1_UTCTIME *s, time_t t)
+int ASN1_UTCTIME_cmp_time_t(const ASN1_UTCTIME *s, time_t t2)
 {
-    struct tm *tm;
-    struct tm data;
-    int offset;
-    int year;
+    struct tm tm1;
+    time_t t1;
 
-#define g2(p) (((p)[0] - '0') * 10 + (p)[1] - '0')
+    /*
+     * This function has never handled failure conditions properly
+     * and should therefore be deprecated. BoringSSL, LibreSSL and
+     * VigorTLS (us) makes it return -2 on failures, while the
+     * OpenSSL version uses NULL pointers instead.
+     */
 
-    if (s->data[12] == 'Z')
-        offset = 0;
-    else {
-        offset = g2(s->data + 13) * 60 + g2(s->data + 15);
-        if (s->data[12] == '-')
-            offset = -offset;
-    }
+    if (asn1_time_parse((const char *)s->data, s->length, &tm1, V_ASN1_UTCTIME) == -1)
+        return -2; /* XXX */
 
-    t -= offset * 60; /* FIXME: may overflow in extreme cases */
+    if ((t1 = timegm(&tm1)) == -1)
+        return -2; /* XXX */
 
-    tm = gmtime_r(&t, &data);
+    if (t1 < t2)
+        return -1;
 
-#define return_cmp(a, b) \
-    if ((a) < (b))       \
-        return -1;       \
-    else if ((a) > (b))  \
-    return 1
-    year = g2(s->data);
-    if (year < 50)
-        year += 100;
-    return_cmp(year, tm->tm_year);
-    return_cmp(g2(s->data + 2) - 1, tm->tm_mon);
-    return_cmp(g2(s->data + 4), tm->tm_mday);
-    return_cmp(g2(s->data + 6), tm->tm_hour);
-    return_cmp(g2(s->data + 8), tm->tm_min);
-    return_cmp(g2(s->data + 10), tm->tm_sec);
-#undef g2
-#undef return_cmp
+    if (t1 > t2)
+        return 1;
 
     return 0;
 }
