@@ -279,7 +279,7 @@ SSL_SESSION *ssl_session_dup(SSL_SESSION *src, int ticket)
         if (dest->tlsext_ecpointformatlist == NULL)
             goto err;
         memcpy(dest->tlsext_ecpointformatlist,
-               dest->tlsext_ecpointformatlist,
+               src->tlsext_ecpointformatlist,
                src->tlsext_ecpointformatlist_length);
     }
     if (src->tlsext_ellipticcurvelist) {
