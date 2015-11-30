@@ -124,9 +124,11 @@
 #ifndef HEADER_BN_H
 #define HEADER_BN_H
 
+#include <stdio.h> /* FILE */
+
 #include <openssl/opensslconf.h>
 
-#include <stdio.h> /* FILE */
+#include <openssl/bio.h>
 #include <openssl/ossl_typ.h>
 #include <openssl/crypto.h>
 #include <openssl/internal.h>
@@ -392,11 +394,7 @@ int BN_mod_exp_simple(BIGNUM *r, const BIGNUM *a, const BIGNUM *p,
 
 int BN_mask_bits(BIGNUM *a, int n);
 int BN_print_fp(FILE *fp, const BIGNUM *a);
-#ifdef HEADER_BIO_H
 int BN_print(BIO *fp, const BIGNUM *a);
-#else
-int BN_print(void *fp, const BIGNUM *a);
-#endif
 int BN_reciprocal(BIGNUM *r, const BIGNUM *m, int len, BN_CTX *ctx);
 int BN_rshift(BIGNUM *r, const BIGNUM *a, int n);
 int BN_rshift1(BIGNUM *r, const BIGNUM *a);
