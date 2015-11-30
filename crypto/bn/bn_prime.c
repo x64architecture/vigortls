@@ -111,8 +111,10 @@
 
 #include <stdio.h>
 #include <time.h>
+
+#include <openssl/err.h>
+
 #include "bn_lcl.h"
-#include <openssl/rand.h>
 
 /* NB: these functions have been "upgraded", the deprecated versions (which are
  * compatibility wrappers using these functions) are in bn_depr.c.
@@ -162,15 +164,26 @@ int BN_generate_prime_ex(BIGNUM *ret, int bits, int safe,
     int found = 0;
     int i, j, c1 = 0;
     BN_CTX *ctx;
-    int checks = BN_prime_checks_for_size(bits);
+    int checks;
 
-    ctx = BN_CTX_new();
-    if (ctx == NULL)
+    if (bits < 2 || (bits == 2 && safe)) {
+        /*
+         * There are no prime numbers smaller than 2, and the smallest
+         * safe prime (7) spans three bits.
+         */
+        BNerr(BN_F_BN_GENERATE_PRIME_EX, BN_R_BITS_TOO_SMALL);
+        return 0;
+    }
+        
+
+    if ((ctx = BN_CTX_new()) == NULL)
         goto err;
     BN_CTX_start(ctx);
-    t = BN_CTX_get(ctx);
-    if (!t)
+    if ((t = BN_CTX_get(ctx)) == NULL)
         goto err;
+
+    checks = BN_prime_checks_for_size(bits);
+
 loop:
     /* make a random number and set the top and bottom bits */
     if (add == NULL) {
