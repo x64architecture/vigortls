@@ -1558,8 +1558,8 @@ int X509_cmp_current_time(const ASN1_TIME *ctm)
 int X509_cmp_time(const ASN1_TIME *ctm, time_t *cmp_time)
 {
     time_t time1, time2;
-    struct tm tm1;
-    int ret = 0;
+    struct tm tm1, tm2;
+    int ret = 0, type;
 
     if (cmp_time == NULL)
         time2 = time(NULL);
@@ -1568,8 +1568,14 @@ int X509_cmp_time(const ASN1_TIME *ctm, time_t *cmp_time)
 
     memset(&tm1, 0, sizeof(tm1));
 
-    if (asn1_time_parse((const char *)ctm->data, ctm->length, &tm1, 0) == -1)
+    if ((type = asn1_time_parse((const char *)ctm->data, ctm->length, &tm1, 0)) == -1)
         goto out; /* invalid time */
+
+    /* RFC 5280 section 4.1.2.5 */
+    if (tm1.tm_year < 150 && type != V_ASN1_UTCTIME)
+        goto out;
+    if (tm1.tm_year >= 150 && type != V_ASN1_GENERALIZEDTIME)
+        goto out;
 
     /*
      * Defensively fail if the time string is not representable as
@@ -1579,10 +1585,12 @@ int X509_cmp_time(const ASN1_TIME *ctm, time_t *cmp_time)
      if ((time1 = timegm(&tm1)) == -1)
          goto out;
 
-    if (time1 <= time2)
-        ret = -1;
-    else
-        ret = 1;
+    if (gmtime_r(&time2, &tm2) == NULL)
+        goto out;
+
+    ret = asn1_tm_cmp(&tm1, &tm2);
+    if (ret == 0)
+        ret = -1; /* 0 is used for error, so map same to less than */
 out:
     return ret;
 }
@@ -1592,28 +1600,21 @@ ASN1_TIME *X509_gmtime_adj(ASN1_TIME *s, long adj)
     return X509_time_adj(s, adj, NULL);
 }
 
-ASN1_TIME *X509_time_adj(ASN1_TIME *s, long offset_sec, time_t *in_tm)
+ASN1_TIME *X509_time_adj(ASN1_TIME *s, long offset_sec, time_t *in_time)
 {
-    return X509_time_adj_ex(s, 0, offset_sec, in_tm);
+    return X509_time_adj_ex(s, 0, offset_sec, in_time);
 }
 
 ASN1_TIME *X509_time_adj_ex(ASN1_TIME *s,
-                            int offset_day, long offset_sec, time_t *in_tm)
+                            int offset_day, long offset_sec, time_t *in_time)
 {
     time_t t;
 
-    if (in_tm)
-        t = *in_tm;
+    if (in_time == NULL)
+        t = time(NULL);
     else
-        time(&t);
+        t = *in_time;
 
-    if (s && !(s->flags & ASN1_STRING_FLAG_MSTRING)) {
-        if (s->type == V_ASN1_UTCTIME)
-            return ASN1_UTCTIME_adj(s, t, offset_day, offset_sec);
-        if (s->type == V_ASN1_GENERALIZEDTIME)
-            return ASN1_GENERALIZEDTIME_adj(s, t, offset_day,
-                                            offset_sec);
-    }
     return ASN1_TIME_adj(s, t, offset_day, offset_sec);
 }
 

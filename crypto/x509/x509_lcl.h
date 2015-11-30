@@ -6,3 +6,4 @@ struct x509_attributes_st {
 };
 
 int asn1_time_parse(const char *, size_t, struct tm *, int);
+int asn1_tm_cmp(struct tm *tm1, struct tm *tm2);

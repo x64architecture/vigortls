@@ -17,7 +17,6 @@ add_library(
     a_d2i_fp.c
     a_digest.c
     a_dup.c
-    a_gentm.c
     a_i2d_fp.c
     a_int.c
     a_mbstr.c
@@ -30,7 +29,6 @@ add_library(
     a_time.c
     a_time_tm.c
     a_type.c
-    a_utctm.c
     a_utf8.c
     a_verify.c
     bio_asn1.c
