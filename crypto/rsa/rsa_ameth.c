@@ -260,7 +260,7 @@ static int rsa_priv_print(BIO *bp, const EVP_PKEY *pkey, int indent,
 /* Given an MGF1 Algorithm ID decode to an Algorithm Identifier */
 static X509_ALGOR *rsa_mgf1_decode(X509_ALGOR *alg)
 {
-    if (alg == NULL)
+    if (alg == NULL || alg->parameter == NULL)
         return NULL;
     if (OBJ_obj2nid(alg->algorithm) != NID_mgf1)
         return NULL;
