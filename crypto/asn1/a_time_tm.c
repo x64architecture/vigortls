@@ -126,7 +126,8 @@ char *rfc5280_string_from_tm(struct tm *tm)
 #define    ATOI2(ar)    ((ar) += 2, ((ar)[-2] - '0') * 10 + ((ar)[-1] - '0'))
 int asn1_time_parse(const uint8_t *bytes, size_t len, struct tm *tm, int mode)
 {
-    int i, type = 0;
+    size_t i;
+    int type = 0;
     struct tm ltm;
     struct tm *lt;
     const uint8_t *p;
