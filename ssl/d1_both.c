@@ -266,6 +266,8 @@ int dtls1_do_write(SSL *s, int type)
         blocksize = 0;
 
     frag_off = 0;
+    s->rwstate = SSL_NOTHING;
+
     /* s->init_num shouldn't ever be < 0...but just in case */
     while (s->init_num > 0) {
         used_len = BIO_wpending(SSL_get_wbio(s)) + DTLS1_RT_HEADER_LENGTH + mac_size + blocksize;
@@ -277,8 +279,10 @@ int dtls1_do_write(SSL *s, int type)
         if (curr_mtu <= DTLS1_HM_HEADER_LENGTH) {
             /* grr.. we could get an error if MTU picked was wrong */
             ret = BIO_flush(SSL_get_wbio(s));
-            if (ret <= 0)
+            if (ret <= 0) {
+                s->rwstate = SSL_WRITING;            
                 return ret;
+            }
             used_len = DTLS1_RT_HEADER_LENGTH + mac_size + blocksize;
             if (s->d1->mtu > used_len + DTLS1_HM_HEADER_LENGTH)
                 curr_mtu = s->d1->mtu - used_len;
