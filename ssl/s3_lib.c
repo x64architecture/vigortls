@@ -1970,7 +1970,7 @@ err:
 
 void ssl3_free(SSL *s)
 {
-    if (s == NULL)
+    if (s == NULL || s->s3 == NULL)
         return;
 
     ssl3_cleanup_key_block(s);
