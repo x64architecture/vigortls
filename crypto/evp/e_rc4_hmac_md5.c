@@ -99,26 +99,10 @@ static int rc4_hmac_md5_init_key(EVP_CIPHER_CTX *ctx,
     return 1;
 }
 
-#if !defined(OPENSSL_NO_ASM) && (defined(__x86_64) || defined(__x86_64__) || defined(_M_AMD64) || defined(_M_X64) || defined(__INTEL__)) && !(defined(__APPLE__) && defined(__MACH__))
-#define STITCHED_CALL
-#endif
-
-#if !defined(STITCHED_CALL)
-#define rc4_off 0
-#define md5_off 0
-#endif
-
 static int rc4_hmac_md5_cipher(EVP_CIPHER_CTX *ctx, uint8_t *out,
                                const uint8_t *in, size_t len)
 {
     EVP_RC4_HMAC_MD5 *key = data(ctx);
-#if defined(STITCHED_CALL)
-    size_t rc4_off = 32 - 1 - (key->ks.x & (32 - 1)), /* 32 is $MOD from rc4_md5-x86_64.pl */
-        md5_off = MD5_CBLOCK - key->md.num,
-           blocks;
-    unsigned int l;
-    extern unsigned int OPENSSL_ia32cap_P[];
-#endif
     size_t plen = key->payload_length;
 
     if (plen != NO_PAYLOAD_LENGTH && len != (plen + MD5_DIGEST_LENGTH))
@@ -127,34 +111,11 @@ static int rc4_hmac_md5_cipher(EVP_CIPHER_CTX *ctx, uint8_t *out,
     if (ctx->encrypt) {
         if (plen == NO_PAYLOAD_LENGTH)
             plen = len;
-#if defined(STITCHED_CALL)
-        /* cipher has to "fall behind" */
-        if (rc4_off > md5_off)
-            md5_off += MD5_CBLOCK;
-
-        if (plen > md5_off && (blocks = (plen - md5_off) / MD5_CBLOCK) && (OPENSSL_ia32cap_P[0] & (1 << 20)) == 0) {
-            MD5_Update(&key->md, in, md5_off);
-            RC4(&key->ks, rc4_off, in, out);
-
-            rc4_md5_enc(&key->ks, in + rc4_off, out + rc4_off,
-                        &key->md, in + md5_off, blocks);
-            blocks *= MD5_CBLOCK;
-            rc4_off += blocks;
-            md5_off += blocks;
-            key->md.Nh += blocks >> 29;
-            key->md.Nl += blocks <<= 3;
-            if (key->md.Nl < (unsigned int)blocks)
-                key->md.Nh++;
-        } else {
-            rc4_off = 0;
-            md5_off = 0;
-        }
-#endif
-        MD5_Update(&key->md, in + md5_off, plen - md5_off);
+        MD5_Update(&key->md, in, plen);
 
         if (plen != len) { /* "TLS" mode of operation */
             if (in != out)
-                memcpy(out + rc4_off, in + rc4_off, plen - rc4_off);
+                memcpy(out, in, plen);
 
             /* calculate HMAC and append it to payload */
             MD5_Final(out + plen, &key->md);
@@ -162,42 +123,16 @@ static int rc4_hmac_md5_cipher(EVP_CIPHER_CTX *ctx, uint8_t *out,
             MD5_Update(&key->md, out + plen, MD5_DIGEST_LENGTH);
             MD5_Final(out + plen, &key->md);
             /* encrypt HMAC at once */
-            RC4(&key->ks, len - rc4_off, out + rc4_off, out + rc4_off);
+            RC4(&key->ks, len, out, out);
         } else {
-            RC4(&key->ks, len - rc4_off, in + rc4_off, out + rc4_off);
+            RC4(&key->ks, len, in, out);
         }
     } else {
         uint8_t mac[MD5_DIGEST_LENGTH];
-#if defined(STITCHED_CALL)
-        /* digest has to "fall behind" */
-        if (md5_off > rc4_off)
-            rc4_off += 2 * MD5_CBLOCK;
-        else
-            rc4_off += MD5_CBLOCK;
-
-        if (len > rc4_off && (blocks = (len - rc4_off) / MD5_CBLOCK) && (OPENSSL_ia32cap_P[0] & (1 << 20)) == 0) {
-            RC4(&key->ks, rc4_off, in, out);
-            MD5_Update(&key->md, out, md5_off);
-
-            rc4_md5_enc(&key->ks, in + rc4_off, out + rc4_off,
-                        &key->md, out + md5_off, blocks);
-            blocks *= MD5_CBLOCK;
-            rc4_off += blocks;
-            md5_off += blocks;
-            l = (key->md.Nl + (blocks << 3)) & 0xffffffffU;
-            if (l < key->md.Nl)
-                key->md.Nh++;
-            key->md.Nl = l;
-            key->md.Nh += blocks >> 29;
-        } else {
-            md5_off = 0;
-            rc4_off = 0;
-        }
-#endif
         /* decrypt HMAC at once */
-        RC4(&key->ks, len - rc4_off, in + rc4_off, out + rc4_off);
+        RC4(&key->ks, len, in, out);
         if (plen != NO_PAYLOAD_LENGTH) { /* "TLS" mode of operation */
-            MD5_Update(&key->md, out + md5_off, plen - md5_off);
+            MD5_Update(&key->md, out, plen);
 
             /* calculate HMAC and verify it */
             MD5_Final(mac, &key->md);
@@ -208,7 +143,7 @@ static int rc4_hmac_md5_cipher(EVP_CIPHER_CTX *ctx, uint8_t *out,
             if (CRYPTO_memcmp(out + plen, mac, MD5_DIGEST_LENGTH) != 0)
                 return 0;
         } else {
-            MD5_Update(&key->md, out + md5_off, len - md5_off);
+            MD5_Update(&key->md, out, len);
         }
     }
 

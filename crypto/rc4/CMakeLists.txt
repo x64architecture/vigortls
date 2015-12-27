@@ -5,7 +5,6 @@ if (${ARCH} STREQUAL "x86_64")
         RC4_ARCH_SOURCES
 
         rc4-x86_64.${ASM_EXT}
-        rc4-md5-x86_64.${ASM_EXT}
     )
 elseif (${ARCH} STREQUAL "x86")
     set(
@@ -30,5 +29,4 @@ add_library(
 )
 
 perlasm(rc4-x86_64.${ASM_EXT} asm/rc4-x86_64.pl)
-perlasm(rc4-md5-x86_64.${ASM_EXT} asm/rc4-md5-x86_64.pl)
 perlasm(rc4-586.${ASM_EXT} asm/rc4-586.pl)
