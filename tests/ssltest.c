@@ -140,8 +140,9 @@
  * OTHERWISE.
  */
 
-#define _BSD_SOURCE 1 /* Or gethostname won't be declared properly \
-                         on Linux and GNU platforms. */
+/* gethostname */
+#define _BSD_SOURCE 1
+#define _DEFAULT_SOURCE
                          
 #include <stdcompat.h>
 #include <sys/types.h>
