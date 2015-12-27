@@ -23,6 +23,8 @@
 
 void vigortls_zeroize(void *ptr, size_t len)
 {
+    if (ptr == NULL)
+        return;
 #if defined(_MSC_VER)
     SecureZeroMemory(ptr, len);
 #else
