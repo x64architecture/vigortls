@@ -116,6 +116,9 @@ const char *SSL_state_string_long(const SSL *s)
         case SSL_ST_OK | SSL_ST_ACCEPT:
             str = "ok/accept SSL initialization";
             break;
+        case SSL_ST_ERR:
+            str = "error";
+            break;
 
         /* SSLv3 additions */
         case SSL3_ST_CW_CLNT_HELLO_A:
@@ -354,6 +357,9 @@ const char *SSL_state_string(const SSL *s)
             break;
         case SSL_ST_OK:
             str = "SSLOK ";
+            break;
+        case SSL_ST_ERR:
+            str = "SSLERR";
             break;
 
         /* SSLv3 additions */
