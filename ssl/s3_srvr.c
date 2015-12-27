@@ -717,7 +717,7 @@ int ssl3_send_hello_request(SSL *s)
 
 int ssl3_get_client_hello(SSL *s)
 {
-    int i, j, ok, al, ret = -1;
+    int i, j, ok, al, ret = -1, cookie_valid = 0;
     unsigned int cookie_len;
     long n;
     unsigned long id;
@@ -879,7 +879,7 @@ int ssl3_get_client_hello(SSL *s)
                 goto f_err;
             }
 
-            ret = 2;
+            cookie_valid = 1;
         }
 
         p += cookie_len;
@@ -1055,8 +1055,7 @@ int ssl3_get_client_hello(SSL *s)
         goto err;
     }
 
-    if (ret < 0)
-        ret = 1;
+    ret = cookie_valid ? 2 : 1;
     if (0) {
     truncated:
         al = SSL_AD_DECODE_ERROR;
@@ -1066,7 +1065,7 @@ int ssl3_get_client_hello(SSL *s)
     }
 err:
     sk_SSL_CIPHER_free(ciphers);
-    return (ret);
+    return ret;
 }
 
 int ssl3_send_server_hello(SSL *s)
