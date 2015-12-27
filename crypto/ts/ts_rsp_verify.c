@@ -500,7 +500,7 @@ static int TS_check_status_info(TS_RESP *response)
             if (ASN1_BIT_STRING_get_bit(info->failure_info,
                                         TS_failure_info[i].code)) {
                 if (!first)
-                    strlcpy(failure_text, ",", TS_STATUS_BUF_SIZE);
+                    strlcat(failure_text, ",", TS_STATUS_BUF_SIZE);
                 else
                     first = 0;
                 strlcat(failure_text, TS_failure_info[i].text, TS_STATUS_BUF_SIZE);
