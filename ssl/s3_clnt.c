@@ -1721,6 +1721,7 @@ int ssl3_get_new_session_ticket(SSL *s)
     long n;
     const uint8_t *p;
     uint8_t *d;
+    unsigned long ticket_lifetime_hint;
 
     n = s->method->ssl_get_message(s,
             SSL3_ST_CR_SESSION_TICKET_A,
@@ -1741,6 +1742,19 @@ int ssl3_get_new_session_ticket(SSL *s)
     }
 
     p = d = (uint8_t *)s->init_msg;
+
+    n2l(p, ticket_lifetime_hint);
+    n2s(p, ticklen);
+    /* ticket_lifetime_hint + ticket_length + ticket */
+    if (ticklen + 6 != n) {
+        al = SSL_AD_DECODE_ERROR;
+        SSLerr(SSL_F_SSL3_GET_NEW_SESSION_TICKET, SSL_R_LENGTH_MISMATCH);
+        goto f_err;
+    }
+
+    /* Server is allowed to change its mind and send an empty ticket. */
+    if (ticklen == 0)
+        return 1;
 
     if (s->session->session_id_length > 0) {
         int i = s->session_ctx->session_cache_mode;
@@ -1773,15 +1787,6 @@ int ssl3_get_new_session_ticket(SSL *s)
         s->session = new_sess;
     }
 
-    n2l(p, s->session->tlsext_tick_lifetime_hint);
-    n2s(p, ticklen);
-    /* ticket_lifetime_hint + ticket_length + ticket */
-    if (ticklen + 6 != n) {
-        al = SSL_AD_DECODE_ERROR;
-        SSLerr(SSL_F_SSL3_GET_NEW_SESSION_TICKET,
-               SSL_R_LENGTH_MISMATCH);
-        goto f_err;
-    }
     free(s->session->tlsext_tick);
     s->session->tlsext_ticklen = 0;
     s->session->tlsext_tick = malloc(ticklen);
@@ -1791,6 +1796,7 @@ int ssl3_get_new_session_ticket(SSL *s)
         goto err;
     }
     memcpy(s->session->tlsext_tick, p, ticklen);
+    s->session->tlsext_tick_lifetime_hint = ticket_lifetime_hint;
     s->session->tlsext_ticklen = ticklen;
     /*
      * There are two ways to detect a resumed ticket session.
