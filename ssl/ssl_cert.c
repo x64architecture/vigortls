@@ -194,6 +194,7 @@ CERT *ssl_cert_dup(CERT *cert)
      * same as ret->key = ret->pkeys + (cert->key - cert->pkeys),
      * if you find that more readable
      */
+    ret->references = 1;
     ret->key = &ret->pkeys[cert->key - &cert->pkeys[0]];
 
     ret->valid = cert->valid;
@@ -254,7 +255,6 @@ CERT *ssl_cert_dup(CERT *cert)
      * chain is held inside SSL_CTX
      */
 
-    ret->references = 1;
     /*
      * Set digests to defaults. NB: we don't copy existing values
      * as they will be set during handshake.
