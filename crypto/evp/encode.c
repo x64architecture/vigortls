@@ -61,8 +61,8 @@
 
 #include <openssl/evp.h>
 
+static unsigned char conv_ascii2bin(unsigned char a);
 #define conv_bin2ascii(a) (data_bin2ascii[(a)&0x3f])
-#define conv_ascii2bin(a) (data_ascii2bin[(a)&0x7f])
 
 /* 64 char lines
  * pad input with 0
@@ -110,6 +110,13 @@ static const uint8_t data_ascii2bin[128] = {
     0x29, 0x2A, 0x2B, 0x2C, 0x2D, 0x2E, 0x2F, 0x30,
     0x31, 0x32, 0x33, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
 };
+
+static unsigned char conv_ascii2bin(unsigned char a)
+{
+    if (a & 0x80)
+        return B64_ERROR;
+    return data_ascii2bin[a];
+}
 
 void EVP_EncodeInit(EVP_ENCODE_CTX *ctx)
 {
