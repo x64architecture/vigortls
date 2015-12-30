@@ -313,18 +313,9 @@ static int get_cert_by_subject(X509_LOOKUP *xl, int type, X509_NAME *name,
             hent = NULL;
         }
         for (;;) {
-            char c = '/';
-            if (c == '\0') {
-                /* This is special.  When c == '\0', no
-                   directory separator should be added. */
                 snprintf(b->data, b->max,
-                         "%s%08lx.%s%d", ent->dir, h,
+                         "%s%c%08lx.%s%d", ent->dir, '/', h,
                          postfix, k);
-            } else {
-                snprintf(b->data, b->max,
-                         "%s%c%08lx.%s%d", ent->dir, c, h,
-                         postfix, k);
-            }
             {
                 struct stat st;
                 if (stat(b->data, &st) < 0)
