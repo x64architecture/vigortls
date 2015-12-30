@@ -1851,7 +1851,7 @@ int ssl_check_serverhello_tlsext(SSL *s)
      * tell the callback
      */
     if ((s->tlsext_status_type != -1) && !(s->tlsext_status_expected) 
-        && s->ctx && s->ctx->tlsext_status_cb) {
+        && !(s->hit) && s->ctx && s->ctx->tlsext_status_cb) {
         int r;
         /* Set resp to NULL, resplen to -1 so callback knows
          * there is no response.
