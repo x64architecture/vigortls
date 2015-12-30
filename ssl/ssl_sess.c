@@ -287,7 +287,7 @@ SSL_SESSION *ssl_session_dup(SSL_SESSION *src, int ticket)
             malloc(src->tlsext_ellipticcurvelist_length);
         if (dest->tlsext_ellipticcurvelist == NULL)
             goto err;
-        memcpy(dest->tlsext_ecpointformatlist,
+        memcpy(dest->tlsext_ellipticcurvelist,
                src->tlsext_ellipticcurvelist,
                src->tlsext_ellipticcurvelist_length);
     }
