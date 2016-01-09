@@ -20,6 +20,9 @@
 #include <ctype.h>
 #include <limits.h>
 
+#include <stdcompat.h>
+#include <win32compat.h>
+
 #include <openssl/asn1t.h>
 #include <openssl/err.h>
 

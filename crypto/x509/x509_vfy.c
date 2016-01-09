@@ -61,6 +61,8 @@
 #include <time.h>
 #include <errno.h>
 
+#include <win32compat.h>
+
 #include <openssl/crypto.h>
 #include <openssl/lhash.h>
 #include <openssl/buffer.h>

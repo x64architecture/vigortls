@@ -14,8 +14,8 @@
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-#include <stdcompat.h>
 #include <stdio.h>
+#include <stdcompat.h>
 
 int snprintf(char *buf, size_t n, const char *format, ...)
 {

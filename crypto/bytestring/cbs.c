@@ -15,9 +15,10 @@
  */
 
 #include <assert.h>
-#include <stdcompat.h>
 #include <stdlib.h>
 #include <string.h>
+
+#include <stdcompat.h>
 
 #include <openssl/opensslconf.h>
 #include <openssl/buffer.h>

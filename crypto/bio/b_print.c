@@ -1,7 +1,7 @@
 /* Kurt Cancemi places this file in the public domain. */
 
-#include <stdcompat.h>
 #include <openssl/bio.h>
+#include <stdcompat.h>
 
 int BIO_printf(BIO *bio, const char *format, ...)
 {

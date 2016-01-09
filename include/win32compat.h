@@ -27,5 +27,7 @@
 
 #define gmtime_r(tp, tm) ((gmtime_s((tm), (tp)) == 0) ? (tm) : NULL)
 
+#define timegm _mkgmtime
+
 #endif /* _WIN32 */
 #endif

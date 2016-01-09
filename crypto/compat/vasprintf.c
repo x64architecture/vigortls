@@ -14,9 +14,10 @@
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-#include <stdcompat.h>
 #include <stdio.h>
 #include <stdlib.h>
+
+#include <stdcompat.h>
 
 int vasprintf(char **buf, const char *format, va_list args)
 {
