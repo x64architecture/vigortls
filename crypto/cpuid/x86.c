@@ -178,6 +178,7 @@ void OPENSSL_cpuid_setup(void)
     if (cpuid[1][2] & (1 << 27))
         xcr0 = vigortls_xgetbv(0);
 
+    /* Verify that XMM and YMM state are enabled in XCR0. */
     if ((xcr0 & 6) != 6) {
         cpuid[1][2] &= ~(1 << 28); /* AVX */
         cpuid[1][2] &= ~(1 << 12); /* FMA */
