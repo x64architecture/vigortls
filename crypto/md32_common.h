@@ -197,17 +197,17 @@ static inline uint32_t ROTATE(uint32_t a, unsigned int n)
 
 #ifndef HOST_c2l
 #define HOST_c2l(c, l)                       \
-        l = (((uint32_t)(*((c)++)))       ), \
+        (l = (((uint32_t)(*((c)++)))      ), \
         l |= (((uint32_t)(*((c)++))) << 8 ), \
         l |= (((uint32_t)(*((c)++))) << 16), \
-        l |= (((uint32_t)(*((c)++))) << 24)
+        l |= (((uint32_t)(*((c)++))) << 24))
 #endif
 #ifndef HOST_l2c
-#define HOST_l2c(l, c)                               \
-       (*((c)++) = (uint8_t)(((l)      ) & 0xff),    \
-        *((c)++) = (uint8_t)(((l) >> 8 ) & 0xff),    \
-        *((c)++) = (uint8_t)(((l) >> 16) & 0xff),    \
-        *((c)++) = (uint8_t)(((l) >> 24) & 0xff),    \
+#define HOST_l2c(l, c)                            \
+       (*((c)++) = (uint8_t)(((l)      ) & 0xff), \
+        *((c)++) = (uint8_t)(((l) >> 8 ) & 0xff), \
+        *((c)++) = (uint8_t)(((l) >> 16) & 0xff), \
+        *((c)++) = (uint8_t)(((l) >> 24) & 0xff), \
         l)
 #endif
 

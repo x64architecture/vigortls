@@ -1,4 +1,4 @@
-include_directories( ${CMAKE_CURRENT_BINARY_DIR} .. ../../include . ../asn1 ../evp ../modes )
+include_directories( ${CMAKE_CURRENT_BINARY_DIR} .. ../../include . ../asn1 ../evp ../modes ../cpuid)
 
 if (${ARCH} STREQUAL "x86_64")
     set(

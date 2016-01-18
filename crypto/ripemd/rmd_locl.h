@@ -90,15 +90,15 @@ void ripemd160_block_data_order(RIPEMD160_CTX *c, const void *p, size_t num);
     do {                          \
         unsigned long ll;         \
         ll = (c)->A;              \
-        HOST_l2c(ll, (s));        \
+        (void) HOST_l2c(ll, (s)); \
         ll = (c)->B;              \
-        HOST_l2c(ll, (s));        \
+        (void) HOST_l2c(ll, (s)); \
         ll = (c)->C;              \
-        HOST_l2c(ll, (s));        \
+        (void) HOST_l2c(ll, (s)); \
         ll = (c)->D;              \
-        HOST_l2c(ll, (s));        \
+        (void) HOST_l2c(ll, (s)); \
         ll = (c)->E;              \
-        HOST_l2c(ll, (s));        \
+        (void) HOST_l2c(ll, (s)); \
     } while (0)
 #define HASH_BLOCK_DATA_ORDER ripemd160_block_data_order
 

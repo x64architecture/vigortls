@@ -1,4 +1,4 @@
-include_directories(../../include)
+include_directories(../../include ../cpuid)
 
 if (${ARCH} STREQUAL "x86_64")
     set(
