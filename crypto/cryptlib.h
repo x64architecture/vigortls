@@ -82,7 +82,7 @@ extern "C" {
 #define HEX_SIZE(type) (sizeof(type) * 2)
 
 void OPENSSL_cpuid_setup(void);
-extern unsigned int OPENSSL_ia32cap_P[];
+extern uint32_t OPENSSL_ia32cap_P[4];
 
 #ifdef __cplusplus
 }

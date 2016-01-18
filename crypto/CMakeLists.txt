@@ -38,31 +38,6 @@ function(perlasm dest src)
 	)
 endfunction()
 
-if (${ARCH} STREQUAL "x86_64")
-    set(
-        CRYPTO_ARCH_SOURCES
-
-        x86_64cpuid.${ASM_EXT}
-    )
-endif()
-
-if (${ARCH} STREQUAL "x86")
-    set(
-        CRYPTO_ARCH_SOURCES
-
-        x86cpuid.${ASM_EXT}
-    )
-endif()
-
-if (${ARCH} STREQUAL "arm")
-    set(
-        CRYPTO_ARCH_SOURCES
-
-        armcap.c
-        armv4cpuid.S
-    )
-endif()
-
 add_subdirectory(aes)
 add_subdirectory(asn1)
 add_subdirectory(blowfish)
@@ -77,6 +52,7 @@ add_subdirectory(cmac)
 add_subdirectory(cms)
 add_subdirectory(conf)
 add_subdirectory(compat)
+add_subdirectory(cpuid)
 add_subdirectory(des)
 add_subdirectory(dh)
 add_subdirectory(dsa)
@@ -127,8 +103,6 @@ add_library(
     time_support.c
     uid.c
 
-    ${CRYPTO_ARCH_SOURCES}
-
     $<TARGET_OBJECTS:aes>
     $<TARGET_OBJECTS:asn1>
     $<TARGET_OBJECTS:blowfish>
@@ -143,6 +117,7 @@ add_library(
     $<TARGET_OBJECTS:cms>
     $<TARGET_OBJECTS:conf>
     $<TARGET_OBJECTS:compat>
+    $<TARGET_OBJECTS:cpuid>
     $<TARGET_OBJECTS:des>
     $<TARGET_OBJECTS:dh>
     $<TARGET_OBJECTS:dsa>
@@ -188,6 +163,3 @@ endif()
 install(TARGETS crypto
         LIBRARY DESTINATION lib
         ARCHIVE DESTINATION lib)
-
-perlasm(x86_64cpuid.${ASM_EXT} x86_64cpuid.pl)
-perlasm(x86cpuid.${ASM_EXT} x86cpuid.pl)

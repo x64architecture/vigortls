@@ -584,57 +584,16 @@ const char *CRYPTO_get_lock_name(int type)
 
 #if defined(VIGORTLS_X86) || defined(VIGORTLS_X86_64)
 
-/* This value must be initialized to zero in order to work around a 
+/*
+ * This value must be initialized to zero in order to work around a 
  * bug in libtool or the linker on OS X.
  *
  * If not initialized or linked with the "-fno-common" flag the value 
  * becomes a "common symbol". In a library, linking on OS X will fail
  * to resolve common symbols. By initializing the value to zero, it
- * becomes a "data symbol", which isn't affected. */
+ * becomes a "data symbol", which isn't affected.
+ */
 unsigned int OPENSSL_ia32cap_P[4] = { 0 };
-unsigned int *OPENSSL_ia32cap_loc(void)
-{
-    return OPENSSL_ia32cap_P;
-}
-
-#if defined(OPENSSL_CPUID_OBJ) && !defined(OPENSSL_NO_ASM) && !defined(I386_ONLY)
-#define OPENSSL_CPUID_SETUP
-typedef uint64_t IA32CAP;
-void OPENSSL_cpuid_setup(void)
-{
-    static int trigger = 0;
-    IA32CAP OPENSSL_ia32_cpuid(unsigned int *);
-    IA32CAP vec;
-
-    if (trigger)
-        return;
-
-    trigger = 1;
-
-    vec = OPENSSL_ia32_cpuid(OPENSSL_ia32cap_P);
-
-    /*
-     * |(1<<10) sets a reserved bit to signal that variable
-     * was initialized already... This is to avoid interference
-     * with cpuid snippets in ELF .init segment.
-     */
-    OPENSSL_ia32cap_P[0] = (unsigned int)vec | (1 << 10);
-    OPENSSL_ia32cap_P[1] = (unsigned int)(vec >> 32);
-}
-#endif
-
-#else
-unsigned int *OPENSSL_ia32cap_loc(void)
-{
-    return NULL;
-}
-#endif
-
-#if !defined(OPENSSL_CPUID_SETUP) && !defined(OPENSSL_CPUID_OBJ)
-void OPENSSL_cpuid_setup(unsigned int *)
-{
-    return;
-}
 #endif
 
 static void OPENSSL_showfatal(const char *fmta, ...)
