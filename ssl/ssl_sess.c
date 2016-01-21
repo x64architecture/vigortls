@@ -511,9 +511,6 @@ int ssl_get_prev_session(SSL *s, uint8_t *session_id, int len,
 
     /* This is used only by servers. */
 
-    if (len > SSL_MAX_SSL_SESSION_ID_LENGTH)
-        goto err;
-
     if (session_id + len > limit) {
         fatal = 1;
         goto err;
