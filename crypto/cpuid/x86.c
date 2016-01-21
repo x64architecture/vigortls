@@ -88,7 +88,8 @@ static void vigortls_cpuid(uint32_t eax, uint32_t *regs)
 #endif
 }
 
-static uint64_t vigortls_xgetbv(uint32_t xcr) {
+static uint64_t vigortls_xgetbv(uint32_t xcr)
+{
 #if defined(VIGORTLS_MSVC)
     return _xgetbv(xcr);
 #else
