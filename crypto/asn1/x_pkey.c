@@ -68,9 +68,8 @@ X509_PKEY *X509_PKEY_new(void)
 {
     X509_PKEY *ret = NULL;
 
-    if ((ret = malloc(sizeof(X509_PKEY))) == NULL)
+    if ((ret = calloc(1, sizeof(X509_PKEY))) == NULL)
         goto err;
-    memset(ret, 0, sizeof(X509_PKEY));
 
     ret->version = 0;
     ret->enc_algor = X509_ALGOR_new();

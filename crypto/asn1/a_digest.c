@@ -59,10 +59,6 @@
 #include <stdio.h>
 #include <time.h>
 
-#ifndef NO_SYS_TYPES_H
-#include <sys/types.h>
-#endif
-
 #include <openssl/err.h>
 #include <openssl/evp.h>
 #include <openssl/buffer.h>
