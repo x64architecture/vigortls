@@ -1,4 +1,3 @@
-/* crypto/bio/bss_acpt.c */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -84,38 +83,12 @@ typedef struct bio_accept_st {
     BIO *bio_chain;
 } BIO_ACCEPT;
 
-static int acpt_write(BIO *h, const char *buf, int num);
-static int acpt_read(BIO *h, char *buf, int size);
-static int acpt_puts(BIO *h, const char *str);
-static long acpt_ctrl(BIO *h, int cmd, long arg1, void *arg2);
-static int acpt_new(BIO *h);
-static int acpt_free(BIO *data);
-static int acpt_state(BIO *b, BIO_ACCEPT *c);
-static void acpt_close_socket(BIO *data);
 static BIO_ACCEPT *BIO_ACCEPT_new(void);
 static void BIO_ACCEPT_free(BIO_ACCEPT *a);
 
 #define ACPT_S_BEFORE 1
 #define ACPT_S_GET_ACCEPT_SOCKET 2
 #define ACPT_S_OK 3
-
-static BIO_METHOD methods_acceptp = {
-    BIO_TYPE_ACCEPT,
-    "socket accept",
-    acpt_write,
-    acpt_read,
-    acpt_puts,
-    NULL, /* connect_gets, */
-    acpt_ctrl,
-    acpt_new,
-    acpt_free,
-    NULL,
-};
-
-BIO_METHOD *BIO_s_accept(void)
-{
-    return (&methods_acceptp);
-}
 
 static int acpt_new(BIO *bi)
 {
@@ -439,4 +412,20 @@ BIO *BIO_new_accept(char *str)
         BIO_free(ret);
         return (NULL);
     }
+}
+
+static BIO_METHOD methods_acceptp = {
+    .type    = BIO_TYPE_ACCEPT,
+    .name    = "socket accept",
+    .bwrite  = acpt_write,
+    .bread   = acpt_read,
+    .bputs   = acpt_puts,
+    .ctrl    = acpt_ctrl,
+    .create  = acpt_new,
+    .destroy = acpt_free,
+};
+
+BIO_METHOD *BIO_s_accept(void)
+{
+    return (&methods_acceptp);
 }

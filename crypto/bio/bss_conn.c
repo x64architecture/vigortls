@@ -1,4 +1,3 @@
-/* crypto/bio/bss_conn.c */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -96,31 +95,35 @@ typedef struct bio_connect_st {
     int (*info_callback)(const BIO *bio, int state, int ret);
 } BIO_CONNECT;
 
-static int conn_write(BIO *h, const char *buf, int num);
-static int conn_read(BIO *h, char *buf, int size);
-static int conn_puts(BIO *h, const char *str);
-static long conn_ctrl(BIO *h, int cmd, long arg1, void *arg2);
-static int conn_new(BIO *h);
-static int conn_free(BIO *data);
-static long conn_callback_ctrl(BIO *h, int cmd, bio_info_cb *);
+BIO_CONNECT *BIO_CONNECT_new(void)
+{
+    BIO_CONNECT *ret;
 
-static int conn_state(BIO *b, BIO_CONNECT *c);
-static void conn_close_socket(BIO *data);
-BIO_CONNECT *BIO_CONNECT_new(void);
-void BIO_CONNECT_free(BIO_CONNECT *a);
+    if ((ret = malloc(sizeof(BIO_CONNECT))) == NULL)
+        return (NULL);
+    ret->state = BIO_CONN_S_BEFORE;
+    ret->param_hostname = NULL;
+    ret->param_port = NULL;
+    ret->info_callback = NULL;
+    ret->nbio = 0;
+    ret->ip[0] = 0;
+    ret->ip[1] = 0;
+    ret->ip[2] = 0;
+    ret->ip[3] = 0;
+    ret->port = 0;
+    memset((char *)&ret->them, 0, sizeof(ret->them));
+    return (ret);
+}
 
-static BIO_METHOD methods_connectp = {
-    BIO_TYPE_CONNECT,
-    "socket connect",
-    conn_write,
-    conn_read,
-    conn_puts,
-    NULL, /* connect_gets, */
-    conn_ctrl,
-    conn_new,
-    conn_free,
-    conn_callback_ctrl,
-};
+void BIO_CONNECT_free(BIO_CONNECT *a)
+{
+    if (a == NULL)
+        return;
+
+    free(a->param_hostname);
+    free(a->param_port);
+    free(a);
+}
 
 static int conn_state(BIO *b, BIO_CONNECT *c)
 {
@@ -188,7 +191,11 @@ static int conn_state(BIO *b, BIO_CONNECT *c)
                 memset((char *)&c->them, 0, sizeof(c->them));
                 c->them.sin_family = AF_INET;
                 c->them.sin_port = htons((unsigned short)c->port);
-                l = (unsigned long)((unsigned long)c->ip[0] << 24L) | ((unsigned long)c->ip[1] << 16L) | ((unsigned long)c->ip[2] << 8L) | ((unsigned long)c->ip[3]);
+                l = (unsigned long)
+                    ((unsigned long)c->ip[0] << 24L) |
+                    ((unsigned long)c->ip[1] << 16L) |
+                    ((unsigned long)c->ip[2] << 8L) |
+                    ((unsigned long)c->ip[3]);
                 c->them.sin_addr.s_addr = htonl(l);
                 c->state = BIO_CONN_S_CREATE_SOCKET;
 
@@ -279,41 +286,6 @@ exit_loop:
         ret = cb((BIO *)b, c->state, ret);
 end:
     return (ret);
-}
-
-BIO_CONNECT *BIO_CONNECT_new(void)
-{
-    BIO_CONNECT *ret;
-
-    if ((ret = malloc(sizeof(BIO_CONNECT))) == NULL)
-        return (NULL);
-    ret->state = BIO_CONN_S_BEFORE;
-    ret->param_hostname = NULL;
-    ret->param_port = NULL;
-    ret->info_callback = NULL;
-    ret->nbio = 0;
-    ret->ip[0] = 0;
-    ret->ip[1] = 0;
-    ret->ip[2] = 0;
-    ret->ip[3] = 0;
-    ret->port = 0;
-    memset((char *)&ret->them, 0, sizeof(ret->them));
-    return (ret);
-}
-
-void BIO_CONNECT_free(BIO_CONNECT *a)
-{
-    if (a == NULL)
-        return;
-
-    free(a->param_hostname);
-    free(a->param_port);
-    free(a);
-}
-
-BIO_METHOD *BIO_s_connect(void)
-{
-    return (&methods_connectp);
 }
 
 static int conn_new(BIO *bi)
@@ -566,6 +538,18 @@ static int conn_puts(BIO *bp, const char *str)
     return (ret);
 }
 
+static BIO_METHOD methods_connectp = {
+    .type    = BIO_TYPE_CONNECT,
+    .name    = "socket connect",
+    .bwrite  = conn_write,
+    .bread   = conn_read,
+    .bputs   = conn_puts,
+    .ctrl    = conn_ctrl,
+    .create  = conn_new,
+    .destroy = conn_free,
+    .callback_ctrl = conn_callback_ctrl,
+};
+
 BIO *BIO_new_connect(char *str)
 {
     BIO *ret;
@@ -579,4 +563,9 @@ BIO *BIO_new_connect(char *str)
         BIO_free(ret);
         return (NULL);
     }
+}
+
+BIO_METHOD *BIO_s_connect(void)
+{
+    return (&methods_connectp);
 }

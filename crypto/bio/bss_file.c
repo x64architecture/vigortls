@@ -1,4 +1,3 @@
-/* crypto/bio/bss_file.c */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -56,15 +55,6 @@
  * [including the GNU Public Licence.]
  */
 
-/*
- * 03-Dec-1997    rdenny@dc3.com  Fix bug preventing use of stdin/stdout
- *        with binary data (e.g. asn1parse -inform DER < xxx) under
- *        Windows
- */
-
-#ifndef HEADER_BSS_FILE_C
-#define HEADER_BSS_FILE_C
-
 #if defined(__linux) || defined(__sun) || defined(__hpux)
 /* Following definition aliases fopen to fopen64 on above mentioned
  * platforms. This makes it possible to open and sequentially access
@@ -90,25 +80,6 @@
 #include <openssl/buffer.h>
 #include <openssl/err.h>
 #include <stdcompat.h>
-
-static int file_write(BIO *h, const char *buf, int num);
-static int file_read(BIO *h, char *buf, int size);
-static int file_puts(BIO *h, const char *str);
-static int file_gets(BIO *h, char *str, int size);
-static long file_ctrl(BIO *h, int cmd, long arg1, void *arg2);
-static int file_new(BIO *h);
-static int file_free(BIO *data);
-static BIO_METHOD methods_filep = {
-    .type = BIO_TYPE_FILE,
-    .name = "FILE pointer",
-    .bwrite = file_write,
-    .bread = file_read,
-    .bputs = file_puts,
-    .bgets = file_gets,
-    .ctrl = file_ctrl,
-    .create = file_new,
-    .destroy = file_free
-};
 
 BIO *BIO_new_file(const char *filename, const char *mode)
 {
@@ -144,11 +115,6 @@ BIO *BIO_new_fp(FILE *stream, int close_flag)
 
     BIO_set_fp(ret, stream, close_flag);
     return (ret);
-}
-
-BIO_METHOD *BIO_s_file(void)
-{
-    return (&methods_filep);
 }
 
 static int file_new(BIO *bi)
@@ -192,16 +158,10 @@ static int file_write(BIO *b, const char *in, int inl)
 {
     int ret = 0;
 
-    if (b->init && (in != NULL)) {
-        ret = fwrite(in, (int)inl, 1, (FILE *)b->ptr);
-        if (ret)
-            ret = inl;
-        /* ret = fwrite(in,1,(int)inl,(FILE *)b->ptr); */
-        /* according to Tim Hudson <tjh@cryptsoft.com>, the commented
-         * out version above can cause 'inl' write calls under
-         * some stupid stdio implementations (VMS) */
-    }
-    return (ret);
+    if (b->init && (in != NULL))
+        ret = fwrite(in, 1, inl, (FILE *)b->ptr);
+
+    return ret;
 }
 
 static long file_ctrl(BIO *b, int cmd, long num, void *ptr)
@@ -312,4 +272,19 @@ static int file_puts(BIO *bp, const char *str)
     return (ret);
 }
 
-#endif /* HEADER_BSS_FILE_C */
+static BIO_METHOD methods_filep = {
+    .type = BIO_TYPE_FILE,
+    .name = "FILE pointer",
+    .bwrite = file_write,
+    .bread = file_read,
+    .bputs = file_puts,
+    .bgets = file_gets,
+    .ctrl = file_ctrl,
+    .create = file_new,
+    .destroy = file_free
+};
+
+BIO_METHOD *BIO_s_file(void)
+{
+    return (&methods_filep);
+}

@@ -1,4 +1,3 @@
-/* crypto/bio/bss_log.c */
 /* ====================================================================
  * Copyright (c) 1999 The OpenSSL Project.  All rights reserved.
  *
@@ -62,44 +61,31 @@
 
 */
 
+#ifndef NO_SYSLOG
+
 #include <errno.h>
 #include <stdio.h>
 #include <string.h>
 
-#if !defined(NO_SYSLOG)
 #include <syslog.h>
-#endif
 
 #include <openssl/buffer.h>
 #include <openssl/err.h>
 #include <stdcompat.h>
 
-#ifndef NO_SYSLOG
-
-static int slg_write(BIO *h, const char *buf, int num);
-static int slg_puts(BIO *h, const char *str);
-static long slg_ctrl(BIO *h, int cmd, long arg1, void *arg2);
-static int slg_new(BIO *h);
-static int slg_free(BIO *data);
-static void xopenlog(BIO *bp, char *name, int level);
-static void xsyslog(BIO *bp, int priority, const char *string);
-static void xcloselog(BIO *bp);
-
-static BIO_METHOD methods_slg = {
-    BIO_TYPE_MEM, "syslog",
-    slg_write,
-    NULL,
-    slg_puts,
-    NULL,
-    slg_ctrl,
-    slg_new,
-    slg_free,
-    NULL,
-};
-
-BIO_METHOD *BIO_s_log(void)
+static void xopenlog(BIO *bp, char *name, int level)
 {
-    return (&methods_slg);
+    openlog(name, LOG_PID | LOG_CONS, level);
+}
+
+static void xcloselog(BIO *bp)
+{
+    closelog();
+}
+
+static void xsyslog(BIO *bp, int priority, const char *string)
+{
+    syslog(priority, "%s", string);
 }
 
 static int slg_new(BIO *bi)
@@ -192,19 +178,19 @@ static int slg_puts(BIO *bp, const char *str)
     return (ret);
 }
 
-static void xopenlog(BIO *bp, char *name, int level)
-{
-    openlog(name, LOG_PID | LOG_CONS, level);
-}
+static BIO_METHOD methods_slg = {
+    .type    = BIO_TYPE_MEM,
+    .name    = "syslog",
+    .bwrite  = slg_write,
+    .bputs   = slg_puts,
+    .ctrl    = slg_ctrl,
+    .create  = slg_new,
+    .destroy = slg_free,
+};
 
-static void xsyslog(BIO *bp, int priority, const char *string)
+BIO_METHOD *BIO_s_log(void)
 {
-    syslog(priority, "%s", string);
-}
-
-static void xcloselog(BIO *bp)
-{
-    closelog();
+    return (&methods_slg);
 }
 
 #endif /* NO_SYSLOG */

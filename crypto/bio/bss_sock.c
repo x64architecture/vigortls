@@ -1,4 +1,3 @@
-/* crypto/bio/bss_sock.c */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -63,43 +62,6 @@
 #include <unistd.h>
 
 #include <openssl/bio.h>
-
-static int sock_write(BIO *h, const char *buf, int num);
-static int sock_read(BIO *h, char *buf, int size);
-static int sock_puts(BIO *h, const char *str);
-static long sock_ctrl(BIO *h, int cmd, long arg1, void *arg2);
-static int sock_new(BIO *h);
-static int sock_free(BIO *data);
-int BIO_sock_should_retry(int s);
-
-static BIO_METHOD methods_sockp = {
-    BIO_TYPE_SOCKET,
-    "socket",
-    sock_write,
-    sock_read,
-    sock_puts,
-    NULL, /* sock_gets, */
-    sock_ctrl,
-    sock_new,
-    sock_free,
-    NULL,
-};
-
-BIO_METHOD *BIO_s_socket(void)
-{
-    return (&methods_sockp);
-}
-
-BIO *BIO_new_socket(int fd, int close_flag)
-{
-    BIO *ret;
-
-    ret = BIO_new(BIO_s_socket());
-    if (ret == NULL)
-        return (NULL);
-    BIO_set_fd(ret, fd, close_flag);
-    return (ret);
-}
 
 static int sock_new(BIO *bi)
 {
@@ -199,6 +161,33 @@ static int sock_puts(BIO *bp, const char *str)
 
     n = strlen(str);
     ret = sock_write(bp, str, n);
+    return (ret);
+}
+
+static BIO_METHOD methods_sockp = {
+    .type    = BIO_TYPE_SOCKET,
+    .name    = "socket",
+    .bwrite  = sock_write,
+    .bread   = sock_read,
+    .bputs   = sock_puts,
+    .ctrl    = sock_ctrl,
+    .create  = sock_new,
+    .destroy = sock_free,
+};
+
+BIO_METHOD *BIO_s_socket(void)
+{
+    return (&methods_sockp);
+}
+
+BIO *BIO_new_socket(int fd, int close_flag)
+{
+    BIO *ret;
+
+    ret = BIO_new(BIO_s_socket());
+    if (ret == NULL)
+        return (NULL);
+    BIO_set_fd(ret, fd, close_flag);
     return (ret);
 }
 

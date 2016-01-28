@@ -1,4 +1,3 @@
-/* crypto/bio/bf_buff.c */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -61,37 +60,8 @@
 #include <openssl/bio.h>
 #include <openssl/evp.h>
 
-static int linebuffer_write(BIO *h, const char *buf, int num);
-static int linebuffer_read(BIO *h, char *buf, int size);
-static int linebuffer_puts(BIO *h, const char *str);
-static int linebuffer_gets(BIO *h, char *str, int size);
-static long linebuffer_ctrl(BIO *h, int cmd, long arg1, void *arg2);
-static int linebuffer_new(BIO *h);
-static int linebuffer_free(BIO *data);
-static long linebuffer_callback_ctrl(BIO *h, int cmd, bio_info_cb *fp);
-
 /* A 10k maximum should be enough for most purposes */
 #define DEFAULT_LINEBUFFER_SIZE 1024 * 10
-
-/* #define DEBUG */
-
-static BIO_METHOD methods_linebuffer = {
-    BIO_TYPE_LINEBUFFER,
-    "linebuffer",
-    linebuffer_write,
-    linebuffer_read,
-    linebuffer_puts,
-    linebuffer_gets,
-    linebuffer_ctrl,
-    linebuffer_new,
-    linebuffer_free,
-    linebuffer_callback_ctrl,
-};
-
-BIO_METHOD *BIO_f_linebuffer(void)
-{
-    return (&methods_linebuffer);
-}
 
 typedef struct bio_linebuffer_ctx_struct {
     char *obuf;    /* the output char array */
@@ -366,4 +336,22 @@ static int linebuffer_gets(BIO *b, char *buf, int size)
 static int linebuffer_puts(BIO *b, const char *str)
 {
     return (linebuffer_write(b, str, strlen(str)));
+}
+
+static BIO_METHOD methods_linebuffer = {
+    .type    = BIO_TYPE_LINEBUFFER,
+    .name    = "linebuffer",
+    .write   = linebuffer_write,
+    .bread   = linebuffer_read,
+    .bputs   = linebuffer_puts,
+    .bgets   = linebuffer_gets,
+    .ctrl    = linebuffer_ctrl,
+    .create  = linebuffer_new,
+    .destroy = linebuffer_free,
+    .callback_ctrl = linebuffer_callback_ctrl,
+};
+
+BIO_METHOD *BIO_f_linebuffer(void)
+{
+    return (&methods_linebuffer);
 }

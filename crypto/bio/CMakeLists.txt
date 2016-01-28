@@ -1,12 +1,27 @@
 include_directories(../../include)
 
+if (WIN32)
+    set(
+        BIO_SOURCES
+
+        b_win.c
+    )
+else()
+    set(
+        BIO_SOURCES
+
+        b_posix.c
+    )
+endif()
+
 add_library(
     bio
 
     OBJECT
 
+    ${BIO_SOURCES}
+
     bf_buff.c
-    bf_nbio.c
     bio_cb.c
     bio_err.c
     bio_lib.c
@@ -23,6 +38,4 @@ add_library(
     b_dump.c
     b_print.c
     b_sock.c
-    b_posix.c
-    b_win.c
 )

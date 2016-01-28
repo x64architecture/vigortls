@@ -1,4 +1,3 @@
-/* crypto/bio/bss_null.c */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -62,31 +61,6 @@
 
 #include <openssl/bio.h>
 
-static int null_write(BIO *h, const char *buf, int num);
-static int null_read(BIO *h, char *buf, int size);
-static int null_puts(BIO *h, const char *str);
-static int null_gets(BIO *h, char *str, int size);
-static long null_ctrl(BIO *h, int cmd, long arg1, void *arg2);
-static int null_new(BIO *h);
-static int null_free(BIO *data);
-static BIO_METHOD null_method = {
-    BIO_TYPE_NULL,
-    "NULL",
-    null_write,
-    null_read,
-    null_puts,
-    null_gets,
-    null_ctrl,
-    null_new,
-    null_free,
-    NULL,
-};
-
-BIO_METHOD *BIO_s_null(void)
-{
-    return (&null_method);
-}
-
 static int null_new(BIO *bi)
 {
     bi->init = 1;
@@ -147,4 +121,20 @@ static int null_puts(BIO *bp, const char *str)
     if (str == NULL)
         return (0);
     return (strlen(str));
+}
+
+static BIO_METHOD null_method = {
+    .type    = BIO_TYPE_NULL,
+    .bwrite  = null_write,
+    .bread   = null_read,
+    .bputs   = null_puts,
+    .bgets   = null_gets,
+    .ctrl    = null_ctrl,
+    .create  = null_new,
+    .destroy = null_free,
+};
+
+BIO_METHOD *BIO_s_null(void)
+{
+    return (&null_method);
 }

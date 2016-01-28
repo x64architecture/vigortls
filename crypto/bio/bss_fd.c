@@ -1,4 +1,3 @@
-/* crypto/bio/bss_fd.c */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -65,41 +64,7 @@
 
 #include <openssl/bio.h>
 
-static int fd_write(BIO *h, const char *buf, int num);
-static int fd_read(BIO *h, char *buf, int size);
-static int fd_puts(BIO *h, const char *str);
-static int fd_gets(BIO *h, char *buf, int size);
-static long fd_ctrl(BIO *h, int cmd, long arg1, void *arg2);
-static int fd_new(BIO *h);
-static int fd_free(BIO *data);
 int BIO_fd_should_retry(int s);
-
-static BIO_METHOD methods_fdp = {
-    BIO_TYPE_FD, "file descriptor",
-    fd_write,
-    fd_read,
-    fd_puts,
-    fd_gets,
-    fd_ctrl,
-    fd_new,
-    fd_free,
-    NULL,
-};
-
-BIO_METHOD *BIO_s_fd(void)
-{
-    return (&methods_fdp);
-}
-
-BIO *BIO_new_fd(int fd, int close_flag)
-{
-    BIO *ret;
-    ret = BIO_new(BIO_s_fd());
-    if (ret == NULL)
-        return (NULL);
-    BIO_set_fd(ret, fd, close_flag);
-    return (ret);
-}
 
 static int fd_new(BIO *bi)
 {
@@ -284,4 +249,31 @@ int BIO_fd_non_fatal_error(int err)
             break;
     }
     return (0);
+}
+
+static BIO_METHOD methods_fdp = {
+    .type    = BIO_TYPE_FD,
+    .name    = "file descriptor",
+    .bwrite  = fd_write,
+    .bread   = fd_read,
+    .bputs   = fd_puts,
+    .bgets   = fd_gets,
+    .ctrl    = fd_ctrl,
+    .create  = fd_new,
+    .destroy = fd_free,
+};
+
+BIO_METHOD *BIO_s_fd(void)
+{
+    return (&methods_fdp);
+}
+
+BIO *BIO_new_fd(int fd, int close_flag)
+{
+    BIO *ret;
+    ret = BIO_new(BIO_s_fd());
+    if (ret == NULL)
+        return (NULL);
+    BIO_set_fd(ret, fd, close_flag);
+    return (ret);
 }

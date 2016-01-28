@@ -232,7 +232,6 @@ static const char *s_cert_file = TEST_CERT, *s_key_file = NULL;
 static const char *s_cert_file2 = TEST_CERT2, *s_key_file2 = NULL;
 static char *s_dcert_file = NULL, *s_dkey_file = NULL;
 static int s_nbio = 0;
-static int s_nbio_test = 0;
 int s_crlf = 0;
 static SSL_CTX *ctx = NULL;
 static SSL_CTX *ctx2 = NULL;
@@ -277,7 +276,6 @@ static void s_server_init(void)
     s_key_file2 = NULL;
     ctx2 = NULL;
     s_nbio = 0;
-    s_nbio_test = 0;
     ctx = NULL;
     www = 0;
 
@@ -529,7 +527,6 @@ typedef enum OPTION_choice {
     OPT_VERIFY_RET_ERROR,
     OPT_CAFILE,
     OPT_NBIO,
-    OPT_NBIO_TEST,
     OPT_DEBUG,
     OPT_TLSEXTDEBUG,
     OPT_STATUS,
@@ -588,7 +585,6 @@ OPTIONS s_server_options[] = {
     { "dkeyform", OPT_DKEYFORM, 'F', "Second key format (PEM, DER or ENGINE) PEM default" },
     { "dpass", OPT_DPASS, 's', "Second private key file pass phrase source" },
     { "nbio", OPT_NBIO, '-', "Use non-blocking IO" },
-    { "nbio_test", OPT_NBIO_TEST, '-', "Test with the non-blocking test bio" },
     { "crlf", OPT_CRLF, '-', "Convert LF from terminal into CRLF" },
     { "debug", OPT_DEBUG, '-', "Print more output" },
     { "msg", OPT_MSG, '-', "Show protocol messages" },
@@ -794,9 +790,6 @@ int s_server_main(int argc, char *argv[])
                 break;
             case OPT_NBIO:
                 s_nbio = 1;
-                break;
-            case OPT_NBIO_TEST:
-                s_nbio = s_nbio_test = 1;
                 break;
             case OPT_DEBUG:
                 s_debug = 1;
@@ -1366,13 +1359,6 @@ static int sv_body(char *hostname, int s, uint8_t *context)
     } else
         sbio = BIO_new_socket(s, BIO_NOCLOSE);
 
-    if (s_nbio_test) {
-        BIO *test;
-
-        test = BIO_new(BIO_f_nbio_test());
-        sbio = BIO_push(test, sbio);
-    }
-
     SSL_set_bio(con, sbio, sbio);
     SSL_set_accept_state(con);
     /* SSL_set_fd(con,s); */
@@ -1761,12 +1747,6 @@ static int www_body(char *hostname, int s, uint8_t *context)
                                    strlen((char *)context));
 
     sbio = BIO_new_socket(s, BIO_NOCLOSE);
-    if (s_nbio_test) {
-        BIO *test;
-
-        test = BIO_new(BIO_f_nbio_test());
-        sbio = BIO_push(test, sbio);
-    }
     SSL_set_bio(con, sbio, sbio);
     SSL_set_accept_state(con);
 

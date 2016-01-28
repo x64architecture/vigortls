@@ -263,7 +263,6 @@ typedef enum OPTION_choice {
     OPT_MSGFILE,
     OPT_ENGINE,
     OPT_SHOWCERTS,
-    OPT_NBIO_TEST,
     OPT_STATE,
     OPT_TLS1_2,
     OPT_TLS1_1,
@@ -307,7 +306,6 @@ OPTIONS s_client_options[] = {
     { "debug", OPT_DEBUG, '-', "Extra output" },
     { "msg", OPT_MSG, '-', "Show protocol messages" },
     { "msgfile", OPT_MSGFILE, '>' },
-    { "nbio_test", OPT_NBIO_TEST, '-', "More ssl protocol testing" },
     { "state", OPT_STATE, '-', "Print the ssl states" },
     { "crlf", OPT_CRLF, '-', "Convert LF from terminal into CRLF" },
     { "quiet", OPT_QUIET, '-', "No s_client output" },
@@ -385,7 +383,7 @@ int s_client_main(int argc, char **argv)
     int crlf = 0;
     int write_tty, read_tty, write_ssl, read_ssl, tty_on, ssl_pending;
     SSL_CTX *ctx = NULL;
-    int ret = 1, in_init = 1, i, nbio_test = 0;
+    int ret = 1, in_init = 1, i;
     int starttls_proto = PROTO_OFF;
     int prexit = 0;
     X509_VERIFY_PARAM *vpm = NULL;
@@ -533,9 +531,6 @@ int s_client_main(int argc, char **argv)
             break;
         case OPT_SHOWCERTS:
             c_showcerts = 1;
-            break;
-        case OPT_NBIO_TEST:
-            nbio_test = 1;
             break;
         case OPT_STATE:
             state = 1;
@@ -818,13 +813,6 @@ re_start:
             BIO_ctrl(sbio, BIO_CTRL_DGRAM_MTU_DISCOVER, 0, NULL);
     } else
         sbio = BIO_new_socket(s, BIO_NOCLOSE);
-
-    if (nbio_test) {
-        BIO *test;
-
-        test = BIO_new(BIO_f_nbio_test());
-        sbio = BIO_push(test, sbio);
-    }
 
     if (c_debug) {
         SSL_set_debug(con, 1);

@@ -1,4 +1,3 @@
-/* crypto/bio/b_dump.c */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -54,10 +53,6 @@
  * derivative of this code cannot be changed.  i.e. this code cannot simply be
  * copied and put under another distribution licence
  * [including the GNU Public Licence.]
- */
-
-/*
- * Stolen from tjh's ssl/ssl_trc.c stuff.
  */
 
 #include <stdio.h>

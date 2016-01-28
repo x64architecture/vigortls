@@ -1,4 +1,3 @@
-/* crypto/bio/bss_mem.c */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -63,57 +62,6 @@
 #include <openssl/bio.h>
 #include <openssl/buffer.h>
 #include <openssl/err.h>
-
-static int mem_write(BIO *h, const char *buf, int num);
-static int mem_read(BIO *h, char *buf, int size);
-static int mem_puts(BIO *h, const char *str);
-static int mem_gets(BIO *h, char *str, int size);
-static long mem_ctrl(BIO *h, int cmd, long arg1, void *arg2);
-static int mem_new(BIO *h);
-static int mem_free(BIO *data);
-
-static BIO_METHOD mem_method = {
-    .type = BIO_TYPE_MEM,
-    .name = "memory buffer",
-    .bwrite = mem_write,
-    .bread = mem_read,
-    .bputs = mem_puts,
-    .bgets = mem_gets,
-    .ctrl = mem_ctrl,
-    .create = mem_new,
-    .destroy = mem_free
-};
-
-/* bio->num is used to hold the value to return on 'empty', if it is
- * 0, should_retry is not set */
-
-BIO_METHOD *BIO_s_mem(void)
-{
-    return (&mem_method);
-}
-
-BIO *BIO_new_mem_buf(void *buf, int len)
-{
-    BIO *ret;
-    BUF_MEM *b;
-    size_t sz;
-
-    if (!buf) {
-        BIOerr(BIO_F_BIO_NEW_MEM_BUF, BIO_R_NULL_PARAMETER);
-        return NULL;
-    }
-    sz = (len < 0) ? strlen(buf) : (size_t)len;
-    if (!(ret = BIO_new(BIO_s_mem())))
-        return NULL;
-    b = (BUF_MEM *)ret->ptr;
-    b->data = buf;
-    b->length = sz;
-    b->max = sz;
-    ret->flags |= BIO_FLAGS_MEM_RDONLY;
-    /* Since this is static data retrying wont help */
-    ret->num = 0;
-    return ret;
-}
 
 static int mem_new(BIO *bi)
 {
@@ -309,4 +257,44 @@ static int mem_puts(BIO *bp, const char *str)
     ret = mem_write(bp, str, n);
     /* memory semantics is that it will always work */
     return (ret);
+}
+
+static BIO_METHOD mem_method = {
+    .type    = BIO_TYPE_MEM,
+    .name    = "memory buffer",
+    .bwrite  = mem_write,
+    .bread   = mem_read,
+    .bputs   = mem_puts,
+    .bgets   = mem_gets,
+    .ctrl    = mem_ctrl,
+    .create  = mem_new,
+    .destroy = mem_free
+};
+
+BIO_METHOD *BIO_s_mem(void)
+{
+    return (&mem_method);
+}
+
+BIO *BIO_new_mem_buf(void *buf, int len)
+{
+    BIO *ret;
+    BUF_MEM *b;
+    size_t sz;
+
+    if (!buf) {
+        BIOerr(BIO_F_BIO_NEW_MEM_BUF, BIO_R_NULL_PARAMETER);
+        return NULL;
+    }
+    sz = (len < 0) ? strlen(buf) : (size_t)len;
+    if (!(ret = BIO_new(BIO_s_mem())))
+        return NULL;
+    b = (BUF_MEM *)ret->ptr;
+    b->data = buf;
+    b->length = sz;
+    b->max = sz;
+    ret->flags |= BIO_FLAGS_MEM_RDONLY;
+    /* Since this is static data retrying wont help */
+    ret->num = 0;
+    return ret;
 }

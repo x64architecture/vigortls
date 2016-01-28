@@ -1,4 +1,3 @@
-/* crypto/bio/bss_bio.c  -*- Mode: C; c-file-style: "eay" -*- */
 /* ====================================================================
  * Copyright (c) 1998-2003 The OpenSSL Project.  All rights reserved.
  *
@@ -83,7 +82,7 @@
 #include <openssl/err.h>
 #include <openssl/crypto.h>
 
-#ifdef _MSC_VER
+#ifdef VIGORTLS_MSVC
 #include <BaseTsd.h>
 typedef SSIZE_T ssize_t;
 #endif
@@ -92,33 +91,8 @@ typedef SSIZE_T ssize_t;
 #define SSIZE_MAX INT_MAX
 #endif
 
-static int bio_new(BIO *bio);
-static int bio_free(BIO *bio);
-static int bio_read(BIO *bio, char *buf, int size);
-static int bio_write(BIO *bio, const char *buf, int num);
-static long bio_ctrl(BIO *bio, int cmd, long num, void *ptr);
-static int bio_puts(BIO *bio, const char *str);
-
 static int bio_make_pair(BIO *bio1, BIO *bio2);
 static void bio_destroy_pair(BIO *bio);
-
-static BIO_METHOD methods_biop = {
-    BIO_TYPE_BIO,
-    "BIO pair",
-    bio_write,
-    bio_read,
-    bio_puts,
-    NULL /* no bio_gets */,
-    bio_ctrl,
-    bio_new,
-    bio_free,
-    NULL /* no bio_callback_ctrl */
-};
-
-BIO_METHOD *BIO_s_bio(void)
-{
-    return &methods_biop;
-}
 
 struct bio_bio_st {
     BIO *peer; /* NULL if buf == NULL.
@@ -858,4 +832,20 @@ int BIO_nwrite(BIO *bio, char **buf, int num)
     if (ret > 0)
         bio->num_write += ret;
     return ret;
+}
+
+static BIO_METHOD methods_biop = {
+    .type    = BIO_TYPE_BIO,
+    .name    = "BIO pair",
+    .bwrite  = bio_write,
+    .bread   = bio_read,
+    .bputs   = bio_puts,
+    .ctrl    = bio_ctrl,
+    .create  = bio_new,
+    .destroy = bio_free,
+};
+
+BIO_METHOD *BIO_s_bio(void)
+{
+    return &methods_biop;
 }

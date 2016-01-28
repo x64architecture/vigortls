@@ -1,4 +1,3 @@
-/* crypto/bio/bio_dgram.c */
 /*
  * DTLS implementation written by Nagendra Modadugu
  * (nagendra@cs.stanford.edu) for the OpenSSL project 2005.
@@ -74,28 +73,7 @@
 
 #ifndef OPENSSL_NO_DGRAM
 
-static int dgram_write(BIO *h, const char *buf, int num);
-static int dgram_read(BIO *h, char *buf, int size);
-static int dgram_puts(BIO *h, const char *str);
-static long dgram_ctrl(BIO *h, int cmd, long arg1, void *arg2);
-static int dgram_new(BIO *h);
-static int dgram_free(BIO *data);
-static int dgram_clear(BIO *bio);
-
 static int BIO_dgram_should_retry(int s);
-
-static BIO_METHOD methods_dgramp = {
-    BIO_TYPE_DGRAM,
-    "datagram socket",
-    dgram_write,
-    dgram_read,
-    dgram_puts,
-    NULL, /* dgram_gets, */
-    dgram_ctrl,
-    dgram_new,
-    dgram_free,
-    NULL,
-};
 
 typedef struct bio_dgram_data_st {
     union {
@@ -109,11 +87,6 @@ typedef struct bio_dgram_data_st {
     struct timeval next_timeout;
     struct timeval socket_timeout;
 } bio_dgram_data;
-
-BIO_METHOD *BIO_s_datagram(void)
-{
-    return (&methods_dgramp);
-}
 
 BIO *BIO_new_dgram(int fd, int close_flag)
 {
@@ -141,21 +114,6 @@ static int dgram_new(BIO *bi)
     return (1);
 }
 
-static int dgram_free(BIO *a)
-{
-    bio_dgram_data *data;
-
-    if (a == NULL)
-        return (0);
-    if (!dgram_clear(a))
-        return 0;
-
-    data = (bio_dgram_data *)a->ptr;
-    free(data);
-
-    return (1);
-}
-
 static int dgram_clear(BIO *a)
 {
     if (a == NULL)
@@ -168,6 +126,21 @@ static int dgram_clear(BIO *a)
         a->init = 0;
         a->flags = 0;
     }
+    return (1);
+}
+
+static int dgram_free(BIO *a)
+{
+    bio_dgram_data *data;
+
+    if (a == NULL)
+        return (0);
+    if (!dgram_clear(a))
+        return 0;
+
+    data = (bio_dgram_data *)a->ptr;
+    free(data);
+
     return (1);
 }
 
@@ -673,6 +646,22 @@ int BIO_dgram_non_fatal_error(int err)
             break;
     }
     return (0);
+}
+
+static BIO_METHOD methods_dgramp = {
+    .type = BIO_TYPE_DGRAM,
+    .name = "datagram socket",
+    .bwrite  = dgram_write,
+    .bread   = dgram_read,
+    .bputs   = dgram_puts,
+    .ctrl    = dgram_ctrl,
+    .create  = dgram_new,
+    .destroy = dgram_free,
+};
+
+BIO_METHOD *BIO_s_datagram(void)
+{
+    return (&methods_dgramp);
 }
 
 #endif

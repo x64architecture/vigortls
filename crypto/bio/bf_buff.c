@@ -1,4 +1,3 @@
-/* crypto/bio/bf_buff.c */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -63,33 +62,7 @@
 #include <openssl/bio.h>
 #include <openssl/err.h>
 
-static int buffer_write(BIO *h, const char *buf, int num);
-static int buffer_read(BIO *h, char *buf, int size);
-static int buffer_puts(BIO *h, const char *str);
-static int buffer_gets(BIO *h, char *str, int size);
-static long buffer_ctrl(BIO *h, int cmd, long arg1, void *arg2);
-static int buffer_new(BIO *h);
-static int buffer_free(BIO *data);
-static long buffer_callback_ctrl(BIO *h, int cmd, bio_info_cb *fp);
 #define DEFAULT_BUFFER_SIZE 4096
-
-static BIO_METHOD methods_buffer = {
-    BIO_TYPE_BUFFER,
-    "buffer",
-    buffer_write,
-    buffer_read,
-    buffer_puts,
-    buffer_gets,
-    buffer_ctrl,
-    buffer_new,
-    buffer_free,
-    buffer_callback_ctrl,
-};
-
-BIO_METHOD *BIO_f_buffer(void)
-{
-    return (&methods_buffer);
-}
 
 static int buffer_new(BIO *bi)
 {
@@ -506,4 +479,22 @@ static int buffer_gets(BIO *b, char *buf, int size)
 static int buffer_puts(BIO *b, const char *str)
 {
     return (buffer_write(b, str, strlen(str)));
+}
+
+static BIO_METHOD methods_buffer = {
+    .type    = BIO_TYPE_BUFFER,
+    .name    = "buffer",
+    .bwrite  = buffer_write,
+    .bread   = buffer_read,
+    .bputs   = buffer_puts,
+    .bgets   = buffer_gets,
+    .ctrl    = buffer_ctrl,
+    .create   = buffer_new,
+    .destroy = buffer_free,
+    .callback_ctrl = buffer_callback_ctrl,
+};
+
+BIO_METHOD *BIO_f_buffer(void)
+{
+    return (&methods_buffer);
 }
