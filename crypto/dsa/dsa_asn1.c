@@ -157,12 +157,12 @@ int i2d_DSAparams(const DSA *a, uint8_t **out)
  * in a SEQUENCE
  */
 
-ASN1_SEQUENCE(DSAPublicKey) = {
+ASN1_SEQUENCE_cb(DSAPublicKey, dsa_cb) = {
     ASN1_SIMPLE(DSA, pub_key, BIGNUM),
     ASN1_SIMPLE(DSA, p, BIGNUM),
     ASN1_SIMPLE(DSA, q, BIGNUM),
     ASN1_SIMPLE(DSA, g, BIGNUM)
-} ASN1_SEQUENCE_END_name(DSA, DSAPublicKey)
+} ASN1_SEQUENCE_END_cb(DSA, DSAPublicKey)
 
 DSA *d2i_DSAPublicKey(DSA **a, const uint8_t **in, long len)
 {
