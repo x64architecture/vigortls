@@ -48,15 +48,10 @@ int BIO_sock_init(void)
 
 void BIO_sock_cleanup(void)
 {
-    /*
-    * We could call WSACleanup here, but it is easy to get it wrong. Since
-    * this API provides no way to even tell if it failed, there is no safe
-    * way to expose that functionality here.
-    *
-    * The cost of leaving the networking DLLs loaded may have been large
-    * during the Windows 3.1/win32s era, but it is small in modern
-    * contexts, so don't bother.
-    */
+    if (wsa_init_done) {
+        wsa_init_done = 0;
+        WSACleanup();
+    }
 }
 
 int BIO_socket_nbio(int s, int mode)
