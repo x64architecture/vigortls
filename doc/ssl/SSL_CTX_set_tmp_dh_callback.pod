@@ -48,24 +48,8 @@ even if he gets hold of the normal (certified) key, as this key was
 only used for signing.
 
 In order to perform a DH key exchange the server must use a DH group
-(DH parameters) and generate a DH key. The server will always generate a new
-DH key during the negotiation, when the DH parameters are supplied via
-callback and/or when the SSL_OP_SINGLE_DH_USE option of
-L<SSL_CTX_set_options(3)|SSL_CTX_set_options(3)> is set. It will
-immediately create a DH key, when DH parameters are supplied via
-SSL_CTX_set_tmp_dh() and SSL_OP_SINGLE_DH_USE is not set. In this case,
-it may happen that a key is generated on initialization without later
-being needed, while on the other hand the computer time during the
-negotiation is being saved.
-
-If "strong" primes were used to generate the DH parameters, it is not strictly
-necessary to generate a new key for each handshake but it does improve forward
-secrecy. If it is not assured, that "strong" primes were used (see especially
-the section about DSA parameters below), SSL_OP_SINGLE_DH_USE must be used
-in order to prevent small subgroup attacks. Always using SSL_OP_SINGLE_DH_USE
-has an impact on the computer time needed during negotiation, but it is not
-very large, so application authors/users should consider to always enable
-this option.
+(DH parameters) and generate a DH key. The server will always generate
+a new DH key during the negotiation.
 
 As generating DH parameters is extremely time consuming, an application
 should not generate the parameters on the fly but supply the parameters.

@@ -530,8 +530,6 @@ struct ssl_session_st {
 
 /* If set, always create a new key when using tmp_ecdh parameters */
 #define SSL_OP_SINGLE_ECDH_USE 0x00080000L
-/* If set, always create a new key when using tmp_dh parameters */
-#define SSL_OP_SINGLE_DH_USE 0x00100000L
 /* Set on servers to choose the cipher according to the server's
  * preferences */
 #define SSL_OP_CIPHER_SERVER_PREFERENCE 0x00400000L
@@ -568,6 +566,7 @@ struct ssl_session_st {
 #define SSL_OP_NETSCAPE_REUSE_CIPHER_CHANGE_BUG   0x0
 #define SSL_OP_PKCS1_CHECK_1                      0x0
 #define SSL_OP_PKCS1_CHECK_2                      0x0
+#define SSL_OP_SINGLE_DH_USE                      0x0
 #define SSL_OP_SSLEAY_080_CLIENT_DH_BUG           0x0
 #define SSL_OP_SSLREF2_REUSE_CERT_TYPE_BUG        0x0
 #define SSL_OP_TLS_BLOCK_PADDING_BUG              0x0
