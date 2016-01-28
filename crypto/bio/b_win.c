@@ -25,6 +25,8 @@
 #include <openssl/bio.h>
 #include <openssl/err.h>
 
+static int wsa_init_done = 0;
+
 int BIO_sock_init(void)
 {
     /*
@@ -33,7 +35,6 @@ int BIO_sock_init(void)
     */
     static struct WSAData wsa_state = { 0 };
     WORD version_requested = MAKEWORD(2, 2);
-    static int wsa_init_done = 0;
     if (!wsa_init_done) {
         if (WSAStartup(version_requested, &wsa_state) != 0) {
             int err = WSAGetLastError();
