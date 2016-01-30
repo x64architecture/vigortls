@@ -3,7 +3,4 @@ language: c
 sudo: required
 dist: trusty
 
-before_install:
- - sudo apt-get install cmake
-
 script: mkdir build && cd build && cmake .. && make && make test
