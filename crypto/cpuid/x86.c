@@ -33,7 +33,7 @@ static void vigortls_cpuid(uint32_t eax, uint32_t *regs)
     regs[1] = (uint32_t)tmp[1];
     regs[2] = (uint32_t)tmp[2];
     regs[3] = (uint32_t)tmp[3];
-#elif defined(__x86_64)
+#elif defined(VIGORTLS_X86_64)
     __asm__ volatile(
         "mov %0, %%rdi\n"
 
@@ -59,7 +59,7 @@ static void vigortls_cpuid(uint32_t eax, uint32_t *regs)
         :"m"(regs)
         :"memory", "eax", "rdi"
     );
-#elif defined(__i386__)
+#elif defined(VIGORTLS_X86)
     __asm__ volatile(
         "mov %0, %%edi\n"
 
@@ -95,7 +95,7 @@ static uint64_t vigortls_xgetbv(uint32_t xcr)
 #else
     uint32_t eax, edx;
     __asm__ volatile (
-        "xgetbv"
+        ".byte 0x0f, 0x01, 0xd0" /* xgetbv */
         : "=a"(eax), "=d"(edx) : "c"(xcr)
     );
     return ((uint64_t)edx << 32) | eax;

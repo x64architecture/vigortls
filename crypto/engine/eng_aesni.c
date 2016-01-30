@@ -89,7 +89,7 @@
    doesn't exist elsewhere, but it even can't be compiled on other
    platforms! */
 #undef COMPILE_HW_AESNI
-#if (defined(__x86_64) || defined(__x86_64__) || defined(_M_AMD64) || defined(_M_X64) || defined(OPENSSL_IA32_SSE2)) && !defined(OPENSSL_NO_ASM) && !defined(__i386__)
+#if (defined(VIGORTLS_X86_64 || defined(OPENSSL_IA32_SSE2)) && !defined(OPENSSL_NO_ASM) && !defined(VIGORTLS_X86)
 #define COMPILE_HW_AESNI
 #endif
 static ENGINE *ENGINE_aesni(void);

@@ -112,6 +112,7 @@
 #ifndef HEADER_BN_LCL_H
 #define HEADER_BN_LCL_H
 
+#include <openssl/opensslconf.h>
 #include <openssl/bn.h>
 
 #ifdef __cplusplus
@@ -195,7 +196,7 @@ extern "C" {
 #define BN_MUL_LOW_RECURSIVE_SIZE_NORMAL (32) /* 32 */
 #define BN_MONT_CTX_SET_SIZE_WORD (64)        /* 32 */
 
-#if !defined(OPENSSL_NO_ASM) && !defined(OPENSSL_NO_INLINE_ASM) && !defined(PEDANTIC)
+#if !defined(OPENSSL_NO_ASM) && !defined(OPENSSL_NO_INLINE_ASM)
 /*
  * BN_UMULT_HIGH section.
  *
@@ -240,7 +241,7 @@ extern "C" {
          : "r"(a), "r"(b));       \
     ret; })
 #endif /* compiler */
-#elif defined(__x86_64) || defined(__x86_64__)
+#elif defined(VIGORTLS_X86_64)
 #if defined(__GNUC__) && __GNUC__ >= 2
 #define BN_UMULT_HIGH(a, b) ({     \
     register BN_ULONG ret,discard; \
@@ -255,8 +256,8 @@ extern "C" {
         : "a"(a), "g"(b)               \
         : "cc");
 #endif
-#elif (defined(_M_AMD64) || defined(_M_X64)) && defined(VIGORTLS_64_BIT)
-#if defined(_MSC_VER)
+#elif defined(VIGORTLS_X86_64) && defined(VIGORTLS_64_BIT)
+#if defined(VIGORTLS_MSVC)
 unsigned __int64 __umulh(unsigned __int64 a, unsigned __int64 b);
 unsigned __int64 _umul128(unsigned __int64 a, unsigned __int64 b, unsigned __int64 *h);
 #pragma intrinsic(__umulh, _umul128)

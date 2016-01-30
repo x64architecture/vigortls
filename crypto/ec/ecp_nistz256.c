@@ -44,7 +44,7 @@
 
 #if defined(__GNUC__)
 #define ALIGN32 __attribute((aligned(32)))
-#elif defined(_MSC_VER)
+#elif defined(VIGORTLS_MSVC)
 #define ALIGN32 __declspec(align(32))
 #else
 #define ALIGN32
@@ -854,9 +854,8 @@ err:
  * you'd need to compile even asm/ecp_nistz256-avx.pl module.
  */
 #if defined(ECP_NISTZ256_AVX2)
-#if !(defined(__x86_64) || defined(__x86_64__)) || defined(_M_AMD64)               \
-    || defined(_MX64))                                                             \
-    || !(defined(__GNUC__) || defined(_MSC_VER)) /* this is for ALIGN32 */
+#if !defined(VIGORTLS_X86_64) || \
+    !(defined(__GNUC__) || defined(VIGORTLS_MSVC)) /* this is for ALIGN32 */
 #undef ECP_NISTZ256_AVX2
 #else
 /* Constant time access, loading four values, from four consecutive tables */
@@ -1406,7 +1405,8 @@ static int ecp_nistz256_window_have_precompute_mult(const EC_GROUP *group)
         return 1;
     }
 
-    return EC_EX_DATA_get_data(group->extra_data, ecp_nistz256_pre_comp_dup, ecp_nistz256_pre_comp_free,
+    return EC_EX_DATA_get_data(group->extra_data, ecp_nistz256_pre_comp_dup,
+                               ecp_nistz256_pre_comp_free,
                                ecp_nistz256_pre_comp_clear_free) != NULL;
 }
 

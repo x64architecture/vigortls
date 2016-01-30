@@ -18,7 +18,7 @@
 #undef STRICT_ALIGNMENT
 #endif
 
-#if !defined(PEDANTIC) && !defined(OPENSSL_NO_ASM)
+#if !defined(OPENSSL_NO_ASM)
 #if defined(__GNUC__) && __GNUC__ >= 2
 #if defined(VIGORTLS_X86_64)
 #define BSWAP8(x)                         \

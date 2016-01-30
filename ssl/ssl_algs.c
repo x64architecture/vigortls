@@ -71,7 +71,7 @@ int SSL_library_init(void)
     EVP_add_cipher(EVP_idea_cbc());
 #endif
     EVP_add_cipher(EVP_rc4());
-#if !defined(OPENSSL_NO_MD5) && (defined(__x86_64) || defined(__x86_64__))
+#if !defined(OPENSSL_NO_MD5) && defined(VIGORTLS_X86_64)
     EVP_add_cipher(EVP_rc4_hmac_md5());
 #endif
 #ifndef OPENSSL_NO_RC2

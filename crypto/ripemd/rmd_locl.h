@@ -71,7 +71,7 @@
  *                    <appro@fy.chalmers.se>
  */
 #ifndef OPENSSL_NO_ASM
-#if defined(__i386) || defined(__i386__) || defined(_M_IX86) || defined(__INTEL__)
+#if defined(VIGORTLS_X86)
 #define ripemd160_block_data_order ripemd160_block_asm_data_order
 #endif
 #endif

@@ -117,7 +117,7 @@
 
 #include "bn_lcl.h"
 
-#ifdef _WIN32
+#if defined(VIGORTLS_MSVC)
 #include <malloc.h>
 #ifndef alloca
 #define alloca _alloca

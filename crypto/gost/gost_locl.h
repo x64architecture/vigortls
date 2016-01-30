@@ -51,6 +51,8 @@
 #ifndef HEADER_GOST_LOCL_H
 #define HEADER_GOST_LOCL_H
 
+#include <openssl/opensslconf.h>
+
 #include <openssl/ec.h>
 #include <openssl/ecdsa.h>
 
@@ -66,7 +68,7 @@ typedef struct {
     uint8_t k1[16];
 } gost_subst_block;
 
-#if defined(__i386) || defined(__i386__) || defined(__x86_64) || defined(__x86_64__)
+#if defined(VIGORTLS_X86) || defined(VIGORTLS_X86_64)
 #define c2l(c, l) ((l) = *((const unsigned int *)(c)), (c) += 4)
 #define l2c(l, c) (*((unsigned int *)(c)) = (l), (c) += 4)
 #else

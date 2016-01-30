@@ -1,5 +1,3 @@
-#include <openssl/opensslfeatures.h>
-
 #if defined(__x86_64) || defined(__x86_64__) || defined(_M_AMD64) || defined(_M_X64)
 # define VIGORTLS_64_BIT
 # define VIGORTLS_X86_64
@@ -12,6 +10,8 @@
 #else
 # error "Unknown target CPU"
 #endif
+
+#include <openssl/opensslfeatures.h>
 
 #if defined(HEADER_CRYPTLIB_H) && !defined(OPENSSLDIR)
 #define ENGINESDIR "/usr/lib/engines"

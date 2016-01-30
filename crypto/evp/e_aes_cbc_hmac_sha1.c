@@ -84,9 +84,9 @@ typedef struct
 
 #define NO_PAYLOAD_LENGTH ((size_t)-1)
 
-#if !defined(OPENSSL_NO_ASM) && (defined(__x86_64) || defined(__x86_64__) || defined(_M_AMD64) || defined(_M_X64) || defined(__INTEL__))
+#if !defined(OPENSSL_NO_ASM) && defined(VIGORTLS_X86_64)
 
-#if defined(__GNUC__) && __GNUC__ >= 2 && !defined(PEDANTIC)
+#if defined(__GNUC__) && __GNUC__ >= 2
 #define BSWAP(x) ({ unsigned int r=(x); __asm__ ("bswapl %0":"=r"(r):"0"(r)); r; })
 #endif
 

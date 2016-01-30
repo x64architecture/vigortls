@@ -64,10 +64,10 @@
 #include "bn_lcl.h"
 
 #if !defined(OPENSSL_NO_ASM) && !defined(OPENSSL_NO_INLINE_ASM) \
-    && !defined(PEDANTIC) && !defined(BN_DIV3W)
+    && !defined(BN_DIV3W)
 #if defined(__GNUC__) && __GNUC__ >= 2
-#if defined(__i386) || defined(__i386__)
-/*
+#if defined(VIGORTLS_X86)
+   /*
     * There were two reasons for implementing this template:
     * - GNU C generates a call to a function (__udivdi3 to be exact)
     *   in reply to ((((BN_ULLONG)n0)<<BN_BITS2)|n1)/d0 (I fail to
@@ -87,8 +87,8 @@
         q;                          \
     })
 #define REMAINDER_IS_ALREADY_CALCULATED
-#elif defined(__x86_64)
-/*
+#elif defined(VIGORTLS_X86_64)
+   /*
     * Same story here, but it's 128-bit by 64-bit division. Wow!
     *                    <appro@fy.chalmers.se>
     */

@@ -94,7 +94,7 @@
 /* 32-bit rotations */
 #if !defined(OPENSSL_NO_ASM) && !defined(OPENSSL_NO_INLINE_ASM)
 #  if defined(__GNUC__) && __GNUC__ >= 2
-#    if defined(__i386) || defined(__x86_64)
+#    if defined(VIGORTLS_X86) || defined(VIGORTLS_X86_64)
 #      define GETU32(p) ({uint32_t r=*(const uint32_t *)(p); __asm__ ("bswapl %0":"=r"(r):"0"(r)); r; })
 #      define PUTU32(p, v) ({uint32_t r=(v); __asm__ ("bswapl %0":"=r"(r):"0"(r)); *(uint32_t *)(p)=r; })
 #    endif

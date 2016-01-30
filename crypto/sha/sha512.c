@@ -301,7 +301,7 @@ static const uint64_t K512[80] = {
 };
 
 #if defined(__GNUC__) && __GNUC__ >= 2 && !defined(OPENSSL_NO_ASM)
-#if defined(__x86_64) || defined(__x86_64__)
+#if defined(VIGORTLS_X86_64)
 #define ROTR(a, n)                                                                 \
     ({                                                                             \
         uint64_t ret;                                                              \
@@ -314,7 +314,7 @@ static const uint64_t K512[80] = {
         __asm__("bswapq	%0" : "=r"(ret) : "0"(ret));                               \
         ret;                                                                       \
     })
-#elif(defined(__i386) || defined(__i386__))
+#elif defined(VIGORTLS_X86)
 #define PULL64(x)                                                                  \
     ({                                                                             \
         const unsigned int *p = (const unsigned int *)(&(x));                      \
@@ -346,20 +346,25 @@ static const uint64_t K512[80] = {
     })
 #endif
 #endif
-#elif defined(_MSC_VER)
-#if defined(_WIN64) /* applies to both IA-64 and AMD64 */
-#pragma intrinsic(_rotr64)
-#define ROTR(a, n) _rotr64((a), n)
-#endif
-#if defined(_M_IX86) && !defined(OPENSSL_NO_ASM)
+#elif defined(VIGORTLS_X86_64)
+
+#if defined(VIGORTLS_MSVC)
+ #if defined(_WIN64) /* applies to both IA-64 and AMD64 */
+  #pragma intrinsic(_rotr64)
+  #define ROTR(a, n) _rotr64((a), n)
+ #endif
+#if defined(VIGORTLS_X86) && !defined(OPENSSL_NO_ASM)
 static uint64_t __fastcall __pull64be(const void *x)
 {
-    __asm mov edx, [ecx + 0] __asm mov eax,
-        [ecx + 4] __asm bswap edx __asm bswap eax
+    __asm mov edx, [ecx + 0]
+    __asm mov eax, [ecx + 4]
+    __asm bswap edx
+    __asm bswap eax
 }
 #define PULL64(x) __pull64be(&(x))
 #if _MSC_VER <= 1200
 #pragma inline_depth(0)
+#endif
 #endif
 #endif
 #endif

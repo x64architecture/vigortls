@@ -66,7 +66,7 @@
 #define NDEBUG
 #endif
 
-#if defined(__i386) || defined(__i386__)
+#if defined(VIGORTLS_X86)
     #define OPENSSL_BN_ASM_PART_WORDS
 #endif
 
