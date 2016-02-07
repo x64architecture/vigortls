@@ -501,12 +501,16 @@ void CRYPTO_mem_leaks_cb(CRYPTO_MEM_LEAK_CB *cb);
 void OpenSSLDie(const char *file, int line, const char *assertion);
 #define OPENSSL_assert(e) (void)((e) ? 0 : (OpenSSLDie(__FILE__, __LINE__, #e), 1))
 
-/* CRYPTO_memcmp returns zero iff the |len| bytes at |a| and |b| are equal. It
- * takes an amount of time dependent on |len|, but independent of the contents
- * of |a| and |b|. Unlike memcmp, it cannot be used to put elements into a
- * defined order as the return value when a != b is undefined, other than to be
- * non-zero. */
-int CRYPTO_memcmp(const void *a, const void *b, size_t len);
+/*
+ * CRYPTO_memcmp returns zero if the |len| bytes at |in_a| and |in_b| are equal.
+ * It takes an amount of time dependent on |len|, but independent of the contents
+ * of |in_a| and |in_b|. Unlike memcmp, it cannot be used to put elements into a
+ * defined order as the return value when in_a != in_b is undefined, other than
+ * to be non-zero.
+ */
+int CRYPTO_memcmp(const volatile void * volatile in_a,
+                  const volatile void * volatile in_b,
+                  size_t len);
 
 /* BEGIN ERROR CODES */
 /*

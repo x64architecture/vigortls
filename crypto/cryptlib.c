@@ -623,11 +623,31 @@ unsigned long SSLeay(void)
     return OPENSSL_VERSION_NUMBER;
 }
 
-int CRYPTO_memcmp(const void *in_a, const void *in_b, size_t len)
+/*
+ * volatile uint8_t * pointers are there because
+ * 1. Accessing a variable declared volatile via a pointer
+ *    that lacks a volatile qualifier causes undefined behavior.
+ * 2. When the variable itself is not volatile the compiler is
+ *    not required to keep all those reads and can convert
+ *    this into canonical memcmp() which doesn't read the whole block.
+ * Pointers to volatile resolve the first problem fully. The second
+ * problem cannot be resolved in any Standard-compliant way but this
+ * works the problem around. Compilers typically react to
+ * pointers to volatile by preserving the reads and writes through them.
+ * The latter is not required by the Standard if the memory pointed to
+ * is not volatile.
+ * Pointers themselves are volatile in the function signature to work
+ * around a subtle bug in gcc 4.6+ which causes writes through
+ * pointers to volatile to not be emitted in some rare,
+ * never needed in real life, pieces of code.
+ */
+int CRYPTO_memcmp(const volatile void * volatile in_a,
+                  const volatile void * volatile in_b,
+                  size_t len)
 {
     size_t i;
-    const uint8_t *a = in_a;
-    const uint8_t *b = in_b;
+    const volatile uint8_t *a = in_a;
+    const volatile uint8_t *b = in_b;
     uint8_t x = 0;
 
     for (i = 0; i < len; i++)
