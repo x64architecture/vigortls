@@ -136,11 +136,17 @@ int prime_main(int argc, char **argv)
         free(s);
     } else {
         for (; *argv; argv++) {
-            if (hex)
-                BN_hex2bn(&bn, argv[0]);
-            else
-                BN_dec2bn(&bn, argv[0]);
-
+            if (hex) {
+                if (!BN_hex2bn(&bn, argv[0])) {
+                    BIO_printf(bio_err, "BN_hex2bn() failed\n");
+                    goto end;
+                }
+            } else {
+                if (!BN_dec2bn(&bn, argv[0])) {
+                    BIO_printf(bio_err, "BN_dec2bn() failed\n");
+                    goto end;
+                }
+            }
             BN_print(bio_out, bn);
             BIO_printf(bio_out, " (%s) %s prime\n", argv[0],
                        BN_is_prime_ex(bn, checks, NULL, NULL) ? "is" : "is not");

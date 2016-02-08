@@ -713,6 +713,12 @@ end:
     sk_X509_pop_free(verify_other, X509_free);
     sk_CONF_VALUE_pop_free(headers, X509V3_conf_free);
 
+    if (use_ssl != -1) {
+        free(host);
+        free(port);
+        free(path);
+    }
+
     return (ret);
 }
 

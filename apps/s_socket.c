@@ -124,6 +124,7 @@ int init_client(int *sock, char *host, char *port, int type, int af)
             if (i < 0) {
                 perror("keepalive");
                 close(s);
+                freeaddrinfo(ai_top);
                 return (0);
             }
         }

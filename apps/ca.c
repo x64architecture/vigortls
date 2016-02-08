@@ -1461,6 +1461,7 @@ static int do_body(X509 **xret, EVP_PKEY *pkey, X509 *x509, const EVP_MD *dgst,
                    int ext_copy, int selfsign)
 {
     X509_NAME *name = NULL, *CAname = NULL, *subject = NULL, *dn_subject = NULL;
+    ASN1_INTEGER *tmpser;
     ASN1_UTCTIME *tm, *tmptm;
     ASN1_STRING *str, *str2;
     ASN1_OBJECT *obj;
@@ -1754,8 +1755,12 @@ static int do_body(X509 **xret, EVP_PKEY *pkey, X509 *x509, const EVP_MD *dgst,
         goto end;
 #endif
 
-    if (BN_to_ASN1_INTEGER(serial, ci->serialNumber) == NULL)
+    if ((tmpser = BN_to_ASN1_INTEGER(serial, ci->serialNumber)) == NULL)
         goto end;
+    else {
+        ASN1_INTEGER_free(tmpser);
+        tmpser = NULL;
+    }
     if (selfsign) {
         if (!X509_set_issuer_name(ret, subject))
             goto end;

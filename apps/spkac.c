@@ -193,7 +193,6 @@ int spkac_main(int argc, char **argv)
         if (out == NULL)
             goto end;
         BIO_printf(out, "SPKAC=%s\n", spkstr);
-        free(spkstr);
         ret = 0;
         goto end;
     }
@@ -256,5 +255,6 @@ end:
     BIO_free_all(out);
     EVP_PKEY_free(pkey);
     free(passin);
+    free(spkstr);
     return (ret);
 }

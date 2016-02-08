@@ -1933,6 +1933,7 @@ static int do_multi(int multi)
             close(1);
             if (dup(fd[1]) == -1) {
                 fprintf(stderr, "dup failed\n");
+                close(fd[1]);
                 exit(1);
             }
             close(fd[1]);
