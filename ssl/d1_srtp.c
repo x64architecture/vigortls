@@ -388,33 +388,38 @@ int ssl_add_serverhello_use_srtp_ext(SSL *s, uint8_t *p, int *len,
     return 0;
 }
 
-int ssl_parse_serverhello_use_srtp_ext(SSL *s, uint8_t *d, int len,
+int ssl_parse_serverhello_use_srtp_ext(SSL *s, const uint8_t *d, int len,
                                        int *al)
 {
     STACK_OF(SRTP_PROTECTION_PROFILE) * clnt;
     SRTP_PROTECTION_PROFILE *prof;
-    unsigned id;
     int i;
-    int ct;
+    uint16_t id;
+    CBS cbs, profile_ids, mki;
 
-    if (len != 5) {
+    if (len < 0) {
         SSLerr(SSL_F_SSL_PARSE_SERVERHELLO_USE_SRTP_EXT,
                SSL_R_BAD_SRTP_PROTECTION_PROFILE_LIST);
         *al = SSL_AD_DECODE_ERROR;
         return 1;
     }
 
-    n2s(d, ct);
-    if (ct != 2) {
+    CBS_init(&cbs, d, len);
+
+    /*
+     * As per RFC 5764 section 4.1.1, server response MUST be a single
+     * profile id.
+     */
+    if (!CBS_get_u16_length_prefixed(&cbs, &profile_ids) ||
+        !CBS_get_u16(&profile_ids, &id) || CBS_len(&profile_ids) != 0) {
         SSLerr(SSL_F_SSL_PARSE_SERVERHELLO_USE_SRTP_EXT,
                SSL_R_BAD_SRTP_PROTECTION_PROFILE_LIST);
         *al = SSL_AD_DECODE_ERROR;
         return 1;
     }
 
-    n2s(d, id);
-    if (*d) {
-        /* Must be no MKI, since we never offer one. */
+    /* Must be no MKI, since we never offer one. */
+    if (!CBS_get_u8_length_prefixed(&cbs, &mki) || CBS_len(&mki) != 0) {
         SSLerr(SSL_F_SSL_PARSE_SERVERHELLO_USE_SRTP_EXT, SSL_R_BAD_SRTP_MKI_VALUE);
         *al = SSL_AD_ILLEGAL_PARAMETER;
         return 1;

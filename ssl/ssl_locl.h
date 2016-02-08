@@ -874,7 +874,7 @@ int ssl_parse_clienthello_use_srtp_ext(SSL *s, const uint8_t *d, int len,
                                        int *al);
 int ssl_add_serverhello_use_srtp_ext(SSL *s, uint8_t *p, int *len,
                                      int maxlen);
-int ssl_parse_serverhello_use_srtp_ext(SSL *s, uint8_t *d, int len,
+int ssl_parse_serverhello_use_srtp_ext(SSL *s, const uint8_t *d, int len,
                                        int *al);
 int ssl_handshake_hash(SSL *s, uint8_t *out, int outlen);
 
