@@ -116,12 +116,15 @@
 #include <limits.h>
 #include <string.h>
 #include <stdio.h>
-#include "ssl_locl.h"
+
 #include <openssl/buffer.h>
 #include <openssl/rand.h>
 #include <openssl/objects.h>
 #include <openssl/evp.h>
 #include <openssl/x509.h>
+
+#include "bytestring.h"
+#include "ssl_locl.h"
 
 /* send s->init_buf in records of type 'type' (SSL3_RT_HANDSHAKE or
  * SSL3_RT_CHANGE_CIPHER_SPEC) */
@@ -210,10 +213,9 @@ static void ssl3_take_mac(SSL *s)
 
 int ssl3_get_finished(SSL *s, int a, int b)
 {
-    int al, i, ok;
+    int al, ok, md_len;
     long n;
-    uint8_t *p;
-
+    CBS cbs;
 
     n = s->method->ssl_get_message(s, a, b, SSL3_MT_FINISHED, 64,
                                    /* should actually be 36+4 :-) */ &ok);
@@ -229,16 +231,18 @@ int ssl3_get_finished(SSL *s, int a, int b)
     }
     s->s3->change_cipher_spec = 0;
 
-    p = (uint8_t *)s->init_msg;
-    i = s->s3->tmp.peer_finish_md_len;
+    md_len = s->s3->tmp.peer_finish_md_len;
 
-    if (i != n) {
+    CBS_init(&cbs, s->init_msg, n);
+
+    if (n < 0 || s->s3->tmp.peer_finish_md_len != md_len ||
+        CBS_len(&cbs) != md_len) {
         al = SSL_AD_DECODE_ERROR;
         SSLerr(SSL_F_SSL3_GET_FINISHED, SSL_R_BAD_DIGEST_LENGTH);
         goto f_err;
     }
 
-    if (memcmp(p, s->s3->tmp.peer_finish_md, i) != 0) {
+    if (!CBS_mem_equal(&cbs, s->s3->tmp.peer_finish_md, CBS_len(&cbs))) {
         al = SSL_AD_DECRYPT_ERROR;
         SSLerr(SSL_F_SSL3_GET_FINISHED, SSL_R_DIGEST_CHECK_FAILED);
         goto f_err;
@@ -247,13 +251,13 @@ int ssl3_get_finished(SSL *s, int a, int b)
     /* Copy the finished so we can use it for
        renegotiation checks */
     if (s->type == SSL_ST_ACCEPT) {
-        OPENSSL_assert(i <= EVP_MAX_MD_SIZE);
-        memcpy(s->s3->previous_client_finished, s->s3->tmp.peer_finish_md, i);
-        s->s3->previous_client_finished_len = i;
+        OPENSSL_assert(md_len <= EVP_MAX_MD_SIZE);
+        memcpy(s->s3->previous_client_finished, s->s3->tmp.peer_finish_md, md_len);
+        s->s3->previous_client_finished_len = md_len;
     } else {
-        OPENSSL_assert(i <= EVP_MAX_MD_SIZE);
-        memcpy(s->s3->previous_server_finished, s->s3->tmp.peer_finish_md, i);
-        s->s3->previous_server_finished_len = i;
+        OPENSSL_assert(md_len <= EVP_MAX_MD_SIZE);
+        memcpy(s->s3->previous_server_finished, s->s3->tmp.peer_finish_md, md_len);
+        s->s3->previous_server_finished_len = md_len;
     }
 
     return (1);
