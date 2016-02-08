@@ -1819,9 +1819,11 @@ err:
 
 int ssl3_get_cert_status(SSL *s)
 {
+    CBS cert_status, response;
+    size_t stow_len;
     int ok, al;
-    unsigned long resplen, n;
-    const uint8_t *p;
+    long n;
+    uint8_t status_type;
 
     n = s->method->ssl_get_message(s,
                                    SSL3_ST_CR_CERT_STATUS_A,
@@ -1838,34 +1840,38 @@ int ssl3_get_cert_status(SSL *s)
          */
         s->s3->tmp.reuse_message = 1;
     } else {
-        if (n < 4) {
+        CBS_init(&cert_status, s->init_msg, n);
+
+        if (n < 0 || !CBS_get_u8(&cert_status, &status_type) ||
+            CBS_len(&cert_status) < 3) {
             /* need at least status type + length */
             al = SSL_AD_DECODE_ERROR;
             SSLerr(SSL_F_SSL3_GET_CERT_STATUS, SSL_R_LENGTH_MISMATCH);
             goto f_err;
         }
-        p = (unsigned char *)s->init_msg;
-        if (*p++ != TLSEXT_STATUSTYPE_ocsp) {
+
+        if (status_type != TLSEXT_STATUSTYPE_ocsp) {
             al = SSL_AD_DECODE_ERROR;
             SSLerr(SSL_F_SSL3_GET_CERT_STATUS, SSL_R_UNSUPPORTED_STATUS_TYPE);
             goto f_err;
         }
-        n2l3(p, resplen);
-        if (resplen + 4 != n) {
+
+        if (!CBS_get_u24_length_prefixed(&cert_status, &response) ||
+            CBS_len(&cert_status) != 0) {
             al = SSL_AD_DECODE_ERROR;
             SSLerr(SSL_F_SSL3_GET_CERT_STATUS, SSL_R_LENGTH_MISMATCH);
             goto f_err;
         }
-        free(s->tlsext_ocsp_resp);
-        s->tlsext_ocsp_resp = malloc(resplen);
-        if (s->tlsext_ocsp_resp == NULL) {
+        if (!CBS_stow(&response, &s->tlsext_ocsp_resp, &stow_len)) {
+            s->tlsext_ocsp_resplen = 0;
             al = SSL_AD_INTERNAL_ERROR;
-            SSLerr(SSL_F_SSL3_GET_CERT_STATUS, ERR_R_MALLOC_FAILURE);
+            SSLerr(SSL_F_SSL3_GET_CERT_STATUS,
+                   ERR_R_MALLOC_FAILURE);
             goto f_err;
         }
-        memcpy(s->tlsext_ocsp_resp, p, resplen);
-        s->tlsext_ocsp_resplen = resplen;
+        s->tlsext_ocsp_resplen = (int)stow_len;
     }
+
     if (s->ctx->tlsext_status_cb) {
         int ret;
         ret = s->ctx->tlsext_status_cb(s, s->ctx->tlsext_status_arg);
