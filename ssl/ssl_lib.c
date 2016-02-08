@@ -140,7 +140,7 @@
  */
 
 #include <stdio.h>
-#include "ssl_locl.h"
+
 #include <openssl/objects.h>
 #include <openssl/lhash.h>
 #include <openssl/x509v3.h>
@@ -151,6 +151,9 @@
 #include <openssl/engine.h>
 #endif
 #include <stdcompat.h>
+
+#include "bytestring.h"
+#include "ssl_locl.h"
 
 const char *SSL_version_str = OPENSSL_VERSION_TEXT;
 
@@ -1301,18 +1304,21 @@ int ssl_cipher_list_to_bytes(SSL *s, STACK_OF(SSL_CIPHER) *sk,
     return (p - q);
 }
 
-STACK_OF(SSL_CIPHER) *ssl_bytes_to_cipher_list(SSL *s, uint8_t *p, int num)
+STACK_OF(SSL_CIPHER) *ssl_bytes_to_cipher_list(SSL *s, const uint8_t *p, int num)
 {
+    CBS cipher_suites;
     const SSL_CIPHER *c;
     STACK_OF(SSL_CIPHER) *sk = NULL;
-    int i;
-    unsigned int cipherid;
+    unsigned int cipher_id;
     uint16_t cipher_value;
 
     if (s->s3)
         s->s3->send_connection_binding = 0;
 
-    if ((num % SSL3_CIPHER_VALUE_SIZE) != 0) {
+    /*
+     * RFC 5246 section 7.4.1.2 defines the interval as [2,2^16-2].
+     */
+    if (num < 2 || num > 0x10000 - 2) {
         SSLerr(SSL_F_SSL_BYTES_TO_CIPHER_LIST, SSL_R_ERROR_IN_RECEIVED_CIPHER_LIST);
         return NULL;
     }
@@ -1321,12 +1327,18 @@ STACK_OF(SSL_CIPHER) *ssl_bytes_to_cipher_list(SSL *s, uint8_t *p, int num)
         goto err;
     }
 
-    for (i = 0; i < num; i += SSL3_CIPHER_VALUE_SIZE) {
-        n2s(p, cipher_value);
-        cipherid = SSL3_CK_ID | cipher_value;
+    CBS_init(&cipher_suites, p, num);
+    while (CBS_len(&cipher_suites) > 0) {
+        if (!CBS_get_u16(&cipher_suites, &cipher_value)) {
+            SSLerr(SSL_F_SSL_BYTES_TO_CIPHER_LIST,
+                   SSL_R_ERROR_IN_RECEIVED_CIPHER_LIST);
+            goto err;
+        }
+
+        cipher_id = SSL3_CK_ID | cipher_value;
 
         /* Check for TLS_EMPTY_RENEGOTIATION_INFO_SCSV */
-        if (s->s3 && cipherid == SSL3_CK_SCSV) {
+        if (s->s3 && cipher_id == SSL3_CK_SCSV) {
             /* SCSV fatal if renegotiating */
             if (s->renegotiate) {
                 SSLerr(SSL_F_SSL_BYTES_TO_CIPHER_LIST, SSL_R_SCSV_RECEIVED_WHEN_RENEGOTIATING);
@@ -1339,7 +1351,7 @@ STACK_OF(SSL_CIPHER) *ssl_bytes_to_cipher_list(SSL *s, uint8_t *p, int num)
         }
 
         /* Check for TLS_FALLBACK_SCSV */
-        if (s->s3 && cipherid == SSL3_CK_FALLBACK_SCSV) {
+        if (s->s3 && cipher_id == SSL3_CK_FALLBACK_SCSV) {
             /* The SCSV indicates that the client previously tried a higher version.
              * Fail if the current version is an unexpected downgrade. */
             if (!SSL_ctrl(s, SSL_CTRL_CHECK_PROTO_VERSION, 0, NULL)) {
@@ -1351,7 +1363,7 @@ STACK_OF(SSL_CIPHER) *ssl_bytes_to_cipher_list(SSL *s, uint8_t *p, int num)
             continue;
         }
 
-        c = ssl3_get_cipher_by_id(cipherid);
+        c = ssl3_get_cipher_by_id(cipher_id);
         if (c != NULL) {
             if (!sk_SSL_CIPHER_push(sk, c)) {
                 SSLerr(SSL_F_SSL_BYTES_TO_CIPHER_LIST, ERR_R_MALLOC_FAILURE);
