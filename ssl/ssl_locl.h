@@ -870,7 +870,7 @@ int tls1_check_ec_tmp_key(SSL *s);
 
 int ssl_add_clienthello_use_srtp_ext(SSL *s, uint8_t *p, int *len,
                                      int maxlen);
-int ssl_parse_clienthello_use_srtp_ext(SSL *s, uint8_t *d, int len,
+int ssl_parse_clienthello_use_srtp_ext(SSL *s, const uint8_t *d, int len,
                                        int *al);
 int ssl_add_serverhello_use_srtp_ext(SSL *s, uint8_t *p, int *len,
                                      int maxlen);

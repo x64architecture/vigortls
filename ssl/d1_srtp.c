@@ -116,13 +116,16 @@
 
 #include <openssl/opensslconf.h>
 
-#include <stdio.h>
-#include <openssl/objects.h>
-#include "ssl_locl.h"
-
 #ifndef OPENSSL_NO_SRTP
 
+#include <stdio.h>
+
+#include "ssl_locl.h"
+
+#include <openssl/objects.h>
 #include <openssl/srtp.h>
+
+#include "bytestring.h"
 
 static SRTP_PROTECTION_PROFILE srtp_known_profiles[] = {
     {
@@ -281,39 +284,23 @@ int ssl_add_clienthello_use_srtp_ext(SSL *s, uint8_t *p, int *len,
     return 0;
 }
 
-int ssl_parse_clienthello_use_srtp_ext(SSL *s, uint8_t *d, int len,
+int ssl_parse_clienthello_use_srtp_ext(SSL *s, const uint8_t *d, int len,
                                        int *al)
 {
     SRTP_PROTECTION_PROFILE *cprof, *sprof;
     STACK_OF(SRTP_PROTECTION_PROFILE) *clnt = 0, *srvr;
-    int ct;
-    int mki_len;
     int i, j;
-    int id;
     int ret = 1;
+    uint16_t id;
+    CBS cbs, ciphers, mki;
 
-    /* Length value + the MKI length */
-    if (len < 3) {
-        SSLerr(SSL_F_SSL_PARSE_CLIENTHELLO_USE_SRTP_EXT,
-               SSL_R_BAD_SRTP_PROTECTION_PROFILE_LIST);
-        *al = SSL_AD_DECODE_ERROR;
-        goto done;
-    }
+    CBS_init(&cbs, d, len);
 
-    /* Pull off the length of the cipher suite list */
-    n2s(d, ct);
-    len -= 2;
-
-    /* Check that it is even */
-    if (ct % 2) {
-        SSLerr(SSL_F_SSL_PARSE_CLIENTHELLO_USE_SRTP_EXT,
-               SSL_R_BAD_SRTP_PROTECTION_PROFILE_LIST);
-        *al = SSL_AD_DECODE_ERROR;
-        goto done;
-    }
-
-    /* Check that lengths are consistent */
-    if (len < (ct + 1)) {
+    /* Pull off the cipher suite list */
+    if (len < 0 ||
+        !CBS_get_u16_length_prefixed(&cbs, &ciphers) ||
+        CBS_len(&ciphers) % 2 ||
+        CBS_len(&cbs) != 0) {
         SSLerr(SSL_F_SSL_PARSE_CLIENTHELLO_USE_SRTP_EXT,
                SSL_R_BAD_SRTP_PROTECTION_PROFILE_LIST);
         *al = SSL_AD_DECODE_ERROR;
@@ -322,24 +309,23 @@ int ssl_parse_clienthello_use_srtp_ext(SSL *s, uint8_t *d, int len,
 
     clnt = sk_SRTP_PROTECTION_PROFILE_new_null();
 
-    while (ct) {
-        n2s(d, id);
-        ct -= 2;
-        len -= 2;
-
-        if (!find_profile_by_num(id, &cprof)) {
-            sk_SRTP_PROTECTION_PROFILE_push(clnt, cprof);
-        } else {
-            ; /* Ignore */
+    while (CBS_len(&ciphers) > 0) {
+        if (!CBS_get_u16(&ciphers, &id)) {
+            SSLerr(SSL_F_SSL_PARSE_CLIENTHELLO_USE_SRTP_EXT,
+                   SSL_R_BAD_SRTP_PROTECTION_PROFILE_LIST);
+            *al = SSL_AD_DECODE_ERROR;
+            goto done;
         }
+
+        if (!find_profile_by_num(id, &cprof))
+            sk_SRTP_PROTECTION_PROFILE_push(clnt, cprof);
+        else
+            ; /* Ignore */
     }
 
     /* Extract the MKI value as a sanity check, but discard it for now. */
-    mki_len = *d;
-    d++;
-    len--;
-
-    if (mki_len != len) {
+    if (!CBS_get_u8_length_prefixed(&cbs, &mki) ||
+        CBS_len(&cbs) != 0) {
         SSLerr(SSL_F_SSL_PARSE_CLIENTHELLO_USE_SRTP_EXT, SSL_R_BAD_SRTP_MKI_VALUE);
         *al = SSL_AD_DECODE_ERROR;
         sk_SRTP_PROTECTION_PROFILE_free(clnt);
