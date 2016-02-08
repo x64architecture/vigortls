@@ -113,7 +113,7 @@
  */
 
 #include <stdio.h>
-#include "ssl_locl.h"
+
 #include <openssl/buffer.h>
 #include <openssl/rand.h>
 #include <openssl/objects.h>
@@ -121,6 +121,9 @@
 #include <openssl/md5.h>
 #include <openssl/bn.h>
 #include <openssl/dh.h>
+
+#include "bytestring.h"
+#include "ssl_locl.h"
 
 static const SSL_METHOD *dtls1_get_client_method(int ver);
 static int dtls1_get_hello_verify(SSL *s);
@@ -597,9 +600,11 @@ end:
 
 static int dtls1_get_hello_verify(SSL *s)
 {
-    int n, al, ok = 0;
-    uint8_t *data;
-    unsigned int cookie_len;
+    long n;
+    int al, ok = 0;
+    size_t cookie_len;
+    uint16_t ssl_version;
+    CBS hello_verify_request, cookie;
 
     n = s->method->ssl_get_message(s, DTLS1_ST_CR_HELLO_VERIFY_REQUEST_A,
                                    DTLS1_ST_CR_HELLO_VERIFY_REQUEST_B, -1,
@@ -614,32 +619,34 @@ static int dtls1_get_hello_verify(SSL *s)
         return (1);
     }
 
-    if (2 > n)
+    if (n < 0)
         goto truncated;
-    data = (uint8_t *)s->init_msg;
 
-    if ((data[0] != (s->version >> 8)) || (data[1] != (s->version & 0xff))) {
+    CBS_init(&hello_verify_request, s->init_msg, n);
+
+    if (!CBS_get_u16(&hello_verify_request, &ssl_version))
+        goto truncated;
+
+    if (ssl_version != s->version) {
         SSLerr(SSL_F_DTLS1_GET_HELLO_VERIFY, SSL_R_WRONG_SSL_VERSION);
-        s->version = (s->version & 0xff00) | data[1];
+        s->version = (s->version & 0xff00) | (ssl_version & 0xff);
         al = SSL_AD_PROTOCOL_VERSION;
         goto f_err;
     }
-    data += 2;
 
-    if (2 + 1 > n)
+    if (!CBS_get_u8_length_prefixed(&hello_verify_request, &cookie))
         goto truncated;
-    cookie_len = *(data++);
-    if (2 + 1 + cookie_len > n)
-        goto truncated;
-    if (cookie_len > sizeof(s->d1->cookie)) {
+
+    if (!CBS_write_bytes(&cookie, s->d1->cookie,
+        sizeof(s->d1->cookie), &cookie_len)) {
+        s->d1->cookie_len = 0;
         al = SSL_AD_ILLEGAL_PARAMETER;
         goto f_err;
     }
 
-    memcpy(s->d1->cookie, data, cookie_len);
     s->d1->cookie_len = cookie_len;
-
     s->d1->send_cookie = 1;
+
     return 1;
 
 truncated:
