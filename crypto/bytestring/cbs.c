@@ -89,6 +89,20 @@ int CBS_strdup(const CBS *cbs, char **out_ptr)
     return (*out_ptr != NULL);
 }
 
+int CBS_write_bytes(const CBS *cbs, uint8_t *dest, size_t dest_len,
+                    size_t *copied)
+{
+    if (dest_len < cbs->len)
+        return 0;
+
+    memmove(dest, cbs->data, cbs->len);
+
+    if (copied != NULL)
+        *copied = cbs->len;
+
+    return 1;
+}
+
 int CBS_contains_zero_byte(const CBS *cbs)
 {
     return memchr(cbs->data, 0, cbs->len) != NULL;

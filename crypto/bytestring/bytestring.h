@@ -90,6 +90,14 @@ int CBS_stow(const CBS *cbs, uint8_t **out_ptr, size_t *out_len);
 int CBS_strdup(const CBS *cbs, char **out_ptr);
 
 /*
+ * CBS_write_bytes writes all of the remaining data from |cbs| into |dest|
+ * if it is at most |dest_len| bytes.  If |copied| is not NULL, it will be set
+ * to the amount copied. It returns one on success and zero otherwise.
+ */
+int CBS_write_bytes(const CBS *cbs, uint8_t *dest, size_t dest_len,
+                    size_t *copied);
+
+/*
  * CBS_contains_zero_byte returns one if the current contents of |cbs| contains
  * a NUL byte and zero otherwise.
  */
