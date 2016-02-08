@@ -78,7 +78,7 @@ typedef struct bio_ssl_st {
     unsigned long renegotiate_count;
     unsigned long byte_count;
     unsigned long renegotiate_timeout;
-    unsigned long last_time;
+    time_t last_time;
 } BIO_SSL;
 
 static BIO_METHOD methods_sslp = {
@@ -164,9 +164,9 @@ static int ssl_read(BIO *b, char *out, int outl)
                 }
             }
             if ((sb->renegotiate_timeout > 0) && (!r)) {
-                unsigned long tm;
+                time_t tm;
 
-                tm = (unsigned long)time(NULL);
+                tm = time(NULL);
                 if (tm > sb->last_time + sb->renegotiate_timeout) {
                     sb->last_time = tm;
                     sb->num_renegotiates++;
@@ -312,7 +312,7 @@ static long ssl_ctrl(BIO *b, int cmd, long num, void *ptr)
             if (num < 60)
                 num = 5;
             bs->renegotiate_timeout = (unsigned long)num;
-            bs->last_time = (unsigned long)time(NULL);
+            bs->last_time = time(NULL);
             break;
         case BIO_C_SET_SSL_RENEGOTIATE_BYTES:
             ret = bs->renegotiate_count;
