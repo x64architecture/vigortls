@@ -118,6 +118,7 @@
 #include <openssl/rand.h>
 
 #include "ssl_locl.h"
+#include "bytestring.h"
 
 static int tls_decrypt_ticket(SSL *s, const uint8_t *tick, int ticklen,
                               const uint8_t *sess_id, int sesslen,
@@ -390,15 +391,19 @@ static void tls1_get_curvelist(SSL *s, int client_curves, const uint16_t **pcurv
 /* Check that a curve is one of our preferences. */
 int tls1_check_curve(SSL *s, const uint8_t *p, size_t len)
 {
+    CBS cbs;
+    uint8_t type;
     const uint16_t *curves;
     uint16_t curve_id;
     size_t curves_len, i;
 
-    /* Only named curves are supported. */
-    if (len != 3 || p[0] != NAMED_CURVE_TYPE)
-        return 0;
+    CBS_init(&cbs, p, len);
 
-    curve_id = (p[1] << 8) | p[2];
+    /* Only named curves are supported. */
+    if (CBS_len(&cbs) != 3 || !CBS_get_u8(&cbs, &type) ||
+        type != NAMED_CURVE_TYPE ||
+        !CBS_get_u16(&cbs, &curve_id))
+        return 0;
 
     tls1_get_curvelist(s, 0, &curves, &curves_len);
 
