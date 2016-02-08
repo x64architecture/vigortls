@@ -141,20 +141,6 @@
 
 #include "buildinf.h"
 
-#ifndef HAVE_FORK
-#if (_WIN32)
-#define HAVE_FORK 0
-#else
-#define HAVE_FORK 1
-#endif
-#endif
-
-#if HAVE_FORK
-#undef NO_FORK
-#else
-#define NO_FORK
-#endif
-
 #undef BUFSIZE
 #define BUFSIZE (1024 * 8 + 64)
 #define MAX_MISALIGNMENT 63
@@ -169,7 +155,7 @@ static void print_message(const char *s, long num, int length);
 static void pkey_print_message(const char *str, const char *str2, long num, int bits,
                                int sec);
 static void print_result(int alg, int run_no, int count, double time_used);
-#ifndef NO_FORK
+#if defined(HAVE_FORK)
 static int do_multi(int multi);
 #endif
 
@@ -267,7 +253,7 @@ OPTIONS speed_options[] = {
 #endif
     { "evp", OPT_EVP, 's', "Use specified EVP cipher" },
     { "decrypt", OPT_DECRYPT, '-', "Time decryption instead of encryption (only EVP)" },
-#ifndef NO_FORK
+#if defined(HAVE_FORK)
     { "multi", OPT_MULTI, 'p', "Run benchmarks in parallel" },
 #endif
     { "mr", OPT_MR, '-', "Produce machine readable output" },
@@ -454,7 +440,7 @@ int speed_main(int argc, char **argv)
     uint8_t *buf = NULL, *buf2 = NULL;
     uint8_t md[EVP_MAX_MD_SIZE];
     const char *stnerr = NULL;
-#ifndef NO_FORK
+#if defined(HAVE_FORK)
     int multi = 0;
 #endif
 /* What follows are the buffers and key material. */
@@ -655,7 +641,7 @@ int speed_main(int argc, char **argv)
                 setup_engine(opt_arg(), 0);
                 break;
 #endif
-#ifndef NO_FORK
+#if defined(HAVE_FORK)
             case OPT_MULTI:
                 multi = strtonum(opt_arg(), 1, INT_MAX, &stnerr);
                 if (stnerr) {
@@ -757,7 +743,7 @@ int speed_main(int argc, char **argv)
         goto end;
     }
 
-#ifndef NO_FORK
+#if defined(HAVE_FORK)
     if (multi && do_multi(multi))
         goto show_res;
 #endif
@@ -1715,7 +1701,7 @@ int speed_main(int argc, char **argv)
                 ecdh_doit[j] = 0;
         }
     }
-#ifndef NO_FORK
+#if defined(HAVE_FORK)
 show_res:
 #endif
     if (!mr) {
@@ -1890,7 +1876,7 @@ static void print_result(int alg, int run_no, int count, double time_used)
     results[alg][run_no] = ((double)count) / time_used * lengths[run_no];
 }
 
-#ifndef NO_FORK
+#if defined(HAVE_FORK)
 static char *sstrsep(char **string, const char *delim)
 {
     char isdelim[256];

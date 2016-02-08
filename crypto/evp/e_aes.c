@@ -144,7 +144,7 @@ void AES_xts_decrypt(const char *inp, char *out, size_t len,
 #endif
 
 #if defined(AES_ASM) && !defined(I386_ONLY) && \
-    ((defined(VIGORTLS_x86) && defined(OPENSSL_IA32_SSE2)) || VIGORTLS_x86_64)
+    ((defined(VIGORTLS_x86) && defined(OPENSSL_IA32_SSE2)) || defined(VIGORTLS_X86_64))
 
 extern unsigned int OPENSSL_ia32cap_P[2];
 
@@ -198,14 +198,16 @@ void aesni_ccm64_decrypt_blocks(const uint8_t *in, uint8_t *out,
 size_t aesni_gcm_encrypt(const unsigned char *in,
                          unsigned char *out,
                          size_t len,
-                         const void *key, unsigned char ivec[16], u64 *Xi);
+                         const void *key, unsigned char ivec[16],
+                         uint64_t *Xi);
 #define AES_gcm_encrypt aesni_gcm_encrypt
 size_t aesni_gcm_decrypt(const unsigned char *in,
                          unsigned char *out,
                          size_t len,
-                         const void *key, unsigned char ivec[16], u64 *Xi);
+                         const void *key, unsigned char ivec[16],
+                         uint64_t *Xi);
 #define AES_gcm_decrypt aesni_gcm_decrypt
-void gcm_ghash_avx(u64 Xi[2], const u128 Htable[16], const u8 *in,
+void gcm_ghash_avx(uint64_t Xi[2], const u128 Htable[16], const uint8_t *in,
                    size_t len);
 #define AES_GCM_ASM(gctx)       (gctx->ctr == aesni_ctr32_encrypt_blocks && \
                                  gctx->gcm.ghash == gcm_ghash_avx)
@@ -433,14 +435,14 @@ static int aesni_ccm_cipher(EVP_CIPHER_CTX *ctx, uint8_t *out,
         .nid = n##_##keylen##_##mode,                                        \
         .block_size = blocksize,                                             \
         .key_len = (EVP_CIPH_##MODE##_MODE == EVP_CIPH_XTS_MODE ? 2 : 1) *   \
-            keylen / 8,                                                      \
+            (keylen / 8),                                                    \
         .iv_len = ivlen,                                                     \
         .flags = fl | EVP_CIPH_##MODE##_MODE,                                \
         .init = aesni_##mode##_init_key,                                     \
         .do_cipher = aesni_##mode##_cipher,                                  \
         .cleanup = aes_##mode##_cleanup,                                     \
         .ctx_size = sizeof(EVP_AES_##MODE##_CTX),                            \
-        .ctrl = aes_##mode##_ctrl }; \                                       \
+        .ctrl = aes_##mode##_ctrl };                                         \
     static const EVP_CIPHER aes_##keylen##_##mode = {                        \
         .nid = n##_##keylen##_##mode,                                        \
         .block_size = blocksize,                                             \
@@ -474,14 +476,14 @@ static int aesni_ccm_cipher(EVP_CIPHER_CTX *ctx, uint8_t *out,
     const EVP_CIPHER *EVP_aes_##keylen##_##mode(void)                        \
     {                                                                        \
         return &aes_##keylen##_##mode;                                       \
-    }                                                                        \
+    }
 
 #define BLOCK_CIPHER_custom(n, keylen, blocksize, ivlen, mode, MODE, fl)     \
     static const EVP_CIPHER aes_##keylen##_##mode = {                        \
         .nid = n##_##keylen##_##mode,                                        \
         .block_size = blocksize,                                             \
         .key_len = (EVP_CIPH_##MODE##_MODE == EVP_CIPH_XTS_MODE ? 2 : 1)     \
-            * keylen / 8,                                                    \
+            * (keylen / 8),                                                  \
         .iv_len = ivlen,                                                     \
         .flags = fl | EVP_CIPH_##MODE##_MODE,                                \
         .init = aes_##mode##_init_key,                                       \
@@ -497,7 +499,7 @@ static int aesni_ccm_cipher(EVP_CIPHER_CTX *ctx, uint8_t *out,
 
 #endif
 
-#define BLOCK_CIPHER_generic_pack(nid, keylen, flags)                                              \
+#define BLOCK_CIPHER_generic_pack(nid, keylen, flags)                   \
     BLOCK_CIPHER_generic(nid, keylen, 16, 16, cbc, cbc, CBC, flags |    \
                          EVP_CIPH_FLAG_DEFAULT_ASN1)                    \
     BLOCK_CIPHER_generic(nid, keylen, 16, 0, ecb, ecb, ECB, flags |     \
