@@ -198,15 +198,18 @@ int main(int argc, char *argv[])
     BIO_set_fp(out, stdout, BIO_NOCLOSE);
 
     for (i = 0; i < 200; i++) {
-        RAND_bytes(&c, 1);
+        if (RAND_bytes(&c, 1) <= 0)
+            exit(1);
         c = (c % BN_BITS) - BN_BITS2;
         BN_rand(a, NUM_BITS + c, 0, 0);
 
-        RAND_bytes(&c, 1);
+        if (RAND_bytes(&c, 1) <= 0)
+            exit(1);
         c = (c % BN_BITS) - BN_BITS2;
         BN_rand(b, NUM_BITS + c, 0, 0);
 
-        RAND_bytes(&c, 1);
+        if (RAND_bytes(&c, 1) <= 0)
+            exit(1);
         c = (c % BN_BITS) - BN_BITS2;
         BN_rand(m, NUM_BITS + c, 0, 1);
 
