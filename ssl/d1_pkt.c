@@ -469,19 +469,24 @@ int dtls1_get_record(SSL *s)
         return 1;
 
 /* get something from the wire */
+    if (0) {
 again:
+        /* dump this record on all retries */
+        rr->length = 0;
+        s->packet_length = 0;
+    }
+
     /* check if we have the header */
-    if ((s->rstate != SSL_ST_READ_BODY) || (s->packet_length < DTLS1_RT_HEADER_LENGTH)) {
+    if ((s->rstate != SSL_ST_READ_BODY) ||
+        (s->packet_length < DTLS1_RT_HEADER_LENGTH)) {
         n = ssl3_read_n(s, DTLS1_RT_HEADER_LENGTH, s->s3->rbuf.len, 0);
         /* read timeout is handled by dtls1_read_bytes */
         if (n <= 0)
             return (n); /* error or non-blocking io */
 
         /* this packet contained a partial record, dump it */
-        if (s->packet_length != DTLS1_RT_HEADER_LENGTH) {
-            s->packet_length = 0;
+        if (s->packet_length != DTLS1_RT_HEADER_LENGTH)
             goto again;
-        }
 
         s->rstate = SSL_ST_READ_BODY;
 
@@ -503,27 +508,18 @@ again:
 
         /* Lets check version */
         if (!s->first_packet) {
-            if (version != s->version) {
+            if (version != s->version)
                 /* unexpected version, silently discard */
-                rr->length = 0;
-                s->packet_length = 0;
                 goto again;
-            }
         }
 
-        if ((version & 0xff00) != (s->version & 0xff00)) {
+        if ((version & 0xff00) != (s->version & 0xff00))
             /* wrong version, silently discard record */
-            rr->length = 0;
-            s->packet_length = 0;
             goto again;
-        }
 
-        if (rr->length > SSL3_RT_MAX_ENCRYPTED_LENGTH) {
+        if (rr->length > SSL3_RT_MAX_ENCRYPTED_LENGTH)
             /* record too long, silently discard it */
-            rr->length = 0;
-            s->packet_length = 0;
             goto again;
-        }
 
         /* now s->rstate == SSL_ST_READ_BODY */
     }
@@ -536,11 +532,8 @@ again:
         n = ssl3_read_n(s, i, i, 1);
 
         /* this packet contained a partial record, dump it */
-        if (n != i) {
-            rr->length = 0;
-            s->packet_length = 0;
+        if (n != i)
             goto again;
-        }
 
         /* now n == rr->length,
      * and s->packet_length == DTLS1_RT_HEADER_LENGTH + rr->length */
@@ -549,13 +542,8 @@ again:
 
     /* match epochs.  NULL means the packet is dropped on the floor */
     bitmap = dtls1_get_bitmap(s, rr, &is_next_epoch);
-    if (bitmap == NULL) {
-        rr->length = 0;
-        s->packet_length = 0;
-        /* dump this record */
+    if (bitmap == NULL)
         goto again;
-        /* get another record */
-    }
 
         /* Check whether this is a repeat, or aged record.
          * Don't check if we're listening and this message is
@@ -566,12 +554,10 @@ again:
         if (!(s->d1->listen && rr->type == SSL3_RT_HANDSHAKE &&
             p != NULL && *p == SSL3_MT_CLIENT_HELLO) &&
             !dtls1_record_replay_check(s, bitmap))
-        {
-            rr->length = 0;
-            s->packet_length = 0; /* dump this record */
-            goto again; /* get another record */
-        }
-        dtls1_record_bitmap_update(s, bitmap); /* Mark receipt of record. */
+            goto again;
+
+        /* Mark receipt of record. */
+        dtls1_record_bitmap_update(s, bitmap);
 
     /* just read a 0 length packet */
     if (rr->length == 0)
@@ -586,20 +572,14 @@ again:
         if ((SSL_in_init(s) || s->in_handshake) && !s->d1->listen) {
             if (dtls1_buffer_record(s, &(s->d1->unprocessed_rcds), rr->seq_num) < 0)
                 return -1;
-            dtls1_record_bitmap_update(s, bitmap); /* Mark receipt of record. */
+            /* Mark receipt of record. */
+            dtls1_record_bitmap_update(s, bitmap);
         }
-        rr->length = 0;
-        s->packet_length = 0;
         goto again;
     }
 
-    if (!dtls1_process_record(s)) {
-        rr->length = 0;
-        s->packet_length = 0;
-        /* dump this record */
+    if (!dtls1_process_record(s))
         goto again;
-        /* get another record */
-    }
 
     return (1);
 }
