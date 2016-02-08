@@ -112,15 +112,17 @@
  * [including the GNU Public Licence.]
  */
 
-#include <stdio.h>
 #include <errno.h>
+#include <stdio.h>
 #include <machine/endian.h>
-#include "ssl_locl.h"
+
 #include <openssl/evp.h>
 #include <openssl/buffer.h>
 #include <openssl/rand.h>
 
+#include "bytestring.h"
 #include "pqueue.h"
+#include "ssl_locl.h"
 
 /* mod 128 saturating subtract of two 64-bit values in big-endian order */
 static int satsub64be(const uint8_t *v1, const uint8_t *v2)
@@ -449,11 +451,9 @@ err:
 /* used only by dtls1_read_bytes */
 int dtls1_get_record(SSL *s)
 {
-    int ssl_major, ssl_minor;
     int i, n;
     SSL3_RECORD *rr;
     uint8_t *p = NULL;
-    unsigned short version;
     DTLS1_BITMAP *bitmap;
     unsigned int is_next_epoch;
 
@@ -479,6 +479,11 @@ again:
     /* check if we have the header */
     if ((s->rstate != SSL_ST_READ_BODY) ||
         (s->packet_length < DTLS1_RT_HEADER_LENGTH)) {
+        CBS header, seq_no;
+        uint16_t epoch, len, ssl_version;
+        uint8_t type;
+
+        
         n = ssl3_read_n(s, DTLS1_RT_HEADER_LENGTH, s->s3->rbuf.len, 0);
         /* read timeout is handled by dtls1_read_bytes */
         if (n <= 0)
@@ -490,38 +495,44 @@ again:
 
         s->rstate = SSL_ST_READ_BODY;
 
-        p = s->packet;
+        CBS_init(&header, s->packet, s->packet_length);
 
         /* Pull apart the header into the DTLS1_RECORD */
-        rr->type = *(p++);
-        ssl_major = *(p++);
-        ssl_minor = *(p++);
-        version = (ssl_major << 8) | ssl_minor;
-
-        /* sequence number is 64 bits, with top 2 bytes = epoch */
-        n2s(p, rr->epoch);
-
-        memcpy(&(s->s3->read_sequence[2]), p, 6);
-        p += 6;
-
-        n2s(p, rr->length);
-
-        /* Lets check version */
-        if (!s->first_packet) {
-            if (version != s->version)
-                /* unexpected version, silently discard */
-                goto again;
-        }
-
-        if ((version & 0xff00) != (s->version & 0xff00))
-            /* wrong version, silently discard record */
+        if (!CBS_get_u8(&header, &type))
+            goto again;
+        if (!CBS_get_u16(&header, &ssl_version))
             goto again;
 
+        /* sequence number is 64 bits, with top 2 bytes = epoch */
+        if (!CBS_get_u16(&header, &epoch) ||
+            !CBS_get_bytes(&header, &seq_no, 6))
+            goto again;
+
+        if (!CBS_write_bytes(&seq_no, &(s->s3->read_sequence[2]),
+            sizeof(s->s3->read_sequence) - 2, NULL))
+            goto again;
+
+        if (!CBS_get_u16(&header, &len))
+            goto again;
+
+        rr->type = type;
+        rr->epoch = epoch;
+        rr->length = len;
+
+        /* unexpected version, silently discard */
+        if (!s->first_packet && ssl_version != s->version)
+            goto again;
+
+        /* wrong version, silently discard record */
+        if ((ssl_version & 0xff00) != (s->version & 0xff00))
+            goto again;
+
+        /* record too long, silently discard it */
         if (rr->length > SSL3_RT_MAX_ENCRYPTED_LENGTH)
-            /* record too long, silently discard it */
             goto again;
 
         /* now s->rstate == SSL_ST_READ_BODY */
+        p = (uint8_t *)CBS_data(&header);
     }
 
     /* s->rstate == SSL_ST_READ_BODY, get and decode the data */
