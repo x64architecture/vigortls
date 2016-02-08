@@ -844,7 +844,7 @@ int ssl_check_clienthello_tlsext_early(SSL *s);
 int ssl_check_clienthello_tlsext_late(SSL *s);
 int ssl_check_serverhello_tlsext(SSL *s);
 
-int tls1_process_ticket(SSL *s, uint8_t *session_id, int len,
+int tls1_process_ticket(SSL *s, const uint8_t *session, int session_len,
                         const uint8_t *limit, SSL_SESSION **ret);
 
 int tls12_get_sigandhash(uint8_t *p, const EVP_PKEY *pk,

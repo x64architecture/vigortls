@@ -1923,12 +1923,11 @@ int ssl_check_serverhello_tlsext(SSL *s)
  *   s->ctx->tlsext_ticket_key_cb asked to renew the client's ticket.
  *   Otherwise, s->tlsext_ticket_expected is set to 0.
  */
-int tls1_process_ticket(SSL *s, uint8_t *session_id, int len,
+int tls1_process_ticket(SSL *s, const uint8_t *session, int session_len,
                         const uint8_t *limit, SSL_SESSION **ret)
 {
     /* Point after session ID in client hello */
-    const uint8_t *p = session_id + len;
-    unsigned short i;
+    CBS session_id, cookie, cipher_list, compression_alg, extensions;
 
     *ret = NULL;
     s->tlsext_ticket_expected = 0;
@@ -1940,38 +1939,41 @@ int tls1_process_ticket(SSL *s, uint8_t *session_id, int len,
         return 0;
     if (!limit)
         return 0;
-    if (p >= limit)
+    if (limit < session)
         return -1;
+
+    CBS_init(&session_id, session, limit - session);
+
+    /* Skip past the session id */
+    if (!CBS_skip(&session_id, session_len))
+        return -1;
+
     /* Skip past DTLS cookie */
     if (SSL_IS_DTLS(s)) {
-        i = *(p++);
-        p += i;
-        if (p >= limit)
+        if (!CBS_get_u8_length_prefixed(&session_id, &cookie))
             return -1;
     }
     /* Skip past cipher list */
-    n2s(p, i);
-    p += i;
-    if (p >= limit)
+    if (!CBS_get_u16_length_prefixed(&session_id, &cipher_list))
         return -1;
     /* Skip past compression algorithm list */
-    i = *(p++);
-    p += i;
-    if (p > limit)
+    if (!CBS_get_u8_length_prefixed(&session_id, &compression_alg))
         return -1;
     /* Now at start of extensions */
-    if ((p + 2) >= limit)
-        return 0;
-    n2s(p, i);
-    while ((p + 4) <= limit) {
-        unsigned short type, size;
-        n2s(p, type);
-        n2s(p, size);
-        if (p + size > limit)
-            return 0;
-        if (type == TLSEXT_TYPE_session_ticket) {
+    if (!CBS_get_u16_length_prefixed(&session_id, &extensions))
+        return -1;
+
+    while (CBS_len(&extensions) > 0) {
+        CBS ext_data;
+        uint16_t ext_type;
+
+        if (!CBS_get_u16(&extensions, &ext_type) ||
+            !CBS_get_u16_length_prefixed(&extensions, &ext_data))
+            return -1;
+
+        if (ext_type == TLSEXT_TYPE_session_ticket) {
             int r;
-            if (size == 0) {
+            if (CBS_len(&ext_data) == 0) {
                 /* The client will accept a ticket but doesn't
                  * currently have one. */
                 s->tlsext_ticket_expected = 1;
@@ -1985,7 +1987,8 @@ int tls1_process_ticket(SSL *s, uint8_t *session_id, int len,
                  * calculate the master secret later. */
                 return 2;
             }
-            r = tls_decrypt_ticket(s, p, size, session_id, len, ret);
+            r = tls_decrypt_ticket(s, CBS_data(&ext_data), CBS_len(&ext_data),
+                                   session, session_len, ret);
             switch (r) {
                 case 2: /* ticket couldn't be decrypted */
                     s->tlsext_ticket_expected = 1;
@@ -1999,7 +2002,6 @@ int tls1_process_ticket(SSL *s, uint8_t *session_id, int len,
                     return -1;
             }
         }
-        p += size;
     }
     return 0;
 }
