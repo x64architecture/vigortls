@@ -113,16 +113,18 @@
  */
 
 #include <limits.h>
-#include <string.h>
 #include <stdio.h>
-#include "ssl_locl.h"
+#include <string.h>
+
 #include <openssl/buffer.h>
 #include <openssl/rand.h>
 #include <openssl/objects.h>
 #include <openssl/evp.h>
 #include <openssl/x509.h>
 
+#include "bytestring.h"
 #include "pqueue.h"
+#include "ssl_locl.h"
 
 #define RSMBLY_BITMASK_SIZE(msg_len) (((msg_len)+7) / 8)
 
@@ -837,14 +839,13 @@ again:
         return i;
     }
     /* Handshake fails if message header is incomplete */
-    if (i != DTLS1_HM_HEADER_LENGTH) {
+    if (i != DTLS1_HM_HEADER_LENGTH ||
+        /* parse the message fragment header */        
+        dtls1_get_message_header(wire, &msg_hdr) == 0) {
         al = SSL_AD_UNEXPECTED_MESSAGE;
         SSLerr(SSL_F_DTLS1_GET_MESSAGE_FRAGMENT, SSL_R_UNEXPECTED_MESSAGE);
         goto f_err;
     }
-
-    /* parse the message fragment header */
-    dtls1_get_message_header(wire, &msg_hdr);
 
     len = msg_hdr.msg_len;
     frag_off = msg_hdr.frag_off;
@@ -1267,16 +1268,36 @@ static unsigned int dtls1_guess_mtu(unsigned int curr_mtu)
     return curr_mtu;
 }
 
-void dtls1_get_message_header(uint8_t *data,
-                              struct hm_header_st *msg_hdr)
+int dtls1_get_message_header(const uint8_t *data,
+                             struct hm_header_st *msg_hdr)
 {
-    memset(msg_hdr, 0x00, sizeof(struct hm_header_st));
-    msg_hdr->type = *(data++);
-    n2l3(data, msg_hdr->msg_len);
+    CBS header;
+    uint32_t msg_len, frag_off, frag_len;
+    uint16_t seq;
+    uint8_t type;
 
-    n2s(data, msg_hdr->seq);
-    n2l3(data, msg_hdr->frag_off);
-    n2l3(data, msg_hdr->frag_len);
+    CBS_init(&header, data, sizeof(*msg_hdr));
+
+    memset(msg_hdr, 0, sizeof(*msg_hdr));
+
+    if (!CBS_get_u8(&header, &type))
+        return 0;
+    if (!CBS_get_u24(&header, &msg_len))
+        return 0;
+    if (!CBS_get_u16(&header, &seq))
+        return 0;
+    if (!CBS_get_u24(&header, &frag_off))
+        return 0;
+    if (!CBS_get_u24(&header, &frag_len))
+        return 0;
+
+    msg_hdr->type = type;
+    msg_hdr->msg_len = msg_len;
+    msg_hdr->seq = seq;
+    msg_hdr->frag_off = frag_off;
+    msg_hdr->frag_len = frag_len;
+
+    return 1;
 }
 
 void dtls1_get_ccs_header(uint8_t *data, struct ccs_header_st *ccs_hdr)

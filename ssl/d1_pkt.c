@@ -992,7 +992,8 @@ start:
         struct hm_header_st msg_hdr;
 
         /* this may just be a stale retransmit */
-        dtls1_get_message_header(rr->data, &msg_hdr);
+        if (!dtls1_get_message_header(rr->data, &msg_hdr))
+            return -1;
         if (rr->epoch != s->d1->r_epoch) {
             rr->length = 0;
             goto start;
