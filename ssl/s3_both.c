@@ -314,9 +314,11 @@ unsigned long ssl3_output_cert_chain(SSL *s, X509 *x)
 long ssl3_get_message(SSL *s, int st1, int stn, int mt, long max, int *ok)
 {
     uint8_t *p;
-    unsigned long l;
+    uint32_t l;
     long n;
     int i, al;
+    CBS cbs;
+    uint8_t message_type;
 
     if (s->s3->tmp.reuse_message) {
         s->s3->tmp.reuse_message = 0;
@@ -377,9 +379,15 @@ long ssl3_get_message(SSL *s, int st1, int stn, int mt, long max, int *ok)
             goto f_err;
         }
 
-        s->s3->tmp.message_type = *(p++);
+        /* XXX remove call to n2l3 */
+        CBS_init(&cbs, p, 4);
+        if (!CBS_get_u8(&cbs, &message_type) ||
+            !CBS_get_u24(&cbs, &l)) {
+            SSLerr(SSL_F_SSL3_GET_MESSAGE, ERR_R_BUF_LIB);
+            goto err;
+        }
+        s->s3->tmp.message_type = message_type;
 
-        n2l3(p, l);
         if (l > (unsigned long)max) {
             al = SSL_AD_ILLEGAL_PARAMETER;
             SSLerr(SSL_F_SSL3_GET_MESSAGE, SSL_R_EXCESSIVE_MESSAGE_SIZE);
