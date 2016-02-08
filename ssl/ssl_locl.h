@@ -855,7 +855,7 @@ const EVP_MD *tls12_get_hash(uint8_t hash_alg);
 void ssl_clear_hash_ctx(EVP_MD_CTX **hash);
 int ssl_add_serverhello_renegotiate_ext(SSL *s, uint8_t *p, int *len,
                                         int maxlen);
-int ssl_parse_serverhello_renegotiate_ext(SSL *s, uint8_t *d, int len,
+int ssl_parse_serverhello_renegotiate_ext(SSL *s, const uint8_t *d, int len,
                                           int *al);
 int ssl_add_clienthello_renegotiate_ext(SSL *s, uint8_t *p, int *len,
                                         int maxlen);
