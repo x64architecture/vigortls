@@ -1476,21 +1476,23 @@ err:
     return 0;
 }
 
-/* ssl_next_proto_validate validates a Next Protocol Negotiation block. No
+/*
+ * ssl_next_proto_validate validates a Next Protocol Negotiation block. No
  * elements of zero length are allowed and the set of elements must exactly fill
- * the length of the block. */
-static char ssl_next_proto_validate(uint8_t *d, unsigned len)
+ * the length of the block.
+ */
+static char ssl_next_proto_validate(const uint8_t *d, unsigned int len)
 {
-    unsigned int off = 0;
+    CBS npn, value;
 
-    while (off < len) {
-        if (d[off] == 0)
+    CBS_init(&npn, d, len);
+    while (CBS_len(&npn) > 0) {
+        if (!CBS_get_u8_length_prefixed(&npn, &value) ||
+            CBS_len(&value) == 0)
             return 0;
-        off += d[off];
-        off++;
     }
 
-    return off == len;
+    return 1;
 }
 
 int ssl_parse_serverhello_tlsext(SSL *s, uint8_t **p, uint8_t *d,
