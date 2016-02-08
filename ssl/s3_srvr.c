@@ -158,6 +158,7 @@
 #include <openssl/bn.h>
 #include <openssl/md5.h>
 
+#include "bytestring.h"
 #include "ssl_locl.h"
 #include "../crypto/constant_time_locl.h"
 
@@ -2477,10 +2478,10 @@ int ssl3_send_cert_status(SSL *s)
  */
 int ssl3_get_next_proto(SSL *s)
 {
+    CBS cbs, proto, padding;
     int ok;
-    int proto_len, padding_len;
     long n;
-    const uint8_t *p;
+    size_t len;
 
     /*
      * Clients cannot send a NextProtocol message if we didn't see the
@@ -2512,7 +2513,7 @@ int ssl3_get_next_proto(SSL *s)
         return (0);
     /* The body must be > 1 bytes long */
 
-    p = (uint8_t *)s->init_msg;
+    CBS_init(&cbs, s->init_msg, s->init_num);
 
     /*
      * The payload looks like:
@@ -2521,20 +2522,23 @@ int ssl3_get_next_proto(SSL *s)
      *   uint8 padding_len;
      *   uint8 padding[padding_len];
      */
-    proto_len = p[0];
-    if (proto_len + 2 > s->init_num)
-        return (0);
-    padding_len = p[proto_len + 1];
-    if (proto_len + padding_len + 2 != s->init_num)
+    if (!CBS_get_u8_length_prefixed(&cbs, &proto) ||
+        !CBS_get_u8_length_prefixed(&cbs, &padding) ||
+        CBS_len(&cbs) != 0)
         return (0);
 
-    s->next_proto_negotiated = malloc(proto_len);
-    if (!s->next_proto_negotiated) {
+    /*
+     * XXX: We should not NULL next_proto_negotiated[_len], but this matches
+     * the old behavior of not freeing before calling malloc.
+     */
+    s->next_proto_negotiated = NULL;
+    s->next_proto_negotiated_len = 0;
+
+    if (!CBS_stow(&proto, &s->next_proto_negotiated, &len)) {
         SSLerr(SSL_F_SSL3_GET_NEXT_PROTO, ERR_R_MALLOC_FAILURE);
         return (0);
     }
-    memcpy(s->next_proto_negotiated, p + 1, proto_len);
-    s->next_proto_negotiated_len = proto_len;
+    s->next_proto_negotiated_len = (uint8_t)len;
 
     return (1);
 }
