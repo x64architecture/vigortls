@@ -32,6 +32,11 @@ void CBS_init(CBS *cbs, const uint8_t *data, size_t len)
     cbs->len = len;
 }
 
+void CBS_dup(const CBS *cbs, CBS *out)
+{
+    CBS_init(out, CBS_data(cbs), CBS_len(cbs));
+}
+
 static int cbs_get(CBS *cbs, const uint8_t **p, size_t n)
 {
     if (cbs->len < n)

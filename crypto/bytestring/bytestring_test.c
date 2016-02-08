@@ -600,24 +600,76 @@ static int test_asn1_uint64(void)
     return 1;
 }
 
+static int test_cbs_dup(void)
+{
+    CBS data, check;
+    static const uint8_t input[] = {'f', 'o', 'o', 'b', 'a', 'r'};
+
+    CBS_init(&data, input, sizeof(input));
+    if (CBS_len(&data) != 6)
+        return 0;
+    CBS_dup(&data, &check);
+    if (CBS_len(&check) != 6)
+        return 0;
+	if (CBS_data(&data) != CBS_data(&check))
+        return 0;
+	if (CBS_skip(&data, 1) == 0)
+        return 0;
+	if (CBS_len(&data) != 5)
+        return 0;
+	if (CBS_len(&check) != 6)
+        return 0;
+	if (CBS_data(&data) != CBS_data(&check) + 1)
+        return 0;
+	if (CBS_skip(&check, 1) == 0)
+        return 0;
+	if (CBS_len(&data) != 5)
+        return 0;
+	if (CBS_len(&check) != 5)
+        return 0;
+	if (CBS_data(&data) != CBS_data(&check))
+        return 0;
+
+	CBS_init(&data, input, sizeof(input));
+	if (CBS_skip(&data, 5) == 0)
+        return 0;
+	CBS_dup(&data, &check);
+	if (CBS_len(&data) != 1)
+        return 0;
+	if (CBS_len(&check) != 1)
+        return 0;
+	if (CBS_data(&data) != input + 5)
+        return 0;
+	if (CBS_data(&data) != CBS_data(&check))
+        return 0;
+
+    return 1;
+}
+
 int main(void)
 {
-    if (!test_skip()
-        || !test_get_u()
-        || !test_get_prefixed()
-        || !test_get_prefixed_bad()
-        || !test_get_asn1()
-        || !test_cbb_basic()
-        || !test_cbb_fixed()
-        || !test_cbb_finish_child()
-        || !test_cbb_misuse()
-        || !test_cbb_prefixed()
-        || !test_cbb_asn1()
-        || !test_indefinite_convert()
-        || !test_asn1_uint64()
-        || !test_get_optional_asn1_bool())
+    unsigned failed = 0;
+
+    failed |= !test_skip();
+    failed |= !test_get_u();
+    failed |= !test_get_prefixed();
+    failed |= !test_get_prefixed_bad();
+    failed |= !test_get_asn1();
+    failed |= !test_cbb_basic();
+    failed |= !test_cbb_fixed();
+    failed |= !test_cbb_finish_child();
+    failed |= !test_cbb_misuse();
+    failed |= !test_cbb_prefixed();
+    failed |= !test_cbb_asn1();
+    failed |= !test_indefinite_convert();
+    failed |= !test_asn1_uint64();
+    failed |= !test_get_optional_asn1_bool();
+    failed |= !test_cbs_dup();
+
+    if (!failed)
+        printf("PASS\n");
+    else
         return 1;
 
-    printf("PASS\n");
     return 0;
 }

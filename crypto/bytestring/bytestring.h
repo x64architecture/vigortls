@@ -48,6 +48,12 @@ typedef struct cbs_st {
 void CBS_init(CBS *cbs, const uint8_t *data, size_t len);
 
 /*
+ * CBS_dup sets |out| to point to cbs's |data| and |len|.  It results in two
+ * CBS structs that point to the same buffer.
+ */
+void CBS_dup(const CBS *cbs, CBS *out);
+
+/*
  * CBS_skip advances |cbs| by |len| bytes. It returns one on success and zero
  * otherwise.
  */
