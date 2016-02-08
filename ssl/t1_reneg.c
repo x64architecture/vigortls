@@ -109,6 +109,8 @@
  */
 #include <stdio.h>
 #include <openssl/objects.h>
+
+#include "bytestring.h"
 #include "ssl_locl.h"
 
 /* Add the client's renegotiation binding */
@@ -137,23 +139,23 @@ int ssl_add_clienthello_renegotiate_ext(SSL *s, uint8_t *p, int *len,
 
 /* Parse the client's renegotiation binding and abort if it's not
    right */
-int ssl_parse_clienthello_renegotiate_ext(SSL *s, uint8_t *d, int len,
+int ssl_parse_clienthello_renegotiate_ext(SSL *s, const uint8_t *d, int len,
                                           int *al)
 {
-    int ilen;
+    CBS cbs, reneg;
 
     /* Parse the length byte */
-    if (len < 1) {
+    if (len < 0) {
         SSLerr(SSL_F_SSL_PARSE_CLIENTHELLO_RENEGOTIATE_EXT,
                SSL_R_RENEGOTIATION_ENCODING_ERR);
         *al = SSL_AD_ILLEGAL_PARAMETER;
         return 0;
     }
-    ilen = *d;
-    d++;
 
-    /* Consistency check */
-    if ((ilen + 1) != len) {
+    CBS_init(&cbs, d, len);
+    if (!CBS_get_u8_length_prefixed(&cbs, &reneg) ||
+        /* Consistency check */
+        CBS_len(&cbs) != 0) {
         SSLerr(SSL_F_SSL_PARSE_CLIENTHELLO_RENEGOTIATE_EXT,
                SSL_R_RENEGOTIATION_ENCODING_ERR);
         *al = SSL_AD_ILLEGAL_PARAMETER;
@@ -161,15 +163,15 @@ int ssl_parse_clienthello_renegotiate_ext(SSL *s, uint8_t *d, int len,
     }
 
     /* Check that the extension matches */
-    if (ilen != s->s3->previous_client_finished_len) {
+    if (CBS_len(&reneg) != s->s3->previous_client_finished_len) {
         SSLerr(SSL_F_SSL_PARSE_CLIENTHELLO_RENEGOTIATE_EXT,
                SSL_R_RENEGOTIATION_MISMATCH);
         *al = SSL_AD_HANDSHAKE_FAILURE;
         return 0;
     }
 
-    if (memcmp(d, s->s3->previous_client_finished,
-               s->s3->previous_client_finished_len) != 0) {
+    if (!CBS_mem_equal(&reneg, s->s3->previous_client_finished,
+               s->s3->previous_client_finished_len)) {
         SSLerr(SSL_F_SSL_PARSE_CLIENTHELLO_RENEGOTIATE_EXT,
                SSL_R_RENEGOTIATION_MISMATCH);
         *al = SSL_AD_HANDSHAKE_FAILURE;

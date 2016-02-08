@@ -859,7 +859,7 @@ int ssl_parse_serverhello_renegotiate_ext(SSL *s, uint8_t *d, int len,
                                           int *al);
 int ssl_add_clienthello_renegotiate_ext(SSL *s, uint8_t *p, int *len,
                                         int maxlen);
-int ssl_parse_clienthello_renegotiate_ext(SSL *s, uint8_t *d, int len,
+int ssl_parse_clienthello_renegotiate_ext(SSL *s, const uint8_t *d, int len,
                                           int *al);
 long ssl_get_algorithm2(SSL *s);
 int tls1_process_sigalgs(SSL *s, const uint8_t *data, int dsize);
