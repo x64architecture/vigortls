@@ -2129,10 +2129,11 @@ end:
 
 int ssl3_get_client_certificate(SSL *s)
 {
+    CBS cbs, client_certs;
     int i, ok, al, ret = -1;
     X509 *x = NULL;
-    unsigned long l, nc, llen, n;
-    const uint8_t *p, *q;
+    long n;
+    const uint8_t *q;
     STACK_OF(X509) *sk = NULL;
 
     n = s->method->ssl_get_message(s, SSL3_ST_SR_CERT_A, SSL3_ST_SR_CERT_B, -1,
@@ -2167,33 +2168,37 @@ int ssl3_get_client_certificate(SSL *s)
         SSLerr(SSL_F_SSL3_GET_CLIENT_CERTIFICATE, SSL_R_WRONG_MESSAGE_TYPE);
         goto f_err;
     }
-    p = (const uint8_t *)s->init_msg;
+
+    if (n < 0)
+        goto truncated;
+
+    CBS_init(&cbs, s->init_msg, n);
 
     if ((sk = sk_X509_new_null()) == NULL) {
         SSLerr(SSL_F_SSL3_GET_CLIENT_CERTIFICATE, ERR_R_MALLOC_FAILURE);
         goto err;
     }
 
-    if (3 > n)
+    if (!CBS_get_u24_length_prefixed(&cbs, &client_certs) ||
+        CBS_len(&cbs) != 0)
         goto truncated;
-    n2l3(p, llen);
-    if (llen + 3 != n)
-        goto truncated;
-    for (nc = 0; nc < llen;) {
-        n2l3(p, l);
-        if (l + nc + 3 > llen) {
+
+    while (CBS_len(&client_certs) > 0) {
+        CBS cert;
+
+        if (!CBS_get_u24_length_prefixed(&client_certs, &cert)) {
             al = SSL_AD_DECODE_ERROR;
             SSLerr(SSL_F_SSL3_GET_CLIENT_CERTIFICATE, SSL_R_CERT_LENGTH_MISMATCH);
             goto f_err;
         }
 
-        q = p;
-        x = d2i_X509(NULL, &p, l);
+        q = CBS_data(&cert);
+        x = d2i_X509(NULL, &q, CBS_len(&cert));
         if (x == NULL) {
             SSLerr(SSL_F_SSL3_GET_CLIENT_CERTIFICATE, ERR_R_ASN1_LIB);
             goto err;
         }
-        if (p != (q + l)) {
+        if (q != CBS_data(&cert) + CBS_len(&cert)) {
             al = SSL_AD_DECODE_ERROR;
             SSLerr(SSL_F_SSL3_GET_CLIENT_CERTIFICATE, SSL_R_CERT_LENGTH_MISMATCH);
             goto f_err;
@@ -2203,7 +2208,6 @@ int ssl3_get_client_certificate(SSL *s)
             goto err;
         }
         x = NULL;
-        nc += l + 3;
     }
 
     if (sk_X509_num(sk) <= 0) {
