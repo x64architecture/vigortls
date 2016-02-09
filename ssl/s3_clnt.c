@@ -979,16 +979,20 @@ int ssl3_get_server_certificate(SSL *s)
         goto f_err;
     }
 
-    CBS_init(&cbs, s->init_msg, n);
-
     if ((sk = sk_X509_new_null()) == NULL) {
         SSLerr(SSL_F_SSL3_GET_SERVER_CERTIFICATE,
                ERR_R_MALLOC_FAILURE);
         goto err;
     }
 
-    if (n < 0 || CBS_len(&cbs) < 3)
+    if (n < 0)
         goto truncated;
+
+    CBS_init(&cbs, s->init_msg, n);
+
+    if (CBS_len(&cbs) < 3)
+        goto truncated;
+
     if (!CBS_get_u24_length_prefixed(&cbs, &cert_list) ||
         CBS_len(&cbs) != 0) {
         al = SSL_AD_DECODE_ERROR;
@@ -1736,9 +1740,16 @@ int ssl3_get_new_session_ticket(SSL *s)
     if (!ok)
         return ((int)n);
 
+    if (n < 0) {
+        /* need at least status type + length */
+        al = SSL_AD_DECODE_ERROR;
+        SSLerr(SSL_F_SSL3_GET_NEW_SESSION_TICKET, SSL_R_LENGTH_MISMATCH);
+        goto f_err;
+    }
+
     CBS_init(&new_session_ticket, s->init_msg, n);
 
-    if (n < 0 || !CBS_get_u32(&new_session_ticket, &ticket_lifetime_hint) ||
+    if (!CBS_get_u32(&new_session_ticket, &ticket_lifetime_hint) ||
         !CBS_get_u16_length_prefixed(&new_session_ticket, &session_ticket) ||
         CBS_len(&new_session_ticket) != 0) {
         al = SSL_AD_DECODE_ERROR;
@@ -1840,9 +1851,16 @@ int ssl3_get_cert_status(SSL *s)
          */
         s->s3->tmp.reuse_message = 1;
     } else {
+        if (n < 0) {
+            /* need at least status type + length */
+            al = SSL_AD_DECODE_ERROR;
+            SSLerr(SSL_F_SSL3_GET_CERT_STATUS, SSL_R_LENGTH_MISMATCH);
+            goto f_err;
+        }
+
         CBS_init(&cert_status, s->init_msg, n);
 
-        if (n < 0 || !CBS_get_u8(&cert_status, &status_type) ||
+        if (!CBS_get_u8(&cert_status, &status_type) ||
             CBS_len(&cert_status) < 3) {
             /* need at least status type + length */
             al = SSL_AD_DECODE_ERROR;
