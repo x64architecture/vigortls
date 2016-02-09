@@ -848,8 +848,13 @@ static int do_gcm128_test(int testnum, struct gcm128_test *tv)
     CRYPTO_gcm128_setiv(&ctx, tv->IV, tv->IV_len);
     if (tv->A_len > 0)
         CRYPTO_gcm128_aad(&ctx, tv->A, tv->A_len);
-    if (tv->P_len > 0)
-        CRYPTO_gcm128_encrypt(&ctx, tv->P, out, outlen);
+    if (tv->P_len > 0) {
+        if (CRYPTO_gcm128_encrypt(&ctx, tv->P, out, outlen)) {
+            fprintf(stderr, "TEST %d: CRYPTO_gcm128_encrypt failed\n",
+                    testnum);
+            goto fail;
+        }
+    }
     if (CRYPTO_gcm128_finish(&ctx, tv->T, 16)) {
         fprintf(stderr, "TEST %d: CRYPTO_gcm128_finish failed\n",
                 testnum);
@@ -864,8 +869,13 @@ static int do_gcm128_test(int testnum, struct gcm128_test *tv)
     CRYPTO_gcm128_setiv(&ctx, tv->IV, tv->IV_len);
     if (tv->A_len > 0)
         CRYPTO_gcm128_aad(&ctx, tv->A, tv->A_len);
-    if (tv->C_len > 0)
-        CRYPTO_gcm128_decrypt(&ctx, tv->C, out, outlen);
+    if (tv->C_len > 0) {
+        if (CRYPTO_gcm128_decrypt(&ctx, tv->C, out, outlen)) {
+            fprintf(stderr, "TEST %d: CRYPTO_gcm128_decrypt failed\n",
+                    testnum);
+            goto fail;
+        }
+    }
     if (CRYPTO_gcm128_finish(&ctx, tv->T, 16)) {
         fprintf(stderr, "TEST %d: CRYPTO_gcm128_finish failed\n",
                 testnum);
