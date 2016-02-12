@@ -1663,7 +1663,7 @@ int ssl3_get_client_key_exchange(SSL *s)
             = s->method->ssl3_enc->generate_master_secret(s, s->session->master_key, p,
                                                           sizeof(rand_premaster_secret));
         vigortls_zeroize(p, sizeof(rand_premaster_secret));
-    } else if (alg_k & (SSL_kDHE | SSL_kDHr | SSL_kDHd)) {
+    } else if (alg_k & SSL_kDHE) {
         if (2 > n)
             goto truncated;
         n2s(p, i);
@@ -1711,7 +1711,7 @@ int ssl3_get_client_key_exchange(SSL *s)
         vigortls_zeroize(p, i);
     } else
 
-        if (alg_k & (SSL_kECDHE | SSL_kECDHr | SSL_kECDHe)) {
+        if (alg_k & SSL_kECDHE) {
         int ret = 1;
         int field_size = 0;
         const EC_KEY *tkey;
@@ -1724,17 +1724,11 @@ int ssl3_get_client_key_exchange(SSL *s)
             goto err;
         }
 
-        /* Let's get server private key and group information. */
-        if (alg_k & (SSL_kECDHr | SSL_kECDHe)) {
-            /* Use the certificate */
-            tkey = s->cert->pkeys[SSL_PKEY_ECC].privatekey->pkey.ec;
-        } else {
-            /*
-             * Use the ephermeral values we saved when
-             * generating the ServerKeyExchange msg.
-             */
-            tkey = s->s3->tmp.ecdh;
-        }
+        /*
+         * Use the ephermeral values we saved when
+         * generating the ServerKeyExchange msg.
+         */
+        tkey = s->s3->tmp.ecdh;
 
         group = EC_KEY_get0_group(tkey);
         priv_key = EC_KEY_get0_private_key(tkey);

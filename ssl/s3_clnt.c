@@ -1300,11 +1300,6 @@ int ssl3_get_key_exchange(SSL *s)
 
         s->session->sess_cert->peer_dh_tmp = dh;
         dh = NULL;
-    } else if ((alg_k & SSL_kDHr) || (alg_k & SSL_kDHd)) {
-        al = SSL_AD_ILLEGAL_PARAMETER;
-        SSLerr(SSL_F_SSL3_GET_KEY_EXCHANGE,
-               SSL_R_TRIED_TO_USE_UNSUPPORTED_CIPHER);
-        goto f_err;
     } else if (alg_k & SSL_kECDHE) {
         EC_GROUP *ngroup;
         const EC_GROUP *group;
@@ -2004,7 +1999,7 @@ int ssl3_send_client_key_exchange(SSL *s)
             s->session->master_key_length
                 = s->method->ssl3_enc->generate_master_secret(s, s->session->master_key, tmp_buf, sizeof tmp_buf);
             vigortls_zeroize(tmp_buf, sizeof tmp_buf);
-        } else if (alg_k & (SSL_kDHE | SSL_kDHr | SSL_kDHd)) {
+        } else if (alg_k & SSL_kDHE) {
             DH *dh_srvr, *dh_clnt;
 
             if (s->session->sess_cert == NULL) {
@@ -2067,7 +2062,7 @@ int ssl3_send_client_key_exchange(SSL *s)
             DH_free(dh_clnt);
 
             /* perhaps clean things up a bit EAY EAY EAY EAY*/
-        } else if (alg_k & (SSL_kECDHE | SSL_kECDHr | SSL_kECDHe)) {
+        } else if (alg_k & SSL_kECDHE) {
             const EC_GROUP *srvr_group = NULL;
             EC_KEY *tkey;
             int ecdh_clnt_cert = 0;
@@ -2079,34 +2074,6 @@ int ssl3_send_client_key_exchange(SSL *s)
                 SSLerr(SSL_F_SSL3_SEND_CLIENT_KEY_EXCHANGE,
                        SSL_R_UNEXPECTED_MESSAGE);
                 goto err;
-            }
-
-            /*
-             * Did we send out the client's ECDH share for use
-             * in premaster computation as part of client
-             * certificate? If so, set ecdh_clnt_cert to 1.
-             */
-            if ((alg_k & (SSL_kECDHr | SSL_kECDHe)) && (s->cert != NULL)) {
-                /*
-                 * XXX: For now, we do not support client
-                 * authentication using ECDH certificates.
-                 * To add such support, one needs to add
-                 * code that checks for appropriate
-                 * conditions and sets ecdh_clnt_cert to 1.
-                 * For example, the cert have an ECC
-                 * key on the same curve as the server's
-                 * and the key should be authorized for
-                 * key agreement.
-                 *
-                 * One also needs to add code in ssl3_connect
-                 * to skip sending the certificate verify
-                 * message.
-                 *
-                 * if ((s->cert->key->privatekey != NULL) &&
-                 *     (s->cert->key->privatekey->type ==
-                 *      EVP_PKEY_EC) && ...)
-                 * ecdh_clnt_cert = 1;
-                 */
             }
 
             if (s->session->sess_cert->peer_ecdh_tmp != NULL) {
@@ -2558,7 +2525,7 @@ int ssl3_check_cert_and_algorithm(SSL *s)
     alg_a = s->s3->tmp.new_cipher->algorithm_auth;
 
     /* We don't have a certificate. */
-    if (alg_a & (SSL_aDH | SSL_aNULL))
+    if (alg_a & SSL_aNULL)
         return (1);
 
     sc = s->session->sess_cert;
@@ -2607,14 +2574,6 @@ int ssl3_check_cert_and_algorithm(SSL *s)
     if ((alg_k & SSL_kDHE) && !(has_bits(i, EVP_PK_DH | EVP_PKT_EXCH) || (dh != NULL))) {
         SSLerr(SSL_F_SSL3_CHECK_CERT_AND_ALGORITHM,
                SSL_R_MISSING_DH_KEY);
-        goto f_err;
-    } else if ((alg_k & SSL_kDHr) && !has_bits(i, EVP_PK_DH | EVP_PKS_RSA)) {
-        SSLerr(SSL_F_SSL3_CHECK_CERT_AND_ALGORITHM,
-               SSL_R_MISSING_DH_RSA_CERT);
-        goto f_err;
-    } else if ((alg_k & SSL_kDHd) && !has_bits(i, EVP_PK_DH | EVP_PKS_DSA)) {
-        SSLerr(SSL_F_SSL3_CHECK_CERT_AND_ALGORITHM,
-               SSL_R_MISSING_DH_DSA_CERT);
         goto f_err;
     }
 
