@@ -1629,7 +1629,7 @@ const EC_METHOD *EC_GFp_nistp521_method(void)
  * FUNCTIONS TO MANAGE PRECOMPUTATION
  */
 
-static NISTP521_PRE_COMP *nistp521_pre_comp_new()
+static NISTP521_PRE_COMP *nistp521_pre_comp_new(void)
 {
     NISTP521_PRE_COMP *ret = NULL;
     ret = calloc(1, sizeof(NISTP521_PRE_COMP));

@@ -186,7 +186,7 @@ BIO *bio_in = NULL;
 BIO *bio_out = NULL;
 BIO *bio_err = NULL;
 
-static char *make_config_name()
+static char *make_config_name(void)
 {
     const char *t = X509_get_default_cert_area();
     char *p;

@@ -138,7 +138,7 @@ void test_nistvector(const uint8_t *vector, size_t len)
         fprintf(stderr, "iv_%zu mismatch\n", len), exit(4);
 }
 
-int main()
+int main(void)
 {
     AES_set_encrypt_key(test_key, 128, &encks);
     AES_set_decrypt_key(test_key, 128, &decks);

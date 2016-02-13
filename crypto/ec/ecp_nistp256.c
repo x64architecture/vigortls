@@ -1751,7 +1751,7 @@ const EC_METHOD *EC_GFp_nistp256_method(void)
  * FUNCTIONS TO MANAGE PRECOMPUTATION
  */
 
-static NISTP256_PRE_COMP *nistp256_pre_comp_new()
+static NISTP256_PRE_COMP *nistp256_pre_comp_new(void)
 {
     NISTP256_PRE_COMP *ret = NULL;
     ret = calloc(1, sizeof *ret);

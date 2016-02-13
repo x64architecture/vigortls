@@ -310,7 +310,7 @@ typedef struct opt_pair_st {
 char *opt_progname(char *argv0);
 char *opt_getprog(void);
 char *opt_init(int ac, char **av, const OPTIONS *o);
-int opt_next();
+int opt_next(void);
 int opt_format(const char *s, unsigned long flags, int *result);
 int opt_int(const char *arg, int *result);
 int opt_ulong(const char *arg, unsigned long *result);

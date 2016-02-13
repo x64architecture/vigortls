@@ -1394,7 +1394,7 @@ static void internal_curve_test(void)
 /* nistp_test_params contains magic numbers for testing our optimized
  * implementations of several NIST curves with characteristic > 3. */
 struct nistp_test_params {
-    const EC_METHOD *(*meth)();
+    const EC_METHOD *(*meth)(void);
     int degree;
     /* Qx, Qy and D are taken from
      * http://csrc.nist.gov/groups/ST/toolkit/documents/Examples/ECDSA_Prime.pdf
@@ -1575,7 +1575,7 @@ void nistp_single_test(const struct nistp_test_params *test)
     BN_CTX_free(ctx);
 }
 
-void nistp_tests()
+void nistp_tests(void)
 {
     unsigned i;
 

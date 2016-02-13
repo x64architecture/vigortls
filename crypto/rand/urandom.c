@@ -89,7 +89,7 @@ static int urandom_fd = -2;
  * urandom_get_fd_locked returns a file descriptor to /dev/urandom. The caller
  * of this function must hold CRYPTO_LOCK_RAND.
  */
-static int urandom_get_fd_locked()
+static int urandom_get_fd_locked(void)
 {
     if (urandom_fd != -2)
         return urandom_fd;

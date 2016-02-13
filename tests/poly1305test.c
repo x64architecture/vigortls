@@ -79,7 +79,7 @@ static void hexdump(uint8_t *a, size_t len)
         printf("%02x", a[i]);
 }
 
-int main()
+int main(void)
 {
     static const unsigned num_tests = sizeof(poly1305_tests) / sizeof(struct poly1305_test);
     unsigned i;

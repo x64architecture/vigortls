@@ -104,7 +104,7 @@ static void *misalign(void *in)
     return (void *)x;
 }
 
-int main()
+int main(void)
 {
     static const unsigned num_tests = sizeof(chacha_tests) / sizeof(struct chacha_test);
     unsigned i;

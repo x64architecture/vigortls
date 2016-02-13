@@ -15,8 +15,6 @@
  * CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-
-
 #include <stdint.h>
 #include <string.h>
 
@@ -304,12 +302,12 @@ static const EVP_AEAD aead_chacha20_poly1305_ietf = {
     .open = aead_chacha20_poly1305_open,
 };
 
-const EVP_AEAD *EVP_aead_chacha20_poly1305()
+const EVP_AEAD *EVP_aead_chacha20_poly1305(void)
 {
     return &aead_chacha20_poly1305;
 }
 
-const EVP_AEAD *EVP_aead_chacha20_poly1305_ietf()
+const EVP_AEAD *EVP_aead_chacha20_poly1305_ietf(void)
 {
     return &aead_chacha20_poly1305_ietf;
 }

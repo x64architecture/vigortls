@@ -895,7 +895,7 @@ fail:
 
 #define NUM_TESTS (sizeof(gcm128_tests) / sizeof(*gcm128_tests))
 
-int main()
+int main(void)
 {
     int ret = 0;
     size_t i;
