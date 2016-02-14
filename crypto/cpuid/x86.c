@@ -28,62 +28,31 @@ static void vigortls_cpuid(uint32_t eax, uint32_t *regs)
     regs[1] = regs[2] = regs[3] = 0;
 #if defined(VIGORTLS_MSVC)
     int tmp[4];
-    __cpuid(tmp, (int)regs[0]);
+    __cpuid(tmp, (int)eax);
     regs[0] = (uint32_t)tmp[0];
     regs[1] = (uint32_t)tmp[1];
     regs[2] = (uint32_t)tmp[2];
     regs[3] = (uint32_t)tmp[3];
 #elif defined(VIGORTLS_X86_64)
     __asm__ volatile(
-        "mov %0, %%rdi\n"
-
-        "push %%rbx\n"
-        "push %%rcx\n"
-        "push %%rdx\n"
-
-        "mov   (%%rdi), %%eax\n"
-        "mov  4(%%rdi), %%ebx\n"
-        "mov  8(%%rdi), %%ecx\n"
-        "mov 12(%%rdi), %%edx\n"
-
+        "xor %%ecx, %%ecx\n"
         "cpuid\n"
-
-        "mov %%eax,   (%%rdi)\n"
-        "mov %%ebx,  4(%%rdi)\n"
-        "mov %%ecx,  8(%%rdi)\n"
-        "mov %%edx, 12(%%rdi)\n"
-        "pop %%rdx\n"
-        "pop %%rcx\n"
-        "pop %%rbx\n"
-        :
-        :"m"(regs)
-        :"memory", "eax", "rdi"
+        : "=a"(regs[0]), "=b"(regs[1]), "=c"(regs[2]), "=d"(regs[3])
+        : "a"(eax)
     );
-#elif defined(VIGORTLS_X86)
+#elif defined(__pic__) && defined(VIGORTLS_32_BIT)
+    /*
+     * We have to save and restore the EBX register when
+     * PIC is used.
+     * https://gcc.gnu.org/bugzilla/show_bug.cgi?id=47602
+     */
     __asm__ volatile(
-        "mov %0, %%edi\n"
-
-        "push %%ebx\n"
-        "push %%ecx\n"
-        "push %%edx\n"
-
-        "mov   (%%edi), %%eax\n"
-        "mov  4(%%edi), %%ebx\n"
-        "mov  8(%%edi), %%ecx\n"
-        "mov 12(%%edi), %%edx\n"
-
+        "xor %%ecx, %%ecx\n"
+        "mov %%ebx, %%edi\n"
         "cpuid\n"
-
-        "mov %%eax,   (%%edi)\n"
-        "mov %%ebx,  4(%%edi)\n"
-        "mov %%ecx,  8(%%edi)\n"
-        "mov %%edx, 12(%%edi)\n"
-        "pop %%edx\n"
-        "pop %%ecx\n"
-        "pop %%ebx\n"
-        :
-        :"m"(regs)
-        :"memory", "eax", "edi"
+        "xchg %%edi, %%ebx\n"
+        : "=a"(regs[0]), "=b"(regs[1]), "=c"(regs[2]), "=d"(regs[3])
+        : "a"(eax)
     );
 #endif
 }
