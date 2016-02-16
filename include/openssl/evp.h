@@ -1185,6 +1185,7 @@ const EVP_AEAD *EVP_aead_aes_256_gcm(void);
 #if !defined(OPENSSL_NO_CHACHA) && !defined(OPENSSL_NO_POLY1305)
 /* EVP_aead_chacha20_poly1305 is ChaCha20 with a Poly1305 authenticator. */
 const EVP_AEAD *EVP_aead_chacha20_poly1305(void);
+const EVP_AEAD *EVP_aead_chacha20_poly1305_ietf(void);
 #endif
 
 /* EVP_AEAD_key_length returns the length of the keys used. */

@@ -30,21 +30,8 @@
 extern "C" {
 #endif
 
-typedef struct {
-    unsigned int input[16];
-    uint8_t ks[64];
-    uint8_t unused;
-} ChaCha_ctx;
-
-void ChaCha_set_key(ChaCha_ctx *ctx, const uint8_t *key,
-                    unsigned int keybits);
-void ChaCha_set_iv(ChaCha_ctx *ctx, const uint8_t *iv,
-                   const uint8_t *counter);
-void ChaCha(ChaCha_ctx *ctx, uint8_t *out, const uint8_t *in,
-            size_t inlen);
-
 void CRYPTO_chacha_20(uint8_t *out, const uint8_t *in, size_t inlen,
-                      const uint8_t key[32], const uint8_t nonce[8], uint64_t counter);
+                      const uint8_t key[32], const uint8_t nonce[12], uint32_t counter);
 
 #ifdef __cplusplus
 }

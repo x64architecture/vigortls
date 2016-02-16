@@ -188,6 +188,13 @@ int main(int argc, char **argv)
         fprintf(stderr, "No chacha20-poly1305 support. Skipping test.\n");
         return 0;
 #endif
+    } else if (strcmp(argv[1], "chacha20-poly1305-ietf") == 0) {
+#if !defined(OPENSSL_NO_CHACHA) && !defined(OPENSSL_NO_POLY1305)
+        aead = EVP_aead_chacha20_poly1305_ietf();
+#else
+        fprintf(stderr, "No chacha20-poly1305 support. Skipping test.\n");
+        return 0;
+#endif
     } else if (strcmp(argv[1], "aes-128-gcm") == 0) {
         aead = EVP_aead_aes_128_gcm();
     } else if (strcmp(argv[1], "aes-256-gcm") == 0) {
