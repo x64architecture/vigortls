@@ -71,26 +71,21 @@ my $win64=0;
 my $prefix="";
 my $decor=".L";
 
-my $masmref=8 + 50727*2**-32;	# 8.00.50727 shipped with VS2005
-my $masm=0;
 my $PTR=" PTR";
 
 my $nasmref=2.03;
 my $nasm=0;
 
 if    ($flavour eq "mingw64")	{ $gas=1; $elf=0; $win64=1;
-				  $prefix=`echo __USER_LABEL_PREFIX__ | $ENV{CC} -E -P -`;
+				  $prefix=`echo __USER_LABEL_PREFIX__ | $cc -E -P -`;
 				  chomp($prefix);
 				}
 elsif ($flavour eq "macosx")	{ $gas=1; $elf=0; $prefix="_"; $decor="L\$"; }
-elsif ($flavour eq "masm")	{ $gas=0; $elf=0; $masm=$masmref; $win64=1; $decor="\$L\$"; }
 elsif ($flavour eq "nasm")	{ $gas=0; $elf=0; $nasm=$nasmref; $win64=1; $decor="\$L\$"; $PTR=""; }
 elsif (!$gas)
 {   if ($ENV{ASM} =~ m/nasm/ && `nasm -v` =~ m/version ([0-9]+)\.([0-9]+)/i)
     {	$nasm = $1 + $2*0.01; $PTR="";  }
-    elsif (`ml64 2>&1` =~ m/Version ([0-9]+)\.([0-9]+)(\.([0-9]+))?/)
-    {	$masm = $1 + $2*2**-16 + $4*2**-32;   }
-    die "no assembler found on %PATH" if (!($nasm || $masm));
+    die "no assembler found on %PATH" if (!($nasm));
     $win64=1;
     $elf=0;
     $decor="\$L\$";
@@ -206,7 +201,6 @@ my %globals;
 	    sprintf "\$%s",$self->{value};
 	} else {
 	    $self->{value} =~ s/(0b[0-1]+)/oct($1)/eig;
-	    $self->{value} =~ s/0x([0-9a-f]+)/0$1h/ig if ($masm);
 	    sprintf "%s",$self->{value};
 	}
     }
@@ -380,7 +374,6 @@ my %globals;
 	    }
 	    $func;
 	} elsif ($self->{value} ne "$current_function->{name}") {
-	    $self->{value} .= ":" if ($masm && $ret!~m/^\$/);
 	    $self->{value} . ":";
 	} elsif ($win64 && $current_function->{abi} eq "svr4") {
 	    my $func =	"$current_function->{name}" .
@@ -390,7 +383,6 @@ my %globals;
 	    $func .= "	mov	QWORD${PTR}[16+rsp],rsi\n";
 	    $func .= "	mov	rax,rsp\n";
 	    $func .= "${decor}SEH_begin_$current_function->{name}:";
-	    $func .= ":" if ($masm);
 	    $func .= "\n";
 	    my $narg = $current_function->{narg};
 	    $narg=6 if (!defined($narg));
@@ -535,7 +527,7 @@ my %globals;
 		return $self;
 	    }
 
-	    # non-gas case or nasm/masm
+	    # non-gas case or nasm
 	    SWITCH: for ($dir) {
 		/\.text/    && do { my $v=undef;
 				    if ($nasm) {
@@ -544,7 +536,6 @@ my %globals;
 					$v="$current_segment\tENDS\n" if ($current_segment);
 					$current_segment = ".text\$";
 					$v.="$current_segment\tSEGMENT ";
-					$v.=$masm>=$masmref ? "ALIGN(256)" : "PAGE";
 					$v.=" 'CODE'";
 				    }
 				    $self->{value} = $v;
@@ -577,10 +568,8 @@ my %globals;
 					$v.="$line\tSEGMENT";
 					if ($line=~/\.([px])data/) {
 					    $v.=" READONLY";
-					    $v.=" ALIGN(".($1 eq "p" ? 4 : 8).")" if ($masm>=$masmref);
 					} elsif ($line=~/\.CRT\$/i) {
 					    $v.=" READONLY ";
-					    $v.=$masm>=$masmref ? "ALIGN(8)" : "DWORD";
 					}
 				    }
 				    $current_segment = $line;
@@ -588,11 +577,10 @@ my %globals;
 				    last;
 				  };
 		/\.extern/  && do { $self->{value}  = "EXTERN\t".$line;
-				    $self->{value} .= ":NEAR" if ($masm);
 				    last;
 				  };
 		/\.globl|.global/
-			    && do { $self->{value}  = $masm?"PUBLIC":"global";
+			    && do { $self->{value}  = "global";
 				    $self->{value} .= "\t".$line;
 				    last;
 				  };
@@ -600,9 +588,7 @@ my %globals;
 					undef $self->{value};
 					if ($current_function->{abi} eq "svr4") {
 					    $self->{value}="${decor}SEH_end_$current_function->{name}:";
-					    $self->{value}.=":\n" if($masm);
 					}
-					$self->{value}.="$current_function->{name}\tENDP" if($masm && $current_function->{name});
 					undef $current_function;
 				    }
 				    last;
@@ -614,7 +600,6 @@ my %globals;
 				    my $last = pop(@arr);
 				    my $conv = sub  {	my $var=shift;
 							$var=~s/^(0b[0-1]+)/oct($1)/eig;
-							$var=~s/^0x([0-9a-f]+)/0$1h/ig if ($masm);
 							if ($sz eq "D" && ($current_segment=~/.[px]data/ || $dir eq ".rva"))
 							{ $var=~s/([_a-z\$\@][_a-z0-9\$\@]*)/$nasm?"$1 wrt ..imagebase":"imagerel $1"/egi; }
 							$var;
@@ -628,7 +613,6 @@ my %globals;
 				  };
 		/\.byte/    && do { my @str=split(/,\s*/,$line);
 				    map(s/(0b[0-1]+)/oct($1)/eig,@str);
-				    map(s/0x([0-9a-f]+)/0$1h/ig,@str) if ($masm);	
 				    while ($#str>15) {
 					$self->{value}.="DB\t"
 						.join(",",@str[0..15])."\n";
@@ -784,10 +768,6 @@ default	rel
 %define YMMWORD
 %define ZMMWORD
 ___
-} elsif ($masm) {
-    print <<___;
-OPTION	DOTNAME
-___
 }
 while($line=<>) {
 
@@ -860,9 +840,6 @@ while($line=<>) {
 
     print $line,"\n";
 }
-
-print "\n$current_segment\tENDS\n"	if ($current_segment && $masm);
-print "END\n"				if ($masm);
 
 close STDOUT;
 

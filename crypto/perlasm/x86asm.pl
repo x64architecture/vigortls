@@ -267,8 +267,6 @@ sub ::asm_init
     {	$netware=1;		require "x86nasm.pl";	}
     #elsif (($type eq "nw-mwasm"))
     #{	$netware=1; $mwerks=1;	require "x86nasm.pl";	}
-    elsif (($type eq "win32"))
-    {	$win32=1;		require "x86masm.pl";	}
     elsif (($type eq "macosx"))
     {	$aout=1; $macosx=1;	require "x86gas.pl";	}
     elsif (($type eq "android"))

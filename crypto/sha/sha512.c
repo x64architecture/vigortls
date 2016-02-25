@@ -38,8 +38,8 @@
  */
 
 #if !defined(OPENSSL_NO_ASM) && \
-        (defined(VIGORTLS_X86) || defined(VIGORTLS_X86_64) || \
-        defined(VIGORTLS_ARM))
+        (defined(VIGORTLS_X86) || defined(VIGORTLS_X86_64)) || \
+        defined(VIGORTLS_ARM)
 #define SHA512_BLOCK_CAN_MANAGE_UNALIGNED_DATA
 #define SHA512_ASM
 #endif

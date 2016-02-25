@@ -62,6 +62,7 @@
 # Sandy Bridge	7.9		6.3/+25%	5.2/+51%
 
 $flavour = shift;
+$cc      = shift;
 $output  = shift;
 if ($flavour =~ /\./) { $output = $flavour; undef $flavour; }
 
@@ -72,15 +73,19 @@ $0 =~ m/(.*[\/\\])[^\/\\]+$/; $dir=$1;
 ( $xlate="${dir}../../perlasm/x86_64-xlate.pl" and -f $xlate) or
 die "can't locate x86_64-xlate.pl";
 
-$avx=1 if (`$ENV{CC} -Wa,-v -c -o /dev/null -x assembler /dev/null 2>&1`
-		=~ /GNU assembler version ([2-9]\.[0-9]+)/ &&
-	   $1>=2.19);
-$avx=1 if (!$avx && $win64 && ($flavour =~ /nasm/ || $ENV{ASM} =~ /nasm/) &&
-	   `nasm -v 2>&1` =~ /NASM version ([2-9]\.[0-9]+)/ &&
-	   $1>=2.09);
-$avx=1 if (!$avx && $win64 && ($flavour =~ /masm/ || $ENV{ASM} =~ /ml64/) &&
-	   `ml64 2>&1` =~ /Version ([0-9]+)\./ &&
-	   $1>=10);
+if (`$cc -Wa,-v -c -o /dev/null -x assembler /dev/null 2>&1`
+		=~ /GNU assembler version ([2-9]\.[0-9]+)/) {
+	$avx = ($1>=2.19) + ($1>=2.22);
+}
+
+if (!$avx && $win64 && ($flavour =~ /nasm/ || $ENV{ASM} =~ /nasm/) &&
+	   `nasm -v 2>&1` =~ /NASM version ([2-9]\.[0-9]+)/) {
+	$avx = ($1>=2.09) + ($1>=2.10);
+}
+
+if (!$avx && `$cc -v 2>&1` =~ /((?:^clang|LLVM) version|.*based on LLVM) ([3-9]\.[0-9]+)/) {
+	$avx = ($2>=3.0) + ($2>3.0);
+}
 
 open OUT,"| \"$^X\" $xlate $flavour $output";
 *STDOUT=*OUT;

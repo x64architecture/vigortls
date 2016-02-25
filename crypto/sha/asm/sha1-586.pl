@@ -105,10 +105,11 @@ require "x86asm.pl";
 &asm_init($ARGV[0],"sha1-586.pl",$ARGV[$#ARGV] eq "386");
 
 $xmm=$ymm=0;
-for (@ARGV) { $xmm=1 if (/-DOPENSSL_IA32_SSE2/); }
+$xmm=1;
+$cc=$ARGV[1];
 
 $ymm=1 if ($xmm &&
-		`$ENV{CC} -Wa,-v -c -o /dev/null -x assembler /dev/null 2>&1`
+		`$cc -Wa,-v -c -o /dev/null -x assembler /dev/null 2>&1`
 			=~ /GNU assembler version ([2-9]\.[0-9]+)/ &&
 		$1>=2.19);	# first version supporting AVX
 

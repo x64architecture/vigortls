@@ -40,6 +40,7 @@
 # Add MULX/ADOX/ADCX code path.
 
 $flavour = shift;
+$cc      = shift;
 $output  = shift;
 if ($flavour =~ /\./) { $output = $flavour; undef $flavour; }
 
@@ -53,7 +54,7 @@ die "can't locate x86_64-xlate.pl";
 open OUT,"| \"$^X\" $xlate $flavour $output";
 *STDOUT=*OUT;
 
-if (`$ENV{CC} -Wa,-v -c -o /dev/null -x assembler /dev/null 2>&1`
+if (`$cc -Wa,-v -c -o /dev/null -x assembler /dev/null 2>&1`
 		=~ /GNU assembler version ([2-9]\.[0-9]+)/) {
 	$addx = ($1>=2.23);
 }
@@ -63,12 +64,7 @@ if (!$addx && $win64 && ($flavour =~ /nasm/ || $ENV{ASM} =~ /nasm/) &&
 	$addx = ($1>=2.10);
 }
 
-if (!$addx && $win64 && ($flavour =~ /masm/ || $ENV{ASM} =~ /ml64/) &&
-	    `ml64 2>&1` =~ /Version ([0-9]+)\./) {
-	$addx = ($1>=12);
-}
-
-if (!$addx && `$ENV{CC} -v 2>&1` =~ /(^clang version|based on LLVM) ([3-9])\.([0-9]+)/) {
+if (!$addx && `$cc -v 2>&1` =~ /(^clang version|based on LLVM) ([3-9])\.([0-9]+)/) {
 	my $ver = $2 + $3/100.0;	# 3.1->3.01, 3.10->3.10
 	$addx = ($ver>=3.03);
 }

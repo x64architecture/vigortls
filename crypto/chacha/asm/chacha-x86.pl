@@ -34,10 +34,11 @@ require "x86asm.pl";
 &asm_init($ARGV[0],"chacha-x86.pl",$ARGV[$#ARGV] eq "386");
 
 $xmm=$ymm=0;
-for (@ARGV) { $xmm=1 if (/-DOPENSSL_IA32_SSE2/); }
+$xmm=1;
+$cc=$ARGV[1];
 
 $ymm=1 if ($xmm &&
-		`$ENV{CC} -Wa,-v -c -o /dev/null -x assembler /dev/null 2>&1`
+		`$cc -Wa,-v -c -o /dev/null -x assembler /dev/null 2>&1`
 			=~ /GNU assembler version ([2-9]\.[0-9]+)/ &&
 		$1>=2.19);	# first version supporting AVX
 
@@ -45,12 +46,8 @@ $ymm=1 if ($xmm && !$ymm && $ARGV[0] eq "win32n" &&
 		`nasm -v 2>&1` =~ /NASM version ([2-9]\.[0-9]+)/ &&
 		$1>=2.03);	# first version supporting AVX
 
-$ymm=1 if ($xmm && !$ymm && $ARGV[0] eq "win32" &&
-		`ml 2>&1` =~ /Version ([0-9]+)\./ &&
-		$1>=10);	# first version supporting AVX
-
 $ymm=1 if ($xmm && !$ymm &&
-		`$ENV{CC} -v 2>&1` =~ /(^clang version|based on LLVM) ([3-9]\.[0-9]+)/ &&
+		`$cc -v 2>&1` =~ /(^clang version|based on LLVM) ([3-9]\.[0-9]+)/ &&
 		$2>=3.0);	# first version supporting AVX
 
 $a="eax";

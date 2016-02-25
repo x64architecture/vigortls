@@ -41,7 +41,8 @@ require "x86asm.pl";
 &asm_init($ARGV[0],"poly1305-x86.pl",$ARGV[$#ARGV] eq "386");
 
 $sse2=$avx=0;
-for (@ARGV) { $sse2=1 if (/-DOPENSSL_IA32_SSE2/); }
+$sse2=1;
+$cc=$ARGV[1];
 
 if ($sse2) {
 	&static_label("const_sse2");
@@ -49,7 +50,7 @@ if ($sse2) {
 	&static_label("enter_emit");
 	&external_label("OPENSSL_ia32cap_P");
 
-	if (`$ENV{CC} -Wa,-v -c -o /dev/null -x assembler /dev/null 2>&1`
+	if (`$cc -Wa,-v -c -o /dev/null -x assembler /dev/null 2>&1`
 			=~ /GNU assembler version ([2-9]\.[0-9]+)/) {
 		$avx = ($1>=2.19) + ($1>=2.22);
 	}
@@ -59,7 +60,7 @@ if ($sse2) {
 	$avx = ($1>=2.09) + ($1>=2.10);
 	}
 
-	if (!$avx && `$ENV{CC} -v 2>&1` =~ /(^clang version|based on LLVM) ([3-9]\.[0-9]+)/) {
+	if (!$avx && `$cc -v 2>&1` =~ /(^clang version|based on LLVM) ([3-9]\.[0-9]+)/) {
 		$avx = ($2>=3.0) + ($2>3.0);
 	}
 }
