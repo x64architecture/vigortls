@@ -201,8 +201,7 @@ static void poly1305_update_padded_16(poly1305_state *poly1305,
 
     CRYPTO_poly1305_update(poly1305, data, data_len);
     if (data_len % 16 != 0) {
-        CRYPTO_poly1305_update(poly1305, padding,
-                               sizeof(padding) - (data_len % 16));
+        CRYPTO_poly1305_update(poly1305, padding, sizeof(padding) - (data_len % 16));
     }
 }
 
@@ -254,13 +253,10 @@ static void poly1305_update_old(poly1305_state *ctx, const uint8_t *ad,
     poly1305_update_length(ctx, ciphertext_len);
 }
 
-static int aead_chacha20_poly1305_old_seal(const EVP_AEAD_CTX *ctx,
-                                           uint8_t *out, size_t *out_len,
-                                           size_t max_out_len,
-                                           const uint8_t *nonce,
-                                           size_t nonce_len,
-                                           const uint8_t *in, size_t in_len,
-                                           const uint8_t *ad, size_t ad_len)
+static int aead_chacha20_poly1305_old_seal(
+    const EVP_AEAD_CTX *ctx, uint8_t *out, size_t *out_len, size_t max_out_len,
+    const uint8_t *nonce, size_t nonce_len, const uint8_t *in, size_t in_len,
+    const uint8_t *ad, size_t ad_len)
 {
     if (nonce_len != 8) {
         EVPerr(EVP_F_AEAD_CHACHA20_POLY1305_SEAL, EVP_R_IV_TOO_LARGE);
@@ -273,13 +269,10 @@ static int aead_chacha20_poly1305_old_seal(const EVP_AEAD_CTX *ctx,
                      nonce_96, in, in_len, ad, ad_len);
 }
 
-static int aead_chacha20_poly1305_old_open(const EVP_AEAD_CTX *ctx,
-                                           uint8_t *out, size_t *out_len,
-                                           size_t max_out_len,
-                                           const uint8_t *nonce,
-                                           size_t nonce_len,
-                                           const uint8_t *in, size_t in_len,
-                                           const uint8_t *ad, size_t ad_len)
+static int aead_chacha20_poly1305_old_open(
+    const EVP_AEAD_CTX *ctx, uint8_t *out, size_t *out_len, size_t max_out_len,
+    const uint8_t *nonce, size_t nonce_len, const uint8_t *in, size_t in_len,
+    const uint8_t *ad, size_t ad_len)
 {
     if (nonce_len != 8) {
         EVPerr(EVP_F_AEAD_CHACHA20_POLY1305_SEAL, EVP_R_IV_TOO_LARGE);

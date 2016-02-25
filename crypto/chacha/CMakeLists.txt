@@ -1,19 +1,28 @@
 include_directories(../../include ../cpuid)
 
-if (${ARCH} STREQUAL "x86" OR ${ARCH} STREQUAL "x86_64")
+if (${ARCH} STREQUAL "x86_64")
     set(
         CHACHA_ARCH_SOURCES
 
-        chacha_vec.c
+        chacha-x86_64.${ASM_EXT}
     )
-    if (CMAKE_COMPILER_IS_GNUCC OR ${CMAKE_C_COMPILER_ID} STREQUAL "Clang")
-        set_source_files_properties(chacha_vec.c PROPERTIES COMPILE_OPTIONS -mssse3)
-    endif()
-elseif (${ARCH} STREQUAL "arm")
+elseif(${ARCH} STREQUAL "x86")
     set(
         CHACHA_ARCH_SOURCES
 
-        chacha_vec_arm.S
+        chacha-x86.${ASM_EXT}
+    )
+elseif(${ARCH} STREQUAL "arm")
+    set(
+        CHACHA_ARCH_SOURCES
+
+        chacha-armv4.${ASM_EXT}
+    )
+else()
+    set(
+        CHACHA_ARCH_SOURCES
+
+        chacha_generic.c
     )
 endif()
 
@@ -26,3 +35,6 @@ add_library(
 
     chacha.c
 )
+perlasm(chacha-x86_64.${ASM_EXT} asm/chacha-x86_64.pl)
+perlasm(chacha-x86.${ASM_EXT} asm/chacha-x86.pl)
+perlasm(chacha-armv4.${ASM_EXT} asm/chacha-armv4.pl)

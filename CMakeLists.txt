@@ -46,12 +46,6 @@ endif()
 
 add_definitions(-DVIGORTLS_INTERNAL)
 
-option(BUILD_SHARED_LIBS
-    "Build as a shared library instead of static" OFF)
-if (BUILD_SHARED_LIBS)
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fPIC")
-endif()
-
 if(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
     add_definitions(-D_GNU_SOURCE)
 endif()
