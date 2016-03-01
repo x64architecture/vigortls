@@ -122,6 +122,7 @@ DSO *DSO_new_method(DSO_METHOD *meth)
         ret->meth = meth;
     ret->references = 1;
     if ((ret->meth->init != NULL) && !ret->meth->init(ret)) {
+        sk_void_free(ret->meth_data);
         free(ret);
         ret = NULL;
     }
