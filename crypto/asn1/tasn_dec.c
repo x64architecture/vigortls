@@ -641,7 +641,7 @@ static int asn1_d2i_ex_primitive(ASN1_VALUE **pval,
     long plen;
     char cst, inf, free_cont = 0;
     const uint8_t *p;
-    BUF_MEM buf = { 0, NULL, 0 }
+    BUF_MEM buf = { 0, NULL, 0 };
     const uint8_t *cont = NULL;
     long len;
     if (!pval) {
