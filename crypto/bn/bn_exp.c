@@ -116,6 +116,7 @@
 #include <openssl/err.h>
 
 #include "bn_lcl.h"
+#include "constant_time_locl.h"
 
 #if defined(VIGORTLS_MSVC)
 #include <malloc.h>
@@ -554,42 +555,78 @@ err:
  * used to transfer a BIGNUM from/to that table.
  */
 
-static int MOD_EXP_CTIME_COPY_TO_PREBUF(const BIGNUM *b, int top,
-                                        uint8_t *buf, int idx, int width)
+static int MOD_EXP_CTIME_COPY_TO_PREBUF(const BIGNUM *b, int top, uint8_t *buf,
+                                        int idx, int window)
 {
-    size_t i, j;
-
+    int i, j;
+    int width = 1 << window;
+    BN_ULONG *table = (BN_ULONG *)buf;
+    
     if (top > b->top)
         top = b->top; /* this works because 'buf' is explicitly zeroed */
-    for (i = 0, j = idx; i < top * sizeof b->d[0]; i++, j += width) {
-        buf[j] = ((uint8_t *)b->d)[i];
+    for (i = 0, j = idx; i < top; i++, j += width) {
+        table[j] = b->d[i];
     }
 
     return 1;
 }
 
 static int MOD_EXP_CTIME_COPY_FROM_PREBUF(BIGNUM *b, int top, uint8_t *buf,
-                                          int idx, int width)
+                                          int idx, int window)
 {
-    size_t i, j;
+    int i, j;
+    int width = 1 << window;
+    volatile BN_ULONG *table = (volatile BN_ULONG *)buf;
 
     if (bn_wexpand(b, top) == NULL)
         return 0;
 
-    for (i = 0, j = idx; i < top * sizeof b->d[0]; i++, j += width) {
-        ((uint8_t *)b->d)[i] = buf[j];
-    }
+    if (window <= 3) {
+        for (i = 0; i < top; i++, table += width) {
+            BN_ULONG acc = 0;
 
+            for (j = 0; j < width; j++) {
+                acc |= table[j] &
+                       ((BN_ULONG)0 - (constant_time_eq_int(j,idx)&1));
+            }
+
+            b->d[i] = acc;
+        }
+    } else {
+        int xstride = 1 << (window - 2);
+        BN_ULONG y0, y1, y2, y3;
+
+        i = idx >> (window - 2);        /* equivalent of idx / xstride */
+        idx &= xstride - 1;             /* equivalent of idx % xstride */
+
+        y0 = (BN_ULONG)0 - (constant_time_eq_int(i,0)&1);
+        y1 = (BN_ULONG)0 - (constant_time_eq_int(i,1)&1);
+        y2 = (BN_ULONG)0 - (constant_time_eq_int(i,2)&1);
+        y3 = (BN_ULONG)0 - (constant_time_eq_int(i,3)&1);
+
+        for (i = 0; i < top; i++, table += width) {
+            BN_ULONG acc = 0;
+
+            for (j = 0; j < xstride; j++) {
+                acc |= ((table[j + 0 * xstride] & y0) |
+                        (table[j + 1 * xstride] & y1) |
+                        (table[j + 2 * xstride] & y2) |
+                        (table[j + 3 * xstride] & y3) ) &
+                        ((BN_ULONG)0 - (constant_time_eq_int(j, idx) & 1));
+            }
+
+            b->d[i] = acc;
+        }
+    }
     b->top = top;
     bn_correct_top(b);
     return 1;
 }
 
 /* Given a pointer value, compute the next address that is a cache line multiple. */
-#define MOD_EXP_CTIME_ALIGN(x_)            \
-    ((uint8_t *)(x_)                 \
-     + (MOD_EXP_CTIME_MIN_CACHE_LINE_WIDTH \
-        - (((size_t)(x_)) & (MOD_EXP_CTIME_MIN_CACHE_LINE_MASK))))
+#define MOD_EXP_CTIME_ALIGN(x_)                                                \
+    ((uint8_t *)(x_) + (MOD_EXP_CTIME_MIN_CACHE_LINE_WIDTH - (((size_t)(x_)) & \
+        (MOD_EXP_CTIME_MIN_CACHE_LINE_MASK))))
 
 /*
  * This variant of BN_mod_exp_mont() uses fixed windows and the special
@@ -859,9 +896,9 @@ int BN_mod_exp_mont_consttime(BIGNUM *rr, const BIGNUM *a, const BIGNUM *p,
     } else
 #endif
     {
-        if (!MOD_EXP_CTIME_COPY_TO_PREBUF(&tmp, top, powerbuf, 0, numPowers))
+        if (!MOD_EXP_CTIME_COPY_TO_PREBUF(&tmp, top, powerbuf, 0, window))
             goto err;
-        if (!MOD_EXP_CTIME_COPY_TO_PREBUF(&am, top, powerbuf, 1, numPowers))
+        if (!MOD_EXP_CTIME_COPY_TO_PREBUF(&am, top, powerbuf, 1, window))
             goto err;
 
         /*
@@ -873,14 +910,15 @@ int BN_mod_exp_mont_consttime(BIGNUM *rr, const BIGNUM *a, const BIGNUM *p,
         if (window > 1) {
             if (!BN_mod_mul_montgomery(&tmp, &am, &am, mont, ctx))
                 goto err;
-            if (!MOD_EXP_CTIME_COPY_TO_PREBUF(&tmp, top, powerbuf, 2, numPowers))
+            if (!MOD_EXP_CTIME_COPY_TO_PREBUF(&tmp, top, powerbuf, 2,
+                                              window))
                 goto err;
             for (i = 3; i < numPowers; i++) {
                 /* Calculate a^i = a^(i-1) * a */
                 if (!BN_mod_mul_montgomery(&tmp, &am, &tmp, mont, ctx))
                     goto err;
                 if (!MOD_EXP_CTIME_COPY_TO_PREBUF(&tmp, top, powerbuf, i,
-                                                  numPowers))
+                                                  window))
                     goto err;
             }
         }
@@ -888,7 +926,8 @@ int BN_mod_exp_mont_consttime(BIGNUM *rr, const BIGNUM *a, const BIGNUM *p,
         bits--;
         for (wvalue = 0, i = bits % window; i >= 0; i--, bits--)
             wvalue = (wvalue << 1) + BN_is_bit_set(p, bits);
-        if (!MOD_EXP_CTIME_COPY_FROM_PREBUF(&tmp, top, powerbuf, wvalue, numPowers))
+        if (!MOD_EXP_CTIME_COPY_FROM_PREBUF(&tmp, top, powerbuf, wvalue,
+                                            window))
             goto err;
 
         /*
@@ -907,7 +946,7 @@ int BN_mod_exp_mont_consttime(BIGNUM *rr, const BIGNUM *a, const BIGNUM *p,
 
             /* Fetch the appropriate pre-computed value from the pre-buf */
             if (!MOD_EXP_CTIME_COPY_FROM_PREBUF(&am, top, powerbuf, wvalue,
-                                                numPowers))
+                                                window))
                 goto err;
 
             /* Multiply the result into the intermediate result */
