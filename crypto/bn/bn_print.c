@@ -57,6 +57,7 @@
  */
 
 #include <ctype.h>
+#include <limits.h>
 #include <stdio.h>
 
 #include <openssl/bio.h>
@@ -186,8 +187,11 @@ int BN_hex2bn(BIGNUM **bn, const char *a)
         a++;
     }
 
-    for (i = 0; isxdigit((uint8_t)a[i]); i++)
-        ;
+    for (i = 0; i <= (INT_MAX / 4) && isxdigit((uint8_t)a[i]); i++)
+        continue;
+    
+    if (i > INT_MAX / 4)
+        goto err;
 
     num = i + neg;
     if (bn == NULL)
@@ -202,7 +206,7 @@ int BN_hex2bn(BIGNUM **bn, const char *a)
         BN_zero(ret);
     }
 
-    /* i is the number of hex digests; */
+    /* i is the number of hex digits */
     if (bn_expand(ret, i * 4) == NULL)
         goto err;
 
@@ -258,8 +262,11 @@ int BN_dec2bn(BIGNUM **bn, const char *a)
         a++;
     }
 
-    for (i = 0; isdigit((uint8_t)a[i]); i++)
-        ;
+    for (i = 0; i <= (INT_MAX / 4) && isdigit((uint8_t)a[i]); i++)
+        continue;
+    
+    if (i > INT_MAX / 4)
+        goto err;
 
     num = i + neg;
     if (bn == NULL)
@@ -275,7 +282,7 @@ int BN_dec2bn(BIGNUM **bn, const char *a)
         BN_zero(ret);
     }
 
-    /* i is the number of digests, a bit of an over expand; */
+    /* i is the number of digits, a bit of an over expand; */
     if (bn_expand(ret, i * 4) == NULL)
         goto err;
 
