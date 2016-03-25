@@ -152,7 +152,7 @@ int s_time_main(int argc, char **argv)
     SSL_CTX *ctx = NULL;
     const SSL_METHOD *meth = NULL;
     char *CApath = NULL, *CAfile = NULL, *cipher = NULL, *www_path = NULL;
-    char *host = SSL_CONNECT_NAME, *certfile = NULL, *keyfile = NULL, *prog;
+    char *host = (char *)SSL_CONNECT_NAME, *certfile = NULL, *keyfile = NULL, *prog;
     double totalTime = 0.0;
     int maxtime = SECONDS, nConn = 0, perform = 3, ret = 1, i, st_bugs = 0, ver;
     long bytes_read = 0, finishtime = 0;

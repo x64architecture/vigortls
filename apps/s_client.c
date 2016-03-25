@@ -370,9 +370,9 @@ int s_client_main(int argc, char **argv)
     char *cbuf = NULL, *sbuf = NULL, *mbuf = NULL;
     int cbuf_len, cbuf_off;
     int sbuf_len, sbuf_off;
-    char *port = PORT_STR;
+    char *port = (char *)PORT_STR;
     int full_log = 1;
-    char *host = SSL_HOST_NAME;
+    char *host = (char *)SSL_HOST_NAME;
     char *cert_file = NULL, *key_file = NULL;
     int cert_format = FORMAT_PEM, key_format = FORMAT_PEM;
     char *passarg = NULL, *pass = NULL;

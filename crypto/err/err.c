@@ -999,7 +999,7 @@ int ERR_get_next_error_library(void)
     return ERRFN(get_next_lib)();
 }
 
-void ERR_set_error_data(char *data, int flags)
+void ERR_set_error_data(const char *data, int flags)
 {
     ERR_STATE *es;
     int i;
@@ -1011,7 +1011,7 @@ void ERR_set_error_data(char *data, int flags)
         i = ERR_NUM_ERRORS - 1;
 
     err_clear_data(es, i);
-    es->err_data[i] = data;
+    es->err_data[i] = (char *)data;
     es->err_data_flags[i] = flags;
 }
 

@@ -64,7 +64,7 @@
 #include <openssl/evp.h>
 #include <openssl/md5.h>
 
-static char *test[] = {
+static const char *test[] = {
     "",
     "a",
     "abc",
@@ -75,7 +75,7 @@ static char *test[] = {
     NULL,
 };
 
-static char *ret[] = {
+static const char *ret[] = {
     "d41d8cd98f00b204e9800998ecf8427e",
     "0cc175b9c0f1b6a831c399e269772661",
     "900150983cd24fb0d6963f7d28e17f72",
@@ -89,8 +89,7 @@ static char *pt(uint8_t *md);
 int main(int argc, char *argv[])
 {
     int i, err = 0;
-    char **P, **R;
-    char *p;
+    const char **P, **R, *p;
     uint8_t md[MD5_DIGEST_LENGTH];
 
     P = test;

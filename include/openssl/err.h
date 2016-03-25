@@ -302,7 +302,7 @@ typedef struct ERR_string_data_st {
 } ERR_STRING_DATA;
 
 void ERR_put_error(int lib, int func, int reason, const char *file, int line);
-void ERR_set_error_data(char *data, int flags);
+void ERR_set_error_data(const char *data, int flags);
 
 unsigned long ERR_get_error(void);
 unsigned long ERR_get_error_line(const char **file, int *line);

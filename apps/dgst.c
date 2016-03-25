@@ -222,7 +222,7 @@ int dgst_main(int argc, char **argv)
                 debug = 1;
                 break;
             case OPT_FIPS_FINGERPRINT:
-                hmac_key = "etaonrishdlcupfm";
+                hmac_key = (char *)"etaonrishdlcupfm";
                 break;
             case OPT_NON_FIPS_ALLOW:
                 non_fips_allow = 1;

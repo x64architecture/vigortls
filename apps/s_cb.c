@@ -532,7 +532,7 @@ void tlsext_cb(SSL *s, int client_server, int type,
                void *arg)
 {
     BIO *bio = arg;
-    char *extname;
+    const char *extname;
 
     switch (type) {
         case TLSEXT_TYPE_server_name:

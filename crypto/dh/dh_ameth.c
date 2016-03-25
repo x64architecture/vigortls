@@ -452,8 +452,8 @@ const EVP_PKEY_ASN1_METHOD dh_asn1_meth = {
     .pkey_id = EVP_PKEY_DH,
     .pkey_base_id = EVP_PKEY_DH,
 
-    .pem_str = "DH",
-    .info = "OpenSSL PKCS#3 DH method",
+    .pem_str = (char *)"DH",
+    .info = (char *)"OpenSSL PKCS#3 DH method",
 
     .pub_decode = dh_pub_decode,
     .pub_encode = dh_pub_encode,

@@ -155,7 +155,7 @@ static int noecho_console(UI *ui);
 static int close_console(UI *ui);
 
 static UI_METHOD ui_openssl = {
-    .name = "OpenSSL default user interface",
+    .name = (char *)"OpenSSL default user interface",
     .ui_open_session = open_console,
     .ui_write_string = write_string,
     .ui_read_string = read_string,

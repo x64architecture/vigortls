@@ -71,7 +71,7 @@ int main(int argc, char *argv[])
 #include <openssl/ripemd.h>
 #include <openssl/evp.h>
 
-static char *test[] = {
+static const char *test[] = {
     "",
     "a",
     "abc",
@@ -83,7 +83,7 @@ static char *test[] = {
     NULL,
 };
 
-static char *ret[] = {
+static const char *ret[] = {
     "9c1185a5c5e9fc54612808977ee8f548b2258d31",
     "0bdc9d2d256b3ee9daae347be6f4dc835a467ffe",
     "8eb208f7e05d987a9b044a8e98c6b087f15a0bfc",
@@ -98,8 +98,8 @@ static char *pt(uint8_t *md);
 int main(int argc, char *argv[])
 {
     int i, err = 0;
-    char **P, **R;
-    char *p;
+    const char **P, **R;
+    const char *p;
     uint8_t md[RIPEMD160_DIGEST_LENGTH];
 
     P = test;

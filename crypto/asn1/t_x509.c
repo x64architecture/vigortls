@@ -212,7 +212,7 @@ int X509_print_ex(BIO *bp, X509 *x, unsigned long nmflags, unsigned long cflag)
     }
 
     if (!(cflag & X509_FLAG_NO_EXTENSIONS))
-        X509V3_extensions_print(bp, "X509v3 extensions",
+        X509V3_extensions_print(bp, (char *)"X509v3 extensions",
                                 ci->extensions, cflag, 8);
 
     if (!(cflag & X509_FLAG_NO_SIGDUMP)) {

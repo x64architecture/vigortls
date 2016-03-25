@@ -160,11 +160,11 @@ int OCSP_REQUEST_print(BIO *bp, OCSP_REQUEST *o, unsigned long flags)
         cid = one->reqCert;
         ocsp_certid_print(bp, cid, 8);
         if (!X509V3_extensions_print(bp,
-                                     "Request Single Extensions",
+                                     (char *)"Request Single Extensions",
                                      one->singleRequestExtensions, flags, 8))
             goto err;
     }
-    if (!X509V3_extensions_print(bp, "Request Extensions",
+    if (!X509V3_extensions_print(bp, (char *)"Request Extensions",
                                  inf->requestExtensions, flags, 4))
         goto err;
     if (sig) {
@@ -275,13 +275,13 @@ int OCSP_RESPONSE_print(BIO *bp, OCSP_RESPONSE *o, unsigned long flags)
         if (BIO_write(bp, "\n", 1) <= 0)
             goto err;
         if (!X509V3_extensions_print(bp,
-                                     "Response Single Extensions",
+                                     (char *)"Response Single Extensions",
                                      single->singleExtensions, flags, 8))
             goto err;
         if (BIO_write(bp, "\n", 1) <= 0)
             goto err;
     }
-    if (!X509V3_extensions_print(bp, "Response Extensions",
+    if (!X509V3_extensions_print(bp, (char *)"Response Extensions",
                                  rd->responseExtensions, flags, 4))
         goto err;
     if (X509_signature_print(bp, br->signatureAlgorithm, br->signature) <= 0)

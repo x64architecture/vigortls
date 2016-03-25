@@ -234,7 +234,7 @@ int ocsp_main(int argc, char **argv)
     X509_STORE *store = NULL;
     X509_VERIFY_PARAM *vpm = NULL;
     char *CAfile = NULL, *CApath = NULL, *header, *value;
-    char *host = NULL, *port = NULL, *path = "/", *outfile = NULL;
+    char *host = NULL, *port = NULL, *path = (char *)"/", *outfile = NULL;
     char *rca_filename = NULL, *reqin = NULL, *respin = NULL;
     char *reqout = NULL, *respout = NULL, *ridx_filename = NULL;
     char *rsignfile = NULL, *rkeyfile = NULL;

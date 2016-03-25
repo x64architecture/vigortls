@@ -73,7 +73,7 @@ int main(int argc, char *argv[])
 #else
 #include <openssl/blowfish.h>
 
-static char *bf_key[2] = {
+static const char *bf_key[2] = {
     "abcdefghijklmnopqrstuvwxyz",
     "Who is John Galt?"
 };

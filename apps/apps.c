@@ -314,7 +314,7 @@ static int ui_close(UI *ui)
 }
 int setup_ui_method(void)
 {
-    ui_method = UI_create_method("OpenSSL application user interface");
+    ui_method = UI_create_method((char *)"OpenSSL application user interface");
     UI_method_set_opener(ui_method, ui_open);
     UI_method_set_reader(ui_method, ui_read);
     UI_method_set_writer(ui_method, ui_write);

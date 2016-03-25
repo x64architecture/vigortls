@@ -545,10 +545,10 @@ int main(int argc, char *argv[])
     int tls1 = 0, dtls1 = 0, ret = 1;
     int client_auth = 0;
     int server_auth = 0, i;
-    struct app_verify_arg app_verify_arg = { APP_CALLBACK_STRING, 0, 0, NULL, NULL };
-    char *server_cert = TEST_SERVER_CERT;
+    struct app_verify_arg app_verify_arg = { (char *)APP_CALLBACK_STRING, 0, 0, NULL, NULL };
+    char *server_cert = (char *)TEST_SERVER_CERT;
     char *server_key = NULL;
-    char *client_cert = TEST_CLIENT_CERT;
+    char *client_cert = (char *)TEST_CLIENT_CERT;
     char *client_key = NULL;
     char *named_curve = NULL;
     SSL_CTX *s_ctx = NULL;
@@ -1586,7 +1586,8 @@ static int get_proxy_auth_ex_data_idx(void)
         CRYPTO_w_lock(CRYPTO_LOCK_SSL_CTX);
         if (idx < 0) {
             idx = X509_STORE_CTX_get_ex_new_index(0,
-                                                  "SSLtest for verify callback", NULL, NULL, NULL);
+                      (char *)"SSLtest for verify callback",
+                      NULL, NULL, NULL);
         }
         CRYPTO_w_unlock(CRYPTO_LOCK_SSL_CTX);
     }

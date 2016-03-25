@@ -310,54 +310,32 @@ int X509_VERIFY_PARAM_get_depth(const X509_VERIFY_PARAM *param)
 
 static const X509_VERIFY_PARAM default_table[] = {
     {
-      "default", /* X509 default parameters */
-      0,         /* Check time */
-      0,         /* internal flags */
-      0,         /* flags */
-      0,         /* purpose */
-      0,         /* trust */
-      100,       /* depth */
-      NULL       /* policies */
+      .name = (char *)"default",
+      .depth = 100,
     },
     {
-      "pkcs7",                 /* S/MIME sign parameters */
-      0,                       /* Check time */
-      0,                       /* internal flags */
-      0,                       /* flags */
-      X509_PURPOSE_SMIME_SIGN, /* purpose */
-      X509_TRUST_EMAIL,        /* trust */
-      -1,                      /* depth */
-      NULL                     /* policies */
+      .name = (char *)"pkcs7",
+      .purpose = X509_PURPOSE_SMIME_SIGN,
+      .trust = X509_TRUST_EMAIL,
+      .depth = -1,
     },
     {
-      "smime_sign",            /* S/MIME sign parameters */
-      0,                       /* Check time */
-      0,                       /* internal flags */
-      0,                       /* flags */
-      X509_PURPOSE_SMIME_SIGN, /* purpose */
-      X509_TRUST_EMAIL,        /* trust */
-      -1,                      /* depth */
-      NULL                     /* policies */
+      .name = (char *)"smime_sign",
+      .purpose = X509_PURPOSE_SMIME_SIGN,
+      .trust = X509_TRUST_EMAIL,
+      .depth = -1,
     },
     {
-      "ssl_client",            /* SSL/TLS client parameters */
-      0,                       /* Check time */
-      0,                       /* internal flags */
-      0,                       /* flags */
-      X509_PURPOSE_SSL_CLIENT, /* purpose */
-      X509_TRUST_SSL_CLIENT,   /* trust */
-      -1,                      /* depth */
-      NULL                     /* policies */
+      .name = (char *)"ssl_client",
+      .purpose = X509_PURPOSE_SSL_CLIENT,
+      .trust = X509_TRUST_SSL_CLIENT,
+      .depth = -1,
     },
     {
-      "ssl_server",            /* SSL/TLS server parameters */
-      0,                       /* Check time */
-      0,                       /* internal flags */
-      0,                       /* flags */
-      X509_PURPOSE_SSL_SERVER, /* purpose */
-      X509_TRUST_SSL_SERVER,   /* trust */
-      -1,                      /* depth */
-      NULL                     /* policies */
+      .name = (char *)"ssl_server",
+      .purpose = X509_PURPOSE_SSL_SERVER,
+      .trust = X509_TRUST_SSL_SERVER,
+      .depth = -1,
     }
 };
 

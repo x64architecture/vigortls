@@ -535,7 +535,7 @@ int x509_main(int argc, char **argv)
             extsect = NCONF_get_string(extconf, "default", "extensions");
             if (!extsect) {
                 ERR_clear_error();
-                extsect = "default";
+                extsect = (char *)"default";
             }
         }
         X509V3_set_ctx_test(&ctx2);

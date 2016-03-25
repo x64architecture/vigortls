@@ -139,8 +139,8 @@ const EVP_PKEY_ASN1_METHOD hmac_asn1_meth = {
     .pkey_id = EVP_PKEY_HMAC,
     .pkey_base_id = EVP_PKEY_HMAC,
 
-    .pem_str = "HMAC",
-    .info = "OpenSSL HMAC method",
+    .pem_str = (char *)"HMAC",
+    .info = (char *)"OpenSSL HMAC method",
 
     .pkey_size = hmac_size,
 

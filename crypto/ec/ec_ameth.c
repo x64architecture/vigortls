@@ -587,8 +587,8 @@ const EVP_PKEY_ASN1_METHOD eckey_asn1_meth = {
     .pkey_id = EVP_PKEY_EC,
     .pkey_base_id = EVP_PKEY_EC,
 
-    .pem_str = "EC",
-    .info = "OpenSSL EC algorithm",
+    .pem_str = (char *)"EC",
+    .info = (char *)"OpenSSL EC algorithm",
 
     .pub_decode = eckey_pub_decode,
     .pub_encode = eckey_pub_encode,

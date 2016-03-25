@@ -175,7 +175,7 @@ OPTIONS ts_options[] = {
 /*
  * This comand is so complex, special help is needed.
  */
-static char *opt_helplist[] = {
+static const char *opt_helplist[] = {
     "Typical uses:", "ts -query [-config file] [-data file]",
     "          [-digest hexstring] [-policy oid] [-no_nonce] [-cert]",
     "          [-in file] [-out file] [-text]", "  or",
@@ -197,7 +197,8 @@ static char *opt_helplist[] = {
 int ts_main(int argc, char **argv)
 {
     CONF *conf = NULL;
-    char *CAfile = NULL, *untrusted = NULL, *engine = NULL, *prog, **helpp;
+    const char **helpp;
+    char *CAfile = NULL, *untrusted = NULL, *engine = NULL, *prog;
     char *configfile = NULL, *section = NULL, *password = NULL;
     char *data = NULL, *digest = NULL, *policy = NULL;
     char *in = NULL, *out = NULL, *queryfile = NULL, *passin = NULL;

@@ -166,7 +166,7 @@ OCSP_REQ_CTX *OCSP_sendreq_new(BIO *io, char *path, OCSP_REQUEST *req,
     if (!rctx->iobuf)
         goto err;
     if (!path)
-        path = "/";
+        path = (char *)"/";
 
     if (BIO_printf(rctx->mem, post_hdr, path) <= 0)
         goto err;

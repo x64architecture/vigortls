@@ -73,7 +73,7 @@
 #include <openssl/err.h>
 #include <stdcompat.h>
 
-static void xopenlog(BIO *bp, char *name, int level)
+static void xopenlog(BIO *bp, const char *name, int level)
 {
     openlog(name, LOG_PID | LOG_CONS, level);
 }

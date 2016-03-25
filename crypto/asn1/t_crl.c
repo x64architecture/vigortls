@@ -105,7 +105,7 @@ int X509_CRL_print(BIO *out, X509_CRL *x)
         BIO_printf(out, "NONE");
     BIO_printf(out, "\n");
 
-    X509V3_extensions_print(out, "CRL extensions",
+    X509V3_extensions_print(out, (char *)"CRL extensions",
                             x->crl->extensions, 0, 8);
 
     rev = X509_CRL_get_REVOKED(x);
@@ -122,7 +122,7 @@ int X509_CRL_print(BIO *out, X509_CRL *x)
         BIO_printf(out, "\n        Revocation Date: ");
         ASN1_TIME_print(out, r->revocationDate);
         BIO_printf(out, "\n");
-        X509V3_extensions_print(out, "CRL entry extensions",
+        X509V3_extensions_print(out, (char *)"CRL entry extensions",
                                 r->extensions, 0, 8);
     }
     X509_signature_print(out, x->sig_alg, x->signature);

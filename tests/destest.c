@@ -418,7 +418,7 @@ static char *pt(uint8_t *p)
     static int bnum = 0;
     char *ret;
     int i;
-    static char *f = "0123456789ABCDEF";
+    static const char *f = "0123456789ABCDEF";
 
     ret = &(bufs[bnum++][0]);
     bnum %= 10;

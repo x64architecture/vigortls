@@ -64,37 +64,24 @@
 #include <openssl/evp.h>
 #include <openssl/sha.h>
 
-#undef SHA_0  /* FIPS 180 */
-#define SHA_1 /* FIPS 180-1 */
-
-static char *test[] = {
+static const char *test[] = {
     "abc",
     "abcdbcdecdefdefgefghfghighijhijkijkljklmklmnlmnomnopnopq",
     NULL,
 };
 
-#ifdef SHA_0
-static char *ret[] = {
-    "0164b8a914cd2a5e74c4f7ff082c4d97f1edf880",
-    "d2516ee1acfa5baf33dfc1c471e438449ef134c8",
-};
-static char *bigret = "3232affa48628a26653b5aaa44541fd90d690603";
-#endif
-#ifdef SHA_1
-static char *ret[] = {
+static const char *ret[] = {
     "a9993e364706816aba3e25717850c26c9cd0d89d",
     "84983e441c3bd26ebaae4aa1f95129e5e54670f1",
 };
-static char *bigret = "34aa973cd4c4daa4f61eeb2bdbad27316534016f";
-#endif
+static const char *bigret = "34aa973cd4c4daa4f61eeb2bdbad27316534016f";
 
 static char *pt(uint8_t *md);
 int main(int argc, char *argv[])
 {
     int i, err = 0;
-    char **P, **R;
+    const char **P, **R, *p, *r;
     static uint8_t buf[1000];
-    char *p, *r;
     EVP_MD_CTX c;
     uint8_t md[SHA_DIGEST_LENGTH];
 

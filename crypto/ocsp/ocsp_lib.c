@@ -174,7 +174,8 @@ int OCSP_parse_url(char *url, char **phost, char **pport, char **ppath, int *pss
 {
     char *p, *buf;
 
-    char *host, *port;
+    char *host;
+    const char *port;
 
     *phost = NULL;
     *pport = NULL;

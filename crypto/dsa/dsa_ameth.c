@@ -626,8 +626,8 @@ const EVP_PKEY_ASN1_METHOD dsa_asn1_meths[] = {
     { .pkey_id = EVP_PKEY_DSA,
       .pkey_base_id = EVP_PKEY_DSA,
 
-      .pem_str = "DSA",
-      .info = "OpenSSL DSA method",
+      .pem_str = (char *)"DSA",
+      .info = (char *)"OpenSSL DSA method",
 
       .pub_decode = dsa_pub_decode,
       .pub_encode = dsa_pub_encode,

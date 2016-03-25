@@ -436,15 +436,15 @@ static int test_digest(const char *digest,
 
 int main(int argc, char **argv)
 {
-    char *szTestFile = "data/evptests.txt";
+    const char *testfile = "data/evptests.txt";
     FILE *fp;
 
     if (argc > 1)
-        szTestFile = argv[1];
+        testfile = argv[1];
 
-    fp = fopen(szTestFile, "r");
+    fp = fopen(testfile, "r");
     if (!fp) {
-        perror(szTestFile);
+        perror(testfile);
         exit(2);
     }
 

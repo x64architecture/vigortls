@@ -832,7 +832,7 @@ end_of_options:
         /* We can have sections in the ext file */
         if (!extensions
             && !(extensions = NCONF_get_string(extconf, "default", "extensions")))
-            extensions = "default";
+            extensions = (char *)"default";
     }
 
     /*****************************************************************/
@@ -918,7 +918,7 @@ end_of_options:
             goto end;
         }
         if (startdate == NULL)
-            startdate = "today";
+            startdate = (char *)"today";
 
         if (enddate == NULL) {
             enddate = NCONF_get_string(conf, section, ENV_DEFAULT_ENDDATE);
@@ -1072,10 +1072,10 @@ end_of_options:
             BIO_printf(bio_err, "Write out database with %d new entries\n",
                        sk_X509_num(cert_sk));
 
-            if (!save_serial(serialfile, "new", serial, NULL))
+            if (!save_serial(serialfile, (char *)"new", serial, NULL))
                 goto end;
 
-            if (!save_index(dbfile, "new", db))
+            if (!save_index(dbfile, (char *)"new", db))
                 goto end;
         }
 
@@ -1128,7 +1128,7 @@ end_of_options:
 
         if (sk_X509_num(cert_sk)) {
             /* Rename the database and the serial file */
-            if (!rotate_serial(serialfile, "new", "old"))
+            if (!rotate_serial(serialfile, (char *)"new", (char *)"old"))
                 goto end;
 
             if (!rotate_index(dbfile, "new", "old"))
@@ -1259,7 +1259,7 @@ end_of_options:
 
         /* we have a CRL number that need updating */
         if (crlnumberfile != NULL)
-            if (!save_serial(crlnumberfile, "new", crlnumber, NULL))
+            if (!save_serial(crlnumberfile, (char *)"new", crlnumber, NULL))
                 goto end;
 
         if (crlnumber) {
@@ -1273,7 +1273,7 @@ end_of_options:
         PEM_write_bio_X509_CRL(Sout, crl);
 
         if (crlnumberfile != NULL) /* Rename the crlnumber file */
-            if (!rotate_serial(crlnumberfile, "new", "old"))
+            if (!rotate_serial(crlnumberfile, (char *)"new", (char *)"old"))
                 goto end;
     }
     /*****************************************************************/

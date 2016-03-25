@@ -178,8 +178,7 @@ static void update_buflen(const BIGNUM *b, size_t *pbuflen)
 
 static int do_rsa_print(BIO *bp, const RSA *x, int off, int priv)
 {
-    char *str;
-    const char *s;
+    const char *s, *str;
     uint8_t *m = NULL;
     int ret = 0, mod_len = 0;
     size_t buf_len = 0;
@@ -608,8 +607,8 @@ const EVP_PKEY_ASN1_METHOD rsa_asn1_meths[] = {
       .pkey_base_id = EVP_PKEY_RSA,
       .pkey_flags = ASN1_PKEY_SIGPARAM_NULL,
 
-      .pem_str = "RSA",
-      .info = "OpenSSL RSA method",
+      .pem_str = (char *)"RSA",
+      .info = (char *)"OpenSSL RSA method",
 
       .pub_decode = rsa_pub_decode,
       .pub_encode = rsa_pub_encode,

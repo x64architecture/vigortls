@@ -1555,14 +1555,14 @@ char *SSL_CIPHER_description(const SSL_CIPHER *cipher, char *buf, int len)
     }
 
     if (asprintf(&ret, fmt, cipher->name, ver, kx, au, enc, mac) == -1)
-        return "malloc Error";
+        return (char *)"malloc Error";
 
     if (buf != NULL) {
         l = strlcpy(buf, ret, len);
         free(ret);
         ret = buf;
         if (l >= len)
-            ret = "Buffer too small";
+            ret = (char *)"Buffer too small";
     }
 
     return (ret);
@@ -1573,22 +1573,22 @@ char *SSL_CIPHER_get_version(const SSL_CIPHER *c)
     int i;
 
     if (c == NULL)
-        return ("(NONE)");
+        return (char *)"(NONE)";
     i = (int)(c->id >> 24L);
     if (i == 3)
-        return ("TLSv1/SSLv3");
+        return (char *)"TLSv1/SSLv3";
     else if (i == 2)
-        return ("SSLv2");
+        return (char *)"SSLv2";
     else
-        return ("unknown");
+        return (char *)"unknown";
 }
 
 /* return the actual cipher being used */
 const char *SSL_CIPHER_get_name(const SSL_CIPHER *c)
 {
     if (c != NULL)
-        return (c->name);
-    return ("(NONE)");
+        return c->name;
+    return "(NONE)";
 }
 
 /* number of bits for symmetric cipher */

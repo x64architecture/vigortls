@@ -76,8 +76,8 @@ const EVP_PKEY_ASN1_METHOD cmac_asn1_meth = {
     .pkey_id = EVP_PKEY_CMAC,
     .pkey_base_id = EVP_PKEY_CMAC,
 
-    .pem_str = "CMAC",
-    .info = "OpenSSL CMAC method",
+    .pem_str = (char *)"CMAC",
+    .info = (char *)"OpenSSL CMAC method",
 
     .pkey_size = cmac_size,
     .pkey_free = cmac_key_free
