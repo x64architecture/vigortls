@@ -1693,6 +1693,7 @@ int ssl3_get_certificate_request(SSL *s)
 
         p += l;
         nc += l + 2;
+        xn = NULL;
     }
 
     /* we should setup a certificate to return.... */
@@ -1709,6 +1710,7 @@ int ssl3_get_certificate_request(SSL *s)
                SSL_R_BAD_PACKET_LENGTH);
     }
 err:
+    X509_NAME_free(xn);
     sk_X509_NAME_pop_free(ca_sk, X509_NAME_free);
     return (ret);
 }
