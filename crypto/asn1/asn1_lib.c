@@ -65,7 +65,7 @@
 
 #include "cryptlib.h"
 
-static int asn1_get_length(const uint8_t **pp, int *inf, long *rl, int max);
+static int asn1_get_length(const uint8_t **pp, int *inf, long *rl, long max);
 static void asn1_put_length(uint8_t **pp, int length);
 
 static int
@@ -132,7 +132,7 @@ int ASN1_get_object(const uint8_t **pp, long *plength, int *ptag,
     }
     *ptag = tag;
     *pclass = xclass;
-    if (!asn1_get_length(&p, &inf, plength, (int)max))
+    if (!asn1_get_length(&p, &inf, plength, max))
         goto err;
 
     if (*plength > (omax - (p - *pp))) {
@@ -148,14 +148,14 @@ err:
     return (0x80);
 }
 
-static int asn1_get_length(const uint8_t **pp, int *inf, long *rl, int max)
+static int asn1_get_length(const uint8_t **pp, int *inf, long *rl, long max)
 {
     const uint8_t *p = *pp;
     unsigned long ret = 0;
-    unsigned int i;
+    unsigned long i;
 
     if (max-- < 1)
-        return (0);
+        return 0;
     if (*p == 0x80) {
         *inf = 1;
         ret = 0;
@@ -171,7 +171,7 @@ static int asn1_get_length(const uint8_t **pp, int *inf, long *rl, int max)
                 p++;
                 i--;
             }
-            if (i > sizeof(long))
+            if (i > sizeof(ret) || max < i)
                 return 0;
             while (i-- > 0) {
                 ret <<= 8L;
@@ -184,7 +184,7 @@ static int asn1_get_length(const uint8_t **pp, int *inf, long *rl, int max)
         return 0;
     *pp = p;
     *rl = (long)ret;
-    return (1);
+    return 1;
 }
 
 /* class 0 is constructed
