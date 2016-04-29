@@ -93,11 +93,12 @@
 extern "C" {
 #endif
 
-#ifdef _WIN32
-/* Under Win32 these are defined in wincrypt.h */
-# undef X509_NAME
-# undef X509_EXTENSIONS
-# endif
+/* Fix conflicts with wincrypt.h */
+#if defined(_WIN32) && defined(__WINCRYPT_H__)
+ #undef X509_NAME
+ #undef X509_CERT_PAIR
+ #undef X509_EXTENSIONS
+#endif
 
 #define X509_FILETYPE_PEM 1
 #define X509_FILETYPE_ASN1 2

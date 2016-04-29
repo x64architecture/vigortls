@@ -69,11 +69,11 @@
 extern "C" {
 #endif
 
-# ifdef _WIN32
-/* Under Win32 these are defined in wincrypt.h */
-# undef PKCS7_ISSUER_AND_SERIAL
-# undef PKCS7_SIGNER_INFO
-# endif
+/* Fix conflicts with wincrypt.h */
+#if defined(_WIN32) && defined(__WINCRYPT_H__)
+ #undef PKCS7_ISSUER_AND_SERIAL
+ #undef PKCS7_SIGNER_INFO
+#endif
 
 /*
 Encryption_ID        DES-CBC

@@ -81,14 +81,16 @@ typedef struct asn1_object_st ASN1_OBJECT;
 typedef struct ASN1_ITEM_st ASN1_ITEM;
 typedef struct asn1_pctx_st ASN1_PCTX;
 
-/* Fixes conflicts on win32 */
-# ifdef _WIN32
-# undef X509_NAME
-# undef X509_EXTENSIONS
-# undef PKCS7_ISSUER_AND_SERIAL
-# undef OCSP_REQUEST
-# undef OCSP_RESPONSE
-# endif
+
+/* Fixes conflicts with wincrypt.h */
+#if defined(_WIN32) && defined(__WINCRYPT_H__)
+ #undef X509_NAME
+ #undef X509_CERT_PAIR
+ #undef X509_EXTENSIONS
+ #undef OCSP_REQUEST
+ #undef OCSP_RESPONSE
+ #undef PKCS7_ISSUER_AND_SERIAL
+#endif
 
 #ifdef BIGNUM
 #undef BIGNUM
