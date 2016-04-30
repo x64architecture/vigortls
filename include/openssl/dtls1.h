@@ -63,9 +63,9 @@
 #include <stdlib.h>
 #include <string.h>
 #if defined(_WIN32)
- #include <sys/time.h>
-#else
  #include <winsock2.h>
+#else
+ #include <sys/time.h>
 #endif
 
 #include <openssl/buffer.h>
