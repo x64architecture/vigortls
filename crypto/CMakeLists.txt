@@ -53,6 +53,7 @@ add_subdirectory(cms)
 add_subdirectory(conf)
 add_subdirectory(compat)
 add_subdirectory(cpuid)
+add_subdirectory(decrepit)
 add_subdirectory(des)
 add_subdirectory(dh)
 add_subdirectory(dsa)
@@ -93,15 +94,11 @@ add_subdirectory(x509v3)
 add_library(
     crypto
 
-    o_str.c
     cpt_err.c
     cryptlib.c
     ex_data.c
-    malloc_wrapper.c
-    mem_clr.c
-    mem_dbg.c
+    memory.c
     time_support.c
-    uid.c
 
     $<TARGET_OBJECTS:aes>
     $<TARGET_OBJECTS:asn1>
@@ -118,6 +115,7 @@ add_library(
     $<TARGET_OBJECTS:conf>
     $<TARGET_OBJECTS:compat>
     $<TARGET_OBJECTS:cpuid>
+    $<TARGET_OBJECTS:decrepit>
     $<TARGET_OBJECTS:des>
     $<TARGET_OBJECTS:dh>
     $<TARGET_OBJECTS:dsa>

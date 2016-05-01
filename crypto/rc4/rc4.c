@@ -108,8 +108,3 @@ void RC4_set_key(RC4_KEY *key, int len, const uint8_t *data)
     }
 }
 
-const char *RC4_options(void)
-{
-    return ("rc4(ptr,int)");
-}
-

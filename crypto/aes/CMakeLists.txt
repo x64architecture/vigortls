@@ -37,7 +37,6 @@ add_library(
 
     OBJECT
 
-    aes_misc.c
     aes_modes.c
     aes_ige.c
     aes_wrap.c

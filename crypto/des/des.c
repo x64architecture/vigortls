@@ -811,9 +811,4 @@ void DES_ede3_cbc_encrypt(const uint8_t *input, uint8_t *output, long length,
     tin[0] = tin[1] = 0;
 }
 
-const char *DES_options(void)
-{
-        return "des(idx,cisc,unrolled,size)";
-}
-
 

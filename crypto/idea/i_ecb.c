@@ -59,11 +59,6 @@
 #include <openssl/idea.h>
 #include "idea_lcl.h"
 
-const char *idea_options(void)
-{
-    return ("idea(int)");
-}
-
 void idea_ecb_encrypt(const uint8_t *in, uint8_t *out,
                       IDEA_KEY_SCHEDULE *ks)
 {
