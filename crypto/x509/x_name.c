@@ -70,6 +70,12 @@
 typedef STACK_OF(X509_NAME_ENTRY) STACK_OF_X509_NAME_ENTRY;
 DECLARE_STACK_OF(STACK_OF_X509_NAME_ENTRY)
 
+/*
+ * Maximum length of X509_NAME: much larger than anything we should
+ * ever see in practice.
+ */
+#define X509_NAME_MAX (1024 * 1024)
+
 static int x509_name_ex_d2i(ASN1_VALUE **val,
                             const uint8_t **in, long len,
                             const ASN1_ITEM *it,
@@ -231,6 +237,11 @@ static int x509_name_ex_d2i(ASN1_VALUE **val,
     int i, j, ret;
     STACK_OF(X509_NAME_ENTRY) * entries;
     X509_NAME_ENTRY *entry;
+    
+    if (len > X509_NAME_MAX) {
+        ASN1Err(ASN1_F_X509_NAME_EX_D2I, ASN1_R_TOO_LONG);
+        return 0;
+    }
     q = p;
 
     /* Get internal representation of Name */
