@@ -56,6 +56,7 @@
  * [including the GNU Public Licence.]
  */
 
+#include <limits.h>
 #include <stdio.h>
 #include <string.h>
 
@@ -153,7 +154,7 @@ void EVP_EncodeUpdate(EVP_ENCODE_CTX *ctx, uint8_t *out, int *outl,
         *out = '\0';
         total = j + 1;
     }
-    while (inl >= ctx->length) {
+    while (inl >= ctx->length && total <= INT_MAX) {
         j = EVP_EncodeBlock(out, in, ctx->length);
         in += ctx->length;
         inl -= ctx->length;
@@ -161,6 +162,11 @@ void EVP_EncodeUpdate(EVP_ENCODE_CTX *ctx, uint8_t *out, int *outl,
         *(out++) = '\n';
         *out = '\0';
         total += j + 1;
+    }
+    if (total > INT_MAX) {
+        /* Too much output data! */
+        *outl = 0;
+        return;
     }
     if (inl != 0)
         memcpy(&(ctx->enc_data[0]), in, inl);
