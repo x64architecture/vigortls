@@ -239,7 +239,7 @@ static int x509_name_ex_d2i(ASN1_VALUE **val,
     X509_NAME_ENTRY *entry;
     
     if (len > X509_NAME_MAX) {
-        ASN1Err(ASN1_F_X509_NAME_EX_D2I, ASN1_R_TOO_LONG);
+        ASN1err(ASN1_F_X509_NAME_EX_D2I, ASN1_R_TOO_LONG);
         return 0;
     }
     q = p;
