@@ -68,6 +68,12 @@
 
 #include "internal/x509_int.h"
 
+/*
+ * Limit to ensure we don't overflow: much greater than
+ * anything enountered in practice.
+ */
+#define NAME_ONELINE_MAX    (1024 * 1024)
+
 char *X509_NAME_oneline(X509_NAME *a, char *buf, int len)
 {
     X509_NAME_ENTRY *ne;
@@ -113,6 +119,10 @@ char *X509_NAME_oneline(X509_NAME *a, char *buf, int len)
 
         type = ne->value->type;
         num = ne->value->length;
+        if (num > NAME_ONELINE_MAX) {
+            X509err(X509_F_X509_NAME_ONELINE, X509_R_NAME_TOO_LONG);
+            goto end;
+        }
         q = ne->value->data;
 
         if ((type == V_ASN1_GENERALSTRING) && ((num % 4) == 0)) {
@@ -140,6 +150,10 @@ char *X509_NAME_oneline(X509_NAME *a, char *buf, int len)
 
         lold = l;
         l += 1 + l1 + 1 + l2;
+        if (l > NAME_ONELINE_MAX) {
+            X509err(X509_F_X509_NAME_ONELINE, X509_R_NAME_TOO_LONG);
+            goto end;
+        }
         if (b != NULL) {
             if (!BUF_MEM_grow(b, l + 1))
                 goto err;
@@ -179,6 +193,7 @@ char *X509_NAME_oneline(X509_NAME *a, char *buf, int len)
     return (p);
 err:
     X509err(X509_F_X509_NAME_ONELINE, ERR_R_MALLOC_FAILURE);
+end:
     BUF_MEM_free(b);
     return (NULL);
 }
