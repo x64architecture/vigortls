@@ -383,6 +383,9 @@ static int cpy_utf8(unsigned long value, void *arg)
     return 1;
 }
 
+/* defined in a_print.c */
+extern int ASN1_char_is_printable(char c);
+
 /* Return 1 if the character is permitted in a PrintableString */
 static int is_printable(unsigned long value)
 {
@@ -393,13 +396,8 @@ static int is_printable(unsigned long value)
     /* Note: we can't use 'isalnum' because certain accented
      * characters may count as alphanumeric in some environments.
      */
-    if ((ch >= 'a') && (ch <= 'z'))
+    if (ASN1_char_is_printable(ch))
         return 1;
-    if ((ch >= 'A') && (ch <= 'Z'))
-        return 1;
-    if ((ch >= '0') && (ch <= '9'))
-        return 1;
-    if ((ch == ' ') || strchr("'()+,-./:=?", ch))
-        return 1;
+
     return 0;
 }

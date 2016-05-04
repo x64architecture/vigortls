@@ -59,6 +59,16 @@
 #include <stdio.h>
 #include <openssl/asn1.h>
 
+int ASN1_char_is_printable(char c)
+{
+    return
+        ((((c >= 'a') && (c <= 'z')) || ((c >= 'A') && (c <= 'Z')) ||
+        (c == ' ') || ((c >= '0') && (c <= '9')) || (c == ' ') ||
+        (c == '\'') || (c == '(') || (c == ')') || (c == '+') ||
+        (c == ',') || (c == '-') || (c == '.') || (c == '/') ||
+        (c == ':') || (c == '=') || (c == '?')));
+}
+
 int ASN1_PRINTABLE_type(const uint8_t *s, int len)
 {
     int c;
@@ -72,7 +82,7 @@ int ASN1_PRINTABLE_type(const uint8_t *s, int len)
 
     while ((*s) && (len-- != 0)) {
         c = *(s++);
-        if (!(((c >= 'a') && (c <= 'z')) || ((c >= 'A') && (c <= 'Z')) || (c == ' ') || ((c >= '0') && (c <= '9')) || (c == ' ') || (c == '\'') || (c == '(') || (c == ')') || (c == '+') || (c == ',') || (c == '-') || (c == '.') || (c == '/') || (c == ':') || (c == '=') || (c == '?')))
+        if (!ASN1_char_is_printable(c))
             ia5 = 1;
         if (c & 0x80)
             t61 = 1;
