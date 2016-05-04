@@ -302,21 +302,20 @@
 #define SSL_aGOST01             0x00000020L
 
 /* Bits for algorithm_enc (symmetric encryption) */
-#define SSL_DES 0x00000001L
-#define SSL_3DES 0x00000002L
-#define SSL_RC4 0x00000004L
-#define SSL_RC2 0x00000008L
-#define SSL_IDEA 0x00000010L
-#define SSL_eNULL 0x00000020L
-#define SSL_AES128 0x00000040L
-#define SSL_AES256 0x00000080L
-#define SSL_CAMELLIA128 0x00000100L
-#define SSL_CAMELLIA256 0x00000200L
-#define SSL_eGOST2814789CNT 0x00000400L
-#define SSL_SEED 0x00000800L
-#define SSL_AES128GCM 0x00001000L
-#define SSL_AES256GCM 0x00002000L
-#define SSL_CHACHA20POLY1305 0x00004000L
+#define SSL_DES                     0x00000001L
+#define SSL_3DES                    0x00000002L
+#define SSL_RC4                     0x00000004L
+#define SSL_IDEA                    0x00000008L
+#define SSL_eNULL                   0x00000010L
+#define SSL_AES128                  0x00000020L
+#define SSL_AES256                  0x00000040L
+#define SSL_CAMELLIA128             0x00000080L
+#define SSL_CAMELLIA256             0x00000100L
+#define SSL_eGOST2814789CNT         0x00000200L
+#define SSL_AES128GCM               0x00000400L
+#define SSL_AES256GCM               0x00000800L
+#define SSL_CHACHA20POLY1305        0x00001000L
+#define SSL_CHACHA20POLY1305_OLD    0x00002000L
 
 #define SSL_AES (SSL_AES128 | SSL_AES256 | SSL_AES128GCM | SSL_AES256GCM)
 #define SSL_CAMELLIA (SSL_CAMELLIA128 | SSL_CAMELLIA256)
@@ -570,9 +569,10 @@ struct ssl_aead_ctx_st {
    * fixed_nonce contains any bytes of the nonce that are fixed for all
    * records.
    */
-    uint8_t fixed_nonce[8];
+    uint8_t fixed_nonce[12];
     uint8_t fixed_nonce_len;
     uint8_t variable_nonce_len;
+    uint8_t xor_fixed_nonce;
     uint8_t tag_len;
     /*
    * variable_nonce_in_record is non-zero if the variable nonce

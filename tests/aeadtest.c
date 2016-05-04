@@ -188,9 +188,9 @@ int main(int argc, char **argv)
         fprintf(stderr, "No chacha20-poly1305 support. Skipping test.\n");
         return 0;
 #endif
-    } else if (strcmp(argv[1], "chacha20-poly1305-ietf") == 0) {
+    } else if (strcmp(argv[1], "chacha20-poly1305-old") == 0) {
 #if !defined(OPENSSL_NO_CHACHA) && !defined(OPENSSL_NO_POLY1305)
-        aead = EVP_aead_chacha20_poly1305_ietf();
+        aead = EVP_aead_chacha20_poly1305_old();
 #else
         fprintf(stderr, "No chacha20-poly1305 support. Skipping test.\n");
         return 0;

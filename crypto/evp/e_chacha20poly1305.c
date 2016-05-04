@@ -285,7 +285,7 @@ static int aead_chacha20_poly1305_old_open(
                      nonce_96, in, in_len, ad, ad_len);
 }
 
-static const EVP_AEAD aead_chacha20_poly1305 = {
+static const EVP_AEAD aead_chacha20_poly1305_old = {
     .key_len = 32,
     .nonce_len = 8,
     .overhead = POLY1305_TAG_LEN,
@@ -296,12 +296,12 @@ static const EVP_AEAD aead_chacha20_poly1305 = {
     .open = aead_chacha20_poly1305_old_open,
 };
 
-const EVP_AEAD *EVP_aead_chacha20_poly1305(void)
+const EVP_AEAD *EVP_aead_chacha20_poly1305_old(void)
 {
-    return &aead_chacha20_poly1305;
+    return &aead_chacha20_poly1305_old;
 }
 
-static const EVP_AEAD aead_chacha20_poly1305_ietf = {
+static const EVP_AEAD aead_chacha20_poly1305 = {
     .key_len = 32,
     .nonce_len = 12,
     .overhead = POLY1305_TAG_LEN,
@@ -312,9 +312,9 @@ static const EVP_AEAD aead_chacha20_poly1305_ietf = {
     .open = aead_chacha20_poly1305_open,
 };
 
-const EVP_AEAD *EVP_aead_chacha20_poly1305_ietf(void)
+const EVP_AEAD *EVP_aead_chacha20_poly1305(void)
 {
-    return &aead_chacha20_poly1305_ietf;
+    return &aead_chacha20_poly1305;
 }
 
 #endif

@@ -148,20 +148,19 @@
 
 #include "ssl_locl.h"
 
-#define SSL_ENC_DES_IDX 0
-#define SSL_ENC_3DES_IDX 1
-#define SSL_ENC_RC4_IDX 2
-#define SSL_ENC_RC2_IDX 3
-#define SSL_ENC_IDEA_IDX 4
-#define SSL_ENC_NULL_IDX 5
-#define SSL_ENC_AES128_IDX 6
-#define SSL_ENC_AES256_IDX 7
-#define SSL_ENC_CAMELLIA128_IDX 8
-#define SSL_ENC_CAMELLIA256_IDX 9
-#define SSL_ENC_GOST89_IDX 10
-#define SSL_ENC_AES128GCM_IDX 12
-#define SSL_ENC_AES256GCM_IDX 13
-#define SSL_ENC_NUM_IDX 14
+#define SSL_ENC_DES_IDX         0
+#define SSL_ENC_3DES_IDX        1
+#define SSL_ENC_RC4_IDX         2
+#define SSL_ENC_IDEA_IDX        3
+#define SSL_ENC_NULL_IDX        4
+#define SSL_ENC_AES128_IDX      5
+#define SSL_ENC_AES256_IDX      6
+#define SSL_ENC_CAMELLIA128_IDX 7
+#define SSL_ENC_CAMELLIA256_IDX 8
+#define SSL_ENC_GOST89_IDX      9
+#define SSL_ENC_AES128GCM_IDX   10
+#define SSL_ENC_AES256GCM_IDX   11
+#define SSL_ENC_NUM_IDX         12
 
 static const EVP_CIPHER *ssl_cipher_methods[SSL_ENC_NUM_IDX] = {
     NULL, NULL, NULL, NULL, NULL, NULL, NULL,
@@ -331,9 +330,6 @@ static const SSL_CIPHER cipher_aliases[] = {
       .name = SSL_TXT_RC4, .algorithm_enc = SSL_RC4,
     },
     {
-      .name = SSL_TXT_RC2, .algorithm_enc = SSL_RC2,
-    },
-    {
       .name = SSL_TXT_IDEA, .algorithm_enc = SSL_IDEA,
     },
     {
@@ -361,6 +357,10 @@ static const SSL_CIPHER cipher_aliases[] = {
       .name = SSL_TXT_CAMELLIA,
       .algorithm_enc = SSL_CAMELLIA128 | SSL_CAMELLIA256,
     },
+  	{
+ 		.name = SSL_TXT_CHACHA20,
+        .algorithm_enc = SSL_CHACHA20POLY1305 | SSL_CHACHA20POLY1305_OLD,
+ 	},
 
     /* MAC aliases */
     {
@@ -450,7 +450,6 @@ void ssl_load_ciphers(void)
     ssl_cipher_methods[SSL_ENC_DES_IDX] = EVP_get_cipherbyname(SN_des_cbc);
     ssl_cipher_methods[SSL_ENC_3DES_IDX] = EVP_get_cipherbyname(SN_des_ede3_cbc);
     ssl_cipher_methods[SSL_ENC_RC4_IDX] = EVP_get_cipherbyname(SN_rc4);
-    ssl_cipher_methods[SSL_ENC_RC2_IDX] = EVP_get_cipherbyname(SN_rc2_cbc);
 #ifndef OPENSSL_NO_IDEA
     ssl_cipher_methods[SSL_ENC_IDEA_IDX] = EVP_get_cipherbyname(SN_idea_cbc);
 #else
@@ -518,9 +517,6 @@ int ssl_cipher_get_evp(const SSL_SESSION *s, const EVP_CIPHER **enc,
             break;
         case SSL_RC4:
             i = SSL_ENC_RC4_IDX;
-            break;
-        case SSL_RC2:
-            i = SSL_ENC_RC2_IDX;
             break;
         case SSL_IDEA:
             i = SSL_ENC_IDEA_IDX;
@@ -651,6 +647,9 @@ int ssl_cipher_get_evp_aead(const SSL_SESSION *s, const EVP_AEAD **aead)
         case SSL_CHACHA20POLY1305:
             *aead = EVP_aead_chacha20_poly1305();
             return 1;
+        case SSL_CHACHA20POLY1305_OLD:
+            *aead = EVP_aead_chacha20_poly1305_old();
+            return 1;
 #endif
         default:
             break;
@@ -737,7 +736,6 @@ static void ssl_cipher_get_disabled(unsigned long *mkey, unsigned long *auth,
     *enc |= (ssl_cipher_methods[SSL_ENC_DES_IDX] == NULL) ? SSL_DES : 0;
     *enc |= (ssl_cipher_methods[SSL_ENC_3DES_IDX] == NULL) ? SSL_3DES : 0;
     *enc |= (ssl_cipher_methods[SSL_ENC_RC4_IDX] == NULL) ? SSL_RC4 : 0;
-    *enc |= (ssl_cipher_methods[SSL_ENC_RC2_IDX] == NULL) ? SSL_RC2 : 0;
     *enc |= (ssl_cipher_methods[SSL_ENC_IDEA_IDX] == NULL) ? SSL_IDEA : 0;
     *enc |= (ssl_cipher_methods[SSL_ENC_AES128_IDX] == NULL) ? SSL_AES128 : 0;
     *enc |= (ssl_cipher_methods[SSL_ENC_AES256_IDX] == NULL) ? SSL_AES256 : 0;
@@ -1312,14 +1310,12 @@ STACK_OF(SSL_CIPHER) * ssl_create_cipher_list(const SSL_METHOD *ssl_method,
     ssl_cipher_apply_rule(0, SSL_kECDHE, 0, 0, 0, 0, 0, CIPHER_DEL, -1, &head,
                           &tail);
 
-    /*
-     * CHACHA20 is fast and safe on all hardware and is thus our preferred
-     * symmetric cipher, with AES second.
-     */
-    ssl_cipher_apply_rule(0, 0, 0, SSL_CHACHA20POLY1305, 0, 0, 0, CIPHER_ADD, -1,
-                          &head, &tail);
     ssl_cipher_apply_rule(0, 0, 0, SSL_AES, 0, 0, 0, CIPHER_ADD, -1, &head,
                           &tail);
+    ssl_cipher_apply_rule(0, 0, 0, SSL_CHACHA20POLY1305, 0, 0, 0, CIPHER_ADD, -1,
+                          &head, &tail);
+    ssl_cipher_apply_rule(0, 0, 0, SSL_CHACHA20POLY1305_OLD, 0, 0, 0, CIPHER_ADD, -1,
+                          &head, &tail);
 
     /* Temporarily enable everything else for sorting */
     ssl_cipher_apply_rule(0, 0, 0, 0, 0, 0, 0, CIPHER_ADD, -1, &head, &tail);
@@ -1498,9 +1494,6 @@ char *SSL_CIPHER_description(const SSL_CIPHER *cipher, char *buf, int len)
         case SSL_RC4:
             enc = alg2 & SSL2_CF_8_BYTE_ENC ? "RC4(64)" : "RC4(128)";
             break;
-        case SSL_RC2:
-            enc = "RC2(128)";
-            break;
         case SSL_IDEA:
             enc = "IDEA(128)";
             break;
@@ -1527,6 +1520,9 @@ char *SSL_CIPHER_description(const SSL_CIPHER *cipher, char *buf, int len)
             break;
         case SSL_CHACHA20POLY1305:
             enc = "ChaCha20-Poly1305";
+            break;
+        case SSL_CHACHA20POLY1305_OLD:
+            enc = "ChaCha20-Poly1305-Old";
             break;
         default:
             enc = "unknown";
