@@ -2129,7 +2129,8 @@ SSL_CIPHER *ssl3_choose_cipher(SSL *s, STACK_OF(SSL_CIPHER) * clnt,
         /* Use ChaCha20+Poly1305 if it's the client's most preferred cipher suite */
         if (sk_SSL_CIPHER_num(clnt) > 0) {
             c = sk_SSL_CIPHER_value(clnt, 0);
-            if (c->algorithm_enc == SSL_CHACHA20POLY1305)
+            if (c->algorithm_enc == SSL_CHACHA20POLY1305 ||
+                c->algorithm_enc == SSL_CHACHA20POLY1305_OLD)
                 use_chacha = 1;
         }
     } else {
