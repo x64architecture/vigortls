@@ -72,6 +72,7 @@ start:
         } while (r == -1 && (errno == EAGAIN || errno == EINTR));
 
         if (r <= 0) {
+            close(fd);
             return 0;
         }
 
