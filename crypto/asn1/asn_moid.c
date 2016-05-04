@@ -114,7 +114,7 @@ static int do_create(char *value, char *name)
     ASN1_OBJECT *oid;
     char *ln, *ostr, *p, *lntmp;
     p = strrchr(value, ',');
-    if (!p) {
+    if (p == NULL) {
         ln = name;
         ostr = value;
     } else {
@@ -122,7 +122,7 @@ static int do_create(char *value, char *name)
         ostr = p + 1;
         if (!*ostr)
             return 0;
-        while (isspace((uint8_t)*ostr))
+        while (isspace(*ostr))
             ostr++;
     }
 
@@ -133,10 +133,10 @@ static int do_create(char *value, char *name)
 
     if (p) {
         ln = value;
-        while (isspace((uint8_t)*ln))
+        while (isspace(*ln))
             ln++;
         p--;
-        while (isspace((uint8_t)*p)) {
+        while (isspace(*p)) {
             if (p == ln)
                 return 0;
             p--;

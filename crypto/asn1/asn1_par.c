@@ -246,7 +246,9 @@ static int asn1_parse2(BIO *bp, const uint8_t **pp, long length, int offset,
                     /* testing whether the octet string is
                      * printable */
                     for (i = 0; i < os->length; i++) {
-                        if (((opp[i] < ' ') && (opp[i] != '\n') && (opp[i] != '\r') && (opp[i] != '\t')) || (opp[i] > '~')) {
+                        if (((opp[i] < ' ') && (opp[i] != '\n') &&
+                            (opp[i] != '\r') && (opp[i] != '\t')) ||
+                            (opp[i] > '~')) {
                             printable = 0;
                             break;
                         }
@@ -278,7 +280,8 @@ static int asn1_parse2(BIO *bp, const uint8_t **pp, long length, int offset,
                         }
                         if (BIO_dump_indent(bp,
                                             (const char *)opp,
-                                            ((dump == -1 || dump > os->length) ? os->length : dump),
+                                            ((dump == -1 || dump > os->length) ?
+                                            os->length : dump),
                                             dump_indent) <= 0)
                             goto end;
                         nl = 1;

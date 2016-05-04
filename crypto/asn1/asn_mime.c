@@ -124,7 +124,10 @@ int i2d_ASN1_bio_stream(BIO *out, ASN1_VALUE *val, BIO *in, int flags,
             ASN1err(ASN1_F_I2D_ASN1_BIO_STREAM, ERR_R_MALLOC_FAILURE);
             return 0;
         }
-        SMIME_crlf_copy(in, bio, flags);
+        if (!SMIME_crlf_copy(in, bio, flags)) {
+            ASN1err(ASN1_F_I2D_ASN1_BIO_STREAM, ERR_R_MALLOC_FAILURE);
+            return 0;
+        }
         (void)BIO_flush(bio);
         /* Free up successive BIOs until we hit the old output BIO */
         do {
@@ -136,8 +139,10 @@ int i2d_ASN1_bio_stream(BIO *out, ASN1_VALUE *val, BIO *in, int flags,
     /* else just write out ASN1 structure which will have all content
      * stored internally
      */
-    else
-        ASN1_item_i2d_bio(it, out, val);
+    else {
+        if (!ASN1_item_i2d_bio(it, out, val))
+            return 0;
+    }
     return 1;
 }
 
@@ -392,7 +397,8 @@ static int asn1_output_data(BIO *out, BIO *data, ASN1_VALUE *val, int flags,
         return 0;
 
     /* Copy data across, passing through filter BIOs for processing */
-    SMIME_crlf_copy(data, sarg.ndef_bio, flags);
+    if (!SMIME_crlf_copy(data, sarg.ndef_bio, flags))
+        return 0;
 
     /* Finalize structure */
     if (aux->asn1_cb(ASN1_OP_DETACHED_POST, &val, it, &sarg) <= 0)
@@ -493,7 +499,8 @@ ASN1_VALUE *SMIME_read_ASN1(BIO *bio, BIO **bcont, const ASN1_ITEM *it)
 
     /* OK, if not multipart/signed try opaque signature */
 
-    if (strcmp(hdr->value, "application/x-pkcs7-mime") && strcmp(hdr->value, "application/pkcs7-mime")) {
+    if (strcmp(hdr->value, "application/x-pkcs7-mime") != 0 &&
+        strcmp(hdr->value, "application/pkcs7-mime") != 0) {
         ASN1err(ASN1_F_SMIME_READ_ASN1, ASN1_R_INVALID_MIME_TYPE);
         ERR_asprintf_error_data("type: %s", hdr->value);
         goto err;
@@ -520,7 +527,8 @@ int SMIME_crlf_copy(BIO *in, BIO *out, int flags)
     char eol;
     int len;
     char linebuf[MAX_SMLEN];
-    /* Buffer output so we don't write one line at a time. This is
+    /*
+     * Buffer output so we don't write one line at a time. This is
      * useful when streaming as we don't end up with one OCTET STRING
      * per line.
      */
@@ -579,7 +587,8 @@ int SMIME_text(BIO *in, BIO *out)
     return 1;
 }
 
-/* Split a multipart/XXX message body into component parts: result is
+/*
+ * Split a multipart/XXX message body into component parts: result is
  * canonical parts in a STACK of bios
  */
 
@@ -663,9 +672,10 @@ static STACK_OF(MIME_HEADER) *mime_parse_hdr(BIO *bio)
         /* Go through all characters */
         for (p = linebuf, q = linebuf; (c = *p) && (c != '\r') && (c != '\n'); p++) {
 
-            /* State machine to handle MIME headers
-     * if this looks horrible that's because it *is*
-         */
+            /*
+             * State machine to handle MIME headers
+             * if this looks horrible that's because it *is*
+             */
 
             switch (state) {
                 case MIME_START:

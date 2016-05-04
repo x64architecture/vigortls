@@ -118,9 +118,10 @@ int ASN1_verify(i2d_of_void *i2d, X509_ALGOR *a, ASN1_BIT_STRING *signature,
         ret = 0;
         goto err;
     }
-    /* we don't need to zero the 'ctx' because we just checked
-     * public information */
-    /* memset(&ctx,0,sizeof(ctx)); */
+    /*
+     * We don't need to zero the 'ctx' because we only checked
+     * public information.
+     */
     ret = 1;
 err:
     EVP_MD_CTX_cleanup(&ctx);
@@ -162,7 +163,8 @@ int ASN1_item_verify(const ASN1_ITEM *it, X509_ALGOR *a,
         }
         ret = pkey->ameth->item_verify(&ctx, it, asn, a,
                                        signature, pkey);
-        /* Return value of 2 means carry on, anything else means we
+        /*
+         * Return value of 2 means carry on, anything else means we
          * exit straight away: either a fatal error of the underlying
          * verification routine handles all verification.
          */
@@ -212,9 +214,10 @@ int ASN1_item_verify(const ASN1_ITEM *it, X509_ALGOR *a,
         ret = 0;
         goto err;
     }
-    /* we don't need to zero the 'ctx' because we just checked
-     * public information */
-    /* memset(&ctx,0,sizeof(ctx)); */
+    /*
+     * We don't need to zero the 'ctx' because we only checked
+     * public information.
+     */
     ret = 1;
 err:
     EVP_MD_CTX_cleanup(&ctx);

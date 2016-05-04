@@ -145,7 +145,7 @@ static int asn1_bio_new(BIO *b)
 {
     BIO_ASN1_BUF_CTX *ctx;
     ctx = malloc(sizeof(BIO_ASN1_BUF_CTX));
-    if (!ctx)
+    if (ctx == NULL)
         return 0;
     if (!asn1_bio_init(ctx, DEFAULT_ASN1_BUF_SIZE)) {
         free(ctx);
@@ -160,7 +160,7 @@ static int asn1_bio_new(BIO *b)
 static int asn1_bio_init(BIO_ASN1_BUF_CTX *ctx, int size)
 {
     ctx->buf = malloc(size);
-    if (!ctx->buf)
+    if (ctx->buf == NULL)
         return 0;
     ctx->bufsize = size;
     ctx->bufpos = 0;
@@ -181,8 +181,7 @@ static int asn1_bio_free(BIO *b)
     ctx = (BIO_ASN1_BUF_CTX *)b->ptr;
     if (ctx == NULL)
         return 0;
-    if (ctx->buf)
-        free(ctx->buf);
+    free(ctx->buf);
     free(ctx);
     b->init = 0;
     b->ptr = NULL;

@@ -115,7 +115,7 @@ BIO *BIO_new_NDEF(BIO *out, ASN1_VALUE *val, const ASN1_ITEM *it)
 
     out = BIO_push(asn_bio, out);
 
-    if (!ndef_aux || !asn_bio || !out)
+    if (ndef_aux == NULL || !asn_bio || !out)
         goto err;
 
     BIO_asn1_set_prefix(asn_bio, ndef_prefix, ndef_prefix_free);
@@ -143,10 +143,8 @@ BIO *BIO_new_NDEF(BIO *out, ASN1_VALUE *val, const ASN1_ITEM *it)
     return sarg.ndef_bio;
 
 err:
-    if (asn_bio)
-        BIO_free(asn_bio);
-    if (ndef_aux)
-        free(ndef_aux);
+    BIO_free(asn_bio);
+    free(ndef_aux);
     return NULL;
 }
 
@@ -163,6 +161,8 @@ static int ndef_prefix(BIO *b, uint8_t **pbuf, int *plen, void *parg)
 
     derlen = ASN1_item_ndef_i2d(ndef_aux->val, NULL, ndef_aux->it);
     p = malloc(derlen);
+    if (p == NULL)
+        return 0;
     ndef_aux->derbuf = p;
     *pbuf = p;
     derlen = ASN1_item_ndef_i2d(ndef_aux->val, &p, ndef_aux->it);
@@ -184,8 +184,7 @@ static int ndef_prefix_free(BIO *b, uint8_t **pbuf, int *plen, void *parg)
 
     ndef_aux = *(NDEF_SUPPORT **)parg;
 
-    if (ndef_aux->derbuf)
-        free(ndef_aux->derbuf);
+    free(ndef_aux->derbuf);
 
     ndef_aux->derbuf = NULL;
     *pbuf = NULL;
@@ -228,6 +227,8 @@ static int ndef_suffix(BIO *b, uint8_t **pbuf, int *plen, void *parg)
 
     derlen = ASN1_item_ndef_i2d(ndef_aux->val, NULL, ndef_aux->it);
     p = malloc(derlen);
+    if (p == NULL)
+        return 0;
     ndef_aux->derbuf = p;
     *pbuf = p;
     derlen = ASN1_item_ndef_i2d(ndef_aux->val, &p, ndef_aux->it);

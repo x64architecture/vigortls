@@ -258,10 +258,8 @@ ASN1_TYPE *ASN1_generate_v3(char *str, X509V3_CTX *cnf)
     ret = d2i_ASN1_TYPE(NULL, &cp, len);
 
 err:
-    if (orig_der)
-        free(orig_der);
-    if (new_der)
-        free(new_der);
+    free(orig_der);
+    free(new_der);
 
     return ret;
 }
@@ -476,8 +474,7 @@ static ASN1_TYPE *asn1_multi(int utype, const char *section, X509V3_CTX *cnf)
 
 bad:
 
-    if (der)
-        free(der);
+    free(der);
 
     if (sk)
         sk_ASN1_TYPE_pop_free(sk, ASN1_TYPE_free);

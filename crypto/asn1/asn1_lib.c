@@ -334,8 +334,7 @@ int ASN1_STRING_set(ASN1_STRING *str, const void *_data, int len)
 
 void ASN1_STRING_set0(ASN1_STRING *str, void *data, int len)
 {
-    if (str->data)
-        free(str->data);
+    free(str->data);
     str->data = data;
     str->length = len;
 }
@@ -365,7 +364,7 @@ void ASN1_STRING_free(ASN1_STRING *a)
 {
     if (a == NULL)
         return;
-    if (a->data && !(a->flags & ASN1_STRING_FLAG_NDEF))
+    if (!(a->flags & ASN1_STRING_FLAG_NDEF))
         free(a->data);
     free(a);
 }
