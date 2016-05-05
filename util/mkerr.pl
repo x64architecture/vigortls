@@ -195,7 +195,7 @@ while (($hdr, $lib) = each %libinc)
 
 		next if (/^\#/);                      # skip preprocessor directives
 
-		s/{[^{}]*}//gs;                      # ignore {} blocks
+		s/{ [^{}]* }//gs;                      # ignore {} blocks
 
 		if (/\{|\/\*/) { # Add a } so editor works...
 		    $line = $_;
