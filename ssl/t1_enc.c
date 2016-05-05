@@ -143,11 +143,9 @@
 
 void ssl3_cleanup_key_block(SSL *s)
 {
-    if (s->s3->tmp.key_block != NULL) {
-        vigortls_zeroize(s->s3->tmp.key_block, s->s3->tmp.key_block_length);
-        free(s->s3->tmp.key_block);
-        s->s3->tmp.key_block = NULL;
-    }
+    vigortls_zeroize(s->s3->tmp.key_block, s->s3->tmp.key_block_length);
+    free(s->s3->tmp.key_block);
+    s->s3->tmp.key_block = NULL;
     s->s3->tmp.key_block_length = 0;
 }
 
@@ -588,7 +586,8 @@ int tls1_change_cipher_state(SSL *s, int which)
      * write" direction. This is the case if we're a client sending a
      * ChangeCipherSpec, or a server reading a client's ChangeCipherSpec.
      */
-    use_client_keys = ((which == SSL3_CHANGE_CIPHER_CLIENT_WRITE) || (which == SSL3_CHANGE_CIPHER_SERVER_READ));
+    use_client_keys = ((which == SSL3_CHANGE_CIPHER_CLIENT_WRITE) ||
+                       (which == SSL3_CHANGE_CIPHER_SERVER_READ));
 
     /*
      * Reset sequence number to zero - for DTLS this is handled in

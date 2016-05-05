@@ -1751,7 +1751,7 @@ int ssl_check_clienthello_tlsext_early(SSL *s)
 int ssl_check_clienthello_tlsext_late(SSL *s)
 {
     int ret = SSL_TLSEXT_ERR_OK;
-    int al = 0; /* XXX gcc3 */
+    int al = 0;
 
     /* If status request then ask callback what to do.
      * Note: this must be called after servername callbacks in case
@@ -2073,7 +2073,7 @@ static int tls_decrypt_ticket(SSL *s, const uint8_t *etick, int eticklen,
     HMAC_Update(&hctx, etick, eticklen);
     HMAC_Final(&hctx, tick_hmac, NULL);
     HMAC_CTX_cleanup(&hctx);
-    if (memcmp(tick_hmac, etick + eticklen, mlen)) {
+    if (memcmp(tick_hmac, etick + eticklen, mlen) != 0) {
         EVP_CIPHER_CTX_cleanup(&ctx);
         return 2;
     }
