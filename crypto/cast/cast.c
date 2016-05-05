@@ -58,6 +58,7 @@
 #include <openssl/cast.h>
 
 #include "../macros.h"
+#include "cast_tables.h"
 
 void CAST_ecb_encrypt(const uint8_t *in, uint8_t *out,
                       const CAST_KEY *ks, int enc)
@@ -78,15 +79,6 @@ void CAST_ecb_encrypt(const uint8_t *in, uint8_t *out,
     l2n(l, out);
     l = d[0] = d[1] = 0;
 }
-
-extern const uint32_t CAST_S_table0[256];
-extern const uint32_t CAST_S_table1[256];
-extern const uint32_t CAST_S_table2[256];
-extern const uint32_t CAST_S_table3[256];
-extern const uint32_t CAST_S_table4[256];
-extern const uint32_t CAST_S_table5[256];
-extern const uint32_t CAST_S_table6[256];
-extern const uint32_t CAST_S_table7[256];
 
 static inline uint32_t ROTL(uint32_t a, unsigned int n)
 {
