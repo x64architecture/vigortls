@@ -142,7 +142,7 @@ int ssl3_read_n(SSL *s, int n, int max, int extend)
             return -1;
 
     left = rb->left;
-    align = (long)rb->buf + SSL3_RT_HEADER_LENGTH;
+    align = (size_t)rb->buf + SSL3_RT_HEADER_LENGTH;
     align = (-align) & (SSL3_ALIGN_PAYLOAD - 1);
 
     if (!extend) {
