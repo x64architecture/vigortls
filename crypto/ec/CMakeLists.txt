@@ -42,5 +42,5 @@ add_library(
     ec_print.c
 )
 
-perlasm(ecp_nistz256-x86_64.${ASM_EXT} asm/ecp_nistz256-x86_64.pl)
-perlasm(ecp_nistz256-avx2.${ASM_EXT} asm/ecp_nistz256-avx2.pl)
+perlasm(ecp_nistz256-x86_64.${ASM_EXT} asm/ecp_nistz256-x86_64.pl ${CMAKE_C_COMPILER})
+perlasm(ecp_nistz256-avx2.${ASM_EXT} asm/ecp_nistz256-avx2.pl ${CMAKE_C_COMPILER})

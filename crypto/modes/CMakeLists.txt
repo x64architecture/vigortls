@@ -42,7 +42,7 @@ add_library(
     ${MODES_ARCH_SOURCES}
 )
 
-perlasm(aesni-gcm-x86_64.${ASM_EXT} asm/aesni-gcm-x86_64.pl)
-perlasm(ghash-x86_64.${ASM_EXT} asm/ghash-x86_64.pl)
+perlasm(aesni-gcm-x86_64.${ASM_EXT} asm/aesni-gcm-x86_64.pl ${CMAKE_C_COMPILER})
+perlasm(ghash-x86_64.${ASM_EXT} asm/ghash-x86_64.pl ${CMAKE_C_COMPILER})
 perlasm(ghash-x86.${ASM_EXT} asm/ghash-x86.pl)
 perlasm(ghash-armv4.${ASM_EXT} asm/ghash-armv4.pl)

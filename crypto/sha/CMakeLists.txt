@@ -42,7 +42,7 @@ add_library(
     ${SHA_ARCH_SOURCES}
 )
 
-perlasm(sha1-x86_64.${ASM_EXT} asm/sha1-x86_64.pl)
+perlasm(sha1-x86_64.${ASM_EXT} asm/sha1-x86_64.pl ${CMAKE_C_COMPILER})
 perlasm(sha256-x86_64.${ASM_EXT} asm/sha512-x86_64.pl sha256)
 perlasm(sha512-x86_64.${ASM_EXT} asm/sha512-x86_64.pl sha512)
 perlasm(sha1-586.${ASM_EXT} asm/sha1-586.pl)

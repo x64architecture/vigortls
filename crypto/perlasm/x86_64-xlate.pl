@@ -1,4 +1,11 @@
-#!/usr/bin/env perl
+#! /usr/bin/env perl
+# Copyright 2005-2016 The OpenSSL Project Authors. All Rights Reserved.
+#
+# Licensed under the OpenSSL license (the "License").  You may not use
+# this file except in compliance with the License.  You can obtain a copy
+# in the file LICENSE in the source distribution or at
+# https://www.openssl.org/source/license.html
+
 
 # Ascetic x86_64 AT&T to MASM/NASM assembler translator by <appro>.
 #
@@ -78,7 +85,7 @@ my $nasm=0;
 
 if    ($flavour eq "mingw64")	{ $gas=1; $elf=0; $win64=1;
 				  $prefix=`echo __USER_LABEL_PREFIX__ | $cc -E -P -`;
-				  chomp($prefix);
+				  $prefix =~ s|\R$||; # Better chomp
 				}
 elsif ($flavour eq "macosx")	{ $gas=1; $elf=0; $prefix="_"; $decor="L\$"; }
 elsif ($flavour eq "nasm")	{ $gas=0; $elf=0; $nasm=$nasmref; $win64=1; $decor="\$L\$"; $PTR=""; }
@@ -190,17 +197,17 @@ my %globals;
     sub out {
     	my $self = shift;
 
+	$self->{value} =~ s/\b(0b[0-1]+)/oct($1)/eig;
 	if ($gas) {
 	    # Solaris /usr/ccs/bin/as can't handle multiplications
 	    # in $self->{value}
-        my $value = $self->{value};
-        $value =~ s/(?<![\w\$\.])(0x?[0-9a-f]+)/oct($1)/egi;
+	    my $value = $self->{value};
+	    $value =~ s/(?<![\w\$\.])(0x?[0-9a-f]+)/oct($1)/egi;
 	    if ($value =~ s/([0-9]+\s*[\*\/\%]\s*[0-9]+)/eval($1)/eg) {
-            $self->{value} = $value;
-        }
+		$self->{value} = $value;
+	    }
 	    sprintf "\$%s",$self->{value};
 	} else {
-	    $self->{value} =~ s/(0b[0-1]+)/oct($1)/eig;
 	    sprintf "%s",$self->{value};
 	}
     }
@@ -280,7 +287,7 @@ my %globals;
 	    (opcode->mnemonic() =~ /^v?mov([qd])$/)		&& ($sz=$1)  ||
 	    (opcode->mnemonic() =~ /^v?pinsr([qdwb])$/)		&& ($sz=$1)  ||
 	    (opcode->mnemonic() =~ /^vpbroadcast([qdwb])$/)	&& ($sz=$1)  ||
-	    (opcode->mnemonic() =~ /^vinsert[fi]128$/)		&& ($sz="x");
+	    (opcode->mnemonic() =~ /^v(?!perm)[a-z]+[fi]128$/)	&& ($sz="x");
 
 	    if (defined($self->{index})) {
 		sprintf "%s[%s%s*%d%s]",$szmap{$sz},
@@ -299,7 +306,7 @@ my %globals;
 }
 { package register;	# pick up registers, which start with %.
     sub re {
-	my	$class = shift;	# muliple instances...
+	my	$class = shift;	# multiple instances...
 	my	$self = {};
 	local	*line = shift;
 	undef	$ret;
@@ -593,7 +600,10 @@ my %globals;
 				    }
 				    last;
 				  };
-		/\.align/   && do { $self->{value} = "ALIGN\t".$line; last; };
+		/\.align/   && do { my $max = 4096;
+				    $self->{value} = "ALIGN\t".($line>$max?$max:$line);
+				    last;
+				  };
 		/\.(value|long|rva|quad)/
 			    && do { my $sz  = substr($1,0,1);
 				    my @arr = split(/,\s*/,$line);
@@ -660,6 +670,28 @@ sub rex {
 my %regrm = (	"%eax"=>0, "%ecx"=>1, "%edx"=>2, "%ebx"=>3,
 		"%esp"=>4, "%ebp"=>5, "%esi"=>6, "%edi"=>7	);
 
+my $movq = sub {	# elderly gas can't handle inter-register movq
+  my $arg = shift;
+  my @opcode=(0x66);
+    if ($arg =~ /%xmm([0-9]+),\s*%r(\w+)/) {
+	my ($src,$dst)=($1,$2);
+	if ($dst !~ /[0-9]+/)	{ $dst = $regrm{"%e$dst"}; }
+	rex(\@opcode,$src,$dst,0x8);
+	push @opcode,0x0f,0x7e;
+	push @opcode,0xc0|(($src&7)<<3)|($dst&7);	# ModR/M
+	@opcode;
+    } elsif ($arg =~ /%r(\w+),\s*%xmm([0-9]+)/) {
+	my ($src,$dst)=($2,$1);
+	if ($dst !~ /[0-9]+/)	{ $dst = $regrm{"%e$dst"}; }
+	rex(\@opcode,$src,$dst,0x8);
+	push @opcode,0x0f,0x6e;
+	push @opcode,0xc0|(($src&7)<<3)|($dst&7);	# ModR/M
+	@opcode;
+    } else {
+	();
+    }
+};
+
 my $pextrd = sub {
     if (shift =~ /\$([0-9]+),\s*%xmm([0-9]+),\s*(%\w+)/) {
       my @opcode=(0x66);
@@ -690,6 +722,45 @@ my $pinsrd = sub {
 	push @opcode,0x0f,0x3a,0x22;
 	push @opcode,0xc0|(($dst&7)<<3)|($src&7);	# ModR/M
 	push @opcode,$imm;
+	@opcode;
+    } else {
+	();
+    }
+};
+
+my $pshufb = sub {
+    if (shift =~ /%xmm([0-9]+),\s*%xmm([0-9]+)/) {
+      my @opcode=(0x66);
+	rex(\@opcode,$2,$1);
+	push @opcode,0x0f,0x38,0x00;
+	push @opcode,0xc0|($1&7)|(($2&7)<<3);		# ModR/M
+	@opcode;
+    } else {
+	();
+    }
+};
+
+my $palignr = sub {
+    if (shift =~ /\$([0-9]+),\s*%xmm([0-9]+),\s*%xmm([0-9]+)/) {
+      my @opcode=(0x66);
+	rex(\@opcode,$3,$2);
+	push @opcode,0x0f,0x3a,0x0f;
+	push @opcode,0xc0|($2&7)|(($3&7)<<3);		# ModR/M
+	push @opcode,$1;
+	@opcode;
+    } else {
+	();
+    }
+};
+
+my $pclmulqdq = sub {
+    if (shift =~ /\$([x0-9a-f]+),\s*%xmm([0-9]+),\s*%xmm([0-9]+)/) {
+      my @opcode=(0x66);
+	rex(\@opcode,$3,$2);
+	push @opcode,0x0f,0x3a,0x44;
+	push @opcode,0xc0|($2&7)|(($3&7)<<3);		# ModR/M
+	my $c=$1;
+	push @opcode,$c=~/^0/?oct($c):$c;
 	@opcode;
     } else {
 	();
@@ -769,9 +840,9 @@ default	rel
 %define ZMMWORD
 ___
 }
-while($line=<>) {
+while(defined($line=<>)) {
 
-    chomp($line);
+    $line =~ s|\R$||;           # Better chomp
 
     $line =~ s|[#!].*$||;	# get rid of asm-style comments...
     $line =~ s|/\*.*\*/||;	# ... and C-style comments...
@@ -869,7 +940,7 @@ close STDOUT;
 # (#)	Nth argument, volatile
 #
 # In Unix terms top of stack is argument transfer area for arguments
-# which could not be accomodated in registers. Or in other words 7th
+# which could not be accommodated in registers. Or in other words 7th
 # [integer] argument resides at 8(%rsp) upon function entry point.
 # 128 bytes above %rsp constitute a "red zone" which is not touched
 # by signal handlers and can be used as temporal storage without

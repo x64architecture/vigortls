@@ -35,6 +35,6 @@ add_library(
 
     chacha.c
 )
-perlasm(chacha-x86_64.${ASM_EXT} asm/chacha-x86_64.pl)
-perlasm(chacha-x86.${ASM_EXT} asm/chacha-x86.pl)
+perlasm(chacha-x86_64.${ASM_EXT} asm/chacha-x86_64.pl ${CMAKE_C_COMPILER})
+perlasm(chacha-x86.${ASM_EXT} asm/chacha-x86.pl ${CMAKE_C_COMPILER})
 perlasm(chacha-armv4.${ASM_EXT} asm/chacha-armv4.pl)

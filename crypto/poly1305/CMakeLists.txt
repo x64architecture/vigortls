@@ -29,6 +29,6 @@ add_library(
 
     poly1305.c
 )
-perlasm(poly1305-x86_64.${ASM_EXT} asm/poly1305-x86_64.pl)
-perlasm(poly1305-x86.${ASM_EXT} asm/poly1305-x86.pl)
+perlasm(poly1305-x86_64.${ASM_EXT} asm/poly1305-x86_64.pl ${CMAKE_C_COMPILER})
+perlasm(poly1305-x86.${ASM_EXT} asm/poly1305-x86.pl ${CMAKE_C_COMPILER})
 perlasm(poly1305-armv4.${ASM_EXT} asm/poly1305-armv4.pl)

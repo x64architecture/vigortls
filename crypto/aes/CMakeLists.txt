@@ -46,7 +46,7 @@ add_library(
 
 perlasm(aes-x86_64.${ASM_EXT} asm/aes-x86_64.pl)
 perlasm(aesni-x86_64.${ASM_EXT} asm/aesni-x86_64.pl)
-perlasm(aesni-sha1-x86_64.${ASM_EXT} asm/aesni-sha1-x86_64.pl)
+perlasm(aesni-sha1-x86_64.${ASM_EXT} asm/aesni-sha1-x86_64.pl ${CMAKE_C_COMPILER})
 perlasm(bsaes-x86_64.${ASM_EXT} asm/bsaes-x86_64.pl)
 perlasm(vpaes-x86_64.${ASM_EXT} asm/vpaes-x86_64.pl)
 perlasm(aes-586.${ASM_EXT} asm/aes-586.pl)
