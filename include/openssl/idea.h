@@ -1,4 +1,3 @@
-/* crypto/idea/idea.h */
 /* Copyright (C) 1995-1997 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -60,7 +59,7 @@
 #define HEADER_IDEA_H
 
 #include <stdint.h>
-#include <openssl/opensslconf.h> /* IDEA_INT, OPENSSL_NO_IDEA */
+#include <openssl/opensslconf.h>
 
 #ifdef OPENSSL_NO_IDEA
 #error IDEA is disabled.

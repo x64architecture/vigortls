@@ -117,6 +117,10 @@
      l |= ((unsigned long)(*((c)++))) << 16L, \
      l |= ((unsigned long)(*((c)++))) << 8L, l |= ((unsigned long)(*((c)++))))
 
+#undef n2s
+#define n2s(c, l) (l = ((uint32_t)(*((c)++))) << 8L, \
+                   l |= ((uint32_t)(*((c)++))))
+
 #undef l2n
 #define l2n(l, c)                               \
     (*((c)++) = (uint8_t)(((l) >> 24L) & 0xff), \
