@@ -59,7 +59,9 @@
 #ifndef HEADER_RC5_H
 #define HEADER_RC5_H
 
-#include <openssl/opensslconf.h> /* OPENSSL_NO_RC5 */
+#include <stdint.h>
+
+#include <openssl/opensslconf.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -72,8 +74,7 @@ extern "C" {
 #define RC5_ENCRYPT 1
 #define RC5_DECRYPT 0
 
-/* 32 bit.  For Alpha, things may get weird */
-#define RC5_32_INT unsigned long
+#define RC5_32_INT uint32_t
 
 #define RC5_32_BLOCK 8
 #define RC5_32_KEY_LENGTH 16 /* This is a default, max is 255 */
@@ -88,9 +89,8 @@ extern "C" {
 #define RC5_16_ROUNDS 16
 
 typedef struct rc5_key_st {
-    /* Number of rounds */
     int rounds;
-    RC5_32_INT data[2 * (RC5_16_ROUNDS + 1)];
+    uint32_t data[2 * (RC5_16_ROUNDS + 1)];
 } RC5_32_KEY;
 
 void RC5_32_set_key(RC5_32_KEY *key, int len, const uint8_t *data,
