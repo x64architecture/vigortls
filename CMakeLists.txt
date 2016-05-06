@@ -9,7 +9,7 @@ include(CMake/GenDeps.cmake)
 
 if (CMAKE_COMPILER_IS_GNUCC OR ${CMAKE_C_COMPILER_ID} STREQUAL "Clang"
     OR ${CMAKE_C_COMPILER_ID} STREQUAL "Intel")
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Werror -Wundef -g -std=c99")
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Werror -Wundef -Wsign-compare -g -std=c99")
     set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS} -O3")
 elseif(MSVC)
   set(CMAKE_C_FLAGS "/W3 /WX /wd4267 /wd4018 /wd4090 /wd4146 /wd4244")

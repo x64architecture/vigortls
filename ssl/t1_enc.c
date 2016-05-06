@@ -913,8 +913,6 @@ int tls1_enc(SSL *s, int send)
             rec->data = rec->input = out;
         }
 
-        if (n == -1)
-            return -1;
         rec->length = n;
 
         return 1;

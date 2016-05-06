@@ -160,15 +160,14 @@ int RSA_verify_PKCS1_PSS_mgf1(RSA *rsa, const uint8_t *mHash,
     }
     if (!EVP_DigestFinal_ex(&ctx, H_, NULL))
         goto err;
-    if (memcmp(H_, H, hLen)) {
+    if (memcmp(H_, H, hLen) != 0) {
         RSAerr(RSA_F_RSA_VERIFY_PKCS1_PSS_MGF1, RSA_R_BAD_SIGNATURE);
         ret = 0;
     } else
         ret = 1;
 
 err:
-    if (DB)
-        free(DB);
+    free(DB);
     EVP_MD_CTX_cleanup(&ctx);
 
     return ret;
@@ -226,7 +225,7 @@ int RSA_padding_add_PKCS1_PSS_mgf1(RSA *rsa, uint8_t *EM,
     }
     if (sLen > 0) {
         salt = malloc(sLen);
-        if (!salt) {
+        if (salt == NULL) {
             RSAerr(RSA_F_RSA_PADDING_ADD_PKCS1_PSS_MGF1, ERR_R_MALLOC_FAILURE);
             goto err;
         }
@@ -272,8 +271,7 @@ int RSA_padding_add_PKCS1_PSS_mgf1(RSA *rsa, uint8_t *EM,
     ret = 1;
 
 err:
-    if (salt)
-        free(salt);
+    free(salt);
 
     return ret;
 }

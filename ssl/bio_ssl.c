@@ -167,7 +167,7 @@ static int ssl_read(BIO *b, char *out, int outl)
                 time_t tm;
 
                 tm = time(NULL);
-                if (tm > sb->last_time + sb->renegotiate_timeout) {
+                if (tm > (time_t)(sb->last_time + sb->renegotiate_timeout)) {
                     sb->last_time = tm;
                     sb->num_renegotiates++;
                     SSL_renegotiate(ssl);

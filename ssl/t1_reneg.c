@@ -243,7 +243,7 @@ int ssl_parse_serverhello_renegotiate_ext(SSL *s, const uint8_t *d, int len,
     }
 
     /* Check that the extension matches */
-    if (CBS_len(&reneg) != expected_len ||
+    if (CBS_len(&reneg) != (size_t)expected_len ||
         !CBS_get_bytes(&reneg, &previous_client,
         s->s3->previous_client_finished_len) ||
         !CBS_get_bytes(&reneg, &previous_server,

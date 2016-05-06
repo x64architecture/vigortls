@@ -101,10 +101,9 @@ int RSA_sign_ASN1_OCTET_STRING(int type,
     return (ret);
 }
 
-int RSA_verify_ASN1_OCTET_STRING(int dtype,
-                                 const uint8_t *m,
-                                 unsigned int m_len, uint8_t *sigbuf, unsigned int siglen,
-                                 RSA *rsa)
+int RSA_verify_ASN1_OCTET_STRING(int dtype, const uint8_t *m,
+                                 unsigned int m_len, uint8_t *sigbuf,
+                                 unsigned int siglen, RSA *rsa)
 {
     int i, ret = 0;
     uint8_t *s;
@@ -116,13 +115,12 @@ int RSA_verify_ASN1_OCTET_STRING(int dtype,
         return (0);
     }
 
-    s = malloc((unsigned int)siglen);
+    s = malloc(siglen);
     if (s == NULL) {
         RSAerr(RSA_F_RSA_VERIFY_ASN1_OCTET_STRING, ERR_R_MALLOC_FAILURE);
         goto err;
     }
     i = RSA_public_decrypt((int)siglen, sigbuf, s, rsa, RSA_PKCS1_PADDING);
-
     if (i <= 0)
         goto err;
 
@@ -137,9 +135,7 @@ int RSA_verify_ASN1_OCTET_STRING(int dtype,
         ret = 1;
 err:
     ASN1_OCTET_STRING_free(sig);
-    if (s != NULL) {
-        vigortls_zeroize(s, (unsigned int)siglen);
-        free(s);
-    }
-    return (ret);
+    vigortls_zeroize(s, (unsigned int)siglen);
+    free(s);
+    return ret;
 }

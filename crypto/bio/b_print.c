@@ -39,9 +39,10 @@ int BIO_snprintf(char *buf, size_t n, const char *format, ...)
     ret = vsnprintf(buf, n, format, args);
     va_end(args);
 
-    if (ret >= n || ret == -1)
-        return (-1);
-    return (ret);
+    if (ret < 0 || (size_t)ret >= n)
+        return -1;
+
+    return ret;
 }
 
 int BIO_vsnprintf(char *buf, size_t n, const char *format, va_list args)
@@ -50,7 +51,8 @@ int BIO_vsnprintf(char *buf, size_t n, const char *format, va_list args)
 
     ret = vsnprintf(buf, n, format, args);
 
-    if (ret >= n || ret == -1)
-        return (-1);
-    return (ret);
+    if (ret < 0 || (size_t)ret >= n)
+        return -1;
+
+    return ret;
 }

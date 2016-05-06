@@ -836,9 +836,9 @@ void ERR_error_string_n(unsigned long e, char *buf, size_t len)
     }
 
     ret = snprintf(buf, len, "error:%08lX:%s:%s:%s", e, ls, fs, rs);
-    if (ret == -1)
+    if (ret < 0)
         return; /* can't happen, and can't do better if it does */
-    if (ret >= len) {
+    if ((size_t)ret >= len) {
 /* output may be truncated; make sure we always have 5
          * colon-separated fields, i.e. 4 colons ... */
 #define NUM_COLONS 4

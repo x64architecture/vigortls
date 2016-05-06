@@ -642,7 +642,7 @@ uint8_t *ssl_add_clienthello_tlsext(SSL *s, uint8_t *p, uint8_t *limit)
            + hostname length
         */
 
-        if ((size_t)(limit - ret) < 9)
+        if ((limit - ret) < 9)
             return NULL;
 
         lenmax = limit - ret - 9;
@@ -673,7 +673,7 @@ uint8_t *ssl_add_clienthello_tlsext(SSL *s, uint8_t *p, uint8_t *limit)
             return NULL;
         }
 
-        if ((size_t)(limit - ret) < 4 + el)
+        if ((limit - ret) < 4 + el)
             return NULL;
 
         s2n(TLSEXT_TYPE_renegotiate, ret);
@@ -694,11 +694,11 @@ uint8_t *ssl_add_clienthello_tlsext(SSL *s, uint8_t *p, uint8_t *limit)
         size_t curves_len, formats_len, lenmax;
         const uint8_t *formats;
         const uint16_t *curves;
-        int i;
+        size_t i;
 
         tls1_get_formatlist(s, 0, &formats, &formats_len);
 
-        if ((size_t)(limit - ret) < 5)
+        if ((limit - ret) < 5)
             return NULL;
 
         lenmax = limit - ret - 5;
@@ -720,7 +720,7 @@ uint8_t *ssl_add_clienthello_tlsext(SSL *s, uint8_t *p, uint8_t *limit)
          */
         tls1_get_curvelist(s, 0, &curves, &curves_len);
 
-        if ((size_t)(limit - ret) < 6)
+        if ((limit - ret) < 6)
             return NULL;
 
         lenmax = limit - ret - 6;
@@ -757,7 +757,7 @@ uint8_t *ssl_add_clienthello_tlsext(SSL *s, uint8_t *p, uint8_t *limit)
         /* Check for enough room 2 for extension type, 2 for len
          * rest for ticket
          */
-        if ((size_t)(limit - ret) < 4 + ticklen)
+        if ((limit - ret) < 4 + ticklen)
             return NULL;
         s2n(TLSEXT_TYPE_session_ticket, ret);
 
@@ -801,7 +801,7 @@ skip_ext:
         } else
             extlen = 0;
 
-        if ((size_t)(limit - ret) < 7 + extlen + idlen)
+        if ((limit - ret) < 7 + extlen + idlen)
             return NULL;
         s2n(TLSEXT_TYPE_status_request, ret);
         if (extlen + idlen > 0xFFF0)
@@ -827,14 +827,14 @@ skip_ext:
     if (s->ctx->next_proto_select_cb && !s->s3->tmp.finish_md_len) {
         /* The client advertises an emtpy extension to indicate its
          * support for Next Protocol Negotiation */
-        if ((size_t)(limit - ret) < 4)
+        if ((limit - ret) < 4)
             return NULL;
         s2n(TLSEXT_TYPE_next_proto_neg, ret);
         s2n(0, ret);
     }
 
     if (s->alpn_client_proto_list != NULL && s->s3->tmp.finish_md_len == 0) {
-        if ((size_t)(limit - ret) < 6 + s->alpn_client_proto_list_len)
+        if ((limit - ret) < 6 + s->alpn_client_proto_list_len)
             return (NULL);
         s2n(TLSEXT_TYPE_application_layer_protocol_negotiation, ret);
         s2n(2 + s->alpn_client_proto_list_len, ret);
@@ -849,7 +849,7 @@ skip_ext:
 
         ssl_add_clienthello_use_srtp_ext(s, 0, &el, 0);
 
-        if ((size_t)(limit - ret) < 4 + el)
+        if ((limit - ret) < 4 + el)
             return NULL;
 
         s2n(TLSEXT_TYPE_use_srtp, ret);
@@ -923,7 +923,7 @@ uint8_t *ssl_add_serverhello_tlsext(SSL *s, uint8_t *p,
         return NULL; /* this really never occurs, but ... */
 
     if (!s->hit && s->servername_done == 1 && s->session->tlsext_hostname != NULL) {
-        if ((size_t)(limit - ret) < 4)
+        if ((limit - ret) < 4)
             return NULL;
 
         s2n(TLSEXT_TYPE_server_name, ret);
@@ -938,7 +938,7 @@ uint8_t *ssl_add_serverhello_tlsext(SSL *s, uint8_t *p,
             return NULL;
         }
 
-        if ((size_t)(limit - ret) < 4 + el)
+        if ((limit - ret) < 4 + el)
             return NULL;
 
         s2n(TLSEXT_TYPE_renegotiate, ret);
@@ -961,7 +961,7 @@ uint8_t *ssl_add_serverhello_tlsext(SSL *s, uint8_t *p,
          */
         tls1_get_formatlist(s, 0, &formats, &formats_len);
 
-        if ((size_t)(limit - ret) < 5)
+        if ((limit - ret) < 5)
             return NULL;
 
         lenmax = limit - ret - 5;
@@ -981,7 +981,7 @@ uint8_t *ssl_add_serverhello_tlsext(SSL *s, uint8_t *p,
     /* Currently the server should not respond with a SupportedCurves extension */
 
     if (s->tlsext_ticket_expected && !(SSL_get_options(s) & SSL_OP_NO_TICKET)) {
-        if ((size_t)(limit - ret) < 4)
+        if ((limit - ret) < 4)
             return NULL;
 
         s2n(TLSEXT_TYPE_session_ticket, ret);
@@ -989,7 +989,7 @@ uint8_t *ssl_add_serverhello_tlsext(SSL *s, uint8_t *p,
     }
 
     if (s->tlsext_status_expected) {
-        if ((size_t)(limit - ret) < 4)
+        if ((limit - ret) < 4)
             return NULL;
 
         s2n(TLSEXT_TYPE_status_request, ret);
@@ -1002,7 +1002,7 @@ uint8_t *ssl_add_serverhello_tlsext(SSL *s, uint8_t *p,
 
         ssl_add_serverhello_use_srtp_ext(s, 0, &el, 0);
 
-        if ((size_t)(limit - ret) < 4 + el)
+        if ((limit - ret) < 4 + el)
             return NULL;
 
         s2n(TLSEXT_TYPE_use_srtp, ret);
@@ -1042,7 +1042,7 @@ uint8_t *ssl_add_serverhello_tlsext(SSL *s, uint8_t *p,
         r = s->ctx->next_protos_advertised_cb(
             s, &npa, &npalen, s->ctx->next_protos_advertised_cb_arg);
         if (r == SSL_TLSEXT_ERR_OK) {
-            if ((size_t)(limit - ret) < 4 + npalen)
+            if ((limit - ret) < 4 + npalen)
                 return NULL;
             s2n(TLSEXT_TYPE_next_proto_neg, ret);
             s2n(npalen, ret);
@@ -1271,7 +1271,7 @@ int ssl_parse_clienthello_tlsext(SSL *s, uint8_t **p, uint8_t *limit,
                 return 0;
             }
             formats_len = *(sdata++);
-            if (formats_len != size - 1) {
+            if (formats_len != (size_t)(size - 1)) {
                 *al = TLS1_AD_DECODE_ERROR;
                 return 0;
             }
@@ -1298,7 +1298,7 @@ int ssl_parse_clienthello_tlsext(SSL *s, uint8_t **p, uint8_t *limit,
                 return 0;
             }
             n2s(sdata, curves_len);
-            if (curves_len != size - 2 || curves_len % 2 != 0) {
+            if (curves_len != (size_t)(size - 2) || curves_len % 2 != 0) {
                 *al = TLS1_AD_DECODE_ERROR;
                 return 0;
             }
@@ -1545,7 +1545,7 @@ int ssl_parse_serverhello_tlsext(SSL *s, uint8_t **p, uint8_t *d,
                 return 0;
             }
             formats_len = *(sdata++);
-            if (formats_len != size - 1) {
+            if (formats_len != (size_t)(size - 1)) {
                 *al = TLS1_AD_DECODE_ERROR;
                 return 0;
             }

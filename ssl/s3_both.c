@@ -241,7 +241,7 @@ int ssl3_get_finished(SSL *s, int a, int b)
 
     CBS_init(&cbs, s->init_msg, n);
 
-    if (s->s3->tmp.peer_finish_md_len != md_len || CBS_len(&cbs) != md_len) {
+    if (s->s3->tmp.peer_finish_md_len != md_len || (int)CBS_len(&cbs) != md_len) {
         al = SSL_AD_DECODE_ERROR;
         SSLerr(SSL_F_SSL3_GET_FINISHED, SSL_R_BAD_DIGEST_LENGTH);
         goto f_err;

@@ -37,7 +37,7 @@ static int rand_getrandom(uint8_t *out, size_t requested)
         rv = syscall(SYS_getrandom, (void *)out, requested, flags);
     } while (rv == -1 && (errno == EAGAIN || errno == EINTR));
 
-    if (rv != requested)
+    if ((size_t)rv != requested)
         return 0;
 
     return 1;

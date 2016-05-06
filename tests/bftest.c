@@ -284,7 +284,7 @@ int main(int argc, char *argv[])
 
 static int print_test_data(void)
 {
-    int len;
+    size_t len;
     unsigned int i, j;
 
     printf("ecb test data\n");
@@ -326,8 +326,8 @@ static int print_test_data(void)
 
     len = strlen(cbc_data) + 1;
 
-    printf("\ndata[%d]  = '%s'", len, cbc_data);
-    printf("\ndata[%d]  = ", len);
+    printf("\ndata[%zu]  = '%s'", len, cbc_data);
+    printf("\ndata[%zu]  = ", len);
     for (j = 0; j < len; j++)
         printf("%02X", cbc_data[j]);
     printf("\n");
@@ -338,13 +338,13 @@ static int print_test_data(void)
     printf("\n");
 
     printf("cfb64 cipher text\n");
-    printf("cipher[%d]= ", len);
+    printf("cipher[%zu]= ", len);
     for (j = 0; j < len; j++)
         printf("%02X", cfb64_ok[j]);
     printf("\n");
 
     printf("ofb64 cipher text\n");
-    printf("cipher[%d]= ", len);
+    printf("cipher[%zu]= ", len);
     for (j = 0; j < len; j++)
         printf("%02X", ofb64_ok[j]);
     printf("\n");
