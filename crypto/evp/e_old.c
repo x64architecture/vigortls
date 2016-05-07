@@ -68,24 +68,6 @@ static void *dummy = &dummy;
    in shared libraries are selected by entry point location,
    not by name.  */
 
-#ifndef OPENSSL_NO_BF
-#undef EVP_bf_cfb
-const EVP_CIPHER *EVP_bf_cfb(void);
-const EVP_CIPHER *EVP_bf_cfb(void)
-{
-    return EVP_bf_cfb64();
-}
-#endif
-
-#ifndef OPENSSL_NO_DES
-#undef EVP_des_ede_cfb
-const EVP_CIPHER *EVP_des_ede_cfb(void);
-const EVP_CIPHER *EVP_des_ede_cfb(void)
-{
-    return EVP_des_ede_cfb64();
-}
-#endif
-
 #ifndef OPENSSL_NO_IDEA
 #undef EVP_idea_cfb
 const EVP_CIPHER *EVP_idea_cfb(void);
@@ -101,15 +83,6 @@ const EVP_CIPHER *EVP_rc2_cfb(void);
 const EVP_CIPHER *EVP_rc2_cfb(void)
 {
     return EVP_rc2_cfb64();
-}
-#endif
-
-#ifndef OPENSSL_NO_CAST
-#undef EVP_cast5_cfb
-const EVP_CIPHER *EVP_cast5_cfb(void);
-const EVP_CIPHER *EVP_cast5_cfb(void)
-{
-    return EVP_cast5_cfb64();
 }
 #endif
 

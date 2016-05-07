@@ -50,6 +50,12 @@ if(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
     add_definitions(-D_GNU_SOURCE)
 endif()
 
+if (BUILD_SHARED_LIBS)
+    # Because we use OBJECT we have to globaly set
+    # CMAKE_POSITION_INDEPENDENT_CODE to TRUE
+    set(CMAKE_POSITION_INDEPENDENT_CODE TRUE)
+endif()
+
 install(DIRECTORY include/openssl DESTINATION include)
 
 add_subdirectory(crypto)
