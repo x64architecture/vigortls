@@ -431,8 +431,10 @@ my ($ap,$bp,$cp,$dp)=map(($_&~3)+(($_-1)&3),($ai,$bi,$ci,$di));	# previous
 
 &function_begin("ChaCha20_ssse3");
 &set_label("ssse3_shortcut");
+if ($ymm) {
 	&test		(&DWP(4,"ebp"),1<<11);		# test XOP bit
 	&jnz		(&label("xop_shortcut"));
+}
 
 	&mov		($out,&wparam(0));
 	&mov		($inp,&wparam(1));
@@ -764,7 +766,7 @@ sub SSSE3ROUND {	# critical path is 20 "SIMD ticks" per round
 }
 &asciz	("ChaCha20 for x86, CRYPTOGAMS by <appro\@openssl.org>");
 
-if ($xmm) {
+if ($ymm) {
 my ($xa,$xa_,$xb,$xb_,$xc,$xc_,$xd,$xd_)=map("xmm$_",(0..7));
 my ($out,$inp,$len)=("edi","esi","ecx");
 
@@ -1127,3 +1129,5 @@ sub XOPROUND {
 }
 
 &asm_finish();
+
+close STDOUT;

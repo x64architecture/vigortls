@@ -110,6 +110,7 @@ $code.=<<___;
 	add	$d3,%rax
 	add	%rax,$h0
 	adc	\$0,$h1
+	adc	\$0,$h2
 ___
 }
 
@@ -125,8 +126,12 @@ $code.=<<___;
 .extern	OPENSSL_ia32cap_P
 
 .globl	poly1305_init
+.hidden	poly1305_init
 .globl	poly1305_blocks
+.hidden	poly1305_blocks
 .globl	poly1305_emit
+.hidden	poly1305_emit
+
 .type	poly1305_init,\@function,3
 .align	32
 poly1305_init:
@@ -161,10 +166,16 @@ $code.=<<___;
 	and	8($inp),%rcx
 	mov	%rax,24($ctx)
 	mov	%rcx,32($ctx)
-
+___
+$code.=<<___	if ($flavour !~ /elf32/);
 	mov	%r10,0(%rdx)
 	mov	%r11,8(%rdx)
-
+___
+$code.=<<___	if ($flavour =~ /elf32/);
+	mov	%r10d,0(%rdx)
+	mov	%r11d,4(%rdx)
+___
+$code.=<<___;
 	mov	\$1,%eax
 .Lno_key:
 	ret
@@ -174,8 +185,8 @@ $code.=<<___;
 .align	32
 poly1305_blocks:
 .Lblocks:
-	sub	\$16,$len		# too short?
-	jc	.Lno_data
+	shr	\$4,$len
+	jz	.Lno_data		# too short
 
 	push	%rbx
 	push	%rbp
@@ -210,8 +221,8 @@ ___
 	&poly1305_iteration();
 $code.=<<___;
 	mov	$r1,%rax
-	sub	\$16,%r15		# len-=16
-	jnc	.Loop
+	dec	%r15			# len-=16
+	jnz	.Loop
 
 	mov	$h0,0($ctx)		# store hash value
 	mov	$h1,8($ctx)
@@ -484,10 +495,10 @@ poly1305_blocks_avx:
 
 	################################# base 2^26 -> base 2^64
 	mov	$d1#d,$h0#d
-	and	\$-1<<31,$d1
+	and	\$`-1*(1<<31)`,$d1
 	mov	$d2,$r1			# borrow $r1
 	mov	$d2#d,$h1#d
-	and	\$-1<<31,$d2
+	and	\$`-1*(1<<31)`,$d2
 
 	shr	\$6,$d1
 	shl	\$52,$r1
@@ -511,6 +522,7 @@ poly1305_blocks_avx:
 	add	$d2,$d1			# =*5
 	add	$d1,$h0
 	adc	\$0,$h1
+	adc	\$0,$h2
 
 	mov	$s1,$r1
 	mov	$s1,%rax
@@ -1305,6 +1317,7 @@ poly1305_emit_avx:
 	add	%rcx,%rax
 	add	%rax,%r8
 	adc	\$0,%r9
+	adc	\$0,%r10
 
 	mov	%r8,%rax
 	add	\$5,%r8		# compare to modulus
@@ -1370,10 +1383,10 @@ poly1305_blocks_avx2:
 
 	################################# base 2^26 -> base 2^64
 	mov	$d1#d,$h0#d
-	and	\$-1<<31,$d1
+	and	\$`-1*(1<<31)`,$d1
 	mov	$d2,$r1			# borrow $r1
 	mov	$d2#d,$h1#d
-	and	\$-1<<31,$d2
+	and	\$`-1*(1<<31)`,$d2
 
 	shr	\$6,$d1
 	shl	\$52,$r1
@@ -1397,6 +1410,7 @@ poly1305_blocks_avx2:
 	add	$d2,$d1			# =*5
 	add	$d1,$h0
 	adc	\$0,$h1
+	adc	\$0,$h2
 
 	mov	$s1,$r1
 	mov	$s1,%rax
@@ -1977,7 +1991,7 @@ $code.=<<___;
 .Lmask24:
 .long	0x0ffffff,0,0x0ffffff,0,0x0ffffff,0,0x0ffffff,0
 .L129:
-.long	1<<24,0,1<<24,0,1<<24,0,1<<24,0
+.long	`1<<24`,0,`1<<24`,0,`1<<24`,0,`1<<24`,0
 .Lmask26:
 .long	0x3ffffff,0,0x3ffffff,0,0x3ffffff,0,0x3ffffff,0
 .Lfive:
