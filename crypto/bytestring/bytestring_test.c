@@ -609,8 +609,9 @@ static int test_cbs_dup(void)
     if (CBS_len(&data) != 6)
         return 0;
     CBS_dup(&data, &check);
-    if (CBS_len(&check) != 6)
+    if (CBS_len(&check) != 6) {
         return 0;
+    }
 	if (CBS_data(&data) != CBS_data(&check))
         return 0;
 	if (CBS_skip(&data, 1) == 0)

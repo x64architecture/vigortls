@@ -525,7 +525,7 @@ int dtls1_accept(SSL *s)
                 ret = ssl3_get_cert_verify(s);
                 if (ret <= 0)
                     goto end;
-                    s->state = SSL3_ST_SR_FINISHED_A;
+                s->state = SSL3_ST_SR_FINISHED_A;
                 s->init_num = 0;
                 break;
 

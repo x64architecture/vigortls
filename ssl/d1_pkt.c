@@ -562,13 +562,15 @@ again:
          * since they arrive from different connections and
          * would be dropped unnecessarily.
          */
-        if (!(s->d1->listen && rr->type == SSL3_RT_HANDSHAKE &&
-            p != NULL && *p == SSL3_MT_CLIENT_HELLO) &&
-            !dtls1_record_replay_check(s, bitmap))
-            goto again;
+    if (!(s->d1->listen && rr->type == SSL3_RT_HANDSHAKE &&
+        p != NULL && *p == SSL3_MT_CLIENT_HELLO) &&
+        !dtls1_record_replay_check(s, bitmap))
+    {
+        goto again;
+    }
 
-        /* Mark receipt of record. */
-        dtls1_record_bitmap_update(s, bitmap);
+    /* Mark receipt of record. */
+    dtls1_record_bitmap_update(s, bitmap);
 
     /* just read a 0 length packet */
     if (rr->length == 0)

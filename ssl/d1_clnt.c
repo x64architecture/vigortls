@@ -419,7 +419,7 @@ int dtls1_connect(SSL *s)
                 ret = ssl3_send_client_verify(s);
                 if (ret <= 0)
                     goto end;
-                    s->state = SSL3_ST_CW_CHANGE_A;
+                s->state = SSL3_ST_CW_CHANGE_A;
                 s->init_num = 0;
                 break;
 

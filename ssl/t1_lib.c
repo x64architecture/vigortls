@@ -1678,9 +1678,10 @@ int ssl_parse_serverhello_tlsext(SSL *s, uint8_t **p, uint8_t *d,
                     *al = SSL_AD_UNRECOGNIZED_NAME;
                     return 0;
                 }
-            } else
+            } else {
                 *al = SSL_AD_DECODE_ERROR;
                 return 0;
+            }
         }
     }
 
