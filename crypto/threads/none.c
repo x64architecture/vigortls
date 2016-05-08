@@ -20,7 +20,7 @@
 
 CRYPTO_MUTEX *CRYPTO_thread_new(void)
 {
-    CRYPTO_MUTEX *lock = calloc(1, sizeof(pthread_rwlock_t));
+    CRYPTO_MUTEX *lock = calloc(1, sizeof(unsigned int));
     if (lock == NULL)
         return NULL;
 
