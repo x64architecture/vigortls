@@ -71,32 +71,25 @@ extern "C" {
 #error RIPEMD is disabled.
 #endif
 
-#if defined(__LP32__)
-#define RIPEMD160_LONG unsigned long
-#elif defined(__ILP64__)
-#define RIPEMD160_LONG unsigned long
-#define RIPEMD160_LONG_LOG2 3
-#else
-#define RIPEMD160_LONG unsigned int
-#endif
+#define RIPEMD160_LONG uint32_t
 
 #define RIPEMD160_CBLOCK 64
 #define RIPEMD160_LBLOCK (RIPEMD160_CBLOCK / 4)
 #define RIPEMD160_DIGEST_LENGTH 20
 
 typedef struct RIPEMD160state_st {
-    RIPEMD160_LONG A, B, C, D, E;
-    RIPEMD160_LONG Nl, Nh;
-    RIPEMD160_LONG data[RIPEMD160_LBLOCK];
+    uint32_t A, B, C, D, E;
+    uint32_t Nl, Nh;
+    uint32_t data[RIPEMD160_LBLOCK];
     unsigned int num;
 } RIPEMD160_CTX;
 
 int RIPEMD160_Init(RIPEMD160_CTX *c);
 int RIPEMD160_Update(RIPEMD160_CTX *c, const void *data, size_t len);
 int RIPEMD160_Final(uint8_t *md, RIPEMD160_CTX *c);
-uint8_t *RIPEMD160(const uint8_t *d, size_t n,
-                         uint8_t *md);
+uint8_t *RIPEMD160(const uint8_t *d, size_t n, uint8_t *md);
 void RIPEMD160_Transform(RIPEMD160_CTX *c, const uint8_t *b);
+
 #ifdef __cplusplus
 }
 #endif
