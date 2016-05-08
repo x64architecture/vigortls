@@ -112,6 +112,8 @@
 #include <openssl/lhash.h>
 #include <stdcompat.h>
 
+#include "internal/threads.h"
+
 typedef struct {
     long argl;                  /* Arbitary long */
     void *argp;                 /* Arbitary void * */
@@ -132,6 +134,14 @@ typedef struct {
 } EX_CLASS_ITEM;
 static EX_CLASS_ITEM ex_data[CRYPTO_EX_INDEX__COUNT];
 
+static CRYPTO_MUTEX *ex_data_lock;
+static CRYPTO_ONCE ex_data_init = CRYPTO_ONCE_STATIC_INIT;
+
+static void do_ex_data_init(void)
+{
+    ex_data_lock = CRYPTO_thread_new();
+}
+
 /*
  * Return the EX_CLASS_ITEM from the "ex_data" array that corresponds to
  * a given class.  On success, *holds the lock.*
@@ -145,8 +155,10 @@ static EX_CLASS_ITEM *def_get_class(int class_index)
         return NULL;
     }
 
+    CRYPTO_thread_run_once(&ex_data_init, do_ex_data_init);
+
     ip = &ex_data[class_index];
-    CRYPTO_w_lock(CRYPTO_LOCK_EX_DATA);
+    CRYPTO_thread_write_lock(ex_data_lock);
     if (ip->meth == NULL) {
         ip->meth = sk_CRYPTO_EX_DATA_FUNCS_new_null();
         /* We push an initial value on the stack because the SSL
@@ -155,7 +167,7 @@ static EX_CLASS_ITEM *def_get_class(int class_index)
             || !sk_CRYPTO_EX_DATA_FUNCS_push(ip->meth, NULL))
         {
             CRYPTOerr(CRYPTO_F_DEF_GET_CLASS, ERR_R_MALLOC_FAILURE);
-            CRYPTO_w_unlock(CRYPTO_LOCK_EX_DATA);
+            CRYPTO_thread_unlock(ex_data_lock);
             return NULL;
         }
     }
@@ -217,7 +229,7 @@ int CRYPTO_get_ex_new_index(int class_index, long argl, void *argp,
     (void)sk_CRYPTO_EX_DATA_FUNCS_set(ip->meth, toret, a);
 
 err:
-    CRYPTO_w_unlock(CRYPTO_LOCK_EX_DATA);
+    CRYPTO_thread_unlock(ex_data_lock);
     return toret;
 }
 
@@ -253,7 +265,7 @@ int CRYPTO_new_ex_data(int class_index, void *obj, CRYPTO_EX_DATA *ad)
                 storage[i] = sk_CRYPTO_EX_DATA_FUNCS_value(ip->meth, i);
         }
     }
-    CRYPTO_w_unlock(CRYPTO_LOCK_EX_DATA);
+    CRYPTO_thread_unlock(ex_data_lock);
 
     if ((mx > 0) && storage == NULL) {
         CRYPTOerr(CRYPTO_F_CRYPTO_NEW_EX_DATA, ERR_R_MALLOC_FAILURE);
@@ -305,7 +317,7 @@ int CRYPTO_dup_ex_data(int class_index, CRYPTO_EX_DATA *to,
                 storage[i] = sk_CRYPTO_EX_DATA_FUNCS_value(ip->meth, i);
         }
     }
-    CRYPTO_w_unlock(CRYPTO_LOCK_EX_DATA);
+    CRYPTO_thread_unlock(ex_data_lock);
 
     if (mx > 0 && storage == NULL) {
         CRYPTOerr(CRYPTO_F_CRYPTO_DUP_EX_DATA, ERR_R_MALLOC_FAILURE);
@@ -349,7 +361,7 @@ void CRYPTO_free_ex_data(int class_index, void *obj, CRYPTO_EX_DATA *ad)
                 storage[i] = sk_CRYPTO_EX_DATA_FUNCS_value(ip->meth, i);
         }
     }
-    CRYPTO_w_unlock(CRYPTO_LOCK_EX_DATA);
+    CRYPTO_thread_unlock(ex_data_lock);
 
     if (mx > 0 && storage == NULL) {
         CRYPTOerr(CRYPTO_F_CRYPTO_FREE_EX_DATA, ERR_R_MALLOC_FAILURE);

@@ -155,7 +155,6 @@ typedef struct openssl_item_st {
  */
 
 #define CRYPTO_LOCK_ERR 1
-#define CRYPTO_LOCK_EX_DATA 2
 #define CRYPTO_LOCK_X509 3
 #define CRYPTO_LOCK_X509_INFO 4
 #define CRYPTO_LOCK_X509_PKEY 5
