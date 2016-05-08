@@ -65,6 +65,8 @@
 #include <openssl/err.h>
 #include <stdcompat.h>
 
+#include "internal/threads.h"
+
 static DSO_METHOD *default_DSO_meth = NULL;
 
 DSO *DSO_new(void)
@@ -107,26 +109,34 @@ DSO *DSO_new_method(DSO_METHOD *meth)
     ret = calloc(1, sizeof(DSO));
     if (ret == NULL) {
         DSOerr(DSO_F_DSO_NEW_METHOD, ERR_R_MALLOC_FAILURE);
-        return (NULL);
+        return NULL;
     }
     ret->meth_data = sk_void_new_null();
     if (ret->meth_data == NULL) {
         /* sk_new doesn't generate any errors so we do */
         DSOerr(DSO_F_DSO_NEW_METHOD, ERR_R_MALLOC_FAILURE);
         free(ret);
-        return (NULL);
+        return NULL;
     }
     if (meth == NULL)
         ret->meth = default_DSO_meth;
     else
         ret->meth = meth;
     ret->references = 1;
-    if ((ret->meth->init != NULL) && !ret->meth->init(ret)) {
+
+    ret->lock = CRYPTO_thread_new();
+    if (ret->lock == NULL) {
         sk_void_free(ret->meth_data);
         free(ret);
+        return NULL;
+    }
+
+    if ((ret->meth->init != NULL) && !ret->meth->init(ret)) {
+        DSO_free(ret);
         ret = NULL;
     }
-    return (ret);
+
+    return ret;
 }
 
 int DSO_free(DSO *dso)
@@ -135,29 +145,31 @@ int DSO_free(DSO *dso)
 
     if (dso == NULL) {
         DSOerr(DSO_F_DSO_FREE, ERR_R_PASSED_NULL_PARAMETER);
-        return (0);
+        return 0;
     }
 
-    i = CRYPTO_add(&dso->references, -1, CRYPTO_LOCK_DSO);
+    if (CRYPTO_atomic_add(&dso->references, -1, &i, dso->lock) <= 0)
+        return 0;
+
     if (i > 0)
-        return (1);
+        return 1;
 
     if ((dso->meth->dso_unload != NULL) && !dso->meth->dso_unload(dso)) {
         DSOerr(DSO_F_DSO_FREE, DSO_R_UNLOAD_FAILED);
-        return (0);
+        return 0;
     }
 
     if ((dso->meth->finish != NULL) && !dso->meth->finish(dso)) {
         DSOerr(DSO_F_DSO_FREE, DSO_R_FINISH_FAILED);
-        return (0);
+        return 0;
     }
 
     sk_void_free(dso->meth_data);
     free(dso->filename);
     free(dso->loaded_filename);
-
+    CRYPTO_thread_cleanup(dso->lock);
     free(dso);
-    return (1);
+    return 1;
 }
 
 int DSO_flags(DSO *dso)
@@ -167,13 +179,17 @@ int DSO_flags(DSO *dso)
 
 int DSO_up_ref(DSO *dso)
 {
+    int i;
+
     if (dso == NULL) {
         DSOerr(DSO_F_DSO_UP_REF, ERR_R_PASSED_NULL_PARAMETER);
-        return (0);
+        return 0;
     }
 
-    CRYPTO_add(&dso->references, 1, CRYPTO_LOCK_DSO);
-    return (1);
+    if (CRYPTO_atomic_add(&dso->references, 1, &i, dso->lock) <= 0)
+        return 0;
+
+    return ((i > 1) ? 1 : 0);
 }
 
 DSO *DSO_load(DSO *dso, const char *filename, DSO_METHOD *meth, int flags)
