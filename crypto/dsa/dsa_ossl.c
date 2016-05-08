@@ -246,8 +246,7 @@ static int dsa_sign_setup(DSA *dsa, BN_CTX *ctx_in, BIGNUM **kinvp, BIGNUM **rp)
 
     if (dsa->flags & DSA_FLAG_CACHE_MONT_P) {
         if (!BN_MONT_CTX_set_locked(&dsa->method_mont_p,
-                                    CRYPTO_LOCK_DSA,
-                                    dsa->p, ctx))
+                                    dsa->lock, dsa->p, ctx))
             goto err;
     }
 
@@ -364,7 +363,7 @@ static int dsa_do_verify(const uint8_t *dgst, int dgst_len, DSA_SIG *sig,
 
     if (dsa->flags & DSA_FLAG_CACHE_MONT_P) {
         mont = BN_MONT_CTX_set_locked(&dsa->method_mont_p,
-                                      CRYPTO_LOCK_DSA, dsa->p, ctx);
+                                      dsa->lock, dsa->p, ctx);
         if (!mont)
             goto err;
     }

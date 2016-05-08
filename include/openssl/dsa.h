@@ -80,6 +80,8 @@
 #include <openssl/dh.h>
 #endif
 
+#include <openssl/threads.h>
+
 #ifndef OPENSSL_DSA_MAX_MODULUS_BITS
 #define OPENSSL_DSA_MAX_MODULUS_BITS 10000
 #endif
@@ -156,6 +158,7 @@ struct dsa_st {
     const DSA_METHOD *meth;
     /* functional reference if 'meth' is ENGINE-provided */
     ENGINE *engine;
+    CRYPTO_MUTEX *lock;
 };
 
 #define d2i_DSAparams_fp(fp, x) (DSA *) ASN1_d2i_fp((char *(*)())DSA_new, \

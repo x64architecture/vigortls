@@ -67,6 +67,8 @@
 #include <openssl/bn.h>
 #endif
 
+#include <openssl/threads.h>
+
 #ifndef OPENSSL_DH_MAX_MODULUS_BITS
 #define OPENSSL_DH_MAX_MODULUS_BITS 10000
 #endif
@@ -129,6 +131,7 @@ struct dh_st {
     CRYPTO_EX_DATA ex_data;
     const DH_METHOD *meth;
     ENGINE *engine;
+    CRYPTO_MUTEX *lock;
 };
 
 #define DH_GENERATOR_2 2

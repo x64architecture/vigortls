@@ -63,6 +63,8 @@
 #include <openssl/engine.h>
 #endif
 
+#include "internal/threads.h"
+
 static const DH_METHOD *default_DH_method = NULL;
 
 void DH_set_default_method(const DH_METHOD *meth)
@@ -110,7 +112,7 @@ DH *DH_new_method(ENGINE *engine)
     ret = malloc(sizeof(DH));
     if (ret == NULL) {
         DHerr(DH_F_DH_NEW_METHOD, ERR_R_MALLOC_FAILURE);
-        return (NULL);
+        return NULL;
     }
 
     ret->meth = DH_get_default_method();
@@ -149,17 +151,26 @@ DH *DH_new_method(ENGINE *engine)
     ret->counter = NULL;
     ret->method_mont_p = NULL;
     ret->references = 1;
+
     CRYPTO_new_ex_data(CRYPTO_EX_INDEX_DH, ret, &ret->ex_data);
-    if ((ret->meth->init != NULL) && !ret->meth->init(ret)) {
+
+    ret->lock = CRYPTO_thread_new();
+    if (ret->lock == NULL) {
 #ifndef OPENSSL_NO_ENGINE
         if (ret->engine)
             ENGINE_finish(ret->engine);
 #endif
         CRYPTO_free_ex_data(CRYPTO_EX_INDEX_DH, ret, &ret->ex_data);
         free(ret);
+        return NULL;
+    }
+
+    if ((ret->meth->init != NULL) && !ret->meth->init(ret)) {
+        DH_free(ret);
         ret = NULL;
     }
-    return (ret);
+
+    return ret;
 }
 
 void DH_free(DH *r)
@@ -167,7 +178,8 @@ void DH_free(DH *r)
     int i;
     if (r == NULL)
         return;
-    i = CRYPTO_add(&r->references, -1, CRYPTO_LOCK_DH);
+
+    CRYPTO_atomic_add(&r->references, -1, &i, r->lock);
     if (i > 0)
         return;
 
@@ -179,6 +191,8 @@ void DH_free(DH *r)
 #endif
 
     CRYPTO_free_ex_data(CRYPTO_EX_INDEX_DH, r, &r->ex_data);
+
+    CRYPTO_thread_cleanup(r->lock);
 
     BN_clear_free(r->p);
     BN_clear_free(r->g);
@@ -193,7 +207,11 @@ void DH_free(DH *r)
 
 int DH_up_ref(DH *r)
 {
-    int i = CRYPTO_add(&r->references, 1, CRYPTO_LOCK_DH);
+    int i;
+
+    if (CRYPTO_atomic_add(&r->references, 1, &i, r->lock) <= 0)
+        return 0;
+
     return ((i > 1) ? 1 : 0);
 }
 

@@ -68,6 +68,8 @@
 #include <openssl/bn.h>
 #endif
 
+#include <openssl/threads.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -149,6 +151,7 @@ struct rsa_st {
      * NULL */
     BN_BLINDING *blinding;
     BN_BLINDING *mt_blinding;
+    CRYPTO_MUTEX *lock;
 };
 
 #ifndef OPENSSL_RSA_MAX_MODULUS_BITS

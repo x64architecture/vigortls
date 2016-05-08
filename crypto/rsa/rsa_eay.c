@@ -116,6 +116,8 @@
 #include <openssl/rand.h>
 #include <openssl/rsa.h>
 
+#include "internal/threads.h"
+
 static int RSA_eay_public_encrypt(int flen, const uint8_t *from,
                                   uint8_t *to, RSA *rsa, int padding);
 static int RSA_eay_private_encrypt(int flen, const uint8_t *from,
@@ -217,7 +219,7 @@ static int RSA_eay_public_encrypt(int flen, const uint8_t *from,
     }
 
     if (rsa->flags & RSA_FLAG_CACHE_PUBLIC)
-        if (!BN_MONT_CTX_set_locked(&rsa->_method_mod_n, CRYPTO_LOCK_RSA, rsa->n, ctx))
+        if (!BN_MONT_CTX_set_locked(&rsa->_method_mod_n, rsa->lock, rsa->n, ctx))
             goto err;
 
     if (!rsa->meth->bn_mod_exp(ret, f, rsa->e, rsa->n, ctx,
@@ -245,19 +247,12 @@ err:
 static BN_BLINDING *rsa_get_blinding(RSA *rsa, int *local, BN_CTX *ctx)
 {
     BN_BLINDING *ret;
-    int got_write_lock = 0;
     CRYPTO_THREADID cur;
 
-    CRYPTO_r_lock(CRYPTO_LOCK_RSA);
+    CRYPTO_thread_write_lock(rsa->lock);
 
-    if (rsa->blinding == NULL) {
-        CRYPTO_r_unlock(CRYPTO_LOCK_RSA);
-        CRYPTO_w_lock(CRYPTO_LOCK_RSA);
-        got_write_lock = 1;
-
-        if (rsa->blinding == NULL)
-            rsa->blinding = RSA_setup_blinding(rsa, ctx);
-    }
+    if (rsa->blinding == NULL)
+        rsa->blinding = RSA_setup_blinding(rsa, ctx);
 
     ret = rsa->blinding;
     if (ret == NULL)
@@ -271,30 +266,16 @@ static BN_BLINDING *rsa_get_blinding(RSA *rsa, int *local, BN_CTX *ctx)
     } else {
         /* resort to rsa->mt_blinding instead */
 
-        *local = 0; /* instructs rsa_blinding_convert(), rsa_blinding_invert()
-                     * that the BN_BLINDING is shared, meaning that accesses
-                     * require locks, and that the blinding factor must be
-                     * stored outside the BN_BLINDING
-                     */
+        *local = 0;
 
-        if (rsa->mt_blinding == NULL) {
-            if (!got_write_lock) {
-                CRYPTO_r_unlock(CRYPTO_LOCK_RSA);
-                CRYPTO_w_lock(CRYPTO_LOCK_RSA);
-                got_write_lock = 1;
-            }
+        if (rsa->mt_blinding == NULL)
+            rsa->mt_blinding = RSA_setup_blinding(rsa, ctx);
 
-            if (rsa->mt_blinding == NULL)
-                rsa->mt_blinding = RSA_setup_blinding(rsa, ctx);
-        }
         ret = rsa->mt_blinding;
     }
 
 err:
-    if (got_write_lock)
-        CRYPTO_w_unlock(CRYPTO_LOCK_RSA);
-    else
-        CRYPTO_r_unlock(CRYPTO_LOCK_RSA);
+    CRYPTO_thread_unlock(rsa->lock);
     return ret;
 }
 
@@ -415,7 +396,7 @@ static int RSA_eay_private_encrypt(int flen, const uint8_t *from,
             d = rsa->d;
 
         if (rsa->flags & RSA_FLAG_CACHE_PUBLIC)
-            if (!BN_MONT_CTX_set_locked(&rsa->_method_mod_n, CRYPTO_LOCK_RSA, rsa->n, ctx))
+            if (!BN_MONT_CTX_set_locked(&rsa->_method_mod_n, rsa->lock, rsa->n, ctx))
                 goto err;
 
         if (!rsa->meth->bn_mod_exp(ret, f, d, rsa->n, ctx,
@@ -529,7 +510,7 @@ static int RSA_eay_private_decrypt(int flen, const uint8_t *from,
             d = rsa->d;
 
         if (rsa->flags & RSA_FLAG_CACHE_PUBLIC)
-            if (!BN_MONT_CTX_set_locked(&rsa->_method_mod_n, CRYPTO_LOCK_RSA, rsa->n, ctx))
+            if (!BN_MONT_CTX_set_locked(&rsa->_method_mod_n, rsa->lock, rsa->n, ctx))
                 goto err;
         if (!rsa->meth->bn_mod_exp(ret, f, d, rsa->n, ctx,
                                    rsa->_method_mod_n))
@@ -629,7 +610,7 @@ static int RSA_eay_public_decrypt(int flen, const uint8_t *from,
     }
 
     if (rsa->flags & RSA_FLAG_CACHE_PUBLIC)
-        if (!BN_MONT_CTX_set_locked(&rsa->_method_mod_n, CRYPTO_LOCK_RSA, rsa->n, ctx))
+        if (!BN_MONT_CTX_set_locked(&rsa->_method_mod_n, rsa->lock, rsa->n, ctx))
             goto err;
 
     if (!rsa->meth->bn_mod_exp(ret, f, rsa->e, rsa->n, ctx,
@@ -703,15 +684,15 @@ static int RSA_eay_mod_exp(BIGNUM *r0, const BIGNUM *I, RSA *rsa, BN_CTX *ctx)
         }
 
         if (rsa->flags & RSA_FLAG_CACHE_PRIVATE) {
-            if (!BN_MONT_CTX_set_locked(&rsa->_method_mod_p, CRYPTO_LOCK_RSA, p, ctx))
+            if (!BN_MONT_CTX_set_locked(&rsa->_method_mod_p, rsa->lock, p, ctx))
                 goto err;
-            if (!BN_MONT_CTX_set_locked(&rsa->_method_mod_q, CRYPTO_LOCK_RSA, q, ctx))
+            if (!BN_MONT_CTX_set_locked(&rsa->_method_mod_q, rsa->lock, q, ctx))
                 goto err;
         }
     }
 
     if (rsa->flags & RSA_FLAG_CACHE_PUBLIC)
-        if (!BN_MONT_CTX_set_locked(&rsa->_method_mod_n, CRYPTO_LOCK_RSA, rsa->n, ctx))
+        if (!BN_MONT_CTX_set_locked(&rsa->_method_mod_n, rsa->lock, rsa->n, ctx))
             goto err;
 
     /* compute I mod q */

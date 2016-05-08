@@ -67,6 +67,8 @@
 #endif
 #include <openssl/dh.h>
 
+#include "internal/threads.h"
+
 static const DSA_METHOD *default_DSA_method = NULL;
 
 void DSA_set_default_method(const DSA_METHOD *meth)
@@ -114,7 +116,7 @@ DSA *DSA_new_method(ENGINE *engine)
     ret = malloc(sizeof(DSA));
     if (ret == NULL) {
         DSAerr(DSA_F_DSA_NEW_METHOD, ERR_R_MALLOC_FAILURE);
-        return (NULL);
+        return NULL;
     }
     ret->meth = DSA_get_default_method();
 #ifndef OPENSSL_NO_ENGINE
@@ -153,18 +155,26 @@ DSA *DSA_new_method(ENGINE *engine)
     ret->method_mont_p = NULL;
 
     ret->references = 1;
+
     CRYPTO_new_ex_data(CRYPTO_EX_INDEX_DSA, ret, &ret->ex_data);
-    if ((ret->meth->init != NULL) && !ret->meth->init(ret)) {
+
+    ret->lock = CRYPTO_thread_new();
+    if (ret->lock == NULL) {
 #ifndef OPENSSL_NO_ENGINE
         if (ret->engine)
             ENGINE_finish(ret->engine);
 #endif
         CRYPTO_free_ex_data(CRYPTO_EX_INDEX_DSA, ret, &ret->ex_data);
         free(ret);
+        return NULL;
+    }
+
+    if ((ret->meth->init != NULL) && !ret->meth->init(ret)) {
+        DSA_free(ret);
         ret = NULL;
     }
 
-    return (ret);
+    return ret;
 }
 
 void DSA_free(DSA *r)
@@ -174,7 +184,7 @@ void DSA_free(DSA *r)
     if (r == NULL)
         return;
 
-    i = CRYPTO_add(&r->references, -1, CRYPTO_LOCK_DSA);
+    CRYPTO_atomic_add(&r->references, -1, &i, r->lock);
     if (i > 0)
         return;
 
@@ -186,6 +196,8 @@ void DSA_free(DSA *r)
 #endif
 
     CRYPTO_free_ex_data(CRYPTO_EX_INDEX_DSA, r, &r->ex_data);
+
+    CRYPTO_thread_cleanup(r->lock);
 
     BN_clear_free(r->p);
     BN_clear_free(r->q);
@@ -199,7 +211,11 @@ void DSA_free(DSA *r)
 
 int DSA_up_ref(DSA *r)
 {
-    int i = CRYPTO_add(&r->references, 1, CRYPTO_LOCK_DSA);
+    int i;
+
+    if (CRYPTO_atomic_add(&r->references, 1, &i, r->lock) <= 0)
+        return 0;
+
     return ((i > 1) ? 1 : 0);
 }
 

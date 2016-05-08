@@ -68,6 +68,8 @@
 #include <openssl/engine.h>
 #endif
 
+#include "internal/threads.h"
+
 static const RSA_METHOD *default_RSA_meth = NULL;
 
 RSA *RSA_new(void)
@@ -170,19 +172,26 @@ RSA *RSA_new_method(ENGINE *engine)
             ENGINE_finish(ret->engine);
 #endif
         free(ret);
-        return (NULL);
+        return NULL;
     }
 
-    if ((ret->meth->init != NULL) && !ret->meth->init(ret)) {
+    ret->lock = CRYPTO_thread_new();
+    if (ret->lock == NULL) {
 #ifndef OPENSSL_NO_ENGINE
         if (ret->engine)
             ENGINE_finish(ret->engine);
 #endif
         CRYPTO_free_ex_data(CRYPTO_EX_INDEX_RSA, ret, &ret->ex_data);
         free(ret);
+        return NULL;
+    }
+
+    if ((ret->meth->init != NULL) && !ret->meth->init(ret)) {
+        RSA_free(ret);
         ret = NULL;
     }
-    return (ret);
+
+    return ret;
 }
 
 void RSA_free(RSA *r)
@@ -192,7 +201,7 @@ void RSA_free(RSA *r)
     if (r == NULL)
         return;
 
-    i = CRYPTO_add(&r->references, -1, CRYPTO_LOCK_RSA);
+    CRYPTO_atomic_add(&r->references, -1, &i, r->lock);
     if (i > 0)
         return;
 
@@ -205,6 +214,7 @@ void RSA_free(RSA *r)
 
     CRYPTO_free_ex_data(CRYPTO_EX_INDEX_RSA, r, &r->ex_data);
 
+    CRYPTO_thread_cleanup(r->lock);
 
     BN_clear_free(r->n);
     BN_clear_free(r->e);
@@ -221,7 +231,11 @@ void RSA_free(RSA *r)
 
 int RSA_up_ref(RSA *r)
 {
-    int i = CRYPTO_add(&r->references, 1, CRYPTO_LOCK_RSA);
+    int i;
+
+    if (CRYPTO_atomic_add(&r->references, 1, &i, r->lock) <= 0)
+        return 0;
+
     return ((i > 1) ? 1 : 0);
 }
 
