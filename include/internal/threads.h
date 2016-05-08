@@ -23,6 +23,8 @@
 
 typedef unsigned int CRYPTO_ONCE;
 
+#define CRYPTO_ONCE_STATIC_INIT 0
+
 #elif defined(_WIN32)
 
 #define _WIN32_LEAN_AND_MEAN
