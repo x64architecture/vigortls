@@ -1,4 +1,3 @@
-/* crypto/ripemd/rmd_dgst.c */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -56,27 +55,107 @@
  * [including the GNU Public Licence.]
  */
 
-#include <stdio.h>
-#include "rmd_locl.h"
-#include <openssl/crypto.h>
+#include <string.h>
 
-#ifndef OPENSSL_NO_ASM
-void ripemd160_block_x86(RIPEMD160_CTX *c, unsigned long *p, size_t num);
-#define ripemd160_block ripemd160_block_x86
-#else
-void ripemd160_block(RIPEMD160_CTX *c, unsigned long *p, size_t num);
-#endif
+#include <openssl/crypto.h>
+#include <openssl/ripemd.h>
+
+uint8_t *RIPEMD160(const uint8_t *d, size_t n, uint8_t *md)
+{
+    RIPEMD160_CTX c;
+    static uint8_t m[RIPEMD160_DIGEST_LENGTH];
+
+    if (md == NULL)
+        md = m;
+    if (!RIPEMD160_Init(&c))
+        return NULL;
+    RIPEMD160_Update(&c, d, n);
+    RIPEMD160_Final(md, &c);
+    vigortls_zeroize(&c, sizeof(c)); /* security consideration */
+    return (md);
+}
 
 int RIPEMD160_Init(RIPEMD160_CTX *c)
 {
     memset(c, 0, sizeof(*c));
-    c->A = RIPEMD160_A;
-    c->B = RIPEMD160_B;
-    c->C = RIPEMD160_C;
-    c->D = RIPEMD160_D;
-    c->E = RIPEMD160_E;
+    c->A = 0x67452301L;
+    c->B = 0xEFCDAB89L;
+    c->C = 0x98BADCFEL;
+    c->D = 0x10325476L;
+    c->E = 0xC3D2E1F0L;
     return 1;
 }
+
+void ripemd160_block_data_order(RIPEMD160_CTX *ctx, const void *p, size_t num);
+
+#define DATA_ORDER_IS_LITTLE_ENDIAN
+
+#define HASH_LONG RIPEMD160_LONG
+#define HASH_CTX RIPEMD160_CTX
+#define HASH_CBLOCK RIPEMD160_CBLOCK
+#define HASH_UPDATE RIPEMD160_Update
+#define HASH_TRANSFORM RIPEMD160_Transform
+#define HASH_FINAL RIPEMD160_Final
+#define HASH_MAKE_STRING(c, s)    \
+    do {                          \
+        uint32_t ll;              \
+        ll = (c)->A;              \
+        (void) HOST_l2c(ll, (s)); \
+        ll = (c)->B;              \
+        (void) HOST_l2c(ll, (s)); \
+        ll = (c)->C;              \
+        (void) HOST_l2c(ll, (s)); \
+        ll = (c)->D;              \
+        (void) HOST_l2c(ll, (s)); \
+        ll = (c)->E;              \
+        (void) HOST_l2c(ll, (s)); \
+    } while (0)
+#define HASH_BLOCK_DATA_ORDER ripemd160_block_data_order
+
+#include "md32_common.h"
+
+#define F1(x, y, z) ((x) ^ (y) ^ (z))
+#define F2(x, y, z) ((((y) ^ (z)) & (x)) ^ (z))
+#define F3(x, y, z) (((~(y)) | (x)) ^ (z))
+#define F4(x, y, z) ((((x) ^ (y)) & (z)) ^ (y))
+#define F5(x, y, z) (((~(z)) | (y)) ^ (x))
+
+#include "rmdconst.h"
+
+#define RIP1(a, b, c, d, e, w, s) \
+    {                             \
+        a += F1(b, c, d) + X(w);  \
+        a = ROTATE(a, s) + e;     \
+        c = ROTATE(c, 10);        \
+    }
+
+#define RIP2(a, b, c, d, e, w, s, K) \
+    {                                \
+        a += F2(b, c, d) + X(w) + K; \
+        a = ROTATE(a, s) + e;        \
+        c = ROTATE(c, 10);           \
+    }
+
+#define RIP3(a, b, c, d, e, w, s, K) \
+    {                                \
+        a += F3(b, c, d) + X(w) + K; \
+        a = ROTATE(a, s) + e;        \
+        c = ROTATE(c, 10);           \
+    }
+
+#define RIP4(a, b, c, d, e, w, s, K) \
+    {                                \
+        a += F4(b, c, d) + X(w) + K; \
+        a = ROTATE(a, s) + e;        \
+        c = ROTATE(c, 10);           \
+    }
+
+#define RIP5(a, b, c, d, e, w, s, K) \
+    {                                \
+        a += F5(b, c, d) + X(w) + K; \
+        a = ROTATE(a, s) + e;        \
+        c = ROTATE(c, 10);           \
+    }
 
 #ifndef ripemd160_block_data_order
 #ifdef X
@@ -85,17 +164,11 @@ int RIPEMD160_Init(RIPEMD160_CTX *c)
 void ripemd160_block_data_order(RIPEMD160_CTX *ctx, const void *p, size_t num)
 {
     const uint8_t *data = p;
-    register unsigned MD32_REG_T A, B, C, D, E;
-    unsigned MD32_REG_T a, b, c, d, e, l;
-#ifndef MD32_XARRAY
-    /* See comment in crypto/sha/sha_locl.h for details. */
-    unsigned MD32_REG_T XX0, XX1, XX2, XX3, XX4, XX5, XX6, XX7,
-        XX8, XX9, XX10, XX11, XX12, XX13, XX14, XX15;
+    uint32_t A, B, C, D, E;
+    uint32_t a, b, c, d, e, l;
+    uint32_t XX0, XX1, XX2, XX3, XX4, XX5, XX6, XX7,
+             XX8, XX9, XX10, XX11, XX12, XX13, XX14, XX15;
 #define X(i) XX##i
-#else
-    RIPEMD160_LONG XX[16];
-#define X(i) XX[i]
-#endif
 
     for (; num--;) {
 
