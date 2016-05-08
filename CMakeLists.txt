@@ -56,6 +56,9 @@ if (BUILD_SHARED_LIBS)
     set(CMAKE_POSITION_INDEPENDENT_CODE TRUE)
 endif()
 
+option(MT_SUPPORT
+    "Build with multi-threading support" FALSE)
+
 install(DIRECTORY include/openssl DESTINATION include)
 
 add_subdirectory(crypto)

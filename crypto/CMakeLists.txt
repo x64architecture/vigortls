@@ -83,6 +83,7 @@ add_subdirectory(ripemd)
 add_subdirectory(rsa)
 add_subdirectory(sha)
 add_subdirectory(stack)
+add_subdirectory(threads)
 add_subdirectory(ts)
 add_subdirectory(txt_db)
 add_subdirectory(ui)
@@ -146,6 +147,7 @@ add_library(
     $<TARGET_OBJECTS:rsa>
     $<TARGET_OBJECTS:sha>
     $<TARGET_OBJECTS:stack>
+    $<TARGET_OBJECTS:threads>
     $<TARGET_OBJECTS:ts>
     $<TARGET_OBJECTS:txt_db>
     $<TARGET_OBJECTS:ui>
@@ -153,6 +155,10 @@ add_library(
     $<TARGET_OBJECTS:x509>
     $<TARGET_OBJECTS:x509v3>
 )
+
+if(NOT MSVC AND MT_SUPPORT)
+    target_link_libraries(crypto pthread)
+endif()
 
 if (WIN32)
 	target_link_libraries(crypto Ws2_32)
