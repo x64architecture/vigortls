@@ -57,7 +57,7 @@ if (BUILD_SHARED_LIBS)
 endif()
 
 option(MT_SUPPORT
-    "Build with multi-threading support" FALSE)
+    "Build with multi-threading support" TRUE)
 
 install(DIRECTORY include/openssl DESTINATION include)
 
