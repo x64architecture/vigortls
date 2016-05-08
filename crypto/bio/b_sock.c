@@ -71,11 +71,23 @@
 #include <openssl/buffer.h>
 #include <openssl/err.h>
 
+#include "internal/threads.h"
+
+static CRYPTO_MUTEX *bio_get_host_ip_lock;
+static CRYPTO_ONCE bio_get_host_ip_init = CRYPTO_ONCE_STATIC_INIT;
+
+static CRYPTO_MUTEX *bio_get_port_lock;
+static CRYPTO_ONCE bio_get_port_init = CRYPTO_ONCE_STATIC_INIT;
+
+static void do_bio_get_host_ip_init(void)
+{
+    bio_get_host_ip_lock = CRYPTO_thread_new();
+}
+
 int BIO_get_host_ip(const char *str, uint8_t *ip)
 {
     int i;
     int err = 1;
-    int locked = 0;
     struct hostent *he;
 
     /* At this point, we have something that is most probably correct
@@ -86,11 +98,12 @@ int BIO_get_host_ip(const char *str, uint8_t *ip)
     /* If the string actually contained an IP address, we need not do
        anything more */
     if (inet_pton(AF_INET, str, ip) == 1)
-        return (1);
+        return 1;
 
     /* do a gethostbyname */
-    CRYPTO_w_lock(CRYPTO_LOCK_GETHOSTBYNAME);
-    locked = 1;
+    CRYPTO_thread_run_once(&bio_get_host_ip_init, do_bio_get_host_ip_init);
+
+    CRYPTO_thread_write_lock(bio_get_host_ip_lock);
     he = BIO_gethostbyname(str);
     if (he == NULL) {
         BIOerr(BIO_F_BIO_GET_HOST_IP, BIO_R_BAD_HOSTNAME_LOOKUP);
@@ -106,13 +119,17 @@ int BIO_get_host_ip(const char *str, uint8_t *ip)
     err = 0;
 
 err:
-    if (locked)
-        CRYPTO_w_unlock(CRYPTO_LOCK_GETHOSTBYNAME);
+    CRYPTO_thread_unlock(bio_get_host_ip_lock);
     if (err) {
         ERR_asprintf_error_data("host=%s", str);
         return 0;
     } else
         return 1;
+}
+
+static void do_bio_get_port_init(void)
+{
+    bio_get_port_lock = CRYPTO_thread_new();
 }
 
 int BIO_get_port(const char *str, unsigned short *port_ptr)
@@ -128,12 +145,14 @@ int BIO_get_port(const char *str, unsigned short *port_ptr)
     if (i != 0)
         *port_ptr = (unsigned short)i;
     else {
-        CRYPTO_w_lock(CRYPTO_LOCK_GETSERVBYNAME);
+        CRYPTO_thread_run_once(&bio_get_port_init, do_bio_get_port_init);
+
+        CRYPTO_thread_write_lock(bio_get_port_lock);
         s = getservbyname(str, "tcp");
 
         if (s != NULL)
             *port_ptr = ntohs((unsigned short)s->s_port);
-        CRYPTO_w_unlock(CRYPTO_LOCK_GETSERVBYNAME);
+        CRYPTO_thread_unlock(bio_get_port_lock);
         if (s == NULL) {
             if (strcmp(str, "http") == 0)
                 *port_ptr = 80;
@@ -152,11 +171,11 @@ int BIO_get_port(const char *str, unsigned short *port_ptr)
             else {
                 SYSerr(SYS_F_GETSERVBYNAME, errno);
                 ERR_asprintf_error_data("service='%s'", str);
-                return (0);
+                return 0;
             }
         }
     }
-    return (1);
+    return 1;
 }
 
 int BIO_sock_error(int sock)
