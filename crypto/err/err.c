@@ -1,4 +1,3 @@
-/* crypto/err/err.c */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -121,6 +120,8 @@
 #include <openssl/opensslconf.h>
 #include <stdcompat.h>
 
+#include "internal/threads.h"
+
 DECLARE_LHASH_OF(ERR_STRING_DATA);
 DECLARE_LHASH_OF(ERR_STATE);
 
@@ -221,16 +222,12 @@ static ERR_STRING_DATA ERR_str_reasons[] = {
 /* Predeclarations of the "err_defaults" functions */
 static LHASH_OF(ERR_STRING_DATA) *get_hash(int create, int lockit);
 static ERR_STRING_DATA *int_err_get_item(const ERR_STRING_DATA *);
-static LHASH_OF(ERR_STATE) *int_thread_get(int create, int lockit);
-static void int_thread_release(LHASH_OF(ERR_STATE) **hash);
-static ERR_STATE *int_thread_get_item(const ERR_STATE *);
-static ERR_STATE *int_thread_set_item(ERR_STATE *);
-static void int_thread_del_item(const ERR_STATE *);
+
+static CRYPTO_ONCE err_init = CRYPTO_ONCE_STATIC_INIT;
+static CRYPTO_THREAD_LOCAL err_thread_local;
 
 /* The internal state */
 static LHASH_OF(ERR_STRING_DATA) *int_error_hash = NULL;
-static LHASH_OF(ERR_STATE) *int_thread_hash = NULL;
-static int int_thread_hash_references = 0;
 static int int_err_library_number = ERR_LIB_USER;
 
 /*
@@ -289,106 +286,6 @@ static ERR_STRING_DATA *int_err_get_item(const ERR_STRING_DATA *d)
     CRYPTO_r_unlock(CRYPTO_LOCK_ERR);
 
     return p;
-}
-
-static unsigned long err_state_hash(const ERR_STATE *a)
-{
-    return CRYPTO_THREADID_hash(&a->tid) * 13;
-}
-
-static IMPLEMENT_LHASH_HASH_FN(err_state, ERR_STATE)
-
-static int err_state_cmp(const ERR_STATE *a, const ERR_STATE *b)
-{
-    return CRYPTO_THREADID_cmp(&a->tid, &b->tid);
-}
-
-static IMPLEMENT_LHASH_COMP_FN(err_state, ERR_STATE)
-
-static LHASH_OF(ERR_STATE) *int_thread_get(int create, int lockit)
-{
-    LHASH_OF(ERR_STATE) *ret = NULL;
-
-    if (lockit)
-        CRYPTO_w_lock(CRYPTO_LOCK_ERR);
-    if (!int_thread_hash && create) {
-        int_thread_hash = lh_ERR_STATE_new();
-    }
-    if (int_thread_hash) {
-        int_thread_hash_references++;
-        ret = int_thread_hash;
-    }
-    if (lockit)
-        CRYPTO_w_unlock(CRYPTO_LOCK_ERR);
-    return ret;
-}
-
-static void int_thread_release(LHASH_OF(ERR_STATE) * *hash)
-{
-    int i;
-
-    if (hash == NULL || *hash == NULL)
-        return;
-
-    i = CRYPTO_add(&int_thread_hash_references, -1, CRYPTO_LOCK_ERR);
-    if (i > 0)
-        return;
-    *hash = NULL;
-}
-
-static ERR_STATE *int_thread_get_item(const ERR_STATE *d)
-{
-    ERR_STATE *p = NULL;
-    LHASH_OF(ERR_STATE) *hash;
-
-    CRYPTO_r_lock(CRYPTO_LOCK_ERR);
-    hash = int_thread_get(0, 0);
-    if (hash)
-        p = lh_ERR_STATE_retrieve(hash, d);
-    CRYPTO_r_unlock(CRYPTO_LOCK_ERR);
-
-    int_thread_release(&hash);
-    return p;
-}
-
-static ERR_STATE *int_thread_set_item(ERR_STATE *d)
-{
-    ERR_STATE *p = NULL;
-    LHASH_OF(ERR_STATE) *hash;
-
-    CRYPTO_w_lock(CRYPTO_LOCK_ERR);
-    hash = int_thread_get(1, 0);
-    if (hash)
-        p = lh_ERR_STATE_insert(hash, d);
-    CRYPTO_w_unlock(CRYPTO_LOCK_ERR);
-
-    int_thread_release(&hash);
-    return p;
-}
-
-static void int_thread_del_item(const ERR_STATE *d)
-{
-    ERR_STATE *p = NULL;
-    LHASH_OF(ERR_STATE) *hash;
-
-    CRYPTO_w_lock(CRYPTO_LOCK_ERR);
-    hash = int_thread_get(0, 0);
-    if (hash) {
-        p = lh_ERR_STATE_delete(hash, d);
-        /* If there are no other references, and we just removed the
-         * last item, delete the int_thread_hash */
-        if (int_thread_hash_references == 1 && int_thread_hash &&
-            lh_ERR_STATE_num_items(int_thread_hash) == 0)
-        {
-            lh_ERR_STATE_free(int_thread_hash);
-            int_thread_hash = NULL;
-        }
-    }
-    CRYPTO_w_unlock(CRYPTO_LOCK_ERR);
-
-    int_thread_release(&hash);
-    if (p)
-        ERR_STATE_free(p);
 }
 
 #ifndef OPENSSL_NO_ERR
@@ -737,9 +634,10 @@ void ERR_error_string_n(unsigned long e, char *buf, size_t len)
     }
 }
 
-/* BAD for multi-threading: uses a local buffer if ret == NULL */
-/* ERR_error_string_n should be used instead for ret != NULL
- * as ERR_error_string cannot know how large the buffer is */
+/*
+ * ERR_error_string_n should be used instead for ret != NULL
+ * as ERR_error_string cannot know how large the buffer is
+ */
 char *ERR_error_string(unsigned long e, char *ret)
 {
     static char buf[256];
@@ -754,16 +652,6 @@ char *ERR_error_string(unsigned long e, char *ret)
 LHASH_OF(ERR_STRING_DATA) *ERR_get_string_table(void)
 {
     return get_hash(0, 1);
-}
-
-LHASH_OF(ERR_STATE) *ERR_get_err_state_table(void)
-{
-    return int_thread_get(0, 1);
-}
-
-void ERR_release_err_state_table(LHASH_OF(ERR_STATE) * *hash)
-{
-    int_thread_release(hash);
 }
 
 const char *ERR_lib_error_string(unsigned long e)
@@ -807,17 +695,12 @@ const char *ERR_reason_error_string(unsigned long e)
 
 void ERR_remove_thread_state(const CRYPTO_THREADID *id)
 {
-    ERR_STATE tmp;
+    ERR_STATE *state = ERR_get_state();
+    if (state == NULL)
+        return;
 
-    if (id)
-        CRYPTO_THREADID_cpy(&tmp.tid, id);
-    else
-        CRYPTO_THREADID_current(&tmp.tid);
-    /*
-     * thread_del_item automatically destroys the LHASH if the number of
-     * items reaches zero.
-     */
-    int_thread_del_item(&tmp);
+    CRYPTO_thread_set_local(&err_thread_local, NULL);
+    ERR_STATE_free(state);
 }
 
 #ifndef OPENSSL_NO_DEPRECATED
@@ -827,41 +710,30 @@ void ERR_remove_state(unsigned long pid)
 }
 #endif
 
+static void err_do_init(void)
+{
+    CRYPTO_thread_init_local(&err_thread_local, NULL);
+}
+
 ERR_STATE *ERR_get_state(void)
 {
-    static ERR_STATE fallback;
-    ERR_STATE *ret, tmp, *tmpp = NULL;
-    int i;
-    CRYPTO_THREADID tid;
+    ERR_STATE *state = NULL;
 
-    CRYPTO_THREADID_current(&tid);
-    CRYPTO_THREADID_cpy(&tmp.tid, &tid);
-    ret = int_thread_get_item(&tmp);
+    CRYPTO_thread_run_once(&err_init, err_do_init);
 
-    /* ret == the error state, if NULL, make a new one */
-    if (ret == NULL) {
-        ret = malloc(sizeof(ERR_STATE));
-        if (ret == NULL)
-            return (&fallback);
-        CRYPTO_THREADID_cpy(&ret->tid, &tid);
-        ret->top = 0;
-        ret->bottom = 0;
-        for (i = 0; i < ERR_NUM_ERRORS; i++) {
-            ret->err_data[i] = NULL;
-            ret->err_data_flags[i] = 0;
+    state = CRYPTO_thread_get_local(&err_thread_local);
+    if (state == NULL) {
+        state = calloc(1, sizeof(*state));
+        if (state == NULL)
+            return NULL;
+
+        if (!CRYPTO_thread_set_local(&err_thread_local, state)) {
+            ERR_STATE_free(state);
+            return NULL;
         }
-        tmpp = int_thread_set_item(ret);
-        /* To check if insertion failed, do a get. */
-        if (int_thread_get_item(ret) != ret) {
-            ERR_STATE_free(ret); /* could not insert it */
-            return (&fallback);
-        }
-        /* If a race occurred in this function and we came second, tmpp
-         * is the first one that we just replaced. */
-        if (tmpp)
-            ERR_STATE_free(tmpp);
     }
-    return ret;
+
+    return state;
 }
 
 int ERR_get_next_error_library(void)
