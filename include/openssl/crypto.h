@@ -168,7 +168,6 @@ typedef struct openssl_item_st {
 #define CRYPTO_LOCK_SSL 16
 #define CRYPTO_LOCK_SSL_METHOD 17
 #define CRYPTO_LOCK_MALLOC 20
-#define CRYPTO_LOCK_BIO 21
 #define CRYPTO_LOCK_READDIR 24
 #define CRYPTO_LOCK_RSA_BLINDING 25
 #define CRYPTO_LOCK_MALLOC2 27

@@ -66,6 +66,7 @@
 #include <stdarg.h>
 
 #include <openssl/crypto.h>
+#include <openssl/threads.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -302,6 +303,7 @@ struct bio_st {
     unsigned long num_write;
 
     CRYPTO_EX_DATA ex_data;
+    CRYPTO_MUTEX *lock;
 };
 
 DECLARE_STACK_OF(BIO)
@@ -574,6 +576,7 @@ BIO *BIO_new(BIO_METHOD *type);
 int BIO_set(BIO *a, BIO_METHOD *type);
 int BIO_free(BIO *a);
 void BIO_vfree(BIO *a);
+int BIO_up_ref(BIO *a);
 int BIO_read(BIO *b, void *data, int len);
 int BIO_gets(BIO *bp, char *buf, int size);
 int BIO_write(BIO *b, const void *data, int len);

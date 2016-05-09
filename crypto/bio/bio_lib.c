@@ -63,6 +63,8 @@
 #include <openssl/err.h>
 #include <openssl/stack.h>
 
+#include "internal/threads.h"
+
 BIO *BIO_new(BIO_METHOD *method)
 {
     BIO *ret = NULL;
@@ -96,13 +98,21 @@ int BIO_set(BIO *bio, BIO_METHOD *method)
     bio->num_read = 0L;
     bio->num_write = 0L;
     CRYPTO_new_ex_data(CRYPTO_EX_INDEX_BIO, bio, &bio->ex_data);
-    if (method->create != NULL)
+
+    bio->lock = CRYPTO_thread_new();
+    if (bio->lock == NULL) {
+        CRYPTO_free_ex_data(CRYPTO_EX_INDEX_BIO, bio, &bio->ex_data);
+        return 0;
+    }
+
+    if (method->create != NULL) {
         if (!method->create(bio)) {
-            CRYPTO_free_ex_data(CRYPTO_EX_INDEX_BIO, bio,
-                                &bio->ex_data);
-            return (0);
+            CRYPTO_free_ex_data(CRYPTO_EX_INDEX_BIO, bio, &bio->ex_data);
+            CRYPTO_thread_cleanup(bio->lock);
+            return 0;
         }
-    return (1);
+    }
+    return 1;
 }
 
 int BIO_free(BIO *a)
@@ -110,26 +120,44 @@ int BIO_free(BIO *a)
     int i;
 
     if (a == NULL)
-        return (0);
+        return 0;
 
-    i = CRYPTO_add(&a->references, -1, CRYPTO_LOCK_BIO);
+    if (CRYPTO_atomic_add(&a->references, -1, &i, a->lock) <= 0)
+        return 0;
+
     if (i > 0)
-        return (1);
-    if ((a->callback != NULL) && ((i = (int)a->callback(a, BIO_CB_FREE, NULL, 0, 0L, 1L)) <= 0))
-        return (i);
+        return 1;
+    if ((a->callback != NULL) &&
+        ((i = (int)a->callback(a, BIO_CB_FREE, NULL, 0, 0L, 1L)) <= 0))
+    {
+        return i;
+    }
 
     CRYPTO_free_ex_data(CRYPTO_EX_INDEX_BIO, a, &a->ex_data);
 
+    CRYPTO_thread_cleanup(a->lock);
+
     if ((a->method == NULL) || (a->method->destroy == NULL))
-        return (1);
-    a->method->destroy(a);
+        a->method->destroy(a);
+
     free(a);
-    return (1);
+
+    return 1;
 }
 
 void BIO_vfree(BIO *a)
 {
     BIO_free(a);
+}
+
+int BIO_up_ref(BIO *a)
+{
+    int i;
+
+    if (CRYPTO_atomic_add(&a->references, 1, &i, a->lock) <= 0)
+        return 0;
+
+    return ((i > 1) ? 1 : 0);
 }
 
 void BIO_clear_flags(BIO *b, int flags)
