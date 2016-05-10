@@ -91,7 +91,7 @@ void GOST_KEY_free(GOST_KEY *r)
     if (r == NULL)
         return;
 
-    i = CRYPTO_add(&r->references, -1, CRYPTO_LOCK_EC);
+    CRYPTO_atomic_add(&r->references, -1, &i, r->lock);
     if (i > 0)
         return;
 

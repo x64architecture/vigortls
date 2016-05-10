@@ -85,6 +85,7 @@ typedef struct ec_pre_comp_st {
                             * 'num' pointers to EC_POINT objects followed by a NULL */
     size_t num;            /* numblocks * 2^(w-1) */
     int references;
+    CRYPTO_MUTEX *lock;
 } EC_PRE_COMP;
 
 /* functions to manage EC_PRE_COMP within the EC_GROUP extra_data framework */
@@ -111,16 +112,25 @@ static EC_PRE_COMP *ec_pre_comp_new(const EC_GROUP *group)
     ret->points = NULL;
     ret->num = 0;
     ret->references = 1;
+
+    ret->lock = CRYPTO_thread_new();
+    if (ret->lock == NULL) {
+        ECerr(EC_F_EC_PRE_COMP_NEW, ERR_R_MALLOC_FAILURE);
+        free(ret);
+        return NULL;
+    }
+
     return ret;
 }
 
 static void *ec_pre_comp_dup(void *src_)
 {
+    int i;
     EC_PRE_COMP *src = src_;
 
     /* no need to actually copy, these objects never change! */
 
-    CRYPTO_add(&src->references, 1, CRYPTO_LOCK_EC_PRE_COMP);
+    CRYPTO_atomic_add(&src->references, 1, &i, src->lock);
 
     return src_;
 }
@@ -130,13 +140,14 @@ static void ec_pre_comp_free(void *pre_)
     int i;
     EC_PRE_COMP *pre = pre_;
 
-    if (!pre)
+    if (pre == NULL)
         return;
 
-    i = CRYPTO_add(&pre->references, -1, CRYPTO_LOCK_EC_PRE_COMP);
+    CRYPTO_atomic_add(&pre->references, -1, &i, pre->lock);
     if (i > 0)
         return;
 
+    CRYPTO_thread_cleanup(pre->lock);
     if (pre->points) {
         EC_POINT **p;
 
@@ -155,10 +166,11 @@ static void ec_pre_comp_clear_free(void *pre_)
     if (!pre)
         return;
 
-    i = CRYPTO_add(&pre->references, -1, CRYPTO_LOCK_EC_PRE_COMP);
+    CRYPTO_atomic_add(&pre->references, -1, &i, pre->lock);
     if (i > 0)
         return;
 
+    CRYPTO_thread_cleanup(pre->lock);
     if (pre->points) {
         EC_POINT **p;
 

@@ -75,6 +75,8 @@
 #include <openssl/ec.h>
 #include <openssl/bn.h>
 
+#include "internal/threads.h"
+
 #if defined(__SUNPRO_C)
 #if __SUNPRO_C >= 0x520
 #pragma error_messages(off, E_ARRAY_OF_INCOMPLETE_NONAME, E_ARRAY_OF_INCOMPLETE)
@@ -249,6 +251,7 @@ struct ec_key_st {
     point_conversion_form_t conv_form;
 
     int references;
+    CRYPTO_MUTEX *lock;
     int flags;
 
     EC_EXTRA_DATA *method_data;

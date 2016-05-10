@@ -83,6 +83,12 @@ EC_KEY *EC_KEY_new(void)
     ret->enc_flag = 0;
     ret->conv_form = POINT_CONVERSION_UNCOMPRESSED;
     ret->references = 1;
+    ret->lock = CRYPTO_thread_new();
+    if (ret->lock == NULL) {
+        ECerr(EC_F_EC_KEY_NEW, ERR_R_MALLOC_FAILURE);
+        free(ret);
+        return NULL;
+    }
     ret->method_data = NULL;
     return (ret);
 }
@@ -107,10 +113,11 @@ void EC_KEY_free(EC_KEY *r)
     if (r == NULL)
         return;
 
-    i = CRYPTO_add(&r->references, -1, CRYPTO_LOCK_EC);
+    CRYPTO_atomic_add(&r->references, -1, &i, r->lock);
     if (i > 0)
         return;
 
+    CRYPTO_thread_cleanup(r->lock);
     EC_GROUP_free(r->group);
     EC_POINT_free(r->pub_key);
     BN_clear_free(r->priv_key);
@@ -118,7 +125,6 @@ void EC_KEY_free(EC_KEY *r)
     EC_EX_DATA_free_all_data(&r->method_data);
 
     vigortls_zeroize((void *)r, sizeof(EC_KEY));
-
     free(r);
 }
 
@@ -197,7 +203,11 @@ EC_KEY *EC_KEY_dup(const EC_KEY *ec_key)
 
 int EC_KEY_up_ref(EC_KEY *r)
 {
-    int i = CRYPTO_add(&r->references, 1, CRYPTO_LOCK_EC);
+    int i;
+
+    if (CRYPTO_atomic_add(&r->references, 1, &i, r->lock) <= 0)
+        return 0;
+
     return ((i > 1) ? 1 : 0);
 }
 
@@ -461,9 +471,9 @@ void *EC_KEY_get_key_method_data(EC_KEY *key,
 {
     void *ret;
 
-    CRYPTO_r_lock(CRYPTO_LOCK_EC);
+    CRYPTO_thread_read_lock(key->lock);
     ret = EC_EX_DATA_get_data(key->method_data, dup_func, free_func, clear_free_func);
-    CRYPTO_r_unlock(CRYPTO_LOCK_EC);
+    CRYPTO_thread_unlock(key->lock);
 
     return ret;
 }
@@ -473,12 +483,12 @@ void *EC_KEY_insert_key_method_data(EC_KEY *key, void *data,
 {
     EC_EXTRA_DATA *ex_data;
 
-    CRYPTO_w_lock(CRYPTO_LOCK_EC);
+    CRYPTO_thread_write_lock(key->lock);
     ex_data = EC_EX_DATA_get_data(key->method_data, dup_func, free_func, clear_free_func);
     if (ex_data == NULL)
         if (!EC_EX_DATA_set_data(&key->method_data, data, dup_func, free_func, clear_free_func))
             return NULL;
-    CRYPTO_w_unlock(CRYPTO_LOCK_EC);
+    CRYPTO_thread_unlock(key->lock);
 
     return ex_data;
 }

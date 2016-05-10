@@ -1575,6 +1575,7 @@ static void batch_mul(felem x_out, felem y_out, felem z_out,
 typedef struct {
     felem g_pre_comp[16][3];
     int references;
+    CRYPTO_MUTEX *lock;
 } NISTP521_PRE_COMP;
 
 const EC_METHOD *EC_GFp_nistp521_method(void)
@@ -1638,15 +1639,23 @@ static NISTP521_PRE_COMP *nistp521_pre_comp_new(void)
         return ret;
     }
     ret->references = 1;
+
+    ret->lock = CRYPTO_thread_new();
+    if (ret->lock == NULL) {
+        ECerr(EC_F_NISTP521_PRE_COMP_NEW, ERR_R_MALLOC_FAILURE);
+        free(ret);
+        return NULL;
+    }
     return ret;
 }
 
 static void *nistp521_pre_comp_dup(void *src_)
 {
+    int i;
     NISTP521_PRE_COMP *src = src_;
 
     /* no need to actually copy, these objects never change! */
-    CRYPTO_add(&src->references, 1, CRYPTO_LOCK_EC_PRE_COMP);
+    CRYPTO_atomic_add(&src->references, 1, &i, src->lock);
 
     return src_;
 }
@@ -1656,13 +1665,14 @@ static void nistp521_pre_comp_free(void *pre_)
     int i;
     NISTP521_PRE_COMP *pre = pre_;
 
-    if (!pre)
+    if (pre == NULL)
         return;
 
-    i = CRYPTO_add(&pre->references, -1, CRYPTO_LOCK_EC_PRE_COMP);
+    CRYPTO_atomic_add(&pre->references, -1, &i, pre->lock);
     if (i > 0)
         return;
 
+    CRYPTO_thread_cleanup(pre->lock);
     free(pre);
 }
 
@@ -1671,13 +1681,14 @@ static void nistp521_pre_comp_clear_free(void *pre_)
     int i;
     NISTP521_PRE_COMP *pre = pre_;
 
-    if (!pre)
+    if (pre == NULL)
         return;
 
-    i = CRYPTO_add(&pre->references, -1, CRYPTO_LOCK_EC_PRE_COMP);
+    CRYPTO_atomic_add(&pre->references, -1, &i, pre->lock);
     if (i > 0)
         return;
 
+    CRYPTO_thread_cleanup(pre->lock);
     vigortls_zeroize(pre, sizeof(*pre));
     free(pre);
 }
