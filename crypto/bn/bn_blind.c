@@ -114,6 +114,7 @@
 #include <openssl/err.h>
 
 #include "bn_lcl.h"
+#include "internal/threads.h"
 
 #define BN_BLINDING_COUNTER 32
 
@@ -122,17 +123,14 @@ struct bn_blinding_st {
     BIGNUM *Ai;
     BIGNUM *e;
     BIGNUM *mod; /* just a reference */
-#ifndef OPENSSL_NO_DEPRECATED
-    unsigned long thread_id; /* added in OpenSSL 0.9.6j and 0.9.7b;
-                  * used only by crypto/rsa/rsa_eay.c, rsa_lib.c */
-#endif
-    CRYPTO_THREADID tid;
+    CRYPTO_THREAD_ID tid;
     int counter;
     unsigned long flags;
     BN_MONT_CTX *m_ctx;
     int (*bn_mod_exp)(BIGNUM *r, const BIGNUM *a, const BIGNUM *p,
                       const BIGNUM *m, BN_CTX *ctx,
                       BN_MONT_CTX *m_ctx);
+    CRYPTO_MUTEX *lock;
 };
 
 BN_BLINDING *BN_BLINDING_new(const BIGNUM *A, const BIGNUM *Ai, BIGNUM *mod)
@@ -143,8 +141,18 @@ BN_BLINDING *BN_BLINDING_new(const BIGNUM *A, const BIGNUM *Ai, BIGNUM *mod)
 
     if ((ret = calloc(1, sizeof(BN_BLINDING))) == NULL) {
         BNerr(BN_F_BN_BLINDING_NEW, ERR_R_MALLOC_FAILURE);
-        return (NULL);
+        return NULL;
     }
+
+    ret->lock = CRYPTO_thread_new();
+    if (ret->lock == NULL) {
+        BNerr(BN_F_BN_BLINDING_NEW, ERR_R_MALLOC_FAILURE);
+        free(ret);
+        return NULL;
+    }
+
+    BN_BLINDING_set_current_thread(ret);
+
     if (A != NULL)
         if ((ret->A = BN_dup(A)) == NULL)
             goto err;
@@ -155,6 +163,7 @@ BN_BLINDING *BN_BLINDING_new(const BIGNUM *A, const BIGNUM *Ai, BIGNUM *mod)
     /* save a copy of mod in the BN_BLINDING structure */
     if ((ret->mod = BN_dup(mod)) == NULL)
         goto err;
+
     if (BN_get_flags(mod, BN_FLG_CONSTTIME) != 0)
         BN_set_flags(ret->mod, BN_FLG_CONSTTIME);
 
@@ -162,11 +171,11 @@ BN_BLINDING *BN_BLINDING_new(const BIGNUM *A, const BIGNUM *Ai, BIGNUM *mod)
      * to indicate that this is never-used fresh blinding
      * that does not need updating before first use. */
     ret->counter = -1;
-    CRYPTO_THREADID_current(&ret->tid);
-    return (ret);
+
+    return ret;
 err:
     BN_BLINDING_free(ret);
-    return (NULL);
+    return NULL;
 }
 
 void BN_BLINDING_free(BN_BLINDING *r)
@@ -178,6 +187,7 @@ void BN_BLINDING_free(BN_BLINDING *r)
     BN_free(r->Ai);
     BN_free(r->e);
     BN_free(r->mod);
+    CRYPTO_thread_cleanup(r->lock);
     free(r);
 }
 
@@ -268,21 +278,24 @@ int BN_BLINDING_invert_ex(BIGNUM *n, const BIGNUM *r, BN_BLINDING *b, BN_CTX *ct
     return (ret);
 }
 
-#ifndef OPENSSL_NO_DEPRECATED
-unsigned long BN_BLINDING_get_thread_id(const BN_BLINDING *b)
+int BN_BLINDING_is_current_thread(BN_BLINDING *b)
 {
-    return b->thread_id;
+    return CRYPTO_thread_compare_id(CRYPTO_thread_get_current_id(), b->tid);
 }
 
-void BN_BLINDING_set_thread_id(BN_BLINDING *b, unsigned long n)
+void BN_BLINDING_set_current_thread(BN_BLINDING *b)
 {
-    b->thread_id = n;
+    b->tid = CRYPTO_thread_get_current_id();
 }
-#endif
 
-CRYPTO_THREADID *BN_BLINDING_thread_id(BN_BLINDING *b)
+int BN_BLINDING_lock(BN_BLINDING *b)
 {
-    return &b->tid;
+    return CRYPTO_thread_write_lock(b->lock);
+}
+
+int BN_BLINDING_unlock(BN_BLINDING *b)
+{
+    return CRYPTO_thread_unlock(b->lock);
 }
 
 unsigned long BN_BLINDING_get_flags(const BN_BLINDING *b)

@@ -155,7 +155,6 @@ typedef struct openssl_item_st {
  */
 
 #define CRYPTO_LOCK_EVP_PKEY 10
-#define CRYPTO_LOCK_RSA_BLINDING 25
 #define CRYPTO_LOCK_DYNLOCK 29
 #define CRYPTO_NUM_LOCKS 41
 

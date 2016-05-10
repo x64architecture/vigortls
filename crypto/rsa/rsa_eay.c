@@ -247,7 +247,6 @@ err:
 static BN_BLINDING *rsa_get_blinding(RSA *rsa, int *local, BN_CTX *ctx)
 {
     BN_BLINDING *ret;
-    CRYPTO_THREADID cur;
 
     CRYPTO_thread_write_lock(rsa->lock);
 
@@ -258,8 +257,7 @@ static BN_BLINDING *rsa_get_blinding(RSA *rsa, int *local, BN_CTX *ctx)
     if (ret == NULL)
         goto err;
 
-    CRYPTO_THREADID_current(&cur);
-    if (!CRYPTO_THREADID_cmp(&cur, BN_BLINDING_thread_id(ret))) {
+    if (BN_BLINDING_is_current_thread(ret)) {
         /* rsa->blinding is ours! */
 
         *local = 1;
@@ -290,9 +288,11 @@ static int rsa_blinding_convert(BN_BLINDING *b, BIGNUM *f, BIGNUM *unblind,
         /* Shared blinding: store the unblinding factor
          * outside BN_BLINDING. */
         int ret;
-        CRYPTO_w_lock(CRYPTO_LOCK_RSA_BLINDING);
+
+        BN_BLINDING_lock(b);
         ret = BN_BLINDING_convert_ex(f, unblind, b, ctx);
-        CRYPTO_w_unlock(CRYPTO_LOCK_RSA_BLINDING);
+        BN_BLINDING_unlock(b);
+
         return ret;
     }
 }
