@@ -288,7 +288,7 @@ error:
 /* Internal functions to open, handle and close a channel to the console.  */
 static int open_console(UI *ui)
 {
-    CRYPTO_w_lock(CRYPTO_LOCK_UI);
+    CRYPTO_thread_write_lock(ui->lock);
     is_a_tty = 1;
 
 #define DEV_TTY "/dev/tty"
@@ -335,7 +335,7 @@ static int close_console(UI *ui)
         fclose(tty_in);
     if (tty_out != stderr)
         fclose(tty_out);
-    CRYPTO_w_unlock(CRYPTO_LOCK_UI);
+    CRYPTO_thread_unlock(ui->lock);
 
     return 1;
 }

@@ -171,7 +171,6 @@ typedef struct openssl_item_st {
 #define CRYPTO_LOCK_RSA_BLINDING 25
 #define CRYPTO_LOCK_DYNLOCK 29
 #define CRYPTO_LOCK_ENGINE 30
-#define CRYPTO_LOCK_UI 31
 #define CRYPTO_NUM_LOCKS 41
 
 #define CRYPTO_LOCK 1
