@@ -63,25 +63,26 @@
 #include <openssl/evp.h>
 #include <openssl/x509.h>
 
+#include "internal/threads.h"
+
 X509_INFO *X509_INFO_new(void)
 {
     X509_INFO *ret = NULL;
 
-    ret = malloc(sizeof(X509_INFO));
+    ret = calloc(1, sizeof(X509_INFO));
     if (ret == NULL) {
         ASN1err(ASN1_F_X509_INFO_NEW, ERR_R_MALLOC_FAILURE);
-        return (NULL);
+        return NULL;
+    }
+    ret->references = 1;
+    ret->lock = CRYPTO_thread_new();
+    if (ret->lock == NULL) {
+        ASN1err(ASN1_F_X509_INFO_NEW, ERR_R_MALLOC_FAILURE);
+        X509_INFO_free(ret);
+        return NULL;
     }
 
-    ret->enc_cipher.cipher = NULL;
-    ret->enc_len = 0;
-    ret->enc_data = NULL;
-
-    ret->references = 1;
-    ret->x509 = NULL;
-    ret->crl = NULL;
-    ret->x_pkey = NULL;
-    return (ret);
+    return ret;
 }
 
 void X509_INFO_free(X509_INFO *x)
@@ -91,7 +92,7 @@ void X509_INFO_free(X509_INFO *x)
     if (x == NULL)
         return;
 
-    i = CRYPTO_add(&x->references, -1, CRYPTO_LOCK_X509_INFO);
+    CRYPTO_atomic_add(&x->references, -1, &i, x->lock);
     if (i > 0)
         return;
 
@@ -99,5 +100,6 @@ void X509_INFO_free(X509_INFO *x)
     X509_CRL_free(x->crl);
     X509_PKEY_free(x->x_pkey);
     free(x->enc_data);
+    CRYPTO_thread_cleanup(x->lock);
     free(x);
 }

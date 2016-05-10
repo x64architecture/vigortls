@@ -69,6 +69,7 @@
 #include <openssl/lhash.h>
 #include <openssl/bio.h>
 #include <openssl/crypto.h>
+#include <openssl/threads.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -187,6 +188,7 @@ struct x509_store_st {
 
     CRYPTO_EX_DATA ex_data;
     int references;
+    CRYPTO_MUTEX *lock;
 } /* X509_STORE */;
 
 int X509_STORE_set_depth(X509_STORE *store, int depth);

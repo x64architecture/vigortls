@@ -59,6 +59,7 @@
 #include <openssl/x509.h>
 #include <openssl/x509v3.h>
 
+#include "internal/threads.h"
 #include "pcy_int.h"
 
 static int policy_data_cmp(const X509_POLICY_DATA *const *a,
@@ -226,9 +227,9 @@ const X509_POLICY_CACHE *policy_cache_set(X509 *x)
 {
 
     if (x->policy_cache == NULL) {
-        CRYPTO_w_lock(CRYPTO_LOCK_X509);
+        CRYPTO_thread_write_lock(x->lock);
         policy_cache_new(x);
-        CRYPTO_w_unlock(CRYPTO_LOCK_X509);
+        CRYPTO_thread_unlock(x->lock);
     }
 
     return x->policy_cache;

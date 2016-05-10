@@ -64,6 +64,7 @@
 #include <openssl/err.h>
 
 #include "asn1_locl.h"
+#include "internal/threads.h"
 
 /* Utility functions for manipulating fields and offsets */
 
@@ -103,6 +104,7 @@ int asn1_do_lock(ASN1_VALUE **pval, int op, const ASN1_ITEM *it)
 {
     const ASN1_AUX *aux;
     int *lck, ret;
+    CRYPTO_MUTEX **lock;
     if ((it->itype != ASN1_ITYPE_SEQUENCE)
         && (it->itype != ASN1_ITYPE_NDEF_SEQUENCE))
         return 0;
@@ -110,11 +112,17 @@ int asn1_do_lock(ASN1_VALUE **pval, int op, const ASN1_ITEM *it)
     if (!aux || !(aux->flags & ASN1_AFLG_REFCOUNT))
         return 0;
     lck = offset2ptr(*pval, aux->ref_offset);
+    lock = offset2ptr(*pval, aux->ref_lock);
     if (op == 0) {
         *lck = 1;
+        *lock = CRYPTO_thread_new();
+        if (*lock == NULL)
+            return 0;
         return 1;
     }
-    ret = CRYPTO_add(lck, op, aux->ref_lock);
+    CRYPTO_atomic_add(lck, op, &ret, *lock);
+    if (ret == 0)
+        CRYPTO_thread_cleanup(*lock);
     return ret;
 }
 

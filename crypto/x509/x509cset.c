@@ -62,6 +62,8 @@
 #include <openssl/evp.h>
 #include <openssl/x509.h>
 
+#include "internal/threads.h"
+
 int X509_CRL_set_version(X509_CRL *x, long version)
 {
     if (x == NULL)
@@ -131,7 +133,8 @@ int X509_CRL_sort(X509_CRL *c)
 
 void X509_CRL_up_ref(X509_CRL *crl)
 {
-    CRYPTO_add(&crl->references, 1, CRYPTO_LOCK_X509_CRL);
+    int i;
+    CRYPTO_atomic_add(&crl->references, 1, &i, crl->lock);
 }
 
 int X509_REVOKED_set_revocationDate(X509_REVOKED *x, ASN1_TIME *tm)

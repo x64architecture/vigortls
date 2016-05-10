@@ -62,6 +62,8 @@
 #include <openssl/evp.h>
 #include <openssl/x509.h>
 
+#include "internal/threads.h"
+
 int X509_set_version(X509 *x, long version)
 {
     if (x == NULL)
@@ -147,5 +149,6 @@ int X509_set_pubkey(X509 *x, EVP_PKEY *pkey)
 
 void X509_up_ref(X509 *x)
 {
-    CRYPTO_add(&x->references, 1, CRYPTO_LOCK_X509);
+    int i;
+    CRYPTO_atomic_add(&x->references, 1, &i, x->lock);
 }

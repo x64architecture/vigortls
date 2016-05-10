@@ -1828,7 +1828,7 @@ X509_STORE_CTX *X509_STORE_CTX_new(void)
 {
     X509_STORE_CTX *ctx;
     ctx = calloc(1, sizeof(X509_STORE_CTX));
-    if (!ctx) {
+    if (ctx == NULL) {
         X509err(X509_F_X509_STORE_CTX_NEW, ERR_R_MALLOC_FAILURE);
         return NULL;
     }
@@ -1837,6 +1837,9 @@ X509_STORE_CTX *X509_STORE_CTX_new(void)
 
 void X509_STORE_CTX_free(X509_STORE_CTX *ctx)
 {
+    if (ctx == NULL)
+        return;
+
     X509_STORE_CTX_cleanup(ctx);
     free(ctx);
 }

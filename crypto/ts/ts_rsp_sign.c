@@ -180,7 +180,8 @@ int TS_RESP_CTX_set_signer_cert(TS_RESP_CTX *ctx, X509 *signer)
     if (ctx->signer_cert)
         X509_free(ctx->signer_cert);
     ctx->signer_cert = signer;
-    CRYPTO_add(&ctx->signer_cert->references, +1, CRYPTO_LOCK_X509);
+
+    X509_up_ref(ctx->signer_cert);
     return 1;
 }
 
@@ -222,7 +223,7 @@ int TS_RESP_CTX_set_certs(TS_RESP_CTX *ctx, STACK_OF(X509) * certs)
     }
     for (i = 0; i < sk_X509_num(ctx->certs); ++i) {
         X509 *cert = sk_X509_value(ctx->certs, i);
-        CRYPTO_add(&cert->references, +1, CRYPTO_LOCK_X509);
+        X509_up_ref(cert);
     }
 
     return 1;

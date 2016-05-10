@@ -64,6 +64,8 @@
 #include <openssl/objects.h>
 #include <openssl/x509.h>
 
+#include "internal/threads.h"
+
 X509_PKEY *X509_PKEY_new(void)
 {
     X509_PKEY *ret = NULL;
@@ -71,18 +73,16 @@ X509_PKEY *X509_PKEY_new(void)
     if ((ret = calloc(1, sizeof(X509_PKEY))) == NULL)
         goto err;
 
-    ret->version = 0;
+    ret->references = 1;
+    ret->lock = CRYPTO_thread_new();
+    if (ret->lock == NULL) {
+        free(ret);
+        return NULL;
+    }
     ret->enc_algor = X509_ALGOR_new();
     ret->enc_pkey = ASN1_OCTET_STRING_new();
     if (!ret->enc_algor || !ret->enc_pkey)
         goto err;
-    ret->dec_pkey = NULL;
-    ret->key_length = 0;
-    ret->key_data = NULL;
-    ret->key_free = 0;
-    ret->cipher.cipher = NULL;
-    memset(ret->cipher.iv, 0, EVP_MAX_IV_LENGTH);
-    ret->references = 1;
     return ret;
 
 err:
@@ -98,7 +98,7 @@ void X509_PKEY_free(X509_PKEY *x)
     if (x == NULL)
         return;
 
-    i = CRYPTO_add(&x->references, -1, CRYPTO_LOCK_X509_PKEY);
+    CRYPTO_atomic_add(&x->references, -1, &i, x->lock);
     if (i > 0)
         return;
 
@@ -107,5 +107,6 @@ void X509_PKEY_free(X509_PKEY *x)
     EVP_PKEY_free(x->dec_pkey);
     if (x->key_free)
         free(x->key_data);
+    CRYPTO_thread_cleanup(x->lock);
     free(x);
 }

@@ -69,18 +69,13 @@ EC_KEY *EC_KEY_new(void)
 {
     EC_KEY *ret;
 
-    ret = malloc(sizeof(EC_KEY));
+    ret = calloc(1, sizeof(EC_KEY));
     if (ret == NULL) {
         ECerr(EC_F_EC_KEY_NEW, ERR_R_MALLOC_FAILURE);
-        return (NULL);
+        return NULL;
     }
 
     ret->version = 1;
-    ret->flags = 0;
-    ret->group = NULL;
-    ret->pub_key = NULL;
-    ret->priv_key = NULL;
-    ret->enc_flag = 0;
     ret->conv_form = POINT_CONVERSION_UNCOMPRESSED;
     ret->references = 1;
     ret->lock = CRYPTO_thread_new();
@@ -89,8 +84,7 @@ EC_KEY *EC_KEY_new(void)
         free(ret);
         return NULL;
     }
-    ret->method_data = NULL;
-    return (ret);
+    return ret;
 }
 
 EC_KEY *EC_KEY_new_by_curve_name(int nid)

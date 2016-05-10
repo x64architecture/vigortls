@@ -64,6 +64,7 @@
 #include <openssl/x509v3.h>
 
 #include "asn1_locl.h"
+#include "internal/threads.h"
 
 static int X509_REVOKED_cmp(const X509_REVOKED *const *a,
                             const X509_REVOKED *const *b);
@@ -325,7 +326,7 @@ static void setup_idp(X509_CRL *crl, ISSUING_DIST_POINT *idp)
     DIST_POINT_set_dpname(idp->distpoint, X509_CRL_get_issuer(crl));
 }
 
-ASN1_SEQUENCE_ref(X509_CRL, crl_cb, CRYPTO_LOCK_X509_CRL) = {
+ASN1_SEQUENCE_ref(X509_CRL, crl_cb) = {
     ASN1_SIMPLE(X509_CRL, crl, X509_CRL_INFO),
     ASN1_SIMPLE(X509_CRL, sig_alg, X509_ALGOR),
     ASN1_SIMPLE(X509_CRL, signature, ASN1_BIT_STRING)
@@ -482,9 +483,9 @@ static int def_crl_lookup(X509_CRL *crl, X509_REVOKED **ret, ASN1_INTEGER *seria
      * Do this under a lock to avoid race condition.
       */
     if (!sk_X509_REVOKED_is_sorted(crl->crl->revoked)) {
-        CRYPTO_w_lock(CRYPTO_LOCK_X509_CRL);
+        CRYPTO_thread_write_lock(crl->lock);
         sk_X509_REVOKED_sort(crl->crl->revoked);
-        CRYPTO_w_unlock(CRYPTO_LOCK_X509_CRL);
+        CRYPTO_thread_unlock(crl->lock);
     }
     idx = sk_X509_REVOKED_find(crl->crl->revoked, &rtmp);
     if (idx < 0)

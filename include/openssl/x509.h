@@ -71,11 +71,10 @@
 #include <openssl/stack.h>
 #include <openssl/asn1.h>
 #include <openssl/safestack.h>
+#include <openssl/threads.h>
 
 #include <openssl/ec.h>
-
 #include <openssl/ecdsa.h>
-
 #include <openssl/ecdh.h>
 
 #ifndef OPENSSL_NO_DEPRECATED
@@ -190,6 +189,7 @@ typedef struct X509_req_st {
     X509_ALGOR *sig_alg;
     ASN1_BIT_STRING *signature;
     int references;
+    CRYPTO_MUTEX *lock;
 } X509_REQ;
 
 typedef struct x509_cinf_st {
@@ -243,6 +243,7 @@ struct x509_st {
     NAME_CONSTRAINTS *nc;
     uint8_t sha1_hash[SHA_DIGEST_LENGTH];
     X509_CERT_AUX *aux;
+    CRYPTO_MUTEX *lock;
 } /* X509 */;
 
 DECLARE_STACK_OF(X509)
@@ -394,6 +395,7 @@ struct X509_crl_st {
     STACK_OF(GENERAL_NAMES) * issuers;
     const X509_CRL_METHOD *meth;
     void *meth_data;
+    CRYPTO_MUTEX *lock;
 } /* X509_CRL */;
 
 DECLARE_STACK_OF(X509_CRL)
@@ -415,8 +417,8 @@ typedef struct private_key_st {
 
     /* expanded version of 'enc_algor' */
     EVP_CIPHER_INFO cipher;
-
     int references;
+    CRYPTO_MUTEX *lock;
 } X509_PKEY;
 
 typedef struct X509_info_st {
@@ -427,8 +429,8 @@ typedef struct X509_info_st {
     EVP_CIPHER_INFO enc_cipher;
     int enc_len;
     char *enc_data;
-
     int references;
+    CRYPTO_MUTEX *lock;
 } X509_INFO;
 
 DECLARE_STACK_OF(X509_INFO)
