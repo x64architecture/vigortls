@@ -127,31 +127,22 @@
 #include <openssl/x509v3.h>
 #include <openssl/dh.h>
 #include <openssl/bn.h>
+
+#include "internal/threads.h"
 #include "ssl_locl.h"
+
+static CRYPTO_ONCE ssl_x509_store_ctx_once = CRYPTO_ONCE_STATIC_INIT;
+static volatile int ssl_x509_store_ctx_idx = -1;
+
+static void ssl_x509_store_ctx_init(void)
+{
+    ssl_x509_store_ctx_idx = X509_STORE_CTX_get_ex_new_index(0,
+        (char *)"SSL for verify callback", NULL, NULL, NULL);
+}
 
 int SSL_get_ex_data_X509_STORE_CTX_idx(void)
 {
-    static volatile int ssl_x509_store_ctx_idx = -1;
-    int got_write_lock = 0;
-
-    CRYPTO_r_lock(CRYPTO_LOCK_SSL_CTX);
-
-    if (ssl_x509_store_ctx_idx < 0) {
-        CRYPTO_r_unlock(CRYPTO_LOCK_SSL_CTX);
-        CRYPTO_w_lock(CRYPTO_LOCK_SSL_CTX);
-        got_write_lock = 1;
-
-        if (ssl_x509_store_ctx_idx < 0) {
-            ssl_x509_store_ctx_idx = X509_STORE_CTX_get_ex_new_index(
-                0, (char *)"SSL for verify callback", NULL, NULL, NULL);
-        }
-    }
-
-    if (got_write_lock)
-        CRYPTO_w_unlock(CRYPTO_LOCK_SSL_CTX);
-    else
-        CRYPTO_r_unlock(CRYPTO_LOCK_SSL_CTX);
-
+    CRYPTO_thread_run_once(&ssl_x509_store_ctx_once, ssl_x509_store_ctx_init);
     return ssl_x509_store_ctx_idx;
 }
 
@@ -171,12 +162,18 @@ CERT *ssl_cert_new(void)
     ret = calloc(1, sizeof(CERT));
     if (ret == NULL) {
         SSLerr(SSL_F_SSL_CERT_NEW, ERR_R_MALLOC_FAILURE);
-        return (NULL);
+        return NULL;
     }
     ret->key = &(ret->pkeys[SSL_PKEY_RSA_ENC]);
     ret->references = 1;
     ssl_cert_set_default_md(ret);
-    return (ret);
+    ret->lock = CRYPTO_thread_new();
+    if (ret->lock == NULL) {
+        SSLerr(SSL_F_SSL_CERT_NEW, ERR_R_MALLOC_FAILURE);
+        free(ret);
+        return NULL;
+    }
+    return ret;
 }
 
 CERT *ssl_cert_dup(CERT *cert)
@@ -196,6 +193,13 @@ CERT *ssl_cert_dup(CERT *cert)
      */
     ret->references = 1;
     ret->key = &ret->pkeys[cert->key - &cert->pkeys[0]];
+
+    ret->lock = CRYPTO_thread_new();
+    if (ret == NULL) {
+        SSLerr(SSL_F_SSL_CERT_DUP, ERR_R_MALLOC_FAILURE);
+        free(ret);
+        return NULL;
+    }
 
     ret->valid = cert->valid;
     ret->mask_k = cert->mask_k;
@@ -261,7 +265,7 @@ CERT *ssl_cert_dup(CERT *cert)
      */
     ssl_cert_set_default_md(ret);
 
-    return (ret);
+    return ret;
 
 err:
     DH_free(ret->dh_tmp);
@@ -282,7 +286,7 @@ void ssl_cert_free(CERT *c)
     if (c == NULL)
         return;
 
-    i = CRYPTO_add(&c->references, -1, CRYPTO_LOCK_SSL_CERT);
+    CRYPTO_atomic_add(&c->references, -1, &i, c->lock);
     if (i > 0)
         return;
 
@@ -293,7 +297,7 @@ void ssl_cert_free(CERT *c)
         X509_free(c->pkeys[i].x509);
         EVP_PKEY_free(c->pkeys[i].privatekey);
     }
-
+    CRYPTO_thread_cleanup(c->lock);
     free(c);
 }
 
@@ -334,6 +338,12 @@ SESS_CERT *ssl_sess_cert_new(void)
     }
     ret->peer_key = &(ret->peer_pkeys[SSL_PKEY_RSA_ENC]);
     ret->references = 1;
+    ret->lock = CRYPTO_thread_new();
+    if (ret->lock == NULL) {
+        SSLerr(SSL_F_SSL_SESS_CERT_NEW, ERR_R_MALLOC_FAILURE);
+        free(ret);
+        return NULL;
+    }
 
     return ret;
 }
@@ -345,7 +355,7 @@ void ssl_sess_cert_free(SESS_CERT *sc)
     if (sc == NULL)
         return;
 
-    i = CRYPTO_add(&sc->references, -1, CRYPTO_LOCK_SSL_SESS_CERT);
+    CRYPTO_atomic_add(&sc->references, -1, &i, sc->lock);
     if (i > 0)
         return;
 
@@ -361,7 +371,13 @@ void ssl_sess_cert_free(SESS_CERT *sc)
     free(sc);
 }
 
-int ssl_verify_cert_chain(SSL *s, STACK_OF(X509) * sk)
+void SSL_CERT_up_ref(SESS_CERT *sc)
+{
+    int i;
+    CRYPTO_atomic_add(&sc->references, 1, &i, sc->lock);
+}
+
+int ssl_verify_cert_chain(SSL *s, STACK_OF(X509) *sk)
 {
     X509_STORE_CTX ctx;
     X509 *x;
@@ -634,7 +650,6 @@ int SSL_add_dir_cert_subjects_to_stack(STACK_OF(X509_NAME) * stack,
     char *path = NULL;
     int ret = 0;
 
-    CRYPTO_w_lock(CRYPTO_LOCK_READDIR);
     dirp = opendir(dir);
     if (dirp) {
         struct dirent *dp;
@@ -653,7 +668,7 @@ int SSL_add_dir_cert_subjects_to_stack(STACK_OF(X509_NAME) * stack,
         ERR_asprintf_error_data("opendir ('%s')", dir);
         SSLerr(SSL_F_SSL_ADD_DIR_CERT_SUBJECTS_TO_STACK, ERR_R_SYS_LIB);
     }
-    CRYPTO_w_unlock(CRYPTO_LOCK_READDIR);
+
     return ret;
 }
 

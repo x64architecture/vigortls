@@ -153,6 +153,7 @@
 #include <stdcompat.h>
 
 #include "bytestring.h"
+#include "internal/threads.h"
 #include "ssl_locl.h"
 
 const char *SSL_version_str = OPENSSL_VERSION_TEXT;
@@ -312,7 +313,7 @@ SSL *SSL_new(SSL_CTX *ctx)
     s->quiet_shutdown = ctx->quiet_shutdown;
     s->max_send_fragment = ctx->max_send_fragment;
 
-    CRYPTO_add(&ctx->references, 1, CRYPTO_LOCK_SSL_CTX);
+    SSL_CTX_up_ref(ctx);
     s->ctx = ctx;
     s->tlsext_debug_cb = 0;
     s->tlsext_debug_arg = NULL;
@@ -323,7 +324,7 @@ SSL *SSL_new(SSL_CTX *ctx)
     s->tlsext_ocsp_exts = NULL;
     s->tlsext_ocsp_resp = NULL;
     s->tlsext_ocsp_resplen = -1;
-    CRYPTO_add(&ctx->references, 1, CRYPTO_LOCK_SSL_CTX);
+    SSL_CTX_up_ref(ctx);
     s->initial_ctx = ctx;
     s->next_proto_negotiated = NULL;
 
@@ -351,12 +352,18 @@ SSL *SSL_new(SSL_CTX *ctx)
 
     CRYPTO_new_ex_data(CRYPTO_EX_INDEX_SSL, s, &s->ex_data);
 
-    return (s);
+    return s;
 err:
     SSL_free(s);
     SSLerr(SSL_F_SSL_NEW, ERR_R_MALLOC_FAILURE);
-    return (NULL);
+    return NULL;
 }
+
+void SSL_up_ref(SSL *s)
+ {
+    int i;
+    CRYPTO_atomic_add(&s->references, 1, &i, s->lock);
+ }
 
 int SSL_CTX_set_session_id_context(SSL_CTX *ctx, const uint8_t *sid_ctx,
                                    unsigned int sid_ctx_len)
@@ -388,18 +395,18 @@ int SSL_set_session_id_context(SSL *ssl, const uint8_t *sid_ctx,
 
 int SSL_CTX_set_generate_session_id(SSL_CTX *ctx, GEN_SESSION_CB cb)
 {
-    CRYPTO_w_lock(CRYPTO_LOCK_SSL_CTX);
+    CRYPTO_thread_write_lock(ctx->lock);
     ctx->generate_session_id = cb;
-    CRYPTO_w_unlock(CRYPTO_LOCK_SSL_CTX);
-    return (1);
+    CRYPTO_thread_unlock(ctx->lock);
+    return 1;
 }
 
 int SSL_set_generate_session_id(SSL *ssl, GEN_SESSION_CB cb)
 {
-    CRYPTO_w_lock(CRYPTO_LOCK_SSL);
+    CRYPTO_thread_write_lock(ssl->lock);
     ssl->generate_session_id = cb;
-    CRYPTO_w_unlock(CRYPTO_LOCK_SSL);
-    return (1);
+    CRYPTO_thread_unlock(ssl->lock);
+    return 1;
 }
 
 int SSL_has_matching_session_id(const SSL *ssl, const uint8_t *id,
@@ -421,9 +428,9 @@ int SSL_has_matching_session_id(const SSL *ssl, const uint8_t *id,
     r.session_id_length = id_len;
     memcpy(r.session_id, id, id_len);
 
-    CRYPTO_r_lock(CRYPTO_LOCK_SSL_CTX);
+    CRYPTO_thread_read_lock(ssl->ctx->lock);
     p = lh_SSL_SESSION_retrieve(ssl->ctx->sessions, &r);
-    CRYPTO_r_unlock(CRYPTO_LOCK_SSL_CTX);
+    CRYPTO_thread_unlock(ssl->ctx->lock);
     return (p != NULL);
 }
 
@@ -464,7 +471,7 @@ void SSL_free(SSL *s)
     if (s == NULL)
         return;
 
-    i = CRYPTO_add(&s->references, -1, CRYPTO_LOCK_SSL);
+    CRYPTO_atomic_add(&s->references, -1, &i, s->lock);
     if (i > 0)
         return;
 
@@ -534,7 +541,7 @@ void SSL_free(SSL *s)
     if (s->srtp_profiles)
         sk_SRTP_PROTECTION_PROFILE_free(s->srtp_profiles);
 #endif
-
+    CRYPTO_thread_cleanup(s->lock);
     free(s);
 }
 
@@ -788,6 +795,7 @@ STACK_OF(X509) * SSL_get_peer_cert_chain(const SSL *s)
  */
 void SSL_copy_session_id(SSL *t, const SSL *f)
 {
+    int i;
     CERT *tmp;
 
     /* Do we need to to SSL locking? */
@@ -805,7 +813,7 @@ void SSL_copy_session_id(SSL *t, const SSL *f)
 
     tmp = t->cert;
     if (f->cert != NULL) {
-        CRYPTO_add(&f->cert->references, 1, CRYPTO_LOCK_SSL_CERT);
+        CRYPTO_atomic_add(&f->cert->references, 1, &i, f->cert->lock);
         t->cert = f->cert;
     } else
         t->cert = NULL;
@@ -1639,17 +1647,16 @@ static int ssl_session_cmp(const SSL_SESSION *a, const SSL_SESSION *b)
  * variable. The reason is that the functions aren't static, they're exposed via
  * ssl.h.
  */
-static IMPLEMENT_LHASH_HASH_FN(
-    ssl_session, SSL_SESSION) static IMPLEMENT_LHASH_COMP_FN(ssl_session,
-                                                             SSL_SESSION)
+static IMPLEMENT_LHASH_HASH_FN(ssl_session, SSL_SESSION)
+static IMPLEMENT_LHASH_COMP_FN(ssl_session, SSL_SESSION)
 
-    SSL_CTX *SSL_CTX_new(const SSL_METHOD *meth)
+SSL_CTX *SSL_CTX_new(const SSL_METHOD *meth)
 {
     SSL_CTX *ret = NULL;
 
     if (meth == NULL) {
         SSLerr(SSL_F_SSL_CTX_NEW, SSL_R_NULL_SSL_METHOD_PASSED);
-        return (NULL);
+        return NULL;
     }
 
     if (SSL_get_ex_data_X509_STORE_CTX_idx() < 0) {
@@ -1662,45 +1669,22 @@ static IMPLEMENT_LHASH_HASH_FN(
 
     ret->method = meth;
 
-    ret->cert_store = NULL;
     ret->session_cache_mode = SSL_SESS_CACHE_SERVER;
     ret->session_cache_size = SSL_SESSION_CACHE_MAX_SIZE_DEFAULT;
-    ret->session_cache_head = NULL;
-    ret->session_cache_tail = NULL;
 
     /* We take the system default */
     ret->session_timeout = meth->get_timeout();
-
-    ret->new_session_cb = 0;
-    ret->remove_session_cb = 0;
-    ret->get_session_cb = 0;
-    ret->generate_session_id = 0;
-
-    memset((char *)&ret->stats, 0, sizeof(ret->stats));
-
     ret->references = 1;
-    ret->quiet_shutdown = 0;
-
-    ret->info_callback = NULL;
-
-    ret->app_verify_callback = 0;
-    ret->app_verify_arg = NULL;
-
+    ret->lock = CRYPTO_thread_new();
+    if (ret->lock == NULL) {
+        SSLerr(SSL_F_SSL_CTX_NEW, ERR_R_MALLOC_FAILURE);
+        free(ret);
+        return NULL;
+    }
     ret->max_cert_list = SSL_MAX_CERT_LIST_DEFAULT;
-    ret->read_ahead = 0;
-    ret->msg_callback = 0;
-    ret->msg_callback_arg = NULL;
     ret->verify_mode = SSL_VERIFY_NONE;
-    ret->sid_ctx_length = 0;
-    ret->default_verify_callback = NULL;
     if ((ret->cert = ssl_cert_new()) == NULL)
         goto err;
-
-    ret->default_passwd_callback = 0;
-    ret->default_passwd_callback_userdata = NULL;
-    ret->client_cert_cb = 0;
-    ret->app_gen_cookie_cb = 0;
-    ret->app_verify_cookie_cb = 0;
 
     ret->sessions = lh_SSL_SESSION_new();
     if (ret->sessions == NULL)
@@ -1734,25 +1718,15 @@ static IMPLEMENT_LHASH_HASH_FN(
 
     CRYPTO_new_ex_data(CRYPTO_EX_INDEX_SSL_CTX, ret, &ret->ex_data);
 
-    ret->extra_certs = NULL;
-
     ret->max_send_fragment = SSL3_RT_MAX_PLAIN_LENGTH;
 
-    ret->tlsext_servername_callback = 0;
-    ret->tlsext_servername_arg = NULL;
     /* Setup RFC4507 ticket keys */
     if ((RAND_bytes(ret->tlsext_tick_key_name, 16) <= 0)
         || (RAND_bytes(ret->tlsext_tick_hmac_key, 16) <= 0)
         || (RAND_bytes(ret->tlsext_tick_aes_key, 16) <= 0))
         ret->options |= SSL_OP_NO_TICKET;
 
-    ret->tlsext_status_cb = 0;
-    ret->tlsext_status_arg = NULL;
-
-    ret->next_protos_advertised_cb = 0;
-    ret->next_proto_select_cb = 0;
 #ifndef OPENSSL_NO_ENGINE
-    ret->client_cert_engine = NULL;
 #ifdef OPENSSL_SSL_CLIENT_ENGINE_AUTO
 #define eng_strx(x) #x
 #define eng_str(x) eng_strx(x)
@@ -1779,12 +1753,18 @@ static IMPLEMENT_LHASH_HASH_FN(
     /* Default is to disable SSLv3. */
     ret->options |= SSL_OP_NO_SSLv3;
 
-    return (ret);
+    return ret;
 err:
     SSLerr(SSL_F_SSL_CTX_NEW, ERR_R_MALLOC_FAILURE);
 err2:
     SSL_CTX_free(ret);
-    return (NULL);
+    return NULL;
+}
+
+void SSL_CTX_up_ref(SSL_CTX *ctx)
+{
+    int i;
+    CRYPTO_atomic_add(&ctx->references, 1, &i, ctx->lock);
 }
 
 void SSL_CTX_free(SSL_CTX *a)
@@ -1794,7 +1774,7 @@ void SSL_CTX_free(SSL_CTX *a)
     if (a == NULL)
         return;
 
-    i = CRYPTO_add(&a->references, -1, CRYPTO_LOCK_SSL_CTX);
+    CRYPTO_atomic_add(&a->references, -1, &i, a->lock);
     if (i > 0)
         return;
 
@@ -1830,6 +1810,7 @@ void SSL_CTX_free(SSL_CTX *a)
 #endif
 
     free(a->alpn_client_proto_list);
+    CRYPTO_thread_cleanup(a->lock);
     free(a);
 }
 
@@ -2097,7 +2078,7 @@ void ssl_update_cache(SSL *s, int mode)
     if ((i & mode) && (!s->hit) && ((i & SSL_SESS_CACHE_NO_INTERNAL_STORE)
         || SSL_CTX_add_session(s->session_ctx, s->session)) && (s->session_ctx->new_session_cb != NULL))
     {
-        CRYPTO_add(&s->session->references, 1, CRYPTO_LOCK_SSL_SESSION);
+        SSL_SESSION_up_ref(s->session);
         if (!s->session_ctx->new_session_cb(s, s->session))
             SSL_SESSION_free(s->session);
     }
@@ -2105,7 +2086,8 @@ void ssl_update_cache(SSL *s, int mode)
     /* auto flush every 255 connections */
     if ((!(i & SSL_SESS_CACHE_NO_AUTO_CLEAR)) && ((i & mode) == mode)) {
         if ((((mode & SSL_SESS_CACHE_CLIENT)
-            ? s->session_ctx->stats.sess_connect_good : s->session_ctx->stats.sess_accept_good) & 0xff) == 0xff)
+            ? s->session_ctx->stats.sess_connect_good :
+            s->session_ctx->stats.sess_accept_good) & 0xff) == 0xff)
         {
             SSL_CTX_flush_sessions(s->session_ctx, time(NULL));
         }
@@ -2599,11 +2581,11 @@ SSL_CTX *SSL_set_SSL_CTX(SSL *ssl, SSL_CTX *ctx)
         memcpy(&ssl->sid_ctx, &ctx->sid_ctx, sizeof(ssl->sid_ctx));
     }
     
-    CRYPTO_add(&ctx->references, 1, CRYPTO_LOCK_SSL_CTX);
+    SSL_CTX_up_ref(ctx);
     SSL_CTX_free(ssl->ctx); /* decrement reference count */
     ssl->ctx = ctx;
     
-    return (ssl->ctx);
+    return ssl->ctx;
 }
 
 int SSL_CTX_set_default_verify_paths(SSL_CTX *ctx)

@@ -146,6 +146,7 @@
 #endif
 #include <stdcompat.h>
 
+#include "internal/threads.h"
 #include "ssl_locl.h"
 
 #define SSL_ENC_DES_IDX         0
@@ -173,9 +174,11 @@ static const EVP_CIPHER *ssl_cipher_methods[SSL_ENC_NUM_IDX] = {
 #define SSL_MD_GOST89MAC_IDX 3
 #define SSL_MD_SHA256_IDX 4
 #define SSL_MD_SHA384_IDX 5
-/*Constant SSL_MAX_DIGEST equal to size of digests array should be
- * defined in the
- * ssl_locl.h */
+
+/*
+ * Constant SSL_MAX_DIGEST is equal to size of the digests array and should
+ * be defined in ssl_locl.h
+ */
 #define SSL_MD_NUM_IDX SSL_MAX_DIGEST
 static const EVP_MD *ssl_digest_methods[SSL_MD_NUM_IDX] = { NULL, NULL, NULL,
                                                             NULL, NULL, NULL };

@@ -62,12 +62,23 @@
 
 #include "eng_int.h"
 
+CRYPTO_MUTEX *global_engine_lock;
+
+CRYPTO_ONCE engine_lock_init = CRYPTO_ONCE_STATIC_INIT;
+
 /* The "new"/"free" stuff first */
+
+void do_engine_lock_init(void)
+{
+    global_engine_lock = CRYPTO_thread_new();
+}
 
 ENGINE *
 ENGINE_new(void)
 {
     ENGINE *ret;
+
+    CRYPTO_thread_run_once(&engine_lock_init, do_engine_lock_init);
 
     ret = calloc(1, sizeof(ENGINE));
     if (ret == NULL) {
@@ -116,7 +127,7 @@ engine_free_util(ENGINE *e, int locked)
         return 0;
     }
     if (locked)
-        i = CRYPTO_add(&e->struct_ref, -1, CRYPTO_LOCK_ENGINE);
+        CRYPTO_atomic_add(&e->struct_ref, -1, &i, global_engine_lock);
     else
         i = --e->struct_ref;
     engine_ref_debug(e, 0, -1) if (i > 0) return 1;
@@ -210,6 +221,7 @@ ENGINE_cleanup(void)
     /* FIXME: This should be handled (somehow) through RAND, eg. by it
      * registering a cleanup callback. */
     RAND_set_rand_method(NULL);
+    CRYPTO_thread_cleanup(global_engine_lock);
 }
 
 /* Now the "ex_data" support */

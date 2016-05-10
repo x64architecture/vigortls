@@ -224,7 +224,9 @@ look_str_cb(int nid, STACK_OF(ENGINE) * sk, ENGINE * def, void *arg)
         ENGINE *e = sk_ENGINE_value(sk, i);
         EVP_PKEY_ASN1_METHOD *ameth;
         e->pkey_asn1_meths(e, &ameth, NULL, nid);
-        if (((int)strlen(ameth->pem_str) == lk->len) && strncasecmp(ameth->pem_str, lk->str, lk->len) == 0) {
+        if (((int)strlen(ameth->pem_str) == lk->len) &&
+            strncasecmp(ameth->pem_str, lk->str, lk->len) == 0)
+        {
             lk->e = e;
             lk->ameth = ameth;
             return;
@@ -241,7 +243,10 @@ ENGINE_pkey_asn1_find_str(ENGINE **pe, const char *str, int len)
     fstr.ameth = NULL;
     fstr.str = str;
     fstr.len = len;
-    CRYPTO_w_lock(CRYPTO_LOCK_ENGINE);
+
+    CRYPTO_thread_run_once(&engine_lock_init, do_engine_lock_init);
+    CRYPTO_thread_write_lock(global_engine_lock);
+
     engine_table_doall(pkey_asn1_meth_table, look_str_cb, &fstr);
     /* If found obtain a structural reference to engine */
     if (fstr.e) {
@@ -249,6 +254,6 @@ ENGINE_pkey_asn1_find_str(ENGINE **pe, const char *str, int len)
         engine_ref_debug(fstr.e, 0, 1)
     }
     *pe = fstr.e;
-    CRYPTO_w_unlock(CRYPTO_LOCK_ENGINE);
+    CRYPTO_thread_unlock(global_engine_lock);
     return fstr.ameth;
 }

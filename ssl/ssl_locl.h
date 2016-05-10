@@ -480,10 +480,11 @@ typedef struct cert_st {
     CERT_PKEY pkeys[SSL_PKEY_NUM];
 
     int references; /* >1 only if SSL_copy_session_id is used */
+    CRYPTO_MUTEX *lock;
 } CERT;
 
 typedef struct sess_cert_st {
-    STACK_OF(X509) * cert_chain; /* as received from peer */
+    STACK_OF(X509) *cert_chain; /* as received from peer */
 
     /* The 'peer_...' members are used only by clients. */
     int peer_cert_type;
@@ -498,6 +499,7 @@ typedef struct sess_cert_st {
     EC_KEY *peer_ecdh_tmp;
 
     int references; /* actually always 1 at the moment */
+    CRYPTO_MUTEX *lock;
 } SESS_CERT;
 
 /*#define SSL_DEBUG    */
@@ -599,6 +601,7 @@ int ssl_cert_inst(CERT **o);
 void ssl_cert_free(CERT *c);
 SESS_CERT *ssl_sess_cert_new(void);
 void ssl_sess_cert_free(SESS_CERT *sc);
+void SSL_CERT_up_ref(SESS_CERT *sc);
 int ssl_get_new_session(SSL *s, int session);
 int ssl_get_prev_session(SSL *s, uint8_t *session, int len,
                          const uint8_t *limit);

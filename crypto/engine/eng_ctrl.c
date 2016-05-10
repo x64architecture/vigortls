@@ -194,9 +194,9 @@ ENGINE_ctrl(ENGINE *e, int cmd, long i, void *p, void (*f)(void))
         ENGINEerr(ENGINE_F_ENGINE_CTRL, ERR_R_PASSED_NULL_PARAMETER);
         return 0;
     }
-    CRYPTO_w_lock(CRYPTO_LOCK_ENGINE);
+    CRYPTO_thread_write_lock(global_engine_lock);
     ref_exists = ((e->struct_ref > 0) ? 1 : 0);
-    CRYPTO_w_unlock(CRYPTO_LOCK_ENGINE);
+    CRYPTO_thread_unlock(global_engine_lock);
     ctrl_exists = ((e->ctrl == NULL) ? 0 : 1);
     if (!ref_exists) {
         ENGINEerr(ENGINE_F_ENGINE_CTRL, ENGINE_R_NO_REFERENCE);

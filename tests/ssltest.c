@@ -179,6 +179,8 @@
 #include <openssl/dh.h>
 #include <openssl/bn.h>
 
+#include "internal/threads.h"
+
 #define _XOPEN_SOURCE_EXTENDED 1
 /* Or gethostname won't be declared properly
    on Compaq platforms (at least with DEC C).
@@ -1579,19 +1581,20 @@ err:
     return (ret);
 }
 
+static CRYPTO_ONCE proxy_auth_ex_data_once = CRYPTO_ONCE_STATIC_INIT;
+static volatile int proxy_auth_ex_data_idx = -1;
+
+static void do_get_proxy_auth_ex_data_idx(void)
+{
+    proxy_auth_ex_data_idx = X509_STORE_CTX_get_ex_new_index(0,
+        (char *)"SSLtest for verify callback", NULL, NULL, NULL);
+}
+
 static int get_proxy_auth_ex_data_idx(void)
 {
-    static volatile int idx = -1;
-    if (idx < 0) {
-        CRYPTO_w_lock(CRYPTO_LOCK_SSL_CTX);
-        if (idx < 0) {
-            idx = X509_STORE_CTX_get_ex_new_index(0,
-                      (char *)"SSLtest for verify callback",
-                      NULL, NULL, NULL);
-        }
-        CRYPTO_w_unlock(CRYPTO_LOCK_SSL_CTX);
-    }
-    return idx;
+    CRYPTO_thread_run_once(&proxy_auth_ex_data_once,
+                           do_get_proxy_auth_ex_data_idx);
+    return proxy_auth_ex_data_idx;
 }
 
 static int verify_callback(int ok, X509_STORE_CTX *ctx)

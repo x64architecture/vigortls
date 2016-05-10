@@ -110,14 +110,14 @@ ENGINE_load_private_key(ENGINE *e, const char *key_id, UI_METHOD *ui_method,
                   ERR_R_PASSED_NULL_PARAMETER);
         return 0;
     }
-    CRYPTO_w_lock(CRYPTO_LOCK_ENGINE);
+    CRYPTO_thread_write_lock(global_engine_lock);
     if (e->funct_ref == 0) {
-        CRYPTO_w_unlock(CRYPTO_LOCK_ENGINE);
+        CRYPTO_thread_unlock(global_engine_lock);
         ENGINEerr(ENGINE_F_ENGINE_LOAD_PRIVATE_KEY,
                   ENGINE_R_NOT_INITIALISED);
         return 0;
     }
-    CRYPTO_w_unlock(CRYPTO_LOCK_ENGINE);
+    CRYPTO_thread_unlock(global_engine_lock);
     if (!e->load_privkey) {
         ENGINEerr(ENGINE_F_ENGINE_LOAD_PRIVATE_KEY,
                   ENGINE_R_NO_LOAD_FUNCTION);
@@ -143,14 +143,14 @@ ENGINE_load_public_key(ENGINE *e, const char *key_id, UI_METHOD *ui_method,
                   ERR_R_PASSED_NULL_PARAMETER);
         return 0;
     }
-    CRYPTO_w_lock(CRYPTO_LOCK_ENGINE);
+    CRYPTO_thread_write_lock(global_engine_lock);
     if (e->funct_ref == 0) {
-        CRYPTO_w_unlock(CRYPTO_LOCK_ENGINE);
+        CRYPTO_thread_write_lock(global_engine_lock);
         ENGINEerr(ENGINE_F_ENGINE_LOAD_PUBLIC_KEY,
                   ENGINE_R_NOT_INITIALISED);
         return 0;
     }
-    CRYPTO_w_unlock(CRYPTO_LOCK_ENGINE);
+    CRYPTO_thread_unlock(global_engine_lock);
     if (!e->load_pubkey) {
         ENGINEerr(ENGINE_F_ENGINE_LOAD_PUBLIC_KEY,
                   ENGINE_R_NO_LOAD_FUNCTION);
@@ -175,14 +175,14 @@ ENGINE_load_ssl_client_cert(ENGINE *e, SSL *s, STACK_OF(X509_NAME) * ca_dn,
                   ERR_R_PASSED_NULL_PARAMETER);
         return 0;
     }
-    CRYPTO_w_lock(CRYPTO_LOCK_ENGINE);
+    CRYPTO_thread_write_lock(global_engine_lock);
     if (e->funct_ref == 0) {
-        CRYPTO_w_unlock(CRYPTO_LOCK_ENGINE);
+        CRYPTO_thread_unlock(global_engine_lock);
         ENGINEerr(ENGINE_F_ENGINE_LOAD_SSL_CLIENT_CERT,
                   ENGINE_R_NOT_INITIALISED);
         return 0;
     }
-    CRYPTO_w_unlock(CRYPTO_LOCK_ENGINE);
+    CRYPTO_thread_unlock(global_engine_lock);
     if (!e->load_ssl_client_cert) {
         ENGINEerr(ENGINE_F_ENGINE_LOAD_SSL_CLIENT_CERT,
                   ENGINE_R_NO_LOAD_FUNCTION);

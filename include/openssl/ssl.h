@@ -498,6 +498,7 @@ struct ssl_session_st {
     size_t tlsext_ticklen;          /* Session ticket length */
     long tlsext_tick_lifetime_hint; /* Session lifetime hint in seconds */
     long flags;
+    CRYPTO_MUTEX *lock;
 };
 
 #endif
@@ -868,7 +869,8 @@ struct ssl_ctx_st {
     unsigned int alpn_client_proto_list_len;
 
     /* SRTP profiles we are willing to do from RFC 5764 */
-    STACK_OF(SRTP_PROTECTION_PROFILE) * srtp_profiles;
+    STACK_OF(SRTP_PROTECTION_PROFILE) *srtp_profiles;
+    CRYPTO_MUTEX *lock;
 };
 
 #endif
@@ -1197,6 +1199,7 @@ struct ssl_st {
     int renegotiate; /* 1 if we are renegotiating.
               * 2 if we are a server and are inside a handshake
                      * (i.e. not just sending a HelloRequest) */
+    CRYPTO_MUTEX *lock;
 };
 
 #endif
@@ -1501,6 +1504,7 @@ void BIO_ssl_shutdown(BIO *ssl_bio);
 
 int SSL_CTX_set_cipher_list(SSL_CTX *, const char *str);
 SSL_CTX *SSL_CTX_new(const SSL_METHOD *meth);
+void SSL_CTX_up_ref(SSL_CTX *ctx);
 void SSL_CTX_free(SSL_CTX *);
 long SSL_CTX_set_timeout(SSL_CTX *ctx, long t);
 long SSL_CTX_get_timeout(const SSL_CTX *ctx);
@@ -1579,6 +1583,7 @@ const uint8_t *SSL_SESSION_get_id(const SSL_SESSION *s,
 unsigned int SSL_SESSION_get_compress_id(const SSL_SESSION *s);
 int SSL_SESSION_print_fp(FILE *fp, const SSL_SESSION *ses);
 int SSL_SESSION_print(BIO *fp, const SSL_SESSION *ses);
+int SSL_SESSION_up_ref(SSL_SESSION *ses);
 void SSL_SESSION_free(SSL_SESSION *ses);
 int i2d_SSL_SESSION(SSL_SESSION *in, uint8_t **pp);
 int SSL_set_session(SSL *to, SSL_SESSION *session);
