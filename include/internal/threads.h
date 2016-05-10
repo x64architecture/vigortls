@@ -27,7 +27,7 @@ typedef unsigned int CRYPTO_ONCE;
 
 #elif defined(_WIN32)
 
-#define _WIN32_LEAN_AND_MEAN
+#define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 
 typedef INIT_ONCE CRYPTO_ONCE;
