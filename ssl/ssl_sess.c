@@ -254,7 +254,7 @@ SSL_SESSION *ssl_session_dup(SSL_SESSION *src, int ticket)
         CRYPTO_add(&src->sess_cert->references, 1, CRYPTO_LOCK_SSL_SESS_CERT);
 
     if (src->peer != NULL)
-        CRYPTO_add(&src->peer->references, 1, CRYPTO_LOCK_X509);
+        X509_up_ref(src->peer);
 
     if(src->ciphers != NULL) {
         dest->ciphers = sk_SSL_CIPHER_dup(src->ciphers);

@@ -176,7 +176,7 @@ CMS_RecipientInfo *CMS_add1_recipient_cert(CMS_ContentInfo *cms,
                CMS_R_ERROR_GETTING_PUBLIC_KEY);
         goto err;
     }
-    CRYPTO_add(&recip->references, 1, CRYPTO_LOCK_X509);
+    X509_up_ref(recip);
     ktri->pkey = pk;
     ktri->recip = recip;
 

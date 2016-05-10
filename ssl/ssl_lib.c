@@ -758,11 +758,11 @@ X509 *SSL_get_peer_certificate(const SSL *s)
         r = s->session->peer;
 
     if (r == NULL)
-        return (r);
+        return r;
 
-    CRYPTO_add(&r->references, 1, CRYPTO_LOCK_X509);
+    X509_up_ref(r);
 
-    return (r);
+    return r;
 }
 
 STACK_OF(X509) * SSL_get_peer_cert_chain(const SSL *s)

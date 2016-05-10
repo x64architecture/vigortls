@@ -240,7 +240,7 @@ CERT *ssl_cert_dup(CERT *cert)
     for (i = 0; i < SSL_PKEY_NUM; i++) {
         if (cert->pkeys[i].x509 != NULL) {
             ret->pkeys[i].x509 = cert->pkeys[i].x509;
-            CRYPTO_add(&ret->pkeys[i].x509->references, 1, CRYPTO_LOCK_X509);
+            X509_up_ref(ret->pkeys[i].x509);
         }
 
         if (cert->pkeys[i].privatekey != NULL) {
