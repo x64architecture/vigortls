@@ -854,6 +854,7 @@ struct gost_key_st;
 #endif
 
 EVP_PKEY *EVP_PKEY_new(void);
+void EVP_PKEY_up_ref(EVP_PKEY *pkey);
 void EVP_PKEY_free(EVP_PKEY *pkey);
 
 EVP_PKEY *d2i_PublicKey(int type, EVP_PKEY **a, const uint8_t **pp,

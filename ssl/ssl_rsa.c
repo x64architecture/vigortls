@@ -56,12 +56,13 @@
  */
 
 #include <stdio.h>
-#include "ssl_locl.h"
 #include <openssl/bio.h>
 #include <openssl/objects.h>
 #include <openssl/evp.h>
 #include <openssl/x509.h>
 #include <openssl/pem.h>
+
+#include "ssl_locl.h"
 
 static int ssl_set_cert(CERT *c, X509 *x509);
 static int ssl_set_pkey(CERT *c, EVP_PKEY *pkey);
@@ -192,7 +193,7 @@ static int ssl_set_pkey(CERT *c, EVP_PKEY *pkey)
     }
 
     EVP_PKEY_free(c->pkeys[i].privatekey);
-    CRYPTO_add(&pkey->references, 1, CRYPTO_LOCK_EVP_PKEY);
+    EVP_PKEY_up_ref(pkey);
     c->pkeys[i].privatekey = pkey;
     c->key = &(c->pkeys[i]);
 

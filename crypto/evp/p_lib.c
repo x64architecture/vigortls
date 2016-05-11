@@ -185,6 +185,11 @@ EVP_PKEY *EVP_PKEY_new(void)
     return (ret);
 }
 
+void EVP_PKEY_up_ref(EVP_PKEY *pkey)
+{
+    CRYPTO_add(&pkey->references, 1, CRYPTO_LOCK_EVP_PKEY);
+}
+
 /* Setup a public key ASN1 method and ENGINE from a NID or a string.
  * If pkey is NULL just return 1 or 0 if the algorithm exists.
  */

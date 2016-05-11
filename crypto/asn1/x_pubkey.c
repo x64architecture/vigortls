@@ -149,7 +149,7 @@ EVP_PKEY *X509_PUBKEY_get(X509_PUBKEY *key)
         goto error;
 
     if (key->pkey != NULL) {
-        CRYPTO_add(&key->pkey->references, 1, CRYPTO_LOCK_EVP_PKEY);
+        EVP_PKEY_up_ref(key->pkey);
         return key->pkey;
     }
 
@@ -187,13 +187,13 @@ EVP_PKEY *X509_PUBKEY_get(X509_PUBKEY *key)
         key->pkey = ret;
         CRYPTO_w_unlock(CRYPTO_LOCK_EVP_PKEY);
     }
-    CRYPTO_add(&ret->references, 1, CRYPTO_LOCK_EVP_PKEY);
+    EVP_PKEY_up_ref(ret);
 
     return ret;
 
 error:
     EVP_PKEY_free(ret);
-    return (NULL);
+    return NULL;
 }
 
 /* Now two pseudo ASN1 routines that take an EVP_PKEY structure

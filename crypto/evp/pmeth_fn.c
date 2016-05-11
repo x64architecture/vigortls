@@ -314,7 +314,8 @@ int EVP_PKEY_derive_set_peer(EVP_PKEY_CTX *ctx, EVP_PKEY *peer)
         return ret;
     }
 
-    CRYPTO_add(&peer->references, 1, CRYPTO_LOCK_EVP_PKEY);
+    EVP_PKEY_up_ref(peer);
+
     return 1;
 }
 

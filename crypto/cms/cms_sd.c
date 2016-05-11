@@ -293,7 +293,7 @@ CMS_SignerInfo *CMS_add1_signer(CMS_ContentInfo *cms,
         goto merr;
     X509_check_purpose(signer, -1, -1);
 
-    CRYPTO_add(&pk->references, 1, CRYPTO_LOCK_EVP_PKEY);
+    EVP_PKEY_up_ref(pk);
     X509_up_ref(signer);
 
     si->pkey = pk;
