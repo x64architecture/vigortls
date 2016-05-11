@@ -65,6 +65,8 @@
 #include <openssl/err.h>
 #include <openssl/lhash.h>
 
+#include "internal/threads.h"
+
 void ERR_print_errors_cb(int (*cb)(const char *str, size_t len, void *u),
                          void *u)
 {
@@ -73,14 +75,21 @@ void ERR_print_errors_cb(int (*cb)(const char *str, size_t len, void *u),
     char buf2[4096];
     const char *file, *data;
     int line, flags;
-    unsigned long es;
-    CRYPTO_THREADID cur;
+    /*
+     * We don't know what kind of thing CRYPTO_THREAD_ID is. Here is our best
+     * attempt to convert it into something we can print.
+     */
+    union {
+        CRYPTO_THREAD_ID tid;
+        unsigned long ltid;
+    } tid;
 
-    CRYPTO_THREADID_current(&cur);
-    es = CRYPTO_THREADID_hash(&cur);
+    tid.ltid = 0;
+    tid.tid = CRYPTO_thread_get_current_id();
+
     while ((l = ERR_get_error_line_data(&file, &line, &data, &flags)) != 0) {
         ERR_error_string_n(l, buf, sizeof buf);
-        snprintf(buf2, sizeof(buf2), "%lu:%s:%s:%d:%s\n", es, buf,
+        snprintf(buf2, sizeof(buf2), "%lu:%s:%s:%d:%s\n", tid.ltid, buf,
                  file, line, (flags & ERR_TXT_STRING) ? data : "");
         if (cb(buf2, strlen(buf2), u) <= 0)
             break; /* abort outputting the error report */

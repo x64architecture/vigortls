@@ -706,7 +706,7 @@ const char *ERR_reason_error_string(unsigned long e)
     return ((p == NULL) ? NULL : p->string);
 }
 
-void ERR_remove_thread_state(const CRYPTO_THREADID *id)
+void ERR_remove_thread_state(const void *dummy)
 {
     ERR_STATE *state = ERR_get_state();
     if (state == NULL)
