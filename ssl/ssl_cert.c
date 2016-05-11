@@ -249,8 +249,7 @@ CERT *ssl_cert_dup(CERT *cert)
 
         if (cert->pkeys[i].privatekey != NULL) {
             ret->pkeys[i].privatekey = cert->pkeys[i].privatekey;
-            CRYPTO_add(&ret->pkeys[i].privatekey->references, 1,
-                       CRYPTO_LOCK_EVP_PKEY);
+            EVP_PKEY_up_ref(ret->pkeys[i].privatekey);
         }
     }
 

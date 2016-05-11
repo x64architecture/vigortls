@@ -67,13 +67,21 @@
 #include <openssl/x509.h>
 
 #include "internal/asn1_int.h"
+#include "internal/threads.h"
 
 /* Minor tweak to operation: free up EVP_PKEY */
 static int pubkey_cb(int operation, ASN1_VALUE **pval, const ASN1_ITEM *it,
                      void *exarg)
 {
+    if (operation == ASN1_OP_NEW_POST) {
+        X509_PUBKEY *pubkey = (X509_PUBKEY *)*pval;
+        pubkey->lock = CRYPTO_thread_new();
+        if (pubkey->lock == NULL)
+            return 0;
+    }
     if (operation == ASN1_OP_FREE_POST) {
         X509_PUBKEY *pubkey = (X509_PUBKEY *)*pval;
+        CRYPTO_thread_cleanup(pubkey->lock);
         EVP_PKEY_free(pubkey->pkey);
     }
     return 1;
@@ -178,14 +186,14 @@ EVP_PKEY *X509_PUBKEY_get(X509_PUBKEY *key)
     }
 
     /* Check to see if another thread set key->pkey first */
-    CRYPTO_w_lock(CRYPTO_LOCK_EVP_PKEY);
+    CRYPTO_thread_write_lock(key->lock);
     if (key->pkey) {
-        CRYPTO_w_unlock(CRYPTO_LOCK_EVP_PKEY);
+        CRYPTO_thread_unlock(key->lock);
         EVP_PKEY_free(ret);
         ret = key->pkey;
     } else {
         key->pkey = ret;
-        CRYPTO_w_unlock(CRYPTO_LOCK_EVP_PKEY);
+        CRYPTO_thread_unlock(key->lock);
     }
     EVP_PKEY_up_ref(ret);
 

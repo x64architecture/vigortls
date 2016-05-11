@@ -141,7 +141,8 @@ struct evp_pkey_st {
 #endif
     } pkey;
     int save_parameters;
-    STACK_OF(X509_ATTRIBUTE) * attributes; /* [ 0 ] */
+    STACK_OF(X509_ATTRIBUTE) *attributes; /* [ 0 ] */
+    CRYPTO_MUTEX *lock;
 } /* EVP_PKEY */;
 
 #define EVP_PKEY_MO_SIGN 0x0001

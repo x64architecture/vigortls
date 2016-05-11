@@ -138,6 +138,7 @@ struct X509_pubkey_st {
     X509_ALGOR *algor;
     ASN1_BIT_STRING *public_key;
     EVP_PKEY *pkey;
+    CRYPTO_MUTEX *lock;
 };
 
 typedef struct X509_sig_st {

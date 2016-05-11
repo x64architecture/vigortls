@@ -154,7 +154,6 @@ typedef struct openssl_item_st {
  * names in cryptlib.c
  */
 
-#define CRYPTO_LOCK_EVP_PKEY 10
 #define CRYPTO_LOCK_DYNLOCK 29
 #define CRYPTO_NUM_LOCKS 41
 

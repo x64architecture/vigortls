@@ -73,6 +73,7 @@
 #endif
 
 #include "internal/asn1_int.h"
+#include "internal/threads.h"
 
 static void EVP_PKEY_free_it(EVP_PKEY *x);
 
@@ -172,7 +173,7 @@ EVP_PKEY *EVP_PKEY_new(void)
     ret = malloc(sizeof(EVP_PKEY));
     if (ret == NULL) {
         EVPerr(EVP_F_EVP_PKEY_NEW, ERR_R_MALLOC_FAILURE);
-        return (NULL);
+        return NULL;
     }
     ret->type = EVP_PKEY_NONE;
     ret->save_type = EVP_PKEY_NONE;
@@ -182,12 +183,20 @@ EVP_PKEY *EVP_PKEY_new(void)
     ret->pkey.ptr = NULL;
     ret->attributes = NULL;
     ret->save_parameters = 1;
-    return (ret);
+    ret->lock = CRYPTO_thread_new();
+    if (ret->lock == NULL) {
+        EVPerr(EVP_F_EVP_PKEY_NEW, ERR_R_MALLOC_FAILURE);
+        free(ret);
+        return NULL;
+    }
+
+    return ret;
 }
 
 void EVP_PKEY_up_ref(EVP_PKEY *pkey)
 {
-    CRYPTO_add(&pkey->references, 1, CRYPTO_LOCK_EVP_PKEY);
+    int i;
+    CRYPTO_atomic_add(&pkey->references, 1, &i, pkey->lock);
 }
 
 /* Setup a public key ASN1 method and ENGINE from a NID or a string.
@@ -368,7 +377,7 @@ void EVP_PKEY_free(EVP_PKEY *x)
     if (x == NULL)
         return;
 
-    i = CRYPTO_add(&x->references, -1, CRYPTO_LOCK_EVP_PKEY);
+    CRYPTO_atomic_add(&x->references, -1, &i, x->lock);
     if (i > 0)
         return;
     EVP_PKEY_free_it(x);
@@ -389,6 +398,7 @@ static void EVP_PKEY_free_it(EVP_PKEY *x)
         x->engine = NULL;
     }
 #endif
+    CRYPTO_thread_cleanup(x->lock);
 }
 
 static int unsup_alg(BIO *out, const EVP_PKEY *pkey, int indent,
