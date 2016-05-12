@@ -316,7 +316,7 @@ void gcm_ghash_4bit(uint64_t Xi[2], const u128 Htable[16], const uint8_t *inp,
 #define GHASH_CHUNK (3 * 1024)
 #endif
 
-#if defined(GHASH_ASM) || defined(OPENSSL_CPUID_OBJ)
+#if defined(GHASH_ASM)
 #if defined(VIGORTLS_X86) || defined(VIGORTLS_X86_64)
 #define GHASH_ASM_X86_OR_64
 #define GCM_FUNCREF_4BIT

@@ -56,8 +56,71 @@ if (BUILD_SHARED_LIBS)
     set(CMAKE_POSITION_INDEPENDENT_CODE TRUE)
 endif()
 
-option(MT_SUPPORT
+# Options that can't be changed are defined here
+set(VIGORTLS_OPTIONS
+    "OPENSSL_NO_BUF_FREELISTS"
+    "OPENSSL_NO_COMP"
+    "OPENSSL_NO_DYNAMIC_ENGINE"
+    "OPENSSL_NO_GMP"
+    "OPENSSL_NO_HEARTBEATS"
+    "OPENSSL_NO_JPAKE"
+    "OPENSSL_NO_KRB5"
+    "OPENSSL_NO_MD2"
+    "OPENSSL_NO_MD4"
+    "OPENSSL_NO_MDC2"
+    "OPENSSL_NO_PSK"
+    "OPENSSL_NO_RFC3779"
+    "OPENSSL_NO_SCTP"
+    "OPENSSL_NO_SEED"
+    "OPENSSL_NO_SHA0"
+    "OPENSSL_NO_SRP"
+    "OPENSSL_NO_SSL2"
+    "OPENSSL_NO_STORE"
+    "OPENSSL_USE_IPV6"
+)
+
+option(OPENSSL_NO_ASM
+    "Build without assembler support" FALSE)
+option(OPENSSL_NO_CMS
+    "Build without CMS support" TRUE)
+option(OPENSSL_NO_GOST
+    "Build without GOST support" TRUE)
+option(OPENSSL_NO_IDEA
+    "Build without IDEA support" FALSE)
+option(OPENSSL_NO_RC5
+    "Build without RC5 support" TRUE)
+option(OPENSSL_THREADS
     "Build with multi-threading support" TRUE)
+
+if (OPENSSL_THREADS)
+    list(APPEND VIGORTLS_OPTIONS "OPENSSL_THREADS")
+endif()
+if (OPENSSL_NO_ASM)
+    list(APPEND VIGORTLS_OPTIONS "OPENSSL_NO_ASM")
+endif()
+if (OPENSSL_NO_CMS)
+    list(APPEND VIGORTLS_OPTIONS "OPENSSL_NO_CMS")
+endif()
+if (OPENSSL_NO_GOST)
+    list(APPEND VIGORTLS_OPTIONS "OPENSSL_NO_GOST")
+endif()
+if (OPENSSL_NO_IDEA)
+    list(APPEND VIGORTLS_OPTIONS "OPENSSL_NO_IDEA")
+endif()
+if (OPENSSL_NO_RC5)
+    list(APPEND VIGORTLS_OPTIONS "OPENSSL_NO_RC5")
+endif()
+list(SORT VIGORTLS_OPTIONS)
+
+foreach (VIGORTLS_OPTION IN LISTS VIGORTLS_OPTIONS)
+    list(APPEND VIGORTLS_OPTIONS_PARSED "#define ${VIGORTLS_OPTION}")
+endforeach()
+string(REPLACE ";" "\n" VIGORTLS_OPTIONS_PARSED "${VIGORTLS_OPTIONS_PARSED}")
+file(WRITE include/openssl/opensslfeatures.h "${VIGORTLS_OPTIONS_PARSED}")
+
+if (OPENSSL_NO_ASM)
+    set(ARCH "generic")
+endif()
 
 install(DIRECTORY include/openssl DESTINATION include)
 

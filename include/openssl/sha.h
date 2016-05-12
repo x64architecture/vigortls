@@ -66,6 +66,8 @@
 extern "C" {
 #endif
 
+#define SHA_LONG uint32_t
+
 #define SHA_LBLOCK 16
 #define SHA_CBLOCK (SHA_LBLOCK * 4) /* SHA treats input data as a
                                      * contiguous array of 32 bit

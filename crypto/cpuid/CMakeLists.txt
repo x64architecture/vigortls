@@ -17,6 +17,14 @@ if (${ARCH} STREQUAL "arm")
     )
 endif()
 
+if (${ARCH} STREQUAL "generic")
+    set(
+        CPUID_ARCH_SOURCES
+
+        generic.c
+    )
+endif()
+
 add_library(
     cpuid
 

@@ -50,6 +50,14 @@ if (${ARCH} STREQUAL "arm")
     )
 endif()
 
+if (${ARCH} STREQUAL "generic")
+    set(
+        BN_ARCH_SOURCES
+
+        bn_asm.c
+    )
+endif()
+
 add_library(
     bn
 

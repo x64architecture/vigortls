@@ -103,7 +103,7 @@ void RC4_set_key(RC4_KEY *key, int len, const uint8_t *data)
         j = (j + data[k] + tmp) & 0xFF;
         S[i] = S[j];
         S[j] = tmp;
-        if (++k >= len)
+        if (++k >= (unsigned)len)
             k = 0;
     }
 }

@@ -146,7 +146,7 @@ static
 #include "md32_common.h"
 
 #ifndef SHA256_ASM
-static const SHA_LONG K256[64] = {
+static const uint32_t K256[64] = {
     0x428a2f98UL, 0x71374491UL, 0xb5c0fbcfUL, 0xe9b5dba5UL,
     0x3956c25bUL, 0x59f111f1UL, 0x923f82a4UL, 0xab1c5ed5UL,
     0xd807aa98UL, 0x12835b01UL, 0x243185beUL, 0x550c7dc3UL,
@@ -183,7 +183,7 @@ static const SHA_LONG K256[64] = {
 static void sha256_block_data_order(SHA256_CTX *ctx, const void *in, size_t num)
 {
     unsigned int a, b, c, d, e, f, g, h, s0, s1, T1, T2;
-    SHA_LONG X[16], l;
+    uint32_t X[16], l;
     int i;
     const uint8_t *data = in;
 
@@ -266,7 +266,7 @@ static void sha256_block_data_order(SHA256_CTX *ctx, const void *in, size_t num)
 static void sha256_block_data_order(SHA256_CTX *ctx, const void *in, size_t num)
 {
     unsigned int a, b, c, d, e, f, g, h, s0, s1, T1;
-    SHA_LONG X[16];
+    uint32_t X[16];
     int i;
     const uint8_t *data = in;
 
@@ -281,8 +281,8 @@ static void sha256_block_data_order(SHA256_CTX *ctx, const void *in, size_t num)
         g = ctx->h[6];
         h = ctx->h[7];
 
-        if (BYTE_ORDER == BIG_ENDIAN && sizeof(SHA_LONG) == 4 && ((size_t)in % 4) == 0) {
-            const SHA_LONG *W = (const SHA_LONG *)data;
+        if (BYTE_ORDER == BIG_ENDIAN && sizeof(uint32_t) == 4 && ((size_t)in % 4) == 0) {
+            const uint32_t *W = (const uint32_t *)data;
 
             T1 = X[0] = W[0];
             ROUND_00_15(0, a, b, c, d, e, f, g, h);
@@ -319,7 +319,7 @@ static void sha256_block_data_order(SHA256_CTX *ctx, const void *in, size_t num)
 
             data += SHA256_CBLOCK;
         } else {
-            SHA_LONG l;
+            uint32_t l;
 
             HOST_c2l(data, l);
             T1 = X[0] = l;
