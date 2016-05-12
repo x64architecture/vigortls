@@ -156,7 +156,7 @@ add_library(
     $<TARGET_OBJECTS:x509v3>
 )
 
-if(NOT MSVC AND MT_SUPPORT)
+if(NOT MSVC AND OPENSSL_THREADS)
     target_link_libraries(crypto pthread)
 endif()
 

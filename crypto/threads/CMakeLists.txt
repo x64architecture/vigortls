@@ -13,7 +13,7 @@ elseif(WIN32)
         win32.c
     )
 endif()
-if(NOT MT_SUPPORT)
+if(NOT OPENSSL_THREADS)
     set(
         OS_SOURCES
 
