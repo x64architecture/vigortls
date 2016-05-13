@@ -479,9 +479,12 @@ void *EC_KEY_insert_key_method_data(EC_KEY *key, void *data,
 
     CRYPTO_thread_write_lock(key->lock);
     ex_data = EC_EX_DATA_get_data(key->method_data, dup_func, free_func, clear_free_func);
-    if (ex_data == NULL)
-        if (!EC_EX_DATA_set_data(&key->method_data, data, dup_func, free_func, clear_free_func))
+    if (ex_data == NULL) {
+        if (!EC_EX_DATA_set_data(&key->method_data, data, dup_func, free_func, clear_free_func)) {
+            CRYPTO_thread_unlock(key->lock);
             return NULL;
+        }
+    }
     CRYPTO_thread_unlock(key->lock);
 
     return ex_data;
