@@ -78,7 +78,6 @@ void RC4(RC4_KEY *key, size_t len, const uint8_t *in, uint8_t *out)
             RC4_BLOOP(in, out);
             RC4_BLOOP(in, out);
             RC4_BLOOP(in, out);
-            RC4_BLOOP(in, out);
         }
     }
 #endif
