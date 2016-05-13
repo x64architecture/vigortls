@@ -145,7 +145,7 @@ ENGINE_load_public_key(ENGINE *e, const char *key_id, UI_METHOD *ui_method,
     }
     CRYPTO_thread_write_lock(global_engine_lock);
     if (e->funct_ref == 0) {
-        CRYPTO_thread_write_lock(global_engine_lock);
+        CRYPTO_thread_unlock(global_engine_lock);
         ENGINEerr(ENGINE_F_ENGINE_LOAD_PUBLIC_KEY,
                   ENGINE_R_NOT_INITIALISED);
         return 0;
