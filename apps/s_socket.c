@@ -95,7 +95,7 @@ int init_client(int *sock, char *host, char *port, int type, int af)
     int i, s = 0;
 
     if (!ssl_sock_init())
-        return (0);
+        return 0;
 
     memset(&hints, '\0', sizeof(hints));
     hints.ai_family = af;
@@ -103,14 +103,14 @@ int init_client(int *sock, char *host, char *port, int type, int af)
 
     if ((i = getaddrinfo(host, port, &hints, &ai_top)) != 0) {
         BIO_printf(bio_err, "getaddrinfo: %s\n", gai_strerror(i));
-        return (0);
+        return 0;
     }
     if (ai_top == NULL || ai_top->ai_addr == NULL) {
         BIO_printf(bio_err, "getaddrinfo returned no addresses\n");
         if (ai_top != NULL) {
             freeaddrinfo(ai_top);
         }
-        return (0);
+        return 0;
     }
     for (ai = ai_top; ai != NULL; ai = ai->ai_next) {
         s = socket(ai->ai_family, ai->ai_socktype, ai->ai_protocol);
@@ -123,23 +123,24 @@ int init_client(int *sock, char *host, char *port, int type, int af)
                            (char *)&i, sizeof(i));
             if (i < 0) {
                 perror("keepalive");
-                close(s);
-                freeaddrinfo(ai_top);
-                return (0);
+                goto out;
             }
         }
         if ((i = connect(s, ai->ai_addr, ai->ai_addrlen)) == 0) {
             *sock = s;
             freeaddrinfo(ai_top);
-            return (1);
+            return 1;
         }
         close(s);
+        s = -1;
     }
 
     perror("connect");
-    close(s);
-    freeaddrinfo(ai_top);
-    return (0);
+out:
+	if (s != -1)
+		close(s);
+	freeaddrinfo(ai_top);
+	return (0);
 }
 
 int do_server(int port, int type, int *ret, int (*cb)(char *hostname, int s, uint8_t *context), uint8_t *context)
@@ -150,31 +151,31 @@ int do_server(int port, int type, int *ret, int (*cb)(char *hostname, int s, uin
     int i;
 
     if (!init_server(&accept_socket, port, type))
-        return (0);
+        return 0;
 
     if (ret != NULL) {
         *ret = accept_socket;
-        /* return (1);*/
+        /* return 1; */
     }
     for (;;) {
         if (type == SOCK_STREAM) {
             if (do_accept(accept_socket, &sock, &name) == 0) {
-                shutdown((accept_socket), SHUT_RDWR);
-                close((accept_socket));
+                shutdown(accept_socket, SHUT_RDWR);
+                close(accept_socket);
+                return 0;
             }
         } else
             sock = accept_socket;
         i = (*cb)(name, sock, context);
-        if (name != NULL)
-            free(name);
+        free(name);
         if (type == SOCK_STREAM) {
             shutdown((sock), SHUT_RDWR);
-            close((sock));
+            close(sock);
         }
         if (i < 0) {
             shutdown((accept_socket), SHUT_RDWR);
-            close((accept_socket));
-            return (i);
+            close(accept_socket);
+            return i;
         }
     }
 }
@@ -206,8 +207,10 @@ static int init_server_long(int *sock, int port, char *ip, int type)
 #if defined SOL_SOCKET && defined SO_REUSEADDR
     {
         int j = 1;
-        setsockopt(s, SOL_SOCKET, SO_REUSEADDR,
-                   (void *)&j, sizeof j);
+        if (setsockopt(s, SOL_SOCKET, SO_REUSEADDR, (void *)&j, sizeof j) == -1) {
+            perror("setsockopt");
+            goto err;
+        }
     }
 #endif
     if (bind(s, (struct sockaddr *)&server, sizeof(server)) == -1) {
