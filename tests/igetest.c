@@ -275,6 +275,8 @@ int main(int argc, char **argv)
         ++err;
     }
 
+    RAND_bytes(rkey2, sizeof rkey2);
+
     /* make sure garble extends both ways */
     AES_set_encrypt_key(rkey, 8 * sizeof rkey, &key);
     AES_set_encrypt_key(rkey2, 8 * sizeof rkey2, &key2);
