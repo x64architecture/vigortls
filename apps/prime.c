@@ -153,8 +153,7 @@ int prime_main(int argc, char **argv)
         }
     }
 
-    BN_free(bn);
-
 end:
+    BN_free(bn);
     return ret;
 }
