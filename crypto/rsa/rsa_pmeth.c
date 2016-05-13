@@ -516,8 +516,10 @@ static int pkey_rsa_ctrl_str(EVP_PKEY_CTX *ctx, const char *type, const char *va
     if (strcmp(type, "rsa_keygen_pubexp") == 0) {
         int ret;
         BIGNUM *pubexp = NULL;
-        if (!BN_asc2bn(&pubexp, value))
+        if (!BN_asc2bn(&pubexp, value)) {
+            BN_free(pubexp);
             return 0;
+        }
         ret = EVP_PKEY_CTX_set_rsa_keygen_pubexp(ctx, pubexp);
         if (ret <= 0)
             BN_free(pubexp);
