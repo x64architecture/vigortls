@@ -137,7 +137,7 @@ int BIO_free(BIO *a)
 
     CRYPTO_thread_cleanup(a->lock);
 
-    if ((a->method == NULL) || (a->method->destroy == NULL))
+    if ((a->method != NULL) || (a->method->destroy != NULL))
         a->method->destroy(a);
 
     free(a);
