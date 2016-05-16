@@ -1,4 +1,3 @@
-/* crypto/buffer/buffer.c */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -71,15 +70,13 @@ BUF_MEM *BUF_MEM_new(void)
 {
     BUF_MEM *ret;
 
-    ret = malloc(sizeof(BUF_MEM));
+    ret = calloc(1, sizeof(BUF_MEM));
     if (ret == NULL) {
         BUFerr(BUF_F_BUF_MEM_NEW, ERR_R_MALLOC_FAILURE);
-        return (NULL);
+        return NULL;
     }
-    ret->length = 0;
-    ret->max = 0;
-    ret->data = NULL;
-    return (ret);
+
+    return ret;
 }
 
 void BUF_MEM_free(BUF_MEM *a)
@@ -101,12 +98,12 @@ int BUF_MEM_grow(BUF_MEM *str, size_t len)
 
     if (str->length >= len) {
         str->length = len;
-        return (len);
+        return len;
     }
     if (str->max >= len) {
         memset(&str->data[str->length], 0, len - str->length);
         str->length = len;
-        return (len);
+        return len;
     }
     /* This limit is sufficient to ensure (len+3)/3*4 < 2**31 */
     if (len > LIMIT_BEFORE_EXPANSION) {
@@ -117,14 +114,14 @@ int BUF_MEM_grow(BUF_MEM *str, size_t len)
     ret = realloc(str->data, n);
     if (ret == NULL) {
         BUFerr(BUF_F_BUF_MEM_GROW, ERR_R_MALLOC_FAILURE);
-        len = 0;
-    } else {
-        str->data = ret;
-        str->max = n;
-        memset(&str->data[str->length], 0, len - str->length);
-        str->length = len;
+        return 0;
     }
-    return (len);
+    str->data = ret;
+    str->max = n;
+    memset(&str->data[str->length], 0, len - str->length);
+    str->length = len;
+
+    return len;
 }
 
 int BUF_MEM_grow_clean(BUF_MEM *str, size_t len)
@@ -135,12 +132,12 @@ int BUF_MEM_grow_clean(BUF_MEM *str, size_t len)
     if (str->length >= len) {
         memset(&str->data[len], 0, str->length - len);
         str->length = len;
-        return (len);
+        return len;
     }
     if (str->max >= len) {
         memset(&str->data[str->length], 0, len - str->length);
         str->length = len;
-        return (len);
+        return len;
     }
     /* This limit is sufficient to ensure (len+3)/3*4 < 2**31 */
     if (len > LIMIT_BEFORE_EXPANSION) {
@@ -148,20 +145,23 @@ int BUF_MEM_grow_clean(BUF_MEM *str, size_t len)
         return 0;
     }
     n = (len + 3) / 3 * 4;
-    if (str->data == NULL)
-        ret = malloc(n);
-    else
-        ret = OPENSSL_realloc_clean(str->data, str->max, n);
+    ret = malloc(n);
     if (ret == NULL) {
         BUFerr(BUF_F_BUF_MEM_GROW_CLEAN, ERR_R_MALLOC_FAILURE);
-        len = 0;
-    } else {
-        str->data = ret;
-        str->max = n;
-        memset(&str->data[str->length], 0, len - str->length);
-        str->length = len;
+        return 0;
     }
-    return (len);
+    if (str->data != NULL) {
+        memcpy(ret, str->data, str->max);
+        vigortls_zeroize(str->data, str->max);
+        free(str->data);
+    }
+
+    str->data = ret;
+    str->max = n;
+    memset(&str->data[str->length], 0, len - str->length);
+    str->length = len;
+
+    return len;
 }
 
 void BUF_reverse(uint8_t *out, const uint8_t *in, size_t size)

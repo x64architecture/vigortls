@@ -1,4 +1,3 @@
-/* crypto/asn1/a_bitstr.c */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -75,7 +74,7 @@ int i2c_ASN1_BIT_STRING(ASN1_BIT_STRING *a, uint8_t **pp)
     uint8_t *p, *d;
 
     if (a == NULL)
-        return (0);
+        return 0;
 
     len = a->length;
 
@@ -123,7 +122,7 @@ int i2c_ASN1_BIT_STRING(ASN1_BIT_STRING *a, uint8_t **pp)
     if (len > 0)
         p[-1] &= (0xff << bits);
     *pp = p;
-    return (ret);
+    return ret;
 }
 
 ASN1_BIT_STRING *c2i_ASN1_BIT_STRING(ASN1_BIT_STRING **a,
@@ -141,7 +140,7 @@ ASN1_BIT_STRING *c2i_ASN1_BIT_STRING(ASN1_BIT_STRING **a,
 
     if ((a == NULL) || ((*a) == NULL)) {
         if ((ret = ASN1_BIT_STRING_new()) == NULL)
-            return (NULL);
+            return NULL;
     } else
         ret = (*a);
 
