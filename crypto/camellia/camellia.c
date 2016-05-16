@@ -577,7 +577,7 @@ void Camellia_DecryptBlock_Rounds(int grandRounds, const uint8_t ciphertext[],
 #endif /* OPENSSL_NO_ASM || (!VIGORTLS_X86_64 && !VIGORTLS_X86) */
 
 /* TODO: Why is this implemented in ASM on X86? */
-#if (!defined(VIGORTLS_X86) || !defined(OPENSSL_NO_ASM))
+#if (!defined(VIGORTLS_X86) && !defined(OPENSSL_NO_ASM))
 
 void Camellia_encrypt(const uint8_t *in, uint8_t *out,
                       const CAMELLIA_KEY *key)
