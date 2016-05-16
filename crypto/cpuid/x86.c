@@ -33,13 +33,6 @@ static void vigortls_cpuid(uint32_t eax, uint32_t *regs)
     regs[1] = (uint32_t)tmp[1];
     regs[2] = (uint32_t)tmp[2];
     regs[3] = (uint32_t)tmp[3];
-#elif defined(VIGORTLS_X86_64)
-    __asm__ volatile(
-        "xor %%ecx, %%ecx\n"
-        "cpuid\n"
-        : "=a"(regs[0]), "=b"(regs[1]), "=c"(regs[2]), "=d"(regs[3])
-        : "a"(eax)
-    );
 #elif defined(__pic__) && defined(VIGORTLS_32_BIT)
     /*
      * We have to save and restore the EBX register when
@@ -54,6 +47,13 @@ static void vigortls_cpuid(uint32_t eax, uint32_t *regs)
         : "=a"(regs[0]), "=b"(regs[1]), "=c"(regs[2]), "=d"(regs[3])
         : "a"(eax)
     );
+#else
+    __asm__ volatile(
+        "xor %%ecx, %%ecx\n"
+        "cpuid\n"
+        : "=a"(regs[0]), "=b"(regs[1]), "=c"(regs[2]), "=d"(regs[3])
+        : "a"(eax)
+    );
 #endif
 }
 
@@ -63,7 +63,7 @@ static uint64_t vigortls_xgetbv(uint32_t xcr)
     return _xgetbv(xcr);
 #else
     uint32_t eax, edx;
-    __asm__ volatile (
+    __asm__ volatile(
         ".byte 0x0f, 0x01, 0xd0" /* xgetbv */
         : "=a"(eax), "=d"(edx) : "c"(xcr)
     );
