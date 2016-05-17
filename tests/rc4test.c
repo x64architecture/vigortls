@@ -111,9 +111,6 @@ int main(int argc, char *argv[])
     RC4_KEY key;
     uint8_t obuf[512];
 
-    void OPENSSL_cpuid_setup(void);
-    OPENSSL_cpuid_setup();
-
     for (i = 0; i < 6; i++) {
         RC4_set_key(&key, keys[i][0], &(keys[i][1]));
         memset(obuf, 0x00, sizeof(obuf));

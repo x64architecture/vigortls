@@ -92,12 +92,23 @@ add_subdirectory(whrlpool)
 add_subdirectory(x509)
 add_subdirectory(x509v3)
 
+if (WIN32 AND BUILD_SHARED_LIBS)
+    set(
+        CRYPTO_SOURCES
+
+        dllmain.c
+    )
+endif()
+
 add_library(
     crypto
+
+    ${CRYPTO_SOURCES}
 
     cpt_err.c
     cryptlib.c
     ex_data.c
+    init.c
     memory.c
     time_support.c
 

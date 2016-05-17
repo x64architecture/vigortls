@@ -20,6 +20,8 @@
 #include <openssl/crypto.h>
 #include <openssl/opensslconf.h>
 
+#include "cryptlib.h"
+
 #if defined(VIGORTLS_X86) || defined(VIGORTLS_X86_64)
 
 /*
