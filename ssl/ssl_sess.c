@@ -167,10 +167,9 @@ SSL_SESSION *SSL_get1_session(SSL *ssl)
     CRYPTO_thread_read_lock(ssl->lock);
     sess = ssl->session;
     if (sess)
-        sess->references++;
+        SSL_SESSION_up_ref(sess);
     CRYPTO_thread_unlock(ssl->lock);
-
-    return (sess);
+    return sess;
 }
 
 int SSL_SESSION_get_ex_new_index(long argl, void *argp, CRYPTO_EX_new *new_func,
@@ -426,8 +425,8 @@ int ssl_get_new_session(SSL *s, int session)
             cb = s->generate_session_id;
         else if (s->session_ctx->generate_session_id)
             cb = s->session_ctx->generate_session_id;
-        CRYPTO_thread_unlock(s->lock);
         CRYPTO_thread_unlock(s->session_ctx->lock);
+        CRYPTO_thread_unlock(s->lock);
 
         /* Choose a session ID. */
         tmp = ss->session_id_length;

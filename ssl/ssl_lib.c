@@ -273,6 +273,13 @@ SSL *SSL_new(SSL_CTX *ctx)
     if (s == NULL)
         goto err;
 
+    s->lock = CRYPTO_thread_new();
+    if (s->lock == NULL) {
+        SSLerr(SSL_F_SSL_NEW, ERR_R_MALLOC_FAILURE);
+        free(s);
+        return NULL;
+    }
+
     s->options = ctx->options;
     s->mode = ctx->mode;
     s->max_cert_list = ctx->max_cert_list;
