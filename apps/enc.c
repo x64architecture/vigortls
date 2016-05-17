@@ -138,7 +138,7 @@ OPTIONS enc_options[] = {
     { "K", OPT_UPPER_K, '-', "Same as -iv" },
     { "S", OPT_UPPER_S, 's', "Salt, in hex" },
     { "iv", OPT_IV, 's', "IV in hex" },
-    { "md", OPT_MD, 's', "Use specified digest to create key from passphrase" },
+    { "md", OPT_MD, 's', "Use specified digest to create a key from the passphrase" },
     { "none", OPT_NONE, '-', "Don't encrypt" },
     { "", OPT_CIPHER, '-', "Any supported cipher" },
     { NULL }
