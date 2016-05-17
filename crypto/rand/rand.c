@@ -18,8 +18,9 @@
 #include <stdint.h>
 #include <string.h>
 
-#include <openssl/rand.h>
 #include <openssl/chacha.h>
+#include <openssl/opensslconf.h>
+#include <openssl/rand.h>
 
 #include "cryptlib.h"
 #include "internal.h"
@@ -57,7 +58,7 @@ void RAND_add(const void *buf, int num, double entropy)
     return;
 }
 
-#if defined(VIGORTLS_X86_64)
+#if defined(VIGORTLS_X86_64) && !defined(OPENSSL_NO_ASM)
 
 extern int vigortls_rdrand(uint8_t *buf);
 extern int vigortls_rdrand_mul_of_8(uint8_t *buf, size_t len);
