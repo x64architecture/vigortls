@@ -18,5 +18,4 @@ add_library(
     cms_pwri.c
     cms_sd.c
     cms_smime.c
-
 )

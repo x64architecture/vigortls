@@ -29,9 +29,8 @@ L OCSP      include/openssl/ocsp.h             crypto/ocsp/ocsp_err.c
 L UI        include/openssl/ui.h               crypto/ui/ui_err.c
 L ECDSA     include/openssl/ecdsa.h            crypto/ecdsa/ecs_err.c
 L ECDH      include/openssl/ecdh.h             crypto/ecdh/ech_err.c
-#L STORE     include/openssl/store.h            crypto/store/str_err.c
 L TS        include/openssl/ts.h               crypto/ts/ts_err.c
-L HMAC      include/openssl/hmac.h             crypto/hmac/hmac_err.c
+#L HMAC      include/openssl/hmac.h             crypto/hmac/hmac_err.c
 L CMS       include/openssl/cms.h              crypto/cms/cms_err.c
 L GOST      include/openssl/gost.h             crypto/gost/gost_err.c
 

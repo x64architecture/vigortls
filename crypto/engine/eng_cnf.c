@@ -1,58 +1,10 @@
-/* Written by Stephen Henson (steve@openssl.org) for the OpenSSL
- * project 2001.
- */
-/* ====================================================================
- * Copyright (c) 2001 The OpenSSL Project.  All rights reserved.
+/*
+ * Copyright 2001-2016 The OpenSSL Project Authors. All Rights Reserved.
  *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- *
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- *
- * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in
- *    the documentation and/or other materials provided with the
- *    distribution.
- *
- * 3. All advertising materials mentioning features or use of this
- *    software must display the following acknowledgment:
- *    "This product includes software developed by the OpenSSL Project
- *    for use in the OpenSSL Toolkit. (http://www.OpenSSL.org/)"
- *
- * 4. The names "OpenSSL Toolkit" and "OpenSSL Project" must not be used to
- *    endorse or promote products derived from this software without
- *    prior written permission. For written permission, please contact
- *    licensing@OpenSSL.org.
- *
- * 5. Products derived from this software may not be called "OpenSSL"
- *    nor may "OpenSSL" appear in their names without prior written
- *    permission of the OpenSSL Project.
- *
- * 6. Redistributions of any form whatsoever must retain the following
- *    acknowledgment:
- *    "This product includes software developed by the OpenSSL Project
- *    for use in the OpenSSL Toolkit (http://www.OpenSSL.org/)"
- *
- * THIS SOFTWARE IS PROVIDED BY THE OpenSSL PROJECT ``AS IS'' AND ANY
- * EXPRESSED OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
- * PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL THE OpenSSL PROJECT OR
- * ITS CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
- * NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
- * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
- * STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
- * OF THE POSSIBILITY OF SUCH DAMAGE.
- * ====================================================================
- *
- * This product includes cryptographic software written by Eric Young
- * (eay@cryptsoft.com).  This product includes software written by Tim
- * Hudson (tjh@cryptsoft.com).
- *
+ * Licensed under the OpenSSL license (the "License").  You may not use
+ * this file except in compliance with the License.  You can obtain a copy
+ * in the file LICENSE in the source distribution or at
+ * https://www.openssl.org/source/license.html
  */
 
 #include <string.h>
@@ -65,8 +17,7 @@
 
 /* ENGINE config module */
 
-static char *
-skip_dot(char *name)
+static char *skip_dot(char *name)
 {
     char *p;
 
@@ -78,8 +29,7 @@ skip_dot(char *name)
 
 static STACK_OF(ENGINE) *initialized_engines = NULL;
 
-static int
-int_engine_init(ENGINE *e)
+static int int_engine_init(ENGINE *e)
 {
     if (!ENGINE_init(e))
         return 0;
@@ -92,8 +42,7 @@ int_engine_init(ENGINE *e)
     return 1;
 }
 
-static int
-int_engine_configure(char *name, char *value, const CONF *cnf)
+static int int_engine_configure(char *name, char *value, const CONF *cnf)
 {
     int i;
     int ret = 0;
@@ -204,8 +153,7 @@ err:
     return ret;
 }
 
-static int
-int_engine_module_init(CONF_IMODULE *md, const CONF *cnf)
+static int int_engine_module_init(CONF_IMODULE *md, const CONF *cnf)
 {
     STACK_OF(CONF_VALUE) * elist;
     CONF_VALUE *cval;
@@ -233,8 +181,7 @@ int_engine_module_init(CONF_IMODULE *md, const CONF *cnf)
     return 1;
 }
 
-static void
-int_engine_module_finish(CONF_IMODULE *md)
+static void int_engine_module_finish(CONF_IMODULE *md)
 {
     ENGINE *e;
 
@@ -244,8 +191,7 @@ int_engine_module_finish(CONF_IMODULE *md)
     initialized_engines = NULL;
 }
 
-void
-ENGINE_add_conf_module(void)
+void ENGINE_add_conf_module(void)
 {
     CONF_module_add("engines", int_engine_module_init,
                     int_engine_module_finish);

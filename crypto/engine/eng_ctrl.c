@@ -1,56 +1,10 @@
-/* crypto/engine/eng_ctrl.c */
-/* ====================================================================
- * Copyright (c) 1999-2001 The OpenSSL Project.  All rights reserved.
+/*
+ * Copyright 2001-2016 The OpenSSL Project Authors. All Rights Reserved.
  *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- *
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- *
- * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in
- *    the documentation and/or other materials provided with the
- *    distribution.
- *
- * 3. All advertising materials mentioning features or use of this
- *    software must display the following acknowledgment:
- *    "This product includes software developed by the OpenSSL Project
- *    for use in the OpenSSL Toolkit. (http://www.OpenSSL.org/)"
- *
- * 4. The names "OpenSSL Toolkit" and "OpenSSL Project" must not be used to
- *    endorse or promote products derived from this software without
- *    prior written permission. For written permission, please contact
- *    licensing@OpenSSL.org.
- *
- * 5. Products derived from this software may not be called "OpenSSL"
- *    nor may "OpenSSL" appear in their names without prior written
- *    permission of the OpenSSL Project.
- *
- * 6. Redistributions of any form whatsoever must retain the following
- *    acknowledgment:
- *    "This product includes software developed by the OpenSSL Project
- *    for use in the OpenSSL Toolkit (http://www.OpenSSL.org/)"
- *
- * THIS SOFTWARE IS PROVIDED BY THE OpenSSL PROJECT ``AS IS'' AND ANY
- * EXPRESSED OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
- * PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL THE OpenSSL PROJECT OR
- * ITS CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
- * NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
- * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
- * STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
- * OF THE POSSIBILITY OF SUCH DAMAGE.
- * ====================================================================
- *
- * This product includes cryptographic software written by Eric Young
- * (eay@cryptsoft.com).  This product includes software written by Tim
- * Hudson (tjh@cryptsoft.com).
- *
+ * Licensed under the OpenSSL license (the "License").  You may not use
+ * this file except in compliance with the License.  You can obtain a copy
+ * in the file LICENSE in the source distribution or at
+ * https://www.openssl.org/source/license.html
  */
 
 #include <stdcompat.h>
@@ -66,16 +20,14 @@ static const char *int_no_description = "";
  * ENGINE in question has asked us to take care of it (ie. the ENGINE did not
  * set the ENGINE_FLAGS_MANUAL_CMD_CTRL flag. */
 
-static int
-int_ctrl_cmd_is_null(const ENGINE_CMD_DEFN *defn)
+static int int_ctrl_cmd_is_null(const ENGINE_CMD_DEFN *defn)
 {
     if ((defn->cmd_num == 0) || (defn->cmd_name == NULL))
         return 1;
     return 0;
 }
 
-static int
-int_ctrl_cmd_by_name(const ENGINE_CMD_DEFN *defn, const char *s)
+static int int_ctrl_cmd_by_name(const ENGINE_CMD_DEFN *defn, const char *s)
 {
     int idx = 0;
     while (!int_ctrl_cmd_is_null(defn) && (strcmp(defn->cmd_name, s) != 0)) {
@@ -88,8 +40,7 @@ int_ctrl_cmd_by_name(const ENGINE_CMD_DEFN *defn, const char *s)
     return idx;
 }
 
-static int
-int_ctrl_cmd_by_num(const ENGINE_CMD_DEFN *defn, unsigned int num)
+static int int_ctrl_cmd_by_num(const ENGINE_CMD_DEFN *defn, unsigned int num)
 {
     int idx = 0;
     /* NB: It is stipulated that 'cmd_defn' lists are ordered by cmd_num. So
@@ -104,8 +55,7 @@ int_ctrl_cmd_by_num(const ENGINE_CMD_DEFN *defn, unsigned int num)
     return -1;
 }
 
-static int
-int_ctrl_helper(ENGINE *e, int cmd, long i, void *p, void (*f)(void))
+static int int_ctrl_helper(ENGINE *e, int cmd, long i, void *p, void (*f)(void))
 {
     int idx;
     int ret;
@@ -118,7 +68,10 @@ int_ctrl_helper(ENGINE *e, int cmd, long i, void *p, void (*f)(void))
         return e->cmd_defns->cmd_num;
     }
     /* One or two commands require that "p" be a valid string buffer */
-    if ((cmd == ENGINE_CTRL_GET_CMD_FROM_NAME) || (cmd == ENGINE_CTRL_GET_NAME_FROM_CMD) || (cmd == ENGINE_CTRL_GET_DESC_FROM_CMD)) {
+    if ((cmd == ENGINE_CTRL_GET_CMD_FROM_NAME) ||
+        (cmd == ENGINE_CTRL_GET_NAME_FROM_CMD) ||
+        (cmd == ENGINE_CTRL_GET_DESC_FROM_CMD))
+        {
         if (s == NULL) {
             ENGINEerr(ENGINE_F_INT_CTRL_HELPER,
                       ERR_R_PASSED_NULL_PARAMETER);
@@ -185,8 +138,7 @@ int_ctrl_helper(ENGINE *e, int cmd, long i, void *p, void (*f)(void))
     return -1;
 }
 
-int
-ENGINE_ctrl(ENGINE *e, int cmd, long i, void *p, void (*f)(void))
+int ENGINE_ctrl(ENGINE *e, int cmd, long i, void *p, void (*f)(void))
 {
     int ctrl_exists, ref_exists;
 
@@ -236,8 +188,7 @@ ENGINE_ctrl(ENGINE *e, int cmd, long i, void *p, void (*f)(void))
     return e->ctrl(e, cmd, i, p, f);
 }
 
-int
-ENGINE_cmd_is_executable(ENGINE *e, int cmd)
+int ENGINE_cmd_is_executable(ENGINE *e, int cmd)
 {
     int flags;
 
@@ -247,14 +198,16 @@ ENGINE_cmd_is_executable(ENGINE *e, int cmd)
                   ENGINE_R_INVALID_CMD_NUMBER);
         return 0;
     }
-    if (!(flags & ENGINE_CMD_FLAG_NO_INPUT) && !(flags & ENGINE_CMD_FLAG_NUMERIC) && !(flags & ENGINE_CMD_FLAG_STRING))
+    if (!(flags & ENGINE_CMD_FLAG_NO_INPUT) &&
+        !(flags & ENGINE_CMD_FLAG_NUMERIC) &&
+        !(flags & ENGINE_CMD_FLAG_STRING))
         return 0;
+
     return 1;
 }
 
-int
-ENGINE_ctrl_cmd(ENGINE *e, const char *cmd_name, long i, void *p,
-                void (*f)(void), int cmd_optional)
+int ENGINE_ctrl_cmd(ENGINE *e, const char *cmd_name, long i, void *p,
+                    void (*f)(void), int cmd_optional)
 {
     int num;
 
@@ -287,9 +240,8 @@ ENGINE_ctrl_cmd(ENGINE *e, const char *cmd_name, long i, void *p,
     return 0;
 }
 
-int
-ENGINE_ctrl_cmd_string(ENGINE *e, const char *cmd_name, const char *arg,
-                       int cmd_optional)
+int ENGINE_ctrl_cmd_string(ENGINE *e, const char *cmd_name, const char *arg,
+                            int cmd_optional)
 {
     int num, flags;
     long l;

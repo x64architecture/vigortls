@@ -1,7 +1,5 @@
 /*
- * Written by Adam Langley (Google) for the OpenSSL project
- */
-/* Copyright 2011 Google Inc.
+ * Copyright 2011 Google Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  *

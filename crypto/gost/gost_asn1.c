@@ -1,11 +1,12 @@
-/**********************************************************************
- *                          gost_keytrans.c                           *
- *             Copyright (c) 2005-2006 Cryptocom LTD                  *
- *         This file is distributed under the same license as OpenSSL *
- *                                                                    *
- *   ASN1 structure definition for GOST key transport                 *
- *          Requires OpenSSL 0.9.9 for compilation                    *
- **********************************************************************/
+/*
+ * Copyright (c) 2014 Dmitry Eremin-Solenikov <dbaryshkov@gmail.com>
+ * Copyright (c) 2005-2006 Cryptocom LTD
+ *
+ * Licensed under the OpenSSL license (the "License").  You may not use
+ * this file except in compliance with the License.  You can obtain a copy
+ * in the file LICENSE in the source distribution or at
+ * https://www.openssl.org/source/license.html
+ */
 
 #include <openssl/opensslconf.h>
 

@@ -1,59 +1,10 @@
-/* crypto/engine/eng_lib.c */
-/* Written by Geoff Thorpe (geoff@geoffthorpe.net) for the OpenSSL
- * project 2000.
- */
-/* ====================================================================
- * Copyright (c) 1999-2001 The OpenSSL Project.  All rights reserved.
+/*
+ * Copyright 2000-2016 The OpenSSL Project Authors. All Rights Reserved.
  *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- *
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- *
- * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in
- *    the documentation and/or other materials provided with the
- *    distribution.
- *
- * 3. All advertising materials mentioning features or use of this
- *    software must display the following acknowledgment:
- *    "This product includes software developed by the OpenSSL Project
- *    for use in the OpenSSL Toolkit. (http://www.OpenSSL.org/)"
- *
- * 4. The names "OpenSSL Toolkit" and "OpenSSL Project" must not be used to
- *    endorse or promote products derived from this software without
- *    prior written permission. For written permission, please contact
- *    licensing@OpenSSL.org.
- *
- * 5. Products derived from this software may not be called "OpenSSL"
- *    nor may "OpenSSL" appear in their names without prior written
- *    permission of the OpenSSL Project.
- *
- * 6. Redistributions of any form whatsoever must retain the following
- *    acknowledgment:
- *    "This product includes software developed by the OpenSSL Project
- *    for use in the OpenSSL Toolkit (http://www.OpenSSL.org/)"
- *
- * THIS SOFTWARE IS PROVIDED BY THE OpenSSL PROJECT ``AS IS'' AND ANY
- * EXPRESSED OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
- * PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL THE OpenSSL PROJECT OR
- * ITS CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
- * NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
- * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
- * STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
- * OF THE POSSIBILITY OF SUCH DAMAGE.
- * ====================================================================
- *
- * This product includes cryptographic software written by Eric Young
- * (eay@cryptsoft.com).  This product includes software written by Tim
- * Hudson (tjh@cryptsoft.com).
- *
+ * Licensed under the OpenSSL license (the "License").  You may not use
+ * this file except in compliance with the License.  You can obtain a copy
+ * in the file LICENSE in the source distribution or at
+ * https://www.openssl.org/source/license.html
  */
 
 #include <string.h>
@@ -73,8 +24,7 @@ void do_engine_lock_init(void)
     global_engine_lock = CRYPTO_thread_new();
 }
 
-ENGINE *
-ENGINE_new(void)
+ENGINE *ENGINE_new(void)
 {
     ENGINE *ret;
 
@@ -94,8 +44,7 @@ ENGINE_new(void)
 /* Placed here (close proximity to ENGINE_new) so that modifications to the
  * elements of the ENGINE structure are more likely to be caught and changed
  * here. */
-void
-engine_set_all_null(ENGINE *e)
+void engine_set_all_null(ENGINE *e)
 {
     e->id = NULL;
     e->name = NULL;
@@ -116,8 +65,7 @@ engine_set_all_null(ENGINE *e)
     e->flags = 0;
 }
 
-int
-engine_free_util(ENGINE *e, int locked)
+int engine_free_util(ENGINE *e, int locked)
 {
     int i;
 
@@ -144,8 +92,7 @@ engine_free_util(ENGINE *e, int locked)
     return 1;
 }
 
-int
-ENGINE_free(ENGINE *e)
+int ENGINE_free(ENGINE *e)
 {
     return engine_free_util(e, 1);
 }
@@ -157,8 +104,7 @@ ENGINE_free(ENGINE *e)
  * bloat by referring to all *possible* cleanups, but any linker bloat into code
  * "X" will cause X's cleanup function to end up here. */
 static STACK_OF(ENGINE_CLEANUP_ITEM) *cleanup_stack = NULL;
-static int
-int_cleanup_check(int create)
+static int int_cleanup_check(int create)
 {
     if (cleanup_stack)
         return 1;
@@ -168,19 +114,17 @@ int_cleanup_check(int create)
     return (cleanup_stack ? 1 : 0);
 }
 
-static ENGINE_CLEANUP_ITEM *
-int_cleanup_item(ENGINE_CLEANUP_CB *cb)
+static ENGINE_CLEANUP_ITEM *int_cleanup_item(ENGINE_CLEANUP_CB *cb)
 {
     ENGINE_CLEANUP_ITEM *item = malloc(sizeof(ENGINE_CLEANUP_ITEM));
 
-    if (!item)
+    if (item == NULL)
         return NULL;
     item->cb = cb;
     return item;
 }
 
-void
-engine_cleanup_add_first(ENGINE_CLEANUP_CB *cb)
+void engine_cleanup_add_first(ENGINE_CLEANUP_CB *cb)
 {
     ENGINE_CLEANUP_ITEM *item;
 
@@ -191,8 +135,7 @@ engine_cleanup_add_first(ENGINE_CLEANUP_CB *cb)
         sk_ENGINE_CLEANUP_ITEM_insert(cleanup_stack, item, 0);
 }
 
-void
-engine_cleanup_add_last(ENGINE_CLEANUP_CB *cb)
+void engine_cleanup_add_last(ENGINE_CLEANUP_CB *cb)
 {
     ENGINE_CLEANUP_ITEM *item;
 
@@ -203,15 +146,13 @@ engine_cleanup_add_last(ENGINE_CLEANUP_CB *cb)
         sk_ENGINE_CLEANUP_ITEM_push(cleanup_stack, item);
 }
 /* The API function that performs all cleanup */
-static void
-engine_cleanup_cb_free(ENGINE_CLEANUP_ITEM *item)
+static void engine_cleanup_cb_free(ENGINE_CLEANUP_ITEM *item)
 {
     (*(item->cb))();
     free(item);
 }
 
-void
-ENGINE_cleanup(void)
+void ENGINE_cleanup(void)
 {
     if (int_cleanup_check(0)) {
         sk_ENGINE_CLEANUP_ITEM_pop_free(cleanup_stack,
@@ -226,22 +167,19 @@ ENGINE_cleanup(void)
 
 /* Now the "ex_data" support */
 
-int
-ENGINE_get_ex_new_index(long argl, void *argp, CRYPTO_EX_new *new_func,
-                        CRYPTO_EX_dup *dup_func, CRYPTO_EX_free *free_func)
+int ENGINE_get_ex_new_index(long argl, void *argp, CRYPTO_EX_new *new_func,
+                            CRYPTO_EX_dup *dup_func, CRYPTO_EX_free *free_func)
 {
     return CRYPTO_get_ex_new_index(CRYPTO_EX_INDEX_ENGINE, argl, argp,
                                    new_func, dup_func, free_func);
 }
 
-int
-ENGINE_set_ex_data(ENGINE *e, int idx, void *arg)
+int ENGINE_set_ex_data(ENGINE *e, int idx, void *arg)
 {
     return (CRYPTO_set_ex_data(&e->ex_data, idx, arg));
 }
 
-void *
-ENGINE_get_ex_data(const ENGINE *e, int idx)
+void *ENGINE_get_ex_data(const ENGINE *e, int idx)
 {
     return (CRYPTO_get_ex_data(&e->ex_data, idx));
 }
@@ -249,8 +187,7 @@ ENGINE_get_ex_data(const ENGINE *e, int idx)
 /* Functions to get/set an ENGINE's elements - mainly to avoid exposing the
  * ENGINE structure itself. */
 
-int
-ENGINE_set_id(ENGINE *e, const char *id)
+int ENGINE_set_id(ENGINE *e, const char *id)
 {
     if (id == NULL) {
         ENGINEerr(ENGINE_F_ENGINE_SET_ID,
@@ -261,8 +198,7 @@ ENGINE_set_id(ENGINE *e, const char *id)
     return 1;
 }
 
-int
-ENGINE_set_name(ENGINE *e, const char *name)
+int ENGINE_set_name(ENGINE *e, const char *name)
 {
     if (name == NULL) {
         ENGINEerr(ENGINE_F_ENGINE_SET_NAME,
@@ -273,92 +209,78 @@ ENGINE_set_name(ENGINE *e, const char *name)
     return 1;
 }
 
-int
-ENGINE_set_destroy_function(ENGINE *e, ENGINE_GEN_INT_FUNC_PTR destroy_f)
+int ENGINE_set_destroy_function(ENGINE *e, ENGINE_GEN_INT_FUNC_PTR destroy_f)
 {
     e->destroy = destroy_f;
     return 1;
 }
 
-int
-ENGINE_set_init_function(ENGINE *e, ENGINE_GEN_INT_FUNC_PTR init_f)
+int ENGINE_set_init_function(ENGINE *e, ENGINE_GEN_INT_FUNC_PTR init_f)
 {
     e->init = init_f;
     return 1;
 }
 
-int
-ENGINE_set_finish_function(ENGINE *e, ENGINE_GEN_INT_FUNC_PTR finish_f)
+int ENGINE_set_finish_function(ENGINE *e, ENGINE_GEN_INT_FUNC_PTR finish_f)
 {
     e->finish = finish_f;
     return 1;
 }
 
-int
-ENGINE_set_ctrl_function(ENGINE *e, ENGINE_CTRL_FUNC_PTR ctrl_f)
+int ENGINE_set_ctrl_function(ENGINE *e, ENGINE_CTRL_FUNC_PTR ctrl_f)
 {
     e->ctrl = ctrl_f;
     return 1;
 }
 
-int
-ENGINE_set_flags(ENGINE *e, int flags)
+int ENGINE_set_flags(ENGINE *e, int flags)
 {
     e->flags = flags;
     return 1;
 }
 
-int
-ENGINE_set_cmd_defns(ENGINE *e, const ENGINE_CMD_DEFN *defns)
+int ENGINE_set_cmd_defns(ENGINE *e, const ENGINE_CMD_DEFN *defns)
 {
     e->cmd_defns = defns;
     return 1;
 }
 
-const char *
-ENGINE_get_id(const ENGINE *e)
+const char *ENGINE_get_id(const ENGINE *e)
 {
     return e->id;
 }
 
-const char *
-ENGINE_get_name(const ENGINE *e)
+const char *ENGINE_get_name(const ENGINE *e)
 {
     return e->name;
 }
 
-ENGINE_GEN_INT_FUNC_PTR
-ENGINE_get_destroy_function(const ENGINE *e)
+ENGINE_GEN_INT_FUNC_PTR ENGINE_get_destroy_function(const ENGINE *e)
 {
     return e->destroy;
 }
 
-ENGINE_GEN_INT_FUNC_PTR
-ENGINE_get_init_function(const ENGINE *e)
+ENGINE_GEN_INT_FUNC_PTR ENGINE_get_init_function(const ENGINE *e)
 {
     return e->init;
 }
 
-ENGINE_GEN_INT_FUNC_PTR
-ENGINE_get_finish_function(const ENGINE *e)
+ENGINE_GEN_INT_FUNC_PTR ENGINE_get_finish_function(const ENGINE *e)
 {
     return e->finish;
 }
 
-ENGINE_CTRL_FUNC_PTR
-ENGINE_get_ctrl_function(const ENGINE *e)
+ENGINE_CTRL_FUNC_PTR ENGINE_get_ctrl_function(const ENGINE *e)
 {
     return e->ctrl;
 }
 
-int
-ENGINE_get_flags(const ENGINE *e)
+int ENGINE_get_flags(const ENGINE *e)
 {
     return e->flags;
 }
 
-const ENGINE_CMD_DEFN *
-ENGINE_get_cmd_defns(const ENGINE *e)
+const ENGINE_CMD_DEFN *ENGINE_get_cmd_defns(const ENGINE *e)
 {
     return e->cmd_defns;
 }
@@ -368,8 +290,7 @@ ENGINE_get_cmd_defns(const ENGINE *e)
 
 static int internal_static_hack = 0;
 
-void *
-ENGINE_get_static_state(void)
+void *ENGINE_get_static_state(void)
 {
     return &internal_static_hack;
 }

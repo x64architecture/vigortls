@@ -1,12 +1,8 @@
-/* crypto/evp/m_wp.c */
-
-#include <stdio.h>
-
-
 #include <openssl/evp.h>
 #include <openssl/objects.h>
 #include <openssl/x509.h>
 #include <openssl/whrlpool.h>
+
 #include "evp_locl.h"
 
 static int init(EVP_MD_CTX *ctx)
@@ -26,16 +22,10 @@ static int final(EVP_MD_CTX *ctx, uint8_t *md)
 
 static const EVP_MD whirlpool_md = {
     .type = NID_whirlpool,
-    .pkey_type = 0,
     .md_size = WHIRLPOOL_DIGEST_LENGTH,
-    .flags = 0,
     .init = init,
     .update = update,
     .final = final,
-    .copy = NULL,
-    .cleanup = NULL,
-    .sign = NULL,
-    .verify = NULL,
     .required_pkey_type = {
         0, 0, 0, 0,
     },
