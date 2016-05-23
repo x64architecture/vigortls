@@ -88,7 +88,7 @@ struct ui_string_st {
 
 struct ui_st {
     const UI_METHOD *meth;
-    STACK_OF(UI_STRING) * strings; /* We might want to prompt for more
+    STACK_OF(UI_STRING) *strings; /* We might want to prompt for more
                      than one thing at a time, and
                      with different echoing status.  */
     void *user_data;

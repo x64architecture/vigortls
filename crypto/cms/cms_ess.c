@@ -70,8 +70,8 @@ int CMS_get1_ReceiptRequest(CMS_SignerInfo *si, CMS_ReceiptRequest **prr)
 
 CMS_ReceiptRequest *CMS_ReceiptRequest_create0(uint8_t *id, int idlen,
                                                int allorfirst,
-                                               STACK_OF(GENERAL_NAMES) * receiptList,
-                                               STACK_OF(GENERAL_NAMES) * receiptsTo)
+                                               STACK_OF(GENERAL_NAMES) *receiptList,
+                                               STACK_OF(GENERAL_NAMES) *receiptsTo)
 {
     CMS_ReceiptRequest *rr = NULL;
 
@@ -138,8 +138,8 @@ merr:
 void CMS_ReceiptRequest_get0_values(CMS_ReceiptRequest *rr,
                                     ASN1_STRING **pcid,
                                     int *pallorfirst,
-                                    STACK_OF(GENERAL_NAMES) * *plist,
-                                    STACK_OF(GENERAL_NAMES) * *prto)
+                                    STACK_OF(GENERAL_NAMES) **plist,
+                                    STACK_OF(GENERAL_NAMES) **prto)
 {
     if (pcid)
         *pcid = rr->signedContentIdentifier;
@@ -198,7 +198,7 @@ int cms_Receipt_verify(CMS_ContentInfo *cms, CMS_ContentInfo *req_cms)
     int r = 0, i;
     CMS_ReceiptRequest *rr = NULL;
     CMS_Receipt *rct = NULL;
-    STACK_OF(CMS_SignerInfo) * sis, *osis;
+    STACK_OF(CMS_SignerInfo) *sis, *osis;
     CMS_SignerInfo *si, *osi = NULL;
     ASN1_OCTET_STRING *msig, **pcont;
     ASN1_OBJECT *octype;

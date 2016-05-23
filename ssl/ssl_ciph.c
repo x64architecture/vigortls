@@ -1134,15 +1134,15 @@ static int ssl_cipher_process_rulestr(const char *rule_str,
     return (retval);
 }
 
-STACK_OF(SSL_CIPHER) * ssl_create_cipher_list(const SSL_METHOD *ssl_method,
-                                              STACK_OF(SSL_CIPHER) * *cipher_list,
-                                              STACK_OF(SSL_CIPHER) * *cipher_list_by_id,
+STACK_OF(SSL_CIPHER) *ssl_create_cipher_list(const SSL_METHOD *ssl_method,
+                                              STACK_OF(SSL_CIPHER) **cipher_list,
+                                              STACK_OF(SSL_CIPHER) **cipher_list_by_id,
                                               const char *rule_str)
 {
     int ok, num_of_ciphers, num_of_alias_max, num_of_group_aliases;
     unsigned long disabled_mkey, disabled_auth, disabled_enc, disabled_mac,
         disabled_ssl;
-    STACK_OF(SSL_CIPHER) * cipherstack, *tmp_cipher_list;
+    STACK_OF(SSL_CIPHER) *cipherstack, *tmp_cipher_list;
     const char *rule_p;
     CIPHER_ORDER *co_list = NULL, *head = NULL, *tail = NULL, *curr;
     const SSL_CIPHER **ca_list = NULL;

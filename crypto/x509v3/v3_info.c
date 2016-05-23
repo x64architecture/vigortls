@@ -16,11 +16,11 @@
 #include <openssl/x509v3.h>
 #include <stdcompat.h>
 
-static STACK_OF(CONF_VALUE) * i2v_AUTHORITY_INFO_ACCESS(X509V3_EXT_METHOD *method,
+static STACK_OF(CONF_VALUE) *i2v_AUTHORITY_INFO_ACCESS(X509V3_EXT_METHOD *method,
                                                         AUTHORITY_INFO_ACCESS *ainfo,
-                                                        STACK_OF(CONF_VALUE) * ret);
+                                                        STACK_OF(CONF_VALUE) *ret);
 static AUTHORITY_INFO_ACCESS *v2i_AUTHORITY_INFO_ACCESS(X509V3_EXT_METHOD *method,
-                                                        X509V3_CTX *ctx, STACK_OF(CONF_VALUE) * nval);
+                                                        X509V3_CTX *ctx, STACK_OF(CONF_VALUE) *nval);
 
 const X509V3_EXT_METHOD v3_info = { NID_info_access, X509V3_EXT_MULTILINE, ASN1_ITEM_ref(AUTHORITY_INFO_ACCESS),
                                     0, 0, 0, 0,
@@ -88,7 +88,7 @@ void AUTHORITY_INFO_ACCESS_free(AUTHORITY_INFO_ACCESS *a)
 
 static STACK_OF(CONF_VALUE) *i2v_AUTHORITY_INFO_ACCESS(X509V3_EXT_METHOD *method,
                                                        AUTHORITY_INFO_ACCESS * ainfo,
-                                                       STACK_OF(CONF_VALUE) * ret)
+                                                       STACK_OF(CONF_VALUE) *ret)
 {
     ACCESS_DESCRIPTION *desc;
     int i, nlen;
@@ -118,7 +118,7 @@ static STACK_OF(CONF_VALUE) *i2v_AUTHORITY_INFO_ACCESS(X509V3_EXT_METHOD *method
 }
 
 static AUTHORITY_INFO_ACCESS *v2i_AUTHORITY_INFO_ACCESS(X509V3_EXT_METHOD *method,
-                                                        X509V3_CTX *ctx, STACK_OF(CONF_VALUE) * nval)
+                                                        X509V3_CTX *ctx, STACK_OF(CONF_VALUE) *nval)
 {
     AUTHORITY_INFO_ACCESS *ainfo = NULL;
     CONF_VALUE *cnf, ctmp;

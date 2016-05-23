@@ -65,7 +65,7 @@
 
 static int null_callback(int ok, X509_STORE_CTX *e);
 static int check_issued(X509_STORE_CTX *ctx, X509 *x, X509 *issuer);
-static X509 *find_issuer(X509_STORE_CTX *ctx, STACK_OF(X509) * sk, X509 * x);
+static X509 *find_issuer(X509_STORE_CTX *ctx, STACK_OF(X509) *sk, X509 * x);
 static int check_chain_extensions(X509_STORE_CTX *ctx);
 static int check_name_constraints(X509_STORE_CTX *ctx);
 static int check_trust(X509_STORE_CTX *ctx);
@@ -79,15 +79,15 @@ static int get_crl_score(X509_STORE_CTX *ctx, X509 **pissuer,
 static int get_crl_delta(X509_STORE_CTX *ctx,
                          X509_CRL **pcrl, X509_CRL **pdcrl, X509 *x);
 static void get_delta_sk(X509_STORE_CTX *ctx, X509_CRL **dcrl, int *pcrl_score,
-                         X509_CRL *base, STACK_OF(X509_CRL) * crls);
+                         X509_CRL *base, STACK_OF(X509_CRL) *crls);
 static void crl_akid_check(X509_STORE_CTX *ctx, X509_CRL *crl,
                            X509 **pissuer, int *pcrl_score);
 static int crl_crldp_check(X509 *x, X509_CRL *crl, int crl_score,
                            unsigned int *preasons);
 static int check_crl_path(X509_STORE_CTX *ctx, X509 *x);
 static int check_crl_chain(X509_STORE_CTX *ctx,
-                           STACK_OF(X509) * cert_path,
-                           STACK_OF(X509) * crl_path);
+                           STACK_OF(X509) *cert_path,
+                           STACK_OF(X509) *crl_path);
 
 static int internal_verify(X509_STORE_CTX *ctx);
 
@@ -334,7 +334,7 @@ int X509_verify_cert(X509_STORE_CTX *ctx)
 /* Given a STACK_OF(X509) find the issuer of cert (if any)
  */
 
-static X509 *find_issuer(X509_STORE_CTX *ctx, STACK_OF(X509) * sk, X509 * x)
+static X509 *find_issuer(X509_STORE_CTX *ctx, STACK_OF(X509) *sk, X509 * x)
 {
     int i;
     X509 *issuer, *rv = NULL;
@@ -721,7 +721,7 @@ static int check_crl_time(X509_STORE_CTX *ctx, X509_CRL *crl, int notify)
 
 static int get_crl_sk(X509_STORE_CTX *ctx, X509_CRL **pcrl, X509_CRL **pdcrl,
                       X509 **pissuer, int *pscore, unsigned int *preasons,
-                      STACK_OF(X509_CRL) * crls)
+                      STACK_OF(X509_CRL) *crls)
 {
     int i, crl_score, best_score = *pscore;
     unsigned int reasons, best_reasons = 0;
@@ -835,7 +835,7 @@ static int check_delta_base(X509_CRL *delta, X509_CRL *base)
  */
 
 static void get_delta_sk(X509_STORE_CTX *ctx, X509_CRL **dcrl, int *pscore,
-                         X509_CRL *base, STACK_OF(X509_CRL) * crls)
+                         X509_CRL *base, STACK_OF(X509_CRL) *crls)
 {
     X509_CRL *delta;
     int i;
@@ -1024,8 +1024,8 @@ err:
  */
 
 static int check_crl_chain(X509_STORE_CTX *ctx,
-                           STACK_OF(X509) * cert_path,
-                           STACK_OF(X509) * crl_path)
+                           STACK_OF(X509) *cert_path,
+                           STACK_OF(X509) *crl_path)
 {
     X509 *cert_ta, *crl_ta;
     cert_ta = sk_X509_value(cert_path, sk_X509_num(cert_path) - 1);
@@ -1158,7 +1158,7 @@ static int get_crl_delta(X509_STORE_CTX *ctx,
     int crl_score = 0;
     unsigned int reasons;
     X509_CRL *crl = NULL, *dcrl = NULL;
-    STACK_OF(X509_CRL) * skcrl;
+    STACK_OF(X509_CRL) *skcrl;
     X509_NAME *nm = X509_get_issuer_name(x);
     reasons = ctx->current_reasons;
     ok = get_crl_sk(ctx, &crl, &dcrl,
@@ -1581,7 +1581,7 @@ ASN1_TIME *X509_time_adj_ex(ASN1_TIME *s,
     return ASN1_TIME_adj(s, t, offset_day, offset_sec);
 }
 
-int X509_get_pubkey_parameters(EVP_PKEY *pkey, STACK_OF(X509) * chain)
+int X509_get_pubkey_parameters(EVP_PKEY *pkey, STACK_OF(X509) *chain)
 {
     EVP_PKEY *ktmp = NULL, *ktmp2;
     int i, j;
@@ -1659,7 +1659,7 @@ X509 *X509_STORE_CTX_get_current_cert(X509_STORE_CTX *ctx)
     return ctx->current_cert;
 }
 
-STACK_OF(X509) * X509_STORE_CTX_get_chain(X509_STORE_CTX *ctx)
+STACK_OF(X509) *X509_STORE_CTX_get_chain(X509_STORE_CTX *ctx)
 {
     return ctx->chain;
 }
@@ -1668,7 +1668,7 @@ STACK_OF(X509) *X509_STORE_CTX_get1_chain(X509_STORE_CTX *ctx)
 {
     int i;
     X509 *x;
-    STACK_OF(X509) * chain;
+    STACK_OF(X509) *chain;
     if (!ctx->chain || !(chain = sk_X509_dup(ctx->chain)))
         return NULL;
     for (i = 0; i < sk_X509_num(chain); i++) {
@@ -1698,12 +1698,12 @@ void X509_STORE_CTX_set_cert(X509_STORE_CTX *ctx, X509 *x)
     ctx->cert = x;
 }
 
-void X509_STORE_CTX_set_chain(X509_STORE_CTX *ctx, STACK_OF(X509) * sk)
+void X509_STORE_CTX_set_chain(X509_STORE_CTX *ctx, STACK_OF(X509) *sk)
 {
     ctx->untrusted = sk;
 }
 
-void X509_STORE_CTX_set0_crls(X509_STORE_CTX *ctx, STACK_OF(X509_CRL) * sk)
+void X509_STORE_CTX_set0_crls(X509_STORE_CTX *ctx, STACK_OF(X509_CRL) *sk)
 {
     ctx->crls = sk;
 }
@@ -1795,7 +1795,7 @@ void X509_STORE_CTX_free(X509_STORE_CTX *ctx)
 }
 
 int X509_STORE_CTX_init(X509_STORE_CTX *ctx, X509_STORE *store, X509 *x509,
-                        STACK_OF(X509) * chain)
+                        STACK_OF(X509) *chain)
 {
     int ret = 1;
     ctx->ctx = store;
@@ -1921,7 +1921,7 @@ err:
  * This avoids X509_STORE nastiness where it isn't needed.
  */
 
-void X509_STORE_CTX_trusted_stack(X509_STORE_CTX *ctx, STACK_OF(X509) * sk)
+void X509_STORE_CTX_trusted_stack(X509_STORE_CTX *ctx, STACK_OF(X509) *sk)
 {
     ctx->other_ctx = sk;
     ctx->get_issuer = get_issuer_sk;

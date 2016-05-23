@@ -71,7 +71,7 @@ int PEM_write_bio_CMS_stream(BIO *out, CMS_ContentInfo *cms, BIO *in, int flags)
 
 int SMIME_write_CMS(BIO *bio, CMS_ContentInfo *cms, BIO *data, int flags)
 {
-    STACK_OF(X509_ALGOR) * mdalgs;
+    STACK_OF(X509_ALGOR) *mdalgs;
     int ctype_nid = OBJ_obj2nid(cms->contentType);
     int econt_nid = OBJ_obj2nid(CMS_get0_eContentType(cms));
     if (ctype_nid == NID_pkcs7_signed)

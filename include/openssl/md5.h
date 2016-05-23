@@ -19,7 +19,6 @@
 extern "C" {
 #endif
 
-
 /*
  * !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
  * ! MD5_LONG has to be at least 32 bits wide. If it's wider, then !

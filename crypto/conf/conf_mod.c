@@ -75,7 +75,7 @@ static CONF_MODULE *module_load_dso(const CONF *cnf, char *name, char *value,
 int CONF_modules_load(const CONF *cnf, const char *appname,
                       unsigned long flags)
 {
-    STACK_OF(CONF_VALUE) * values;
+    STACK_OF(CONF_VALUE) *values;
     CONF_VALUE *vl;
     char *vsection = NULL;
 

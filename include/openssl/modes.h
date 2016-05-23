@@ -10,7 +10,8 @@
 #include <stddef.h>
 #include <stdint.h>
 
-typedef void (*block128_f)(const uint8_t in[16], uint8_t out[16], const void *key);
+typedef void (*block128_f)(const uint8_t in[16], uint8_t out[16],
+                           const void *key);
 
 typedef void (*cbc128_f)(const uint8_t *in, uint8_t *out, size_t len,
                          const void *key, uint8_t ivec[16], int enc);
@@ -19,7 +20,8 @@ typedef void (*ctr128_f)(const uint8_t *in, uint8_t *out, size_t blocks,
                          const void *key, const uint8_t ivec[16]);
 
 typedef void (*ccm128_f)(const uint8_t *in, uint8_t *out, size_t blocks,
-                         const void *key, const uint8_t ivec[16], uint8_t cmac[16]);
+                         const void *key, const uint8_t ivec[16],
+                         uint8_t cmac[16]);
 
 void CRYPTO_cbc128_encrypt(const uint8_t *in, uint8_t *out, size_t len,
                            const void *key, uint8_t ivec[16], block128_f block);
@@ -44,11 +46,11 @@ void CRYPTO_cfb128_encrypt(const uint8_t *in, uint8_t *out, size_t len,
                            const void *key, uint8_t ivec[16], int *num, int enc,
                            block128_f block);
 void CRYPTO_cfb128_8_encrypt(const uint8_t *in, uint8_t *out, size_t length,
-                             const void *key, uint8_t ivec[16], int *num, int enc,
-                             block128_f block);
+                             const void *key, uint8_t ivec[16], int *num,
+                             int enc, block128_f block);
 void CRYPTO_cfb128_1_encrypt(const uint8_t *in, uint8_t *out, size_t bits,
-                             const void *key, uint8_t ivec[16], int *num, int enc,
-                             block128_f block);
+                             const void *key, uint8_t ivec[16], int *num,
+                             int enc, block128_f block);
 
 size_t CRYPTO_cts128_encrypt_block(const uint8_t *in, uint8_t *out, size_t len,
                                    const void *key, uint8_t ivec[16],
@@ -61,16 +63,18 @@ size_t CRYPTO_cts128_decrypt_block(const uint8_t *in, uint8_t *out, size_t len,
 size_t CRYPTO_cts128_decrypt(const uint8_t *in, uint8_t *out, size_t len,
                              const void *key, uint8_t ivec[16], cbc128_f cbc);
 
-size_t CRYPTO_nistcts128_encrypt_block(const uint8_t *in, uint8_t *out, size_t len,
-                                       const void *key, uint8_t ivec[16],
-                                       block128_f block);
+size_t CRYPTO_nistcts128_encrypt_block(const uint8_t *in, uint8_t *out,
+                                       size_t len, const void *key,
+                                       uint8_t ivec[16], block128_f block);
 size_t CRYPTO_nistcts128_encrypt(const uint8_t *in, uint8_t *out, size_t len,
-                                 const void *key, uint8_t ivec[16], cbc128_f cbc);
-size_t CRYPTO_nistcts128_decrypt_block(const uint8_t *in, uint8_t *out, size_t len,
-                                       const void *key, uint8_t ivec[16],
-                                       block128_f block);
+                                 const void *key, uint8_t ivec[16],
+                                 cbc128_f cbc);
+size_t CRYPTO_nistcts128_decrypt_block(const uint8_t *in, uint8_t *out,
+                                       size_t len, const void *key,
+                                       uint8_t ivec[16], block128_f block);
 size_t CRYPTO_nistcts128_decrypt(const uint8_t *in, uint8_t *out, size_t len,
-                                 const void *key, uint8_t ivec[16], cbc128_f cbc);
+                                 const void *key, uint8_t ivec[16],
+                                 cbc128_f cbc);
 
 typedef struct gcm128_context GCM128_CONTEXT;
 
@@ -110,4 +114,5 @@ size_t CRYPTO_ccm128_tag(CCM128_CONTEXT *ctx, uint8_t *tag, size_t len);
 typedef struct xts128_context XTS128_CONTEXT;
 
 int CRYPTO_xts128_encrypt(const XTS128_CONTEXT *ctx, const uint8_t iv[16],
-                          const uint8_t *inp, uint8_t *out, size_t len, int enc);
+                          const uint8_t *inp, uint8_t *out, size_t len,
+                          int enc);

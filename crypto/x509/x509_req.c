@@ -128,7 +128,7 @@ void X509_REQ_set_extension_nids(int *nids)
     ext_nids = nids;
 }
 
-STACK_OF(X509_EXTENSION) * X509_REQ_get_extensions(X509_REQ *req)
+STACK_OF(X509_EXTENSION) *X509_REQ_get_extensions(X509_REQ *req)
 {
     X509_ATTRIBUTE *attr;
     ASN1_TYPE *ext = NULL;
@@ -171,7 +171,7 @@ int X509_REQ_add_extensions_nid(X509_REQ *req, STACK_OF(X509_EXTENSION) *exts, i
     return rv;
 }
 /* This is the normal usage: use the "official" OID */
-int X509_REQ_add_extensions(X509_REQ *req, STACK_OF(X509_EXTENSION) * exts)
+int X509_REQ_add_extensions(X509_REQ *req, STACK_OF(X509_EXTENSION) *exts)
 {
     return X509_REQ_add_extensions_nid(req, exts, NID_ext_req);
 }

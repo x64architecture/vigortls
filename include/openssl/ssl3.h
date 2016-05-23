@@ -215,21 +215,21 @@ extern "C" {
 #ifndef OPENSSL_NO_SSL_INTERN
 
 typedef struct ssl3_record_st {
-    /*r */ int type;                 /* type of record */
-    /*rw*/ unsigned int length;      /* How many bytes available */
-    /*r */ unsigned int off;         /* read/write offset into 'buf' */
-    /*rw*/ uint8_t *data;      /* pointer to the record data */
-    /*rw*/ uint8_t *input;     /* where the decode bytes are */
-    /*r */ unsigned long epoch;      /* epoch number, needed by DTLS1 */
-    /*r */ uint8_t seq_num[8]; /* sequence number, needed by DTLS1 */
+    /*r */ int type;            /* type of record */
+    /*rw*/ unsigned int length; /* How many bytes available */
+    /*r */ unsigned int off;    /* read/write offset into 'buf' */
+    /*rw*/ uint8_t *data;       /* pointer to the record data */
+    /*rw*/ uint8_t *input;      /* where the decode bytes are */
+    /*r */ unsigned long epoch; /* epoch number, needed by DTLS1 */
+    /*r */ uint8_t seq_num[8];  /* sequence number, needed by DTLS1 */
 } SSL3_RECORD;
 
 typedef struct ssl3_buffer_st {
     uint8_t *buf; /* at least SSL3_RT_MAX_PACKET_SIZE bytes,
                              * see ssl3_setup_buffers() */
-    size_t len;         /* buffer size */
-    int offset;         /* where to 'copy from' */
-    int left;           /* how many bytes left */
+    size_t len;   /* buffer size */
+    int offset;   /* where to 'copy from' */
+    int left;     /* how many bytes left */
 } SSL3_BUFFER;
 
 #endif
@@ -358,7 +358,7 @@ typedef struct ssl3_state_st {
         int cert_req;
         int ctype_num;
         char ctype[SSL3_CT_NUMBER];
-        STACK_OF(X509_NAME) * ca_names;
+        STACK_OF(X509_NAME) *ca_names;
 
         int use_rsa_tmp;
 

@@ -14,8 +14,8 @@
 #include <openssl/x509v3.h>
 #include <stdcompat.h>
 
-static GENERAL_NAMES *v2i_subject_alt(X509V3_EXT_METHOD *method, X509V3_CTX *ctx, STACK_OF(CONF_VALUE) * nval);
-static GENERAL_NAMES *v2i_issuer_alt(X509V3_EXT_METHOD *method, X509V3_CTX *ctx, STACK_OF(CONF_VALUE) * nval);
+static GENERAL_NAMES *v2i_subject_alt(X509V3_EXT_METHOD *method, X509V3_CTX *ctx, STACK_OF(CONF_VALUE) *nval);
+static GENERAL_NAMES *v2i_issuer_alt(X509V3_EXT_METHOD *method, X509V3_CTX *ctx, STACK_OF(CONF_VALUE) *nval);
 static int copy_email(X509V3_CTX *ctx, GENERAL_NAMES *gens, int move_p);
 static int copy_issuer(X509V3_CTX *ctx, GENERAL_NAMES *gens);
 static int do_othername(GENERAL_NAME *gen, char *value, X509V3_CTX *ctx);
@@ -43,8 +43,8 @@ const X509V3_EXT_METHOD v3_alt[] = {
       NULL, NULL, NULL, NULL },
 };
 
-STACK_OF(CONF_VALUE) * i2v_GENERAL_NAMES(X509V3_EXT_METHOD *method,
-                                         GENERAL_NAMES *gens, STACK_OF(CONF_VALUE) * ret)
+STACK_OF(CONF_VALUE) *i2v_GENERAL_NAMES(X509V3_EXT_METHOD *method,
+                                         GENERAL_NAMES *gens, STACK_OF(CONF_VALUE) *ret)
 {
     int i;
     GENERAL_NAME *gen;
@@ -57,8 +57,8 @@ STACK_OF(CONF_VALUE) * i2v_GENERAL_NAMES(X509V3_EXT_METHOD *method,
     return ret;
 }
 
-STACK_OF(CONF_VALUE) * i2v_GENERAL_NAME(X509V3_EXT_METHOD *method,
-                                        GENERAL_NAME *gen, STACK_OF(CONF_VALUE) * ret)
+STACK_OF(CONF_VALUE) *i2v_GENERAL_NAME(X509V3_EXT_METHOD *method,
+                                        GENERAL_NAME *gen, STACK_OF(CONF_VALUE) *ret)
 {
     uint8_t *p;
     char oline[256], htmp[5];
@@ -184,7 +184,7 @@ int GENERAL_NAME_print(BIO *out, GENERAL_NAME *gen)
 }
 
 static GENERAL_NAMES *v2i_issuer_alt(X509V3_EXT_METHOD *method,
-                                     X509V3_CTX *ctx, STACK_OF(CONF_VALUE) * nval)
+                                     X509V3_CTX *ctx, STACK_OF(CONF_VALUE) *nval)
 {
     GENERAL_NAMES *gens = NULL;
     CONF_VALUE *cnf;
@@ -249,7 +249,7 @@ err:
 }
 
 static GENERAL_NAMES *v2i_subject_alt(X509V3_EXT_METHOD *method,
-                                      X509V3_CTX *ctx, STACK_OF(CONF_VALUE) * nval)
+                                      X509V3_CTX *ctx, STACK_OF(CONF_VALUE) *nval)
 {
     GENERAL_NAMES *gens = NULL;
     CONF_VALUE *cnf;
@@ -336,7 +336,7 @@ err:
 }
 
 GENERAL_NAMES *v2i_GENERAL_NAMES(const X509V3_EXT_METHOD *method,
-                                 X509V3_CTX *ctx, STACK_OF(CONF_VALUE) * nval)
+                                 X509V3_CTX *ctx, STACK_OF(CONF_VALUE) *nval)
 {
     GENERAL_NAME *gen;
     GENERAL_NAMES *gens = NULL;
@@ -518,7 +518,7 @@ static int do_othername(GENERAL_NAME *gen, char *value, X509V3_CTX *ctx)
 static int do_dirname(GENERAL_NAME *gen, char *value, X509V3_CTX *ctx)
 {
     int ret;
-    STACK_OF(CONF_VALUE) * sk;
+    STACK_OF(CONF_VALUE) *sk;
     X509_NAME *nm;
     if (!(nm = X509_NAME_new()))
         return 0;

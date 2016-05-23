@@ -42,12 +42,11 @@ void CAST_encrypt(uint32_t *data, const CAST_KEY *key);
 void CAST_decrypt(uint32_t *data, const CAST_KEY *key);
 void CAST_cbc_encrypt(const uint8_t *in, uint8_t *out, long length,
                       const CAST_KEY *ks, uint8_t *iv, int enc);
-void CAST_cfb64_encrypt(const uint8_t *in, uint8_t *out,
-                        long length, const CAST_KEY *schedule, uint8_t *ivec,
-                        int *num, int enc);
-void CAST_ofb64_encrypt(const uint8_t *in, uint8_t *out,
-                        long length, const CAST_KEY *schedule, uint8_t *ivec,
-                        int *num);
+void CAST_cfb64_encrypt(const uint8_t *in, uint8_t *out, long length,
+                        const CAST_KEY *schedule, uint8_t *ivec, int *num,
+                        int enc);
+void CAST_ofb64_encrypt(const uint8_t *in, uint8_t *out, long length,
+                        const CAST_KEY *schedule, uint8_t *ivec, int *num);
 
 #ifdef __cplusplus
 }

@@ -485,7 +485,7 @@ int ssl_cipher_ptr_id_cmp(const SSL_CIPHER *const *ap,
                           const SSL_CIPHER *const *bp);
 STACK_OF(SSL_CIPHER) *ssl_bytes_to_cipher_list(SSL *s, const uint8_t *p,
                                                int num);
-int ssl_cipher_list_to_bytes(SSL *s, STACK_OF(SSL_CIPHER) * sk,
+int ssl_cipher_list_to_bytes(SSL *s, STACK_OF(SSL_CIPHER) *sk,
                              uint8_t *p);
 STACK_OF(SSL_CIPHER) *ssl_create_cipher_list(const SSL_METHOD *meth,
                                              STACK_OF(SSL_CIPHER) **pref,
@@ -498,7 +498,7 @@ int ssl_cipher_get_evp(const SSL_SESSION *s, const EVP_CIPHER **enc,
 int ssl_cipher_get_evp_aead(const SSL_SESSION *s, const EVP_AEAD **aead);
 int ssl_get_handshake_digest(int i, long *mask, const EVP_MD **md);
 
-int ssl_verify_cert_chain(SSL *s, STACK_OF(X509) * sk);
+int ssl_verify_cert_chain(SSL *s, STACK_OF(X509) *sk);
 int ssl_add_cert_chain(SSL *s, X509 *x, unsigned long *l);
 int ssl_undefined_function(SSL *s);
 int ssl_undefined_void_function(void);
@@ -509,7 +509,7 @@ EVP_PKEY *ssl_get_sign_pkey(SSL *s, const SSL_CIPHER *c, const EVP_MD **pmd);
 DH *ssl_get_auto_dh(SSL *s);
 int ssl_cert_type(X509 *x, EVP_PKEY *pkey);
 void ssl_set_cert_masks(CERT *c, const SSL_CIPHER *cipher);
-STACK_OF(SSL_CIPHER) * ssl_get_ciphers_by_id(SSL *s);
+STACK_OF(SSL_CIPHER) *ssl_get_ciphers_by_id(SSL *s);
 int ssl_verify_alarm_type(long type);
 void ssl_load_ciphers(void);
 
@@ -539,8 +539,8 @@ int ssl3_write_bytes(SSL *s, int type, const void *buf, int len);
 void tls1_finish_mac(SSL *s, const uint8_t *buf, int len);
 void tls1_free_digest_list(SSL *s);
 unsigned long ssl3_output_cert_chain(SSL *s, X509 *x);
-SSL_CIPHER *ssl3_choose_cipher(SSL *ssl, STACK_OF(SSL_CIPHER) * clnt,
-                               STACK_OF(SSL_CIPHER) * srvr);
+SSL_CIPHER *ssl3_choose_cipher(SSL *ssl, STACK_OF(SSL_CIPHER) *clnt,
+                               STACK_OF(SSL_CIPHER) *srvr);
 int ssl3_setup_buffers(SSL *s);
 int ssl3_setup_read_buffer(SSL *s);
 int ssl3_setup_write_buffer(SSL *s);
@@ -697,7 +697,7 @@ int ssl_ok(SSL *s);
 
 int ssl_check_srvr_ecc_cert_and_alg(X509 *x, SSL *s);
 
-SSL_COMP *ssl3_comp_find(STACK_OF(SSL_COMP) * sk, int n);
+SSL_COMP *ssl3_comp_find(STACK_OF(SSL_COMP) *sk, int n);
 
 int tls1_ec_curve_id2nid(uint16_t curve_id);
 uint16_t tls1_ec_nid2curve_id(int nid);

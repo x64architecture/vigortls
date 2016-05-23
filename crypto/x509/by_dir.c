@@ -29,12 +29,12 @@ typedef struct lookup_dir_hashes_st {
 typedef struct lookup_dir_entry_st {
     char *dir;
     int dir_type;
-    STACK_OF(BY_DIR_HASH) * hashes;
+    STACK_OF(BY_DIR_HASH) *hashes;
 } BY_DIR_ENTRY;
 
 typedef struct lookup_dir_st {
     BUF_MEM *buffer;
-    STACK_OF(BY_DIR_ENTRY) * dirs;
+    STACK_OF(BY_DIR_ENTRY) *dirs;
     CRYPTO_MUTEX *lock;
 } BY_DIR;
 

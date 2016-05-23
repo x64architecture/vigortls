@@ -183,8 +183,8 @@ int PKCS7_add_signer(PKCS7 *p7, PKCS7_SIGNER_INFO *psi)
 {
     int i, j, nid;
     X509_ALGOR *alg;
-    STACK_OF(PKCS7_SIGNER_INFO) * signer_sk;
-    STACK_OF(X509_ALGOR) * md_sk;
+    STACK_OF(PKCS7_SIGNER_INFO) *signer_sk;
+    STACK_OF(X509_ALGOR) *md_sk;
 
     i = OBJ_obj2nid(p7->type);
     switch (i) {
@@ -236,7 +236,7 @@ int PKCS7_add_signer(PKCS7 *p7, PKCS7_SIGNER_INFO *psi)
 int PKCS7_add_certificate(PKCS7 *p7, X509 *x509)
 {
     int i;
-    STACK_OF(X509) * *sk;
+    STACK_OF(X509) **sk;
 
     i = OBJ_obj2nid(p7->type);
     switch (i) {
@@ -268,7 +268,7 @@ int PKCS7_add_certificate(PKCS7 *p7, X509 *x509)
 int PKCS7_add_crl(PKCS7 *p7, X509_CRL *crl)
 {
     int i;
-    STACK_OF(X509_CRL) * *sk;
+    STACK_OF(X509_CRL) **sk;
 
     i = OBJ_obj2nid(p7->type);
     switch (i) {
@@ -437,7 +437,7 @@ err:
 int PKCS7_add_recipient_info(PKCS7 *p7, PKCS7_RECIP_INFO *ri)
 {
     int i;
-    STACK_OF(PKCS7_RECIP_INFO) * sk;
+    STACK_OF(PKCS7_RECIP_INFO) *sk;
 
     i = OBJ_obj2nid(p7->type);
     switch (i) {

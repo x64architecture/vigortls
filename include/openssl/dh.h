@@ -25,13 +25,14 @@
 #endif
 
 #define DH_FLAG_CACHE_MONT_P 0x01
-#define DH_FLAG_NO_EXP_CONSTTIME 0x02 /* new with 0.9.7h; the built-in DH            \
-                                       * implementation now uses constant time       \
-                                       * modular exponentiation for secret exponents \
-                                       * by default. This flag causes the            \
-                                       * faster variable sliding window method to    \
-                                       * be used for all exponents.                  \
-                                       */
+#define DH_FLAG_NO_EXP_CONSTTIME                        \
+    0x02 /* new with 0.9.7h; the built-in DH            \
+          * implementation now uses constant time       \
+          * modular exponentiation for secret exponents \
+          * by default. This flag causes the            \
+          * faster variable sliding window method to    \
+          * be used for all exponents.                  \
+          */
 
 #ifdef __cplusplus
 extern "C" {
@@ -46,8 +47,8 @@ struct dh_method {
     /* Methods here */
     int (*generate_key)(DH *dh);
     int (*compute_key)(uint8_t *key, const BIGNUM *pub_key, DH *dh);
-    int (*bn_mod_exp)(const DH *dh, BIGNUM *r, const BIGNUM *a,
-                      const BIGNUM *p, const BIGNUM *m, BN_CTX *ctx,
+    int (*bn_mod_exp)(const DH *dh, BIGNUM *r, const BIGNUM *a, const BIGNUM *p,
+                      const BIGNUM *m, BN_CTX *ctx,
                       BN_MONT_CTX *m_ctx); /* Can be null */
 
     int (*init)(DH *dh);
@@ -103,10 +104,10 @@ struct dh_st {
    this for backward compatibility: */
 #define DH_CHECK_P_NOT_STRONG_PRIME DH_CHECK_P_NOT_SAFE_PRIME
 
-#define d2i_DHparams_fp(fp, x) (DH *) ASN1_d2i_fp((char *(*)())DH_new, \
-                                                  (char *(*)())d2i_DHparams, (fp), (uint8_t **)(x))
-#define i2d_DHparams_fp(fp, x) ASN1_i2d_fp(i2d_DHparams, (fp), \
-                                           (uint8_t *)(x))
+#define d2i_DHparams_fp(fp, x)                                              \
+    (DH *)ASN1_d2i_fp((char *(*)())DH_new, (char *(*)())d2i_DHparams, (fp), \
+                      (uint8_t **)(x))
+#define i2d_DHparams_fp(fp, x) ASN1_i2d_fp(i2d_DHparams, (fp), (uint8_t *)(x))
 #define d2i_DHparams_bio(bp, x) ASN1_d2i_bio_of(DH, DH_new, d2i_DHparams, bp, x)
 #define i2d_DHparams_bio(bp, x) ASN1_i2d_bio_of_const(DH, i2d_DHparams, bp, x)
 
@@ -139,7 +140,8 @@ DH *DH_generate_parameters(int prime_len, int generator,
 #endif /* !defined(OPENSSL_NO_DEPRECATED) */
 
 /* New version */
-int DH_generate_parameters_ex(DH *dh, int prime_len, int generator, BN_GENCB *cb);
+int DH_generate_parameters_ex(DH *dh, int prime_len, int generator,
+                              BN_GENCB *cb);
 
 int DH_check(const DH *dh, int *codes);
 int DH_check_pub_key(const DH *dh, const BIGNUM *pub_key, int *codes);

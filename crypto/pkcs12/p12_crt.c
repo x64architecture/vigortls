@@ -12,7 +12,7 @@
 #include <openssl/err.h>
 #include <openssl/pkcs12.h>
 
-static int pkcs12_add_bag(STACK_OF(PKCS12_SAFEBAG) * *pbags, PKCS12_SAFEBAG * bag);
+static int pkcs12_add_bag(STACK_OF(PKCS12_SAFEBAG) **pbags, PKCS12_SAFEBAG * bag);
 
 static int copy_bag_attr(PKCS12_SAFEBAG *bag, EVP_PKEY *pkey, int nid)
 {
@@ -28,7 +28,7 @@ static int copy_bag_attr(PKCS12_SAFEBAG *bag, EVP_PKEY *pkey, int nid)
 }
 
 PKCS12 *PKCS12_create(char *pass, char *name, EVP_PKEY *pkey, X509 *cert,
-                      STACK_OF(X509) * ca, int nid_key, int nid_cert, int iter, int mac_iter,
+                      STACK_OF(X509) *ca, int nid_key, int nid_cert, int iter, int mac_iter,
                       int keytype)
 {
     PKCS12 *p12 = NULL;
@@ -133,7 +133,7 @@ err:
     return NULL;
 }
 
-PKCS12_SAFEBAG *PKCS12_add_cert(STACK_OF(PKCS12_SAFEBAG) * *pbags, X509 * cert)
+PKCS12_SAFEBAG *PKCS12_add_cert(STACK_OF(PKCS12_SAFEBAG) **pbags, X509 * cert)
 {
     PKCS12_SAFEBAG *bag = NULL;
     char *name;
@@ -172,7 +172,7 @@ err:
     return NULL;
 }
 
-PKCS12_SAFEBAG *PKCS12_add_key(STACK_OF(PKCS12_SAFEBAG) * *pbags, EVP_PKEY * key,
+PKCS12_SAFEBAG *PKCS12_add_key(STACK_OF(PKCS12_SAFEBAG) **pbags, EVP_PKEY * key,
                                int key_usage, int iter,
                                int nid_key, char *pass)
 {
@@ -207,7 +207,7 @@ err:
     return NULL;
 }
 
-int PKCS12_add_safe(STACK_OF(PKCS7) * *psafes, STACK_OF(PKCS12_SAFEBAG) * bags,
+int PKCS12_add_safe(STACK_OF(PKCS7) **psafes, STACK_OF(PKCS12_SAFEBAG) *bags,
                     int nid_safe, int iter, char *pass)
 {
     PKCS7 *p7 = NULL;
@@ -253,7 +253,7 @@ err:
     return 0;
 }
 
-static int pkcs12_add_bag(STACK_OF(PKCS12_SAFEBAG) * *pbags, PKCS12_SAFEBAG * bag)
+static int pkcs12_add_bag(STACK_OF(PKCS12_SAFEBAG) **pbags, PKCS12_SAFEBAG * bag)
 {
     int free_bags;
     if (!pbags)
@@ -277,7 +277,7 @@ static int pkcs12_add_bag(STACK_OF(PKCS12_SAFEBAG) * *pbags, PKCS12_SAFEBAG * ba
     return 1;
 }
 
-PKCS12 *PKCS12_add_safes(STACK_OF(PKCS7) * safes, int nid_p7)
+PKCS12 *PKCS12_add_safes(STACK_OF(PKCS7) *safes, int nid_p7)
 {
     PKCS12 *p12;
     if (nid_p7 <= 0)

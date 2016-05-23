@@ -170,7 +170,7 @@ int asn1_template_new(ASN1_VALUE **pval, const ASN1_TEMPLATE *tt)
     }
     /* If SET OF or SEQUENCE OF, its a STACK */
     if (tt->flags & ASN1_TFLG_SK_MASK) {
-        STACK_OF(ASN1_VALUE) * skval;
+        STACK_OF(ASN1_VALUE) *skval;
         skval = sk_ASN1_VALUE_new_null();
         if (!skval) {
             ASN1err(ASN1_F_ASN1_TEMPLATE_NEW, ERR_R_MALLOC_FAILURE);

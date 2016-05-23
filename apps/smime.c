@@ -16,7 +16,7 @@
 #include <openssl/x509_vfy.h>
 #include <openssl/x509v3.h>
 
-static int save_certs(char *signerfile, STACK_OF(X509) * signers);
+static int save_certs(char *signerfile, STACK_OF(X509) *signers);
 static int smime_cb(int ok, X509_STORE_CTX *ctx);
 
 #define SMIME_OP 0x10
@@ -556,7 +556,7 @@ int smime_main(int argc, char **argv)
             goto end;
         }
     } else if (operation == SMIME_VERIFY) {
-        STACK_OF(X509) * signers;
+        STACK_OF(X509) *signers;
         if (PKCS7_verify(p7, other, store, indata, out, flags))
             BIO_printf(bio_err, "Verification successful\n");
         else {
@@ -620,7 +620,7 @@ end:
     return (ret);
 }
 
-static int save_certs(char *signerfile, STACK_OF(X509) * signers)
+static int save_certs(char *signerfile, STACK_OF(X509) *signers)
 {
     int i;
     BIO *tmp;

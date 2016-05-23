@@ -17,7 +17,7 @@
 /* PKCS#12 password change routine */
 
 static int newpass_p12(PKCS12 *p12, char *oldpass, char *newpass);
-static int newpass_bags(STACK_OF(PKCS12_SAFEBAG) * bags, char *oldpass,
+static int newpass_bags(STACK_OF(PKCS12_SAFEBAG) *bags, char *oldpass,
                         char *newpass);
 static int newpass_bag(PKCS12_SAFEBAG *bag, char *oldpass, char *newpass);
 static int alg_get(X509_ALGOR *alg, int *pnid, int *piter, int *psaltlen);
@@ -54,8 +54,8 @@ int PKCS12_newpass(PKCS12 *p12, char *oldpass, char *newpass)
 
 static int newpass_p12(PKCS12 *p12, char *oldpass, char *newpass)
 {
-    STACK_OF(PKCS7) * asafes, *newsafes;
-    STACK_OF(PKCS12_SAFEBAG) * bags;
+    STACK_OF(PKCS7) *asafes, *newsafes;
+    STACK_OF(PKCS12_SAFEBAG) *bags;
     int i, bagnid, pbe_nid = 0, pbe_iter = 0, pbe_saltlen = 0;
     PKCS7 *p7, *p7new;
     ASN1_OCTET_STRING *p12_data_tmp = NULL, *macnew = NULL;
@@ -136,7 +136,7 @@ err:
     return 0;
 }
 
-static int newpass_bags(STACK_OF(PKCS12_SAFEBAG) * bags, char *oldpass,
+static int newpass_bags(STACK_OF(PKCS12_SAFEBAG) *bags, char *oldpass,
                         char *newpass)
 {
     int i;

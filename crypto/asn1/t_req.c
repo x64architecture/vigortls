@@ -41,8 +41,8 @@ int X509_REQ_print_ex(BIO *bp, X509_REQ *x, unsigned long nmflags, unsigned long
     int i;
     X509_REQ_INFO *ri;
     EVP_PKEY *pkey;
-    STACK_OF(X509_ATTRIBUTE) * sk;
-    STACK_OF(X509_EXTENSION) * exts;
+    STACK_OF(X509_ATTRIBUTE) *sk;
+    STACK_OF(X509_EXTENSION) *exts;
     char mlch = ' ';
     int nmindent = 0;
 

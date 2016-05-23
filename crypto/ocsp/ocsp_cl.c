@@ -92,7 +92,7 @@ int OCSP_request_sign(OCSP_REQUEST *req,
                       X509 *signer,
                       EVP_PKEY *key,
                       const EVP_MD *dgst,
-                      STACK_OF(X509) * certs,
+                      STACK_OF(X509) *certs,
                       unsigned long flags)
 {
     int i;
@@ -182,7 +182,7 @@ OCSP_SINGLERESP *OCSP_resp_get0(OCSP_BASICRESP *bs, int idx)
 int OCSP_resp_find(OCSP_BASICRESP *bs, OCSP_CERTID *id, int last)
 {
     int i;
-    STACK_OF(OCSP_SINGLERESP) * sresp;
+    STACK_OF(OCSP_SINGLERESP) *sresp;
     OCSP_SINGLERESP *single;
     if (!bs)
         return -1;

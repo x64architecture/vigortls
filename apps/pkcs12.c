@@ -26,17 +26,17 @@
 #define CLCERTS 0x8
 #define CACERTS 0x10
 
-static int get_cert_chain(X509 *cert, X509_STORE *store, STACK_OF(X509) * *chain);
+static int get_cert_chain(X509 *cert, X509_STORE *store, STACK_OF(X509) **chain);
 int dump_certs_keys_p12(BIO *out, PKCS12 *p12, char *pass, int passlen, int options,
                         char *pempass, const EVP_CIPHER *enc);
-int dump_certs_pkeys_bags(BIO *out, STACK_OF(PKCS12_SAFEBAG) * bags, char *pass,
+int dump_certs_pkeys_bags(BIO *out, STACK_OF(PKCS12_SAFEBAG) *bags, char *pass,
                           int passlen, int options, char *pempass, const EVP_CIPHER *enc);
 int dump_certs_pkeys_bag(BIO *out, PKCS12_SAFEBAG *bags, char *pass, int passlen,
                          int options, char *pempass, const EVP_CIPHER *enc);
-int print_attribs(BIO *out, STACK_OF(X509_ATTRIBUTE) * attrlst, const char *name);
+int print_attribs(BIO *out, STACK_OF(X509_ATTRIBUTE) *attrlst, const char *name);
 void hex_prin(BIO *out, uint8_t *buf, int len);
 int alg_print(BIO *x, X509_ALGOR *alg);
-int cert_load(BIO *in, STACK_OF(X509) * sk);
+int cert_load(BIO *in, STACK_OF(X509) *sk);
 static int set_pbe(int *ppbe, const char *str);
 
 typedef enum OPTION_choice {
@@ -395,7 +395,7 @@ int pkcs12_main(int argc, char **argv)
         /* If chaining get chain from user cert */
         if (chain) {
             int vret;
-            STACK_OF(X509) * chain2;
+            STACK_OF(X509) *chain2;
             X509_STORE *store;
             if (!(store = setup_verify(CAfile, CApath)))
                 goto export_end;
@@ -522,7 +522,7 @@ int dump_certs_keys_p12(BIO *out, PKCS12 *p12, char *pass, int passlen, int opti
                         char *pempass, const EVP_CIPHER *enc)
 {
     STACK_OF(PKCS7) *asafes = NULL;
-    STACK_OF(PKCS12_SAFEBAG) * bags;
+    STACK_OF(PKCS12_SAFEBAG) *bags;
     int i, bagnid;
     int ret = 0;
     PKCS7 *p7;
@@ -560,7 +560,7 @@ err:
     return ret;
 }
 
-int dump_certs_pkeys_bags(BIO *out, STACK_OF(PKCS12_SAFEBAG) * bags, char *pass,
+int dump_certs_pkeys_bags(BIO *out, STACK_OF(PKCS12_SAFEBAG) *bags, char *pass,
                           int passlen, int options, char *pempass, const EVP_CIPHER *enc)
 {
     int i;
@@ -689,7 +689,7 @@ int alg_print(BIO *x, X509_ALGOR *alg)
 
 /* Load all certificates from a given file */
 
-int cert_load(BIO *in, STACK_OF(X509) * sk)
+int cert_load(BIO *in, STACK_OF(X509) *sk)
 {
     int ret;
     X509 *cert;
@@ -705,7 +705,7 @@ int cert_load(BIO *in, STACK_OF(X509) * sk)
 
 /* Generalised attribute print: handle PKCS#8 and bag attributes */
 
-int print_attribs(BIO *out, STACK_OF(X509_ATTRIBUTE) * attrlst, const char *name)
+int print_attribs(BIO *out, STACK_OF(X509_ATTRIBUTE) *attrlst, const char *name)
 {
     X509_ATTRIBUTE *attr;
     ASN1_TYPE *av;

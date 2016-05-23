@@ -1977,8 +1977,8 @@ long ssl3_ctx_callback_ctrl(SSL_CTX *ctx, int cmd, void (*fp)(void))
     return (1);
 }
 
-SSL_CIPHER *ssl3_choose_cipher(SSL *s, STACK_OF(SSL_CIPHER) * clnt,
-                               STACK_OF(SSL_CIPHER) * srvr)
+SSL_CIPHER *ssl3_choose_cipher(SSL *s, STACK_OF(SSL_CIPHER) *clnt,
+                               STACK_OF(SSL_CIPHER) *srvr)
 {
     unsigned long alg_k, alg_a, mask_k, mask_a;
     STACK_OF(SSL_CIPHER) *prio, *allow;

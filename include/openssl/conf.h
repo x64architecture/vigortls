@@ -12,9 +12,9 @@
 
 #include <openssl/bio.h>
 #include <openssl/lhash.h>
-#include <openssl/stack.h>
-#include <openssl/safestack.h>
 #include <openssl/opensslconf.h>
+#include <openssl/safestack.h>
+#include <openssl/stack.h>
 
 #include <openssl/ossl_typ.h>
 
@@ -22,8 +22,7 @@
 extern "C" {
 #endif
 
-typedef struct
-    {
+typedef struct {
     char *section;
     char *name;
     char *value;
@@ -69,21 +68,22 @@ typedef void conf_finish_func(CONF_IMODULE *md);
 #define CONF_MFLAGS_DEFAULT_SECTION 0x20
 
 int CONF_set_default_method(CONF_METHOD *meth);
-void CONF_set_nconf(CONF *conf, LHASH_OF(CONF_VALUE) * hash);
-LHASH_OF(CONF_VALUE) * CONF_load(LHASH_OF(CONF_VALUE) * conf, const char *file,
-                                 long *eline);
-LHASH_OF(CONF_VALUE) * CONF_load_fp(LHASH_OF(CONF_VALUE) * conf, FILE * fp,
-                                    long *eline);
-LHASH_OF(CONF_VALUE) * CONF_load_bio(LHASH_OF(CONF_VALUE) * conf, BIO * bp, long *eline);
-STACK_OF(CONF_VALUE) * CONF_get_section(LHASH_OF(CONF_VALUE) * conf,
-                                        const char *section);
-char *CONF_get_string(LHASH_OF(CONF_VALUE) * conf, const char *group,
+void CONF_set_nconf(CONF *conf, LHASH_OF(CONF_VALUE) *hash);
+LHASH_OF(CONF_VALUE) *
+    CONF_load(LHASH_OF(CONF_VALUE) *conf, const char *file, long *eline);
+LHASH_OF(CONF_VALUE) *
+    CONF_load_fp(LHASH_OF(CONF_VALUE) *conf, FILE *fp, long *eline);
+LHASH_OF(CONF_VALUE) *
+    CONF_load_bio(LHASH_OF(CONF_VALUE) *conf, BIO *bp, long *eline);
+STACK_OF(CONF_VALUE) *
+    CONF_get_section(LHASH_OF(CONF_VALUE) *conf, const char *section);
+char *CONF_get_string(LHASH_OF(CONF_VALUE) *conf, const char *group,
                       const char *name);
-long CONF_get_number(LHASH_OF(CONF_VALUE) * conf, const char *group,
+long CONF_get_number(LHASH_OF(CONF_VALUE) *conf, const char *group,
                      const char *name);
-void CONF_free(LHASH_OF(CONF_VALUE) * conf);
-int CONF_dump_fp(LHASH_OF(CONF_VALUE) * conf, FILE * out);
-int CONF_dump_bio(LHASH_OF(CONF_VALUE) * conf, BIO * out);
+void CONF_free(LHASH_OF(CONF_VALUE) *conf);
+int CONF_dump_fp(LHASH_OF(CONF_VALUE) *conf, FILE *out);
+int CONF_dump_bio(LHASH_OF(CONF_VALUE) *conf, BIO *out);
 
 void OPENSSL_config(const char *config_name);
 void OPENSSL_no_config(void);
@@ -94,7 +94,7 @@ void OPENSSL_no_config(void);
 struct conf_st {
     CONF_METHOD *meth;
     void *meth_data;
-    LHASH_OF(CONF_VALUE) * data;
+    LHASH_OF(CONF_VALUE) *data;
 };
 
 CONF_METHOD *NCONF_WIN32(void);
@@ -106,7 +106,7 @@ void NCONF_free_data(CONF *conf);
 int NCONF_load(CONF *conf, const char *file, long *eline);
 int NCONF_load_fp(CONF *conf, FILE *fp, long *eline);
 int NCONF_load_bio(CONF *conf, BIO *bp, long *eline);
-STACK_OF(CONF_VALUE) * NCONF_get_section(const CONF *conf, const char *section);
+STACK_OF(CONF_VALUE) *NCONF_get_section(const CONF *conf, const char *section);
 char *NCONF_get_string(const CONF *conf, const char *group, const char *name);
 int NCONF_get_number_e(const CONF *conf, const char *group, const char *name,
                        long *result);
@@ -140,7 +140,8 @@ void CONF_module_set_usr_data(CONF_MODULE *pmod, void *usr_data);
 char *CONF_get1_default_config_file(void);
 
 int CONF_parse_list(const char *list, int sep, int nospc,
-                    int (*list_cb)(const char *elem, int len, void *usr), void *arg);
+                    int (*list_cb)(const char *elem, int len, void *usr),
+                    void *arg);
 
 void OPENSSL_load_builtin_modules(void);
 

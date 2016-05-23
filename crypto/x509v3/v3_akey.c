@@ -16,10 +16,10 @@
 #include <openssl/err.h>
 #include <openssl/x509v3.h>
 
-static STACK_OF(CONF_VALUE) * i2v_AUTHORITY_KEYID(X509V3_EXT_METHOD *method,
-                                                  AUTHORITY_KEYID *akeyid, STACK_OF(CONF_VALUE) * extlist);
+static STACK_OF(CONF_VALUE) *i2v_AUTHORITY_KEYID(X509V3_EXT_METHOD *method,
+                                                  AUTHORITY_KEYID *akeyid, STACK_OF(CONF_VALUE) *extlist);
 static AUTHORITY_KEYID *v2i_AUTHORITY_KEYID(X509V3_EXT_METHOD *method,
-                                            X509V3_CTX *ctx, STACK_OF(CONF_VALUE) * values);
+                                            X509V3_CTX *ctx, STACK_OF(CONF_VALUE) *values);
 
 const X509V3_EXT_METHOD v3_akey_id = {
     NID_authority_key_identifier,
@@ -32,8 +32,8 @@ const X509V3_EXT_METHOD v3_akey_id = {
     NULL
 };
 
-static STACK_OF(CONF_VALUE) * i2v_AUTHORITY_KEYID(X509V3_EXT_METHOD *method,
-                                                  AUTHORITY_KEYID *akeyid, STACK_OF(CONF_VALUE) * extlist)
+static STACK_OF(CONF_VALUE) *i2v_AUTHORITY_KEYID(X509V3_EXT_METHOD *method,
+                                                  AUTHORITY_KEYID *akeyid, STACK_OF(CONF_VALUE) *extlist)
 {
     char *tmp;
     if (akeyid->keyid) {
@@ -61,7 +61,7 @@ static STACK_OF(CONF_VALUE) * i2v_AUTHORITY_KEYID(X509V3_EXT_METHOD *method,
  */
 
 static AUTHORITY_KEYID *v2i_AUTHORITY_KEYID(X509V3_EXT_METHOD *method,
-                                            X509V3_CTX *ctx, STACK_OF(CONF_VALUE) * values)
+                                            X509V3_CTX *ctx, STACK_OF(CONF_VALUE) *values)
 {
     char keyid = 0, issuer = 0;
     int i;

@@ -20,12 +20,12 @@
 #include <openssl/x509v3.h>
 #include <openssl/cms.h>
 
-static int save_certs(char *signerfile, STACK_OF(X509) * signers);
+static int save_certs(char *signerfile, STACK_OF(X509) *signers);
 static int cms_cb(int ok, X509_STORE_CTX *ctx);
 static void receipt_request_print(BIO *out, CMS_ContentInfo *cms);
-static CMS_ReceiptRequest *make_receipt_request(STACK_OF(OPENSSL_STRING) * rr_to,
+static CMS_ReceiptRequest *make_receipt_request(STACK_OF(OPENSSL_STRING) *rr_to,
                                                 int rr_allorfirst,
-                                                STACK_OF(OPENSSL_STRING) * rr_from);
+                                                STACK_OF(OPENSSL_STRING) *rr_from);
 
 #define SMIME_OP 0x10
 #define SMIME_IP 0x20
@@ -53,7 +53,7 @@ typedef struct cms_key_param_st cms_key_param;
 
 struct cms_key_param_st {
     int idx;
-    STACK_OF(OPENSSL_STRING) * param;
+    STACK_OF(OPENSSL_STRING) *param;
     cms_key_param *next;
 };
 
@@ -772,7 +772,7 @@ int cms_main(int argc, char **argv)
             }
         }
         if (certsoutfile) {
-            STACK_OF(X509) * allcerts;
+            STACK_OF(X509) *allcerts;
             allcerts = CMS_get1_certs(cms);
             if (!save_certs(certsoutfile, allcerts)) {
                 BIO_printf(bio_err, "Error writing certs to %s\n", certsoutfile);
@@ -886,7 +886,7 @@ int cms_main(int argc, char **argv)
 
     } else if (operation == SMIME_SIGN_RECEIPT) {
         CMS_ContentInfo *srcms = NULL;
-        STACK_OF(CMS_SignerInfo) * sis;
+        STACK_OF(CMS_SignerInfo) *sis;
         CMS_SignerInfo *si;
         sis = CMS_get0_SignerInfos(cms);
         if (!sis)
@@ -1029,7 +1029,7 @@ int cms_main(int argc, char **argv)
             goto end;
         }
         if (signerfile) {
-            STACK_OF(X509) * signers;
+            STACK_OF(X509) *signers;
             signers = CMS_get0_signers(cms);
             if (!save_certs(signerfile, signers)) {
                 BIO_printf(bio_err, "Error writing signers to %s\n", signerfile);
@@ -1114,7 +1114,7 @@ end:
     return (ret);
 }
 
-static int save_certs(char *signerfile, STACK_OF(X509) * signers)
+static int save_certs(char *signerfile, STACK_OF(X509) *signers)
 {
     int i;
     BIO *tmp;
@@ -1147,9 +1147,9 @@ static int cms_cb(int ok, X509_STORE_CTX *ctx)
     return ok;
 }
 
-static void gnames_stack_print(BIO *out, STACK_OF(GENERAL_NAMES) * gns)
+static void gnames_stack_print(BIO *out, STACK_OF(GENERAL_NAMES) *gns)
 {
-    STACK_OF(GENERAL_NAME) * gens;
+    STACK_OF(GENERAL_NAME) *gens;
     GENERAL_NAME *gen;
     int i, j;
     for (i = 0; i < sk_GENERAL_NAMES_num(gns); i++) {
@@ -1166,11 +1166,11 @@ static void gnames_stack_print(BIO *out, STACK_OF(GENERAL_NAMES) * gns)
 
 static void receipt_request_print(BIO *out, CMS_ContentInfo *cms)
 {
-    STACK_OF(CMS_SignerInfo) * sis;
+    STACK_OF(CMS_SignerInfo) *sis;
     CMS_SignerInfo *si;
     CMS_ReceiptRequest *rr;
     int allorfirst;
-    STACK_OF(GENERAL_NAMES) * rto, *rlist;
+    STACK_OF(GENERAL_NAMES) *rto, *rlist;
     ASN1_STRING *scid;
     int i, rv;
     sis = CMS_get0_SignerInfos(cms);
@@ -1209,10 +1209,10 @@ static void receipt_request_print(BIO *out, CMS_ContentInfo *cms)
     }
 }
 
-static STACK_OF(GENERAL_NAMES) * make_names_stack(STACK_OF(OPENSSL_STRING) * ns)
+static STACK_OF(GENERAL_NAMES) *make_names_stack(STACK_OF(OPENSSL_STRING) *ns)
 {
     int i;
-    STACK_OF(GENERAL_NAMES) * ret;
+    STACK_OF(GENERAL_NAMES) *ret;
     GENERAL_NAMES *gens = NULL;
     GENERAL_NAME *gen = NULL;
     ret = sk_GENERAL_NAMES_new_null();
@@ -1246,11 +1246,11 @@ err:
     return NULL;
 }
 
-static CMS_ReceiptRequest *make_receipt_request(STACK_OF(OPENSSL_STRING) * rr_to,
+static CMS_ReceiptRequest *make_receipt_request(STACK_OF(OPENSSL_STRING) *rr_to,
                                                 int rr_allorfirst,
-                                                STACK_OF(OPENSSL_STRING) * rr_from)
+                                                STACK_OF(OPENSSL_STRING) *rr_from)
 {
-    STACK_OF(GENERAL_NAMES) * rct_to, *rct_from;
+    STACK_OF(GENERAL_NAMES) *rct_to, *rct_from;
     CMS_ReceiptRequest *rr;
     rct_to = make_names_stack(rr_to);
     if (!rct_to)

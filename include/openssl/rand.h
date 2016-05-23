@@ -10,9 +10,9 @@
 #ifndef HEADER_RAND_H
 #define HEADER_RAND_H
 
+#include <openssl/ossl_typ.h>
 #include <stdint.h>
 #include <stdlib.h>
-#include <openssl/ossl_typ.h>
 
 #ifdef __cplusplus
 extern "C" {

@@ -76,7 +76,7 @@ err:
 EVP_PKEY *d2i_AutoPrivateKey(EVP_PKEY **a, const uint8_t **pp,
                              long length)
 {
-    STACK_OF(ASN1_TYPE) * inkey;
+    STACK_OF(ASN1_TYPE) *inkey;
     const uint8_t *p;
     int keytype;
     p = *pp;

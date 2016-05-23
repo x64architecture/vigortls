@@ -20,7 +20,7 @@
 static int asn1_i2d_ex_primitive(ASN1_VALUE **pval, uint8_t **out,
                                  const ASN1_ITEM *it,
                                  int tag, int aclass);
-static int asn1_set_seq_out(STACK_OF(ASN1_VALUE) * sk, uint8_t **out,
+static int asn1_set_seq_out(STACK_OF(ASN1_VALUE) *sk, uint8_t **out,
                             int skcontlen, const ASN1_ITEM *item,
                             int do_sort, int iclass);
 static int asn1_template_ex_i2d(ASN1_VALUE **pval, uint8_t **out,
@@ -352,7 +352,7 @@ static int der_cmp(const void *a, const void *b)
 
 /* Output the content octets of SET OF or SEQUENCE OF */
 
-static int asn1_set_seq_out(STACK_OF(ASN1_VALUE) * sk, uint8_t **out,
+static int asn1_set_seq_out(STACK_OF(ASN1_VALUE) *sk, uint8_t **out,
                             int skcontlen, const ASN1_ITEM *item,
                             int do_sort, int iclass)
 {

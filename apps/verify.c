@@ -18,8 +18,8 @@
 #include <openssl/pem.h>
 
 static int cb(int ok, X509_STORE_CTX *ctx);
-static int check(X509_STORE *ctx, char *file, STACK_OF(X509) * uchain,
-                 STACK_OF(X509) * tchain, STACK_OF(X509_CRL) * crls, ENGINE *e,
+static int check(X509_STORE *ctx, char *file, STACK_OF(X509) *uchain,
+                 STACK_OF(X509) *tchain, STACK_OF(X509_CRL) *crls, ENGINE *e,
                  int show_chain);
 static int v_verbose = 0, vflags = 0;
 
@@ -172,8 +172,8 @@ end:
     return (ret < 0 ? 2 : ret);
 }
 
-static int check(X509_STORE *ctx, char *file, STACK_OF(X509) * uchain,
-                 STACK_OF(X509) * tchain, STACK_OF(X509_CRL) * crls, ENGINE *e,
+static int check(X509_STORE *ctx, char *file, STACK_OF(X509) *uchain,
+                 STACK_OF(X509) *tchain, STACK_OF(X509_CRL) *crls, ENGINE *e,
                  int show_chain)
 {
     X509 *x = NULL;

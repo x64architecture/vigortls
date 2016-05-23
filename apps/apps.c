@@ -910,7 +910,7 @@ end:
 
 static int set_multi_opts(unsigned long *flags, const char *arg, const NAME_EX_TBL *in_tbl)
 {
-    STACK_OF(CONF_VALUE) * vals;
+    STACK_OF(CONF_VALUE) *vals;
     CONF_VALUE *val;
     int i, ret = 1;
     if (!arg)
@@ -1677,7 +1677,7 @@ int pkey_ctrl_string(EVP_PKEY_CTX *ctx, char *value)
 }
 
 static void nodes_print(BIO *out, const char *name,
-                        STACK_OF(X509_POLICY_NODE) * nodes)
+                        STACK_OF(X509_POLICY_NODE) *nodes)
 {
     X509_POLICY_NODE *node;
     int i;

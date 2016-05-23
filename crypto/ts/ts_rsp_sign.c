@@ -32,7 +32,7 @@ static int TS_RESP_process_extensions(TS_RESP_CTX *ctx);
 static int TS_RESP_sign(TS_RESP_CTX *ctx);
 
 static ESS_SIGNING_CERT *ESS_SIGNING_CERT_new_init(X509 *signcert,
-                                                   STACK_OF(X509) * certs);
+                                                   STACK_OF(X509) *certs);
 static ESS_CERT_ID *ESS_CERT_ID_new_init(X509 *cert, int issuer_needed);
 static int TS_TST_INFO_content_new(PKCS7 *p7);
 static int ESS_add_signing_cert(PKCS7_SIGNER_INFO *si, ESS_SIGNING_CERT *sc);
@@ -157,7 +157,7 @@ err:
     return 0;
 }
 
-int TS_RESP_CTX_set_certs(TS_RESP_CTX *ctx, STACK_OF(X509) * certs)
+int TS_RESP_CTX_set_certs(TS_RESP_CTX *ctx, STACK_OF(X509) *certs)
 {
     int i;
 
@@ -627,7 +627,7 @@ static int TS_RESP_sign(TS_RESP_CTX *ctx)
     int ret = 0;
     PKCS7 *p7 = NULL;
     PKCS7_SIGNER_INFO *si;
-    STACK_OF(X509) * certs; /* Certificates to include in sc. */
+    STACK_OF(X509) *certs; /* Certificates to include in sc. */
     ESS_SIGNING_CERT *sc = NULL;
     ASN1_OBJECT *oid;
     BIO *p7bio = NULL;
@@ -730,7 +730,7 @@ err:
 }
 
 static ESS_SIGNING_CERT *ESS_SIGNING_CERT_new_init(X509 *signcert,
-                                                   STACK_OF(X509) * certs)
+                                                   STACK_OF(X509) *certs)
 {
     ESS_CERT_ID *cid;
     ESS_SIGNING_CERT *sc = NULL;

@@ -15,13 +15,13 @@
 /* Simplified PKCS#12 routines */
 
 static int parse_pk12(PKCS12 *p12, const char *pass, int passlen,
-                      EVP_PKEY **pkey, STACK_OF(X509) * ocerts);
+                      EVP_PKEY **pkey, STACK_OF(X509) *ocerts);
 
-static int parse_bags(STACK_OF(PKCS12_SAFEBAG) * bags, const char *pass,
-                      int passlen, EVP_PKEY **pkey, STACK_OF(X509) * ocerts);
+static int parse_bags(STACK_OF(PKCS12_SAFEBAG) *bags, const char *pass,
+                      int passlen, EVP_PKEY **pkey, STACK_OF(X509) *ocerts);
 
 static int parse_bag(PKCS12_SAFEBAG *bag, const char *pass, int passlen,
-                     EVP_PKEY **pkey, STACK_OF(X509) * ocerts);
+                     EVP_PKEY **pkey, STACK_OF(X509) *ocerts);
 
 /* Parse and decrypt a PKCS#12 structure returning user key, user cert
  * and other (CA) certs. Note either ca should be NULL, *ca should be NULL,
@@ -30,7 +30,7 @@ static int parse_bag(PKCS12_SAFEBAG *bag, const char *pass, int passlen,
  */
 
 int PKCS12_parse(PKCS12 *p12, const char *pass, EVP_PKEY **pkey, X509 **cert,
-                 STACK_OF(X509) * *ca)
+                 STACK_OF(X509) **ca)
 {
     STACK_OF(X509) *ocerts = NULL;
     X509 *x = NULL;
@@ -125,10 +125,10 @@ err:
 /* Parse the outer PKCS#12 structure */
 
 static int parse_pk12(PKCS12 *p12, const char *pass, int passlen,
-                      EVP_PKEY **pkey, STACK_OF(X509) * ocerts)
+                      EVP_PKEY **pkey, STACK_OF(X509) *ocerts)
 {
-    STACK_OF(PKCS7) * asafes;
-    STACK_OF(PKCS12_SAFEBAG) * bags;
+    STACK_OF(PKCS7) *asafes;
+    STACK_OF(PKCS12_SAFEBAG) *bags;
     int i, bagnid;
     PKCS7 *p7;
 
@@ -158,8 +158,8 @@ static int parse_pk12(PKCS12 *p12, const char *pass, int passlen,
     return 1;
 }
 
-static int parse_bags(STACK_OF(PKCS12_SAFEBAG) * bags, const char *pass,
-                      int passlen, EVP_PKEY **pkey, STACK_OF(X509) * ocerts)
+static int parse_bags(STACK_OF(PKCS12_SAFEBAG) *bags, const char *pass,
+                      int passlen, EVP_PKEY **pkey, STACK_OF(X509) *ocerts)
 {
     int i;
     for (i = 0; i < sk_PKCS12_SAFEBAG_num(bags); i++) {
@@ -171,7 +171,7 @@ static int parse_bags(STACK_OF(PKCS12_SAFEBAG) * bags, const char *pass,
 }
 
 static int parse_bag(PKCS12_SAFEBAG *bag, const char *pass, int passlen,
-                     EVP_PKEY **pkey, STACK_OF(X509) * ocerts)
+                     EVP_PKEY **pkey, STACK_OF(X509) *ocerts)
 {
     PKCS8_PRIV_KEY_INFO *p8;
     X509 *x509;

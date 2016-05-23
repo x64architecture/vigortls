@@ -61,8 +61,7 @@ typedef void (*LHASH_DOALL_ARG_FN_TYPE)(void *, void *);
 #define LHASH_COMP_FN(name) name##_LHASH_COMP
 
 /* Third: "doall" functions */
-#define DECLARE_LHASH_DOALL_FN(name, o_type) \
-    void name##_LHASH_DOALL(void *);
+#define DECLARE_LHASH_DOALL_FN(name, o_type) void name##_LHASH_DOALL(void *);
 #define IMPLEMENT_LHASH_DOALL_FN(name, o_type) \
     void name##_LHASH_DOALL(void *arg)         \
     {                                          \
@@ -153,17 +152,14 @@ void lh_node_usage_stats_bio(const _LHASH *lh, BIO *out);
 /* Define wrapper functions. */
 #define LHM_lh_new(type, name) \
     ((LHASH_OF(type) *)lh_new(LHASH_HASH_FN(name), LHASH_COMP_FN(name)))
-#define LHM_lh_error(type, lh) \
-    lh_error(CHECKED_LHASH_OF(type, lh))
-#define LHM_lh_insert(type, lh, inst)              \
-    ((type *)lh_insert(CHECKED_LHASH_OF(type, lh), \
-                       CHECKED_PTR_OF(type, inst)))
+#define LHM_lh_error(type, lh) lh_error(CHECKED_LHASH_OF(type, lh))
+#define LHM_lh_insert(type, lh, inst) \
+    ((type *)lh_insert(CHECKED_LHASH_OF(type, lh), CHECKED_PTR_OF(type, inst)))
 #define LHM_lh_retrieve(type, lh, inst)              \
     ((type *)lh_retrieve(CHECKED_LHASH_OF(type, lh), \
                          CHECKED_PTR_OF(type, inst)))
-#define LHM_lh_delete(type, lh, inst)              \
-    ((type *)lh_delete(CHECKED_LHASH_OF(type, lh), \
-                       CHECKED_PTR_OF(type, inst)))
+#define LHM_lh_delete(type, lh, inst) \
+    ((type *)lh_delete(CHECKED_LHASH_OF(type, lh), CHECKED_PTR_OF(type, inst)))
 #define LHM_lh_doall(type, lh, fn) lh_doall(CHECKED_LHASH_OF(type, lh), fn)
 #define LHM_lh_doall_arg(type, lh, fn, arg_type, arg) \
     lh_doall_arg(CHECKED_LHASH_OF(type, lh), fn, CHECKED_PTR_OF(arg_type, arg))

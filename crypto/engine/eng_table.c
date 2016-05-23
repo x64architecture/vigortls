@@ -17,7 +17,7 @@ typedef struct st_engine_pile {
     /* The 'nid' of this algorithm/mode */
     int nid;
     /* ENGINEs that implement this algorithm/mode. */
-    STACK_OF(ENGINE) * sk;
+    STACK_OF(ENGINE) *sk;
     /* The default ENGINE to perform this algorithm/mode. */
     ENGINE *funct;
     /* Zero if 'sk' is newer than the cached 'funct', non-zero otherwise */
@@ -64,7 +64,7 @@ static IMPLEMENT_LHASH_HASH_FN(engine_pile, ENGINE_PILE) static IMPLEMENT_LHASH_
 
 static int int_table_check(ENGINE_TABLE **t, int create)
 {
-    LHASH_OF(ENGINE_PILE) * lh;
+    LHASH_OF(ENGINE_PILE) *lh;
 
     if (*t)
         return 1;

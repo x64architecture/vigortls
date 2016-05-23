@@ -220,7 +220,7 @@ int OCSP_SINGLERESP_add_ext(OCSP_SINGLERESP *x, X509_EXTENSION *ex, int loc)
  * nonce, previous versions used the raw nonce.
  */
 
-static int ocsp_add1_nonce(STACK_OF(X509_EXTENSION) * *exts, uint8_t *val, int len)
+static int ocsp_add1_nonce(STACK_OF(X509_EXTENSION) **exts, uint8_t *val, int len)
 {
     uint8_t *tmpval;
     ASN1_OCTET_STRING os;

@@ -17,7 +17,7 @@
 
 static int pkcs7_copy_existing_digest(PKCS7 *p7, PKCS7_SIGNER_INFO *si);
 
-PKCS7 *PKCS7_sign(X509 *signcert, EVP_PKEY *pkey, STACK_OF(X509) * certs,
+PKCS7 *PKCS7_sign(X509 *signcert, EVP_PKEY *pkey, STACK_OF(X509) *certs,
                   BIO * data, int flags)
 {
     PKCS7 *p7;
@@ -88,14 +88,14 @@ err:
 
 /* Check to see if a cipher exists and if so add S/MIME capabilities */
 
-static int add_cipher_smcap(STACK_OF(X509_ALGOR) * sk, int nid, int arg)
+static int add_cipher_smcap(STACK_OF(X509_ALGOR) *sk, int nid, int arg)
 {
     if (EVP_get_cipherbynid(nid))
         return PKCS7_simple_smimecap(sk, nid, arg);
     return 1;
 }
 
-static int add_digest_smcap(STACK_OF(X509_ALGOR) * sk, int nid, int arg)
+static int add_digest_smcap(STACK_OF(X509_ALGOR) *sk, int nid, int arg)
 {
     if (EVP_get_digestbynid(nid))
         return PKCS7_simple_smimecap(sk, nid, arg);
@@ -173,7 +173,7 @@ err:
 static int pkcs7_copy_existing_digest(PKCS7 *p7, PKCS7_SIGNER_INFO *si)
 {
     int i;
-    STACK_OF(PKCS7_SIGNER_INFO) * sinfos;
+    STACK_OF(PKCS7_SIGNER_INFO) *sinfos;
     PKCS7_SIGNER_INFO *sitmp;
     ASN1_OCTET_STRING *osdig = NULL;
     sinfos = PKCS7_get_signer_info(p7);
@@ -198,12 +198,12 @@ static int pkcs7_copy_existing_digest(PKCS7 *p7, PKCS7_SIGNER_INFO *si)
     return 0;
 }
 
-int PKCS7_verify(PKCS7 *p7, STACK_OF(X509) * certs, X509_STORE * store,
+int PKCS7_verify(PKCS7 *p7, STACK_OF(X509) *certs, X509_STORE * store,
                  BIO * indata, BIO * out, int flags)
 {
-    STACK_OF(X509) * signers;
+    STACK_OF(X509) *signers;
     X509 *signer;
-    STACK_OF(PKCS7_SIGNER_INFO) * sinfos;
+    STACK_OF(PKCS7_SIGNER_INFO) *sinfos;
     PKCS7_SIGNER_INFO *si;
     X509_STORE_CTX cert_ctx;
     char buf[4096];
@@ -361,10 +361,10 @@ err:
     return ret;
 }
 
-STACK_OF(X509) * PKCS7_get0_signers(PKCS7 *p7, STACK_OF(X509) * certs, int flags)
+STACK_OF(X509) *PKCS7_get0_signers(PKCS7 *p7, STACK_OF(X509) *certs, int flags)
 {
-    STACK_OF(X509) * signers;
-    STACK_OF(PKCS7_SIGNER_INFO) * sinfos;
+    STACK_OF(X509) *signers;
+    STACK_OF(PKCS7_SIGNER_INFO) *sinfos;
     PKCS7_SIGNER_INFO *si;
     PKCS7_ISSUER_AND_SERIAL *ias;
     X509 *signer;
@@ -422,7 +422,7 @@ STACK_OF(X509) * PKCS7_get0_signers(PKCS7 *p7, STACK_OF(X509) * certs, int flags
 
 /* Build a complete PKCS#7 enveloped data */
 
-PKCS7 *PKCS7_encrypt(STACK_OF(X509) * certs, BIO * in, const EVP_CIPHER *cipher,
+PKCS7 *PKCS7_encrypt(STACK_OF(X509) *certs, BIO * in, const EVP_CIPHER *cipher,
                      int flags)
 {
     PKCS7 *p7;

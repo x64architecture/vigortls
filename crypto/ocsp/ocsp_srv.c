@@ -164,7 +164,7 @@ int OCSP_basic_add1_cert(OCSP_BASICRESP *resp, X509 *cert)
 
 int OCSP_basic_sign(OCSP_BASICRESP *brsp,
                     X509 *signer, EVP_PKEY *key, const EVP_MD *dgst,
-                    STACK_OF(X509) * certs, unsigned long flags)
+                    STACK_OF(X509) *certs, unsigned long flags)
 {
     int i;
     OCSP_RESPID *rid;

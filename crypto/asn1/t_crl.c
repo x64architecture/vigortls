@@ -33,7 +33,7 @@ int X509_CRL_print_fp(FILE *fp, X509_CRL *x)
 
 int X509_CRL_print(BIO *out, X509_CRL *x)
 {
-    STACK_OF(X509_REVOKED) * rev;
+    STACK_OF(X509_REVOKED) *rev;
     X509_REVOKED *r;
     long l;
     int i;

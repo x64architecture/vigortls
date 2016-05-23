@@ -41,8 +41,8 @@ static BIT_STRING_BITNAME key_usage_type_table[] = {
 const X509V3_EXT_METHOD v3_nscert = EXT_BITSTRING(NID_netscape_cert_type, ns_cert_type_table);
 const X509V3_EXT_METHOD v3_key_usage = EXT_BITSTRING(NID_key_usage, key_usage_type_table);
 
-STACK_OF(CONF_VALUE) * i2v_ASN1_BIT_STRING(X509V3_EXT_METHOD *method,
-                                           ASN1_BIT_STRING *bits, STACK_OF(CONF_VALUE) * ret)
+STACK_OF(CONF_VALUE) *i2v_ASN1_BIT_STRING(X509V3_EXT_METHOD *method,
+                                           ASN1_BIT_STRING *bits, STACK_OF(CONF_VALUE) *ret)
 {
     BIT_STRING_BITNAME *bnam;
     for (bnam = method->usr_data; bnam->lname; bnam++) {
@@ -53,7 +53,7 @@ STACK_OF(CONF_VALUE) * i2v_ASN1_BIT_STRING(X509V3_EXT_METHOD *method,
 }
 
 ASN1_BIT_STRING *v2i_ASN1_BIT_STRING(X509V3_EXT_METHOD *method,
-                                     X509V3_CTX *ctx, STACK_OF(CONF_VALUE) * nval)
+                                     X509V3_CTX *ctx, STACK_OF(CONF_VALUE) *nval)
 {
     CONF_VALUE *val;
     ASN1_BIT_STRING *bs;

@@ -30,7 +30,7 @@ int PEM_write_bio_PKCS7_stream(BIO *out, PKCS7 *p7, BIO *in, int flags)
 
 int SMIME_write_PKCS7(BIO *bio, PKCS7 *p7, BIO *data, int flags)
 {
-    STACK_OF(X509_ALGOR) * mdalgs;
+    STACK_OF(X509_ALGOR) *mdalgs;
     int ctype_nid = OBJ_obj2nid(p7->type);
     if (ctype_nid == NID_pkcs7_signed)
         mdalgs = p7->d.sign->md_algs;

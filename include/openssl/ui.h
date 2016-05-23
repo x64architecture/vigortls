@@ -13,8 +13,8 @@
 #ifndef OPENSSL_NO_DEPRECATED
 #include <openssl/crypto.h>
 #endif
-#include <openssl/safestack.h>
 #include <openssl/ossl_typ.h>
+#include <openssl/safestack.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -77,14 +77,16 @@ void UI_free(UI *ui);
 
    On success, the all return an index of the added information.  That index
    is usefull when retrieving results with UI_get0_result(). */
-int UI_add_input_string(UI *ui, const char *prompt, int flags,
-                        char *result_buf, int minsize, int maxsize);
-int UI_dup_input_string(UI *ui, const char *prompt, int flags,
-                        char *result_buf, int minsize, int maxsize);
+int UI_add_input_string(UI *ui, const char *prompt, int flags, char *result_buf,
+                        int minsize, int maxsize);
+int UI_dup_input_string(UI *ui, const char *prompt, int flags, char *result_buf,
+                        int minsize, int maxsize);
 int UI_add_verify_string(UI *ui, const char *prompt, int flags,
-                         char *result_buf, int minsize, int maxsize, const char *test_buf);
+                         char *result_buf, int minsize, int maxsize,
+                         const char *test_buf);
 int UI_dup_verify_string(UI *ui, const char *prompt, int flags,
-                         char *result_buf, int minsize, int maxsize, const char *test_buf);
+                         char *result_buf, int minsize, int maxsize,
+                         const char *test_buf);
 int UI_add_input_boolean(UI *ui, const char *prompt, const char *action_desc,
                          const char *ok_chars, const char *cancel_chars,
                          int flags, char *result_buf);
@@ -134,8 +136,8 @@ int UI_dup_error_string(UI *ui, const char *text);
 
     "Enter pass phrase for foo.key:"
 */
-char *UI_construct_prompt(UI *ui_method,
-                          const char *object_desc, const char *object_name);
+char *UI_construct_prompt(UI *ui_method, const char *object_desc,
+                          const char *object_name);
 
 /* The following function is used to store a pointer to user-specific data.
    Any previous such pointer will be returned and replaced.
@@ -251,17 +253,23 @@ enum UI_string_types {
 UI_METHOD *UI_create_method(char *name);
 void UI_destroy_method(UI_METHOD *ui_method);
 int UI_method_set_opener(UI_METHOD *method, int (*opener)(UI *ui));
-int UI_method_set_writer(UI_METHOD *method, int (*writer)(UI *ui, UI_STRING *uis));
+int UI_method_set_writer(UI_METHOD *method,
+                         int (*writer)(UI *ui, UI_STRING *uis));
 int UI_method_set_flusher(UI_METHOD *method, int (*flusher)(UI *ui));
-int UI_method_set_reader(UI_METHOD *method, int (*reader)(UI *ui, UI_STRING *uis));
+int UI_method_set_reader(UI_METHOD *method,
+                         int (*reader)(UI *ui, UI_STRING *uis));
 int UI_method_set_closer(UI_METHOD *method, int (*closer)(UI *ui));
-int UI_method_set_prompt_constructor(UI_METHOD *method, char *(*prompt_constructor)(UI *ui, const char *object_desc, const char *object_name));
+int UI_method_set_prompt_constructor(
+    UI_METHOD *method,
+    char *(*prompt_constructor)(UI *ui, const char *object_desc,
+                                const char *object_name));
 int (*UI_method_get_opener(UI_METHOD *method))(UI *);
 int (*UI_method_get_writer(UI_METHOD *method))(UI *, UI_STRING *);
 int (*UI_method_get_flusher(UI_METHOD *method))(UI *);
 int (*UI_method_get_reader(UI_METHOD *method))(UI *, UI_STRING *);
 int (*UI_method_get_closer(UI_METHOD *method))(UI *);
-char *(*UI_method_get_prompt_constructor(UI_METHOD *method))(UI *, const char *, const char *);
+char *(*UI_method_get_prompt_constructor(UI_METHOD *method))(UI *, const char *,
+                                                             const char *);
 
 /* The following functions are helpers for method writers to access relevant
    data from a UI_STRING. */
@@ -272,7 +280,8 @@ enum UI_string_types UI_get_string_type(UI_STRING *uis);
 int UI_get_input_flags(UI_STRING *uis);
 /* Return the actual string to output (the prompt, info or error) */
 const char *UI_get0_output_string(UI_STRING *uis);
-/* Return the optional action string to output (the boolean promtp instruction) */
+/* Return the optional action string to output (the boolean promtp instruction)
+ */
 const char *UI_get0_action_string(UI_STRING *uis);
 /* Return the result of a prompt */
 const char *UI_get0_result_string(UI_STRING *uis);
@@ -286,8 +295,10 @@ int UI_get_result_maxsize(UI_STRING *uis);
 int UI_set_result(UI *ui, UI_STRING *uis, const char *result);
 
 /* A couple of popular utility functions */
-int UI_UTIL_read_pw_string(char *buf, int length, const char *prompt, int verify);
-int UI_UTIL_read_pw(char *buf, char *buff, int size, const char *prompt, int verify);
+int UI_UTIL_read_pw_string(char *buf, int length, const char *prompt,
+                           int verify);
+int UI_UTIL_read_pw(char *buf, char *buff, int size, const char *prompt,
+                    int verify);
 
 /* BEGIN ERROR CODES */
 /*

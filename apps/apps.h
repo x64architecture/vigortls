@@ -268,9 +268,9 @@ EVP_PKEY *load_key(const char *file, int format, int maybe_stdin,
                    const char *pass, ENGINE *e, const char *key_descrip);
 EVP_PKEY *load_pubkey(const char *file, int format, int maybe_stdin,
                       const char *pass, ENGINE *e, const char *key_descrip);
-STACK_OF(X509) * load_certs(const char *file, int format,
+STACK_OF(X509) *load_certs(const char *file, int format,
                             const char *pass, ENGINE *e, const char *cert_descrip);
-STACK_OF(X509_CRL) * load_crls(const char *file, int format,
+STACK_OF(X509_CRL) *load_crls(const char *file, int format,
                                const char *pass, ENGINE *e, const char *cert_descrip);
 X509_STORE *setup_verify(char *CAfile, char *CApath);
 #ifndef OPENSSL_NO_ENGINE
@@ -280,7 +280,7 @@ ENGINE *setup_engine(const char *engine, int debug);
 #ifndef OPENSSL_NO_OCSP
 OCSP_RESPONSE *process_responder(OCSP_REQUEST *req,
                                  char *host, char *path, char *port, int use_ssl,
-                                 STACK_OF(CONF_VALUE) * headers,
+                                 STACK_OF(CONF_VALUE) *headers,
                                  int req_timeout);
 #endif
 
@@ -332,11 +332,11 @@ int pkey_ctrl_string(EVP_PKEY_CTX *ctx, char *value);
 int init_gen_str(EVP_PKEY_CTX **pctx,
                  const char *algname, ENGINE *e, int do_param);
 int do_X509_sign(X509 *x, EVP_PKEY *pkey, const EVP_MD *md,
-                 STACK_OF(OPENSSL_STRING) * sigopts);
+                 STACK_OF(OPENSSL_STRING) *sigopts);
 int do_X509_REQ_sign(X509_REQ *x, EVP_PKEY *pkey, const EVP_MD *md,
-                     STACK_OF(OPENSSL_STRING) * sigopts);
+                     STACK_OF(OPENSSL_STRING) *sigopts);
 int do_X509_CRL_sign(X509_CRL *x, EVP_PKEY *pkey, const EVP_MD *md,
-                     STACK_OF(OPENSSL_STRING) * sigopts);
+                     STACK_OF(OPENSSL_STRING) *sigopts);
 
 #ifndef OPENSSL_NO_NEXTPROTONEG
 uint8_t *next_protos_parse(unsigned short *outlen, const char *in);

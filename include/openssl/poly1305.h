@@ -32,16 +32,16 @@ extern "C" {
 
 #define POLY1305_BLOCK_SIZE 16
 
-typedef void (*poly1305_blocks_f) (void *ctx, const uint8_t *in,
-                                   size_t len, uint32_t padbit);
-typedef void (*poly1305_emit_f) (void *ctx, uint8_t mac[16],
-                                 const uint32_t nonce[4]);
+typedef void (*poly1305_blocks_f)(void *ctx, const uint8_t *in, size_t len,
+                                  uint32_t padbit);
+typedef void (*poly1305_emit_f)(void *ctx, uint8_t mac[16],
+                                const uint32_t nonce[4]);
 
 typedef struct {
-    double opaque[24];  /* large enough to hold internal state, declared
-                         * 'double' to ensure at least 64-bit invariant
-                         * alignment across all platforms and
-                         * configurations */
+    double opaque[24]; /* large enough to hold internal state, declared
+                        * 'double' to ensure at least 64-bit invariant
+                        * alignment across all platforms and
+                        * configurations */
     uint32_t nonce[4];
     uint8_t data[POLY1305_BLOCK_SIZE];
     size_t num;

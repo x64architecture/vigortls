@@ -23,8 +23,8 @@ struct X509_POLICY_DATA_st {
     unsigned int flags;
     /* Policy OID and qualifiers for this data */
     ASN1_OBJECT *valid_policy;
-    STACK_OF(POLICYQUALINFO) * qualifier_set;
-    STACK_OF(ASN1_OBJECT) * expected_policy_set;
+    STACK_OF(POLICYQUALINFO) *qualifier_set;
+    STACK_OF(ASN1_OBJECT) *expected_policy_set;
 };
 
 /* X509_POLICY_DATA flags values */
@@ -63,7 +63,7 @@ struct X509_POLICY_CACHE_st {
     /* anyPolicy data or NULL if no anyPolicy */
     X509_POLICY_DATA *anyPolicy;
     /* other policy data */
-    STACK_OF(X509_POLICY_DATA) * data;
+    STACK_OF(X509_POLICY_DATA) *data;
     /* If InhibitAnyPolicy present this is its value or -1 if absent. */
     long any_skip;
     /* If policyConstraints and requireExplicitPolicy present this is its
@@ -93,7 +93,7 @@ struct X509_POLICY_LEVEL_st {
     /* Cert for this level */
     X509 *cert;
     /* nodes at this level */
-    STACK_OF(X509_POLICY_NODE) * nodes;
+    STACK_OF(X509_POLICY_NODE) *nodes;
     /* anyPolicy node */
     X509_POLICY_NODE *anyPolicy;
     /* Extra data */
@@ -108,10 +108,10 @@ struct X509_POLICY_TREE_st {
     /* Extra policy data when additional nodes (not from the certificate)
      * are required.
      */
-    STACK_OF(X509_POLICY_DATA) * extra_data;
+    STACK_OF(X509_POLICY_DATA) *extra_data;
     /* This is the authority constained policy set */
-    STACK_OF(X509_POLICY_NODE) * auth_policies;
-    STACK_OF(X509_POLICY_NODE) * user_policies;
+    STACK_OF(X509_POLICY_NODE) *auth_policies;
+    STACK_OF(X509_POLICY_NODE) *user_policies;
     unsigned int flags;
 };
 
@@ -133,7 +133,7 @@ X509_POLICY_DATA *policy_cache_find_data(const X509_POLICY_CACHE *cache,
                                          const ASN1_OBJECT *id);
 int policy_cache_set_mapping(X509 *x, POLICY_MAPPINGS *maps);
 
-STACK_OF(X509_POLICY_NODE) * policy_node_cmp_new(void);
+STACK_OF(X509_POLICY_NODE) *policy_node_cmp_new(void);
 
 void policy_cache_init(void);
 
@@ -143,7 +143,7 @@ X509_POLICY_NODE *level_find_node(const X509_POLICY_LEVEL *level,
                                   const X509_POLICY_NODE *parent,
                                   const ASN1_OBJECT *id);
 
-X509_POLICY_NODE *tree_find_sk(STACK_OF(X509_POLICY_NODE) * sk,
+X509_POLICY_NODE *tree_find_sk(STACK_OF(X509_POLICY_NODE) *sk,
                                const ASN1_OBJECT *id);
 
 X509_POLICY_NODE *level_add_node(X509_POLICY_LEVEL *level,

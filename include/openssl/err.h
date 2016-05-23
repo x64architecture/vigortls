@@ -15,9 +15,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include <openssl/ossl_typ.h>
 #include <openssl/bio.h>
 #include <openssl/lhash.h>
+#include <openssl/ossl_typ.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -102,30 +102,37 @@ typedef struct err_state_st {
 #define X509err(f, r) ERR_PUT_error(ERR_LIB_X509, (f), (r), __FILE__, __LINE__)
 #define ASN1err(f, r) ERR_PUT_error(ERR_LIB_ASN1, (f), (r), __FILE__, __LINE__)
 #define CONFerr(f, r) ERR_PUT_error(ERR_LIB_CONF, (f), (r), __FILE__, __LINE__)
-#define CRYPTOerr(f, r) ERR_PUT_error(ERR_LIB_CRYPTO, (f), (r), __FILE__, __LINE__)
+#define CRYPTOerr(f, r) \
+    ERR_PUT_error(ERR_LIB_CRYPTO, (f), (r), __FILE__, __LINE__)
 #define ECerr(f, r) ERR_PUT_error(ERR_LIB_EC, (f), (r), __FILE__, __LINE__)
 #define SSLerr(f, r) ERR_PUT_error(ERR_LIB_SSL, (f), (r), __FILE__, __LINE__)
 #define BIOerr(f, r) ERR_PUT_error(ERR_LIB_BIO, (f), (r), __FILE__, __LINE__)
-#define PKCS7err(f, r) ERR_PUT_error(ERR_LIB_PKCS7, (f), (r), __FILE__, __LINE__)
-#define X509V3err(f, r) ERR_PUT_error(ERR_LIB_X509V3, (f), (r), __FILE__, __LINE__)
-#define PKCS12err(f, r) ERR_PUT_error(ERR_LIB_PKCS12, (f), (r), __FILE__, __LINE__)
+#define PKCS7err(f, r) \
+    ERR_PUT_error(ERR_LIB_PKCS7, (f), (r), __FILE__, __LINE__)
+#define X509V3err(f, r) \
+    ERR_PUT_error(ERR_LIB_X509V3, (f), (r), __FILE__, __LINE__)
+#define PKCS12err(f, r) \
+    ERR_PUT_error(ERR_LIB_PKCS12, (f), (r), __FILE__, __LINE__)
 #define RANDerr(f, r) ERR_PUT_error(ERR_LIB_RAND, (f), (r), __FILE__, __LINE__)
 #define DSOerr(f, r) ERR_PUT_error(ERR_LIB_DSO, (f), (r), __FILE__, __LINE__)
-#define ENGINEerr(f, r) ERR_PUT_error(ERR_LIB_ENGINE, (f), (r), __FILE__, __LINE__)
+#define ENGINEerr(f, r) \
+    ERR_PUT_error(ERR_LIB_ENGINE, (f), (r), __FILE__, __LINE__)
 #define OCSPerr(f, r) ERR_PUT_error(ERR_LIB_OCSP, (f), (r), __FILE__, __LINE__)
 #define UIerr(f, r) ERR_PUT_error(ERR_LIB_UI, (f), (r), __FILE__, __LINE__)
 #define COMPerr(f, r) ERR_PUT_error(ERR_LIB_COMP, (f), (r), __FILE__, __LINE__)
-#define ECDSAerr(f, r) ERR_PUT_error(ERR_LIB_ECDSA, (f), (r), __FILE__, __LINE__)
+#define ECDSAerr(f, r) \
+    ERR_PUT_error(ERR_LIB_ECDSA, (f), (r), __FILE__, __LINE__)
 #define ECDHerr(f, r) ERR_PUT_error(ERR_LIB_ECDH, (f), (r), __FILE__, __LINE__)
-#define STOREerr(f, r) ERR_PUT_error(ERR_LIB_STORE, (f), (r), __FILE__, __LINE__)
+#define STOREerr(f, r) \
+    ERR_PUT_error(ERR_LIB_STORE, (f), (r), __FILE__, __LINE__)
 #define CMSerr(f, r) ERR_PUT_error(ERR_LIB_CMS, (f), (r), __FILE__, __LINE__)
 #define TSerr(f, r) ERR_PUT_error(ERR_LIB_TS, (f), (r), __FILE__, __LINE__)
 #define HMACerr(f, r) ERR_PUT_error(ERR_LIB_HMAC, (f), (r), __FILE__, __LINE__)
 #define GOSTerr(f, r) ERR_PUT_error(ERR_LIB_GOST, (f), (r), __FILE__, __LINE__)
 
-#define ERR_PACK(l, f, r) (((((unsigned long)l) & 0xffL ) << 24L) \
-                         | ((((unsigned long)f) & 0xfffL) << 12L) \
-                         | ((((unsigned long)r) & 0xfffL)))
+#define ERR_PACK(l, f, r)                    \
+    (((((unsigned long)l) & 0xffL) << 24L) | \
+     ((((unsigned long)f) & 0xfffL) << 12L) | ((((unsigned long)r) & 0xfffL)))
 #define ERR_GET_LIB(l) (int)((((unsigned long)l) >> 24L) & 0xffL)
 #define ERR_GET_FUNC(l) (int)((((unsigned long)l) >> 12L) & 0xfffL)
 #define ERR_GET_REASON(l) (int)((l)&0xfffL)

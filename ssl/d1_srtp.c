@@ -75,9 +75,9 @@ static int find_profile_by_num(unsigned profile_num,
 }
 
 static int ssl_ctx_make_profiles(const char *profiles_string,
-                                 STACK_OF(SRTP_PROTECTION_PROFILE) * *out)
+                                 STACK_OF(SRTP_PROTECTION_PROFILE) **out)
 {
-    STACK_OF(SRTP_PROTECTION_PROFILE) * profiles;
+    STACK_OF(SRTP_PROTECTION_PROFILE) *profiles;
 
     char *col;
     char *ptr = (char *)profiles_string;
@@ -120,7 +120,7 @@ int SSL_set_tlsext_use_srtp(SSL *s, const char *profiles)
     return ssl_ctx_make_profiles(profiles, &s->srtp_profiles);
 }
 
-STACK_OF(SRTP_PROTECTION_PROFILE) * SSL_get_srtp_profiles(SSL *s)
+STACK_OF(SRTP_PROTECTION_PROFILE) *SSL_get_srtp_profiles(SSL *s)
 {
     if (s != NULL) {
         if (s->srtp_profiles != NULL) {
@@ -293,7 +293,7 @@ int ssl_add_serverhello_use_srtp_ext(SSL *s, uint8_t *p, int *len,
 int ssl_parse_serverhello_use_srtp_ext(SSL *s, const uint8_t *d, int len,
                                        int *al)
 {
-    STACK_OF(SRTP_PROTECTION_PROFILE) * clnt;
+    STACK_OF(SRTP_PROTECTION_PROFILE) *clnt;
     SRTP_PROTECTION_PROFILE *prof;
     int i;
     uint16_t id;

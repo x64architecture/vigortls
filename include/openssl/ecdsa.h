@@ -12,7 +12,6 @@
 
 #include <openssl/opensslconf.h>
 
-
 #include <openssl/ec.h>
 #include <openssl/ossl_typ.h>
 #ifndef OPENSSL_NO_DEPRECATED
@@ -75,7 +74,8 @@ ECDSA_SIG *ECDSA_do_sign(const uint8_t *dgst, int dgst_len, EC_KEY *eckey);
  *  \return pointer to a ECDSA_SIG structure or NULL if an error occurred
  */
 ECDSA_SIG *ECDSA_do_sign_ex(const uint8_t *dgst, int dgstlen,
-                            const BIGNUM *kinv, const BIGNUM *rp, EC_KEY *eckey);
+                            const BIGNUM *kinv, const BIGNUM *rp,
+                            EC_KEY *eckey);
 
 /** Verifies that the supplied signature is a valid ECDSA
  *  signature of the supplied hash value using the supplied public key.
@@ -86,8 +86,8 @@ ECDSA_SIG *ECDSA_do_sign_ex(const uint8_t *dgst, int dgstlen,
  *  \return 1 if the signature is valid, 0 if the signature is invalid
  *          and -1 on error
  */
-int ECDSA_do_verify(const uint8_t *dgst, int dgst_len,
-                    const ECDSA_SIG *sig, EC_KEY *eckey);
+int ECDSA_do_verify(const uint8_t *dgst, int dgst_len, const ECDSA_SIG *sig,
+                    EC_KEY *eckey);
 
 const ECDSA_METHOD *ECDSA_OpenSSL(void);
 
@@ -121,8 +121,7 @@ int ECDSA_size(const EC_KEY *eckey);
  *  \param  rp     BIGNUM pointer for x coordinate of k * generator
  *  \return 1 on success and 0 otherwise
  */
-int ECDSA_sign_setup(EC_KEY *eckey, BN_CTX *ctx, BIGNUM **kinv,
-                     BIGNUM **rp);
+int ECDSA_sign_setup(EC_KEY *eckey, BN_CTX *ctx, BIGNUM **kinv, BIGNUM **rp);
 
 /** Computes ECDSA signature of a given hash value using the supplied
  *  private key (note: sig must point to ECDSA_size(eckey) bytes of memory).
@@ -134,8 +133,8 @@ int ECDSA_sign_setup(EC_KEY *eckey, BN_CTX *ctx, BIGNUM **kinv,
  *  \param  eckey    EC_KEY object containing a private EC key
  *  \return 1 on success and 0 otherwise
  */
-int ECDSA_sign(int type, const uint8_t *dgst, int dgstlen,
-               uint8_t *sig, unsigned int *siglen, EC_KEY *eckey);
+int ECDSA_sign(int type, const uint8_t *dgst, int dgstlen, uint8_t *sig,
+               unsigned int *siglen, EC_KEY *eckey);
 
 /** Computes ECDSA signature of a given hash value using the supplied
  *  private key (note: sig must point to ECDSA_size(eckey) bytes of memory).
@@ -150,9 +149,9 @@ int ECDSA_sign(int type, const uint8_t *dgst, int dgstlen,
  *  \param  eckey    EC_KEY object containing a private EC key
  *  \return 1 on success and 0 otherwise
  */
-int ECDSA_sign_ex(int type, const uint8_t *dgst, int dgstlen,
-                  uint8_t *sig, unsigned int *siglen, const BIGNUM *kinv,
-                  const BIGNUM *rp, EC_KEY *eckey);
+int ECDSA_sign_ex(int type, const uint8_t *dgst, int dgstlen, uint8_t *sig,
+                  unsigned int *siglen, const BIGNUM *kinv, const BIGNUM *rp,
+                  EC_KEY *eckey);
 
 /** Verifies that the given signature is valid ECDSA signature
  *  of the supplied hash value using the specified public key.
@@ -165,11 +164,12 @@ int ECDSA_sign_ex(int type, const uint8_t *dgst, int dgstlen,
  *  \return 1 if the signature is valid, 0 if the signature is invalid
  *          and -1 on error
  */
-int ECDSA_verify(int type, const uint8_t *dgst, int dgstlen,
-                 const uint8_t *sig, int siglen, EC_KEY *eckey);
+int ECDSA_verify(int type, const uint8_t *dgst, int dgstlen, const uint8_t *sig,
+                 int siglen, EC_KEY *eckey);
 
 /* the standard ex_data functions */
-int ECDSA_get_ex_new_index(long argl, void *argp, CRYPTO_EX_new *new_func, CRYPTO_EX_dup *dup_func, CRYPTO_EX_free *free_func);
+int ECDSA_get_ex_new_index(long argl, void *argp, CRYPTO_EX_new *new_func,
+                           CRYPTO_EX_dup *dup_func, CRYPTO_EX_free *free_func);
 int ECDSA_set_ex_data(EC_KEY *d, int idx, void *arg);
 void *ECDSA_get_ex_data(EC_KEY *d, int idx);
 

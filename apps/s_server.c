@@ -227,7 +227,7 @@ static int cert_status_cb(SSL *s, void *arg)
     OCSP_REQUEST *req = NULL;
     OCSP_RESPONSE *resp = NULL;
     OCSP_CERTID *id = NULL;
-    STACK_OF(X509_EXTENSION) * exts;
+    STACK_OF(X509_EXTENSION) *exts;
     int ret = SSL_TLSEXT_ERR_NOACK;
     int i;
 
@@ -1660,7 +1660,7 @@ static int www_body(char *hostname, int s, uint8_t *context)
             ((www == 2) && (strncmp("GET /stats ", buf, 11) == 0))) {
             char *p;
             X509 *peer;
-            STACK_OF(SSL_CIPHER) * sk;
+            STACK_OF(SSL_CIPHER) *sk;
             static const char *space = "                          ";
 
             BIO_puts(io, "HTTP/1.0 200 ok\r\nContent-type: text/html\r\n\r\n");

@@ -14,20 +14,20 @@
 #include <stdlib.h>
 #include <string.h>
 #if defined(_WIN32)
- #include <winsock2.h>
+#include <winsock2.h>
 #else
- #include <sys/time.h>
+#include <sys/time.h>
 #endif
 
 #include <openssl/buffer.h>
 
 /* Fixes conflicts on win32 */
-# ifdef _WIN32
-# undef X509_NAME
-# undef X509_EXTENSIONS
-# undef OCSP_REQUEST
-# undef OCSP_RESPONSE
-# endif
+#ifdef _WIN32
+#undef X509_NAME
+#undef X509_EXTENSIONS
+#undef OCSP_REQUEST
+#undef OCSP_RESPONSE
+#endif
 
 #ifdef __cplusplus
 extern "C" {
@@ -58,8 +58,8 @@ extern "C" {
 #ifndef OPENSSL_NO_SSL_INTERN
 
 typedef struct dtls1_bitmap_st {
-    unsigned long map;            /* track 32 packets on 32-bit systems
-                       and 64 - on 64-bit systems */
+    unsigned long map;      /* track 32 packets on 32-bit systems
+                 and 64 - on 64-bit systems */
     uint8_t max_seq_num[8]; /* max record number seen so far,
                        64-bit value in big-endian
                        encoding */
@@ -182,7 +182,8 @@ typedef struct dtls1_state_st {
 
     unsigned int retransmitting;
     /*
-     * Set when the handshake is ready to process peer's ChangeCipherSpec message.
+     * Set when the handshake is ready to process peer's ChangeCipherSpec
+     * message.
      * Cleared after the message has been processed.
      */
     unsigned int change_cipher_spec_ok;

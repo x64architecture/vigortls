@@ -18,16 +18,16 @@
 
 /* Private function declarations. */
 
-static int TS_verify_cert(X509_STORE *store, STACK_OF(X509) * untrusted,
-                          X509 * signer, STACK_OF(X509) * *chain);
-static int TS_check_signing_certs(PKCS7_SIGNER_INFO *si, STACK_OF(X509) * chain);
+static int TS_verify_cert(X509_STORE *store, STACK_OF(X509) *untrusted,
+                          X509 * signer, STACK_OF(X509) **chain);
+static int TS_check_signing_certs(PKCS7_SIGNER_INFO *si, STACK_OF(X509) *chain);
 static ESS_SIGNING_CERT *ESS_get_signing_cert(PKCS7_SIGNER_INFO *si);
-static int TS_find_cert(STACK_OF(ESS_CERT_ID) * cert_ids, X509 * cert);
+static int TS_find_cert(STACK_OF(ESS_CERT_ID) *cert_ids, X509 * cert);
 static int TS_issuer_serial_cmp(ESS_ISSUER_SERIAL *is, X509_CINF *cinfo);
 static int int_TS_RESP_verify_token(TS_VERIFY_CTX *ctx,
                                     PKCS7 *token, TS_TST_INFO *tst_info);
 static int TS_check_status_info(TS_RESP *response);
-static char *TS_get_status_text(STACK_OF(ASN1_UTF8STRING) * text);
+static char *TS_get_status_text(STACK_OF(ASN1_UTF8STRING) *text);
 static int TS_check_policy(ASN1_OBJECT *req_oid, TS_TST_INFO *tst_info);
 static int TS_compute_imprint(BIO *data, TS_TST_INFO *tst_info,
                               X509_ALGOR **md_alg,
@@ -37,7 +37,7 @@ static int TS_check_imprints(X509_ALGOR *algor_a,
                              TS_TST_INFO *tst_info);
 static int TS_check_nonces(const ASN1_INTEGER *a, TS_TST_INFO *tst_info);
 static int TS_check_signer_name(GENERAL_NAME *tsa_name, X509 *signer);
-static int TS_find_name(STACK_OF(GENERAL_NAME) * gen_names, GENERAL_NAME * name);
+static int TS_find_name(STACK_OF(GENERAL_NAME) *gen_names, GENERAL_NAME * name);
 
 /*
  * Local mapping between response codes and descriptions.
@@ -88,7 +88,7 @@ static struct
  *    - Verify the signature value.
  *    - Returns the signer certificate in 'signer', if 'signer' is not NULL.
  */
-int TS_RESP_verify_signature(PKCS7 *token, STACK_OF(X509) * certs,
+int TS_RESP_verify_signature(PKCS7 *token, STACK_OF(X509) *certs,
                              X509_STORE * store, X509 * *signer_out)
 {
     STACK_OF(PKCS7_SIGNER_INFO) *sinfos = NULL;
@@ -177,8 +177,8 @@ err:
  * The certificate chain is returned in chain. Caller is responsible for
  * freeing the vector.
  */
-static int TS_verify_cert(X509_STORE *store, STACK_OF(X509) * untrusted,
-                          X509 * signer, STACK_OF(X509) * *chain)
+static int TS_verify_cert(X509_STORE *store, STACK_OF(X509) *untrusted,
+                          X509 * signer, STACK_OF(X509) **chain)
 {
     X509_STORE_CTX cert_ctx;
     int i;
@@ -205,7 +205,7 @@ static int TS_verify_cert(X509_STORE *store, STACK_OF(X509) * untrusted,
     return ret;
 }
 
-static int TS_check_signing_certs(PKCS7_SIGNER_INFO *si, STACK_OF(X509) * chain)
+static int TS_check_signing_certs(PKCS7_SIGNER_INFO *si, STACK_OF(X509) *chain)
 {
     ESS_SIGNING_CERT *ss = ESS_get_signing_cert(si);
     STACK_OF(ESS_CERT_ID) *cert_ids = NULL;
@@ -253,7 +253,7 @@ static ESS_SIGNING_CERT *ESS_get_signing_cert(PKCS7_SIGNER_INFO *si)
 }
 
 /* Returns < 0 if certificate is not found, certificate index otherwise. */
-static int TS_find_cert(STACK_OF(ESS_CERT_ID) * cert_ids, X509 * cert)
+static int TS_find_cert(STACK_OF(ESS_CERT_ID) *cert_ids, X509 * cert)
 {
     int i;
 
@@ -472,7 +472,7 @@ static int TS_check_status_info(TS_RESP *response)
     return 0;
 }
 
-static char *TS_get_status_text(STACK_OF(ASN1_UTF8STRING) * text)
+static char *TS_get_status_text(STACK_OF(ASN1_UTF8STRING) *text)
 {
     int i;
     unsigned int length = 0;
@@ -646,7 +646,7 @@ static int TS_check_signer_name(GENERAL_NAME *tsa_name, X509 *signer)
 }
 
 /* Returns 1 if name is in gen_names, 0 otherwise. */
-static int TS_find_name(STACK_OF(GENERAL_NAME) * gen_names, GENERAL_NAME * name)
+static int TS_find_name(STACK_OF(GENERAL_NAME) *gen_names, GENERAL_NAME * name)
 {
     int i, found;
     for (i = 0, found = 0; !found && i < sk_GENERAL_NAME_num(gen_names);

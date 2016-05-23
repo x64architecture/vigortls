@@ -19,9 +19,9 @@
 
 static char *strip_spaces(char *name);
 static int sk_strcmp(const char *const *a, const char *const *b);
-static STACK_OF(OPENSSL_STRING) * get_email(X509_NAME *name, GENERAL_NAMES *gens);
+static STACK_OF(OPENSSL_STRING) *get_email(X509_NAME *name, GENERAL_NAMES *gens);
 static void str_free(OPENSSL_STRING str);
-static int append_ia5(STACK_OF(OPENSSL_STRING) * *sk, ASN1_IA5STRING * email);
+static int append_ia5(STACK_OF(OPENSSL_STRING) **sk, ASN1_IA5STRING * email);
 
 static int ipv4_from_asc(uint8_t *v4, const char *in);
 static int ipv6_from_asc(uint8_t *v6, const char *in);
@@ -31,7 +31,7 @@ static int ipv6_hex(uint8_t *out, const char *in, int inlen);
 /* Add a CONF_VALUE name value pair to stack */
 
 int X509V3_add_value(const char *name, const char *value,
-                     STACK_OF(CONF_VALUE) * *extlist)
+                     STACK_OF(CONF_VALUE) **extlist)
 {
     CONF_VALUE *vtmp = NULL;
     char *tname = NULL, *tvalue = NULL;
@@ -58,7 +58,7 @@ err:
 }
 
 int X509V3_add_value_uchar(const char *name, const uint8_t *value,
-                           STACK_OF(CONF_VALUE) * *extlist)
+                           STACK_OF(CONF_VALUE) **extlist)
 {
     return X509V3_add_value(name, (const char *)value, extlist);
 }
@@ -79,7 +79,7 @@ void X509V3_conf_free(CONF_VALUE *conf)
 }
 
 int X509V3_add_value_bool(const char *name, int asn1_bool,
-                          STACK_OF(CONF_VALUE) * *extlist)
+                          STACK_OF(CONF_VALUE) **extlist)
 {
     if (asn1_bool)
         return X509V3_add_value(name, "TRUE", extlist);
@@ -87,7 +87,7 @@ int X509V3_add_value_bool(const char *name, int asn1_bool,
 }
 
 int X509V3_add_value_bool_nf(char *name, int asn1_bool,
-                             STACK_OF(CONF_VALUE) * *extlist)
+                             STACK_OF(CONF_VALUE) **extlist)
 {
     if (asn1_bool)
         return X509V3_add_value(name, "TRUE", extlist);
@@ -167,7 +167,7 @@ ASN1_INTEGER *s2i_ASN1_INTEGER(X509V3_EXT_METHOD *method, char *value)
 }
 
 int X509V3_add_value_int(const char *name, ASN1_INTEGER *aint,
-                         STACK_OF(CONF_VALUE) * *extlist)
+                         STACK_OF(CONF_VALUE) **extlist)
 {
     char *strtmp;
     int ret;
@@ -218,7 +218,7 @@ int X509V3_get_value_int(CONF_VALUE *value, ASN1_INTEGER **aint)
 
 /*#define DEBUG*/
 
-STACK_OF(CONF_VALUE) * X509V3_parse_list(const char *line)
+STACK_OF(CONF_VALUE) *X509V3_parse_list(const char *line)
 {
     char *p, *q, c;
     char *ntmp, *vtmp;
@@ -432,10 +432,10 @@ static int sk_strcmp(const char *const *a, const char *const *b)
     return strcmp(*a, *b);
 }
 
-STACK_OF(OPENSSL_STRING) * X509_get1_email(X509 *x)
+STACK_OF(OPENSSL_STRING) *X509_get1_email(X509 *x)
 {
     GENERAL_NAMES *gens;
-    STACK_OF(OPENSSL_STRING) * ret;
+    STACK_OF(OPENSSL_STRING) *ret;
 
     gens = X509_get_ext_d2i(x, NID_subject_alt_name, NULL, NULL);
     ret = get_email(X509_get_subject_name(x), gens);
@@ -443,7 +443,7 @@ STACK_OF(OPENSSL_STRING) * X509_get1_email(X509 *x)
     return ret;
 }
 
-STACK_OF(OPENSSL_STRING) * X509_get1_ocsp(X509 *x)
+STACK_OF(OPENSSL_STRING) *X509_get1_ocsp(X509 *x)
 {
     AUTHORITY_INFO_ACCESS *info;
     STACK_OF(OPENSSL_STRING) *ret = NULL;
@@ -465,11 +465,11 @@ STACK_OF(OPENSSL_STRING) * X509_get1_ocsp(X509 *x)
     return ret;
 }
 
-STACK_OF(OPENSSL_STRING) * X509_REQ_get1_email(X509_REQ *x)
+STACK_OF(OPENSSL_STRING) *X509_REQ_get1_email(X509_REQ *x)
 {
     GENERAL_NAMES *gens;
-    STACK_OF(X509_EXTENSION) * exts;
-    STACK_OF(OPENSSL_STRING) * ret;
+    STACK_OF(X509_EXTENSION) *exts;
+    STACK_OF(OPENSSL_STRING) *ret;
 
     exts = X509_REQ_get_extensions(x);
     gens = X509V3_get_d2i(exts, NID_subject_alt_name, NULL, NULL);
@@ -479,7 +479,7 @@ STACK_OF(OPENSSL_STRING) * X509_REQ_get1_email(X509_REQ *x)
     return ret;
 }
 
-static STACK_OF(OPENSSL_STRING) * get_email(X509_NAME *name, GENERAL_NAMES *gens)
+static STACK_OF(OPENSSL_STRING) *get_email(X509_NAME *name, GENERAL_NAMES *gens)
 {
     STACK_OF(OPENSSL_STRING) *ret = NULL;
     X509_NAME_ENTRY *ne;
@@ -511,7 +511,7 @@ static void str_free(OPENSSL_STRING str)
     free(str);
 }
 
-static int append_ia5(STACK_OF(OPENSSL_STRING) * *sk, ASN1_IA5STRING * email)
+static int append_ia5(STACK_OF(OPENSSL_STRING) **sk, ASN1_IA5STRING * email)
 {
     char *emtmp;
     /* First some sanity checks */
@@ -535,7 +535,7 @@ static int append_ia5(STACK_OF(OPENSSL_STRING) * *sk, ASN1_IA5STRING * email)
     return 1;
 }
 
-void X509_email_free(STACK_OF(OPENSSL_STRING) * sk)
+void X509_email_free(STACK_OF(OPENSSL_STRING) *sk)
 {
     sk_OPENSSL_STRING_pop_free(sk, str_free);
 }
@@ -777,7 +777,7 @@ static int ipv6_hex(uint8_t *out, const char *in, int inlen)
     return 1;
 }
 
-int X509V3_NAME_from_section(X509_NAME *nm, STACK_OF(CONF_VALUE) * dn_sk,
+int X509V3_NAME_from_section(X509_NAME *nm, STACK_OF(CONF_VALUE) *dn_sk,
                              unsigned long chtype)
 {
     CONF_VALUE *v;

@@ -17,12 +17,12 @@
 
 #include "x509_lcl.h"
 
-int X509at_get_attr_count(const STACK_OF(X509_ATTRIBUTE) * x)
+int X509at_get_attr_count(const STACK_OF(X509_ATTRIBUTE) *x)
 {
     return sk_X509_ATTRIBUTE_num(x);
 }
 
-int X509at_get_attr_by_NID(const STACK_OF(X509_ATTRIBUTE) * x, int nid,
+int X509at_get_attr_by_NID(const STACK_OF(X509_ATTRIBUTE) *x, int nid,
                            int lastpos)
 {
     ASN1_OBJECT *obj;
@@ -33,7 +33,7 @@ int X509at_get_attr_by_NID(const STACK_OF(X509_ATTRIBUTE) * x, int nid,
     return (X509at_get_attr_by_OBJ(x, obj, lastpos));
 }
 
-int X509at_get_attr_by_OBJ(const STACK_OF(X509_ATTRIBUTE) * sk, ASN1_OBJECT * obj,
+int X509at_get_attr_by_OBJ(const STACK_OF(X509_ATTRIBUTE) *sk, ASN1_OBJECT * obj,
                            int lastpos)
 {
     int n;
@@ -53,7 +53,7 @@ int X509at_get_attr_by_OBJ(const STACK_OF(X509_ATTRIBUTE) * sk, ASN1_OBJECT * ob
     return (-1);
 }
 
-X509_ATTRIBUTE *X509at_get_attr(const STACK_OF(X509_ATTRIBUTE) * x, int loc)
+X509_ATTRIBUTE *X509at_get_attr(const STACK_OF(X509_ATTRIBUTE) *x, int loc)
 {
     if (x == NULL || sk_X509_ATTRIBUTE_num(x) <= loc || loc < 0)
         return NULL;
@@ -61,7 +61,7 @@ X509_ATTRIBUTE *X509at_get_attr(const STACK_OF(X509_ATTRIBUTE) * x, int loc)
         return sk_X509_ATTRIBUTE_value(x, loc);
 }
 
-X509_ATTRIBUTE *X509at_delete_attr(STACK_OF(X509_ATTRIBUTE) * x, int loc)
+X509_ATTRIBUTE *X509at_delete_attr(STACK_OF(X509_ATTRIBUTE) *x, int loc)
 {
     X509_ATTRIBUTE *ret;
 
@@ -71,7 +71,7 @@ X509_ATTRIBUTE *X509at_delete_attr(STACK_OF(X509_ATTRIBUTE) * x, int loc)
     return (ret);
 }
 
-STACK_OF(X509_ATTRIBUTE) * X509at_add1_attr(STACK_OF(X509_ATTRIBUTE) * *x,
+STACK_OF(X509_ATTRIBUTE) *X509at_add1_attr(STACK_OF(X509_ATTRIBUTE) **x,
                                             X509_ATTRIBUTE * attr)
 {
     X509_ATTRIBUTE *new_attr = NULL;
@@ -103,12 +103,12 @@ err2:
     return (NULL);
 }
 
-STACK_OF(X509_ATTRIBUTE) * X509at_add1_attr_by_OBJ(STACK_OF(X509_ATTRIBUTE) * *x,
+STACK_OF(X509_ATTRIBUTE) *X509at_add1_attr_by_OBJ(STACK_OF(X509_ATTRIBUTE) **x,
                                                    const ASN1_OBJECT *obj, int type,
                                                    const uint8_t *bytes, int len)
 {
     X509_ATTRIBUTE *attr;
-    STACK_OF(X509_ATTRIBUTE) * ret;
+    STACK_OF(X509_ATTRIBUTE) *ret;
     attr = X509_ATTRIBUTE_create_by_OBJ(NULL, obj, type, bytes, len);
     if (!attr)
         return 0;
@@ -117,12 +117,12 @@ STACK_OF(X509_ATTRIBUTE) * X509at_add1_attr_by_OBJ(STACK_OF(X509_ATTRIBUTE) * *x
     return ret;
 }
 
-STACK_OF(X509_ATTRIBUTE) * X509at_add1_attr_by_NID(STACK_OF(X509_ATTRIBUTE) * *x,
+STACK_OF(X509_ATTRIBUTE) *X509at_add1_attr_by_NID(STACK_OF(X509_ATTRIBUTE) **x,
                                                    int nid, int type,
                                                    const uint8_t *bytes, int len)
 {
     X509_ATTRIBUTE *attr;
-    STACK_OF(X509_ATTRIBUTE) * ret;
+    STACK_OF(X509_ATTRIBUTE) *ret;
     attr = X509_ATTRIBUTE_create_by_NID(NULL, nid, type, bytes, len);
     if (!attr)
         return 0;
@@ -131,12 +131,12 @@ STACK_OF(X509_ATTRIBUTE) * X509at_add1_attr_by_NID(STACK_OF(X509_ATTRIBUTE) * *x
     return ret;
 }
 
-STACK_OF(X509_ATTRIBUTE) * X509at_add1_attr_by_txt(STACK_OF(X509_ATTRIBUTE) * *x,
+STACK_OF(X509_ATTRIBUTE) *X509at_add1_attr_by_txt(STACK_OF(X509_ATTRIBUTE) **x,
                                                    const char *attrname, int type,
                                                    const uint8_t *bytes, int len)
 {
     X509_ATTRIBUTE *attr;
-    STACK_OF(X509_ATTRIBUTE) * ret;
+    STACK_OF(X509_ATTRIBUTE) *ret;
     attr = X509_ATTRIBUTE_create_by_txt(NULL, attrname, type, bytes, len);
     if (!attr)
         return 0;
@@ -145,7 +145,7 @@ STACK_OF(X509_ATTRIBUTE) * X509at_add1_attr_by_txt(STACK_OF(X509_ATTRIBUTE) * *x
     return ret;
 }
 
-void *X509at_get0_data_by_OBJ(STACK_OF(X509_ATTRIBUTE) * x,
+void *X509at_get0_data_by_OBJ(STACK_OF(X509_ATTRIBUTE) *x,
                               ASN1_OBJECT * obj, int lastpos, int type)
 {
     int i;

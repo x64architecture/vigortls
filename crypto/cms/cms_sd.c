@@ -116,7 +116,7 @@ static void cms_sd_set_version(CMS_SignedData *sd)
 
 static int cms_copy_messageDigest(CMS_ContentInfo *cms, CMS_SignerInfo *si)
 {
-    STACK_OF(CMS_SignerInfo) * sinfos;
+    STACK_OF(CMS_SignerInfo) *sinfos;
     CMS_SignerInfo *sitmp;
     int i;
     sinfos = CMS_get0_SignerInfos(cms);
@@ -398,7 +398,7 @@ merr:
     return r;
 }
 
-STACK_OF(CMS_SignerInfo) * CMS_get0_SignerInfos(CMS_ContentInfo *cms)
+STACK_OF(CMS_SignerInfo) *CMS_get0_SignerInfos(CMS_ContentInfo *cms)
 {
     CMS_SignedData *sd;
     sd = cms_get0_signed(cms);
@@ -407,10 +407,10 @@ STACK_OF(CMS_SignerInfo) * CMS_get0_SignerInfos(CMS_ContentInfo *cms)
     return sd->signerInfos;
 }
 
-STACK_OF(X509) * CMS_get0_signers(CMS_ContentInfo *cms)
+STACK_OF(X509) *CMS_get0_signers(CMS_ContentInfo *cms)
 {
     STACK_OF(X509) *signers = NULL;
-    STACK_OF(CMS_SignerInfo) * sinfos;
+    STACK_OF(CMS_SignerInfo) *sinfos;
     CMS_SignerInfo *si;
     int i;
     sinfos = CMS_get0_SignerInfos(cms);
@@ -456,13 +456,13 @@ int CMS_SignerInfo_cert_cmp(CMS_SignerInfo *si, X509 *cert)
     return cms_SignerIdentifier_cert_cmp(si->sid, cert);
 }
 
-int CMS_set1_signers_certs(CMS_ContentInfo *cms, STACK_OF(X509) * scerts,
+int CMS_set1_signers_certs(CMS_ContentInfo *cms, STACK_OF(X509) *scerts,
                            unsigned int flags)
 {
     CMS_SignedData *sd;
     CMS_SignerInfo *si;
     CMS_CertificateChoices *cch;
-    STACK_OF(CMS_CertificateChoices) * certs;
+    STACK_OF(CMS_CertificateChoices) *certs;
     X509 *x;
     int i, j;
     int ret = 0;
@@ -575,7 +575,7 @@ err:
 
 int cms_SignedData_final(CMS_ContentInfo *cms, BIO *chain)
 {
-    STACK_OF(CMS_SignerInfo) * sinfos;
+    STACK_OF(CMS_SignerInfo) *sinfos;
     CMS_SignerInfo *si;
     int i;
     sinfos = CMS_get0_SignerInfos(cms);
@@ -779,7 +779,7 @@ err:
     return r;
 }
 
-int CMS_add_smimecap(CMS_SignerInfo *si, STACK_OF(X509_ALGOR) * algs)
+int CMS_add_smimecap(CMS_SignerInfo *si, STACK_OF(X509_ALGOR) *algs)
 {
     uint8_t *smder = NULL;
     int smderlen, r;
@@ -792,7 +792,7 @@ int CMS_add_smimecap(CMS_SignerInfo *si, STACK_OF(X509_ALGOR) * algs)
     return r;
 }
 
-int CMS_add_simple_smimecap(STACK_OF(X509_ALGOR) * *algs,
+int CMS_add_simple_smimecap(STACK_OF(X509_ALGOR) **algs,
                             int algnid, int keysize)
 {
     X509_ALGOR *alg;
@@ -822,21 +822,21 @@ int CMS_add_simple_smimecap(STACK_OF(X509_ALGOR) * *algs,
 
 /* Check to see if a cipher exists and if so add S/MIME capabilities */
 
-static int cms_add_cipher_smcap(STACK_OF(X509_ALGOR) * *sk, int nid, int arg)
+static int cms_add_cipher_smcap(STACK_OF(X509_ALGOR) **sk, int nid, int arg)
 {
     if (EVP_get_cipherbynid(nid))
         return CMS_add_simple_smimecap(sk, nid, arg);
     return 1;
 }
 
-static int cms_add_digest_smcap(STACK_OF(X509_ALGOR) * *sk, int nid, int arg)
+static int cms_add_digest_smcap(STACK_OF(X509_ALGOR) **sk, int nid, int arg)
 {
     if (EVP_get_digestbynid(nid))
         return CMS_add_simple_smimecap(sk, nid, arg);
     return 1;
 }
 
-int CMS_add_standard_smimecap(STACK_OF(X509_ALGOR) * *smcap)
+int CMS_add_standard_smimecap(STACK_OF(X509_ALGOR) **smcap)
 {
     if (!cms_add_cipher_smcap(smcap, NID_aes_256_cbc, -1)
         || !cms_add_digest_smcap(smcap, NID_id_GostR3411_94, -1)

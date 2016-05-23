@@ -192,7 +192,7 @@ int TS_TST_INFO_print_bio(BIO *bio, TS_TST_INFO *a)
     if (tsa_name == NULL)
         BIO_printf(bio, "unspecified");
     else {
-        STACK_OF(CONF_VALUE) * nval;
+        STACK_OF(CONF_VALUE) *nval;
         if ((nval = i2v_GENERAL_NAME(NULL, tsa_name, NULL)))
             X509V3_EXT_val_prn(bio, nval, 0, 0);
         sk_CONF_VALUE_pop_free(nval, X509V3_conf_free);

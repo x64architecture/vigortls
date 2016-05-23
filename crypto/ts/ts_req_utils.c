@@ -129,7 +129,7 @@ int TS_REQ_get_cert_req(const TS_REQ *a)
     return a->cert_req ? 1 : 0;
 }
 
-STACK_OF(X509_EXTENSION) * TS_REQ_get_exts(TS_REQ *a)
+STACK_OF(X509_EXTENSION) *TS_REQ_get_exts(TS_REQ *a)
 {
     return a->extensions;
 }

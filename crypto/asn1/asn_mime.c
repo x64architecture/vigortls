@@ -38,7 +38,7 @@ DECLARE_STACK_OF(MIME_PARAM)
 typedef struct {
     char *name;                    /* Name of line e.g. "content-type" */
     char *value;                   /* Value of line e.g. "text/plain" */
-    STACK_OF(MIME_PARAM) * params; /* Zero or more parameters */
+    STACK_OF(MIME_PARAM) *params; /* Zero or more parameters */
 } MIME_HEADER;
 
 DECLARE_STACK_OF(MIME_HEADER)
@@ -50,14 +50,14 @@ static char *strip_start(char *name);
 static char *strip_end(char *name);
 static MIME_HEADER *mime_hdr_new(char *name, char *value);
 static int mime_hdr_addparam(MIME_HEADER *mhdr, char *name, char *value);
-static STACK_OF(MIME_HEADER) * mime_parse_hdr(BIO *bio);
+static STACK_OF(MIME_HEADER) *mime_parse_hdr(BIO *bio);
 static int mime_hdr_cmp(const MIME_HEADER *const *a,
                         const MIME_HEADER *const *b);
 static int mime_param_cmp(const MIME_PARAM *const *a,
                           const MIME_PARAM *const *b);
 static void mime_param_free(MIME_PARAM *param);
 static int mime_bound_check(char *line, int linelen, char *bound, int blen);
-static int multi_split(BIO *bio, char *bound, STACK_OF(BIO) * *ret);
+static int multi_split(BIO *bio, char *bound, STACK_OF(BIO) **ret);
 static int strip_eol(char *linebuf, int *plen);
 static MIME_HEADER *mime_hdr_find(STACK_OF(MIME_HEADER) *hdrs, const char *name);
 static MIME_PARAM *mime_param_find(MIME_HEADER *hdr, const char *name);
@@ -156,7 +156,7 @@ static ASN1_VALUE *b64_read_asn1(BIO *bio, const ASN1_ITEM *it)
 
 /* Generate the MIME "micalg" parameter from RFC3851, RFC4490 */
 
-static int asn1_write_micalg(BIO *out, STACK_OF(X509_ALGOR) * mdalgs)
+static int asn1_write_micalg(BIO *out, STACK_OF(X509_ALGOR) *mdalgs)
 {
     const EVP_MD *md;
     int i, have_unknown = 0, write_comma, ret = 0, md_nid;
@@ -227,7 +227,7 @@ err:
 
 int SMIME_write_ASN1(BIO *bio, ASN1_VALUE *val, BIO *data, int flags,
                      int ctype_nid, int econt_nid,
-                     STACK_OF(X509_ALGOR) * mdalgs,
+                     STACK_OF(X509_ALGOR) *mdalgs,
                      const ASN1_ITEM *it)
 {
     char bound[33], c;
@@ -516,7 +516,7 @@ int SMIME_text(BIO *in, BIO *out)
 {
     char iobuf[4096];
     int len;
-    STACK_OF(MIME_HEADER) * headers;
+    STACK_OF(MIME_HEADER) *headers;
     MIME_HEADER *hdr;
 
     if (!(headers = mime_parse_hdr(in))) {
@@ -547,7 +547,7 @@ int SMIME_text(BIO *in, BIO *out)
  * canonical parts in a STACK of bios
  */
 
-static int multi_split(BIO *bio, char *bound, STACK_OF(BIO) * *ret)
+static int multi_split(BIO *bio, char *bound, STACK_OF(BIO) **ret)
 {
     char linebuf[MAX_SMLEN];
     int len, blen;
@@ -613,7 +613,7 @@ static STACK_OF(MIME_HEADER) *mime_parse_hdr(BIO *bio)
     char *ntmp;
     char linebuf[MAX_SMLEN];
     MIME_HEADER *mhdr = NULL;
-    STACK_OF(MIME_HEADER) * headers;
+    STACK_OF(MIME_HEADER) *headers;
     int len, state, save_state = 0;
 
     headers = sk_MIME_HEADER_new(mime_hdr_cmp);

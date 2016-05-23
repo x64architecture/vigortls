@@ -67,11 +67,11 @@ struct CMS_ContentInfo_st {
 
 struct CMS_SignedData_st {
     long version;
-    STACK_OF(X509_ALGOR) * digestAlgorithms;
+    STACK_OF(X509_ALGOR) *digestAlgorithms;
     CMS_EncapsulatedContentInfo *encapContentInfo;
-    STACK_OF(CMS_CertificateChoices) * certificates;
-    STACK_OF(CMS_RevocationInfoChoice) * crls;
-    STACK_OF(CMS_SignerInfo) * signerInfos;
+    STACK_OF(CMS_CertificateChoices) *certificates;
+    STACK_OF(CMS_RevocationInfoChoice) *crls;
+    STACK_OF(CMS_SignerInfo) *signerInfos;
 };
 
 struct CMS_EncapsulatedContentInfo_st {
@@ -85,10 +85,10 @@ struct CMS_SignerInfo_st {
     long version;
     CMS_SignerIdentifier *sid;
     X509_ALGOR *digestAlgorithm;
-    STACK_OF(X509_ATTRIBUTE) * signedAttrs;
+    STACK_OF(X509_ATTRIBUTE) *signedAttrs;
     X509_ALGOR *signatureAlgorithm;
     ASN1_OCTET_STRING *signature;
-    STACK_OF(X509_ATTRIBUTE) * unsignedAttrs;
+    STACK_OF(X509_ATTRIBUTE) *unsignedAttrs;
     /* Signing certificate and key */
     X509 *signer;
     EVP_PKEY *pkey;
@@ -105,14 +105,14 @@ struct CMS_SignerIdentifier_st {
 struct CMS_EnvelopedData_st {
     long version;
     CMS_OriginatorInfo *originatorInfo;
-    STACK_OF(CMS_RecipientInfo) * recipientInfos;
+    STACK_OF(CMS_RecipientInfo) *recipientInfos;
     CMS_EncryptedContentInfo *encryptedContentInfo;
-    STACK_OF(X509_ATTRIBUTE) * unprotectedAttrs;
+    STACK_OF(X509_ATTRIBUTE) *unprotectedAttrs;
 };
 
 struct CMS_OriginatorInfo_st {
-    STACK_OF(CMS_CertificateChoices) * certificates;
-    STACK_OF(CMS_RevocationInfoChoice) * crls;
+    STACK_OF(CMS_CertificateChoices) *certificates;
+    STACK_OF(CMS_RevocationInfoChoice) *crls;
 };
 
 struct CMS_EncryptedContentInfo_st {
@@ -155,7 +155,7 @@ struct CMS_KeyAgreeRecipientInfo_st {
     CMS_OriginatorIdentifierOrKey *originator;
     ASN1_OCTET_STRING *ukm;
     X509_ALGOR *keyEncryptionAlgorithm;
-    STACK_OF(CMS_RecipientEncryptedKey) * recipientEncryptedKeys;
+    STACK_OF(CMS_RecipientEncryptedKey) *recipientEncryptedKeys;
 };
 
 struct CMS_OriginatorIdentifierOrKey_st {
@@ -232,25 +232,25 @@ struct CMS_DigestedData_st {
 struct CMS_EncryptedData_st {
     long version;
     CMS_EncryptedContentInfo *encryptedContentInfo;
-    STACK_OF(X509_ATTRIBUTE) * unprotectedAttrs;
+    STACK_OF(X509_ATTRIBUTE) *unprotectedAttrs;
 };
 
 struct CMS_AuthenticatedData_st {
     long version;
     CMS_OriginatorInfo *originatorInfo;
-    STACK_OF(CMS_RecipientInfo) * recipientInfos;
+    STACK_OF(CMS_RecipientInfo) *recipientInfos;
     X509_ALGOR *macAlgorithm;
     X509_ALGOR *digestAlgorithm;
     CMS_EncapsulatedContentInfo *encapContentInfo;
-    STACK_OF(X509_ATTRIBUTE) * authAttrs;
+    STACK_OF(X509_ATTRIBUTE) *authAttrs;
     ASN1_OCTET_STRING *mac;
-    STACK_OF(X509_ATTRIBUTE) * unauthAttrs;
+    STACK_OF(X509_ATTRIBUTE) *unauthAttrs;
 };
 
 struct CMS_CompressedData_st {
     long version;
     X509_ALGOR *compressionAlgorithm;
-    STACK_OF(CMS_RecipientInfo) * recipientInfos;
+    STACK_OF(CMS_RecipientInfo) *recipientInfos;
     CMS_EncapsulatedContentInfo *encapContentInfo;
 };
 
@@ -313,14 +313,14 @@ struct CMS_OtherKeyAttribute_st {
 struct CMS_ReceiptRequest_st {
     ASN1_OCTET_STRING *signedContentIdentifier;
     CMS_ReceiptsFrom *receiptsFrom;
-    STACK_OF(GENERAL_NAMES) * receiptsTo;
+    STACK_OF(GENERAL_NAMES) *receiptsTo;
 };
 
 struct CMS_ReceiptsFrom_st {
     int type;
     union {
         long allOrFirstTier;
-        STACK_OF(GENERAL_NAMES) * receiptList;
+        STACK_OF(GENERAL_NAMES) *receiptList;
     } d;
 };
 #endif

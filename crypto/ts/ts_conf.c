@@ -56,7 +56,7 @@ end:
     return x;
 }
 
-STACK_OF(X509) * TS_CONF_load_certs(const char *file)
+STACK_OF(X509) *TS_CONF_load_certs(const char *file)
 {
     BIO *certs = NULL;
     STACK_OF(X509) *othercerts = NULL;

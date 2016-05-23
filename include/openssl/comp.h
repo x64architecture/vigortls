@@ -15,12 +15,10 @@ typedef struct comp_method_st {
     const char *name; /* A text string to identify the library */
     int (*init)(COMP_CTX *ctx);
     void (*finish)(COMP_CTX *ctx);
-    int (*compress)(COMP_CTX *ctx,
-                    uint8_t *out, unsigned int olen,
-                    uint8_t *in, unsigned int ilen);
-    int (*expand)(COMP_CTX *ctx,
-                  uint8_t *out, unsigned int olen,
-                  uint8_t *in, unsigned int ilen);
+    int (*compress)(COMP_CTX *ctx, uint8_t *out, unsigned int olen, uint8_t *in,
+                    unsigned int ilen);
+    int (*expand)(COMP_CTX *ctx, uint8_t *out, unsigned int olen, uint8_t *in,
+                  unsigned int ilen);
     /* The following two do NOTHING, but are kept for backward compatibility */
     long (*ctrl)(void);
     long (*callback_ctrl)(void);
@@ -38,10 +36,10 @@ struct comp_ctx_st {
 
 COMP_CTX *COMP_CTX_new(COMP_METHOD *meth);
 void COMP_CTX_free(COMP_CTX *ctx);
-int COMP_compress_block(COMP_CTX *ctx, uint8_t *out, int olen,
-                        uint8_t *in, int ilen);
-int COMP_expand_block(COMP_CTX *ctx, uint8_t *out, int olen,
-                      uint8_t *in, int ilen);
+int COMP_compress_block(COMP_CTX *ctx, uint8_t *out, int olen, uint8_t *in,
+                        int ilen);
+int COMP_expand_block(COMP_CTX *ctx, uint8_t *out, int olen, uint8_t *in,
+                      int ilen);
 COMP_METHOD *COMP_rle(void);
 COMP_METHOD *COMP_zlib(void);
 void COMP_zlib_cleanup(void);
@@ -62,17 +60,17 @@ void ERR_load_COMP_strings(void);
 /* Error codes for the COMP functions. */
 
 /* Function codes. */
-# define COMP_F_BIO_ZLIB_FLUSH                            99
-# define COMP_F_BIO_ZLIB_NEW                              100
-# define COMP_F_BIO_ZLIB_READ                             101
-# define COMP_F_BIO_ZLIB_WRITE                            102
+#define COMP_F_BIO_ZLIB_FLUSH 99
+#define COMP_F_BIO_ZLIB_NEW 100
+#define COMP_F_BIO_ZLIB_READ 101
+#define COMP_F_BIO_ZLIB_WRITE 102
 
 /* Reason codes. */
-# define COMP_R_ZLIB_DEFLATE_ERROR                        99
-# define COMP_R_ZLIB_INFLATE_ERROR                        100
-# define COMP_R_ZLIB_NOT_SUPPORTED                        101
+#define COMP_R_ZLIB_DEFLATE_ERROR 99
+#define COMP_R_ZLIB_INFLATE_ERROR 100
+#define COMP_R_ZLIB_NOT_SUPPORTED 101
 
-#ifdef  __cplusplus
+#ifdef __cplusplus
 }
 #endif
 #endif

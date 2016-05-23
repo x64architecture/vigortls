@@ -39,7 +39,7 @@ static void x509_name_ex_free(ASN1_VALUE **val, const ASN1_ITEM *it);
 static int x509_name_encode(X509_NAME *a);
 static int x509_name_canon(X509_NAME *a);
 static int asn1_string_canon(ASN1_STRING *out, ASN1_STRING *in);
-static int i2d_name_canon(STACK_OF(STACK_OF_X509_NAME_ENTRY) * intname,
+static int i2d_name_canon(STACK_OF(STACK_OF_X509_NAME_ENTRY) *intname,
                           uint8_t **in);
 
 static int x509_name_ex_print(BIO *out, ASN1_VALUE **pval,
@@ -176,7 +176,7 @@ static int x509_name_ex_d2i(ASN1_VALUE **val,
 {
     const uint8_t *p = *in, *q;
     union {
-        STACK_OF(STACK_OF_X509_NAME_ENTRY) * s;
+        STACK_OF(STACK_OF_X509_NAME_ENTRY) *s;
         ASN1_VALUE *a;
     } intname = { NULL };
     union {
@@ -184,7 +184,7 @@ static int x509_name_ex_d2i(ASN1_VALUE **val,
         ASN1_VALUE *a;
     } nm = { NULL };
     int i, j, ret;
-    STACK_OF(X509_NAME_ENTRY) * entries;
+    STACK_OF(X509_NAME_ENTRY) *entries;
     X509_NAME_ENTRY *entry;
     
     if (len > X509_NAME_MAX) {
@@ -254,12 +254,12 @@ static int x509_name_ex_i2d(ASN1_VALUE **val, uint8_t **out, const ASN1_ITEM *it
     return ret;
 }
 
-static void local_sk_X509_NAME_ENTRY_free(STACK_OF(X509_NAME_ENTRY) * ne)
+static void local_sk_X509_NAME_ENTRY_free(STACK_OF(X509_NAME_ENTRY) *ne)
 {
     sk_X509_NAME_ENTRY_free(ne);
 }
 
-static void local_sk_X509_NAME_ENTRY_pop_free(STACK_OF(X509_NAME_ENTRY) * ne)
+static void local_sk_X509_NAME_ENTRY_pop_free(STACK_OF(X509_NAME_ENTRY) *ne)
 {
     sk_X509_NAME_ENTRY_pop_free(ne, X509_NAME_ENTRY_free);
 }
@@ -267,7 +267,7 @@ static void local_sk_X509_NAME_ENTRY_pop_free(STACK_OF(X509_NAME_ENTRY) * ne)
 static int x509_name_encode(X509_NAME *a)
 {
     union {
-        STACK_OF(STACK_OF_X509_NAME_ENTRY) * s;
+        STACK_OF(STACK_OF_X509_NAME_ENTRY) *s;
         ASN1_VALUE *a;
     } intname = { NULL };
     int len;
@@ -479,7 +479,7 @@ static int asn1_string_canon(ASN1_STRING *out, ASN1_STRING *in)
     return 1;
 }
 
-static int i2d_name_canon(STACK_OF(STACK_OF_X509_NAME_ENTRY) * _intname,
+static int i2d_name_canon(STACK_OF(STACK_OF_X509_NAME_ENTRY) *_intname,
                           uint8_t **in)
 {
     int i, len, ltmp;

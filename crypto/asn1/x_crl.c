@@ -81,14 +81,14 @@ ASN1_SEQUENCE_enc(X509_CRL_INFO, enc, crl_inf_cb) = {
 
     int i, j;
     GENERAL_NAMES *gens, *gtmp;
-    STACK_OF(X509_REVOKED) * revoked;
+    STACK_OF(X509_REVOKED) *revoked;
 
     revoked = X509_CRL_get_REVOKED(crl);
 
     gens = NULL;
     for (i = 0; i < sk_X509_REVOKED_num(revoked); i++) {
         X509_REVOKED *rev = sk_X509_REVOKED_value(revoked, i);
-        STACK_OF(X509_EXTENSION) * exts;
+        STACK_OF(X509_EXTENSION) *exts;
         ASN1_ENUMERATED *reason;
         X509_EXTENSION *ext;
         gtmp = X509_REVOKED_get_ext_d2i(rev,
@@ -149,7 +149,7 @@ static int crl_cb(int operation, ASN1_VALUE **pval, const ASN1_ITEM *it,
                   void *exarg)
 {
     X509_CRL *crl = (X509_CRL *)*pval;
-    STACK_OF(X509_EXTENSION) * exts;
+    STACK_OF(X509_EXTENSION) *exts;
     X509_EXTENSION *ext;
     int idx;
 

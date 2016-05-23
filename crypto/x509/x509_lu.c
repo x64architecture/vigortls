@@ -177,7 +177,7 @@ static void cleanup(X509_OBJECT *a)
 void X509_STORE_free(X509_STORE *vfy)
 {
     int i;
-    STACK_OF(X509_LOOKUP) * sk;
+    STACK_OF(X509_LOOKUP) *sk;
     X509_LOOKUP *lu;
 
     if (vfy == NULL)
@@ -216,7 +216,7 @@ int X509_STORE_up_ref(X509_STORE *vfy)
 X509_LOOKUP *X509_STORE_add_lookup(X509_STORE *v, X509_LOOKUP_METHOD *m)
 {
     int i;
-    STACK_OF(X509_LOOKUP) * sk;
+    STACK_OF(X509_LOOKUP) *sk;
     X509_LOOKUP *lu;
 
     sk = v->get_cert_methods;
@@ -369,7 +369,7 @@ void X509_OBJECT_free_contents(X509_OBJECT *a)
     }
 }
 
-static int x509_object_idx_cnt(STACK_OF(X509_OBJECT) * h, int type,
+static int x509_object_idx_cnt(STACK_OF(X509_OBJECT) *h, int type,
                                X509_NAME *name, int *pnmatch)
 {
     X509_OBJECT stmp;
@@ -412,13 +412,13 @@ static int x509_object_idx_cnt(STACK_OF(X509_OBJECT) * h, int type,
     return idx;
 }
 
-int X509_OBJECT_idx_by_subject(STACK_OF(X509_OBJECT) * h, int type,
+int X509_OBJECT_idx_by_subject(STACK_OF(X509_OBJECT) *h, int type,
                                X509_NAME *name)
 {
     return x509_object_idx_cnt(h, type, name, NULL);
 }
 
-X509_OBJECT *X509_OBJECT_retrieve_by_subject(STACK_OF(X509_OBJECT) * h, int type,
+X509_OBJECT *X509_OBJECT_retrieve_by_subject(STACK_OF(X509_OBJECT) *h, int type,
                                              X509_NAME *name)
 {
     int idx;
@@ -431,7 +431,7 @@ X509_OBJECT *X509_OBJECT_retrieve_by_subject(STACK_OF(X509_OBJECT) * h, int type
 STACK_OF(X509) *X509_STORE_get1_certs(X509_STORE_CTX *ctx, X509_NAME *nm)
 {
     int i, idx, cnt;
-    STACK_OF(X509) * sk;
+    STACK_OF(X509) *sk;
     X509 *x;
     X509_OBJECT *obj;
     sk = sk_X509_new_null();
@@ -513,7 +513,7 @@ STACK_OF(X509_CRL) *X509_STORE_get1_crls(X509_STORE_CTX *ctx, X509_NAME *nm)
     return sk;
 }
 
-X509_OBJECT *X509_OBJECT_retrieve_match(STACK_OF(X509_OBJECT) * h, X509_OBJECT * x)
+X509_OBJECT *X509_OBJECT_retrieve_match(STACK_OF(X509_OBJECT) *h, X509_OBJECT * x)
 {
     int idx, i;
     X509_OBJECT *obj;

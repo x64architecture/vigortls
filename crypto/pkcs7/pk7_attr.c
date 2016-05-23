@@ -17,7 +17,7 @@
 #include <openssl/x509.h>
 #include <openssl/err.h>
 
-int PKCS7_add_attrib_smimecap(PKCS7_SIGNER_INFO *si, STACK_OF(X509_ALGOR) * cap)
+int PKCS7_add_attrib_smimecap(PKCS7_SIGNER_INFO *si, STACK_OF(X509_ALGOR) *cap)
 {
     ASN1_STRING *seq;
     if (!(seq = ASN1_STRING_new())) {
@@ -30,7 +30,7 @@ int PKCS7_add_attrib_smimecap(PKCS7_SIGNER_INFO *si, STACK_OF(X509_ALGOR) * cap)
                                       V_ASN1_SEQUENCE, seq);
 }
 
-STACK_OF(X509_ALGOR) * PKCS7_get_smimecap(PKCS7_SIGNER_INFO *si)
+STACK_OF(X509_ALGOR) *PKCS7_get_smimecap(PKCS7_SIGNER_INFO *si)
 {
     ASN1_TYPE *cap;
     const uint8_t *p;
@@ -45,7 +45,7 @@ STACK_OF(X509_ALGOR) * PKCS7_get_smimecap(PKCS7_SIGNER_INFO *si)
 }
 
 /* Basic smime-capabilities OID and optional integer arg */
-int PKCS7_simple_smimecap(STACK_OF(X509_ALGOR) * sk, int nid, int arg)
+int PKCS7_simple_smimecap(STACK_OF(X509_ALGOR) *sk, int nid, int arg)
 {
     X509_ALGOR *alg;
 

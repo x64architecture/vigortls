@@ -20,10 +20,10 @@
 #include <openssl/opensslconf.h>
 #include <stdio.h>
 
-#include <openssl/stack.h>
-#include <openssl/safestack.h>
 #include <openssl/opensslv.h>
 #include <openssl/ossl_typ.h>
+#include <openssl/safestack.h>
+#include <openssl/stack.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -78,7 +78,7 @@ typedef struct {
 typedef struct bio_st BIO_dummy;
 
 struct crypto_ex_data_st {
-    STACK_OF(void)*sk;
+    STACK_OF(void) *sk;
 };
 DECLARE_STACK_OF(void)
 
@@ -109,10 +109,10 @@ DECLARE_STACK_OF(void)
  * this is needed in Win32 where the application malloc and the
  * library malloc may not be the same.
  */
-#define CRYPTO_malloc_init() CRYPTO_set_mem_functions( \
-    malloc, realloc, free)
+#define CRYPTO_malloc_init() CRYPTO_set_mem_functions(malloc, realloc, free)
 
-#if defined CRYPTO_MDEBUG_ALL || defined CRYPTO_MDEBUG_TIME || defined CRYPTO_MDEBUG_THREAD
+#if defined CRYPTO_MDEBUG_ALL || defined CRYPTO_MDEBUG_TIME || \
+    defined CRYPTO_MDEBUG_THREAD
 #ifndef CRYPTO_MDEBUG /* avoid duplicate #define */
 #define CRYPTO_MDEBUG
 #endif
@@ -120,9 +120,11 @@ DECLARE_STACK_OF(void)
 
 /* Set standard debugging functions (not done by default
  * unless CRYPTO_MDEBUG is defined) */
-#define CRYPTO_malloc_debug_init()                                                                                                              \
-    do {                                                                                                                                        \
-        CRYPTO_set_mem_debug_functions(CRYPTO_dbg_malloc, CRYPTO_dbg_realloc, CRYPTO_dbg_free, CRYPTO_dbg_set_options, CRYPTO_dbg_get_options); \
+#define CRYPTO_malloc_debug_init()                                  \
+    do {                                                            \
+        CRYPTO_set_mem_debug_functions(                             \
+            CRYPTO_dbg_malloc, CRYPTO_dbg_realloc, CRYPTO_dbg_free, \
+            CRYPTO_dbg_set_options, CRYPTO_dbg_get_options);        \
     } while (0)
 
 int CRYPTO_mem_ctrl(int mode);
@@ -179,20 +181,20 @@ void CRYPTO_cleanup_all_ex_data(void);
  * These are the functions for the old threading API. These are all now no-ops
  * and should not be used.
  */
-#define CRYPTO_get_new_lockid(name)    (0)
-#define CRYPTO_num_locks()             (0)
+#define CRYPTO_get_new_lockid(name) (0)
+#define CRYPTO_num_locks() (0)
 /*
  * The old CRYPTO_lock() function has been removed completely without a
  * compatibility macro. This is because previously it could not return an error
  * response, but if any applications are using this they will not work and could
  * fail in strange ways. Better for them to fail at compile time.
- * 
+ *
  * void CRYPTO_lock(int mode, int type, const char *file, int line);
  */
 #define CRYPTO_set_locking_callback(func)
-#define CRYPTO_get_locking_callback()        (NULL)
+#define CRYPTO_get_locking_callback() (NULL)
 #define CRYPTO_set_add_lock_callback(func)
-#define CRYPTO_get_add_lock_callback()       (NULL)
+#define CRYPTO_get_add_lock_callback() (NULL)
 
 /* This structure is no longer used */
 typedef struct crypto_threadid_st {
@@ -200,56 +202,57 @@ typedef struct crypto_threadid_st {
 } CRYPTO_THREADID;
 #define CRYPTO_THREADID_set_numeric(id, val)
 #define CRYPTO_THREADID_set_pointer(id, ptr)
-#define CRYPTO_THREADID_set_callback(threadid_func)   (0)
-#define CRYPTO_THREADID_get_callback()                (NULL)
+#define CRYPTO_THREADID_set_callback(threadid_func) (0)
+#define CRYPTO_THREADID_get_callback() (NULL)
 #define CRYPTO_THREADID_current(id)
-#define CRYPTO_THREADID_cmp(a, b)                     (-1)
+#define CRYPTO_THREADID_cmp(a, b) (-1)
 #define CRYPTO_THREADID_cpy(dest, src)
-#define CRYPTO_THREADID_hash(id)                      (0UL)
+#define CRYPTO_THREADID_hash(id) (0UL)
 
 #define CRYPTO_set_id_callback(func)
-#define CRYPTO_get_id_callback()                     (NULL)
-#define CRYPTO_thread_id()                           (0UL)
+#define CRYPTO_get_id_callback() (NULL)
+#define CRYPTO_thread_id() (0UL)
 
-#define CRYPTO_get_lock_name(type)                    (NULL)
+#define CRYPTO_get_lock_name(type) (NULL)
 #define CRYPTO_add_lock(pointer, amount, type, file, line) (0)
 
-#define CRYPTO_get_new_dynlockid()                    (0)
+#define CRYPTO_get_new_dynlockid() (0)
 #define CRYPTO_destroy_dynlockid(i)
-#define CRYPTO_get_dynlock_value(i)                   (NULL)
+#define CRYPTO_get_dynlock_value(i) (NULL)
 #define CRYPTO_set_dynlock_create_callback(dyn_create_function)
 #define CRYPTO_set_dynlock_lock_callback(dyn_lock_function)
 #define CRYPTO_set_dynlock_destroy_callback(dyn_destroy_function)
-#define CRYPTO_get_dynlock_create_callback()          (NULL)
-#define CRYPTO_get_dynlock_lock_callback()            (NULL)
-#define CRYPTO_get_dynlock_destroy_callback()         (NULL)
+#define CRYPTO_get_dynlock_create_callback() (NULL)
+#define CRYPTO_get_dynlock_lock_callback() (NULL)
+#define CRYPTO_get_dynlock_destroy_callback() (NULL)
 
 /* CRYPTO_set_mem_functions includes CRYPTO_set_locked_mem_functions --
  * call the latter last if you need different functions */
-int CRYPTO_set_mem_functions(void *(*m)(size_t), void *(*r)(void *, size_t), void (*f)(void *));
-int CRYPTO_set_locked_mem_functions(void *(*m)(size_t), void (*free_func)(void *));
+int CRYPTO_set_mem_functions(void *(*m)(size_t), void *(*r)(void *, size_t),
+                             void (*f)(void *));
+int CRYPTO_set_locked_mem_functions(void *(*m)(size_t),
+                                    void (*free_func)(void *));
 int CRYPTO_set_mem_ex_functions(void *(*m)(size_t, const char *, int),
                                 void *(*r)(void *, size_t, const char *, int),
                                 void (*f)(void *));
 int CRYPTO_set_locked_mem_ex_functions(void *(*m)(size_t, const char *, int),
                                        void (*free_func)(void *));
-int CRYPTO_set_mem_debug_functions(void (*m)(void *, int, const char *, int, int),
-                                   void (*r)(void *, void *, int, const char *, int, int),
-                                   void (*f)(void *, int),
-                                   void (*so)(long),
-                                   long (*go)(void));
-void CRYPTO_get_mem_functions(void *(**m)(size_t), void *(**r)(void *, size_t), void (**f)(void *));
+int CRYPTO_set_mem_debug_functions(
+    void (*m)(void *, int, const char *, int, int),
+    void (*r)(void *, void *, int, const char *, int, int),
+    void (*f)(void *, int), void (*so)(long), long (*go)(void));
+void CRYPTO_get_mem_functions(void *(**m)(size_t), void *(**r)(void *, size_t),
+                              void (**f)(void *));
 void CRYPTO_get_locked_mem_functions(void *(**m)(size_t), void (**f)(void *));
 void CRYPTO_get_mem_ex_functions(void *(**m)(size_t, const char *, int),
                                  void *(**r)(void *, size_t, const char *, int),
                                  void (**f)(void *));
 void CRYPTO_get_locked_mem_ex_functions(void *(**m)(size_t, const char *, int),
                                         void (**f)(void *));
-void CRYPTO_get_mem_debug_functions(void (**m)(void *, int, const char *, int, int),
-                                    void (**r)(void *, void *, int, const char *, int, int),
-                                    void (**f)(void *, int),
-                                    void (**so)(long),
-                                    long (**go)(void));
+void CRYPTO_get_mem_debug_functions(
+    void (**m)(void *, int, const char *, int, int),
+    void (**r)(void *, void *, int, const char *, int, int),
+    void (**f)(void *, int), void (**so)(long), long (**go)(void));
 
 #ifndef VIGORTLS_INTERNAL
 void *CRYPTO_malloc_locked(int num, const char *file, int line);
@@ -269,8 +272,7 @@ void OPENSSL_cleanse(void *ptr, size_t len);
 void CRYPTO_set_mem_debug_options(long bits);
 long CRYPTO_get_mem_debug_options(void);
 
-#define CRYPTO_push_info(info) \
-    CRYPTO_push_info_(info, __FILE__, __LINE__);
+#define CRYPTO_push_info(info) CRYPTO_push_info_(info, __FILE__, __LINE__);
 int CRYPTO_push_info_(const char *info, const char *file, int line);
 int CRYPTO_pop_info(void);
 int CRYPTO_remove_all_info(void);
@@ -282,8 +284,10 @@ int CRYPTO_remove_all_info(void);
  * 0:    called before the actual memory allocation has taken place
  * 1:    called after the actual memory allocation has taken place
  */
-void CRYPTO_dbg_malloc(void *addr, int num, const char *file, int line, int before_p);
-void CRYPTO_dbg_realloc(void *addr1, void *addr2, int num, const char *file, int line, int before_p);
+void CRYPTO_dbg_malloc(void *addr, int num, const char *file, int line,
+                       int before_p);
+void CRYPTO_dbg_realloc(void *addr1, void *addr2, int num, const char *file,
+                        int line, int before_p);
 void CRYPTO_dbg_free(void *addr, int before_p);
 /* Tell the debugging code about options.  By default, the following values
  * apply:
@@ -304,18 +308,19 @@ void CRYPTO_mem_leaks_cb(CRYPTO_MEM_LEAK_CB *cb);
 
 /* die if we have to */
 void OpenSSLDie(const char *file, int line, const char *assertion);
-#define OPENSSL_assert(e) (void)((e) ? 0 : (OpenSSLDie(__FILE__, __LINE__, #e), 1))
+#define OPENSSL_assert(e) \
+    (void)((e) ? 0 : (OpenSSLDie(__FILE__, __LINE__, #e), 1))
 
 /*
  * CRYPTO_memcmp returns zero if the |len| bytes at |in_a| and |in_b| are equal.
- * It takes an amount of time dependent on |len|, but independent of the contents
+ * It takes an amount of time dependent on |len|, but independent of the
+ * contents
  * of |in_a| and |in_b|. Unlike memcmp, it cannot be used to put elements into a
  * defined order as the return value when in_a != in_b is undefined, other than
  * to be non-zero.
  */
-int CRYPTO_memcmp(const volatile void * volatile in_a,
-                  const volatile void * volatile in_b,
-                  size_t len);
+int CRYPTO_memcmp(const volatile void *volatile in_a,
+                  const volatile void *volatile in_b, size_t len);
 
 /* BEGIN ERROR CODES */
 /*

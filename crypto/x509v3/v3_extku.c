@@ -15,7 +15,7 @@
 static void *v2i_EXTENDED_KEY_USAGE(const X509V3_EXT_METHOD *method,
                                     X509V3_CTX *ctx,
                                     STACK_OF(CONF_VALUE) *nval);
-static STACK_OF(CONF_VALUE) * i2v_EXTENDED_KEY_USAGE(const X509V3_EXT_METHOD *method,
+static STACK_OF(CONF_VALUE) *i2v_EXTENDED_KEY_USAGE(const X509V3_EXT_METHOD *method,
                                                      void *eku, STACK_OF(CONF_VALUE) *extlist);
 
 const X509V3_EXT_METHOD v3_ext_ku = {
@@ -65,7 +65,7 @@ void EXTENDED_KEY_USAGE_free(EXTENDED_KEY_USAGE *a)
 }
 
 static STACK_OF(CONF_VALUE) *i2v_EXTENDED_KEY_USAGE(const X509V3_EXT_METHOD *method, void *a,
-                                                    STACK_OF(CONF_VALUE) * ext_list)
+                                                    STACK_OF(CONF_VALUE) *ext_list)
 {
     EXTENDED_KEY_USAGE *eku = a;
     int i;
@@ -80,7 +80,7 @@ static STACK_OF(CONF_VALUE) *i2v_EXTENDED_KEY_USAGE(const X509V3_EXT_METHOD *met
 }
 
 static void *v2i_EXTENDED_KEY_USAGE(const X509V3_EXT_METHOD *method,
-                                    X509V3_CTX *ctx, STACK_OF(CONF_VALUE) * nval)
+                                    X509V3_CTX *ctx, STACK_OF(CONF_VALUE) *nval)
 {
     EXTENDED_KEY_USAGE *extku;
     char *extval;

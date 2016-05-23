@@ -176,7 +176,7 @@ err:
 
 int X509_load_cert_crl_file(X509_LOOKUP *ctx, const char *file, int type)
 {
-    STACK_OF(X509_INFO) * inf;
+    STACK_OF(X509_INFO) *inf;
     X509_INFO *itmp;
     BIO *in;
     int i, count = 0;

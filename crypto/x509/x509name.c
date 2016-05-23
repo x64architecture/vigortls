@@ -69,7 +69,7 @@ int X509_NAME_get_index_by_OBJ(X509_NAME *name, ASN1_OBJECT *obj,
 {
     int n;
     X509_NAME_ENTRY *ne;
-    STACK_OF(X509_NAME_ENTRY) * sk;
+    STACK_OF(X509_NAME_ENTRY) *sk;
 
     if (name == NULL)
         return (-1);
@@ -98,7 +98,7 @@ X509_NAME_ENTRY *X509_NAME_delete_entry(X509_NAME *name, int loc)
 {
     X509_NAME_ENTRY *ret;
     int i, n, set_prev, set_next;
-    STACK_OF(X509_NAME_ENTRY) * sk;
+    STACK_OF(X509_NAME_ENTRY) *sk;
 
     if (name == NULL || sk_X509_NAME_ENTRY_num(name->entries) <= loc
         || loc < 0)
@@ -177,7 +177,7 @@ int X509_NAME_add_entry(X509_NAME *name, X509_NAME_ENTRY *ne, int loc,
 {
     X509_NAME_ENTRY *new_name = NULL;
     int n, i, inc;
-    STACK_OF(X509_NAME_ENTRY) * sk;
+    STACK_OF(X509_NAME_ENTRY) *sk;
 
     if (name == NULL)
         return (0);

@@ -36,7 +36,7 @@ static int callb(int ok, X509_STORE_CTX *ctx);
 static int sign(X509 *x, EVP_PKEY *pkey, int days, int clrext, const EVP_MD *digest,
                 CONF *conf, char *section);
 static int x509_certify(X509_STORE *ctx, char *CAfile, const EVP_MD *digest, X509 *x,
-                        X509 *xca, EVP_PKEY *pkey, STACK_OF(OPENSSL_STRING) * sigopts,
+                        X509 *xca, EVP_PKEY *pkey, STACK_OF(OPENSSL_STRING) *sigopts,
                         char *serial, int create, int days, int clrext, CONF *conf,
                         char *section, ASN1_INTEGER *sno, int reqfile);
 static int purpose_print(BIO *bio, X509 *cert, X509_PURPOSE *pt);
@@ -636,7 +636,7 @@ int x509_main(int argc, char **argv)
                 BIO_puts(out, "\n");
             } else if ((email == i) || (ocsp_uri == i)) {
                 int j;
-                STACK_OF(OPENSSL_STRING) * emlst;
+                STACK_OF(OPENSSL_STRING) *emlst;
                 if (email == i)
                     emlst = X509_get1_email(x);
                 else
@@ -933,7 +933,7 @@ end:
 }
 
 static int x509_certify(X509_STORE *ctx, char *CAfile, const EVP_MD *digest, X509 *x,
-                        X509 *xca, EVP_PKEY *pkey, STACK_OF(OPENSSL_STRING) * sigopts,
+                        X509 *xca, EVP_PKEY *pkey, STACK_OF(OPENSSL_STRING) *sigopts,
                         char *serialfile, int create, int days, int clrext, CONF *conf,
                         char *section, ASN1_INTEGER *sno, int reqfile)
 {

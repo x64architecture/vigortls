@@ -10,10 +10,10 @@
 #ifndef HEADER_TXT_DB_H
 #define HEADER_TXT_DB_H
 
-#include <openssl/opensslconf.h>
 #include <openssl/bio.h>
-#include <openssl/stack.h>
 #include <openssl/lhash.h>
+#include <openssl/opensslconf.h>
+#include <openssl/stack.h>
 
 #define DB_ERROR_OK 0
 #define DB_ERROR_MALLOC 1
@@ -31,8 +31,8 @@ DECLARE_SPECIAL_STACK_OF(OPENSSL_PSTRING, OPENSSL_STRING)
 
 typedef struct txt_db_st {
     int num_fields;
-    STACK_OF(OPENSSL_PSTRING) * data;
-    LHASH_OF(OPENSSL_STRING) * *index;
+    STACK_OF(OPENSSL_PSTRING) *data;
+    LHASH_OF(OPENSSL_STRING) **index;
     int (**qual)(OPENSSL_STRING *);
     long error;
     long arg1;

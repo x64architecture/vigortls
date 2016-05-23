@@ -83,7 +83,7 @@ PKCS12_SAFEBAG *PKCS12_MAKE_SHKEYBAG(int pbe_nid, const char *pass,
 }
 
 /* Turn a stack of SAFEBAGS into a PKCS#7 data Contentinfo */
-PKCS7 *PKCS12_pack_p7data(STACK_OF(PKCS12_SAFEBAG) * sk)
+PKCS7 *PKCS12_pack_p7data(STACK_OF(PKCS12_SAFEBAG) *sk)
 {
     PKCS7 *p7;
     if (!(p7 = PKCS7_new())) {
@@ -104,7 +104,7 @@ PKCS7 *PKCS12_pack_p7data(STACK_OF(PKCS12_SAFEBAG) * sk)
 }
 
 /* Unpack SAFEBAGS from PKCS#7 data ContentInfo */
-STACK_OF(PKCS12_SAFEBAG) * PKCS12_unpack_p7data(PKCS7 *p7)
+STACK_OF(PKCS12_SAFEBAG) *PKCS12_unpack_p7data(PKCS7 *p7)
 {
     if (!PKCS7_type_is_data(p7)) {
         PKCS12err(PKCS12_F_PKCS12_UNPACK_P7DATA, PKCS12_R_CONTENT_TYPE_NOT_DATA);
@@ -117,7 +117,7 @@ STACK_OF(PKCS12_SAFEBAG) * PKCS12_unpack_p7data(PKCS7 *p7)
 
 PKCS7 *PKCS12_pack_p7encdata(int pbe_nid, const char *pass, int passlen,
                              uint8_t *salt, int saltlen, int iter,
-                             STACK_OF(PKCS12_SAFEBAG) * bags)
+                             STACK_OF(PKCS12_SAFEBAG) *bags)
 {
     PKCS7 *p7;
     X509_ALGOR *pbe;
@@ -155,7 +155,7 @@ PKCS7 *PKCS12_pack_p7encdata(int pbe_nid, const char *pass, int passlen,
     return p7;
 }
 
-STACK_OF(PKCS12_SAFEBAG) * PKCS12_unpack_p7encdata(PKCS7 *p7, const char *pass, int passlen)
+STACK_OF(PKCS12_SAFEBAG) *PKCS12_unpack_p7encdata(PKCS7 *p7, const char *pass, int passlen)
 {
     if (!PKCS7_type_is_encrypted(p7))
         return NULL;
@@ -171,7 +171,7 @@ PKCS8_PRIV_KEY_INFO *PKCS12_decrypt_skey(PKCS12_SAFEBAG *bag, const char *pass,
     return PKCS8_decrypt(bag->value.shkeybag, pass, passlen);
 }
 
-int PKCS12_pack_authsafes(PKCS12 *p12, STACK_OF(PKCS7) * safes)
+int PKCS12_pack_authsafes(PKCS12 *p12, STACK_OF(PKCS7) *safes)
 {
     if (ASN1_item_pack(safes, ASN1_ITEM_rptr(PKCS12_AUTHSAFES),
                        &p12->authsafes->d.data))
@@ -179,7 +179,7 @@ int PKCS12_pack_authsafes(PKCS12 *p12, STACK_OF(PKCS7) * safes)
     return 0;
 }
 
-STACK_OF(PKCS7) * PKCS12_unpack_authsafes(PKCS12 *p12)
+STACK_OF(PKCS7) *PKCS12_unpack_authsafes(PKCS12 *p12)
 {
     if (!PKCS7_type_is_data(p12->authsafes)) {
         PKCS12err(PKCS12_F_PKCS12_UNPACK_AUTHSAFES, PKCS12_R_CONTENT_TYPE_NOT_DATA);

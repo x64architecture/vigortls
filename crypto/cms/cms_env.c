@@ -58,7 +58,7 @@ static CMS_EnvelopedData *cms_enveloped_data_init(CMS_ContentInfo *cms)
     return cms_get0_enveloped(cms);
 }
 
-STACK_OF(CMS_RecipientInfo) * CMS_get0_RecipientInfos(CMS_ContentInfo *cms)
+STACK_OF(CMS_RecipientInfo) *CMS_get0_RecipientInfos(CMS_ContentInfo *cms)
 {
     CMS_EnvelopedData *env;
     env = cms_get0_enveloped(cms);
@@ -711,7 +711,7 @@ int CMS_RecipientInfo_decrypt(CMS_ContentInfo *cms, CMS_RecipientInfo *ri)
 BIO *cms_EnvelopedData_init_bio(CMS_ContentInfo *cms)
 {
     CMS_EncryptedContentInfo *ec;
-    STACK_OF(CMS_RecipientInfo) * rinfos;
+    STACK_OF(CMS_RecipientInfo) *rinfos;
     CMS_RecipientInfo *ri;
     int i, r, ok = 0;
     BIO *ret;

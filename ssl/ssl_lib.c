@@ -115,7 +115,7 @@ int SSL_clear(SSL *s)
 /* Used to change an SSL_CTXs default SSL method type */
 int SSL_CTX_set_ssl_version(SSL_CTX *ctx, const SSL_METHOD *meth)
 {
-    STACK_OF(SSL_CIPHER) * sk;
+    STACK_OF(SSL_CIPHER) *sk;
 
     ctx->method = meth;
 
@@ -652,9 +652,9 @@ X509 *SSL_get_peer_certificate(const SSL *s)
     return r;
 }
 
-STACK_OF(X509) * SSL_get_peer_cert_chain(const SSL *s)
+STACK_OF(X509) *SSL_get_peer_cert_chain(const SSL *s)
 {
-    STACK_OF(X509) * r;
+    STACK_OF(X509) *r;
 
     if ((s == NULL) || (s->session == NULL) || (s->session->sess_cert == NULL))
         r = NULL;
@@ -919,7 +919,7 @@ long SSL_callback_ctrl(SSL *s, int cmd, void (*fp)(void))
     }
 }
 
-LHASH_OF(SSL_SESSION) * SSL_CTX_sessions(SSL_CTX *ctx)
+LHASH_OF(SSL_SESSION) *SSL_CTX_sessions(SSL_CTX *ctx)
 {
     return (ctx->sessions);
 }
@@ -1042,7 +1042,7 @@ int ssl_cipher_ptr_id_cmp(const SSL_CIPHER *const *ap,
  * Return a STACK of the ciphers available for the SSL and in order of
  * preference.
  */
-STACK_OF(SSL_CIPHER) * SSL_get_ciphers(const SSL *s)
+STACK_OF(SSL_CIPHER) *SSL_get_ciphers(const SSL *s)
 {
     if (s != NULL) {
         if (s->cipher_list != NULL) {
@@ -1058,7 +1058,7 @@ STACK_OF(SSL_CIPHER) * SSL_get_ciphers(const SSL *s)
  * Return a STACK of the ciphers available for the SSL and in order of
  * algorithm id.
  */
-STACK_OF(SSL_CIPHER) * ssl_get_ciphers_by_id(SSL *s)
+STACK_OF(SSL_CIPHER) *ssl_get_ciphers_by_id(SSL *s)
 {
     if (s != NULL) {
         if (s->cipher_list_by_id != NULL) {
@@ -1074,7 +1074,7 @@ STACK_OF(SSL_CIPHER) * ssl_get_ciphers_by_id(SSL *s)
 const char *SSL_get_cipher_list(const SSL *s, int n)
 {
     SSL_CIPHER *c;
-    STACK_OF(SSL_CIPHER) * sk;
+    STACK_OF(SSL_CIPHER) *sk;
 
     if (s == NULL)
         return (NULL);
@@ -1090,7 +1090,7 @@ const char *SSL_get_cipher_list(const SSL *s, int n)
 /* Specify the ciphers to be used by default by the SSL_CTX. */
 int SSL_CTX_set_cipher_list(SSL_CTX *ctx, const char *str)
 {
-    STACK_OF(SSL_CIPHER) * sk;
+    STACK_OF(SSL_CIPHER) *sk;
 
     sk = ssl_create_cipher_list(ctx->method, &ctx->cipher_list,
                                 &ctx->cipher_list_by_id, str);
@@ -1115,7 +1115,7 @@ int SSL_CTX_set_cipher_list(SSL_CTX *ctx, const char *str)
 /* Specify the ciphers to be used by the SSL. */
 int SSL_set_cipher_list(SSL *s, const char *str)
 {
-    STACK_OF(SSL_CIPHER) * sk;
+    STACK_OF(SSL_CIPHER) *sk;
 
     sk = ssl_create_cipher_list(s->ctx->method, &s->cipher_list,
                                 &s->cipher_list_by_id, str);
@@ -1133,7 +1133,7 @@ int SSL_set_cipher_list(SSL *s, const char *str)
 char *SSL_get_shared_ciphers(const SSL *s, char *buf, int len)
 {
     char *end;
-    STACK_OF(SSL_CIPHER) * sk;
+    STACK_OF(SSL_CIPHER) *sk;
     SSL_CIPHER *c;
     size_t curlen = 0;
     int i;
@@ -2166,7 +2166,7 @@ const char *SSL_get_version(const SSL *s)
 
 SSL *SSL_dup(SSL *s)
 {
-    STACK_OF(X509_NAME) * sk;
+    STACK_OF(X509_NAME) *sk;
     X509_NAME *xn;
     SSL *ret;
     int i;

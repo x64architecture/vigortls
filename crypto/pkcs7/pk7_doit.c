@@ -15,9 +15,9 @@
 #include <openssl/x509v3.h>
 #include <openssl/err.h>
 
-static int add_attribute(STACK_OF(X509_ATTRIBUTE) * *sk, int nid, int atrtype,
+static int add_attribute(STACK_OF(X509_ATTRIBUTE) **sk, int nid, int atrtype,
                          void *value);
-static ASN1_TYPE *get_attribute(STACK_OF(X509_ATTRIBUTE) * sk, int nid);
+static ASN1_TYPE *get_attribute(STACK_OF(X509_ATTRIBUTE) *sk, int nid);
 
 static int PKCS7_type_is_other(PKCS7 *p7)
 {
@@ -667,7 +667,7 @@ int PKCS7_dataFinal(PKCS7 *p7, BIO *bio)
     BIO *btmp;
     PKCS7_SIGNER_INFO *si;
     EVP_MD_CTX *mdc, ctx_tmp;
-    STACK_OF(X509_ATTRIBUTE) * sk;
+    STACK_OF(X509_ATTRIBUTE) *sk;
     STACK_OF(PKCS7_SIGNER_INFO) *si_sk = NULL;
     ASN1_OCTET_STRING *os = NULL;
     
@@ -890,7 +890,7 @@ int PKCS7_dataVerify(X509_STORE *cert_store, X509_STORE_CTX *ctx, BIO *bio,
 {
     PKCS7_ISSUER_AND_SERIAL *ias;
     int ret = 0, i;
-    STACK_OF(X509) * cert;
+    STACK_OF(X509) *cert;
     X509 *x509;
     
     if (p7 == NULL) {
@@ -948,7 +948,7 @@ int PKCS7_signatureVerify(BIO *bio, PKCS7 *p7, PKCS7_SIGNER_INFO *si,
     EVP_MD_CTX mdc_tmp, *mdc;
     int ret = 0, i;
     int md_type;
-    STACK_OF(X509_ATTRIBUTE) * sk;
+    STACK_OF(X509_ATTRIBUTE) *sk;
     BIO *btmp;
     EVP_PKEY *pkey;
 
@@ -1051,7 +1051,7 @@ err:
 
 PKCS7_ISSUER_AND_SERIAL *PKCS7_get_issuer_and_serial(PKCS7 *p7, int idx)
 {
-    STACK_OF(PKCS7_RECIP_INFO) * rsk;
+    STACK_OF(PKCS7_RECIP_INFO) *rsk;
     PKCS7_RECIP_INFO *ri;
     int i;
 
@@ -1080,7 +1080,7 @@ ASN1_TYPE *PKCS7_get_attribute(PKCS7_SIGNER_INFO *si, int nid)
     return (get_attribute(si->unauth_attr, nid));
 }
 
-static ASN1_TYPE *get_attribute(STACK_OF(X509_ATTRIBUTE) * sk, int nid)
+static ASN1_TYPE *get_attribute(STACK_OF(X509_ATTRIBUTE) *sk, int nid)
 {
     int idx;
     X509_ATTRIBUTE *xa;
@@ -1091,7 +1091,7 @@ static ASN1_TYPE *get_attribute(STACK_OF(X509_ATTRIBUTE) * sk, int nid)
     return X509_ATTRIBUTE_get0_type(xa, 0);
 }
 
-ASN1_OCTET_STRING *PKCS7_digest_from_attributes(STACK_OF(X509_ATTRIBUTE) * sk)
+ASN1_OCTET_STRING *PKCS7_digest_from_attributes(STACK_OF(X509_ATTRIBUTE) *sk)
 {
     ASN1_TYPE *astype;
     if (!(astype = get_attribute(sk, NID_pkcs9_messageDigest)))
@@ -1100,7 +1100,7 @@ ASN1_OCTET_STRING *PKCS7_digest_from_attributes(STACK_OF(X509_ATTRIBUTE) * sk)
 }
 
 int PKCS7_set_signed_attributes(PKCS7_SIGNER_INFO *p7si,
-                                STACK_OF(X509_ATTRIBUTE) * sk)
+                                STACK_OF(X509_ATTRIBUTE) *sk)
 {
     int i;
 
@@ -1118,7 +1118,7 @@ int PKCS7_set_signed_attributes(PKCS7_SIGNER_INFO *p7si,
     return (1);
 }
 
-int PKCS7_set_attributes(PKCS7_SIGNER_INFO *p7si, STACK_OF(X509_ATTRIBUTE) * sk)
+int PKCS7_set_attributes(PKCS7_SIGNER_INFO *p7si, STACK_OF(X509_ATTRIBUTE) *sk)
 {
     int i;
 
@@ -1149,7 +1149,7 @@ int PKCS7_add_attribute(PKCS7_SIGNER_INFO *p7si, int nid, int atrtype,
     return (add_attribute(&(p7si->unauth_attr), nid, atrtype, value));
 }
 
-static int add_attribute(STACK_OF(X509_ATTRIBUTE) * *sk, int nid, int atrtype,
+static int add_attribute(STACK_OF(X509_ATTRIBUTE) **sk, int nid, int atrtype,
                          void *value)
 {
     X509_ATTRIBUTE *attr = NULL;

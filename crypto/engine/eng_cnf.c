@@ -47,7 +47,7 @@ static int int_engine_configure(char *name, char *value, const CONF *cnf)
     int i;
     int ret = 0;
     long do_init = -1;
-    STACK_OF(CONF_VALUE) * ecmds;
+    STACK_OF(CONF_VALUE) *ecmds;
     CONF_VALUE *ecmd = NULL;
     char *ctrlname, *ctrlvalue;
     ENGINE *e = NULL;
@@ -155,7 +155,7 @@ err:
 
 static int int_engine_module_init(CONF_IMODULE *md, const CONF *cnf)
 {
-    STACK_OF(CONF_VALUE) * elist;
+    STACK_OF(CONF_VALUE) *elist;
     CONF_VALUE *cval;
     int i;
 

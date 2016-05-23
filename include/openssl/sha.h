@@ -21,9 +21,10 @@ extern "C" {
 #define SHA_LONG uint32_t
 
 #define SHA_LBLOCK 16
-#define SHA_CBLOCK (SHA_LBLOCK * 4) /* SHA treats input data as a
-                                     * contiguous array of 32 bit
-                                     * wide big-endian values. */
+#define SHA_CBLOCK                                 \
+    (SHA_LBLOCK * 4) /* SHA treats input data as a \
+                      * contiguous array of 32 bit \
+                      * wide big-endian values. */
 #define SHA_LAST_BLOCK (SHA_CBLOCK - 8)
 #define SHA_DIGEST_LENGTH 20
 
@@ -40,9 +41,10 @@ int SHA1_Final(uint8_t *md, SHA_CTX *ctx);
 uint8_t *SHA1(const uint8_t *d, size_t n, uint8_t *md);
 void SHA1_Transform(SHA_CTX *ctx, const uint8_t *data);
 
-#define SHA256_CBLOCK (SHA_LBLOCK * 4) /* SHA-256 treats input data as a
-                                        * contiguous array of 32 bit
-                                        * wide big-endian values. */
+#define SHA256_CBLOCK                                  \
+    (SHA_LBLOCK * 4) /* SHA-256 treats input data as a \
+                      * contiguous array of 32 bit     \
+                      * wide big-endian values. */
 #define SHA224_DIGEST_LENGTH 28
 #define SHA256_DIGEST_LENGTH 32
 
@@ -71,9 +73,10 @@ void SHA256_Transform(SHA256_CTX *c, const uint8_t *data);
  * being exactly 64-bit wide. See Implementation Notes in sha512.c
  * for further details.
  */
-#define SHA512_CBLOCK (SHA_LBLOCK * 8) /* SHA-512 treats input data as a
-                                        * contiguous array of 64 bit
-                                        * wide big-endian values. */
+#define SHA512_CBLOCK                                  \
+    (SHA_LBLOCK * 8) /* SHA-512 treats input data as a \
+                      * contiguous array of 64 bit     \
+                      * wide big-endian values. */
 
 typedef struct SHA512state_st {
     uint64_t h[8];

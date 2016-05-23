@@ -18,11 +18,11 @@
 #include "internal/x509_int.h"
 
 static void *v2i_NAME_CONSTRAINTS(const X509V3_EXT_METHOD *method,
-                                  X509V3_CTX *ctx, STACK_OF(CONF_VALUE) * nval);
+                                  X509V3_CTX *ctx, STACK_OF(CONF_VALUE) *nval);
 static int i2r_NAME_CONSTRAINTS(const X509V3_EXT_METHOD *method,
                                 void *a, BIO *bp, int ind);
 static int do_i2r_name_constraints(const X509V3_EXT_METHOD *method,
-                                   STACK_OF(GENERAL_SUBTREE) * trees,
+                                   STACK_OF(GENERAL_SUBTREE) *trees,
                                    BIO * bp, int ind, const char *name);
 static int print_nc_ipadd(BIO *bp, ASN1_OCTET_STRING *ip);
 
@@ -133,7 +133,7 @@ static int i2r_NAME_CONSTRAINTS(const X509V3_EXT_METHOD *method, void *a,
 }
 
 static int do_i2r_name_constraints(const X509V3_EXT_METHOD *method,
-                                   STACK_OF(GENERAL_SUBTREE) * trees,
+                                   STACK_OF(GENERAL_SUBTREE) *trees,
                                    BIO * bp, int ind, const char *name)
 {
     GENERAL_SUBTREE *tree;

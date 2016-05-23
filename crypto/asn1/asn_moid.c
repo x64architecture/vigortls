@@ -27,7 +27,7 @@ static int oid_module_init(CONF_IMODULE *md, const CONF *cnf)
 {
     int i;
     const char *oid_section;
-    STACK_OF(CONF_VALUE) * sktmp;
+    STACK_OF(CONF_VALUE) *sktmp;
     CONF_VALUE *oval;
     oid_section = CONF_imodule_get_value(md);
     if (!(sktmp = NCONF_get_section(cnf, oid_section))) {

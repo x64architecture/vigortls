@@ -86,7 +86,7 @@ static void tree_print(char *str, X509_POLICY_TREE *tree,
  *  6 Tree empty and requireExplicitPolicy true.
  */
 
-static int tree_init(X509_POLICY_TREE **ptree, STACK_OF(X509) * certs,
+static int tree_init(X509_POLICY_TREE **ptree, STACK_OF(X509) *certs,
                      unsigned int flags)
 {
     X509_POLICY_TREE *tree;
@@ -372,7 +372,7 @@ static int tree_link_any(X509_POLICY_LEVEL *curr,
 
 static int tree_prune(X509_POLICY_TREE *tree, X509_POLICY_LEVEL *curr)
 {
-    STACK_OF(X509_POLICY_NODE) * nodes;
+    STACK_OF(X509_POLICY_NODE) *nodes;
     X509_POLICY_NODE *node;
     int i;
     nodes = curr->nodes;
@@ -416,7 +416,7 @@ static int tree_prune(X509_POLICY_TREE *tree, X509_POLICY_LEVEL *curr)
     return 1;
 }
 
-static int tree_add_auth_node(STACK_OF(X509_POLICY_NODE) * *pnodes,
+static int tree_add_auth_node(STACK_OF(X509_POLICY_NODE) **pnodes,
                               X509_POLICY_NODE * pcy)
 {
     if (!*pnodes) {
@@ -442,11 +442,11 @@ static int tree_add_auth_node(STACK_OF(X509_POLICY_NODE) * *pnodes,
  */
 
 static int tree_calculate_authority_set(X509_POLICY_TREE *tree,
-                                        STACK_OF(X509_POLICY_NODE) * *pnodes)
+                                        STACK_OF(X509_POLICY_NODE) **pnodes)
 {
     X509_POLICY_LEVEL *curr;
     X509_POLICY_NODE *node, *anyptr;
-    STACK_OF(X509_POLICY_NODE) * *addnodes;
+    STACK_OF(X509_POLICY_NODE) **addnodes;
     int i, j;
     curr = tree->levels + tree->nlevel - 1;
 
@@ -484,8 +484,8 @@ static int tree_calculate_authority_set(X509_POLICY_TREE *tree,
 }
 
 static int tree_calculate_user_set(X509_POLICY_TREE *tree,
-                                   STACK_OF(ASN1_OBJECT) * policy_oids,
-                                   STACK_OF(X509_POLICY_NODE) * auth_nodes)
+                                   STACK_OF(ASN1_OBJECT) *policy_oids,
+                                   STACK_OF(X509_POLICY_NODE) *auth_nodes)
 {
     int i;
     X509_POLICY_NODE *node;
@@ -615,7 +615,7 @@ int X509_policy_check(X509_POLICY_TREE **ptree, int *pexplicit_policy,
 {
     int ret;
     X509_POLICY_TREE *tree = NULL;
-    STACK_OF(X509_POLICY_NODE) * nodes, *auth_nodes = NULL;
+    STACK_OF(X509_POLICY_NODE) *nodes, *auth_nodes = NULL;
     *ptree = NULL;
 
     *pexplicit_policy = 0;

@@ -205,7 +205,7 @@ unsigned long X509_NAME_hash_old(X509_NAME *x)
 }
 
 /* Search a stack of X509 for a match */
-X509 *X509_find_by_issuer_and_serial(STACK_OF(X509) * sk, X509_NAME * name,
+X509 *X509_find_by_issuer_and_serial(STACK_OF(X509) *sk, X509_NAME * name,
                                      ASN1_INTEGER * serial)
 {
     int i;
@@ -227,7 +227,7 @@ X509 *X509_find_by_issuer_and_serial(STACK_OF(X509) * sk, X509_NAME * name,
     return (NULL);
 }
 
-X509 *X509_find_by_subject(STACK_OF(X509) * sk, X509_NAME * name)
+X509 *X509_find_by_subject(STACK_OF(X509) *sk, X509_NAME * name)
 {
     X509 *x509;
     int i;

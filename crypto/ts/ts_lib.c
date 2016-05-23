@@ -50,7 +50,7 @@ int TS_OBJ_print_bio(BIO *bio, const ASN1_OBJECT *obj)
     return 1;
 }
 
-int TS_ext_print_bio(BIO *bio, const STACK_OF(X509_EXTENSION) * extensions)
+int TS_ext_print_bio(BIO *bio, const STACK_OF(X509_EXTENSION) *extensions)
 {
     int i, critical, n;
     X509_EXTENSION *ex;

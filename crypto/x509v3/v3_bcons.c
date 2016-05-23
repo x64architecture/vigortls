@@ -64,7 +64,7 @@ static STACK_OF(CONF_VALUE) *i2v_BASIC_CONSTRAINTS(X509V3_EXT_METHOD *method,
 }
 
 static BASIC_CONSTRAINTS *v2i_BASIC_CONSTRAINTS(X509V3_EXT_METHOD *method,
-                                                X509V3_CTX *ctx, STACK_OF(CONF_VALUE) * values)
+                                                X509V3_CTX *ctx, STACK_OF(CONF_VALUE) *values)
 {
     BASIC_CONSTRAINTS *bcons = NULL;
     CONF_VALUE *val;

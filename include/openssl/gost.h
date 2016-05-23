@@ -36,12 +36,12 @@ int Gost2814789_set_key(GOST2814789_KEY *key, const uint8_t *userKey,
                         const int bits);
 void Gost2814789_ecb_encrypt(const uint8_t *in, uint8_t *out,
                              GOST2814789_KEY *key, const int enc);
-void Gost2814789_cfb64_encrypt(const uint8_t *in, uint8_t *out,
-                               size_t length, GOST2814789_KEY *key,
-                               uint8_t *ivec, int *num, const int enc);
-void Gost2814789_cnt_encrypt(const uint8_t *in, uint8_t *out,
-                             size_t length, GOST2814789_KEY *key,
-                             uint8_t *ivec, uint8_t *cnt_buf, int *num);
+void Gost2814789_cfb64_encrypt(const uint8_t *in, uint8_t *out, size_t length,
+                               GOST2814789_KEY *key, uint8_t *ivec, int *num,
+                               const int enc);
+void Gost2814789_cnt_encrypt(const uint8_t *in, uint8_t *out, size_t length,
+                             GOST2814789_KEY *key, uint8_t *ivec,
+                             uint8_t *cnt_buf, int *num);
 
 typedef struct {
     ASN1_OCTET_STRING *iv;
@@ -65,12 +65,12 @@ typedef struct GOST2814789IMITstate_st {
 
 /* Note, also removed second parameter and removed dctx->cipher setting */
 int GOST2814789IMIT_Init(GOST2814789IMIT_CTX *c, int nid);
-int GOST2814789IMIT_Update(GOST2814789IMIT_CTX *c, const void *data, size_t len);
+int GOST2814789IMIT_Update(GOST2814789IMIT_CTX *c, const void *data,
+                           size_t len);
 int GOST2814789IMIT_Final(uint8_t *md, GOST2814789IMIT_CTX *c);
 void GOST2814789IMIT_Transform(GOST2814789IMIT_CTX *c, const uint8_t *data);
-uint8_t *GOST2814789IMIT(const uint8_t *d, size_t n, uint8_t *md,
-                               int nid, const uint8_t *key,
-                               const uint8_t *iv);
+uint8_t *GOST2814789IMIT(const uint8_t *d, size_t n, uint8_t *md, int nid,
+                         const uint8_t *key, const uint8_t *iv);
 
 #define GOSTR341194_LONG unsigned int
 
@@ -93,9 +93,7 @@ int GOSTR341194_Init(GOSTR341194_CTX *c, int nid);
 int GOSTR341194_Update(GOSTR341194_CTX *c, const void *data, size_t len);
 int GOSTR341194_Final(uint8_t *md, GOSTR341194_CTX *c);
 void GOSTR341194_Transform(GOSTR341194_CTX *c, const uint8_t *data);
-uint8_t *GOSTR341194(const uint8_t *d, size_t n, uint8_t *md,
-                           int nid);
-
+uint8_t *GOSTR341194(const uint8_t *d, size_t n, uint8_t *md, int nid);
 
 #undef U64 /* Fix conflict with SHA header */
 #if defined(_LP64)
@@ -136,7 +134,8 @@ typedef struct gost_key_st GOST_KEY;
 GOST_KEY *GOST_KEY_new(void);
 void GOST_KEY_free(GOST_KEY *r);
 int GOST_KEY_check_key(const GOST_KEY *eckey);
-int GOST_KEY_set_public_key_affine_coordinates(GOST_KEY *key, BIGNUM *x, BIGNUM *y);
+int GOST_KEY_set_public_key_affine_coordinates(GOST_KEY *key, BIGNUM *x,
+                                               BIGNUM *y);
 const EC_GROUP *GOST_KEY_get0_group(const GOST_KEY *key);
 int GOST_KEY_set_group(GOST_KEY *key, const EC_GROUP *group);
 int GOST_KEY_get_digest(const GOST_KEY *key);

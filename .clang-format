@@ -1,8 +1,10 @@
 Language:        Cpp
 AccessModifierOffset: -2
 ConstructorInitializerIndentWidth: 4
+AlignConsecutiveAssignments: true
 AlignEscapedNewlinesLeft: true
 AlignTrailingComments: true
+AlignOperands: true
 AllowAllParametersOfDeclarationOnNextLine: true
 AllowShortIfStatementsOnASingleLine: false
 AllowShortLoopsOnASingleLine: false
@@ -29,8 +31,7 @@ PenaltyReturnTypeOnItsOwnLine: 60
 PointerBindsToType: false
 SpacesBeforeTrailingComments: 1
 Cpp11BracedListStyle: false
-Standard: Cpp03
-TabWidth: 8
+Standard: Cpp11
 UseTab: Never
 BreakBeforeBraces: Linux
 IndentFunctionDeclarationAfterType: false
@@ -41,3 +42,4 @@ SpacesInContainerLiterals: true
 SpaceBeforeAssignmentOperators: true
 ContinuationIndentWidth: 4
 SpaceBeforeParens: ControlStatements
+SortIncludes: true

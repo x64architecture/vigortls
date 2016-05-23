@@ -215,7 +215,7 @@ int X509_VERIFY_PARAM_add0_policy(X509_VERIFY_PARAM *param, ASN1_OBJECT *policy)
 }
 
 int X509_VERIFY_PARAM_set1_policies(X509_VERIFY_PARAM *param,
-                                    STACK_OF(ASN1_OBJECT) * policies)
+                                    STACK_OF(ASN1_OBJECT) *policies)
 {
     int i;
     ASN1_OBJECT *oid, *doid;

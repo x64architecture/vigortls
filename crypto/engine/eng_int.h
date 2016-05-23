@@ -81,7 +81,7 @@ ENGINE *engine_table_select_tmp(ENGINE_TABLE **table, int nid, const char *f,
                                 int l);
 #define engine_table_select(t, n) engine_table_select_tmp(t, n, __FILE__, __LINE__)
 #endif
-typedef void(engine_table_doall_cb)(int nid, STACK_OF(ENGINE) * sk,
+typedef void(engine_table_doall_cb)(int nid, STACK_OF(ENGINE) *sk,
                                     ENGINE * def, void *arg);
 void engine_table_doall(ENGINE_TABLE *table, engine_table_doall_cb *cb,
                         void *arg);

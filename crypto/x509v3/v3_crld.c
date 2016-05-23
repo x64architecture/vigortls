@@ -18,7 +18,7 @@
 #include "internal/x509_int.h"
 
 static void *v2i_crld(const X509V3_EXT_METHOD *method,
-                      X509V3_CTX *ctx, STACK_OF(CONF_VALUE) * nval);
+                      X509V3_CTX *ctx, STACK_OF(CONF_VALUE) *nval);
 static int i2r_crldp(const X509V3_EXT_METHOD *method, void *pcrldp, BIO *out,
                      int indent);
 
@@ -42,10 +42,10 @@ const X509V3_EXT_METHOD v3_freshest_crl = {
     NULL
 };
 
-static STACK_OF(GENERAL_NAME) * gnames_from_sectname(X509V3_CTX *ctx, char *sect)
+static STACK_OF(GENERAL_NAME) *gnames_from_sectname(X509V3_CTX *ctx, char *sect)
 {
-    STACK_OF(CONF_VALUE) * gnsect;
-    STACK_OF(GENERAL_NAME) * gens;
+    STACK_OF(CONF_VALUE) *gnsect;
+    STACK_OF(GENERAL_NAME) *gens;
     if (*sect == '@')
         gnsect = X509V3_get_section(ctx, sect + 1);
     else
@@ -74,7 +74,7 @@ static int set_dist_point_name(DIST_POINT_NAME **pdp, X509V3_CTX *ctx,
             goto err;
     } else if (strcmp(cnf->name, "relativename") == 0) {
         int ret;
-        STACK_OF(CONF_VALUE) * dnsect;
+        STACK_OF(CONF_VALUE) *dnsect;
         X509_NAME *nm;
         nm = X509_NAME_new();
         if (!nm)
@@ -205,7 +205,7 @@ static int print_reasons(BIO *out, const char *rname,
 }
 
 static DIST_POINT *crldp_from_section(X509V3_CTX *ctx,
-                                      STACK_OF(CONF_VALUE) * nval)
+                                      STACK_OF(CONF_VALUE) *nval)
 {
     int i;
     CONF_VALUE *cnf;
@@ -240,7 +240,7 @@ err:
 }
 
 static void *v2i_crld(const X509V3_EXT_METHOD *method,
-                      X509V3_CTX *ctx, STACK_OF(CONF_VALUE) * nval)
+                      X509V3_CTX *ctx, STACK_OF(CONF_VALUE) *nval)
 {
     STACK_OF(DIST_POINT) *crld = NULL;
     GENERAL_NAMES *gens = NULL;
@@ -253,7 +253,7 @@ static void *v2i_crld(const X509V3_EXT_METHOD *method,
         DIST_POINT *point;
         cnf = sk_CONF_VALUE_value(nval, i);
         if (!cnf->value) {
-            STACK_OF(CONF_VALUE) * dpsect;
+            STACK_OF(CONF_VALUE) *dpsect;
             dpsect = X509V3_get_section(ctx, cnf->name);
             if (!dpsect)
                 goto err;
@@ -419,7 +419,7 @@ void ISSUING_DIST_POINT_free(ISSUING_DIST_POINT *a)
 }
 
 static int i2r_idp(const X509V3_EXT_METHOD *method, void *pidp, BIO *out, int indent);
-static void *v2i_idp(const X509V3_EXT_METHOD *method, X509V3_CTX *ctx, STACK_OF(CONF_VALUE) * nval);
+static void *v2i_idp(const X509V3_EXT_METHOD *method, X509V3_CTX *ctx, STACK_OF(CONF_VALUE) *nval);
 
 const X509V3_EXT_METHOD v3_idp = {
     NID_issuing_distribution_point, X509V3_EXT_MULTILINE,
@@ -433,7 +433,7 @@ const X509V3_EXT_METHOD v3_idp = {
 };
 
 static void *v2i_idp(const X509V3_EXT_METHOD *method, X509V3_CTX *ctx,
-                     STACK_OF(CONF_VALUE) * nval)
+                     STACK_OF(CONF_VALUE) *nval)
 {
     ISSUING_DIST_POINT *idp = NULL;
     CONF_VALUE *cnf;
@@ -481,7 +481,7 @@ err:
     return NULL;
 }
 
-static int print_gens(BIO *out, STACK_OF(GENERAL_NAME) * gens, int indent)
+static int print_gens(BIO *out, STACK_OF(GENERAL_NAME) *gens, int indent)
 {
     int i;
     for (i = 0; i < sk_GENERAL_NAME_num(gens); i++) {
@@ -558,7 +558,7 @@ static int i2r_crldp(const X509V3_EXT_METHOD *method, void *pcrldp, BIO *out,
 int DIST_POINT_set_dpname(DIST_POINT_NAME *dpn, X509_NAME *iname)
 {
     int i;
-    STACK_OF(X509_NAME_ENTRY) * frag;
+    STACK_OF(X509_NAME_ENTRY) *frag;
     X509_NAME_ENTRY *ne;
     if (!dpn || (dpn->type != 1))
         return 1;

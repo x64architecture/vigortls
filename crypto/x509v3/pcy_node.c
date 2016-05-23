@@ -19,12 +19,12 @@ static int node_cmp(const X509_POLICY_NODE *const *a,
     return OBJ_cmp((*a)->data->valid_policy, (*b)->data->valid_policy);
 }
 
-STACK_OF(X509_POLICY_NODE) * policy_node_cmp_new(void)
+STACK_OF(X509_POLICY_NODE) *policy_node_cmp_new(void)
 {
     return sk_X509_POLICY_NODE_new(node_cmp);
 }
 
-X509_POLICY_NODE *tree_find_sk(STACK_OF(X509_POLICY_NODE) * nodes,
+X509_POLICY_NODE *tree_find_sk(STACK_OF(X509_POLICY_NODE) *nodes,
                                const ASN1_OBJECT *id)
 {
     X509_POLICY_DATA n;

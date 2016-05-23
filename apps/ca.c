@@ -92,31 +92,31 @@
 
 static void lookup_fail(const char *name, const char *tag);
 static int certify(X509 **xret, char *infile, EVP_PKEY *pkey, X509 *x509,
-                   const EVP_MD *dgst, STACK_OF(OPENSSL_STRING) * sigopts,
-                   STACK_OF(CONF_VALUE) * policy, CA_DB * db,
+                   const EVP_MD *dgst, STACK_OF(OPENSSL_STRING) *sigopts,
+                   STACK_OF(CONF_VALUE) *policy, CA_DB * db,
                    BIGNUM * serial, char *subj, unsigned long chtype, int multirdn, int email_dn, char *startdate,
                    char *enddate, long days, int batch, char *ext_sect, CONF *conf,
                    int verbose, unsigned long certopt, unsigned long nameopt,
                    int default_op, int ext_copy, int selfsign);
 static int certify_cert(X509 **xret, char *infile, EVP_PKEY *pkey, X509 *x509,
-                        const EVP_MD *dgst, STACK_OF(OPENSSL_STRING) * sigopts,
-                        STACK_OF(CONF_VALUE) * policy,
+                        const EVP_MD *dgst, STACK_OF(OPENSSL_STRING) *sigopts,
+                        STACK_OF(CONF_VALUE) *policy,
                         CA_DB * db, BIGNUM * serial, char *subj, unsigned long chtype, int multirdn, int email_dn,
                         char *startdate, char *enddate, long days, int batch,
                         char *ext_sect, CONF *conf, int verbose, unsigned long certopt,
                         unsigned long nameopt, int default_op, int ext_copy,
                         ENGINE *e);
 static int certify_spkac(X509 **xret, char *infile, EVP_PKEY *pkey, X509 *x509,
-                         const EVP_MD *dgst, STACK_OF(OPENSSL_STRING) * sigopts,
-                         STACK_OF(CONF_VALUE) * policy,
+                         const EVP_MD *dgst, STACK_OF(OPENSSL_STRING) *sigopts,
+                         STACK_OF(CONF_VALUE) *policy,
                          CA_DB * db, BIGNUM * serial, char *subj, unsigned long chtype, int multirdn, int email_dn,
                          char *startdate, char *enddate, long days, char *ext_sect,
                          CONF *conf, int verbose, unsigned long certopt,
                          unsigned long nameopt, int default_op, int ext_copy);
 static void write_new_certificate(BIO *bp, X509 *x, int output_der, int notext);
 static int do_body(X509 **xret, EVP_PKEY *pkey, X509 *x509, const EVP_MD *dgst,
-                   STACK_OF(OPENSSL_STRING) * sigopts,
-                   STACK_OF(CONF_VALUE) * policy, CA_DB * db, BIGNUM * serial, char *subj, unsigned long chtype, int multirdn,
+                   STACK_OF(OPENSSL_STRING) *sigopts,
+                   STACK_OF(CONF_VALUE) *policy, CA_DB * db, BIGNUM * serial, char *subj, unsigned long chtype, int multirdn,
                    int email_dn, char *startdate, char *enddate, long days, int batch,
                    int verbose, X509_REQ *req, char *ext_sect, CONF *conf,
                    unsigned long certopt, unsigned long nameopt, int default_op,
@@ -1916,8 +1916,8 @@ static void write_new_certificate(BIO *bp, X509 *x, int output_der, int notext)
 }
 
 static int certify_spkac(X509 **xret, char *infile, EVP_PKEY *pkey, X509 *x509,
-                         const EVP_MD *dgst, STACK_OF(OPENSSL_STRING) * sigopts,
-                         STACK_OF(CONF_VALUE) * policy, CA_DB * db,
+                         const EVP_MD *dgst, STACK_OF(OPENSSL_STRING) *sigopts,
+                         STACK_OF(CONF_VALUE) *policy, CA_DB * db,
                          BIGNUM * serial, char *subj, unsigned long chtype, int multirdn, int email_dn, char *startdate, char *enddate,
                          long days, char *ext_sect, CONF *lconf, int verbose, unsigned long certopt,
                          unsigned long nameopt, int default_op, int ext_copy)

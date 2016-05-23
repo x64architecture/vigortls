@@ -141,7 +141,7 @@ err:
 OPENSSL_STRING *TXT_DB_get_by_index(TXT_DB *db, int idx, OPENSSL_STRING *value)
 {
     OPENSSL_STRING *ret;
-    LHASH_OF(OPENSSL_STRING) * lh;
+    LHASH_OF(OPENSSL_STRING) *lh;
 
     if (idx >= db->num_fields) {
         db->error = DB_ERROR_INDEX_OUT_OF_RANGE;
@@ -160,7 +160,7 @@ OPENSSL_STRING *TXT_DB_get_by_index(TXT_DB *db, int idx, OPENSSL_STRING *value)
 int TXT_DB_create_index(TXT_DB *db, int field, int (*qual)(OPENSSL_STRING *),
                         LHASH_HASH_FN_TYPE hash, LHASH_COMP_FN_TYPE cmp)
 {
-    LHASH_OF(OPENSSL_STRING) * idx;
+    LHASH_OF(OPENSSL_STRING) *idx;
     OPENSSL_STRING *r;
     int i, n;
 

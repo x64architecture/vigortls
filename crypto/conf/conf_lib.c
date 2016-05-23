@@ -18,7 +18,7 @@ static CONF_METHOD *default_CONF_method = NULL;
 
 /* Init a 'CONF' structure from an old LHASH */
 
-void CONF_set_nconf(CONF *conf, LHASH_OF(CONF_VALUE) * hash)
+void CONF_set_nconf(CONF *conf, LHASH_OF(CONF_VALUE) *hash)
 {
     if (default_CONF_method == NULL)
         default_CONF_method = NCONF_default();
@@ -36,10 +36,10 @@ int CONF_set_default_method(CONF_METHOD *meth)
     return 1;
 }
 
-LHASH_OF(CONF_VALUE) * CONF_load(LHASH_OF(CONF_VALUE) * conf, const char *file,
+LHASH_OF(CONF_VALUE) *CONF_load(LHASH_OF(CONF_VALUE) *conf, const char *file,
                                  long *eline)
 {
-    LHASH_OF(CONF_VALUE) * ltmp;
+    LHASH_OF(CONF_VALUE) *ltmp;
     BIO *in = NULL;
 
     in = BIO_new_file(file, "rb");
@@ -55,11 +55,11 @@ LHASH_OF(CONF_VALUE) * CONF_load(LHASH_OF(CONF_VALUE) * conf, const char *file,
     return ltmp;
 }
 
-LHASH_OF(CONF_VALUE) * CONF_load_fp(LHASH_OF(CONF_VALUE) * conf, FILE * fp,
+LHASH_OF(CONF_VALUE) *CONF_load_fp(LHASH_OF(CONF_VALUE) *conf, FILE * fp,
                                     long *eline)
 {
     BIO *btmp;
-    LHASH_OF(CONF_VALUE) * ltmp;
+    LHASH_OF(CONF_VALUE) *ltmp;
     if (!(btmp = BIO_new_fp(fp, BIO_NOCLOSE))) {
         CONFerr(CONF_F_CONF_LOAD_FP, ERR_R_BUF_LIB);
         return NULL;
@@ -69,7 +69,7 @@ LHASH_OF(CONF_VALUE) * CONF_load_fp(LHASH_OF(CONF_VALUE) * conf, FILE * fp,
     return ltmp;
 }
 
-LHASH_OF(CONF_VALUE) * CONF_load_bio(LHASH_OF(CONF_VALUE) * conf, BIO * bp,
+LHASH_OF(CONF_VALUE) *CONF_load_bio(LHASH_OF(CONF_VALUE) *conf, BIO * bp,
                                      long *eline)
 {
     CONF ctmp;
@@ -83,7 +83,7 @@ LHASH_OF(CONF_VALUE) * CONF_load_bio(LHASH_OF(CONF_VALUE) * conf, BIO * bp,
     return NULL;
 }
 
-STACK_OF(CONF_VALUE) * CONF_get_section(LHASH_OF(CONF_VALUE) * conf,
+STACK_OF(CONF_VALUE) *CONF_get_section(LHASH_OF(CONF_VALUE) *conf,
                                         const char *section)
 {
     if (conf == NULL) {
@@ -95,7 +95,7 @@ STACK_OF(CONF_VALUE) * CONF_get_section(LHASH_OF(CONF_VALUE) * conf,
     }
 }
 
-char *CONF_get_string(LHASH_OF(CONF_VALUE) * conf, const char *group,
+char *CONF_get_string(LHASH_OF(CONF_VALUE) *conf, const char *group,
                       const char *name)
 {
     if (conf == NULL) {
@@ -107,7 +107,7 @@ char *CONF_get_string(LHASH_OF(CONF_VALUE) * conf, const char *group,
     }
 }
 
-long CONF_get_number(LHASH_OF(CONF_VALUE) * conf, const char *group,
+long CONF_get_number(LHASH_OF(CONF_VALUE) *conf, const char *group,
                      const char *name)
 {
     int status;
@@ -128,14 +128,14 @@ long CONF_get_number(LHASH_OF(CONF_VALUE) * conf, const char *group,
     return result;
 }
 
-void CONF_free(LHASH_OF(CONF_VALUE) * conf)
+void CONF_free(LHASH_OF(CONF_VALUE) *conf)
 {
     CONF ctmp;
     CONF_set_nconf(&ctmp, conf);
     NCONF_free_data(&ctmp);
 }
 
-int CONF_dump_fp(LHASH_OF(CONF_VALUE) * conf, FILE * out)
+int CONF_dump_fp(LHASH_OF(CONF_VALUE) *conf, FILE * out)
 {
     BIO *btmp;
     int ret;
@@ -149,7 +149,7 @@ int CONF_dump_fp(LHASH_OF(CONF_VALUE) * conf, FILE * out)
     return ret;
 }
 
-int CONF_dump_bio(LHASH_OF(CONF_VALUE) * conf, BIO * out)
+int CONF_dump_bio(LHASH_OF(CONF_VALUE) *conf, BIO * out)
 {
     CONF ctmp;
     CONF_set_nconf(&ctmp, conf);
@@ -225,7 +225,7 @@ int NCONF_load_bio(CONF *conf, BIO *bp, long *eline)
     return conf->meth->load_bio(conf, bp, eline);
 }
 
-STACK_OF(CONF_VALUE) * NCONF_get_section(const CONF *conf, const char *section)
+STACK_OF(CONF_VALUE) *NCONF_get_section(const CONF *conf, const char *section)
 {
     if (conf == NULL) {
         CONFerr(CONF_F_NCONF_GET_SECTION, CONF_R_NO_CONF);

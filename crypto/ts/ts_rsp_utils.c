@@ -294,7 +294,7 @@ GENERAL_NAME *TS_TST_INFO_get_tsa(TS_TST_INFO *a)
     return a->tsa;
 }
 
-STACK_OF(X509_EXTENSION) * TS_TST_INFO_get_exts(TS_TST_INFO *a)
+STACK_OF(X509_EXTENSION) *TS_TST_INFO_get_exts(TS_TST_INFO *a)
 {
     return a->extensions;
 }

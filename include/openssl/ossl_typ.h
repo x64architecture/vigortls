@@ -36,15 +36,14 @@ typedef struct asn1_object_st ASN1_OBJECT;
 typedef struct ASN1_ITEM_st ASN1_ITEM;
 typedef struct asn1_pctx_st ASN1_PCTX;
 
-
 /* Fixes conflicts with wincrypt.h */
 #if defined(_WIN32) && defined(__WINCRYPT_H__)
- #undef X509_NAME
- #undef X509_CERT_PAIR
- #undef X509_EXTENSIONS
- #undef OCSP_REQUEST
- #undef OCSP_RESPONSE
- #undef PKCS7_ISSUER_AND_SERIAL
+#undef X509_NAME
+#undef X509_CERT_PAIR
+#undef X509_EXTENSIONS
+#undef OCSP_REQUEST
+#undef OCSP_RESPONSE
+#undef PKCS7_ISSUER_AND_SERIAL
 #endif
 
 #ifdef BIGNUM
@@ -125,12 +124,12 @@ typedef struct NAME_CONSTRAINTS_st NAME_CONSTRAINTS;
 
 typedef struct crypto_ex_data_st CRYPTO_EX_DATA;
 /* Callback types for crypto.h */
-typedef int CRYPTO_EX_new(void *parent, void *ptr, CRYPTO_EX_DATA *ad,
-                          int idx, long argl, void *argp);
+typedef int CRYPTO_EX_new(void *parent, void *ptr, CRYPTO_EX_DATA *ad, int idx,
+                          long argl, void *argp);
 typedef void CRYPTO_EX_free(void *parent, void *ptr, CRYPTO_EX_DATA *ad,
                             int idx, long argl, void *argp);
-typedef int CRYPTO_EX_dup(CRYPTO_EX_DATA *to, CRYPTO_EX_DATA *from, void *from_d,
-                          int idx, long argl, void *argp);
+typedef int CRYPTO_EX_dup(CRYPTO_EX_DATA *to, CRYPTO_EX_DATA *from,
+                          void *from_d, int idx, long argl, void *argp);
 
 typedef struct ocsp_req_ctx_st OCSP_REQ_CTX;
 typedef struct ocsp_response_st OCSP_RESPONSE;

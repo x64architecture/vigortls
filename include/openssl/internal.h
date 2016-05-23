@@ -17,16 +17,11 @@
 #ifndef VIGORTLS_HEADER_INTERNAL_H
 #define VIGORTLS_HEADER_INTERNAL_H
 
-/* This header is for ** INTERNAL USE ONLY ** */
-
 #include <stdint.h>
-#include <inttypes.h>
-
-/* Some versions of inttypes.h will not define print macros in C++ unless
- * __STDC_FORMAT_MACROS is set. */
 #if !defined(__STDC_FORMAT_MACROS)
 #define __STDC_FORMAT_MACROS
 #endif
+#include <inttypes.h>
 
 /* BN_ULONG is the native word size when working with big integers. */
 #if defined(VIGORTLS_64_BIT)
@@ -36,7 +31,7 @@
 #define BN_ULONG uint32_t
 #define BN_BITS2 32
 #else
-#error "Must define either OPENSSL_32_BIT or OPENSSL_64_BIT"
+#error "Must define either VIGORTLS_32_BIT or VIGORTLS_64_BIT"
 #endif
 
 #if defined(VIGORTLS_64_BIT)
@@ -84,7 +79,7 @@
 #define BN_HEX_FMT1 "%" PRIx32
 
 #else
-#error "Must define either OPENSSL_32_BIT or OPENSSL_64_BIT"
+#error "Must define either VIGORTLS_32_BIT or VIGORTLS_64_BIT"
 #endif
 
 #if !defined(BN_LLONG)
@@ -97,26 +92,26 @@
 #define LHBITS(a) (((a) >> BN_BITS2) & BN_MASKl)
 #define LL2HBITS(a) ((BN_ULLONG)((a)&BN_MASKl) << BN_BITS2)
 
-#define mul64(l, h, bl, bh)                \
-    {                                      \
-        BN_ULONG m, m1, lt, ht;            \
-                                           \
-        lt = l;                            \
-        ht = h;                            \
-        m = (bh) * (lt);                   \
-        lt = (bl) * (lt);                  \
-        m1 = (bl) * (ht);                  \
-        ht = (bh) * (ht);                  \
-        m = (m + m1) & BN_MASK2;           \
-        if (m < m1)                        \
-            ht += L2HBITS((BN_ULONG)1);    \
-        ht += HBITS(m);                    \
-        m1 = L2HBITS(m);                   \
-        lt = (lt + m1) & BN_MASK2;         \
-        if (lt < m1)                       \
-            ht++;                          \
-        (l) = lt;                          \
-        (h) = ht;                          \
+#define mul64(l, h, bl, bh)             \
+    {                                   \
+        BN_ULONG m, m1, lt, ht;         \
+                                        \
+        lt = l;                         \
+        ht = h;                         \
+        m  = (bh) * (lt);               \
+        lt = (bl) * (lt);               \
+        m1 = (bl) * (ht);               \
+        ht = (bh) * (ht);               \
+        m  = (m + m1) & BN_MASK2;       \
+        if (m < m1)                     \
+            ht += L2HBITS((BN_ULONG)1); \
+        ht += HBITS(m);                 \
+        m1 = L2HBITS(m);                \
+        lt = (lt + m1) & BN_MASK2;      \
+        if (lt < m1)                    \
+            ht++;                       \
+        (l) = lt;                       \
+        (h) = ht;                       \
     }
 
 #endif /* !defined(BN_LLONG) */

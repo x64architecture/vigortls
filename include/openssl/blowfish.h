@@ -47,8 +47,8 @@ void BF_set_key(BF_KEY *key, int len, const uint8_t *data);
 void BF_encrypt(BF_LONG *data, const BF_KEY *key);
 void BF_decrypt(BF_LONG *data, const BF_KEY *key);
 
-void BF_ecb_encrypt(const uint8_t *in, uint8_t *out,
-                    const BF_KEY *key, int enc);
+void BF_ecb_encrypt(const uint8_t *in, uint8_t *out, const BF_KEY *key,
+                    int enc);
 void BF_cbc_encrypt(const uint8_t *in, uint8_t *out, long length,
                     const BF_KEY *schedule, uint8_t *ivec, int enc);
 void BF_cfb64_encrypt(const uint8_t *in, uint8_t *out, long length,

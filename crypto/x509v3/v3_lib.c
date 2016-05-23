@@ -153,7 +153,7 @@ void *X509V3_EXT_d2i(X509_EXTENSION *ext)
  * -2 extension occurs more than once.
  */
 
-void *X509V3_get_d2i(STACK_OF(X509_EXTENSION) * x, int nid, int *crit, int *idx)
+void *X509V3_get_d2i(STACK_OF(X509_EXTENSION) *x, int nid, int *crit, int *idx)
 {
     int lastpos, i;
     X509_EXTENSION *ex, *found_ex = NULL;
@@ -206,7 +206,7 @@ void *X509V3_get_d2i(STACK_OF(X509_EXTENSION) * x, int nid, int *crit, int *idx)
  * 'value' arguments (if relevant) are the extensions internal structure.
  */
 
-int X509V3_add1_i2d(STACK_OF(X509_EXTENSION) * *x, int nid, void *value,
+int X509V3_add1_i2d(STACK_OF(X509_EXTENSION) **x, int nid, void *value,
                     int crit, unsigned long flags)
 {
     int extidx = -1;

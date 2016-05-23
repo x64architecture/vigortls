@@ -13,7 +13,7 @@
 #include "obj_xref.h"
 
 DECLARE_STACK_OF(nid_triple)
-STACK_OF(nid_triple) * sig_app, *sigx_app;
+STACK_OF(nid_triple) *sig_app, *sigx_app;
 
 static int sig_cmp(const nid_triple *a, const nid_triple *b)
 {

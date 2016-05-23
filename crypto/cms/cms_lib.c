@@ -379,7 +379,7 @@ int cms_DigestAlgorithm_find_ctx(EVP_MD_CTX *mctx, BIO *chain,
     }
 }
 
-static STACK_OF(CMS_CertificateChoices) * *cms_get0_certificate_choices(CMS_ContentInfo *cms)
+static STACK_OF(CMS_CertificateChoices) **cms_get0_certificate_choices(CMS_ContentInfo *cms)
 {
     switch (OBJ_obj2nid(cms->contentType)) {
 
@@ -398,7 +398,7 @@ static STACK_OF(CMS_CertificateChoices) * *cms_get0_certificate_choices(CMS_Cont
 
 CMS_CertificateChoices *CMS_add0_CertificateChoices(CMS_ContentInfo *cms)
 {
-    STACK_OF(CMS_CertificateChoices) * *pcerts;
+    STACK_OF(CMS_CertificateChoices) **pcerts;
     CMS_CertificateChoices *cch;
     pcerts = cms_get0_certificate_choices(cms);
     if (!pcerts)
@@ -420,7 +420,7 @@ CMS_CertificateChoices *CMS_add0_CertificateChoices(CMS_ContentInfo *cms)
 int CMS_add0_cert(CMS_ContentInfo *cms, X509 *cert)
 {
     CMS_CertificateChoices *cch;
-    STACK_OF(CMS_CertificateChoices) * *pcerts;
+    STACK_OF(CMS_CertificateChoices) **pcerts;
     int i;
     pcerts = cms_get0_certificate_choices(cms);
     if (!pcerts)
@@ -452,7 +452,7 @@ int CMS_add1_cert(CMS_ContentInfo *cms, X509 *cert)
     return r;
 }
 
-static STACK_OF(CMS_RevocationInfoChoice) * *cms_get0_revocation_choices(CMS_ContentInfo *cms)
+static STACK_OF(CMS_RevocationInfoChoice) **cms_get0_revocation_choices(CMS_ContentInfo *cms)
 {
     switch (OBJ_obj2nid(cms->contentType)) {
 
@@ -471,7 +471,7 @@ static STACK_OF(CMS_RevocationInfoChoice) * *cms_get0_revocation_choices(CMS_Con
 
 CMS_RevocationInfoChoice *CMS_add0_RevocationInfoChoice(CMS_ContentInfo *cms)
 {
-    STACK_OF(CMS_RevocationInfoChoice) * *pcrls;
+    STACK_OF(CMS_RevocationInfoChoice) **pcrls;
     CMS_RevocationInfoChoice *rch;
     pcrls = cms_get0_revocation_choices(cms);
     if (!pcrls)
@@ -510,11 +510,11 @@ int CMS_add1_crl(CMS_ContentInfo *cms, X509_CRL *crl)
     return r;
 }
 
-STACK_OF(X509) * CMS_get1_certs(CMS_ContentInfo *cms)
+STACK_OF(X509) *CMS_get1_certs(CMS_ContentInfo *cms)
 {
     STACK_OF(X509) *certs = NULL;
     CMS_CertificateChoices *cch;
-    STACK_OF(CMS_CertificateChoices) * *pcerts;
+    STACK_OF(CMS_CertificateChoices) **pcerts;
     int i;
     pcerts = cms_get0_certificate_choices(cms);
     if (!pcerts)
@@ -537,10 +537,10 @@ STACK_OF(X509) * CMS_get1_certs(CMS_ContentInfo *cms)
     return certs;
 }
 
-STACK_OF(X509_CRL) * CMS_get1_crls(CMS_ContentInfo *cms)
+STACK_OF(X509_CRL) *CMS_get1_crls(CMS_ContentInfo *cms)
 {
     STACK_OF(X509_CRL) *crls = NULL;
-    STACK_OF(CMS_RevocationInfoChoice) * *pcrls;
+    STACK_OF(CMS_RevocationInfoChoice) **pcrls;
     CMS_RevocationInfoChoice *rch;
     int i;
     pcrls = cms_get0_revocation_choices(cms);

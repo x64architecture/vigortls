@@ -16,10 +16,10 @@
 #ifndef HEADER_X509_VFY_H
 #define HEADER_X509_VFY_H
 
-#include <openssl/opensslconf.h>
-#include <openssl/lhash.h>
 #include <openssl/bio.h>
 #include <openssl/crypto.h>
+#include <openssl/lhash.h>
+#include <openssl/opensslconf.h>
 #include <openssl/threads.h>
 
 #ifdef __cplusplus
@@ -86,9 +86,8 @@ typedef struct x509_lookup_method_st {
                           X509_OBJECT *ret);
     int (*get_by_issuer_serial)(X509_LOOKUP *ctx, int type, X509_NAME *name,
                                 ASN1_INTEGER *serial, X509_OBJECT *ret);
-    int (*get_by_fingerprint)(X509_LOOKUP *ctx, int type,
-                              uint8_t *bytes, int len,
-                              X509_OBJECT *ret);
+    int (*get_by_fingerprint)(X509_LOOKUP *ctx, int type, uint8_t *bytes,
+                              int len, X509_OBJECT *ret);
     int (*get_by_alias)(X509_LOOKUP *ctx, int type, char *str, int len,
                         X509_OBJECT *ret);
 } X509_LOOKUP_METHOD;
@@ -100,13 +99,13 @@ typedef struct x509_lookup_method_st {
 
 typedef struct X509_VERIFY_PARAM_st {
     char *name;
-    time_t check_time;                /* Time to use */
-    unsigned long inh_flags;          /* Inheritance flags */
-    unsigned long flags;              /* Various verify flags */
-    int purpose;                      /* purpose to check untrusted certificates */
-    int trust;                        /* trust setting to check */
-    int depth;                        /* Verify depth */
-    STACK_OF(ASN1_OBJECT) * policies; /* Permissible policies */
+    time_t check_time;       /* Time to use */
+    unsigned long inh_flags; /* Inheritance flags */
+    unsigned long flags;     /* Various verify flags */
+    int purpose;             /* purpose to check untrusted certificates */
+    int trust;               /* trust setting to check */
+    int depth;               /* Verify depth */
+    STACK_OF(ASN1_OBJECT) *policies; /* Permissible policies */
 } X509_VERIFY_PARAM;
 
 DECLARE_STACK_OF(X509_VERIFY_PARAM)
@@ -117,24 +116,30 @@ DECLARE_STACK_OF(X509_VERIFY_PARAM)
 struct x509_store_st {
     /* The following is a cache of trusted certs */
     int cache;                    /* if true, stash any hits */
-    STACK_OF(X509_OBJECT) * objs; /* Cache of all objects */
+    STACK_OF(X509_OBJECT) *objs; /* Cache of all objects */
 
     /* These are external lookup methods */
-    STACK_OF(X509_LOOKUP) * get_cert_methods;
+    STACK_OF(X509_LOOKUP) *get_cert_methods;
 
     X509_VERIFY_PARAM *param;
 
     /* Callbacks for various operations */
-    int (*verify)(X509_STORE_CTX *ctx);                              /* called to verify a certificate */
-    int (*verify_cb)(int ok, X509_STORE_CTX *ctx);                   /* error callback */
-    int (*get_issuer)(X509 **issuer, X509_STORE_CTX *ctx, X509 *x);  /* get issuers cert from ctx */
-    int (*check_issued)(X509_STORE_CTX *ctx, X509 *x, X509 *issuer); /* check issued */
-    int (*check_revocation)(X509_STORE_CTX *ctx);                    /* Check revocation status of chain */
-    int (*get_crl)(X509_STORE_CTX *ctx, X509_CRL **crl, X509 *x);    /* retrieve CRL */
-    int (*check_crl)(X509_STORE_CTX *ctx, X509_CRL *crl);            /* Check CRL validity */
-    int (*cert_crl)(X509_STORE_CTX *ctx, X509_CRL *crl, X509 *x);    /* Check certificate against CRL */
-    STACK_OF(X509) * (*lookup_certs)(X509_STORE_CTX *ctx, X509_NAME *nm);
-    STACK_OF(X509_CRL) * (*lookup_crls)(X509_STORE_CTX *ctx, X509_NAME *nm);
+    int (*verify)(X509_STORE_CTX *ctx); /* called to verify a certificate */
+    int (*verify_cb)(int ok, X509_STORE_CTX *ctx); /* error callback */
+    int (*get_issuer)(X509 **issuer, X509_STORE_CTX *ctx,
+                      X509 *x); /* get issuers cert from ctx */
+    int (*check_issued)(X509_STORE_CTX *ctx, X509 *x,
+                        X509 *issuer); /* check issued */
+    int (*check_revocation)(
+        X509_STORE_CTX *ctx); /* Check revocation status of chain */
+    int (*get_crl)(X509_STORE_CTX *ctx, X509_CRL **crl,
+                   X509 *x); /* retrieve CRL */
+    int (*check_crl)(X509_STORE_CTX *ctx,
+                     X509_CRL *crl); /* Check CRL validity */
+    int (*cert_crl)(X509_STORE_CTX *ctx, X509_CRL *crl,
+                    X509 *x); /* Check certificate against CRL */
+    STACK_OF(X509) *(*lookup_certs)(X509_STORE_CTX *ctx, X509_NAME *nm);
+    STACK_OF(X509_CRL) *(*lookup_crls)(X509_STORE_CTX *ctx, X509_NAME *nm);
     int (*cleanup)(X509_STORE_CTX *ctx);
 
     CRYPTO_EX_DATA ex_data;
@@ -161,36 +166,42 @@ struct x509_lookup_st {
  * gathering of the cert chain can take some time (and have to be
  * 'retried', this needs to be kept and passed around. */
 struct x509_store_ctx_st /* X509_STORE_CTX */
-    {
+{
     X509_STORE *ctx;
     int current_method; /* used when looking up certs */
 
     /* The following are set by the caller */
     X509 *cert;                 /* The cert to check */
-    STACK_OF(X509) * untrusted; /* chain of X509s - untrusted - passed in */
-    STACK_OF(X509_CRL) * crls;  /* set of CRLs passed in */
+    STACK_OF(X509) *untrusted; /* chain of X509s - untrusted - passed in */
+    STACK_OF(X509_CRL) *crls;  /* set of CRLs passed in */
 
     X509_VERIFY_PARAM *param;
     void *other_ctx; /* Other info for use with get_issuer() */
 
     /* Callbacks for various operations */
-    int (*verify)(X509_STORE_CTX *ctx);                              /* called to verify a certificate */
-    int (*verify_cb)(int ok, X509_STORE_CTX *ctx);                   /* error callback */
-    int (*get_issuer)(X509 **issuer, X509_STORE_CTX *ctx, X509 *x);  /* get issuers cert from ctx */
-    int (*check_issued)(X509_STORE_CTX *ctx, X509 *x, X509 *issuer); /* check issued */
-    int (*check_revocation)(X509_STORE_CTX *ctx);                    /* Check revocation status of chain */
-    int (*get_crl)(X509_STORE_CTX *ctx, X509_CRL **crl, X509 *x);    /* retrieve CRL */
-    int (*check_crl)(X509_STORE_CTX *ctx, X509_CRL *crl);            /* Check CRL validity */
-    int (*cert_crl)(X509_STORE_CTX *ctx, X509_CRL *crl, X509 *x);    /* Check certificate against CRL */
+    int (*verify)(X509_STORE_CTX *ctx); /* called to verify a certificate */
+    int (*verify_cb)(int ok, X509_STORE_CTX *ctx); /* error callback */
+    int (*get_issuer)(X509 **issuer, X509_STORE_CTX *ctx,
+                      X509 *x); /* get issuers cert from ctx */
+    int (*check_issued)(X509_STORE_CTX *ctx, X509 *x,
+                        X509 *issuer); /* check issued */
+    int (*check_revocation)(
+        X509_STORE_CTX *ctx); /* Check revocation status of chain */
+    int (*get_crl)(X509_STORE_CTX *ctx, X509_CRL **crl,
+                   X509 *x); /* retrieve CRL */
+    int (*check_crl)(X509_STORE_CTX *ctx,
+                     X509_CRL *crl); /* Check CRL validity */
+    int (*cert_crl)(X509_STORE_CTX *ctx, X509_CRL *crl,
+                    X509 *x); /* Check certificate against CRL */
     int (*check_policy)(X509_STORE_CTX *ctx);
-    STACK_OF(X509) * (*lookup_certs)(X509_STORE_CTX *ctx, X509_NAME *nm);
-    STACK_OF(X509_CRL) * (*lookup_crls)(X509_STORE_CTX *ctx, X509_NAME *nm);
+    STACK_OF(X509) *(*lookup_certs)(X509_STORE_CTX *ctx, X509_NAME *nm);
+    STACK_OF(X509_CRL) *(*lookup_crls)(X509_STORE_CTX *ctx, X509_NAME *nm);
     int (*cleanup)(X509_STORE_CTX *ctx);
 
     /* The following is built up */
     int valid;              /* if 0, rebuild chain */
     int last_untrusted;     /* index of last untrusted cert */
-    STACK_OF(X509) * chain; /* chain of X509s - built up and trusted */
+    STACK_OF(X509) *chain; /* chain of X509s - built up and trusted */
     X509_POLICY_TREE *tree; /* Valid policy tree */
 
     int explicit_policy; /* Require explicit policy value */
@@ -214,8 +225,7 @@ void X509_STORE_CTX_set_depth(X509_STORE_CTX *ctx, int depth);
 
 #define X509_STORE_CTX_set_app_data(ctx, data) \
     X509_STORE_CTX_set_ex_data(ctx, 0, data)
-#define X509_STORE_CTX_get_app_data(ctx) \
-    X509_STORE_CTX_get_ex_data(ctx, 0)
+#define X509_STORE_CTX_get_app_data(ctx) X509_STORE_CTX_get_ex_data(ctx, 0)
 
 #define X509_L_FILE_LOAD 1
 #define X509_L_ADD_DIR 2
@@ -330,22 +340,23 @@ void X509_STORE_CTX_set_depth(X509_STORE_CTX *ctx, int depth);
 #define X509_VP_FLAG_ONCE 0x10
 
 /* Internal use: mask of policy related options */
-#define X509_V_FLAG_POLICY_MASK (X509_V_FLAG_POLICY_CHECK      \
-                                 | X509_V_FLAG_EXPLICIT_POLICY \
-                                 | X509_V_FLAG_INHIBIT_ANY     \
-                                 | X509_V_FLAG_INHIBIT_MAP)
+#define X509_V_FLAG_POLICY_MASK                               \
+    (X509_V_FLAG_POLICY_CHECK | X509_V_FLAG_EXPLICIT_POLICY | \
+     X509_V_FLAG_INHIBIT_ANY | X509_V_FLAG_INHIBIT_MAP)
 
-int X509_OBJECT_idx_by_subject(STACK_OF(X509_OBJECT) * h, int type,
+int X509_OBJECT_idx_by_subject(STACK_OF(X509_OBJECT) *h, int type,
                                X509_NAME *name);
-X509_OBJECT *X509_OBJECT_retrieve_by_subject(STACK_OF(X509_OBJECT) * h, int type, X509_NAME *name);
-X509_OBJECT *X509_OBJECT_retrieve_match(STACK_OF(X509_OBJECT) * h, X509_OBJECT * x);
+X509_OBJECT *X509_OBJECT_retrieve_by_subject(STACK_OF(X509_OBJECT) *h,
+                                             int type, X509_NAME *name);
+X509_OBJECT *X509_OBJECT_retrieve_match(STACK_OF(X509_OBJECT) *h,
+                                        X509_OBJECT *x);
 void X509_OBJECT_up_ref_count(X509_OBJECT *a);
 void X509_OBJECT_free_contents(X509_OBJECT *a);
 X509_STORE *X509_STORE_new(void);
 void X509_STORE_free(X509_STORE *v);
 
-STACK_OF(X509) * X509_STORE_get1_certs(X509_STORE_CTX *st, X509_NAME *nm);
-STACK_OF(X509_CRL) * X509_STORE_get1_crls(X509_STORE_CTX *st, X509_NAME *nm);
+STACK_OF(X509) *X509_STORE_get1_certs(X509_STORE_CTX *st, X509_NAME *nm);
+STACK_OF(X509_CRL) *X509_STORE_get1_crls(X509_STORE_CTX *st, X509_NAME *nm);
 int X509_STORE_set_flags(X509_STORE *ctx, unsigned long flags);
 int X509_STORE_set_purpose(X509_STORE *ctx, int purpose);
 int X509_STORE_set_trust(X509_STORE *ctx, int trust);
@@ -359,9 +370,9 @@ X509_STORE_CTX *X509_STORE_CTX_new(void);
 int X509_STORE_CTX_get1_issuer(X509 **issuer, X509_STORE_CTX *ctx, X509 *x);
 
 void X509_STORE_CTX_free(X509_STORE_CTX *ctx);
-int X509_STORE_CTX_init(X509_STORE_CTX *ctx, X509_STORE *store,
-                        X509 *x509, STACK_OF(X509) * chain);
-void X509_STORE_CTX_trusted_stack(X509_STORE_CTX *ctx, STACK_OF(X509) * sk);
+int X509_STORE_CTX_init(X509_STORE_CTX *ctx, X509_STORE *store, X509 *x509,
+                        STACK_OF(X509) *chain);
+void X509_STORE_CTX_trusted_stack(X509_STORE_CTX *ctx, STACK_OF(X509) *sk);
 void X509_STORE_CTX_cleanup(X509_STORE_CTX *ctx);
 
 X509_LOOKUP *X509_STORE_add_lookup(X509_STORE *v, X509_LOOKUP_METHOD *m);
@@ -375,8 +386,8 @@ int X509_STORE_add_crl(X509_STORE *ctx, X509_CRL *x);
 int X509_STORE_get_by_subject(X509_STORE_CTX *vs, int type, X509_NAME *name,
                               X509_OBJECT *ret);
 
-int X509_LOOKUP_ctrl(X509_LOOKUP *ctx, int cmd, const char *argc,
-                     long argl, char **ret);
+int X509_LOOKUP_ctrl(X509_LOOKUP *ctx, int cmd, const char *argc, long argl,
+                     char **ret);
 
 int X509_load_cert_file(X509_LOOKUP *ctx, const char *file, int type);
 int X509_load_crl_file(X509_LOOKUP *ctx, const char *file, int type);
@@ -389,18 +400,20 @@ int X509_LOOKUP_by_subject(X509_LOOKUP *ctx, int type, X509_NAME *name,
                            X509_OBJECT *ret);
 int X509_LOOKUP_by_issuer_serial(X509_LOOKUP *ctx, int type, X509_NAME *name,
                                  ASN1_INTEGER *serial, X509_OBJECT *ret);
-int X509_LOOKUP_by_fingerprint(X509_LOOKUP *ctx, int type,
-                               uint8_t *bytes, int len, X509_OBJECT *ret);
-int X509_LOOKUP_by_alias(X509_LOOKUP *ctx, int type, char *str,
-                         int len, X509_OBJECT *ret);
+int X509_LOOKUP_by_fingerprint(X509_LOOKUP *ctx, int type, uint8_t *bytes,
+                               int len, X509_OBJECT *ret);
+int X509_LOOKUP_by_alias(X509_LOOKUP *ctx, int type, char *str, int len,
+                         X509_OBJECT *ret);
 int X509_LOOKUP_shutdown(X509_LOOKUP *ctx);
 
-int X509_STORE_load_locations(X509_STORE *ctx,
-                              const char *file, const char *dir);
+int X509_STORE_load_locations(X509_STORE *ctx, const char *file,
+                              const char *dir);
 int X509_STORE_set_default_paths(X509_STORE *ctx);
 
-int X509_STORE_CTX_get_ex_new_index(long argl, void *argp, CRYPTO_EX_new *new_func,
-                                    CRYPTO_EX_dup *dup_func, CRYPTO_EX_free *free_func);
+int X509_STORE_CTX_get_ex_new_index(long argl, void *argp,
+                                    CRYPTO_EX_new *new_func,
+                                    CRYPTO_EX_dup *dup_func,
+                                    CRYPTO_EX_free *free_func);
 int X509_STORE_CTX_set_ex_data(X509_STORE_CTX *ctx, int idx, void *data);
 void *X509_STORE_CTX_get_ex_data(X509_STORE_CTX *ctx, int idx);
 int X509_STORE_CTX_get_error(X509_STORE_CTX *ctx);
@@ -410,11 +423,11 @@ X509 *X509_STORE_CTX_get_current_cert(X509_STORE_CTX *ctx);
 X509 *X509_STORE_CTX_get0_current_issuer(X509_STORE_CTX *ctx);
 X509_CRL *X509_STORE_CTX_get0_current_crl(X509_STORE_CTX *ctx);
 X509_STORE_CTX *X509_STORE_CTX_get0_parent_ctx(X509_STORE_CTX *ctx);
-STACK_OF(X509) * X509_STORE_CTX_get_chain(X509_STORE_CTX *ctx);
-STACK_OF(X509) * X509_STORE_CTX_get1_chain(X509_STORE_CTX *ctx);
+STACK_OF(X509) *X509_STORE_CTX_get_chain(X509_STORE_CTX *ctx);
+STACK_OF(X509) *X509_STORE_CTX_get1_chain(X509_STORE_CTX *ctx);
 void X509_STORE_CTX_set_cert(X509_STORE_CTX *c, X509 *x);
-void X509_STORE_CTX_set_chain(X509_STORE_CTX *c, STACK_OF(X509) * sk);
-void X509_STORE_CTX_set0_crls(X509_STORE_CTX *c, STACK_OF(X509_CRL) * sk);
+void X509_STORE_CTX_set_chain(X509_STORE_CTX *c, STACK_OF(X509) *sk);
+void X509_STORE_CTX_set0_crls(X509_STORE_CTX *c, STACK_OF(X509_CRL) *sk);
 int X509_STORE_CTX_set_purpose(X509_STORE_CTX *ctx, int purpose);
 int X509_STORE_CTX_set_trust(X509_STORE_CTX *ctx, int trust);
 int X509_STORE_CTX_purpose_inherit(X509_STORE_CTX *ctx, int def_purpose,
@@ -452,7 +465,7 @@ void X509_VERIFY_PARAM_set_time(X509_VERIFY_PARAM *param, time_t t);
 int X509_VERIFY_PARAM_add0_policy(X509_VERIFY_PARAM *param,
                                   ASN1_OBJECT *policy);
 int X509_VERIFY_PARAM_set1_policies(X509_VERIFY_PARAM *param,
-                                    STACK_OF(ASN1_OBJECT) * policies);
+                                    STACK_OF(ASN1_OBJECT) *policies);
 int X509_VERIFY_PARAM_get_depth(const X509_VERIFY_PARAM *param);
 
 int X509_VERIFY_PARAM_add0_table(X509_VERIFY_PARAM *param);
@@ -460,19 +473,20 @@ const X509_VERIFY_PARAM *X509_VERIFY_PARAM_lookup(const char *name);
 void X509_VERIFY_PARAM_table_cleanup(void);
 
 int X509_policy_check(X509_POLICY_TREE **ptree, int *pexplicit_policy,
-                      STACK_OF(X509) * certs,
-                      STACK_OF(ASN1_OBJECT) * policy_oids,
-                      unsigned int flags);
+                      STACK_OF(X509) *certs,
+                      STACK_OF(ASN1_OBJECT) *policy_oids, unsigned int flags);
 
 void X509_policy_tree_free(X509_POLICY_TREE *tree);
 
 int X509_policy_tree_level_count(const X509_POLICY_TREE *tree);
-X509_POLICY_LEVEL *
-X509_policy_tree_get0_level(const X509_POLICY_TREE *tree, int i);
+X509_POLICY_LEVEL *X509_policy_tree_get0_level(const X509_POLICY_TREE *tree,
+                                               int i);
 
-STACK_OF(X509_POLICY_NODE) * X509_policy_tree_get0_policies(const X509_POLICY_TREE *tree);
+STACK_OF(X509_POLICY_NODE) *
+    X509_policy_tree_get0_policies(const X509_POLICY_TREE *tree);
 
-STACK_OF(X509_POLICY_NODE) * X509_policy_tree_get0_user_policies(const X509_POLICY_TREE *tree);
+STACK_OF(X509_POLICY_NODE) *
+    X509_policy_tree_get0_user_policies(const X509_POLICY_TREE *tree);
 
 int X509_policy_level_node_count(X509_POLICY_LEVEL *level);
 
@@ -480,7 +494,8 @@ X509_POLICY_NODE *X509_policy_level_get0_node(X509_POLICY_LEVEL *level, int i);
 
 const ASN1_OBJECT *X509_policy_node_get0_policy(const X509_POLICY_NODE *node);
 
-STACK_OF(POLICYQUALINFO) * X509_policy_node_get0_qualifiers(const X509_POLICY_NODE *node);
+STACK_OF(POLICYQUALINFO) *
+    X509_policy_node_get0_qualifiers(const X509_POLICY_NODE *node);
 const X509_POLICY_NODE *
 X509_policy_node_get0_parent(const X509_POLICY_NODE *node);
 

@@ -188,7 +188,7 @@ static PROXY_CERT_INFO_EXTENSION *r2i_pci(X509V3_EXT_METHOD *method,
                                           X509V3_CTX *ctx, char *value)
 {
     PROXY_CERT_INFO_EXTENSION *pci = NULL;
-    STACK_OF(CONF_VALUE) * vals;
+    STACK_OF(CONF_VALUE) *vals;
     ASN1_OBJECT *language = NULL;
     ASN1_INTEGER *pathlen = NULL;
     ASN1_OCTET_STRING *policy = NULL;
@@ -203,7 +203,7 @@ static PROXY_CERT_INFO_EXTENSION *r2i_pci(X509V3_EXT_METHOD *method,
             goto err;
         }
         if (*cnf->name == '@') {
-            STACK_OF(CONF_VALUE) * sect;
+            STACK_OF(CONF_VALUE) *sect;
             int success_p = 1;
 
             sect = X509V3_get_section(ctx, cnf->name + 1);

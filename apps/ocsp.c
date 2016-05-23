@@ -675,7 +675,7 @@ end:
 }
 
 static int add_ocsp_cert(OCSP_REQUEST **req, X509 *cert, const EVP_MD *cert_id_md, X509 *issuer,
-                         STACK_OF(OCSP_CERTID) * ids)
+                         STACK_OF(OCSP_CERTID) *ids)
 {
     OCSP_CERTID *id;
     if (!issuer) {
@@ -699,7 +699,7 @@ err:
 }
 
 static int add_ocsp_serial(OCSP_REQUEST **req, char *serial, const EVP_MD *cert_id_md, X509 *issuer,
-                           STACK_OF(OCSP_CERTID) * ids)
+                           STACK_OF(OCSP_CERTID) *ids)
 {
     OCSP_CERTID *id;
     X509_NAME *iname;
@@ -734,8 +734,8 @@ err:
 }
 
 static int print_ocsp_summary(BIO *out, OCSP_BASICRESP *bs, OCSP_REQUEST *req,
-                              STACK_OF(OPENSSL_STRING) * names,
-                              STACK_OF(OCSP_CERTID) * ids, long nsec,
+                              STACK_OF(OPENSSL_STRING) *names,
+                              STACK_OF(OCSP_CERTID) *ids, long nsec,
                               long maxage)
 {
     OCSP_CERTID *id;

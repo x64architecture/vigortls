@@ -207,7 +207,7 @@ int ASN1_STRING_TABLE_add(int nid,
 
 void ASN1_STRING_TABLE_cleanup(void)
 {
-    STACK_OF(ASN1_STRING_TABLE) * tmp;
+    STACK_OF(ASN1_STRING_TABLE) *tmp;
     tmp = stable;
     if (!tmp)
         return;
