@@ -354,6 +354,11 @@ typedef struct cert_st {
 
     CERT_PKEY pkeys[SSL_PKEY_NUM];
 
+    /* Array of pairs of NIDs for signature algorithm extension */
+    TLS_SIGALGS *sigalgs;
+    /* Size of above array */
+    size_t sigalgslen;
+
     int references; /* >1 only if SSL_copy_session_id is used */
     CRYPTO_MUTEX *lock;
 } CERT;
@@ -376,6 +381,19 @@ typedef struct sess_cert_st {
     int references; /* actually always 1 at the moment */
     CRYPTO_MUTEX *lock;
 } SESS_CERT;
+
+/* Structure containing decoded values of signature algorithms extension */
+struct tls_sigalgs_st {
+    /* NID of hash algorithm */
+    int hash_nid;
+    /* NID of signature algorithm */
+    int sign_nid;
+    /* Combined hash and signature NID */
+    int signandhash_nid;
+    /* Raw values used in extension */
+    uint8_t rsign;
+    uint8_t rhash;
+};
 
 /*#define SSL_DEBUG    */
 /*#define RSA_DEBUG    */

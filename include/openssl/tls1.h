@@ -149,6 +149,8 @@ extern "C" {
 #define TLSEXT_hash_sha256 4
 #define TLSEXT_hash_sha384 5
 #define TLSEXT_hash_sha512 6
+/* Flag set for unrecognised algorithms */
+#define TLSEXT_nid_unknown 0x1000000
 
 #define TLSEXT_MAXLEN_host_name 255
 
@@ -164,6 +166,9 @@ int SSL_get_servername_type(const SSL *s);
 int SSL_export_keying_material(SSL *s, uint8_t *out, size_t olen,
                                const char *label, size_t llen, const uint8_t *p,
                                size_t plen, int use_context);
+
+int SSL_get_sigalgs(SSL *s, int idx, int *psign, int *phash, int *psignandhash,
+                    uint8_t *rsig, uint8_t *rhash);
 
 #define SSL_set_tlsext_host_name(s, name)                                \
     SSL_ctrl(s, SSL_CTRL_SET_TLSEXT_HOSTNAME, TLSEXT_NAMETYPE_host_name, \

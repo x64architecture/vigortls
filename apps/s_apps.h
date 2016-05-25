@@ -21,6 +21,8 @@ int verify_callback(int ok, X509_STORE_CTX *ctx);
 #ifdef HEADER_SSL_H
 int set_cert_stuff(SSL_CTX *ctx, char *cert_file, char *key_file);
 int set_cert_key_stuff(SSL_CTX *ctx, X509 *cert, EVP_PKEY *key);
+int ssl_print_sigalgs(BIO *out, SSL *s);
+int ssl_print_curves(BIO *out, SSL *s);
 #endif
 int init_client(int *sock, char *server, char *port, int type, int af);
 int should_retry(int i);

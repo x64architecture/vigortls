@@ -213,6 +213,7 @@ void ssl_cert_free(CERT *c)
         EVP_PKEY_free(cpk->privatekey);
         sk_X509_pop_free(cpk->chain, X509_free);
     }
+    free(c->sigalgs);
     CRYPTO_thread_cleanup(c->lock);
     free(c);
 }

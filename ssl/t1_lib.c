@@ -2026,16 +2026,20 @@ typedef struct {
     int id;
 } tls12_lookup;
 
-static tls12_lookup tls12_md[] = { { NID_md5, TLSEXT_hash_md5 },
-                                   { NID_sha1, TLSEXT_hash_sha1 },
-                                   { NID_sha224, TLSEXT_hash_sha224 },
-                                   { NID_sha256, TLSEXT_hash_sha256 },
-                                   { NID_sha384, TLSEXT_hash_sha384 },
-                                   { NID_sha512, TLSEXT_hash_sha512 } };
+static tls12_lookup tls12_md[] = {
+    { NID_md5, TLSEXT_hash_md5 },
+    { NID_sha1, TLSEXT_hash_sha1 },
+    { NID_sha224, TLSEXT_hash_sha224 },
+    { NID_sha256, TLSEXT_hash_sha256 },
+    { NID_sha384, TLSEXT_hash_sha384 },
+    { NID_sha512, TLSEXT_hash_sha512 }
+};
 
-static tls12_lookup tls12_sig[] = { { EVP_PKEY_RSA, TLSEXT_signature_rsa },
-                                    { EVP_PKEY_DSA, TLSEXT_signature_dsa },
-                                    { EVP_PKEY_EC, TLSEXT_signature_ecdsa } };
+static tls12_lookup tls12_sig[] = {
+    { EVP_PKEY_RSA, TLSEXT_signature_rsa },
+    { EVP_PKEY_DSA, TLSEXT_signature_dsa },
+    { EVP_PKEY_EC, TLSEXT_signature_ecdsa }
+};
 
 static int tls12_find_id(int nid, tls12_lookup *table, size_t tlen)
 {
@@ -2045,6 +2049,16 @@ static int tls12_find_id(int nid, tls12_lookup *table, size_t tlen)
             return table[i].id;
     }
     return -1;
+}
+
+static int tls12_find_nid(int id, tls12_lookup *table, size_t tlen)
+{
+    size_t i;
+    for (i = 0; i < tlen; i++) {
+        if (table[i].id == id)
+            return table[i].nid;
+    }
+    return NID_undef;
 }
 
 int tls12_get_sigandhash(uint8_t *p, const EVP_PKEY *pk,
@@ -2096,6 +2110,7 @@ int tls1_process_sigalgs(SSL *s, const uint8_t *data, int dsize)
     int idx;
     const EVP_MD *md;
     CERT *c = s->cert;
+    TLS_SIGALGS *sigptr;
     CBS cbs;
 
     /* Extension ignored for inappropriate versions */
@@ -2113,16 +2128,28 @@ int tls1_process_sigalgs(SSL *s, const uint8_t *data, int dsize)
     c->pkeys[SSL_PKEY_RSA_ENC].digest = NULL;
     c->pkeys[SSL_PKEY_ECC].digest = NULL;
 
-    while (CBS_len(&cbs) > 0) {
-        uint8_t hash_alg, sig_alg;
+    free(c->sigalgs);
+    c->sigalgs = reallocarray(NULL, dsize / 2, sizeof(TLS_SIGALGS));
+    if (c->sigalgs == NULL)
+        return 0;
+    c->sigalgslen = dsize / 2;
 
-        if (!CBS_get_u8(&cbs, &hash_alg) ||
-            !CBS_get_u8(&cbs, &sig_alg)) {
+    for (sigptr = c->sigalgs; CBS_len(&cbs) > 0; sigptr++) {
+        if (!CBS_get_u8(&cbs, &sigptr->rhash) ||
+            !CBS_get_u8(&cbs, &sigptr->rsign)) {
             /* Should never happen */
             return 0;
         }
-
-        switch (sig_alg) {
+        sigptr->hash_nid = tls12_find_nid(sigptr->rhash, tls12_md,
+                                sizeof(tls12_md) / sizeof(tls12_lookup));
+        sigptr->sign_nid = tls12_find_nid(sigptr->rsign, tls12_sig,
+                                sizeof(tls12_sig) / sizeof(tls12_lookup));
+        if (!OBJ_find_sigid_by_algs(&sigptr->signandhash_nid, sigptr->hash_nid,
+                                    sigptr->sign_nid))
+        {
+            sigptr->signandhash_nid = NID_undef;
+        }
+        switch (sigptr->rsign) {
             case TLSEXT_signature_rsa:
                 idx = SSL_PKEY_RSA_SIGN;
                 break;
@@ -2137,7 +2164,7 @@ int tls1_process_sigalgs(SSL *s, const uint8_t *data, int dsize)
         }
 
         if (c->pkeys[idx].digest == NULL) {
-            md = tls12_get_hash(hash_alg);
+            md = tls12_get_hash(sigptr->rhash);
             if (md) {
                 c->pkeys[idx].digest = md;
                 if (idx == SSL_PKEY_RSA_SIGN)
@@ -2158,4 +2185,28 @@ int tls1_process_sigalgs(SSL *s, const uint8_t *data, int dsize)
     if (!c->pkeys[SSL_PKEY_ECC].digest)
         c->pkeys[SSL_PKEY_ECC].digest = EVP_sha1();
     return 1;
+}
+
+int SSL_get_sigalgs(SSL *s, int idx, int *psign, int *phash, int *psignandhash,
+                    uint8_t *rsig, uint8_t *rhash)
+{
+    if (s->cert->sigalgs == NULL)
+        return 0;
+    if (idx >= 0) {
+        TLS_SIGALGS *psig;
+        if (idx >= (int)s->cert->sigalgslen)
+            return 0;
+        psig = s->cert->sigalgs + idx;
+        if (psign)
+            *psign = psig->sign_nid;
+        if (phash)
+            *phash = psig->hash_nid;
+        if (psignandhash)
+            *psignandhash = psig->signandhash_nid;
+        if (rsig)
+            *rsig = psig->rsign;
+        if (rhash)
+            *rhash = psig->rhash;
+    }
+    return s->cert->sigalgslen;
 }

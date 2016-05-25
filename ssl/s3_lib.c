@@ -1770,6 +1770,28 @@ long ssl3_ctrl(SSL *s, int cmd, long larg, void *parg)
             else
                 return ssl_cert_add0_chain_cert(s->cert, (X509 *)parg);
 
+        case SSL_CTRL_GET_CURVELIST: {
+            uint16_t *clist;
+            size_t clistlen;
+            if (!s->session)
+                return 0;
+            clist = s->session->tlsext_ellipticcurvelist;
+            clistlen = s->session->tlsext_ellipticcurvelist_length;
+            if (parg) {
+                size_t i;
+                int *cptr = parg;
+                unsigned int nid;
+                for (i = 0; i < clistlen; i++) {
+                    nid = tls1_ec_curve_id2nid(clist[i]);
+                    if (nid != 0)
+                        cptr[i] = nid;
+                    else
+                        cptr[i] = TLSEXT_nid_unknown | clist[i];
+                }
+            }
+            return (int)clistlen;
+        }
+
         case SSL_CTRL_CHECK_PROTO_VERSION:
             /* For library-internal use; checks that the current protocol
              * is the highest enabled version (according to s->ctx->method,
