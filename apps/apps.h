@@ -46,7 +46,7 @@ void unbuffer(FILE *fp);
     OPT_V_IGNORE_CRITICAL, OPT_V_ISSUER_CHECKS, OPT_V_CRL_CHECK,  \
     OPT_V_CRL_CHECK_ALL, OPT_V_POLICY_CHECK, OPT_V_EXPLICIT_POLICY,                \
     OPT_V_INHIBIT_ANY, OPT_V_INHIBIT_MAP, OPT_V_X509_STRICT, OPT_V_EXTENDED_CRL,   \
-    OPT_V_USE_DELTAS, OPT_V_POLICY_PRINT, OPT_V_CHECK_SS_SIG,                      \
+    OPT_V_USE_DELTAS, OPT_V_POLICY_PRINT, OPT_V_CHECK_SS_SIG, OPT_V_PARTIAL_CHAIN, \
     OPT_V__LAST
 
 #define OPT_V_OPTIONS                                                              \
@@ -69,7 +69,8 @@ void unbuffer(FILE *fp);
         { "extended_crl", OPT_V_EXTENDED_CRL, '-' },                               \
         { "use_deltas", OPT_V_USE_DELTAS, '-' },                                   \
         { "policy_print", OPT_V_POLICY_PRINT, '-' },                               \
-        { "check_ss_sig", OPT_V_CHECK_SS_SIG, '-' }
+        { "check_ss_sig", OPT_V_CHECK_SS_SIG, '-' },                               \
+        { "partial_chain", OPT_V_PARTIAL_CHAIN, '-' }
 
 #define OPT_V_CASES                                                                \
     OPT_V__FIRST:                                                                  \
@@ -92,7 +93,8 @@ void unbuffer(FILE *fp);
     case OPT_V_EXTENDED_CRL:                                                       \
     case OPT_V_USE_DELTAS:                                                         \
     case OPT_V_POLICY_PRINT:                                                       \
-    case OPT_V_CHECK_SS_SIG
+    case OPT_V_CHECK_SS_SIG:                                                       \
+    case OPT_V_PARTIAL_CHAIN
 
 /*
  * Common SSL options.

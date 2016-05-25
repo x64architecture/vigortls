@@ -399,6 +399,9 @@ int opt_verify(int opt, X509_VERIFY_PARAM *vpm)
         case OPT_V_CHECK_SS_SIG:
             X509_VERIFY_PARAM_set_flags(vpm, X509_V_FLAG_CHECK_SS_SIGNATURE);
             break;
+        case OPT_V_PARTIAL_CHAIN:
+            X509_VERIFY_PARAM_set_flags(vpm, X509_V_FLAG_PARTIAL_CHAIN);
+            break;
     }
     return 1;
 }
