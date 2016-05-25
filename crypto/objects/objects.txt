@@ -1308,3 +1308,5 @@ brainpool 1 12 : brainpoolP384t1
 brainpool 1 13 : brainpoolP512r1
 brainpool 1 14 : brainpoolP512t1
 
+
+ISO-US 10046 2 1       : dhpublicnumber                : X9.42 DH

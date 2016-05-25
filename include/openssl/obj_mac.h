@@ -4031,3 +4031,8 @@
 #define NID_brainpoolP512t1        936
 #define OBJ_brainpoolP512t1        OBJ_brainpool,1L,14L
 
+#define SN_dhpublicnumber        "dhpublicnumber"
+#define LN_dhpublicnumber        "X9.42 DH"
+#define NID_dhpublicnumber        952
+#define OBJ_dhpublicnumber        OBJ_ISO_US,10046L,2L,1L
+

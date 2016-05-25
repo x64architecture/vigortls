@@ -152,6 +152,8 @@ int DH_generate_key(DH *dh);
 int DH_compute_key(uint8_t *key, const BIGNUM *pub_key, DH *dh);
 DH *d2i_DHparams(DH **a, const uint8_t **pp, long length);
 int i2d_DHparams(const DH *a, uint8_t **pp);
+DH *d2i_DHxparams(DH **a, const uint8_t **pp, long length);
+int i2d_DHxparams(const DH *a, uint8_t **pp);
 int DHparams_print_fp(FILE *fp, const DH *x);
 int DHparams_print(BIO *bp, const DH *x);
 
@@ -168,8 +170,17 @@ DH *DH_get_2048_256(void);
     EVP_PKEY_CTX_ctrl(ctx, EVP_PKEY_DH, EVP_PKEY_OP_PARAMGEN, \
                       EVP_PKEY_CTRL_DH_PARAMGEN_GENERATOR, gen, NULL)
 
+#define EVP_PKEY_CTX_set_dh_rfc5114(ctx, gen)                  \
+    EVP_PKEY_CTX_ctrl(ctx, EVP_PKEY_DHX, EVP_PKEY_OP_PARAMGEN, \
+                      EVP_PKEY_CTRL_DH_RFC5114, gen, NULL)
+
+#define EVP_PKEY_CTX_set_dhx_rfc5114(ctx, gen)                 \
+    EVP_PKEY_CTX_ctrl(ctx, EVP_PKEY_DHX, EVP_PKEY_OP_PARAMGEN, \
+                      EVP_PKEY_CTRL_DH_RFC5114, gen, NULL)
+
 #define EVP_PKEY_CTRL_DH_PARAMGEN_PRIME_LEN (EVP_PKEY_ALG_CTRL + 1)
 #define EVP_PKEY_CTRL_DH_PARAMGEN_GENERATOR (EVP_PKEY_ALG_CTRL + 2)
+#define EVP_PKEY_CTRL_DH_RFC5114            (EVP_PKEY_ALG_CTRL + 3)
 
 /* BEGIN ERROR CODES */
 /*

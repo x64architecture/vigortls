@@ -22,6 +22,7 @@
 extern const EVP_PKEY_ASN1_METHOD rsa_asn1_meths[];
 extern const EVP_PKEY_ASN1_METHOD dsa_asn1_meths[];
 extern const EVP_PKEY_ASN1_METHOD dh_asn1_meth;
+extern const EVP_PKEY_ASN1_METHOD dhx_asn1_meth;
 extern const EVP_PKEY_ASN1_METHOD eckey_asn1_meth;
 extern const EVP_PKEY_ASN1_METHOD gostr01_asn1_meths[];
 extern const EVP_PKEY_ASN1_METHOD gostimit_asn1_meth;
@@ -47,6 +48,7 @@ static const EVP_PKEY_ASN1_METHOD *standard_methods[] = {
 #endif
     &hmac_asn1_meth,
     &cmac_asn1_meth,
+    &dhx_asn1_meth,
 #ifndef OPENSSL_NO_GOST
     &gostr01_asn1_meths[1],
     &gostr01_asn1_meths[2],

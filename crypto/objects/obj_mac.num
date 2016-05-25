@@ -938,3 +938,4 @@ id_tc26_signwithdigest_gost3410_2012_512        948
 des_cfb64        949
 des_cfb1        950
 des_cfb8        951
+dhpublicnumber        952

@@ -8,12 +8,12 @@
  * in the file LICENSE in the source distribution or at
  * https://www.openssl.org/source/license.html
  */
-#define NUM_NID 952
-#define NUM_SN 929
-#define NUM_LN 929
-#define NUM_OBJ 870
+#define NUM_NID 953
+#define NUM_SN 930
+#define NUM_LN 930
+#define NUM_OBJ 871
 
-static const unsigned char lvalues[6091]={
+static const unsigned char lvalues[6098]={
 0x2A,0x86,0x48,0x86,0xF7,0x0D,               /* [  0] OBJ_rsadsi */
 0x2A,0x86,0x48,0x86,0xF7,0x0D,0x01,          /* [  6] OBJ_pkcs */
 0x2A,0x86,0x48,0x86,0xF7,0x0D,0x02,0x05,     /* [ 13] OBJ_md5 */
@@ -878,6 +878,7 @@ static const unsigned char lvalues[6091]={
 0x2A,0x85,0x03,0x07,0x01,0x01,0x03,0x02,     /* [6069] OBJ_id_tc26_signwithdigest_gost3410_2012_256 */
 0x2A,0x85,0x03,0x07,0x01,0x01,0x03,0x03,     /* [6077] OBJ_id_tc26_signwithdigest_gost3410_2012_512 */
 0x2B,0x0E,0x03,0x02,0x09,                    /* [6085] OBJ_des_cfb64 */
+0x2A,0x86,0x48,0xCE,0x3E,0x02,0x01,          /* [6090] OBJ_dhpublicnumber */
 };
 
 static const ASN1_OBJECT nid_objs[NUM_NID]={
@@ -2413,6 +2414,7 @@ static const ASN1_OBJECT nid_objs[NUM_NID]={
 {"DES-CFB","des-cfb",NID_des_cfb64,5,&(lvalues[6085]),0},
 {"DES-CFB1","des-cfb1",NID_des_cfb1,0,NULL,0},
 {"DES-CFB8","des-cfb8",NID_des_cfb8,0,NULL,0},
+{"dhpublicnumber","X9.42 DH",NID_dhpublicnumber,7,&(lvalues[6090]),0},
 };
 
 static const unsigned int sn_objs[NUM_SN]={
@@ -2685,6 +2687,7 @@ static const unsigned int sn_objs[NUM_SN]={
 107,	/* "description" */
 871,	/* "destinationIndicator" */
 28,	/* "dhKeyAgreement" */
+952,	/* "dhpublicnumber" */
 382,	/* "directory" */
 887,	/* "distinguishedName" */
 892,	/* "dmdName" */
@@ -3487,6 +3490,7 @@ static const unsigned int ln_objs[NUM_LN]={
 85,	/* "X509v3 Subject Alternative Name" */
 769,	/* "X509v3 Subject Directory Attributes" */
 82,	/* "X509v3 Subject Key Identifier" */
+952,	/* "X9.42 DH" */
 184,	/* "X9.57" */
 185,	/* "X9.57 CM ?" */
 478,	/* "aRecord" */
@@ -4653,6 +4657,7 @@ static const unsigned int obj_objs[NUM_OBJ]={
 416,	/* OBJ_ecdsa_with_SHA1              1 2 840 10045 4 1 */
 791,	/* OBJ_ecdsa_with_Recommended       1 2 840 10045 4 2 */
 792,	/* OBJ_ecdsa_with_Specified         1 2 840 10045 4 3 */
+952,	/* OBJ_dhpublicnumber               1 2 840 10046 2 1 */
 258,	/* OBJ_id_pkix_mod                  1 3 6 1 5 5 7 0 */
 175,	/* OBJ_id_pe                        1 3 6 1 5 5 7 1 */
 259,	/* OBJ_id_qt                        1 3 6 1 5 5 7 2 */
