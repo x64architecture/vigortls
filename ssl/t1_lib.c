@@ -1463,7 +1463,7 @@ ri_check:
 
     if (!renegotiate_seen && s->renegotiate) {
         *al = SSL_AD_HANDSHAKE_FAILURE;
-        SSLerr(SSL_F_SSL_PARSE_CLIENTHELLO_TLSEXT,
+        SSLerr(SSL_F_SSL_SCAN_CLIENTHELLO_TLSEXT,
                SSL_R_UNSAFE_LEGACY_RENEGOTIATION_DISABLED);
         return 0;
     }
@@ -1484,7 +1484,7 @@ int ssl_parse_clienthello_tlsext(SSL *s, uint8_t **p, uint8_t *d)
     }
 
     if (ssl_check_clienthello_tlsext_early(s) <= 0) {
-        SSLerr(SSL_F_SSL3_GET_CLIENT_HELLO, SSL_R_CLIENTHELLO_TLSEXT);
+        SSLerr(SSL_F_SSL_PARSE_CLIENTHELLO_TLSEXT, SSL_R_CLIENTHELLO_TLSEXT);
         return 0;
     }
 

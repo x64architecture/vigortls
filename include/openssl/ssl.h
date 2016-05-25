@@ -2020,6 +2020,7 @@ void ERR_load_SSL_strings(void);
 # define SSL_F_SSL_READ                                   223
 # define SSL_F_SSL_RSA_PRIVATE_DECRYPT                    187
 # define SSL_F_SSL_RSA_PUBLIC_ENCRYPT                     188
+# define SSL_F_SSL_SCAN_CLIENTHELLO_TLSEXT                321
 # define SSL_F_SSL_SESSION_DUP                            320
 # define SSL_F_SSL_SESSION_NEW                            189
 # define SSL_F_SSL_SESSION_PRINT_FP                       190
