@@ -601,7 +601,7 @@ int ssl3_get_server_hello(SSL *s)
     STACK_OF(SSL_CIPHER) *sk;
     const SSL_CIPHER *c;
     uint8_t *p, *d, *q;
-    int i, al, ok;
+    int i, al = SSL_AD_INTERNAL_ERROR, ok;
     unsigned int j, cipherid;
     uint16_t cipher_value;
     long n;
@@ -715,7 +715,6 @@ int ssl3_get_server_hello(SSL *s)
         s->hit = 0;
         if (s->session->session_id_length > 0) {
             if (!ssl_get_new_session(s, 0)) {
-                al = SSL_AD_INTERNAL_ERROR;
                 goto f_err;
             }
         }
@@ -784,14 +783,8 @@ int ssl3_get_server_hello(SSL *s)
     }
 
     /* TLS extensions*/
-    if (!ssl_parse_serverhello_tlsext(s, &p, d, n, &al)) {
-        /* 'al' set by ssl_parse_serverhello_tlsext */
+    if (!ssl_parse_serverhello_tlsext(s, &p, d, n)) {
         SSLerr(SSL_F_SSL3_GET_SERVER_HELLO, SSL_R_PARSE_TLSEXT);
-            goto f_err;
-    }
-    if (ssl_check_serverhello_tlsext(s) <= 0) {
-        SSLerr(SSL_F_SSL3_GET_SERVER_HELLO,
-            SSL_R_SERVERHELLO_TLSEXT);
         goto err;
     }
 

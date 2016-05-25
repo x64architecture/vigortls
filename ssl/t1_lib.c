@@ -1510,8 +1510,7 @@ static char ssl_next_proto_validate(const uint8_t *d, unsigned int len)
     return 1;
 }
 
-int ssl_parse_serverhello_tlsext(SSL *s, uint8_t **p, uint8_t *d,
-                                 int n, int *al)
+static int ssl_scan_serverhello_tlsext(SSL *s, uint8_t **p, uint8_t *d, int n, int *al)
 {
     unsigned short length;
     unsigned short type;
@@ -1713,7 +1712,7 @@ ri_check:
      */
     if (!renegotiate_seen && !(s->options & SSL_OP_LEGACY_SERVER_CONNECT)) {
         *al = SSL_AD_HANDSHAKE_FAILURE;
-        SSLerr(SSL_F_SSL_PARSE_SERVERHELLO_TLSEXT,
+        SSLerr(SSL_F_SSL_SCAN_SERVERHELLO_TLSEXT,
                SSL_R_UNSAFE_LEGACY_RENEGOTIATION_DISABLED);
         return 0;
     }
@@ -1904,6 +1903,23 @@ int ssl_check_serverhello_tlsext(SSL *s)
         default:
             return 1;
     }
+}
+
+int ssl_parse_serverhello_tlsext(SSL *s, uint8_t **p, uint8_t *d, int n) 
+{
+    int al = -1;
+
+    if (ssl_scan_serverhello_tlsext(s, p, d, n, &al) <= 0)  {
+        ssl3_send_alert(s, SSL3_AL_FATAL, al);
+        return 0;
+    }
+
+    if (ssl_check_serverhello_tlsext(s) <= 0) {
+        SSLerr(SSL_F_SSL_PARSE_SERVERHELLO_TLSEXT, SSL_R_SERVERHELLO_TLSEXT);
+        return 0;
+    }
+
+    return 1;
 }
 
 /* Since the server cache lookup is done early on in the processing of the
