@@ -1852,10 +1852,10 @@ CERT_PKEY *ssl_get_server_send_pkey(const SSL *s)
         i = SSL_PKEY_GOST01;
     } else { /* if (alg_a & SSL_aNULL) */
         SSLerr(SSL_F_SSL_GET_SERVER_SEND_PKEY, ERR_R_INTERNAL_ERROR);
-        return (NULL);
+        return NULL;
     }
 
-    return (c->pkeys + i);
+    return &c->pkeys[i];
 }
 
 X509 *ssl_get_server_send_cert(const SSL *s)

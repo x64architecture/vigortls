@@ -2142,16 +2142,16 @@ err:
 
 int ssl3_send_server_certificate(SSL *s)
 {
-    X509 *x;
+    CERT_PKEY *cpk;
 
     if (s->state == SSL3_ST_SW_CERT_A) {
-        x = ssl_get_server_send_cert(s);
-        if (x == NULL) {
+        cpk = ssl_get_server_send_pkey(s);
+        if (cpk == NULL) {
             SSLerr(SSL_F_SSL3_SEND_SERVER_CERTIFICATE, ERR_R_INTERNAL_ERROR);
             return (0);
         }
 
-        ssl3_output_cert_chain(s, x);
+        ssl3_output_cert_chain(s, cpk);
         s->state = SSL3_ST_SW_CERT_B;
     }
 

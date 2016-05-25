@@ -2370,7 +2370,7 @@ int ssl3_send_client_certificate(SSL *s)
 
     if (s->state == SSL3_ST_CW_CERT_C) {
         s->state = SSL3_ST_CW_CERT_D;
-        ssl3_output_cert_chain(s, (s->s3->tmp.cert_req == 2) ? NULL : s->cert->key->x509);
+        ssl3_output_cert_chain(s, (s->s3->tmp.cert_req == 2) ? NULL : s->cert->key);
     }
     /* SSL3_ST_CW_CERT_D */
     return ssl_do_write(s);

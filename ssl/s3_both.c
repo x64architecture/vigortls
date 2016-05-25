@@ -194,12 +194,12 @@ int ssl3_send_change_cipher_spec(SSL *s, int a, int b)
     return (ssl3_do_write(s, SSL3_RT_CHANGE_CIPHER_SPEC));
 }
 
-unsigned long ssl3_output_cert_chain(SSL *s, X509 *x)
+unsigned long ssl3_output_cert_chain(SSL *s, CERT_PKEY *cpk)
 {
     uint8_t *p;
     unsigned long l = 3 + SSL_HM_HEADER_LENGTH(s);
 
-    if (!ssl_add_cert_chain(s, x, &l))
+    if (!ssl_add_cert_chain(s, cpk, &l))
         return 0;
 
     l -= 3 + SSL_HM_HEADER_LENGTH(s);
