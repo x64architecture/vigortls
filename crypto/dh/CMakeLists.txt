@@ -15,4 +15,5 @@ add_library(
     dh_lib.c
     dh_pmeth.c
     dh_prn.c
+    dh_rfc5114.c
 )

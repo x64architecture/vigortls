@@ -152,6 +152,11 @@ int i2d_DHparams(const DH *a, uint8_t **pp);
 int DHparams_print_fp(FILE *fp, const DH *x);
 int DHparams_print(BIO *bp, const DH *x);
 
+/* RFC 5114 parameters */
+DH *DH_get_1024_160(void);
+DH *DH_get_2048_224(void);
+DH *DH_get_2048_256(void);
+
 #define EVP_PKEY_CTX_set_dh_paramgen_prime_len(ctx, len)      \
     EVP_PKEY_CTX_ctrl(ctx, EVP_PKEY_DH, EVP_PKEY_OP_PARAMGEN, \
                       EVP_PKEY_CTRL_DH_PARAMGEN_PRIME_LEN, len, NULL)
