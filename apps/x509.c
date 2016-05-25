@@ -88,6 +88,9 @@ typedef enum OPTION_choice {
     OPT_STARTDATE,
     OPT_ENDDATE,
     OPT_CHECKEND,
+    OPT_CHECKHOST,
+    OPT_CHECKEMAIL,
+    OPT_CHECKIP,
     OPT_NOOUT,
     OPT_TRUSTOUT,
     OPT_CLRTRUST,
@@ -145,6 +148,9 @@ OPTIONS x509_options[] = {
     { "days", OPT_DAYS, 'n', "How long till expiry of a signed certificate - def 30 days" },
     { "checkend", OPT_CHECKEND, 'p',
       "Check whether the cert expires in the next arg seconds" },
+    { "checkhost", OPT_CHECKHOST, 's', "Check certificate matches host" },
+    { "checkemail", OPT_CHECKEMAIL, 's', "Check certificate matches email" },
+    { "checkip", OPT_CHECKIP, 's', "Check certificate matches ip address" },
     { OPT_MORE_STR, 1, 1, "Exit 1 if so, 0 if not" },
     { "signkey", OPT_SIGNKEY, '<', "Self sign cert with arg" },
     { "x509toreq", OPT_X509TOREQ, '-', "Output a certification request object" },
@@ -203,6 +209,8 @@ int x509_main(int argc, char **argv)
     int ret = 1, i, num = 0, badsig = 0, clrext = 0, nocert = 0;
     int text = 0, serial = 0, subject = 0, issuer = 0, startdate = 0, enddate = 0;
     unsigned long nmflag = 0, certflag = 0;
+    unsigned char *checkhost = NULL, *checkemail = NULL;
+    char *checkip = NULL;
     OPTION_CHOICE o;
 #ifndef OPENSSL_NO_ENGINE
     ENGINE *e = NULL;
@@ -426,6 +434,15 @@ int x509_main(int argc, char **argv)
             case OPT_CHECKEND:
                 checkoffset = atoi(opt_arg());
                 checkend = 1;
+                break;
+            case OPT_CHECKHOST:
+                checkhost = (uint8_t *)opt_arg();
+                break;
+            case OPT_CHECKEMAIL:
+                checkemail = (uint8_t *)opt_arg();
+                break;
+            case OPT_CHECKIP:
+                checkip = opt_arg();
                 break;
             case OPT_MD:
                 if (!opt_md(opt_unknown(), &digest))
@@ -834,6 +851,8 @@ int x509_main(int argc, char **argv)
         }
         goto end;
     }
+
+    print_cert_checks(out, x, checkhost, checkemail, checkip);
 
     if (noout || nocert) {
         ret = 0;

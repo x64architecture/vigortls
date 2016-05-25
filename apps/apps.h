@@ -344,6 +344,9 @@ int do_X509_CRL_sign(X509_CRL *x, EVP_PKEY *pkey, const EVP_MD *md,
 uint8_t *next_protos_parse(unsigned short *outlen, const char *in);
 #endif
 
+void print_cert_checks(BIO *bio, X509 *x, const uint8_t *checkhost,
+                       const uint8_t *checkemail, const char *checkip);
+
 #define FORMAT_UNDEF 0
 #define FORMAT_ASN1 1
 #define FORMAT_TEXT 2
