@@ -1400,6 +1400,9 @@ DECLARE_PEM_rw(SSL_SESSION, SSL_SESSION)
 #define SSL_CTRL_GET_EXTRA_CHAIN_CERTS 82
 #define SSL_CTRL_CLEAR_EXTRA_CHAIN_CERTS 83
 
+#define SSL_CTRL_CHAIN 88
+#define SSL_CTRL_CHAIN_CERT 89
+
 #define SSL_CTRL_CHECK_PROTO_VERSION 119
 
 #define SSL_CTRL_SET_DH_AUTO 118
@@ -1452,7 +1455,23 @@ DECLARE_PEM_rw(SSL_SESSION, SSL_SESSION)
 #define SSL_CTX_clear_extra_chain_certs(ctx) \
     SSL_CTX_ctrl(ctx, SSL_CTRL_CLEAR_EXTRA_CHAIN_CERTS, 0, NULL)
 
-    BIO_METHOD *BIO_f_ssl(void);
+#define SSL_CTX_set0_chain(ctx, sk) \
+    SSL_CTX_ctrl(ctx, SSL_CTRL_CHAIN, 0, (char *)sk)
+#define SSL_CTX_set1_chain(ctx, sk) \
+    SSL_CTX_ctrl(ctx, SSL_CTRL_CHAIN, 1, (char *)sk)
+#define SSL_CTX_add0_chain_cert(ctx, x509) \
+    SSL_CTX_ctrl(ctx, SSL_CTRL_CHAIN_CERT, 0, (char *)x509)
+#define SSL_CTX_add1_chain_cert(ctx, x509) \
+    SSL_CTX_ctrl(ctx, SSL_CTRL_CHAIN_CERT, 1, (char *)x509)
+
+#define SSL_set0_chain(ctx, sk) SSL_ctrl(ctx, SSL_CTRL_CHAIN, 0, (char *)sk)
+#define SSL_set1_chain(ctx, sk) SSL_ctrl(ctx, SSL_CTRL_CHAIN, 1, (char *)sk)
+#define SSL_add0_chain_cert(ctx, x509) \
+    SSL_ctrl(ctx, SSL_CTRL_CHAIN_CERT, 0, (char *)x509)
+#define SSL_add1_chain_cert(ctx, x509) \
+    SSL_ctrl(ctx, SSL_CTRL_CHAIN_CERT, 1, (char *)x509)
+
+BIO_METHOD *BIO_f_ssl(void);
 BIO *BIO_new_ssl(SSL_CTX *ctx, int client);
 BIO *BIO_new_ssl_connect(SSL_CTX *ctx);
 BIO *BIO_new_buffer_ssl_connect(SSL_CTX *ctx);

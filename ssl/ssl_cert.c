@@ -152,6 +152,18 @@ CERT *ssl_cert_dup(CERT *cert)
             rpk->privatekey = cpk->privatekey;
             EVP_PKEY_up_ref(ret->pkeys[i].privatekey);
         }
+
+        if (cpk->chain) {
+            rpk->chain = sk_X509_dup(cpk->chain);
+            if (rpk->chain == NULL) {
+                SSLerr(SSL_F_SSL_CERT_DUP, ERR_R_MALLOC_FAILURE);
+                goto err;
+            }
+            for (i = 0; i < sk_X509_num(rpk->chain); i++) {
+                X509 *x = sk_X509_value(rpk->chain, i);
+                X509_up_ref(x);
+            }
+        }
     }
 
     /*
@@ -175,6 +187,7 @@ err:
         CERT_PKEY *rpk = ret->pkeys + i;
         X509_free(rpk->x509);
         EVP_PKEY_free(rpk->privatekey);
+        sk_X509_pop_free(rpk->chain, X509_free);
     }
     free(ret);
     return NULL;
@@ -198,6 +211,7 @@ void ssl_cert_free(CERT *c)
         CERT_PKEY *cpk = c->pkeys + i;
         X509_free(cpk->x509);
         EVP_PKEY_free(cpk->privatekey);
+        sk_X509_pop_free(cpk->chain, X509_free);
     }
     CRYPTO_thread_cleanup(c->lock);
     free(c);
@@ -227,6 +241,57 @@ int ssl_cert_inst(CERT **o)
         }
     }
     return (1);
+}
+
+int ssl_cert_set0_chain(CERT *c, STACK_OF(X509) *chain)
+{
+    CERT_PKEY *cpk = c->key;
+    if (cpk == NULL)
+        return 0;
+    sk_X509_pop_free(cpk->chain, X509_free);
+    cpk->chain = chain;
+    return 1;
+}
+
+int ssl_cert_set1_chain(CERT *c, STACK_OF(X509) *chain)
+{
+    STACK_OF(X509) *dchain;
+    X509 *x;
+    int i;
+    if (chain == NULL)
+        return ssl_cert_set0_chain(c, NULL);
+    dchain = sk_X509_dup(chain);
+    if (dchain == NULL)
+        return 0;
+    for (i = 0; i < sk_X509_num(dchain); i++) {
+        x = sk_X509_value(dchain, i);
+        X509_up_ref(x);
+    }
+    if (!ssl_cert_set0_chain(c, dchain)) {
+        sk_X509_pop_free(dchain, X509_free);
+        return 0;
+    }
+    return 1;
+}
+
+int ssl_cert_add0_chain_cert(CERT *c, X509 *x)
+{
+    CERT_PKEY *cpk = c->key;
+    if (cpk == NULL)
+        return 0;
+    if (!cpk->chain)
+        cpk->chain = sk_X509_new_null();
+    if (!cpk->chain || !sk_X509_push(cpk->chain, x))
+        return 0;
+    return 1;
+}
+
+int ssl_cert_add1_chain_cert(CERT *c, X509 *x)
+{
+    if (!ssl_cert_add0_chain_cert(c, x))
+        return 0;
+    X509_up_ref(x);
+    return 1;
 }
 
 SESS_CERT *ssl_sess_cert_new(void)
@@ -606,9 +671,19 @@ int ssl_add_cert_chain(SSL *s, CERT_PKEY *cpk, unsigned long *l)
     int no_chain;
     int i;
     X509 *x = NULL;
+    STACK_OF(X509) *extra_certs;
 
     if (cpk != NULL)
         x = cpk->x509;
+
+    /*
+     * If we have a certificate specific chain use it, else use
+     * parent ctx.
+     */
+    if (cpk && cpk->chain)
+        extra_certs = cpk->chain;
+    else
+        extra_certs = s->ctx->extra_certs;
 
     if ((s->mode & SSL_MODE_NO_AUTO_CHAIN) || s->ctx->extra_certs)
         no_chain = 1;
@@ -645,9 +720,8 @@ int ssl_add_cert_chain(SSL *s, CERT_PKEY *cpk, unsigned long *l)
             X509_STORE_CTX_cleanup(&xs_ctx);
         }
     }
-    /* Thawte special :-) */
-    for (i = 0; i < sk_X509_num(s->ctx->extra_certs); i++) {
-        x = sk_X509_value(s->ctx->extra_certs, i);
+    for (i = 0; i < sk_X509_num(extra_certs); i++) {
+        x = sk_X509_value(extra_certs, i);
         if (!ssl_add_cert_to_buf(buf, l, x))
             return 0;
     }
