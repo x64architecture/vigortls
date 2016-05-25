@@ -313,7 +313,6 @@ int tls1_check_curve(SSL *s, const uint8_t *p, size_t len)
     return 0;
 }
 
-
 int tls1_get_shared_curve(SSL *s)
 {
     const uint16_t *pref, *supp;
@@ -336,6 +335,107 @@ int tls1_get_shared_curve(SSL *s)
         }
     }
     return NID_undef;
+}
+
+int tls1_shared_curve(SSL *s, int nmatch)
+{
+    const uint16_t *pref, *supp;
+    unsigned long server_pref;
+    size_t pref_len, supp_len, i, j;
+    int k = 0;
+
+    /* Cannot do anything on the client side. */
+    if (s->server == 0)
+        return -1;
+
+    server_pref = (s->options & SSL_OP_CIPHER_SERVER_PREFERENCE);
+    tls1_get_curvelist(s, (server_pref == 0), &pref, &pref_len);
+    tls1_get_curvelist(s, (server_pref != 0), &supp, &supp_len);
+
+    for (i = 0; i < pref_len; i++) {
+        for (j = 0; j < supp_len; j++) {
+            if (pref[i] == supp[j]) {
+                if (nmatch == k)
+                    return tls1_ec_curve_id2nid(pref[i]);
+                k++;
+            }
+        }
+    }
+    if (nmatch == -1)
+        return k;
+    return NID_undef;
+}
+
+int tls1_set_curves(uint16_t **pext, size_t *pextlen, int *curves,
+                    size_t ncurves)
+{
+    uint16_t *clist;
+    size_t i;
+    /*
+     * Bitmap of curves included to detect duplicates: only works
+     * while curve ids < 32
+     */
+    unsigned long dup_list = 0;
+    clist = reallocarray(NULL, ncurves, 2);
+    if (clist == NULL)
+        return 0;
+    for (i = 0; i < ncurves; i++) {
+        unsigned long idmask;
+        int id;
+        id = tls1_ec_nid2curve_id(curves[i]);
+        idmask = 1L << id;
+        if (!id || (dup_list & idmask)) {
+            free(clist);
+            return 0;
+        }
+        dup_list |= idmask;
+    }
+    free(*pext);
+    *pext = clist;
+    *pextlen = ncurves * 2;
+    return 1;
+}
+
+#define MAX_CURVELIST 25
+
+typedef struct {
+    size_t nidcnt;
+    int nid_arr[MAX_CURVELIST];
+} nid_cb_st;
+
+static int nid_cb(const char *elem, int len, void *arg)
+{
+    nid_cb_st *narg = arg;
+    size_t i;
+    int nid;
+    char etmp[20];
+    if (narg->nidcnt == MAX_CURVELIST)
+        return 0;
+    if (len > (int)(sizeof(etmp) - 1))
+        return 0;
+    memcpy(etmp, elem, len);
+    etmp[len] = 0;
+    nid       = EC_curve_nist2nid(etmp);
+    if (nid == NID_undef)
+        nid = OBJ_sn2nid(etmp);
+    if (nid == NID_undef)
+        nid = OBJ_ln2nid(etmp);
+    if (nid == NID_undef)
+        return 0;
+    for (i = 0; i < narg->nidcnt; i++)
+        if (narg->nid_arr[i] == nid)
+            return 0;
+    narg->nid_arr[narg->nidcnt++] = nid;
+    return 1;
+}
+/* Set curves based on a colon separate list */
+int tls1_set_curves_list(uint16_t **pext, size_t *pextlen, const char *str)
+{
+    nid_cb_st ncb;
+    ncb.nidcnt = 0;
+    if (!CONF_parse_list(str, ':', 1, nid_cb, &ncb))
+        return 0;
+    return tls1_set_curves(pext, pextlen, ncb.nid_arr, ncb.nidcnt);
 }
 
 /* For an EC key set TLS ID and required compression based on parameters. */

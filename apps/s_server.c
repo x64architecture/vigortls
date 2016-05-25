@@ -102,6 +102,7 @@ static int s_server_verify = SSL_VERIFY_NONE;
 static int s_server_session_id_context = 1; /* anything will do */
 static const char *s_cert_file = TEST_CERT, *s_key_file = NULL;
 static const char *s_cert_file2 = TEST_CERT2, *s_key_file2 = NULL;
+static char *curves = NULL;
 static char *s_dcert_file = NULL, *s_dkey_file = NULL;
 static int s_nbio = 0;
 int s_crlf = 0;
@@ -144,6 +145,7 @@ static void s_server_init(void)
     s_dkey_file = NULL;
     s_cert_file = TEST_CERT;
     s_key_file = NULL;
+    curves = NULL;
     s_cert_file2 = TEST_CERT2;
     s_key_file2 = NULL;
     ctx2 = NULL;
@@ -405,6 +407,7 @@ typedef enum OPTION_choice {
     OPT_STATUS_VERBOSE,
     OPT_STATUS_TIMEOUT,
     OPT_STATUS_URL,
+    OPT_SER_CURVES,
     OPT_MSG,
     OPT_MSGFILE,
     OPT_STATE,
@@ -459,6 +462,7 @@ OPTIONS s_server_options[] = {
     { "nbio", OPT_NBIO, '-', "Use non-blocking IO" },
     { "crlf", OPT_CRLF, '-', "Convert LF from terminal into CRLF" },
     { "debug", OPT_DEBUG, '-', "Print more output" },
+    { "curves", OPT_SER_CURVES, 's', "Elliptic curves to advertise (colon-separated list)" },
     { "msg", OPT_MSG, '-', "Show protocol messages" },
     { "msgfile", OPT_MSGFILE, '>' },
     { "state", OPT_STATE, '-', "Print the SSL states" },
@@ -508,8 +512,6 @@ OPTIONS s_server_options[] = {
 #ifndef OPENSSL_NO_ENGINE
     { "engine", OPT_ENGINE, 's' },
 #endif
-    OPT_S_OPTIONS,
-    OPT_V_OPTIONS,
     { NULL }
 };
 
@@ -688,6 +690,9 @@ int s_server_main(int argc, char *argv[])
                     BIO_printf(bio_err, "Error parsing URL\n");
                     goto end;
                 }
+                break;
+            case OPT_SER_CURVES:
+                curves = opt_arg();
                 break;
             case OPT_MSG:
                 s_msg = 1;
@@ -1081,6 +1086,19 @@ int s_server_main(int argc, char *argv[])
             goto end;
         }
     }
+    if (curves) {
+        if (!SSL_CTX_set1_curves_list(ctx, curves)) {
+            BIO_printf(bio_err, "error setting curves list\n");
+            ERR_print_errors(bio_err);
+            goto end;
+        }
+        if (ctx2 && !SSL_CTX_set1_curves_list(ctx2, curves)) {
+            BIO_printf(bio_err, "error setting curves list\n");
+            ERR_print_errors(bio_err);
+            goto end;
+        }
+    }
+
     SSL_CTX_set_verify(ctx, s_server_verify, verify_callback);
     SSL_CTX_set_session_id_context(ctx, (void *)&s_server_session_id_context,
                                    sizeof s_server_session_id_context);

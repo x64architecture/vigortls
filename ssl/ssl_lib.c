@@ -206,6 +206,26 @@ SSL *SSL_new(SSL_CTX *ctx)
     s->tlsext_ocsp_resplen = -1;
     SSL_CTX_up_ref(ctx);
     s->initial_ctx = ctx;
+    if (ctx->tlsext_ecpointformatlist) {
+        s->tlsext_ecpointformatlist =
+            malloc(ctx->tlsext_ecpointformatlist_length);
+        if (s->tlsext_ecpointformatlist == NULL)
+            goto err;
+        memcpy(s->tlsext_ecpointformatlist, ctx->tlsext_ecpointformatlist,
+               ctx->tlsext_ecpointformatlist_length);
+        s->tlsext_ecpointformatlist_length =
+            ctx->tlsext_ecpointformatlist_length;
+    }
+    if (ctx->tlsext_ellipticcurvelist) {
+        s->tlsext_ellipticcurvelist =
+            malloc(ctx->tlsext_ellipticcurvelist_length);
+        if (s->tlsext_ellipticcurvelist == NULL)
+            goto err;
+        memcpy(s->tlsext_ellipticcurvelist, ctx->tlsext_ellipticcurvelist,
+               ctx->tlsext_ellipticcurvelist_length);
+        s->tlsext_ellipticcurvelist_length =
+            ctx->tlsext_ellipticcurvelist_length;
+    }
     s->next_proto_negotiated = NULL;
 
     if (s->ctx->alpn_client_proto_list != NULL) {
@@ -1690,6 +1710,8 @@ void SSL_CTX_free(SSL_CTX *a)
 #endif
 
     free(a->alpn_client_proto_list);
+    free(a->tlsext_ecpointformatlist);
+    free(a->tlsext_ellipticcurvelist);
     CRYPTO_thread_cleanup(a->lock);
     free(a);
 }

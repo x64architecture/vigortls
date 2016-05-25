@@ -1770,7 +1770,7 @@ long ssl3_ctrl(SSL *s, int cmd, long larg, void *parg)
             else
                 return ssl_cert_add0_chain_cert(s->cert, (X509 *)parg);
 
-        case SSL_CTRL_GET_CURVELIST: {
+        case SSL_CTRL_GET_CURVES: {
             uint16_t *clist;
             size_t clistlen;
             if (!s->session)
@@ -1791,6 +1791,19 @@ long ssl3_ctrl(SSL *s, int cmd, long larg, void *parg)
             }
             return (int)clistlen;
         }
+
+        case SSL_CTRL_SET_CURVES:
+            return tls1_set_curves(&s->tlsext_ellipticcurvelist,
+                                   &s->tlsext_ellipticcurvelist_length,
+                                   parg, larg);
+
+        case SSL_CTRL_SET_CURVES_LIST:
+            return tls1_set_curves_list(&s->tlsext_ellipticcurvelist,
+                                        &s->tlsext_ellipticcurvelist_length,
+                                        parg);
+
+        case SSL_CTRL_GET_SHARED_CURVE:
+            return tls1_shared_curve(s, larg);
 
         case SSL_CTRL_CHECK_PROTO_VERSION:
             /* For library-internal use; checks that the current protocol
@@ -1949,6 +1962,16 @@ long ssl3_ctx_ctrl(SSL_CTX *ctx, int cmd, long larg, void *parg)
         case SSL_CTRL_SET_ECDH_AUTO:
             ctx->cert->ecdh_tmp_auto = larg;
             return 1;
+
+        case SSL_CTRL_SET_CURVES:
+            return tls1_set_curves(&ctx->tlsext_ellipticcurvelist,
+                                   &ctx->tlsext_ellipticcurvelist_length,
+                                   parg, larg);
+
+        case SSL_CTRL_SET_CURVES_LIST:
+            return tls1_set_curves_list(&ctx->tlsext_ellipticcurvelist,
+                                        &ctx->tlsext_ellipticcurvelist_length,
+                                        parg);
 
         /* A Thawte special :-) */
         case SSL_CTRL_EXTRA_CHAIN_CERT:
