@@ -63,7 +63,7 @@ static X509_PURPOSE xstandard[] = {
         no_check, (char *)"Any Purpose", (char *)"any", NULL
     },
     {
-        X509_PURPOSE_OCSP_HELPER, X509_TRUST_COMPAT, 0,
+        X509_PURPOSE_OCSP_HELPER, X509_TRUST_OCSP_SIGN, 0,
         ocsp_helper, (char *)"OCSP helper", (char *)"ocsphelper", NULL
     },
     {
@@ -442,6 +442,10 @@ static void x509v3_cache_extensions(X509 *x)
 
                 case NID_dvcs:
                     x->ex_xkusage |= XKU_DVCS;
+                    break;
+
+                case NID_anyExtendedKeyUsage:
+                    x->ex_xkusage |= XKU_ANYEKU;
                     break;
             }
         }

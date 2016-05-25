@@ -28,7 +28,9 @@ int OCSP_basic_verify(OCSP_BASICRESP *bs, STACK_OF(X509) *certs,
 {
     X509 *signer, *x;
     STACK_OF(X509) *chain = NULL;
+    STACK_OF(X509) *tmpchain = NULL;
     STACK_OF(X509) *untrusted = NULL;
+    X509_STORE *tmpstore = NULL;
     X509_STORE_CTX ctx;
     int i, ret = 0;
     ret = ocsp_find_signer(&signer, bs, certs, st, flags);
@@ -37,7 +39,7 @@ int OCSP_basic_verify(OCSP_BASICRESP *bs, STACK_OF(X509) *certs,
         goto end;
     }
     if ((ret == 2) && (flags & OCSP_TRUSTOTHER))
-        flags |= OCSP_NOVERIFY;
+        chain = certs;
     if (!(flags & OCSP_NOSIGS)) {
         EVP_PKEY *skey;
         skey = X509_get_pubkey(signer);
@@ -52,6 +54,56 @@ int OCSP_basic_verify(OCSP_BASICRESP *bs, STACK_OF(X509) *certs,
     }
     if (!(flags & OCSP_NOVERIFY)) {
         int init_res;
+
+        /*
+         * If we trust the signer, we don't need to build a chain. (If the
+         * signer is a root certificate, X509_verify_cert() would fail anyway!)
+         */
+        if (chain == certs)
+            goto verified_chain;
+
+        /*
+         * If we trust some "other" certificates, mark them as explicitly
+         * trusted (because some of them might be Intermediate CA
+         * Certificates), put them in a store and attempt to build a trusted
+         * chain.
+         */
+        if ((flags & OCSP_TRUSTOTHER) && (certs != NULL)) {
+            ASN1_OBJECT *objtmp = OBJ_nid2obj(NID_OCSP_sign);
+            tmpstore = X509_STORE_new();
+            if (tmpstore == NULL) {
+                ret = -1;
+                OCSPerr(OCSP_F_OCSP_BASIC_VERIFY, ERR_R_MALLOC_FAILURE);
+                goto end;
+            }
+            for (i = 0; i < sk_X509_num(certs); i++) {
+                X509 *xother = sk_X509_value(certs, i);
+                X509_add1_trust_object(xother, objtmp);
+                if (!X509_STORE_add_cert(tmpstore, xother)) {
+                    ret = -1;
+                    goto end;
+                }
+            }
+            init_res = X509_STORE_CTX_init(&ctx, tmpstore, signer, NULL);
+            if (!init_res) {
+                ret = -1;
+                OCSPerr(OCSP_F_OCSP_BASIC_VERIFY, ERR_R_X509_LIB);
+                goto end;
+            }
+            X509_STORE_CTX_set_purpose(&ctx, X509_PURPOSE_OCSP_HELPER);
+            ret = X509_verify_cert(&ctx);
+            if (ret == 1) {
+                chain = tmpchain = X509_STORE_CTX_get1_chain(&ctx);
+                X509_STORE_CTX_cleanup(&ctx);
+                goto verified_chain;
+            }
+            X509_STORE_CTX_cleanup(&ctx);
+        }
+
+        /*
+         * Attempt to build a chain up to a Root Certificate in the trust
+         * store provided by the caller.
+         */
         if (flags & OCSP_NOCHAIN) {
             untrusted = NULL;
         } else if (bs->certs && certs) {
@@ -74,7 +126,7 @@ int OCSP_basic_verify(OCSP_BASICRESP *bs, STACK_OF(X509) *certs,
 
         X509_STORE_CTX_set_purpose(&ctx, X509_PURPOSE_OCSP_HELPER);
         ret = X509_verify_cert(&ctx);
-        chain = X509_STORE_CTX_get1_chain(&ctx);
+        chain = tmpchain = X509_STORE_CTX_get1_chain(&ctx);
         X509_STORE_CTX_cleanup(&ctx);
         if (ret <= 0) {
             i = X509_STORE_CTX_get_error(&ctx);
@@ -82,6 +134,8 @@ int OCSP_basic_verify(OCSP_BASICRESP *bs, STACK_OF(X509) *certs,
             ERR_asprintf_error_data("Verify error: %s", X509_verify_cert_error_string(i));
             goto end;
         }
+
+verified_chain:
         if (flags & OCSP_NOCHECKS) {
             ret = 1;
             goto end;
@@ -110,7 +164,8 @@ int OCSP_basic_verify(OCSP_BASICRESP *bs, STACK_OF(X509) *certs,
     }
 
 end:
-    sk_X509_pop_free(chain, X509_free);
+    sk_X509_pop_free(tmpchain, X509_free);
+    X509_STORE_free(tmpstore);
     if (bs->certs && certs)
         sk_X509_free(untrusted);
     return ret;
