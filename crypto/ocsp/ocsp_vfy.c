@@ -59,7 +59,7 @@ int OCSP_basic_verify(OCSP_BASICRESP *bs, STACK_OF(X509) *certs,
          * If we trust the signer, we don't need to build a chain. (If the
          * signer is a root certificate, X509_verify_cert() would fail anyway!)
          */
-        if (chain == certs)
+        if (chain && chain == certs)
             goto verified_chain;
 
         /*
