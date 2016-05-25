@@ -952,7 +952,7 @@ uint8_t *ssl_add_serverhello_tlsext(SSL *s, uint8_t *p,
     }
 
     if (using_ecc && s->version != DTLS1_VERSION) {
-        const unsigned char *formats;
+        const uint8_t *formats;
         size_t formats_len, lenmax;
 
         /*
@@ -973,7 +973,7 @@ uint8_t *ssl_add_serverhello_tlsext(SSL *s, uint8_t *p,
 
         s2n(TLSEXT_TYPE_ec_point_formats, ret);
         s2n(formats_len + 1, ret);
-        *(ret++) = (unsigned char)formats_len;
+        *(ret++) = (uint8_t)formats_len;
         memcpy(ret, formats, formats_len);
         ret += formats_len;
     }
@@ -1136,8 +1136,7 @@ parse_error:
     return (0);
 }
 
-int ssl_parse_clienthello_tlsext(SSL *s, uint8_t **p, uint8_t *limit,
-                                 int *al)
+static int ssl_scan_clienthello_tlsext(SSL *s, uint8_t **p, uint8_t *limit, int *al)
 {
     unsigned short type;
     unsigned short size;
@@ -1473,6 +1472,23 @@ ri_check:
 err:
     *al = SSL_AD_DECODE_ERROR;
     return 0;
+}
+
+int ssl_parse_clienthello_tlsext(SSL *s, uint8_t **p, uint8_t *d)
+{
+    int al = -1;
+
+    if (ssl_scan_clienthello_tlsext(s, p, d, &al) <= 0) {
+        ssl3_send_alert(s, SSL3_AL_FATAL, al); 
+        return 0;
+    }
+
+    if (ssl_check_clienthello_tlsext_early(s) <= 0) {
+        SSLerr(SSL_F_SSL3_GET_CLIENT_HELLO, SSL_R_CLIENTHELLO_TLSEXT);
+        return 0;
+    }
+
+    return 1;
 }
 
 /*

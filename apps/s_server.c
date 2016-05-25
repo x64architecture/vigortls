@@ -1025,8 +1025,10 @@ int s_server_main(int argc, char *argv[])
     if (!no_ecdhe) {
         EC_KEY *ecdh = NULL;
 
-        if (named_curve) {
-            int nid = OBJ_sn2nid(named_curve);
+        if (named_curve && strcmp(named_curve, "auto") != 0) {
+            int nid = EC_curve_nist2nid(named_curve);
+            if (nid == NID_undef)
+                nid = OBJ_sn2nid(named_curve);
 
             if (nid == 0) {
                 BIO_printf(bio_err, "unknown curve name (%s)\n",
@@ -1043,6 +1045,8 @@ int s_server_main(int argc, char *argv[])
 
         if (ecdh != NULL) {
             BIO_printf(bio_s_out, "Setting temp ECDH parameters\n");
+        } else if (named_curve) {
+            SSL_CTX_set_ecdh_auto(ctx, 1);
         } else {
             BIO_printf(bio_s_out, "Using default temp ECDH parameters\n");
             ecdh = EC_KEY_new_by_curve_name(NID_X9_62_prime256v1);

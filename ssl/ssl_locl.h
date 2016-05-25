@@ -736,8 +736,7 @@ uint8_t *ssl_add_clienthello_tlsext(SSL *s, uint8_t *p,
 uint8_t *ssl_add_serverhello_tlsext(SSL *s, uint8_t *p,
                                           uint8_t *limit);
 
-int ssl_parse_clienthello_tlsext(SSL *s, uint8_t **data, uint8_t *limit,
-                                 int *al);
+int ssl_parse_clienthello_tlsext(SSL *s, uint8_t **data, uint8_t *limit);
 int ssl_parse_serverhello_tlsext(SSL *s, uint8_t **data, uint8_t *d,
                                  int n, int *al);
 int ssl_prepare_clienthello_tlsext(SSL *s);

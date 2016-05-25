@@ -824,14 +824,8 @@ int ssl3_get_client_hello(SSL *s)
     }
 
     /* TLS extensions*/
-    if (!ssl_parse_clienthello_tlsext(s, &p, d + n, &al)) {
-       /* 'al' set by ssl_parse_clienthello_tlsext */
-       SSLerr(SSL_F_SSL3_GET_CLIENT_HELLO, SSL_R_PARSE_TLSEXT);
-       goto f_err;
-    }
-
-    if (ssl_check_clienthello_tlsext_early(s) <= 0) {
-        SSLerr(SSL_F_SSL3_GET_CLIENT_HELLO, SSL_R_CLIENTHELLO_TLSEXT);
+    if (!ssl_parse_clienthello_tlsext(s, &p, d + n)) {
+        SSLerr(SSL_F_SSL3_GET_CLIENT_HELLO, SSL_R_PARSE_TLSEXT);
         goto err;
     }
 
