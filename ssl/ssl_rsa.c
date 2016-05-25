@@ -18,6 +18,8 @@
 
 static int ssl_set_cert(CERT *c, X509 *x509);
 static int ssl_set_pkey(CERT *c, EVP_PKEY *pkey);
+static int ssl_set_authz(CERT *c, uint8_t *authz, size_t authz_length);
+
 int SSL_use_certificate(SSL *ssl, X509 *x)
 {
     if (x == NULL) {
@@ -339,9 +341,15 @@ static int ssl_set_cert(CERT *c, X509 *x)
     X509_free(c->pkeys[i].x509);
     X509_up_ref(x);
     c->pkeys[i].x509 = x;
+    /* Free the old authz data */
+    free(c->pkeys[i].authz);
+    c->pkeys[i].authz = NULL;
+    c->pkeys[i].authz_length = 0;
+
     c->key = &(c->pkeys[i]);
 
     c->valid = 0;
+
     return (1);
 }
 
@@ -630,4 +638,217 @@ end:
     X509_free(x);
     BIO_free(in);
     return (ret);
+}
+
+/*
+ * authz_validate returns true if authz is well formed, i.e. that it meets the
+ * wire format as documented in the CERT_PKEY structure and that there are no
+ * duplicate entries.
+ */
+static char authz_validate(const uint8_t *authz, size_t length)
+{
+    uint8_t types_seen_bitmap[32];
+
+    if (authz == NULL)
+        return 1;
+
+    memset(types_seen_bitmap, 0, sizeof(types_seen_bitmap));
+
+    for (;;) {
+        uint8_t type, byte, bit;
+        uint16_t len;
+
+        if (!length)
+            return 1;
+
+        type = *(authz++);
+        length--;
+
+        byte = type / 8;
+        bit = type & 7;
+        if (types_seen_bitmap[byte] & (1 << bit))
+            return 0;
+        types_seen_bitmap[byte] |= (1 << bit);
+
+        if (length < 2)
+            return 0;
+        len = ((uint16_t)authz[0]) << 8 | ((uint16_t)authz[1]);
+        authz += 2;
+        length -= 2;
+
+        if (length < len)
+            return 0;
+
+        authz += len;
+        length -= len;
+    }
+}
+
+static const uint8_t *authz_find_data(const uint8_t *authz, size_t authz_length,
+                                      uint8_t data_type, size_t *data_length)
+{
+    if (authz == NULL)
+        return NULL;
+
+    if (!authz_validate(authz, authz_length)) {
+        SSLerr(SSL_F_AUTHZ_FIND_DATA, SSL_R_INVALID_AUTHZ_DATA);
+        return NULL;
+    }
+
+    for (;;) {
+        uint8_t type;
+        uint16_t len;
+        if (!authz_length)
+            return NULL;
+
+        type = *(authz++);
+        authz_length--;
+
+        /*
+         * We've validated the authz data, so we don't have to
+         * check again that we have enough bytes left.
+         */
+        len = ((uint16_t)authz[0]) << 8 | ((uint16_t)authz[1]);
+        authz += 2;
+        authz_length -= 2;
+        if (type == data_type) {
+            *data_length = len;
+            return authz;
+        }
+        authz += len;
+        authz_length -= len;
+    }
+    /* No match */
+    return NULL;
+}
+
+static int ssl_set_authz(CERT *c, uint8_t *authz, size_t authz_length)
+{
+    CERT_PKEY *current_key = c->key;
+
+    if (current_key == NULL)
+        return 0;
+
+    if (!authz_validate(authz, authz_length)) {
+        SSLerr(SSL_F_SSL_SET_AUTHZ, SSL_R_INVALID_AUTHZ_DATA);
+        return 0;
+    }
+
+    current_key->authz = realloc(current_key->authz, authz_length);
+    current_key->authz_length = authz_length;
+    memcpy(current_key->authz, authz, authz_length);
+
+    return 1;
+}
+
+int SSL_CTX_use_authz(SSL_CTX *ctx, uint8_t *authz, size_t authz_length)
+{
+    if (authz == NULL) {
+        SSLerr(SSL_F_SSL_CTX_USE_AUTHZ, ERR_R_PASSED_NULL_PARAMETER);
+        return 0;
+    }
+    if (!ssl_cert_inst(&ctx->cert)) {
+        SSLerr(SSL_F_SSL_CTX_USE_AUTHZ, ERR_R_MALLOC_FAILURE);
+        return 0;
+    }
+    return ssl_set_authz(ctx->cert, authz, authz_length);
+}
+
+int SSL_use_authz(SSL *ssl, uint8_t *authz, size_t authz_length)
+{
+    if (authz == NULL) {
+        SSLerr(SSL_F_SSL_USE_AUTHZ, ERR_R_PASSED_NULL_PARAMETER);
+        return 0;
+    }
+    if (!ssl_cert_inst(&ssl->cert)) {
+        SSLerr(SSL_F_SSL_USE_AUTHZ, ERR_R_MALLOC_FAILURE);
+        return 0;
+    }
+    return ssl_set_authz(ssl->cert, authz, authz_length);
+}
+
+const uint8_t *SSL_CTX_get_authz_data(SSL_CTX *ctx, uint8_t type,
+                                      size_t *data_length)
+{
+    CERT_PKEY *current_key;
+
+    if (ctx->cert == NULL)
+        return NULL;
+    current_key = ctx->cert->key;
+    if (current_key->authz == NULL)
+        return NULL;
+    return authz_find_data(current_key->authz, current_key->authz_length, type,
+                           data_length);
+}
+
+/* read_authz returns a newly allocated buffer with authz data */
+static uint8_t *read_authz(const char *file, size_t *authz_length)
+{
+    BIO *authz_in = NULL;
+    uint8_t *authz = NULL;
+    /* Allow authzs up to 64KB. */
+    static const size_t authz_limit = (1024 * 64);
+    size_t read_length;
+    uint8_t *ret = NULL;
+
+    authz_in = BIO_new(BIO_s_file_internal());
+    if (authz_in == NULL) {
+        SSLerr(SSL_F_READ_AUTHZ, ERR_R_BUF_LIB);
+        goto end;
+    }
+
+    if (BIO_read_filename(authz_in, file) <= 0) {
+        SSLerr(SSL_F_READ_AUTHZ, ERR_R_SYS_LIB);
+        goto end;
+    }
+
+    authz = malloc(authz_limit);
+    if (authz == NULL) {
+        SSLerr(SSL_F_READ_AUTHZ, ERR_R_MALLOC_FAILURE);
+        goto end;
+    }
+    read_length = BIO_read(authz_in, authz, authz_limit);
+    if (read_length == authz_limit || read_length <= 0) {
+        SSLerr(SSL_F_READ_AUTHZ, SSL_R_AUTHZ_DATA_TOO_LARGE);
+        free(authz);
+        goto end;
+    }
+    *authz_length = read_length;
+    ret = authz;
+end:
+    if (authz_in != NULL)
+        BIO_free(authz_in);
+    return ret;
+}
+
+int SSL_CTX_use_authz_file(SSL_CTX *ctx, const char *file)
+{
+    uint8_t *authz = NULL;
+    size_t authz_length = 0;
+    int ret;
+
+    authz = read_authz(file, &authz_length);
+    if (authz == NULL)
+        return 0;
+
+    ret = SSL_CTX_use_authz(ctx, authz, authz_length);
+    /* SSL_CTX_use_authz makes a local copy of the authz. */
+    free(authz);
+    return ret;
+}
+
+int SSL_use_authz_file(SSL *ssl, const char *file)
+{
+    uint8_t *authz = NULL;
+    size_t authz_length = 0;
+    int ret;
+
+    authz = read_authz(file, &authz_length);
+    if (authz == NULL)
+        return 0;
+
+    ret = SSL_use_authz(ssl, authz, authz_length);
+    /* SSL_use_authz makes a local copy of the authz. */
+    free(authz);
+    return ret;
 }

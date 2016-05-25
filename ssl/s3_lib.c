@@ -1553,6 +1553,7 @@ void ssl3_free(SSL *s)
     BIO_free(s->s3->handshake_buffer);
     tls1_free_digest_list(s);
     free(s->s3->alpn_selected);
+    free(s->s3->tlsext_authz_client_types);
 
     vigortls_zeroize(s->s3, sizeof *s->s3);
     free(s->s3);
@@ -1571,6 +1572,8 @@ void ssl3_clear(SSL *s)
     s->s3->tmp.dh = NULL;
     EC_KEY_free(s->s3->tmp.ecdh);
     s->s3->tmp.ecdh = NULL;
+    free(s->s3->tlsext_authz_client_types);
+    s->s3->tlsext_authz_client_types = NULL;
 
     rp = s->s3->rbuf.buf;
     wp = s->s3->wbuf.buf;
@@ -1963,6 +1966,10 @@ long ssl3_ctx_ctrl(SSL_CTX *ctx, int cmd, long larg, void *parg)
             ctx->cert->ecdh_tmp_auto = larg;
             return 1;
 
+        case SSL_CTRL_SET_TLSEXT_AUTHZ_SERVER_AUDIT_PROOF_CB_ARG:
+            ctx->tlsext_authz_server_audit_proof_cb_arg = parg;
+            break;
+
         case SSL_CTRL_SET_CURVES:
             return tls1_set_curves(&ctx->tlsext_ellipticcurvelist,
                                    &ctx->tlsext_ellipticcurvelist_length,
@@ -2038,6 +2045,11 @@ long ssl3_ctx_callback_ctrl(SSL_CTX *ctx, int cmd, void (*fp)(void))
         case SSL_CTRL_SET_TLSEXT_TICKET_KEY_CB:
             ctx->tlsext_ticket_key_cb = (int (*)(SSL *, uint8_t *, uint8_t *, EVP_CIPHER_CTX *,
                                                  HMAC_CTX *, int))fp;
+            break;
+
+        case SSL_CTRL_SET_TLSEXT_AUTHZ_SERVER_AUDIT_PROOF_CB:
+            ctx->tlsext_authz_server_audit_proof_cb =
+                (int (*)(SSL *, void *))fp;
             break;
 
         default:

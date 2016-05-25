@@ -1848,35 +1848,45 @@ int ssl_check_srvr_ecc_cert_and_alg(X509 *x, SSL *s)
 }
 
 /* THIS NEEDS CLEANING UP */
+static int ssl_get_server_cert_index(const SSL *s)
+{
+    unsigned long alg_a;
+
+    alg_a = s->s3->tmp.new_cipher->algorithm_auth;
+
+    if (alg_a & SSL_aECDSA) {
+        return SSL_PKEY_ECC;
+    } else if (alg_a & SSL_aDSS) {
+        return SSL_PKEY_DSA_SIGN;
+    } else if (alg_a & SSL_aRSA) {
+        if (s->cert->pkeys[SSL_PKEY_RSA_ENC].x509 == NULL)
+            return SSL_PKEY_RSA_SIGN;
+        else
+            return SSL_PKEY_RSA_ENC;
+    } else if (alg_a & SSL_aGOST94) {
+        return SSL_PKEY_GOST94;
+    } else if (alg_a & SSL_aGOST01) {
+        return SSL_PKEY_GOST01;
+    } else { /* if (alg_a & SSL_aNULL) */
+        SSLerr(SSL_F_SSL_GET_SERVER_CERT_INDEX, ERR_R_INTERNAL_ERROR);
+        return -1;
+    }
+}
+
 CERT_PKEY *ssl_get_server_send_pkey(const SSL *s)
 {
-    uint32_t alg_a;
     CERT *c;
     int i;
 
     c = s->cert;
     ssl_set_cert_masks(c, s->s3->tmp.new_cipher);
 
-    alg_a = s->s3->tmp.new_cipher->algorithm_auth;
-
-    if (alg_a & SSL_aECDSA) {
-        i = SSL_PKEY_ECC;
-    } else if (alg_a & SSL_aDSS) {
-        i = SSL_PKEY_DSA_SIGN;
-    } else if (alg_a & SSL_aRSA) {
-        if (c->pkeys[SSL_PKEY_RSA_ENC].x509 == NULL)
-            i = SSL_PKEY_RSA_SIGN;
-        else
-            i = SSL_PKEY_RSA_ENC;
-    } else if (alg_a & SSL_aGOST94) {
-        i = SSL_PKEY_GOST94;
-    } else if (alg_a & SSL_aGOST01) {
-        i = SSL_PKEY_GOST01;
-    } else { /* if (alg_a & SSL_aNULL) */
-        SSLerr(SSL_F_SSL_GET_SERVER_SEND_PKEY, ERR_R_INTERNAL_ERROR);
+    i = ssl_get_server_cert_index(s);
+    /* This may or may not be an error. */
+    if (i < 0)
         return NULL;
-    }
 
+    /* May be NULL */
     return &c->pkeys[i];
 }
 
@@ -1963,6 +1973,24 @@ DH *ssl_get_auto_dh(SSL *s)
         return (NULL);
     }
     return (dhp);
+}
+
+uint8_t *ssl_get_authz_data(const SSL *s, size_t *authz_length)
+{
+    CERT *c;
+    int i;
+
+    c = s->cert;
+    i = ssl_get_server_cert_index(s);
+    if (i == -1)
+        return NULL;
+
+    *authz_length = 0;
+    if (c->pkeys[i].authz == NULL)
+        return NULL;
+    *authz_length = c->pkeys[i].authz_length;
+
+    return c->pkeys[i].authz;
 }
     
 void ssl_update_cache(SSL *s, int mode)

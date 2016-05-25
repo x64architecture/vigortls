@@ -186,7 +186,22 @@ int ssl3_accept(SSL *s)
                     else
                         s->state = SSL3_ST_SW_CHANGE_A;
                 } else
-                    s->state = SSL3_ST_SW_CERT_A;
+                    s->state = SSL3_ST_SW_SUPPLEMENTAL_DATA_A;
+                s->init_num = 0;
+                break;
+
+            case SSL3_ST_SW_SUPPLEMENTAL_DATA_A:
+            case SSL3_ST_SW_SUPPLEMENTAL_DATA_B:
+                /* We promised to send an audit proof in the hello. */
+                if (s->s3->tlsext_authz_promised_to_client) {
+                    ret = tls1_send_server_supplemental_data(s);
+                    if (ret <= 0)
+                        goto end;
+                } else {
+                    skip = 1;
+                }
+
+                s->state = SSL3_ST_SW_CERT_A;
                 s->init_num = 0;
                 break;
 
@@ -2406,4 +2421,94 @@ int ssl3_get_next_proto(SSL *s)
     s->next_proto_negotiated_len = (uint8_t)len;
 
     return (1);
+}
+
+int tls1_send_server_supplemental_data(SSL *s)
+{
+    size_t length = 0;
+    const uint8_t *authz, *orig_authz;
+    uint8_t *p;
+    size_t authz_length, i;
+
+    if (s->state != SSL3_ST_SW_SUPPLEMENTAL_DATA_A)
+        return ssl3_do_write(s, SSL3_RT_HANDSHAKE);
+
+    orig_authz = authz = ssl_get_authz_data(s, &authz_length);
+    if (authz == NULL) {
+        /* This should never occur. */
+        return 0;
+    }
+
+    /*
+     * First we walk over the authz data to see how long the handshake
+     * message will be.
+     */
+    for (i = 0; i < authz_length; i++) {
+        uint16_t len;
+        uint8_t type;
+
+        type = *(authz++);
+        n2s(authz, len);
+        /* n2s increments authz by 2 */
+        i += 2;
+
+        if (memchr(s->s3->tlsext_authz_client_types, type,
+                   s->s3->tlsext_authz_client_types_len) != NULL)
+            length += 1 /* authz type */ + 2 /* length */ + len;
+
+        authz += len;
+        i += len;
+    }
+
+    length += 1 /* handshake type */            +
+              3 /* handshake length */          +
+              3 /* supplemental data length */  +
+              2 /* supplemental entry type */   +
+              2 /* supplemental entry length */;
+
+    if (!BUF_MEM_grow_clean(s->init_buf, length)) {
+        SSLerr(SSL_F_TLS1_SEND_SERVER_SUPPLEMENTAL_DATA, ERR_R_BUF_LIB);
+        return 0;
+    }
+
+    p = (uint8_t *)s->init_buf->data;
+    *(p++) = SSL3_MT_SUPPLEMENTAL_DATA;
+    /* Handshake length */
+    l2n3(length - 4, p);
+    /* Length of supplemental data */
+    l2n3(length - 7, p);
+    /* Supplemental data type */
+    s2n(TLSEXT_SUPPLEMENTALDATATYPE_authz_data, p);
+    /* Its length */
+    s2n(length - 11, p);
+
+    authz = orig_authz;
+
+    /* Walk over the authz again and append the selected elements. */
+    for (i = 0; i < authz_length; i++) {
+        uint16_t len;
+        uint8_t type;
+
+        type = *(authz++);
+        n2s(authz, len);
+        /* n2s increments authz by 2 */
+        i += 2;
+
+        if (memchr(s->s3->tlsext_authz_client_types, type,
+                   s->s3->tlsext_authz_client_types_len) != NULL) {
+            *(p++) = type;
+            s2n(len, p);
+            memcpy(p, authz, len);
+            p += len;
+        }
+
+        authz += len;
+        i += len;
+    }
+
+    s->state = SSL3_ST_SW_SUPPLEMENTAL_DATA_B;
+    s->init_num = length;
+    s->init_off = 0;
+
+    return ssl3_do_write(s, SSL3_RT_HANDSHAKE);
 }

@@ -165,6 +165,17 @@ CERT *ssl_cert_dup(CERT *cert)
                 X509_up_ref(x);
             }
         }
+        if (cert->pkeys[i].authz != NULL) {
+            /* Just copy everything. */
+            ret->pkeys[i].authz_length = cert->pkeys[i].authz_length;
+            ret->pkeys[i].authz = malloc(ret->pkeys[i].authz_length);
+            if (ret->pkeys[i].authz == NULL) {
+                SSLerr(SSL_F_SSL_CERT_DUP, ERR_R_MALLOC_FAILURE);
+                return NULL;
+            }
+            memcpy(ret->pkeys[i].authz, cert->pkeys[i].authz,
+                   cert->pkeys[i].authz_length);
+        }
     }
 
     /*
@@ -214,6 +225,7 @@ void ssl_cert_free(CERT *c)
         EVP_PKEY_free(cpk->privatekey);
         sk_X509_pop_free(cpk->chain, X509_free);
     }
+    free(c->pkeys[i].authz);
     free(c->sigalgs);
     CRYPTO_thread_cleanup(c->lock);
     free(c);

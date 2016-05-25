@@ -133,6 +133,9 @@ static long socket_mtu;
 static int cert_chain = 0;
 #endif
 
+static BIO *authz_in = NULL;
+static const char *s_authz_file = NULL;
+
 static int local_argc = 0;
 static char **local_argv;
 
@@ -385,6 +388,7 @@ typedef enum OPTION_choice {
     OPT_UPPER_V_VERIFY,
     OPT_CONTEXT,
     OPT_CERT,
+    OPT_AUTHZ,
     OPT_CERTFORM,
     OPT_KEY,
     OPT_KEYFORM,
@@ -449,6 +453,7 @@ OPTIONS s_server_options[] = {
     { "Verify", OPT_UPPER_V_VERIFY, 'n',
       "Turn on peer certificate verification, must have a cert" },
     { "cert", OPT_CERT, '<', "Certificate file to use; default is " TEST_CERT },
+    { "authz", OPT_AUTHZ, 's', "binary authz file for certificate" },
     { "certform", OPT_CERTFORM, 'F', "Certificate format (PEM or DER) PEM default" },
     { "key", OPT_KEY, '<', "Private Key if not in -cert; default is " TEST_CERT },
     { "keyform", OPT_KEYFORM, 'f', "Key format (PEM, DER or ENGINE) PEM default" },
@@ -598,6 +603,9 @@ int s_server_main(int argc, char *argv[])
                 break;
             case OPT_CERT:
                 s_cert_file = opt_arg();
+                break;
+            case OPT_AUTHZ:
+                s_authz_file = opt_arg();
                 break;
             case OPT_CERTFORM:
                 if (!opt_format(opt_arg(), OPT_FMT_PEMDER, &s_cert_format))
@@ -1065,6 +1073,8 @@ int s_server_main(int argc, char *argv[])
 
     if (!set_cert_key_stuff(ctx, s_cert, s_key))
         goto end;
+    if (s_authz_file != NULL && !SSL_CTX_use_authz_file(ctx, s_authz_file))
+        goto end;
     if (ctx2 && !set_cert_key_stuff(ctx2, s_cert2, s_key2))
         goto end;
     if (s_dcert != NULL) {
@@ -1154,6 +1164,7 @@ end:
     EVP_PKEY_free(s_key2);
     free(next_proto.data);
     free(alpn_ctx.data);
+    BIO_free(authz_in);
     if (bio_s_out != NULL) {
         BIO_free(bio_s_out);
         bio_s_out = NULL;
