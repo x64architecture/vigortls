@@ -141,13 +141,15 @@ CERT *ssl_cert_dup(CERT *cert)
     ret->ecdh_tmp_auto = cert->ecdh_tmp_auto;
 
     for (i = 0; i < SSL_PKEY_NUM; i++) {
-        if (cert->pkeys[i].x509 != NULL) {
-            ret->pkeys[i].x509 = cert->pkeys[i].x509;
+        CERT_PKEY *cpk = cert->pkeys + i;
+        CERT_PKEY *rpk = ret->pkeys + i;
+        if (cpk->x509 != NULL) {
+            rpk->x509 = cpk->x509;
             X509_up_ref(ret->pkeys[i].x509);
         }
 
-        if (cert->pkeys[i].privatekey != NULL) {
-            ret->pkeys[i].privatekey = cert->pkeys[i].privatekey;
+        if (cpk->privatekey != NULL) {
+            rpk->privatekey = cpk->privatekey;
             EVP_PKEY_up_ref(ret->pkeys[i].privatekey);
         }
     }
@@ -170,8 +172,9 @@ err:
     EC_KEY_free(ret->ecdh_tmp);
 
     for (i = 0; i < SSL_PKEY_NUM; i++) {
-        X509_free(ret->pkeys[i].x509);
-        EVP_PKEY_free(ret->pkeys[i].privatekey);
+        CERT_PKEY *rpk = ret->pkeys + i;
+        X509_free(rpk->x509);
+        EVP_PKEY_free(rpk->privatekey);
     }
     free(ret);
     return NULL;
@@ -192,8 +195,9 @@ void ssl_cert_free(CERT *c)
     EC_KEY_free(c->ecdh_tmp);
 
     for (i = 0; i < SSL_PKEY_NUM; i++) {
-        X509_free(c->pkeys[i].x509);
-        EVP_PKEY_free(c->pkeys[i].privatekey);
+        CERT_PKEY *cpk = c->pkeys + i;
+        X509_free(cpk->x509);
+        EVP_PKEY_free(cpk->privatekey);
     }
     CRYPTO_thread_cleanup(c->lock);
     free(c);
