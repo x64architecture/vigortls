@@ -908,17 +908,45 @@ int a2i_ipadd(uint8_t *ipout, const char *ipasc)
 
 static int ipv4_from_asc(uint8_t *v4, const char *in)
 {
-    int a0, a1, a2, a3;
-    if (sscanf(in, "%d.%d.%d.%d", &a0, &a1, &a2, &a3) != 4)
+    char *str, *p, *ex;
+    long tmpl;
+    unsigned int i;
+
+    str = strdup(in);
+    if (str == NULL)
         return 0;
-    if ((a0 < 0) || (a0 > 255) || (a1 < 0) || (a1 > 255) || (a2 < 0) ||
-        (a2 > 255) || (a3 < 0) || (a3 > 255))
-        return 0;
-    v4[0] = a0;
-    v4[1] = a1;
-    v4[2] = a2;
-    v4[3] = a3;
+
+    p = strtok(str, ".");
+    if (p == NULL) 
+        goto err;
+
+    for (i = 0; i < 4 && p != NULL; i++) {
+        errno = 0;
+        tmpl = strtol(p, &ex, 10);
+        if (ex == p) {
+            goto err;
+        } else if (tmpl == LONG_MAX && errno == ERANGE) {
+            goto err;
+        } else if (tmpl == LONG_MIN && errno == ERANGE) {
+            goto err;
+        } else if (tmpl == 0 && errno == EINVAL) {
+            goto err;
+        } else if (tmpl < 0 || tmpl > 255) {
+            goto err;
+        }
+        v4[i] = tmpl;
+        p = strtok(NULL, ".");
+    }
+    if (i != 3)
+        goto err;
+
+    free(str);
+
     return 1;
+
+err:
+    free(str);
+    return 0;
 }
 
 typedef struct {
