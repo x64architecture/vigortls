@@ -106,6 +106,12 @@ typedef struct X509_VERIFY_PARAM_st {
     int trust;               /* trust setting to check */
     int depth;               /* Verify depth */
     STACK_OF(ASN1_OBJECT) *policies; /* Permissible policies */
+    uint8_t *host;           /* If not NULL hostname to match */
+    size_t hostlen;
+    uint8_t *email;          /* If not NULL email address to match */
+    size_t emaillen;
+    uint8_t *ip;             /* If not NULL IP address to match */
+    size_t iplen;            /* Length of IP address */
 } X509_VERIFY_PARAM;
 
 DECLARE_STACK_OF(X509_VERIFY_PARAM)
@@ -297,6 +303,11 @@ void X509_STORE_CTX_set_depth(X509_STORE_CTX *ctx, int depth);
 #define X509_V_ERR_UNSUPPORTED_NAME_SYNTAX 53
 #define X509_V_ERR_CRL_PATH_VALIDATION_ERROR 54
 
+/* Host, email and IP check errors */
+#define X509_V_ERR_HOSTNAME_MISMATCH 62
+#define X509_V_ERR_EMAIL_MISMATCH 63
+#define X509_V_ERR_IP_ADDRESS_MISMATCH 64
+
 /* The application is not happy */
 #define X509_V_ERR_APPLICATION_VERIFICATION 50
 
@@ -470,6 +481,15 @@ int X509_VERIFY_PARAM_add0_policy(X509_VERIFY_PARAM *param,
                                   ASN1_OBJECT *policy);
 int X509_VERIFY_PARAM_set1_policies(X509_VERIFY_PARAM *param,
                                     STACK_OF(ASN1_OBJECT) *policies);
+
+int X509_VERIFY_PARAM_set1_host(X509_VERIFY_PARAM *param,
+                               const uint8_t *name, size_t namelen);
+int X509_VERIFY_PARAM_set1_email(X509_VERIFY_PARAM *param,
+                                 const uint8_t *email, size_t emaillen);
+int X509_VERIFY_PARAM_set1_ip(X509_VERIFY_PARAM *param, const uint8_t *ip,
+                              size_t iplen);
+int X509_VERIFY_PARAM_set1_ip_asc(X509_VERIFY_PARAM *param, const char *ipasc);
+
 int X509_VERIFY_PARAM_get_depth(const X509_VERIFY_PARAM *param);
 
 int X509_VERIFY_PARAM_add0_table(X509_VERIFY_PARAM *param);
