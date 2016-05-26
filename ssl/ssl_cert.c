@@ -195,14 +195,30 @@ err:
     DH_free(ret->dh_tmp);
     EC_KEY_free(ret->ecdh_tmp);
 
-    for (i = 0; i < SSL_PKEY_NUM; i++) {
-        CERT_PKEY *rpk = ret->pkeys + i;
-        X509_free(rpk->x509);
-        EVP_PKEY_free(rpk->privatekey);
-        sk_X509_pop_free(rpk->chain, X509_free);
-    }
+    ssl_cert_clear_certs(ret);
     free(ret);
     return NULL;
+}
+
+/* Free up and clear all certificates and chains */
+
+void ssl_cert_clear_certs(CERT *c)
+{
+    int i;
+
+    if (c == NULL)
+        return;
+
+    for (i = 0; i < SSL_PKEY_NUM; i++) {
+        CERT_PKEY *cpk = c->pkeys + i;
+        X509_free(cpk->x509);
+        cpk->x509 = NULL;
+        EVP_PKEY_free(cpk->privatekey);
+        cpk->privatekey = NULL;
+        sk_X509_pop_free(cpk->chain, X509_free);
+        cpk->chain = NULL;
+        free(cpk->authz);
+    }
 }
 
 void ssl_cert_free(CERT *c)
@@ -219,13 +235,7 @@ void ssl_cert_free(CERT *c)
     DH_free(c->dh_tmp);
     EC_KEY_free(c->ecdh_tmp);
 
-    for (i = 0; i < SSL_PKEY_NUM; i++) {
-        CERT_PKEY *cpk = c->pkeys + i;
-        X509_free(cpk->x509);
-        EVP_PKEY_free(cpk->privatekey);
-        sk_X509_pop_free(cpk->chain, X509_free);
-    }
-    free(c->pkeys[i].authz);
+    ssl_cert_clear_certs(c);
     free(c->sigalgs);
     CRYPTO_thread_cleanup(c->lock);
     free(c);
