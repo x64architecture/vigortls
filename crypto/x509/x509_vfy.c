@@ -97,6 +97,33 @@ static int null_callback(int ok, X509_STORE_CTX *e)
     return ok;
 }
 
+/* Given a certificate try and find an exact match in the store */
+
+static X509 *lookup_cert_match(X509_STORE_CTX *ctx, X509 *x)
+{
+    STACK_OF(X509) *certs;
+    X509 *xtmp;
+    int i;
+
+    /* Lookup all certs with matching subject name */
+    certs = ctx->lookup_certs(ctx, X509_get_subject_name(x));
+    if (certs == NULL)
+        return NULL;
+    /* Look for exact match */
+    for (i = 0; i < sk_X509_num(certs); i++) {
+        xtmp = sk_X509_value(certs, i);
+        if (!X509_cmp(xtmp, x))
+            break;
+    }
+    if (i < sk_X509_num(certs))
+        X509_up_ref(xtmp);
+    else
+        xtmp = NULL;
+
+    sk_X509_pop_free(certs, X509_free);
+    return xtmp;
+}
+
 int X509_verify_cert(X509_STORE_CTX *ctx)
 {
     X509 *x, *xtmp, *chain_ss = NULL;
@@ -631,6 +658,17 @@ static int check_trust(X509_STORE_CTX *ctx)
     if (ctx->param->flags & X509_V_FLAG_PARTIAL_CHAIN) {
         if (ctx->last_untrusted < sk_X509_num(ctx->chain))
             return X509_TRUST_TRUSTED;
+    }
+    if (sk_X509_num(ctx->chain) == 1) {
+        X509 *mx;
+        x = sk_X509_value(ctx->chain, 0);
+        mx = lookup_cert_match(ctx, x);
+        if (mx != NULL) {
+            (void)sk_X509_set(ctx->chain, 0, mx);
+            X509_free(x);
+            ctx->last_untrusted = 0;
+            return X509_TRUST_TRUSTED;
+        }
     }
 
     /*
@@ -1505,6 +1543,8 @@ static int internal_verify(X509_STORE_CTX *ctx)
     if (ctx->check_issued(ctx, xi, xi))
         xs = xi;
     else {
+        if (ctx->param->flags & X509_V_FLAG_PARTIAL_CHAIN && n == 0)
+            return x509_check_cert_time(ctx, xi, 0);
         if (n <= 0) {
             ctx->error = X509_V_ERR_UNABLE_TO_VERIFY_LEAF_SIGNATURE;
             ctx->current_cert = xi;
