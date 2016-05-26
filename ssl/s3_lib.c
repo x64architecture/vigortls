@@ -1834,6 +1834,12 @@ long ssl3_ctrl(SSL *s, int cmd, long larg, void *parg)
             ret = 1;
             break;
 
+        case SSL_CTRL_SET_SIGALGS:
+            return tls1_set_sigalgs(s->cert, parg, larg);
+
+        case SSL_CTRL_SET_SIGALGS_LIST:
+            return tls1_set_sigalgs_list(s->cert, parg);
+
         default:
             break;
     }
@@ -1861,6 +1867,7 @@ long ssl3_callback_ctrl(SSL *s, int cmd, void (*fp)(void))
         case SSL_CTRL_SET_TMP_ECDH_CB:
             s->cert->ecdh_tmp_cb = (EC_KEY * (*)(SSL *, int, int))fp;
             break;
+
         case SSL_CTRL_SET_TLSEXT_DEBUG_CB:
             s->tlsext_debug_cb = (void (*)(SSL *, int, int, uint8_t *, int, void *))fp;
             break;
@@ -1965,6 +1972,12 @@ long ssl3_ctx_ctrl(SSL_CTX *ctx, int cmd, long larg, void *parg)
         case SSL_CTRL_SET_ECDH_AUTO:
             ctx->cert->ecdh_tmp_auto = larg;
             return 1;
+
+        case SSL_CTRL_SET_SIGALGS:
+            return tls1_set_sigalgs(ctx->cert, parg, larg);
+
+        case SSL_CTRL_SET_SIGALGS_LIST:
+            return tls1_set_sigalgs_list(ctx->cert, parg);
 
         case SSL_CTRL_SET_TLSEXT_AUTHZ_SERVER_AUDIT_PROOF_CB_ARG:
             ctx->tlsext_authz_server_audit_proof_cb_arg = parg;

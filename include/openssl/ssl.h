@@ -1434,6 +1434,8 @@ DECLARE_PEM_rw(SSL_SESSION, SSL_SESSION)
 
 #define SSL_CTRL_SET_DH_AUTO 118
 #define SSL_CTRL_SET_ECDH_AUTO 94
+#define SSL_CTRL_SET_SIGALGS 97
+#define SSL_CTRL_SET_SIGALGS_LIST 98
 
 #define DTLSv1_get_timeout(ssl, arg) \
     SSL_ctrl(ssl, DTLS_CTRL_GET_TIMEOUT, 0, (void *)arg)
@@ -1463,6 +1465,15 @@ DECLARE_PEM_rw(SSL_SESSION, SSL_SESSION)
     SSL_CTX_ctrl(ctx, SSL_CTRL_SET_DH_AUTO, onoff, NULL)
 #define SSL_CTX_set_ecdh_auto(ctx, onoff) \
     SSL_CTX_ctrl(ctx, SSL_CTRL_SET_ECDH_AUTO, onoff, NULL)
+
+#define SSL_CTX_set1_sigalgs(ctx, slist, slistlen) \
+    SSL_CTX_ctrl(ctx, SSL_CTRL_SET_SIGALGS, slistlen, (int *)slist)
+#define SSL_CTX_set1_sigalgs_list(ctx, s) \
+    SSL_CTX_ctrl(ctx, SSL_CTRL_SET_SIGALGS_LIST, 0, (char *)s)
+#define SSL_set1_sigalgs(ctx, slist, slistlen) \
+    SSL_ctrl(ctx, SSL_CTRL_SET_SIGALGS, clistlen, (int *)slist)
+#define SSL_set1_sigalgs_list(ctx, s) \
+    SSL_ctrl(ctx, SSL_CTRL_SET_SIGALGS_LIST, 0, (char *)s)
 
 #define SSL_need_tmp_RSA(ssl) SSL_ctrl(ssl, SSL_CTRL_NEED_TMP_RSA, 0, NULL)
 #define SSL_set_tmp_rsa(ssl, rsa) \

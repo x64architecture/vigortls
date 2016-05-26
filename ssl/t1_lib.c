@@ -589,13 +589,30 @@ static uint8_t tls12_sigalgs[] = {
     TLSEXT_signature_dsa, TLSEXT_hash_sha1, TLSEXT_signature_ecdsa,
 };
 
-int tls12_get_req_sig_algs(SSL *s, uint8_t *p)
+size_t tls12_get_sig_algs(SSL *s, uint8_t *p)
 {
-    size_t slen = sizeof(tls12_sigalgs);
+    TLS_SIGALGS *sptr = s->cert->conf_sigalgs;
+    size_t slen;
+
+    /* Use custom signature algorithms if any are present */
+
+    if (sptr != NULL) {
+        slen = s->cert->conf_sigalgslen;
+        if (p != NULL) {
+            size_t i;
+            for (i = 0; i < slen; i++, sptr++) {
+                *p++ = sptr->rhash;
+                *p++ = sptr->rsign;
+            }
+        }
+        return slen * 2;
+    }
+
+    slen = sizeof(tls12_sigalgs);
 
     if (p)
         memcpy(p, tls12_sigalgs, slen);
-    return (int)slen;
+    return slen;
 }
 
 /* byte_compare is a compare function for qsort(3) that compares bytes. */
@@ -782,14 +799,16 @@ uint8_t *ssl_add_clienthello_tlsext(SSL *s, uint8_t *p, uint8_t *limit)
 skip_ext:
 
     if (TLS1_get_client_version(s) >= TLS1_2_VERSION) {
-        if ((size_t)(limit - ret) < sizeof(tls12_sigalgs) + 6)
+        size_t salglen;
+        salglen = tls12_get_sig_algs(s, NULL);
+        if ((size_t)(limit - ret) < salglen + 6)
             return NULL;
 
         s2n(TLSEXT_TYPE_signature_algorithms, ret);
-        s2n(sizeof(tls12_sigalgs) + 2, ret);
-        s2n(sizeof(tls12_sigalgs), ret);
-        memcpy(ret, tls12_sigalgs, sizeof(tls12_sigalgs));
-        ret += sizeof(tls12_sigalgs);
+        s2n(salglen + 2, ret);
+        s2n(salglen, ret);
+        tls12_get_sig_algs(s, ret);
+        ret += salglen;
     }
 
     if (s->tlsext_status_type == TLSEXT_STATUSTYPE_ocsp && s->version != DTLS1_VERSION) {
@@ -2459,13 +2478,13 @@ int tls1_process_sigalgs(SSL *s, const uint8_t *data, int dsize)
     c->pkeys[SSL_PKEY_RSA_ENC].digest = NULL;
     c->pkeys[SSL_PKEY_ECC].digest = NULL;
 
-    free(c->sigalgs);
-    c->sigalgs = reallocarray(NULL, dsize / 2, sizeof(TLS_SIGALGS));
-    if (c->sigalgs == NULL)
+    free(c->peer_sigalgs);
+    c->peer_sigalgs = reallocarray(NULL, dsize / 2, sizeof(TLS_SIGALGS));
+    if (c->peer_sigalgs == NULL)
         return 0;
-    c->sigalgslen = dsize / 2;
+    c->peer_sigalgslen = dsize / 2;
 
-    for (sigptr = c->sigalgs; CBS_len(&cbs) > 0; sigptr++) {
+    for (sigptr = c->peer_sigalgs; CBS_len(&cbs) > 0; sigptr++) {
         if (!CBS_get_u8(&cbs, &sigptr->rhash) ||
             !CBS_get_u8(&cbs, &sigptr->rsign)) {
             /* Should never happen */
@@ -2521,13 +2540,13 @@ int tls1_process_sigalgs(SSL *s, const uint8_t *data, int dsize)
 int SSL_get_sigalgs(SSL *s, int idx, int *psign, int *phash, int *psignandhash,
                     uint8_t *rsig, uint8_t *rhash)
 {
-    if (s->cert->sigalgs == NULL)
+    if (s->cert->peer_sigalgs == NULL)
         return 0;
     if (idx >= 0) {
         TLS_SIGALGS *psig;
-        if (idx >= (int)s->cert->sigalgslen)
+        if (idx >= (int)s->cert->peer_sigalgslen)
             return 0;
-        psig = s->cert->sigalgs + idx;
+        psig = s->cert->peer_sigalgs + idx;
         if (psign)
             *psign = psig->sign_nid;
         if (phash)
@@ -2539,5 +2558,107 @@ int SSL_get_sigalgs(SSL *s, int idx, int *psign, int *phash, int *psignandhash,
         if (rhash)
             *rhash = psig->rhash;
     }
-    return s->cert->sigalgslen;
+    return s->cert->peer_sigalgslen;
+}
+
+#define MAX_SIGALGLEN (TLSEXT_hash_num * TLSEXT_signature_num * 2)
+
+typedef struct {
+    size_t sigalgcnt;
+    int sigalgs[MAX_SIGALGLEN];
+} sig_cb_st;
+
+static int sig_cb(const char *elem, int len, void *arg)
+{
+    sig_cb_st *sarg = arg;
+    size_t i;
+    char etmp[20], *p;
+    int sig_alg, hash_alg;
+    if (sarg->sigalgcnt == MAX_SIGALGLEN)
+        return 0;
+    if (len > (int)(sizeof(etmp) - 1))
+        return 0;
+    memcpy(etmp, elem, len);
+    etmp[len] = 0;
+    p = strchr(etmp, '+');
+    if (p == NULL)
+        return 0;
+    *p = '\0';
+    p++;
+    if (*p == '\0')
+        return 0;
+
+    if (strcmp(etmp, "RSA") == 0)
+        sig_alg = EVP_PKEY_RSA;
+    else if (strcmp(etmp, "DSA") == 0)
+        sig_alg = EVP_PKEY_DSA;
+    else if (strcmp(etmp, "ECDSA") == 0)
+        sig_alg = EVP_PKEY_EC;
+    else
+        return 0;
+
+    hash_alg = OBJ_sn2nid(p);
+    if (hash_alg == NID_undef)
+        hash_alg = OBJ_ln2nid(p);
+    if (hash_alg == NID_undef)
+        return 0;
+
+    for (i = 0; i < sarg->sigalgcnt; i += 2) {
+        if (sarg->sigalgs[i] == sig_alg && sarg->sigalgs[i + 1] == hash_alg)
+            return 0;
+    }
+    sarg->sigalgs[sarg->sigalgcnt++] = hash_alg;
+    sarg->sigalgs[sarg->sigalgcnt++] = sig_alg;
+    return 1;
+}
+
+/* Set suppored signature algorithms based on a colon separated list
+ * of the form sig+hash e.g. RSA+SHA512:DSA+SHA512 */
+int tls1_set_sigalgs_list(CERT *c, const char *str)
+{
+    sig_cb_st sig;
+    sig.sigalgcnt = 0;
+    if (!CONF_parse_list(str, ':', 1, sig_cb, &sig))
+        return 0;
+    return tls1_set_sigalgs(c, sig.sigalgs, sig.sigalgcnt);
+}
+
+int tls1_set_sigalgs(CERT *c, const int *salg, size_t salglen)
+{
+    TLS_SIGALGS *sigalgs, *sptr;
+    int rhash, rsign;
+    size_t i;
+    if (salglen & 1)
+        return 0;
+    salglen /= 2;
+    sigalgs = reallocarray(NULL, salglen, sizeof(TLS_SIGALGS));
+    if (sigalgs == NULL)
+        return 0;
+    for (i = 0, sptr = sigalgs; i < salglen; i++, sptr++) {
+        sptr->hash_nid = *salg++;
+        sptr->sign_nid = *salg++;
+        rhash = tls12_find_id(sptr->hash_nid, tls12_md,
+                              sizeof(tls12_md) / sizeof(tls12_lookup));
+        rsign = tls12_find_id(sptr->sign_nid, tls12_sig,
+                              sizeof(tls12_sig) / sizeof(tls12_lookup));
+
+        if (rhash == -1 || rsign == -1)
+            goto err;
+
+        if (!OBJ_find_sigid_by_algs(&sptr->signandhash_nid, sptr->hash_nid,
+                                    sptr->sign_nid))
+            sptr->signandhash_nid = NID_undef;
+        sptr->rhash = rhash;
+        sptr->rsign = rsign;
+    }
+
+    free(c->conf_sigalgs);
+
+    c->conf_sigalgs = sigalgs;
+    c->conf_sigalgslen = salglen;
+    return 1;
+
+err:
+    free(sigalgs);
+    return 0;
 }

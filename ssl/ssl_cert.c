@@ -189,6 +189,17 @@ CERT *ssl_cert_dup(CERT *cert)
      */
     ssl_cert_set_default_md(ret);
 
+    /* Configure sigalgs however we copy across */
+    if (cert->conf_sigalgs) {
+        ret->conf_sigalgs =
+            reallocarray(NULL, cert->conf_sigalgslen, sizeof(TLS_SIGALGS));
+        if (ret->conf_sigalgs == NULL)
+            goto err;
+        memcpy(ret->conf_sigalgs, cert->conf_sigalgs,
+            cert->conf_sigalgslen * sizeof(TLS_SIGALGS));
+        ret->conf_sigalgslen = cert->conf_sigalgslen;
+    }
+
     return ret;
 
 err:
@@ -236,7 +247,8 @@ void ssl_cert_free(CERT *c)
     EC_KEY_free(c->ecdh_tmp);
 
     ssl_cert_clear_certs(c);
-    free(c->sigalgs);
+    free(c->peer_sigalgs);
+    free(c->conf_sigalgs);
     CRYPTO_thread_cleanup(c->lock);
     free(c);
 }
