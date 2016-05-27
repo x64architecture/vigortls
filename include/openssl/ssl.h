@@ -1923,7 +1923,7 @@ void ERR_load_SSL_strings(void);
 
 /* Function codes. */
 # define SSL_F_AUTHZ_FIND_DATA                            330
-# define SSL_F_AUTHZ_VALIDATE                             323
+# define SSL_F_AUTHZ_VALIDATE                             341
 # define SSL_F_CLIENT_CERTIFICATE                         100
 # define SSL_F_CLIENT_FINISHED                            167
 # define SSL_F_CLIENT_HELLO                               101
@@ -2070,7 +2070,7 @@ void ERR_load_SSL_strings(void);
 # define SSL_F_SSL_CTX_SET_SESSION_ID_CONTEXT             219
 # define SSL_F_SSL_CTX_SET_SSL_VERSION                    170
 # define SSL_F_SSL_CTX_SET_TRUST                          229
-#define SSL_F_SSL_CTX_USE_AUTHZ                           324
+# define SSL_F_SSL_CTX_USE_AUTHZ                          324
 # define SSL_F_SSL_CTX_USE_CERTIFICATE                    171
 # define SSL_F_SSL_CTX_USE_CERTIFICATE_ASN1               172
 # define SSL_F_SSL_CTX_USE_CERTIFICATE_CHAIN_FILE         220
@@ -2105,7 +2105,7 @@ void ERR_load_SSL_strings(void);
 # define SSL_F_SSL_RSA_PRIVATE_DECRYPT                    187
 # define SSL_F_SSL_RSA_PUBLIC_ENCRYPT                     188
 # define SSL_F_SSL_SCAN_CLIENTHELLO_TLSEXT                321
-# define SSL_F_SSL_SCAN_SERVERHELLO_TLSEXT                322
+# define SSL_F_SSL_SCAN_SERVERHELLO_TLSEXT                323
 # define SSL_F_SSL_SESSION_DUP                            320
 # define SSL_F_SSL_SESSION_NEW                            189
 # define SSL_F_SSL_SESSION_PRINT_FP                       190
@@ -2161,7 +2161,7 @@ void ERR_load_SSL_strings(void);
 /* Reason codes. */
 # define SSL_R_APP_DATA_IN_HANDSHAKE                      100
 # define SSL_R_ATTEMPT_TO_REUSE_SESSION_IN_DIFFERENT_CONTEXT 272
-#define SSL_R_AUTHZ_DATA_TOO_LARGE                        375
+# define SSL_R_AUTHZ_DATA_TOO_LARGE                       381
 # define SSL_R_BAD_ALERT_RECORD                           101
 # define SSL_R_BAD_AUTHENTICATION_TYPE                    102
 # define SSL_R_BAD_CHANGE_CIPHER_SPEC                     103
@@ -2214,7 +2214,7 @@ void ERR_load_SSL_strings(void);
 # define SSL_R_CERT_LENGTH_MISMATCH                       135
 # define SSL_R_CHALLENGE_IS_DIFFERENT                     136
 # define SSL_R_CIPHER_CODE_WRONG_LENGTH                   137
-# define SSL_R_CIPHER_COMPRESSION_UNAVAILABLE             371
+# define SSL_R_CIPHER_COMPRESSION_UNAVAILABLE             375
 # define SSL_R_CIPHER_OR_HASH_UNAVAILABLE                 138
 # define SSL_R_CIPHER_TABLE_SRC_ERROR                     139
 # define SSL_R_CLIENTHELLO_TLSEXT                         226
@@ -2251,7 +2251,7 @@ void ERR_load_SSL_strings(void);
 # define SSL_R_HTTPS_PROXY_REQUEST                        155
 # define SSL_R_HTTP_REQUEST                               156
 # define SSL_R_ILLEGAL_PADDING                            283
-# define SSL_R_INAPPROPRIATE_FALLBACK                     373
+# define SSL_R_INAPPROPRIATE_FALLBACK                     379
 # define SSL_R_INCONSISTENT_COMPRESSION                   340
 # define SSL_R_INVALID_AUDIT_PROOF                        371
 # define SSL_R_INVALID_AUTHZ_DATA                         374
