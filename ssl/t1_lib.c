@@ -596,26 +596,73 @@ static uint8_t tls12_sigalgs[] = {
     TLSEXT_signature_dsa, TLSEXT_hash_sha1, TLSEXT_signature_ecdsa,
 };
 
-size_t tls12_get_sig_algs(SSL *s, uint8_t *p)
+size_t tls12_get_psigalgs(SSL *s, const uint8_t **psigs)
 {
-    const uint8_t *sigs;
-    size_t sigslen;
-
     /* If server use client authentication sigalgs if not NULL */
     if (s->server && s->cert->client_sigalgs != NULL) {
-        sigs = s->cert->client_sigalgs;
-        sigslen = s->cert->client_sigalgslen;
+        *psigs = s->cert->client_sigalgs;
+        return s->cert->client_sigalgslen;
     } else if (s->cert->conf_sigalgs != NULL) {
-        sigs = s->cert->conf_sigalgs;
-        sigslen = s->cert->conf_sigalgslen;
+        *psigs = s->cert->conf_sigalgs;
+        return s->cert->conf_sigalgslen;
     } else {
-        sigs = tls12_sigalgs;
-        sigslen = sizeof(tls12_sigalgs);
+        *psigs = tls12_sigalgs;
+        return sizeof(tls12_sigalgs);
     }
+}
 
-    if (p)
-        memcpy(p, sigs, sigslen);
-    return sigslen;
+/*
+ * Get a mask of disabled algorithms: an algorithm is disabled
+ * if it isn't supported or doesn't appear in supported signature
+ * algorithms. Unlike ssl_cipher_get_disabled this applies to a specific
+ * session and not global settings.
+ */
+void ssl_set_client_disabled(SSL *s)
+{
+    CERT *c = s->cert;
+    const uint8_t *sigalgs;
+    size_t i, sigalgslen;
+    int have_rsa = 0, have_dsa = 0, have_ecdsa = 0;
+    c->mask_a = 0;
+    c->mask_k = 0;
+    /* If less than TLS 1.2 don't allow TLS 1.2 only ciphers */
+    if (TLS1_get_version(s) < TLS1_2_VERSION)
+        c->mask_ssl = SSL_TLSV1_2;
+    else
+        c->mask_ssl = 0;
+    /*
+     * Now go through all signature algorithms seeing if we support
+     * any for RSA, DSA, ECDSA. Do this for all versions not just
+     * TLS 1.2.
+     */
+    sigalgslen = tls12_get_psigalgs(s, &sigalgs);
+    for (i = 0; i < sigalgslen; i += 2, sigalgs += 2) {
+        switch (sigalgs[1]) {
+            case TLSEXT_signature_rsa:
+                have_rsa = 1;
+                break;
+            case TLSEXT_signature_dsa:
+                have_dsa = 1;
+                break;
+            case TLSEXT_signature_ecdsa:
+                have_ecdsa = 1;
+                break;
+        }
+    }
+    /*
+     * Disable auth and static DH if we don't include any appropriate
+     * signature algorithms.
+     */
+    if (!have_rsa) {
+        c->mask_a |= SSL_aRSA;
+    }
+    if (!have_dsa) {
+        c->mask_a |= SSL_aDSS;
+    }
+    if (!have_ecdsa) {
+        c->mask_a |= SSL_aECDSA;
+    }
+    c->valid = 1;
 }
 
 /* byte_compare is a compare function for qsort(3) that compares bytes. */
@@ -803,14 +850,15 @@ skip_ext:
 
     if (TLS1_get_client_version(s) >= TLS1_2_VERSION) {
         size_t salglen;
-        salglen = tls12_get_sig_algs(s, NULL);
+        const uint8_t *salg;
+        salglen = tls12_get_psigalgs(s, &salg);
         if ((size_t)(limit - ret) < salglen + 6)
             return NULL;
 
         s2n(TLSEXT_TYPE_signature_algorithms, ret);
         s2n(salglen + 2, ret);
         s2n(salglen, ret);
-        tls12_get_sig_algs(s, ret);
+        memcpy(ret, salg, salglen);
         ret += salglen;
     }
 

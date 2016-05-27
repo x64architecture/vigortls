@@ -1376,9 +1376,11 @@ int ssl3_send_certificate_request(SSL *s)
         n++;
 
         if (SSL_USE_SIGALGS(s)) {
-            nl = tls12_get_sig_algs(s, p + 2);
+            const uint8_t *psigs;
+            nl = tls12_get_psigalgs(s, &psigs);
             s2n(nl, p);
-            p += nl + 2;
+            memcpy(p, psigs, nl);
+            p += nl;
             n += nl + 2;
         }
 

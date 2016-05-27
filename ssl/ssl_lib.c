@@ -1199,7 +1199,11 @@ int ssl_cipher_list_to_bytes(SSL *s, STACK_OF(SSL_CIPHER) *sk,
 {
     int i;
     SSL_CIPHER *c;
+    CERT *ct = s->cert;
     uint8_t *q;
+
+    /* Set disabled masks for this session */
+    ssl_set_client_disabled(s);
 
     if (sk == NULL)
         return (0);
@@ -1208,8 +1212,10 @@ int ssl_cipher_list_to_bytes(SSL *s, STACK_OF(SSL_CIPHER) *sk,
     for (i = 0; i < sk_SSL_CIPHER_num(sk); i++) {
         c = sk_SSL_CIPHER_value(sk, i);
 
-        /* Skip TLS v1.2 only ciphersuites if lower than v1.2 */
-        if ((c->algorithm_ssl & SSL_TLSV1_2) && (TLS1_get_client_version(s) < TLS1_2_VERSION))
+        /* Skip disabled ciphers */
+        if (c->algorithm_ssl & ct->mask_ssl ||
+            c->algorithm_mkey & ct->mask_k ||
+            c->algorithm_auth & ct->mask_a)
             continue;
         s2n(ssl3_cipher_get_value(c), p);
     }

@@ -362,11 +362,17 @@ typedef struct cert_st {
                    * Probably it would make more sense to store
                    * an index, not a pointer. */
 
-    /* The following masks are for the key and auth
-     * algorithms that are supported by the certs below */
+    /*
+     * For servers the following masks are for the key and auth
+     * algorithms that are supported by the certs below.
+     * For clients they are masks of *disabled* algorithms based
+     * on the current session.
+     */
     int valid;
     unsigned long mask_k;
     unsigned long mask_a;
+    /* Client only */
+    unsigned long mask_ssl;
 
     DH *dh_tmp;
     DH *(*dh_tmp_cb)(SSL *ssl, int is_export, int keysize);
@@ -853,7 +859,9 @@ int ssl_parse_clienthello_renegotiate_ext(SSL *s, const uint8_t *d, int len,
                                           int *al);
 long ssl_get_algorithm2(SSL *s);
 int tls1_process_sigalgs(SSL *s, const uint8_t *data, int dsize);
-size_t tls12_get_sig_algs(SSL *s, uint8_t *p);
+size_t tls12_get_psigalgs(SSL *s, const uint8_t **psigs);
+void ssl_set_client_disabled(SSL *s);
+
 
 int tls1_check_ec_tmp_key(SSL *s);
 
