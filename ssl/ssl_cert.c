@@ -192,13 +192,20 @@ CERT *ssl_cert_dup(CERT *cert)
 
     /* Configure sigalgs however we copy across */
     if (cert->conf_sigalgs) {
-        ret->conf_sigalgs =
-            reallocarray(NULL, cert->conf_sigalgslen, sizeof(TLS_SIGALGS));
+        ret->conf_sigalgs = malloc(cert->conf_sigalgslen);
         if (ret->conf_sigalgs == NULL)
             goto err;
-        memcpy(ret->conf_sigalgs, cert->conf_sigalgs,
-            cert->conf_sigalgslen * sizeof(TLS_SIGALGS));
+        memcpy(ret->conf_sigalgs, cert->conf_sigalgs, cert->conf_sigalgslen);
         ret->conf_sigalgslen = cert->conf_sigalgslen;
+    }
+
+    if (cert->client_sigalgs != NULL) {
+        ret->client_sigalgs = malloc(cert->client_sigalgslen);
+        if (ret->client_sigalgs == NULL)
+            goto err;
+        memcpy(ret->client_sigalgs, cert->client_sigalgs,
+               cert->client_sigalgslen);
+        ret->client_sigalgslen = cert->client_sigalgslen;
     }
 
     ret->cert_flags = cert->cert_flags;
@@ -256,6 +263,7 @@ void ssl_cert_free(CERT *c)
     ssl_cert_clear_certs(c);
     free(c->peer_sigalgs);
     free(c->conf_sigalgs);
+    free(c->client_sigalgs);
     free(c->shared_sigalgs);
     CRYPTO_thread_cleanup(c->lock);
     free(c);

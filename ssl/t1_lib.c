@@ -600,11 +600,15 @@ size_t tls12_get_sig_algs(SSL *s, uint8_t *p)
 {
     const uint8_t *sigs;
     size_t sigslen;
-    sigs = s->cert->conf_sigalgs;
 
-    if (sigs != NULL)
+    /* If server use client authentication sigalgs if not NULL */
+    if (s->server && s->cert->client_sigalgs != NULL) {
+        sigs = s->cert->client_sigalgs;
+        sigslen = s->cert->client_sigalgslen;
+    } else if (s->cert->conf_sigalgs != NULL) {
+        sigs = s->cert->conf_sigalgs;
         sigslen = s->cert->conf_sigalgslen;
-    else {
+    } else {
         sigs = tls12_sigalgs;
         sigslen = sizeof(tls12_sigalgs);
     }
@@ -2545,10 +2549,15 @@ static int tls1_set_shared_sigalgs(SSL *s)
     size_t nmatch;
     TLS_SIGALGS *salgs = NULL;
     CERT *c = s->cert;
-    conf = c->conf_sigalgs;
-    if (conf)
+
+    /* If client use client signature algorithms if not NULL */
+    if (!s->server && c->client_sigalgs != NULL) {
+        conf = c->client_sigalgs;
+        conflen = c->client_sigalgslen;
+    } else if (c->conf_sigalgs) {
+        conf = c->conf_sigalgs;
         conflen = c->conf_sigalgslen;
-    else {
+    } else {
         conf = tls12_sigalgs;
         conflen = sizeof(tls12_sigalgs);
     }
@@ -2729,16 +2738,16 @@ static int sig_cb(const char *elem, int len, void *arg)
 
 /* Set suppored signature algorithms based on a colon separated list
  * of the form sig+hash e.g. RSA+SHA512:DSA+SHA512 */
-int tls1_set_sigalgs_list(CERT *c, const char *str)
+int tls1_set_sigalgs_list(CERT *c, const char *str, int client)
 {
     sig_cb_st sig;
     sig.sigalgcnt = 0;
     if (!CONF_parse_list(str, ':', 1, sig_cb, &sig))
         return 0;
-    return tls1_set_sigalgs(c, sig.sigalgs, sig.sigalgcnt);
+    return tls1_set_sigalgs(c, sig.sigalgs, sig.sigalgcnt, client);
 }
 
-int tls1_set_sigalgs(CERT *c, const int *psig_nids, size_t salglen)
+int tls1_set_sigalgs(CERT *c, const int *psig_nids, size_t salglen, int client)
 {
     uint8_t *sigalgs, *sptr;
     int rhash, rsign;
@@ -2761,10 +2770,16 @@ int tls1_set_sigalgs(CERT *c, const int *psig_nids, size_t salglen)
         *sptr++ = rsign;
     }
 
-    free(c->conf_sigalgs);
+    if (client) {
+        free(c->client_sigalgs);
+        c->client_sigalgs = sigalgs;
+        c->client_sigalgslen = salglen;
+    } else {
+        free(c->conf_sigalgs);
+        c->conf_sigalgs = sigalgs;
+        c->conf_sigalgslen = salglen;
+    }
 
-    c->conf_sigalgs = sigalgs;
-    c->conf_sigalgslen = salglen;
     return 1;
 
 err:
