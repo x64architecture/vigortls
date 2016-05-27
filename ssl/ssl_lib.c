@@ -1794,13 +1794,13 @@ void ssl_set_cert_masks(CERT *c, const SSL_CIPHER *cipher)
     have_ecdh_tmp = (c->ecdh_tmp != NULL || c->ecdh_tmp_cb != NULL ||
         c->ecdh_tmp_auto != 0);
     cpk = &(c->pkeys[SSL_PKEY_RSA_ENC]);
-    rsa_enc = cpk->valid_flags;
+    rsa_enc = cpk->valid_flags & CERT_PKEY_VALID;
     cpk = &(c->pkeys[SSL_PKEY_RSA_SIGN]);
-    rsa_sign = (cpk->valid_flags & CERT_PKEY_SIGN);
+    rsa_sign = cpk->valid_flags & CERT_PKEY_SIGN;
     cpk = &(c->pkeys[SSL_PKEY_DSA_SIGN]);
-    dsa_sign = (cpk->valid_flags & CERT_PKEY_SIGN);
+    dsa_sign = cpk->valid_flags & CERT_PKEY_SIGN;
     cpk = &(c->pkeys[SSL_PKEY_ECC]);
-    have_ecc_cert = cpk->valid_flags;
+    have_ecc_cert = cpk->valid_flags & CERT_PKEY_VALID;
     mask_k = 0;
     mask_a = 0;
 

@@ -1419,7 +1419,7 @@ err:
 
 int ssl3_get_certificate_request(SSL *s)
 {
-    int ok, ret = 0;
+    int i, ok, ret = 0;
     long n;
     uint8_t ctype_num;
     CBS cert_request, ctypes, rdn_list;
@@ -1514,6 +1514,11 @@ int ssl3_get_certificate_request(SSL *s)
             SSLerr(SSL_F_SSL3_GET_CERTIFICATE_REQUEST,
                    SSL_R_DATA_LENGTH_TOO_LONG);
             goto err;
+        }
+        /* Clear certificate digests and validity flags */
+        for (i = 0; i < SSL_PKEY_NUM; i++) {
+            s->cert->pkeys[i].digest = NULL;
+            s->cert->pkeys[i].valid_flags = 0;
         }
         if ((CBS_len(&sigalgs) & 1) ||
             !tls1_process_sigalgs(s, CBS_data(&sigalgs),

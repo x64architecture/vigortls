@@ -323,14 +323,6 @@
 #define EXPLICIT_CHAR2_CURVE_TYPE 2
 #define NAMED_CURVE_TYPE 3
 
-/* Values for valid_flags in CERT_PKEY structure */
-/* Certificate inconsistent with session, key missing etc */
-#define CERT_PKEY_INVALID 0x0
-/* Certificate can be used with this sesstion */
-#define CERT_PKEY_VALID 0x1
-/* Certificate can also be used for signing */
-#define CERT_PKEY_SIGN 0x2
-
 typedef struct cert_pkey_st {
     X509 *x509;
     EVP_PKEY *privatekey;

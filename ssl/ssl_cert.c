@@ -165,7 +165,8 @@ CERT *ssl_cert_dup(CERT *cert)
                 X509_up_ref(x);
             }
         }
-        rpk->valid_flags = 0;
+        /* Clear all flags apart from explicit sign */
+        cpk->valid_flags &= CERT_PKEY_EXPLICIT_SIGN;
         if (cert->pkeys[i].authz != NULL) {
             /* Just copy everything. */
             ret->pkeys[i].authz_length = cert->pkeys[i].authz_length;
