@@ -2747,4 +2747,9 @@ int SSL_cache_hit(SSL *s)
     return (s->hit);
 }
 
+int SSL_is_server(SSL *s)
+{
+    return s->server;
+}
+
 IMPLEMENT_OBJ_BSEARCH_GLOBAL_CMP_FN(SSL_CIPHER, SSL_CIPHER, ssl_cipher_id);

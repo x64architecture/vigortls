@@ -1900,6 +1900,7 @@ int SSL_set_session_secret_cb(SSL *s,
 
 void SSL_set_debug(SSL *s, int debug);
 int SSL_cache_hit(SSL *s);
+int SSL_is_server(SSL *s);
 
 /* BEGIN ERROR CODES */
 /*
