@@ -869,6 +869,8 @@ int ssl_parse_clienthello_renegotiate_ext(SSL *s, const uint8_t *d, int len,
 long ssl_get_algorithm2(SSL *s);
 int tls1_process_sigalgs(SSL *s, const uint8_t *data, int dsize);
 size_t tls12_get_psigalgs(SSL *s, const uint8_t **psigs);
+int tls12_check_peer_sigalg(const EVP_MD **pmd, SSL *s, const uint8_t *sig,
+                            EVP_PKEY *pkey);
 void ssl_set_client_disabled(SSL *s);
 
 

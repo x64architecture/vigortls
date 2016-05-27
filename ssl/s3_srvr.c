@@ -1871,27 +1871,19 @@ int ssl3_get_cert_verify(SSL *s)
         i = 64;
     } else {
         if (SSL_USE_SIGALGS(s)) {
-            int sigalg = tls12_get_sigid(pkey);
-            /* Should never happen */
-            if (sigalg == -1) {
-                SSLerr(SSL_F_SSL3_GET_CERT_VERIFY, ERR_R_INTERNAL_ERROR);
-                al = SSL_AD_INTERNAL_ERROR;
-                goto f_err;
-            }
+            int rv;
             if (2 > n)
                 goto truncated;
-            /* Check key type is consistent with signature */
-            if (sigalg != (int)p[1]) {
-                SSLerr(SSL_F_SSL3_GET_CERT_VERIFY, SSL_R_WRONG_SIGNATURE_TYPE);
+
+            rv = tls12_check_peer_sigalg(&md, s, p, pkey);
+            if (rv == -1) {
+                al = SSL_AD_INTERNAL_ERROR;
+                goto f_err;
+            } else if (rv == 0) {
                 al = SSL_AD_DECODE_ERROR;
                 goto f_err;
             }
-            md = tls12_get_hash(p[0]);
-            if (md == NULL) {
-                SSLerr(SSL_F_SSL3_GET_CERT_VERIFY, SSL_R_UNKNOWN_DIGEST);
-                al = SSL_AD_DECODE_ERROR;
-                goto f_err;
-            }
+            
             p += 2;
             n -= 2;
         }

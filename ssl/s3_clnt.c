@@ -1303,32 +1303,15 @@ int ssl3_get_key_exchange(SSL *s)
     /* if it was signed, check the signature */
     if (pkey != NULL) {
         if (SSL_USE_SIGALGS(s)) {
-            int sigalg = tls12_get_sigid(pkey);
-            /* Should never happen */
-            if (sigalg == -1) {
-                SSLerr(SSL_F_SSL3_GET_KEY_EXCHANGE,
-                       ERR_R_INTERNAL_ERROR);
-                goto err;
-            }
-            /*
-             * Check key type is consistent
-             * with signature
-             */
+            int rv;
             if (2 > n)
                 goto truncated;
-            if (sigalg != (int)p[1]) {
-                SSLerr(SSL_F_SSL3_GET_KEY_EXCHANGE,
-                       SSL_R_WRONG_SIGNATURE_TYPE);
-                al = SSL_AD_DECODE_ERROR;
+            rv = tls12_check_peer_sigalg(&md, s, p, pkey);
+            if (rv == -1)
+                goto err;
+            else if (rv == 0)
                 goto f_err;
-            }
-            md = tls12_get_hash(p[0]);
-            if (md == NULL) {
-                SSLerr(SSL_F_SSL3_GET_KEY_EXCHANGE,
-                       SSL_R_UNKNOWN_DIGEST);
-                al = SSL_AD_DECODE_ERROR;
-                goto f_err;
-            }
+            
             p += 2;
             n -= 2;
         } else
