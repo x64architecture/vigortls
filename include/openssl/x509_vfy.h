@@ -368,6 +368,7 @@ X509_OBJECT *X509_OBJECT_retrieve_match(STACK_OF(X509_OBJECT) *h,
 void X509_OBJECT_up_ref_count(X509_OBJECT *a);
 void X509_OBJECT_free_contents(X509_OBJECT *a);
 X509_STORE *X509_STORE_new(void);
+int X509_STORE_up_ref(X509_STORE *v);
 void X509_STORE_free(X509_STORE *v);
 
 STACK_OF(X509) *X509_STORE_get1_certs(X509_STORE_CTX *st, X509_NAME *nm);

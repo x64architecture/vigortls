@@ -221,6 +221,16 @@ CERT *ssl_cert_dup(CERT *cert)
     ret->cert_cb = cert->cert_cb;
     ret->cert_cb_arg = cert->cert_cb_arg;
 
+    if (cert->verify_store) {
+        X509_STORE_up_ref(cert->verify_store);
+        ret->verify_store = cert->verify_store;
+    }
+
+    if (cert->chain_store) {
+        X509_STORE_up_ref(cert->chain_store);
+        ret->chain_store = cert->chain_store;
+    }
+
     return ret;
 
 err:
@@ -274,6 +284,8 @@ void ssl_cert_free(CERT *c)
     free(c->client_sigalgs);
     free(c->shared_sigalgs);
     free(c->ctypes);
+    X509_STORE_free(c->verify_store);
+    X509_STORE_free(c->chain_store);
     CRYPTO_thread_cleanup(c->lock);
     free(c);
 }
@@ -414,14 +426,20 @@ void SSL_CERT_up_ref(SESS_CERT *sc)
 int ssl_verify_cert_chain(SSL *s, STACK_OF(X509) *sk)
 {
     X509_STORE_CTX ctx;
+    X509_STORE *verify_store;
     X509 *x;
     int ret;
+
+    if (s->cert->verify_store)
+        verify_store = s->cert->verify_store;
+    else
+        verify_store = s->ctx->cert_store;
 
     if ((sk == NULL) || (sk_X509_num(sk) == 0))
         return (0);
 
     x = sk_X509_value(sk, 0);
-    if (!X509_STORE_CTX_init(&ctx, s->ctx->cert_store, x, sk)) {
+    if (!X509_STORE_CTX_init(&ctx, verify_store, x, sk)) {
         SSLerr(SSL_F_SSL_VERIFY_CERT_CHAIN, ERR_R_X509_LIB);
         return (0);
     }
@@ -739,9 +757,15 @@ int ssl_add_cert_chain(SSL *s, CERT_PKEY *cpk, unsigned long *l)
     int i;
     X509 *x = NULL;
     STACK_OF(X509) *extra_certs;
+    X509_STORE *chain_store;
 
     if (cpk != NULL)
         x = cpk->x509;
+
+    if (s->cert->chain_store)
+        chain_store = s->cert->chain_store;
+    else
+        chain_store = s->ctx->cert_store;
 
     /*
      * If we have a certificate specific chain use it, else use
@@ -769,7 +793,7 @@ int ssl_add_cert_chain(SSL *s, CERT_PKEY *cpk, unsigned long *l)
         } else {
             X509_STORE_CTX xs_ctx;
 
-            if (!X509_STORE_CTX_init(&xs_ctx, s->ctx->cert_store, x, NULL)) {
+            if (!X509_STORE_CTX_init(&xs_ctx, chain_store, x, NULL)) {
                 SSLerr(SSL_F_SSL_ADD_CERT_CHAIN, ERR_R_X509_LIB);
                 return 0;
             }
@@ -793,5 +817,65 @@ int ssl_add_cert_chain(SSL *s, CERT_PKEY *cpk, unsigned long *l)
             return 0;
     }
 
+    return 1;
+}
+
+/* Build a certificate chain for current certificate */
+int ssl_build_cert_chain(CERT *c, X509_STORE *chain_store, int flags)
+{
+    CERT_PKEY *cpk = c->key;
+    X509_STORE_CTX xs_ctx;
+    STACK_OF(X509) *chain = NULL, *untrusted = NULL;
+    X509 *x;
+    int i;
+
+    if (!cpk->x509) {
+        SSLerr(SSL_F_SSL_BUILD_CERT_CHAIN, SSL_R_NO_CERTIFICATE_SET);
+        return 0;
+    }
+
+    if (c->chain_store)
+        chain_store = c->chain_store;
+
+    if (flags & SSL_BUILD_CHAIN_FLAG_UNTRUSTED)
+        untrusted = cpk->chain;
+
+    if (!X509_STORE_CTX_init(&xs_ctx, chain_store, cpk->x509, untrusted)) {
+        SSLerr(SSL_F_SSL_BUILD_CERT_CHAIN, ERR_R_X509_LIB);
+        return 0;
+    }
+
+    i = X509_verify_cert(&xs_ctx);
+    if (i > 0)
+        chain = X509_STORE_CTX_get1_chain(&xs_ctx);
+    X509_STORE_CTX_cleanup(&xs_ctx);
+    if (i <= 0) {
+        SSLerr(SSL_F_SSL_BUILD_CERT_CHAIN, SSL_R_CERTIFICATE_VERIFY_FAILED);
+        return 0;
+    }
+    sk_X509_pop_free(cpk->chain, X509_free);
+    /* Remove EE certificate from chain */
+    x = sk_X509_shift(chain);
+    X509_free(x);
+    if (flags & SSL_BUILD_CHAIN_FLAG_NO_ROOT) {
+        x = sk_X509_pop(chain);
+        X509_free(x);
+    }
+    cpk->chain = chain;
+
+    return 1;
+}
+
+int ssl_cert_set_cert_store(CERT *c, X509_STORE *store, int chain, int ref)
+{
+    X509_STORE **pstore;
+    if (chain)
+        pstore = &c->chain_store;
+    else
+        pstore = &c->verify_store;
+    X509_STORE_free(*pstore);
+    *pstore = store;
+    if (ref && store)
+        X509_STORE_up_ref(store);
     return 1;
 }
