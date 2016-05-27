@@ -188,6 +188,8 @@ int SSL_get_sigalgs(SSL *s, int idx, int *psign, int *phash, int *psignandhash,
 int SSL_get_shared_sigalgs(SSL *s, int idx, int *psign, int *phash,
                            int *psignandhash, uint8_t *rsig, uint8_t *rhash);
 
+int SSL_check_chain(SSL *s, X509 *x, EVP_PKEY *pk, STACK_OF(X509) *chain);
+
 #define SSL_set_tlsext_host_name(s, name)                                \
     SSL_ctrl(s, SSL_CTRL_SET_TLSEXT_HOSTNAME, TLSEXT_NAMETYPE_host_name, \
              (char *)name)

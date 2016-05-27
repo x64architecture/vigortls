@@ -2188,6 +2188,7 @@ void ERR_load_SSL_strings(void);
 # define SSL_R_CA_DN_TOO_LONG                             132
 # define SSL_R_CCS_RECEIVED_EARLY                         133
 # define SSL_R_CERTIFICATE_VERIFY_FAILED                  134
+# define SSL_R_CERT_CB_ERROR                              377
 # define SSL_R_CERT_LENGTH_MISMATCH                       135
 # define SSL_R_CHALLENGE_IS_DIFFERENT                     136
 # define SSL_R_CIPHER_CODE_WRONG_LENGTH                   137
