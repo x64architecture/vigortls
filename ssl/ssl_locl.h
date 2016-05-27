@@ -824,7 +824,6 @@ long ssl_get_algorithm2(SSL *s);
 int tls1_process_sigalgs(SSL *s, const uint8_t *data, int dsize);
 size_t tls12_get_sig_algs(SSL *s, uint8_t *p);
 
-int tls1_check_ec_server_key(SSL *s);
 int tls1_check_ec_tmp_key(SSL *s);
 
 int ssl_add_clienthello_use_srtp_ext(SSL *s, uint8_t *p, int *len,

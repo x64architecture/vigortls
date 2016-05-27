@@ -2126,13 +2126,6 @@ SSL_CIPHER *ssl3_choose_cipher(SSL *s, STACK_OF(SSL_CIPHER) *clnt,
         ok = (alg_k & mask_k) && (alg_a & mask_a);
 
         /*
-         * If we are considering an ECC cipher suite that uses our
-         * certificate check it.
-         */
-        if (alg_a & SSL_aECDSA)
-            ok = ok && tls1_check_ec_server_key(s);
-
-        /*
          * If we are considering an ECC cipher suite that uses
          * an ephemeral EC key check it.
          */
