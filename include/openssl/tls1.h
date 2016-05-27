@@ -185,6 +185,9 @@ int SSL_export_keying_material(SSL *s, uint8_t *out, size_t olen,
 int SSL_get_sigalgs(SSL *s, int idx, int *psign, int *phash, int *psignandhash,
                     uint8_t *rsig, uint8_t *rhash);
 
+int SSL_get_shared_sigalgs(SSL *s, int idx, int *psign, int *phash,
+                           int *psignandhash, uint8_t *rsig, uint8_t *rhash);
+
 #define SSL_set_tlsext_host_name(s, name)                                \
     SSL_ctrl(s, SSL_CTRL_SET_TLSEXT_HOSTNAME, TLSEXT_NAMETYPE_host_name, \
              (char *)name)

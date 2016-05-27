@@ -45,7 +45,7 @@ int SSL_get_ex_data_X509_STORE_CTX_idx(void)
     return ssl_x509_store_ctx_idx;
 }
 
-static void ssl_cert_set_default_md(CERT *cert)
+void ssl_cert_set_default_md(CERT *cert)
 {
     /* Set digest values to defaults */
     cert->pkeys[SSL_PKEY_DSA_SIGN].digest = EVP_sha1();
@@ -249,6 +249,7 @@ void ssl_cert_free(CERT *c)
     ssl_cert_clear_certs(c);
     free(c->peer_sigalgs);
     free(c->conf_sigalgs);
+    free(c->shared_sigalgs);
     CRYPTO_thread_cleanup(c->lock);
     free(c);
 }

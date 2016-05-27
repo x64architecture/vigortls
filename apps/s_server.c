@@ -1548,7 +1548,7 @@ static int init_ssl_connection(SSL *con)
     if (SSL_get_shared_ciphers(con, buf, sizeof buf) != NULL)
         BIO_printf(bio_s_out, "Shared ciphers:%s\n", buf);
     str = SSL_CIPHER_get_name(SSL_get_current_cipher(con));
-    ssl_print_sigalgs(bio_s_out, con);
+    ssl_print_sigalgs(bio_s_out, con, 0);
     ssl_print_curves(bio_s_out, con);
     BIO_printf(bio_s_out, "CIPHER is %s\n", (str != NULL) ? str : "(NONE)");
 
@@ -1761,7 +1761,7 @@ static int www_body(char *hostname, int s, uint8_t *context)
                 }
                 BIO_puts(io, "\n");
             }
-            ssl_print_sigalgs(io, con);
+            ssl_print_sigalgs(io, con, 0);
             ssl_print_curves(io, con);
             BIO_printf(io, (SSL_cache_hit(con) ? "---\nReused, " : "---\nNew, "));
             c = SSL_get_current_cipher(con);
