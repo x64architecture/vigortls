@@ -688,6 +688,10 @@ void *X509_get_ex_data(X509 *r, int idx);
 int i2d_X509_AUX(X509 *a, uint8_t **pp);
 X509 *d2i_X509_AUX(X509 **a, const uint8_t **pp, long length);
 
+void X509_get0_signature(ASN1_BIT_STRING **psig, X509_ALGOR **palg,
+                         const X509 *x);
+int X509_get_signature_nid(const X509 *x);
+
 int X509_alias_set1(X509 *x, uint8_t *name, int len);
 int X509_keyid_set1(X509 *x, uint8_t *id, int len);
 uint8_t *X509_alias_get0(X509 *x, int *len);
