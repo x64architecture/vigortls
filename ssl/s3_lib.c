@@ -2142,6 +2142,8 @@ SSL_CIPHER *ssl3_choose_cipher(SSL *s, STACK_OF(SSL_CIPHER) *clnt,
         use_chacha = 1;
     }
 
+    tls1_set_cert_validity(s);
+
     for (i = 0; i < sk_SSL_CIPHER_num(prio); i++) {
         c = sk_SSL_CIPHER_value(prio, i);
 
