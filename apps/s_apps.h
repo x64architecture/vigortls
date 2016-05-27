@@ -23,7 +23,7 @@ int set_cert_stuff(SSL_CTX *ctx, char *cert_file, char *key_file);
 int set_cert_key_stuff(SSL_CTX *ctx, X509 *cert, EVP_PKEY *key);
 int set_cert_key_and_authz(SSL_CTX *ctx, X509 *cert, EVP_PKEY *key,
                            uint8_t *authz, size_t authz_length);
-int ssl_print_sigalgs(BIO *out, SSL *s, int client);
+int ssl_print_sigalgs(BIO *out, SSL *s);
 int ssl_print_curves(BIO *out, SSL *s);
 #endif
 int init_client(int *sock, char *server, char *port, int type, int af);

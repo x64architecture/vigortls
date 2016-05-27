@@ -207,6 +207,14 @@ CERT *ssl_cert_dup(CERT *cert)
                cert->client_sigalgslen);
         ret->client_sigalgslen = cert->client_sigalgslen;
     }
+    /* Copy any custom client certificate types */
+    if (cert->ctypes != NULL) {
+        ret->ctypes = malloc(cert->ctype_num);
+        if (ret->ctypes == NULL)
+            goto err;
+        memcpy(ret->ctypes, cert->ctypes, cert->ctype_num);
+        ret->ctype_num = cert->ctype_num;
+    }
 
     ret->cert_flags = cert->cert_flags;
  
@@ -265,6 +273,7 @@ void ssl_cert_free(CERT *c)
     free(c->conf_sigalgs);
     free(c->client_sigalgs);
     free(c->shared_sigalgs);
+    free(c->ctypes);
     CRYPTO_thread_cleanup(c->lock);
     free(c);
 }

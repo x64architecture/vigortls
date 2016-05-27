@@ -1490,8 +1490,17 @@ int ssl3_get_certificate_request(SSL *s)
     if (!CBS_get_u8(&cert_request, &ctype_num))
         goto truncated;
 
-    if (ctype_num > SSL3_CT_NUMBER)
+    free(s->cert->ctypes);
+    s->cert->ctypes = NULL;
+
+    if (ctype_num > SSL3_CT_NUMBER) {
+        if (!CBS_stow(&cert_request, &s->cert->ctypes, &s->cert->ctype_num)) {
+            SSLerr(SSL_F_SSL3_GET_CERTIFICATE_REQUEST,
+                   ERR_R_MALLOC_FAILURE);
+            goto err;
+        }
         ctype_num = SSL3_CT_NUMBER;
+    }
     if (!CBS_get_bytes(&cert_request, &ctypes, ctype_num) ||
         !CBS_write_bytes(&ctypes, (uint8_t *)s->s3->tmp.ctype,
             sizeof(s->s3->tmp.ctype), NULL)) {

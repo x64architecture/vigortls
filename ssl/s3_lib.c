@@ -1610,6 +1610,8 @@ void ssl3_clear(SSL *s)
     s->next_proto_negotiated_len = 0;
 }
 
+static int ssl3_set_req_cert_type(CERT *c, const uint8_t *p, size_t len);
+
 long ssl3_ctrl(SSL *s, int cmd, long larg, void *parg)
 {
     int ret = 0;
@@ -1846,6 +1848,25 @@ long ssl3_ctrl(SSL *s, int cmd, long larg, void *parg)
         case SSL_CTRL_SET_CLIENT_SIGALGS_LIST:
             return tls1_set_sigalgs_list(s->cert, parg, 1);
 
+        case SSL_CTRL_GET_CLIENT_CERT_TYPES: {
+            const uint8_t **pctype = parg;
+            if (s->server || !s->s3->tmp.cert_req)
+                return 0;
+            if (s->cert->ctypes != NULL) {
+                if (pctype != NULL)
+                    *pctype = s->cert->ctypes;
+                return (int)s->cert->ctype_num;
+            }
+            if (pctype != NULL)
+                *pctype = (uint8_t *)s->s3->tmp.ctype;
+            return s->s3->tmp.ctype_num;
+        }
+
+        case SSL_CTRL_SET_CLIENT_CERT_TYPES:
+            if (!s->server)
+                return 0;
+            return ssl3_set_req_cert_type(s->cert, parg, larg);
+
         default:
             break;
     }
@@ -1990,6 +2011,9 @@ long ssl3_ctx_ctrl(SSL_CTX *ctx, int cmd, long larg, void *parg)
 
         case SSL_CTRL_SET_CLIENT_SIGALGS_LIST:
             return tls1_set_sigalgs_list(ctx->cert, parg, 1);
+
+        case SSL_CTRL_SET_CLIENT_CERT_TYPES:
+            return ssl3_set_req_cert_type(ctx->cert, parg, larg);
 
         case SSL_CTRL_SET_TLSEXT_AUTHZ_SERVER_AUDIT_PROOF_CB_ARG:
             ctx->tlsext_authz_server_audit_proof_cb_arg = parg;
@@ -2158,7 +2182,50 @@ SSL_CIPHER *ssl3_choose_cipher(SSL *s, STACK_OF(SSL_CIPHER) *clnt,
 int ssl3_get_req_cert_type(SSL *s, uint8_t *p)
 {
     int ret = 0;
+    const uint8_t *sig;
+    size_t siglen;
+    int have_rsa_sign = 0, have_dsa_sign = 0, have_ecdsa_sign = 0;
+    int nostrict = 1;
     unsigned long alg_k;
+
+    /* If we have custom certificate types set, use them */
+    if (s->cert->ctypes != NULL) {
+        memcpy(p, s->cert->ctypes, s->cert->ctype_num);
+        return (int)s->cert->ctype_num;
+    }
+    /* Else see if we have any signature algorithms configured */
+    if (s->cert->client_sigalgs != NULL) {
+        sig = s->cert->client_sigalgs;
+        siglen = s->cert->client_sigalgslen;
+    } else {
+        sig = s->cert->conf_sigalgs;
+        siglen = s->cert->conf_sigalgslen;
+    }
+    /* If we have sigalgs work out if we can sign with RSA, DSA, ECDSA */
+    if (sig != NULL) {
+        size_t i;
+        if (s->cert->cert_flags & SSL_CERT_FLAG_TLS_STRICT)
+            nostrict = 0;
+        for (i = 0; i < siglen; i += 2, sig += 2) {
+            switch(sig[1]) {
+                case TLSEXT_signature_rsa:
+                    have_rsa_sign = 1;
+                    break;
+
+                case TLSEXT_signature_dsa:
+                    have_dsa_sign = 1;
+                    break;
+
+                case TLSEXT_signature_ecdsa:
+                    have_ecdsa_sign = 1;
+                    break;
+                }
+            }
+    } else { /* Otherwise allow anything */
+        have_rsa_sign = 1;
+        have_dsa_sign = 1;
+        have_ecdsa_sign = 1;
+    }
 
     alg_k = s->s3->tmp.new_cipher->algorithm_mkey;
 
@@ -2173,19 +2240,42 @@ int ssl3_get_req_cert_type(SSL *s, uint8_t *p)
 #endif
 
     if (alg_k & SSL_kDHE) {
-        p[ret++] = SSL3_CT_RSA_FIXED_DH;
-        p[ret++] = SSL3_CT_DSS_FIXED_DH;
+        if (nostrict || have_rsa_sign)
+            p[ret++] = SSL3_CT_RSA_FIXED_DH;
+        if (nostrict || have_dsa_sign)
+            p[ret++] = SSL3_CT_DSS_FIXED_DH;
     }
-    p[ret++] = SSL3_CT_RSA_SIGN;
-    p[ret++] = SSL3_CT_DSS_SIGN;
+    if (have_rsa_sign)
+        p[ret++] = SSL3_CT_RSA_SIGN;
+    if (have_dsa_sign)
+        p[ret++] = SSL3_CT_DSS_SIGN;
 
     /*
      * ECDSA certs can be used with RSA cipher suites as well
      * so we don't need to check for SSL_kECDH or SSL_kECDHE
      */
-    p[ret++] = TLS_CT_ECDSA_SIGN;
+    if (nostrict || have_ecdsa_sign)
+        p[ret++] = TLS_CT_ECDSA_SIGN;
 
     return (ret);
+}
+
+static int ssl3_set_req_cert_type(CERT *c, const uint8_t *p, size_t len)
+{
+    free(c->ctypes);
+    c->ctypes = NULL;
+
+    if (p == NULL || !len)
+        return 1;
+    if (len > 0xff)
+        return 0;
+    c->ctypes = malloc(len);
+    if (c->ctypes == NULL)
+        return 0;
+    memcpy(c->ctypes, p, len);
+    c->ctype_num = len;
+
+    return 1;
 }
 
 int ssl3_shutdown(SSL *s)
