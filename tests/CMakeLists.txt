@@ -79,3 +79,4 @@ add_test(ssltest ${CMAKE_CURRENT_SOURCE_DIR}/ssltest.sh ${CMAKE_CURRENT_BINARY_D
 #add_test(ocsptest ${CMAKE_CURRENT_SOURCE_DIR}/ocsptest.sh ${CMAKE_CURRENT_BINARY_DIR}/../apps ${CMAKE_CURRENT_SOURCE_DIR})
 endif()
 add_test_suite(wptest wptest.c)
+add_test_suite(v3nametest v3nametest.c)
