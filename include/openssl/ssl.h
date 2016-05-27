@@ -481,6 +481,14 @@ struct ssl_session_st {
  * just freed (depending on the context's setting for freelist_max_len).
  */
 #define SSL_MODE_RELEASE_BUFFERS 0x00000010L
+
+/* Cert related flags */
+/*
+ * Many implementations ignore some aspects of the TLS standards such as
+ * enforcing certificate chain algorithms. When this is set we enforce them.
+ */
+#define SSL_CERT_FLAG_TLS_STRICT 0x00000001L
+
 /*
  * Send TLS_FALLBACK_SCSV in the ClientHello.
  * To be set only by applications that reconnect with a downgraded protocol
@@ -519,6 +527,15 @@ struct ssl_session_st {
 
 #define SSL_get_secure_renegotiation_support(ssl) \
     SSL_ctrl((ssl), SSL_CTRL_GET_RI_SUPPORT, 0, NULL)
+
+#define SSL_CTX_set_cert_flags(ctx, op) \
+    SSL_CTX_ctrl((ctx), SSL_CTRL_CERT_FLAGS, (op), NULL)
+#define SSL_set_cert_flags(s, op) \
+    SSL_ctrl((s), SSL_CTRL_CERT_FLAGS,(op),NULL)
+#define SSL_CTX_clear_cert_flags(ctx, op) \
+    SSL_CTX_ctrl((ctx), SSL_CTRL_CLEAR_CERT_FLAGS, (op), NULL)
+#define SSL_clear_cert_flags(s, op) \
+    SSL_ctrl((s), SSL_CTRL_CLEAR_CERT_FLAGS, (op), NULL)
 
 void SSL_CTX_set_msg_callback(SSL_CTX *ctx,
                               void (*cb)(int write_p, int version,
@@ -1436,6 +1453,8 @@ DECLARE_PEM_rw(SSL_SESSION, SSL_SESSION)
 #define SSL_CTRL_SET_ECDH_AUTO 94
 #define SSL_CTRL_SET_SIGALGS 97
 #define SSL_CTRL_SET_SIGALGS_LIST 98
+#define SSL_CTRL_CERT_FLAGS 99
+#define SSL_CTRL_CLEAR_CERT_FLAGS 100
 
 #define DTLSv1_get_timeout(ssl, arg) \
     SSL_ctrl(ssl, DTLS_CTRL_GET_TIMEOUT, 0, (void *)arg)

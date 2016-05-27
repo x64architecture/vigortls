@@ -323,6 +323,14 @@
 #define EXPLICIT_CHAR2_CURVE_TYPE 2
 #define NAMED_CURVE_TYPE 3
 
+/* Values for valid_flags in CERT_PKEY structure */
+/* Certificate inconsistent with session, key missing etc */
+#define CERT_PKEY_INVALID 0x0
+/* Certificate can be used with this sesstion */
+#define CERT_PKEY_VALID 0x1
+/* Certificate can also be used for signing */
+#define CERT_PKEY_SIGN 0x2
+
 typedef struct cert_pkey_st {
     X509 *x509;
     EVP_PKEY *privatekey;
@@ -339,6 +347,13 @@ typedef struct cert_pkey_st {
      */
      uint8_t *authz;
      size_t authz_length;
+
+    /*
+     * Set if CERT_PKEY can be used with current SSL session: e.g.
+     * appropriate curve, signature algorithms etc. If zero it can't be
+     * used at all.
+     */
+    int valid_flags;
 } CERT_PKEY;
 
 typedef struct cert_st {
@@ -359,7 +374,11 @@ typedef struct cert_st {
 
     EC_KEY *ecdh_tmp;
     EC_KEY *(*ecdh_tmp_cb)(SSL *ssl, int is_export, int keysize);
+    /* Select ECDH parameters automatically */
     int ecdh_tmp_auto;
+
+    /* Flags related to certificates */
+    unsigned int cert_flags;
 
     CERT_PKEY pkeys[SSL_PKEY_NUM];
 
@@ -788,6 +807,9 @@ const EVP_MD *tls12_get_hash(uint8_t hash_alg);
 
 int tls1_set_sigalgs_list(CERT *c, const char *str);
 int tls1_set_sigalgs(CERT *c, const int *salg, size_t salglen);
+int tls1_check_chain(SSL *s, X509 *x, EVP_PKEY *pk, STACK_OF(X509) *chain,
+                     int idx);
+void tls1_set_cert_validity(SSL *s);
 
 void ssl_clear_hash_ctx(EVP_MD_CTX **hash);
 int ssl_add_serverhello_renegotiate_ext(SSL *s, uint8_t *p, int *len,

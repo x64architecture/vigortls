@@ -165,6 +165,7 @@ CERT *ssl_cert_dup(CERT *cert)
                 X509_up_ref(x);
             }
         }
+        rpk->valid_flags = 0;
         if (cert->pkeys[i].authz != NULL) {
             /* Just copy everything. */
             ret->pkeys[i].authz_length = cert->pkeys[i].authz_length;
@@ -200,6 +201,8 @@ CERT *ssl_cert_dup(CERT *cert)
         ret->conf_sigalgslen = cert->conf_sigalgslen;
     }
 
+    ret->cert_flags = cert->cert_flags;
+
     return ret;
 
 err:
@@ -229,6 +232,7 @@ void ssl_cert_clear_certs(CERT *c)
         sk_X509_pop_free(cpk->chain, X509_free);
         cpk->chain = NULL;
         free(cpk->authz);
+        cpk->valid_flags = 0;
     }
 }
 

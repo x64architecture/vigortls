@@ -926,6 +926,10 @@ long SSL_ctrl(SSL *s, int cmd, long larg, void *parg)
                 return (s->s3->send_connection_binding);
             else
                 return (0);
+        case SSL_CTRL_CERT_FLAGS:
+            return s->cert->cert_flags |= larg;
+        case SSL_CTRL_CLEAR_CERT_FLAGS:
+            return s->cert->cert_flags &= ~larg;
         default:
             return (s->method->ssl_ctrl(s, cmd, larg, parg));
     }
@@ -1022,6 +1026,10 @@ long SSL_CTX_ctrl(SSL_CTX *ctx, int cmd, long larg, void *parg)
                 return (0);
             ctx->max_send_fragment = larg;
             return (1);
+        case SSL_CTRL_CERT_FLAGS:
+            return ctx->cert->cert_flags |= larg;
+        case SSL_CTRL_CLEAR_CERT_FLAGS:
+            return ctx->cert->cert_flags &= ~larg;
         default:
             return (ctx->method->ssl_ctx_ctrl(ctx, cmd, larg, parg));
     }
@@ -1770,13 +1778,13 @@ void ssl_set_cert_masks(CERT *c, const SSL_CIPHER *cipher)
     have_ecdh_tmp = (c->ecdh_tmp != NULL || c->ecdh_tmp_cb != NULL ||
         c->ecdh_tmp_auto != 0);
     cpk = &(c->pkeys[SSL_PKEY_RSA_ENC]);
-    rsa_enc = (cpk->x509 != NULL && cpk->privatekey != NULL);
+    rsa_enc = cpk->valid_flags;
     cpk = &(c->pkeys[SSL_PKEY_RSA_SIGN]);
-    rsa_sign = (cpk->x509 != NULL && cpk->privatekey != NULL);
+    rsa_sign = (cpk->valid_flags & CERT_PKEY_SIGN);
     cpk = &(c->pkeys[SSL_PKEY_DSA_SIGN]);
-    dsa_sign = (cpk->x509 != NULL && cpk->privatekey != NULL);
+    dsa_sign = (cpk->valid_flags & CERT_PKEY_SIGN);
     cpk = &(c->pkeys[SSL_PKEY_ECC]);
-    have_ecc_cert = (cpk->x509 != NULL && cpk->privatekey != NULL);
+    have_ecc_cert = cpk->valid_flags;
     mask_k = 0;
     mask_a = 0;
 
@@ -1810,10 +1818,14 @@ void ssl_set_cert_masks(CERT *c, const SSL_CIPHER *cipher)
      * ECDSA cipher suites depending on the key usage extension.
      */
     if (have_ecc_cert) {
+        cpk = &c->pkeys[SSL_PKEY_ECC];
+        x = cpk->x509;
         /* This call populates extension flags (ex_flags) */
-        x = (c->pkeys[SSL_PKEY_ECC]).x509;
         X509_check_purpose(x, -1, 0);
-        ecdsa_ok = (x->ex_flags & EXFLAG_KUSAGE) ? (x->ex_kusage & X509v3_KU_DIGITAL_SIGNATURE) : 1;
+        ecdsa_ok = (x->ex_flags & EXFLAG_KUSAGE) ?
+            (x->ex_kusage & X509v3_KU_DIGITAL_SIGNATURE) : 1;
+        if (!(cpk->valid_flags & CERT_PKEY_SIGN))
+            ecdsa_ok = 0;
         ecc_pkey = X509_get_pubkey(x);
         EVP_PKEY_free(ecc_pkey);
         if ((x->sig_alg) && (x->sig_alg->algorithm)) {
