@@ -1924,6 +1924,18 @@ long ssl3_ctrl(SSL *s, int cmd, long larg, void *parg)
                 return 0;
             }
 
+        case SSL_CTRL_GET_EC_POINT_FORMATS:
+            if (!s->server)
+                return 0;
+            else {
+                SSL_SESSION *sess = s->session;
+                const uint8_t **pformat = parg;
+                if (!sess || !sess->tlsext_ecpointformatlist)
+                    return 0;
+                *pformat = sess->tlsext_ecpointformatlist;
+                return (int)sess->tlsext_ecpointformatlist_length;
+            }
+
         default:
             break;
     }
