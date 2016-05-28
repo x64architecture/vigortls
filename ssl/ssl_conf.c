@@ -7,10 +7,12 @@
  * https://www.openssl.org/source/license.html
  */
 
-#include "ssl_locl.h"
+#include <strings.h>
+
 #include <openssl/conf.h>
 #include <openssl/objects.h>
-#include <stdio.h>
+
+#include "ssl_locl.h"
 
 /*
  * Structure holding name tables. This is used for pemitted elements in
