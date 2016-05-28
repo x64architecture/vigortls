@@ -24,7 +24,7 @@ static int dtls1_handshake_write(SSL *s);
 int dtls1_listen(SSL *s, struct sockaddr *client);
 
 SSL3_ENC_METHOD DTLSv1_enc_data = {
-    .enc = dtls1_enc,
+    .enc = tls1_enc,
     .mac = tls1_mac,
     .setup_key_block = tls1_setup_key_block,
     .generate_master_secret = tls1_generate_master_secret,
@@ -45,7 +45,7 @@ SSL3_ENC_METHOD DTLSv1_enc_data = {
 };
 
 SSL3_ENC_METHOD DTLSv1_2_enc_data = {
-    .enc = dtls1_enc,
+    .enc = tls1_enc,
     .mac = tls1_mac,
     .setup_key_block = tls1_setup_key_block,
     .generate_master_secret = tls1_generate_master_secret,

@@ -2129,7 +2129,6 @@ void ERR_load_SSL_strings(void);
 # define SSL_F_DTLS1_CHECK_TIMEOUT_NUM                    318
 # define SSL_F_DTLS1_CLIENT_HELLO                         248
 # define SSL_F_DTLS1_CONNECT                              249
-# define SSL_F_DTLS1_ENC                                  250
 # define SSL_F_DTLS1_GET_HELLO_VERIFY                     251
 # define SSL_F_DTLS1_GET_MESSAGE                          252
 # define SSL_F_DTLS1_GET_MESSAGE_FRAGMENT                 253

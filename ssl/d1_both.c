@@ -152,12 +152,17 @@ int dtls1_do_write(SSL *s, int type)
     if (s->init_off == 0 && type == SSL3_RT_HANDSHAKE)
         OPENSSL_assert(s->init_num == (int)s->d1->w_msg_hdr.msg_len + DTLS1_HM_HEADER_LENGTH);
 
-    if (s->write_hash)
-        mac_size = EVP_MD_CTX_size(s->write_hash);
-    else
+    if (s->write_hash) {
+        if (s->enc_write_ctx &&
+            EVP_CIPHER_CTX_mode(s->enc_write_ctx) == EVP_CIPH_GCM_MODE)
+            mac_size = 0;
+        else
+            mac_size = EVP_MD_CTX_size(s->write_hash);
+    } else
         mac_size = 0;
 
-    if (s->enc_write_ctx && (EVP_CIPHER_mode(s->enc_write_ctx->cipher) & EVP_CIPH_CBC_MODE))
+    if (s->enc_write_ctx &&
+        (EVP_CIPHER_CTX_mode(s->enc_write_ctx) == EVP_CIPH_CBC_MODE))
         blocksize = 2 * EVP_CIPHER_block_size(s->enc_write_ctx->cipher);
     else
         blocksize = 0;

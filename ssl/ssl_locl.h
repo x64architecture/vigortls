@@ -290,6 +290,14 @@
 /* Allow TLS 1.2 ciphersuites: applies to DTLS 1.2 as well as TLS 1.2. */
 #define SSL_USE_TLS1_2_CIPHERS(s) \
     (s->method->ssl3_enc->enc_flags & SSL_ENC_FLAG_TLS1_2_CIPHERS)
+/*
+ * Determine if a client can use TLS 1.2 ciphersuites: can't rely on method
+ * flags because it may not be set to correct version yet.
+ */
+#define SSL_CLIENT_USE_TLS1_2_CIPHERS(s) \
+    ((SSL_IS_DTLS(s) && s->client_version <= DTLS1_2_VERSION) || \
+    (!SSL_IS_DTLS(s) && s->client_version >= TLS1_2_VERSION))
+
 
 /* Mostly for SSLv3 */
 #define SSL_PKEY_RSA_ENC 0
@@ -814,7 +822,6 @@ int dtls1_get_record(SSL *s);
 int do_dtls1_write(SSL *s, int type, const uint8_t *buf,
                    unsigned int len);
 int dtls1_dispatch_alert(SSL *s);
-int dtls1_enc(SSL *s, int snd);
 
 int ssl_init_wbio_buffer(SSL *s, int push);
 void ssl_free_wbio_buffer(SSL *s);
