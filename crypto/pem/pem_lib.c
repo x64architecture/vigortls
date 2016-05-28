@@ -496,8 +496,8 @@ static int load_iv(char **fromp, uint8_t *to, int num)
     return (1);
 }
 
-int PEM_write(FILE *fp, char *name, char *header, uint8_t *data,
-              long len)
+int PEM_write(FILE *fp, const char *name, const char *header,
+              const uint8_t *data, long len)
 {
     BIO *b;
     int ret;
@@ -512,8 +512,8 @@ int PEM_write(FILE *fp, char *name, char *header, uint8_t *data,
     return (ret);
 }
 
-int PEM_write_bio(BIO *bp, const char *name, char *header, uint8_t *data,
-                  long len)
+int PEM_write_bio(BIO *bp, const char *name, const char *header,
+                  const uint8_t *data, long len)
 {
     int nlen, n, i, j, outl;
     uint8_t *buf = NULL;

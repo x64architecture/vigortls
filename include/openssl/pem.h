@@ -325,8 +325,8 @@ int PEM_do_header(EVP_CIPHER_INFO *cipher, uint8_t *data, long *len,
 
 int PEM_read_bio(BIO *bp, char **name, char **header, uint8_t **data,
                  long *len);
-int PEM_write_bio(BIO *bp, const char *name, char *hdr, uint8_t *data,
-                  long len);
+int PEM_write_bio(BIO *bp, const char *name, const char *hdr,
+                  const uint8_t *data, long len);
 int PEM_bytes_read_bio(uint8_t **pdata, long *plen, char **pnm,
                        const char *name, BIO *bp, pem_password_cb *cb, void *u);
 void *PEM_ASN1_read_bio(d2i_of_void *d2i, const char *name, BIO *bp, void **x,
@@ -342,7 +342,8 @@ int PEM_X509_INFO_write_bio(BIO *bp, X509_INFO *xi, EVP_CIPHER *enc,
                             void *u);
 
 int PEM_read(FILE *fp, char **name, char **header, uint8_t **data, long *len);
-int PEM_write(FILE *fp, char *name, char *hdr, uint8_t *data, long len);
+int PEM_write(FILE *fp, const char *name, const char *hdr, const uint8_t *data,
+              long len);
 void *PEM_ASN1_read(d2i_of_void *d2i, const char *name, FILE *fp, void **x,
                     pem_password_cb *cb, void *u);
 int PEM_ASN1_write(i2d_of_void *i2d, const char *name, FILE *fp, void *x,
