@@ -348,6 +348,11 @@ X509_CRL *X509_CRL_dup(X509_CRL *x)
     return ASN1_item_dup(&X509_CRL_it, x);
 }
 
+X509_REVOKED *X509_REVOKED_dup(X509_REVOKED *rev)
+{
+    return ASN1_item_dup(&X509_REVOKED_it, rev);
+}
+
 static int X509_REVOKED_cmp(const X509_REVOKED *const *a, const X509_REVOKED *const *b)
 {
     return (ASN1_STRING_cmp(
