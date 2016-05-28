@@ -714,6 +714,8 @@ const EVP_CIPHER *EVP_aes_256_gcm(void);
 const EVP_CIPHER *EVP_aes_256_xts(void);
 const EVP_CIPHER *EVP_aes_128_cbc_hmac_sha1(void);
 const EVP_CIPHER *EVP_aes_256_cbc_hmac_sha1(void);
+const EVP_CIPHER *EVP_aes_128_cbc_hmac_sha256(void);
+const EVP_CIPHER *EVP_aes_256_cbc_hmac_sha256(void);
 const EVP_CIPHER *EVP_camellia_128_ecb(void);
 const EVP_CIPHER *EVP_camellia_128_cbc(void);
 const EVP_CIPHER *EVP_camellia_128_cfb1(void);
