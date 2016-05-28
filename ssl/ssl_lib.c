@@ -1883,30 +1883,17 @@ int ssl_check_srvr_ecc_cert_and_alg(X509 *x, SSL *s)
     /* all checks are ok */
 }
 
-/* THIS NEEDS CLEANING UP */
 static int ssl_get_server_cert_index(const SSL *s)
 {
-    unsigned long alg_a;
+    int idx;
 
-    alg_a = s->s3->tmp.new_cipher->algorithm_auth;
+    idx = ssl_cipher_get_cert_index(s->s3->tmp.new_cipher);
+    if (idx == SSL_PKEY_RSA_ENC && !s->cert->pkeys[SSL_PKEY_RSA_ENC].x509)
+        idx = SSL_PKEY_RSA_SIGN;
+    if (idx == -1)
+        SSLerr(SSL_F_SSL_GET_SERVER_CERT_INDEX,ERR_R_INTERNAL_ERROR);
 
-    if (alg_a & SSL_aECDSA) {
-        return SSL_PKEY_ECC;
-    } else if (alg_a & SSL_aDSS) {
-        return SSL_PKEY_DSA_SIGN;
-    } else if (alg_a & SSL_aRSA) {
-        if (s->cert->pkeys[SSL_PKEY_RSA_ENC].x509 == NULL)
-            return SSL_PKEY_RSA_SIGN;
-        else
-            return SSL_PKEY_RSA_ENC;
-    } else if (alg_a & SSL_aGOST94) {
-        return SSL_PKEY_GOST94;
-    } else if (alg_a & SSL_aGOST01) {
-        return SSL_PKEY_GOST01;
-    } else { /* if (alg_a & SSL_aNULL) */
-        SSLerr(SSL_F_SSL_GET_SERVER_CERT_INDEX, ERR_R_INTERNAL_ERROR);
-        return -1;
-    }
+    return idx;
 }
 
 CERT_PKEY *ssl_get_server_send_pkey(const SSL *s)

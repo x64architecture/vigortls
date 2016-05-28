@@ -1533,3 +1533,25 @@ const char *SSL_COMP_get_name(const void *comp)
 {
     return NULL;
 }
+
+/* For a cipher return the index corresponding to the certificate type */
+int ssl_cipher_get_cert_index(const SSL_CIPHER *c)
+{
+    unsigned long alg_a;
+
+    alg_a = c->algorithm_auth;
+
+    if (alg_a & SSL_aECDSA) {
+        return SSL_PKEY_ECC;
+    } else if (alg_a & SSL_aDSS) {
+        return SSL_PKEY_DSA_SIGN;
+    } else if (alg_a & SSL_aRSA) {
+        return SSL_PKEY_RSA_ENC;
+    } else if (alg_a & SSL_aGOST94) {
+        return SSL_PKEY_GOST94;
+    } else if (alg_a & SSL_aGOST01) {
+        return SSL_PKEY_GOST01;
+    }
+
+    return -1;
+}

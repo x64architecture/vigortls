@@ -954,6 +954,15 @@ int ssl3_get_server_certificate(SSL *s)
         goto f_err;
     }
 
+    int exp_idx = ssl_cipher_get_cert_index(s->s3->tmp.new_cipher);
+    if (exp_idx >= 0 && i != exp_idx) {
+        x = NULL;
+        al = SSL_AD_ILLEGAL_PARAMETER;
+        SSLerr(SSL_F_SSL3_GET_SERVER_CERTIFICATE,
+               SSL_R_WRONG_CERTIFICATE_TYPE);
+        goto f_err;
+    }
+
     sc->peer_cert_type = i;
     X509_up_ref(x);
     /*
