@@ -288,6 +288,17 @@ void gcm_ghash_clmul(uint64_t Xi[2], const u128 Htable[16], const uint8_t *inp,
                      size_t len);
 
 #if defined(VIGORTLS_X86)
+# define gcm_init_avx  gcm_init_clmul
+# define gcm_gmult_avx gcm_gmult_clmul
+# define gcm_ghash_avx gcm_ghash_clmul
+#else
+void gcm_init_avx(u128 Htable[16], const uint64_t Xi[2]);
+void gcm_gmult_avx(uint64_t Xi[2], const u128 Htable[16]);
+void gcm_ghash_avx(uint64_t Xi[2], const u128 Htable[16], const uint8_t *inp,
+                   size_t len);
+#endif
+
+#if defined(VIGORTLS_X86)
 #define GHASH_ASM_X86
 void gcm_gmult_4bit_mmx(uint64_t Xi[2], const u128 Htable[16]);
 void gcm_ghash_4bit_mmx(uint64_t Xi[2], const u128 Htable[16], const uint8_t *inp,
@@ -345,9 +356,15 @@ void CRYPTO_gcm128_init(GCM128_CONTEXT *ctx, void *key, block128_f block)
 #if !defined(GHASH_ASM_X86) || defined(OPENSSL_IA32_SSE2)
     if (OPENSSL_ia32cap_P[0] & (1 << 24) && /* check FXSR bit */
         OPENSSL_ia32cap_P[1] & (1 << 1)) {  /* check PCLMULQDQ bit */
-        gcm_init_clmul(ctx->Htable, ctx->H.u);
-        ctx->gmult = gcm_gmult_clmul;
-        ctx->ghash = gcm_ghash_clmul;
+        if (((OPENSSL_ia32cap_P[1] >> 22) & 0x41) == 0x41) {  /* AVX+MOVBE */
+            gcm_init_avx(ctx->Htable, ctx->H.u);
+            ctx->gmult = gcm_gmult_avx;
+            ctx->ghash = gcm_ghash_avx;
+        } else {
+            gcm_init_clmul(ctx->Htable, ctx->H.u);
+            ctx->gmult = gcm_gmult_clmul;
+            ctx->ghash = gcm_ghash_clmul;
+        }
         return;
     }
 #endif
