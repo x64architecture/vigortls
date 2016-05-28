@@ -354,6 +354,16 @@ int X509_verify_cert(X509_STORE_CTX *ctx)
     if (!ok)
         goto end;
 
+    i = X509_chain_check_suiteb(&ctx->error_depth, NULL, ctx->chain,
+                                ctx->param->flags);
+    if (i != X509_V_OK) {
+        ctx->error = i;
+        ctx->current_cert = sk_X509_value(ctx->chain, ctx->error_depth);
+        ok = cb(0, ctx);
+        if (!ok)
+            goto end;
+    }
+
     /* At this point, we have a chain and need to verify it */
     if (ctx->verify != NULL)
         ok = ctx->verify(ctx);
@@ -1381,6 +1391,14 @@ static int check_crl(X509_STORE_CTX *ctx, X509_CRL *crl)
             if (!ok)
                 goto err;
         } else {
+            int rv;
+            rv = X509_CRL_check_suiteb(crl, ikey, ctx->param->flags);
+            if (rv != X509_V_OK) {
+                ctx->error = rv;
+                ok = ctx->verify_cb(0, ctx);
+                if (!ok)
+                    goto err;
+            }
             /* Verify CRL signature */
             if (X509_CRL_verify(crl, ikey) <= 0) {
                 ctx->error = X509_V_ERR_CRL_SIGNATURE_FAILURE;
