@@ -668,8 +668,6 @@ static int check_trust(X509_STORE_CTX *ctx)
     if (ctx->param->flags & X509_V_FLAG_PARTIAL_CHAIN) {
         if (ctx->last_untrusted < sk_X509_num(ctx->chain))
             return X509_TRUST_TRUSTED;
-    }
-    if (sk_X509_num(ctx->chain) == 1) {
         X509 *mx;
         x = sk_X509_value(ctx->chain, 0);
         mx = lookup_cert_match(ctx, x);
