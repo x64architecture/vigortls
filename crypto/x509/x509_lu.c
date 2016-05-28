@@ -644,3 +644,14 @@ void X509_STORE_set_verify_cb(X509_STORE *ctx,
 {
     ctx->verify_cb = verify_cb;
 }
+
+void X509_STORE_set_lookup_crls_cb(X509_STORE *ctx,
+    STACK_OF(X509_CRL) *(*cb)(X509_STORE_CTX *ctx, X509_NAME *nm))
+{
+    ctx->lookup_crls = cb;
+}
+
+X509_STORE *X509_STORE_CTX_get0_store(X509_STORE_CTX *ctx)
+{
+    return ctx->ctx;
+}
