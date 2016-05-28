@@ -810,6 +810,9 @@ int tls12_check_peer_sigalg(const EVP_MD **pmd, SSL *s, const uint8_t *sig,
         SSLerr(SSL_F_TLS12_CHECK_PEER_SIGALG, SSL_R_UNKNOWN_DIGEST);
         return 0;
     }
+    /* Store the digest used so applications can retrieve it if they wish. */
+    if (s->session != NULL && s->session->sess_cert != NULL)
+        s->session->sess_cert->peer_key->digest = *pmd;
 
     return 1;
 }
