@@ -1385,8 +1385,10 @@ int ssl3_get_key_exchange(SSL *s)
     } else {
         /* aNULL does not need public keys. */
         if (!(alg_a & SSL_aNULL)) {
-            SSLerr(SSL_F_SSL3_GET_KEY_EXCHANGE,
-                   ERR_R_INTERNAL_ERROR);
+            /* Might be wrong key type, check it */
+            if (ssl3_check_cert_and_algorithm(s))
+                SSLerr(SSL_F_SSL3_GET_KEY_EXCHANGE,
+                       ERR_R_INTERNAL_ERROR);
             goto err;
         }
         /* still data left over */
@@ -2438,9 +2440,14 @@ int ssl3_check_cert_and_algorithm(SSL *s)
                    SSL_R_BAD_ECC_CERT);
             goto f_err;
         } else {
-            return (1);
+            return 1;
         }
+    } else if (alg_a & SSL_aECDSA) {
+        SSLerr(SSL_F_SSL3_CHECK_CERT_AND_ALGORITHM,
+               SSL_R_MISSING_ECDSA_SIGNING_CERT);
+        goto f_err;
     }
+        
     pkey = X509_get_pubkey(sc->peer_pkeys[idx].x509);
     i = X509_certificate_type(sc->peer_pkeys[idx].x509, pkey);
     EVP_PKEY_free(pkey);
