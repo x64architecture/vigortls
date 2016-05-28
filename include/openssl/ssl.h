@@ -489,6 +489,13 @@ struct ssl_session_st {
  */
 #define SSL_CERT_FLAG_TLS_STRICT 0x00000001L
 
+/* Suite B modes, takes same values as certificate verify flags */
+#define SSL_CERT_FLAG_SUITEB_128_LOS_ONLY 0x10000
+/* Suite B 192 bit only mode */
+#define SSL_CERT_FLAG_SUITEB_192_LOS 0x20000
+/* Suite B 128 bit mode allowing 192 bit algorithms */
+#define SSL_CERT_FLAG_SUITEB_128_LOS 0x30000
+
 /* Flags for building certificate chains */
 /* Treat any existing certificates as untrusted CAs */
 #define SSL_BUILD_CHAIN_FLAG_UNTRUSTED 0x1
@@ -514,6 +521,8 @@ struct ssl_session_st {
 #define CERT_PKEY_ISSUER_NAME 0x200
 /* Cert type matches client types (always set for server cert) */
 #define CERT_PKEY_CERT_TYPE 0x400
+/* Cert chain suitable to Suite B */
+#define CERT_PKEY_SUITEB 0x800
 
 /*
  * Send TLS_FALLBACK_SCSV in the ClientHello.
@@ -2304,6 +2313,7 @@ void ERR_load_SSL_strings(void);
 # define SSL_R_HTTPS_PROXY_REQUEST                        155
 # define SSL_R_HTTP_REQUEST                               156
 # define SSL_R_ILLEGAL_PADDING                            283
+# define SSL_R_ILLEGAL_SUITEB_DIGEST                      380
 # define SSL_R_INAPPROPRIATE_FALLBACK                     379
 # define SSL_R_INCONSISTENT_COMPRESSION                   340
 # define SSL_R_INVALID_AUDIT_PROOF                        371
@@ -2379,6 +2389,7 @@ void ERR_load_SSL_strings(void);
 # define SSL_R_NULL_SSL_METHOD_PASSED                     196
 # define SSL_R_OLD_SESSION_CIPHER_NOT_RETURNED            197
 # define SSL_R_OLD_SESSION_COMPRESSION_ALGORITHM_NOT_RETURNED 344
+# define SSL_R_ONLY_TLS_1_2_ALLOWED_IN_SUITEB_MODE        382
 # define SSL_R_ONLY_TLS_ALLOWED_IN_FIPS_MODE              297
 # define SSL_R_PACKET_LENGTH_TOO_LONG                     198
 # define SSL_R_PARSE_TLSEXT                               227

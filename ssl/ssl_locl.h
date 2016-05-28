@@ -347,6 +347,12 @@ typedef struct cert_pkey_st {
      */
     int valid_flags;
 } CERT_PKEY;
+/* Retrieve Suite B flags */
+#define tls1_suiteb(s) (s->cert->cert_flags & SSL_CERT_FLAG_SUITEB_128_LOS)
+/* Uses to check strict mode: suite B modes are always strict */
+#define SSL_CERT_FLAGS_CHECK_TLS_STRICT \
+    (SSL_CERT_FLAG_SUITEB_128_LOS | SSL_CERT_FLAG_TLS_STRICT)
+
 
 typedef struct cert_st {
     /* Current active set */
@@ -593,7 +599,7 @@ int ssl_cipher_list_to_bytes(SSL *s, STACK_OF(SSL_CIPHER) *sk,
 STACK_OF(SSL_CIPHER) *ssl_create_cipher_list(const SSL_METHOD *meth,
                                              STACK_OF(SSL_CIPHER) **pref,
                                              STACK_OF(SSL_CIPHER) **sorted,
-                                             const char *rule_str);
+                                             const char *rule_str, CERT *c);
 void ssl_update_cache(SSL *s, int mode);
 int ssl_cipher_get_evp(const SSL_SESSION *s, const EVP_CIPHER **enc,
                        const EVP_MD **md, int *mac_pkey_type,
@@ -815,7 +821,6 @@ int tls1_set_curves(uint16_t **pext, size_t *pextlen, int *curves,
                     size_t ncurves);
 int tls1_set_curves_list(uint16_t **pext, size_t *pextlen, const char *str);
 int tls1_check_curve(SSL *s, const uint8_t *p, size_t len);
-int tls1_get_shared_curve(SSL *s);
 
 uint8_t *ssl_add_clienthello_tlsext(SSL *s, uint8_t *p,
                                           uint8_t *limit);
@@ -866,7 +871,7 @@ int tls12_check_peer_sigalg(const EVP_MD **pmd, SSL *s, const uint8_t *sig,
 void ssl_set_client_disabled(SSL *s);
 
 
-int tls1_check_ec_tmp_key(SSL *s);
+int tls1_check_ec_tmp_key(SSL *s, unsigned long id);
 
 int ssl_add_clienthello_use_srtp_ext(SSL *s, uint8_t *p, int *len,
                                      int maxlen);
