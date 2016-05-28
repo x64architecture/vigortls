@@ -12,6 +12,7 @@
 #include <openssl/asn1.h>
 #include <openssl/evp.h>
 #include <openssl/x509.h>
+#include <openssl/ocsp.h>
 #include <openssl/rsa.h>
 #ifndef OPENSSL_NO_DSA
 #include <openssl/dsa.h>
@@ -78,6 +79,12 @@ int X509_CRL_sign_ctx(X509_CRL *x, EVP_MD_CTX *ctx)
                               x->crl->sig_alg, x->sig_alg, x->signature, x->crl, ctx);
 }
 
+int X509_CRL_http_nbio(OCSP_REQ_CTX *rctx, X509_CRL **pcrl)
+{
+    return OCSP_REQ_CTX_nbio_d2i(rctx, (ASN1_VALUE **)pcrl,
+                                 ASN1_ITEM_rptr(X509_CRL));
+}
+                                 
 int NETSCAPE_SPKI_sign(NETSCAPE_SPKI *x, EVP_PKEY *pkey, const EVP_MD *md)
 {
     return (ASN1_item_sign(ASN1_ITEM_rptr(NETSCAPE_SPKAC), x->sig_algor, NULL,
