@@ -2093,6 +2093,11 @@ static int ssl_scan_serverhello_tlsext(SSL *s, uint8_t **p, uint8_t *d, int n, i
     free(s->s3->alpn_selected);
     s->s3->alpn_selected = NULL;
 
+    /* Clear observed custom extensions */
+    s->s3->tlsext_custom_types_count = 0;
+    free(s->s3->tlsext_custom_types);
+    s->s3->tlsext_custom_types = NULL;             
+
     /* Clear any signature algorithms extension received */
     free(s->cert->peer_sigalgs);
     s->cert->peer_sigalgs = NULL;

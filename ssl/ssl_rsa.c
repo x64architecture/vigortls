@@ -342,16 +342,6 @@ static int ssl_set_cert(CERT *c, X509 *x)
     X509_free(c->pkeys[i].x509);
     X509_up_ref(x);
     c->pkeys[i].x509 = x;
-    /* Free the old authz data */
-    free(c->pkeys[i].authz);
-    c->pkeys[i].authz = NULL;
-    c->pkeys[i].authz_length = 0;
-
-    /* Free the old serverinfo data, if it exists. */
-    free(c->pkeys[i].serverinfo);
-    c->pkeys[i].serverinfo = NULL;
-    c->pkeys[i].serverinfo_length = 0;
-
     c->key = &(c->pkeys[i]);
 
     c->valid = 0;
