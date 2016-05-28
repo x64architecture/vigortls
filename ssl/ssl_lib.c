@@ -968,6 +968,19 @@ long SSL_CTX_ctrl(SSL_CTX *ctx, int cmd, long larg, void *parg)
 {
     long l;
 
+    /* For some cases with ctx == NULL perform syntax checks */
+    if (ctx == NULL) {
+        switch (cmd) {
+            case SSL_CTRL_SET_CURVES_LIST:
+                return tls1_set_curves_list(NULL, NULL, parg);
+            case SSL_CTRL_SET_SIGALGS_LIST:
+            case SSL_CTRL_SET_CLIENT_SIGALGS_LIST:
+                return tls1_set_sigalgs_list(NULL, parg, 0);
+            default:
+                return 0;
+        }
+    }
+
     switch (cmd) {
         case SSL_CTRL_GET_READ_AHEAD:
             return (ctx->read_ahead);

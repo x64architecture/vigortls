@@ -28,6 +28,7 @@ add_library(
     ssl_asn1.c
     ssl_cert.c
     ssl_ciph.c
+    ssl_conf.c
     ssl_err.c
     ssl_err2.c
     ssl_lib.c
