@@ -768,8 +768,10 @@ int tls12_check_peer_sigalg(const EVP_MD **pmd, SSL *s, const uint8_t *sig,
         /* Check compression and curve matches extensions */
         if (!tls1_set_ec_id(&curve_id, &comp_id, pkey->pkey.ec))
             return 0;
-        if (!s->server && !tls1_check_ec_key(s, &curve_id, &comp_id))
+        if (!s->server && !tls1_check_ec_key(s, &curve_id, &comp_id)) {
+            SSLerr(SSL_F_TLS12_CHECK_PEER_SIGALG, SSL_R_WRONG_CURVE);
             return 0;
+        }
         /* If Suite B only P-384+SHA384 or P-256+SHA-256 allowed */
         if (tls1_suiteb(s)) {
             if (!curve_id)
