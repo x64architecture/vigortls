@@ -262,13 +262,14 @@ int ssl_get_new_session(SSL *s, int session)
             case TLS1_1_VERSION:
             case TLS1_2_VERSION:
             case DTLS1_VERSION:
+            case DTLS1_2_VERSION:
                 ss->ssl_version = s->version;
                 ss->session_id_length = SSL3_SSL_SESSION_ID_LENGTH;
                 break;
             default:
                 SSLerr(SSL_F_SSL_GET_NEW_SESSION, SSL_R_UNSUPPORTED_SSL_VERSION);
                 SSL_SESSION_free(ss);
-                return (0);
+                return 0;
         }
 
         /*

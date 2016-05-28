@@ -584,10 +584,11 @@ extern SSL_CIPHER ssl3_ciphers[];
 
 const char *ssl_version_string(int ver);
 
-extern SSL3_ENC_METHOD DTLSv1_enc_data;
 extern SSL3_ENC_METHOD TLSv1_enc_data;
 extern SSL3_ENC_METHOD TLSv1_1_enc_data;
 extern SSL3_ENC_METHOD TLSv1_2_enc_data;
+extern SSL3_ENC_METHOD DTLSv1_enc_data;
+extern SSL3_ENC_METHOD DTLSv1_2_enc_data;
 
 void ssl_clear_cipher_ctx(SSL *s);
 int ssl_clear_bad_session(SSL *s);

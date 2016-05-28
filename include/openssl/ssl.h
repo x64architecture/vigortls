@@ -157,13 +157,14 @@ extern "C" {
 #define SSL_TXT_SHA256 "SHA256"
 #define SSL_TXT_SHA384 "SHA384"
 
-#define SSL_TXT_DTLS1 "DTLSv1"
-#define SSL_TXT_DTLS1_BAD "DTLSv1-bad"
 #define SSL_TXT_SSLV2 "SSLv2"
 #define SSL_TXT_SSLV3 "SSLv3"
 #define SSL_TXT_TLSV1 "TLSv1"
 #define SSL_TXT_TLSV1_1 "TLSv1.1"
 #define SSL_TXT_TLSV1_2 "TLSv1.2"
+#define SSL_TXT_DTLS1 "DTLSv1"
+#define SSL_TXT_DTLS1_BAD "DTLSv1-bad"
+#define SSL_TXT_DTLS1_2 "DTLSv1.2"
 
 #define SSL_TXT_EXP "EXP"
 #define SSL_TXT_EXPORT "EXPORT"
@@ -1932,6 +1933,10 @@ const SSL_METHOD *TLS_client_method(void); /* TLSv1.0+ */
 const SSL_METHOD *DTLSv1_method(void);        /* DTLSv1.0 */
 const SSL_METHOD *DTLSv1_server_method(void); /* DTLSv1.0 */
 const SSL_METHOD *DTLSv1_client_method(void); /* DTLSv1.0 */
+
+const SSL_METHOD *DTLSv1_2_method(void);        /* DTLSv1.2 */
+const SSL_METHOD *DTLSv1_2_server_method(void); /* DTLSv1.2 */
+const SSL_METHOD *DTLSv1_2_client_method(void); /* DTLSv1.2 */
 
 STACK_OF(SSL_CIPHER) *SSL_get_ciphers(const SSL *s);
 

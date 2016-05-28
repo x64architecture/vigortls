@@ -2331,16 +2331,18 @@ int ssl_undefined_const_function(const SSL *s)
 const char *ssl_version_string(int ver)
 {
     switch (ver) {
-        case DTLS1_VERSION:
-            return (SSL_TXT_DTLS1);
         case TLS1_VERSION:
-            return (SSL_TXT_TLSV1);
+            return SSL_TXT_TLSV1;
         case TLS1_1_VERSION:
-            return (SSL_TXT_TLSV1_1);
+            return SSL_TXT_TLSV1_1;
         case TLS1_2_VERSION:
-            return (SSL_TXT_TLSV1_2);
+            return SSL_TXT_TLSV1_2;
+        case DTLS1_VERSION:
+            return SSL_TXT_DTLS1;
+        case DTLS1_2_VERSION:
+            return SSL_TXT_DTLS1_2;
         default:
-            return ("unknown");
+            return "unknown";
     }
 }
 

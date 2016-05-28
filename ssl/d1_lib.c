@@ -44,6 +44,29 @@ SSL3_ENC_METHOD DTLSv1_enc_data = {
     .do_write = dtls1_handshake_write,
 };
 
+SSL3_ENC_METHOD DTLSv1_2_enc_data = {
+    .enc = dtls1_enc,
+    .mac = tls1_mac,
+    .setup_key_block = tls1_setup_key_block,
+    .generate_master_secret = tls1_generate_master_secret,
+    .change_cipher_state = tls1_change_cipher_state,
+    .final_finish_mac = tls1_final_finish_mac,
+    .finish_mac_length = TLS1_FINISH_MAC_LENGTH,
+    .cert_verify_mac = tls1_cert_verify_mac,
+    .client_finished_label = TLS_MD_CLIENT_FINISH_CONST,
+    .client_finished_label_len = TLS_MD_CLIENT_FINISH_CONST_SIZE,
+    .server_finished_label = TLS_MD_SERVER_FINISH_CONST,
+    .server_finished_label_len = TLS_MD_SERVER_FINISH_CONST_SIZE,
+    .alert_value = tls1_alert_code,
+    .export_keying_material = tls1_export_keying_material,
+    .enc_flags = SSL_ENC_FLAG_DTLS | SSL_ENC_FLAG_EXPLICIT_IV |
+                 SSL_ENC_FLAG_SIGALGS | SSL_ENC_FLAG_SHA256_PRF |
+                 SSL_ENC_FLAG_TLS1_2_CIPHERS,
+    .hhlen = DTLS1_HM_HEADER_LENGTH,
+    .set_handshake_header = dtls1_set_handshake_header,
+    .do_write = dtls1_handshake_write,
+};
+
 long dtls1_default_timeout(void)
 {
     /* 2 hours, the 24 hours mentioned in the DTLSv1 spec
@@ -189,7 +212,7 @@ void dtls1_clear(SSL *s)
     }
 
     ssl3_clear(s);
-    s->version = DTLS1_VERSION;
+    s->version = s->method->version;
 }
 
 long dtls1_ctrl(SSL *s, int cmd, long larg, void *parg)
