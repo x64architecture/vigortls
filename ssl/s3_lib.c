@@ -26,6 +26,7 @@
 #include <openssl/md5.h>
 #include <openssl/objects.h>
 
+#include "bytestring.h"
 #include "ssl_locl.h"
 
 #define SSL3_NUM_CIPHERS (sizeof(ssl3_ciphers) / sizeof(SSL_CIPHER))
@@ -1493,6 +1494,11 @@ const SSL_CIPHER *ssl3_get_cipher_by_id(unsigned int id)
     return (NULL);
 }
 
+const SSL_CIPHER *ssl3_get_cipher_by_value(uint16_t value)
+{
+    return ssl3_get_cipher_by_id(SSL3_CK_ID | value);
+}
+
 uint16_t ssl3_cipher_get_value(const SSL_CIPHER *cipher)
 {
     return (cipher->id & SSL3_CK_VALUE_MASK);
@@ -2165,6 +2171,32 @@ long ssl3_ctx_callback_ctrl(SSL_CTX *ctx, int cmd, void (*fp)(void))
             return (0);
     }
     return (1);
+}
+
+/*
+ * This function needs to check if the ciphers required are actually available.
+ */
+const SSL_CIPHER *ssl3_get_cipher_by_char(const unsigned char *p)
+{
+    CBS cipher;
+    uint16_t cipher_value;
+
+    /* We have to assume it is at least 2 bytes due to existing API. */
+    CBS_init(&cipher, p, 2);
+    if (!CBS_get_u16(&cipher, &cipher_value))
+        return NULL;
+
+    return ssl3_get_cipher_by_value(cipher_value);
+}
+
+int ssl3_put_cipher_by_char(const SSL_CIPHER *c, unsigned char *p)
+{
+    if (p != NULL) {
+        if ((c->id & ~SSL3_CK_VALUE_MASK) != SSL3_CK_ID)
+            return 0;
+        s2n(ssl3_cipher_get_value(c), p); 
+    }
+    return 2;
 }
 
 SSL_CIPHER *ssl3_choose_cipher(SSL *s, STACK_OF(SSL_CIPHER) *clnt,

@@ -446,6 +446,10 @@ typedef struct cert_st {
     X509_STORE *chain_store;
     X509_STORE *verify_store;
 
+    /* Raw values of the cipher list from a client */
+    uint8_t *ciphers_raw;
+    size_t ciphers_rawlen;
+
     int references; /* >1 only if SSL_copy_session_id is used */
     CRYPTO_MUTEX *lock;
 } CERT;
@@ -484,6 +488,9 @@ struct tls_sigalgs_st {
 
 /*#define SSL_DEBUG    */
 /*#define RSA_DEBUG    */
+
+#define ssl_put_cipher_by_char(ssl, ciph, ptr) \
+    ((ssl)->method->put_cipher_by_char((ciph), (ptr)))
 
 /* This is for the SSLv3/TLSv1.0 differences in crypto/hash stuff
  * It is a bit of a mess of functions, but hell, think of it as
@@ -607,6 +614,7 @@ int ssl_cipher_get_evp(const SSL_SESSION *s, const EVP_CIPHER **enc,
 int ssl_cipher_get_evp_aead(const SSL_SESSION *s, const EVP_AEAD **aead);
 int ssl_get_handshake_digest(int i, long *mask, const EVP_MD **md);
 int ssl_cipher_get_cert_index(const SSL_CIPHER *c);
+const SSL_CIPHER *ssl_get_cipher_by_char(SSL *ssl, const uint8_t *ptr);
 int ssl_cert_set0_chain(CERT *c, STACK_OF(X509) *chain);
 int ssl_cert_set1_chain(CERT *c, STACK_OF(X509) *chain);
 int ssl_cert_add0_chain_cert(CERT *c, X509 *x);
@@ -631,6 +639,8 @@ int ssl_verify_alarm_type(long type);
 void ssl_load_ciphers(void);
 
 void tls1_init_finished_mac(SSL *s);
+const SSL_CIPHER *ssl3_get_cipher_by_char(const uint8_t *p);
+int ssl3_put_cipher_by_char(const SSL_CIPHER *c, uint8_t *p);
 int ssl3_send_server_certificate(SSL *s);
 int ssl3_send_newsession_ticket(SSL *s);
 int ssl3_send_cert_status(SSL *s);
@@ -645,6 +655,7 @@ int ssl3_send_finished(SSL *s, int a, int b, const char *sender, int slen);
 int ssl3_num_ciphers(void);
 const SSL_CIPHER *ssl3_get_cipher(unsigned int u);
 const SSL_CIPHER *ssl3_get_cipher_by_id(unsigned int id);
+const SSL_CIPHER *ssl3_get_cipher_by_value(uint16_t value);
 uint16_t ssl3_cipher_get_value(const SSL_CIPHER *cipher);
 int ssl3_renegotiate(SSL *ssl);
 

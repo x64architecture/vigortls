@@ -1555,3 +1555,18 @@ int ssl_cipher_get_cert_index(const SSL_CIPHER *c)
 
     return -1;
 }
+
+const SSL_CIPHER *ssl_get_cipher_by_char(SSL *ssl, const uint8_t *ptr)
+{
+    const SSL_CIPHER *c;
+
+    c = ssl->method->get_cipher_by_char(ptr);
+    if (c == NULL || c->valid == 0)
+        return NULL;
+    return c;
+}
+
+const SSL_CIPHER *SSL_CIPHER_find(SSL *ssl, const uint8_t *ptr)
+{
+    return ssl->method->get_cipher_by_char(ptr);
+}

@@ -932,6 +932,15 @@ long SSL_ctrl(SSL *s, int cmd, long larg, void *parg)
             return s->cert->cert_flags |= larg;
         case SSL_CTRL_CLEAR_CERT_FLAGS:
             return s->cert->cert_flags &= ~larg;
+
+        case SSL_CTRL_GET_RAW_CIPHERLIST:
+            if (parg != NULL) {
+                if (s->cert->ciphers_raw == NULL)
+                    return 0;
+                *(uint8_t **)parg = s->cert->ciphers_raw;
+                return (int)s->cert->ciphers_rawlen;
+            } else
+                return ssl_put_cipher_by_char(s, NULL, NULL);
         default:
             return (s->method->ssl_ctrl(s, cmd, larg, parg));
     }
@@ -1256,6 +1265,15 @@ STACK_OF(SSL_CIPHER) *ssl_bytes_to_cipher_list(SSL *s, const uint8_t *p, int num
         SSLerr(SSL_F_SSL_BYTES_TO_CIPHER_LIST, ERR_R_MALLOC_FAILURE);
         goto err;
     }
+
+    free(s->cert->ciphers_raw);
+    s->cert->ciphers_raw = malloc(num);
+    if (s->cert->ciphers_raw == NULL) {
+        SSLerr(SSL_F_SSL_BYTES_TO_CIPHER_LIST,ERR_R_MALLOC_FAILURE);
+        goto err;
+    }
+    memcpy(s->cert->ciphers_raw, p, num);
+    s->cert->ciphers_rawlen = (size_t)num;
 
     CBS_init(&cipher_suites, p, num);
     while (CBS_len(&cipher_suites) > 0) {

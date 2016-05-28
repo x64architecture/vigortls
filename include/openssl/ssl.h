@@ -273,7 +273,6 @@ struct ssl_method_st {
     int (*ssl_dispatch_alert)(SSL *s);
     long (*ssl_ctrl)(SSL *s, int cmd, long larg, void *parg);
     long (*ssl_ctx_ctrl)(SSL_CTX *ctx, int cmd, long larg, void *parg);
-    /* XXX - remove get_cipher_by_char and put_cipher_by_char. */
     const SSL_CIPHER *(*get_cipher_by_char)(const uint8_t *ptr);
     int (*put_cipher_by_char)(const SSL_CIPHER *cipher, uint8_t *ptr);
     int (*ssl_pending)(const SSL *s);
@@ -1499,6 +1498,7 @@ DECLARE_PEM_rw(SSL_SESSION, SSL_SESSION)
 #define SSL_CTRL_SET_CHAIN_CERT_STORE 107
 #define SSL_CTRL_GET_PEER_SIGNATURE_NID 108
 #define SSL_CTRL_GET_SERVER_TMP_KEY 109
+#define SSL_CTRL_GET_RAW_CIPHERLIST 110
 
 #define DTLSv1_get_timeout(ssl, arg) \
     SSL_ctrl(ssl, DTLS_CTRL_GET_TIMEOUT, 0, (void *)arg)
@@ -1560,6 +1560,9 @@ DECLARE_PEM_rw(SSL_SESSION, SSL_SESSION)
 
 #define SSL_get_server_tmp_key(s, pk) \
     SSL_ctrl(s, SSL_CTRL_GET_SERVER_TMP_KEY, 0, pk)
+
+#define SSL_get0_raw_cipherlist(s, plst) \
+    SSL_ctrl(s, SSL_CTRL_GET_RAW_CIPHERLIST, 0, plst)
 
 #define SSL_need_tmp_RSA(ssl) SSL_ctrl(ssl, SSL_CTRL_NEED_TMP_RSA, 0, NULL)
 #define SSL_set_tmp_rsa(ssl, rsa) \
@@ -1964,6 +1967,8 @@ const void *SSL_get_current_expansion(SSL *s);
 const char *SSL_COMP_get_name(const void *comp);
 void *SSL_COMP_get_compression_methods(void);
 int SSL_COMP_add_compression_method(int id, void *cm);
+
+const SSL_CIPHER *SSL_CIPHER_find(SSL *ssl, const uint8_t *ptr);
 
 /* TLS extensions functions */
 int SSL_set_session_ticket_ext(SSL *s, void *ext_data, int ext_len);

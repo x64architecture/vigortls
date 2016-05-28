@@ -282,6 +282,7 @@ void ssl_cert_free(CERT *c)
     free(c->ctypes);
     X509_STORE_free(c->verify_store);
     X509_STORE_free(c->chain_store);
+    free(c->ciphers_raw);
     CRYPTO_thread_cleanup(c->lock);
     free(c);
 }
