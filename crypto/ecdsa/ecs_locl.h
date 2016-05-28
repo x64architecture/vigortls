@@ -32,6 +32,10 @@ struct ecdsa_method {
     char *app_data;
 };
 
+/* The ECDSA_METHOD was allocated and can be freed */
+
+#define ECDSA_METHOD_FLAG_ALLOCATED 0x2
+
 typedef struct ecdsa_data_st {
     /* EC_KEY_METH_DATA part */
     int (*init)(EC_KEY *);
