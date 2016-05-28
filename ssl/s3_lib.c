@@ -1560,6 +1560,7 @@ void ssl3_free(SSL *s)
     tls1_free_digest_list(s);
     free(s->s3->alpn_selected);
     free(s->s3->tlsext_authz_client_types);
+    free(s->s3->tlsext_custom_types);
 
     vigortls_zeroize(s->s3, sizeof *s->s3);
     free(s->s3);
@@ -1580,6 +1581,9 @@ void ssl3_clear(SSL *s)
     s->s3->tmp.ecdh = NULL;
     free(s->s3->tlsext_authz_client_types);
     s->s3->tlsext_authz_client_types = NULL;
+    free(s->s3->tlsext_custom_types);
+    s->s3->tlsext_custom_types = NULL;
+    s->s3->tlsext_custom_types_count = 0;
 
     rp = s->s3->rbuf.buf;
     wp = s->s3->wbuf.buf;

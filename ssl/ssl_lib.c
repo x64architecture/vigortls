@@ -1489,6 +1489,67 @@ void SSL_CTX_set_next_proto_select_cb(SSL_CTX *ctx,
     ctx->next_proto_select_cb_arg = arg;
 }
 
+int SSL_CTX_set_custom_cli_ext(SSL_CTX *ctx, uint16_t ext_type,
+                               custom_cli_ext_first_cb_fn fn1,
+                               custom_cli_ext_second_cb_fn fn2, void *arg)
+{
+    /* Check for duplicates */
+    size_t i;
+    custom_cli_ext_record *record;
+
+    for (i = 0; i < ctx->custom_cli_ext_records_count; i++)
+        if (ext_type == ctx->custom_cli_ext_records[i].ext_type)
+            return 0;
+
+    ctx->custom_cli_ext_records =
+        reallocarray(ctx->custom_cli_ext_records,
+                     ctx->custom_cli_ext_records_count + 1,
+                     sizeof(custom_cli_ext_record));
+    if (ctx->custom_cli_ext_records == NULL) {
+        ctx->custom_cli_ext_records_count = 0;
+        return 0;
+    }
+    ctx->custom_cli_ext_records_count++;
+    record =
+        &ctx->custom_cli_ext_records[ctx->custom_cli_ext_records_count - 1];
+    record->ext_type = ext_type;
+    record->fn1 = fn1;
+    record->fn2 = fn2;
+    record->arg = arg;
+    return 1;
+}
+
+int SSL_CTX_set_custom_srv_ext(SSL_CTX *ctx, uint16_t ext_type,
+                               custom_srv_ext_first_cb_fn fn1,
+                               custom_srv_ext_second_cb_fn fn2, void *arg)
+{
+    /* Check for duplicates */
+    size_t i;
+    custom_srv_ext_record *record;
+
+    for (i = 0; i < ctx->custom_srv_ext_records_count; i++) {
+        if (ext_type == ctx->custom_srv_ext_records[i].ext_type)
+            return 0;
+    }
+
+    ctx->custom_srv_ext_records =
+        reallocarray(ctx->custom_srv_ext_records,
+                     ctx->custom_srv_ext_records_count + 1,
+                     sizeof(custom_srv_ext_record));
+    if (ctx->custom_srv_ext_records == NULL) {
+        ctx->custom_srv_ext_records_count = 0;
+        return 0;
+    }
+    ctx->custom_srv_ext_records_count++;
+    record =
+        &ctx->custom_srv_ext_records[ctx->custom_srv_ext_records_count - 1];
+    record->ext_type = ext_type;
+    record->fn1 = fn1;
+    record->fn2 = fn2;
+    record->arg = arg;
+    return 1;
+}
+
 /*
  * SSL_CTX_set_alpn_protos sets the ALPN protocol list to the specified
  * protocols, which must be in wire-format (i.e. a series of non-empty,
@@ -1756,7 +1817,8 @@ void SSL_CTX_free(SSL_CTX *a)
     ssl_cert_free(a->cert);
     sk_X509_NAME_pop_free(a->client_CA, X509_NAME_free);
     sk_X509_pop_free(a->extra_certs, X509_free);
-
+    free(a->custom_cli_ext_records);
+    free(a->custom_srv_ext_records);
 #ifndef OPENSSL_NO_ENGINE
     if (a->client_cert_engine)
         ENGINE_finish(a->client_cert_engine);
@@ -2046,7 +2108,26 @@ uint8_t *ssl_get_authz_data(const SSL *s, size_t *authz_length)
 
     return c->pkeys[i].authz;
 }
-    
+
+int ssl_get_server_cert_serverinfo(SSL *s, const uint8_t **serverinfo,
+                                   size_t *serverinfo_length)
+{
+    CERT *c = NULL;
+    int i = 0;
+    *serverinfo_length = 0;
+
+    c = s->cert;
+    i = ssl_get_server_cert_index(s);
+    if (i == -1)
+        return 0;
+    if (c->pkeys[i].serverinfo == NULL)
+        return 0;
+
+    *serverinfo = c->pkeys[i].serverinfo;
+    *serverinfo_length = c->pkeys[i].serverinfo_length;
+    return 1;
+}
+
 void ssl_update_cache(SSL *s, int mode)
 {
     int i;

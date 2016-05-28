@@ -76,6 +76,234 @@ static DH *get_dh1024dsa(void);
 static BIO *bio_err = NULL;
 static BIO *bio_stdout = NULL;
 
+#define SCT_EXT_TYPE 18
+
+/*
+ * WARNING : below extension types are *NOT* IETF assigned, and 
+ * could conflict if these types are reassigned and handled 
+ * specially by OpenSSL in the future
+ */
+#define TACK_EXT_TYPE 62208
+#define CUSTOM_EXT_TYPE_0 1000
+#define CUSTOM_EXT_TYPE_1 1001
+#define CUSTOM_EXT_TYPE_2 1002
+#define CUSTOM_EXT_TYPE_3 1003
+
+const char custom_ext_cli_string[] = "abc";
+const char custom_ext_srv_string[] = "defg";
+
+/* These set from cmdline */
+char *serverinfo_file = NULL;
+int serverinfo_sct = 0;
+int serverinfo_tack = 0;
+
+/* These set based on extension callbacks */
+int serverinfo_sct_seen = 0;
+int serverinfo_tack_seen = 0;
+int serverinfo_other_seen = 0;
+
+/* This set from cmdline */
+int custom_ext = 0;
+
+/* This set based on extension callbacks */
+int custom_ext_error = 0;
+
+static int serverinfo_cli_cb(SSL *s, uint16_t ext_type, const uint8_t *in,
+                             uint16_t inlen, int *al, void *arg)
+{
+    if (ext_type == SCT_EXT_TYPE)
+        serverinfo_sct_seen++;
+    else if (ext_type == TACK_EXT_TYPE)
+        serverinfo_tack_seen++;
+    else
+        serverinfo_other_seen++;
+    return 1;
+}
+
+static int verify_serverinfo()
+{
+    if (serverinfo_sct != serverinfo_sct_seen)
+        return -1;
+    if (serverinfo_tack != serverinfo_tack_seen)
+        return -1;
+    if (serverinfo_other_seen)
+        return -1;
+    return 0;
+}
+
+/*
+ * Four test cases for custom extensions:
+ * 0 - no ClientHello extension or ServerHello response
+ * 1 - ClientHello with "abc", no response
+ * 2 - ClientHello with "abc", empty response
+ * 3 - ClientHello with "abc", "defg" response
+ */
+
+static int custom_ext_0_cli_first_cb(SSL *s, uint16_t ext_type,
+                                     const uint8_t **out, uint16_t *outlen,
+                                     void *arg)
+{
+    if (ext_type != CUSTOM_EXT_TYPE_0)
+        custom_ext_error = 1;
+    return -1; /* Don't send an extension */
+}
+
+static int custom_ext_0_cli_second_cb(SSL *s, uint16_t ext_type,
+                                      const uint8_t *in, uint16_t inlen,
+                                      int *al, void *arg)
+{
+    custom_ext_error = 1; /* Shouldn't be called */
+    return 0;
+}
+
+static int custom_ext_1_cli_first_cb(SSL *s, uint16_t ext_type,
+                                     const uint8_t **out, uint16_t *outlen,
+                                     void *arg)
+{
+    if (ext_type != CUSTOM_EXT_TYPE_1)
+        custom_ext_error = 1;
+    *out = (const uint8_t *)custom_ext_cli_string;
+    *outlen = strlen(custom_ext_cli_string);
+    return 1; /* Send "abc" */
+}
+
+static int custom_ext_1_cli_second_cb(SSL *s, uint16_t ext_type,
+                                      const uint8_t *in, uint16_t inlen,
+                                      int *al, void *arg)
+{
+    custom_ext_error = 1; /* Shouldn't be called */
+    return 0;
+}
+
+static int custom_ext_2_cli_first_cb(SSL *s, uint16_t ext_type,
+                                     const uint8_t **out, uint16_t *outlen,
+                                     void *arg)
+{
+    if (ext_type != CUSTOM_EXT_TYPE_2)
+        custom_ext_error = 1;
+    *out = (const uint8_t *)custom_ext_cli_string;
+    *outlen = strlen(custom_ext_cli_string);
+    return 1; /* Send "abc" */
+}
+
+static int custom_ext_2_cli_second_cb(SSL *s, uint16_t ext_type,
+                                      const uint8_t *in, uint16_t inlen,
+                                      int *al, void *arg)
+{
+    if (ext_type != CUSTOM_EXT_TYPE_2)
+        custom_ext_error = 1;
+    if (inlen != 0)
+        custom_ext_error = 1; /* Should be empty response */
+    return 1;
+}
+
+static int custom_ext_3_cli_first_cb(SSL *s, uint16_t ext_type,
+                                     const uint8_t **out, uint16_t *outlen,
+                                     void *arg)
+{
+    if (ext_type != CUSTOM_EXT_TYPE_3)
+        custom_ext_error = 1;
+    *out = (const uint8_t *)custom_ext_cli_string;
+    *outlen = strlen(custom_ext_cli_string);
+    return 1; /* Send "abc" */
+}
+
+static int custom_ext_3_cli_second_cb(SSL *s, uint16_t ext_type,
+                                      const uint8_t *in, uint16_t inlen,
+                                      int *al, void *arg)
+{
+    if (ext_type != CUSTOM_EXT_TYPE_3)
+        custom_ext_error = 1;
+    if (inlen != strlen(custom_ext_srv_string))
+        custom_ext_error = 1;
+    if (memcmp(custom_ext_srv_string, in, inlen) != 0)
+        custom_ext_error = 1; /* Check for "defg" */
+    return 1;
+}
+
+static int custom_ext_0_srv_first_cb(SSL *s, uint16_t ext_type,
+                                     const uint8_t *in, uint16_t inlen, int *al,
+                                     void *arg)
+{
+    custom_ext_error = 1;
+    return 0; /* Shouldn't be called */
+}
+
+static int custom_ext_0_srv_second_cb(SSL *s, uint16_t ext_type,
+                                      const uint8_t **out, uint16_t *outlen,
+                                      void *arg)
+{
+    custom_ext_error = 1;
+    return 0; /* Shouldn't be called */
+}
+
+static int custom_ext_1_srv_first_cb(SSL *s, uint16_t ext_type,
+                                     const uint8_t *in, uint16_t inlen, int *al,
+                                     void *arg)
+{
+    if (ext_type != CUSTOM_EXT_TYPE_1)
+        custom_ext_error = 1;
+    /* Check for "abc" */
+    if (inlen != strlen(custom_ext_cli_string))
+        custom_ext_error = 1;
+    if (memcmp(in, custom_ext_cli_string, inlen) != 0)
+        custom_ext_error = 1;
+    return 1;
+}
+
+static int custom_ext_1_srv_second_cb(SSL *s, uint16_t ext_type,
+                                      const uint8_t **out, uint16_t *outlen,
+                                      void *arg)
+{
+    return -1; /* Don't send an extension */
+}
+
+static int custom_ext_2_srv_first_cb(SSL *s, uint16_t ext_type,
+                                     const uint8_t *in, uint16_t inlen, int *al,
+                                     void *arg)
+{
+    if (ext_type != CUSTOM_EXT_TYPE_2)
+        custom_ext_error = 1;
+    /* Check for "abc" */
+    if (inlen != strlen(custom_ext_cli_string))
+        custom_ext_error = 1;
+    if (memcmp(in, custom_ext_cli_string, inlen) != 0)
+        custom_ext_error = 1;
+    return 1;
+}
+
+static int custom_ext_2_srv_second_cb(SSL *s, uint16_t ext_type,
+                                      const uint8_t **out, uint16_t *outlen,
+                                      void *arg)
+{
+    *out = NULL;
+    *outlen = 0;
+    return 1; /* Send empty extension */
+}
+
+static int custom_ext_3_srv_first_cb(SSL *s, uint16_t ext_type,
+                                     const uint8_t *in, uint16_t inlen, int *al,
+                                     void *arg)
+{
+    if (ext_type != CUSTOM_EXT_TYPE_3)
+        custom_ext_error = 1;
+    /* Check for "abc" */
+    if (inlen != strlen(custom_ext_cli_string))
+        custom_ext_error = 1;
+    if (memcmp(in, custom_ext_cli_string, inlen) != 0)
+        custom_ext_error = 1;
+    return 1;
+}
+
+static int custom_ext_3_srv_second_cb(SSL *s, uint16_t ext_type,
+                                      const uint8_t **out, uint16_t *outlen,
+                                      void *arg)
+{
+    *out = (const uint8_t *)custom_ext_srv_string;
+    *outlen = strlen(custom_ext_srv_string);
+    return 1; /* Send "defg" */
+}
+
 /* Note that this code assumes that this is only a one element list: */
 static const char NEXT_PROTO_STRING[] = "\x09testproto";
 int npn_client = 0;
@@ -321,9 +549,13 @@ static void sv_usage(void)
     fprintf(stderr, " -alpn_client <string> - have client side offer ALPN\n");
     fprintf(stderr, " -alpn_server <string> - have server side offer ALPN\n");
     fprintf(stderr, " -alpn_expected <string> - the ALPN protocol that should be negotiated\n");
-    fprintf(stderr," -server_authz arg - binary authz file for certificate\n");
-    fprintf(stderr," -c_support_proof  - indicate client support for server_authz audit proofs\n");
-    fprintf(stderr," -c_require_proof  - fail if no audit proof is sent\n");
+    fprintf(stderr, " -server_authz arg - binary authz file for certificate\n");
+    fprintf(stderr, " -c_support_proof  - indicate client support for server_authz audit proofs\n");
+    fprintf(stderr, " -c_require_proof  - fail if no audit proof is sent\n");
+    fprintf(stderr, " -serverinfo_file file - have server use this file\n");
+    fprintf(stderr, " -serverinfo_sct  - have client offer and expect SCT\n");
+    fprintf(stderr, " -serverinfo_tack - have client offer and expect TACK\n");
+    fprintf(stderr, " -custom_ext - try various custom extension callbacks\n");
 }
 
 static void print_details(SSL *c_ssl, const char *prefix)
@@ -566,6 +798,16 @@ int main(int argc, char *argv[])
         } else if (strcmp(*argv, "-c_require_proof") == 0) {
             c_require_proof = 1;
             tls1 = 1;
+        } else if (strcmp(*argv, "-serverinfo_sct") == 0) {
+            serverinfo_sct = 1;
+        } else if (strcmp(*argv, "-serverinfo_tack") == 0) {
+            serverinfo_tack = 1;
+        } else if (strcmp(*argv, "-serverinfo_file") == 0) {
+            if (--argc < 1)
+                goto bad;
+            serverinfo_file = *(++argv);
+        } else if (strcmp(*argv, "-custom_ext") == 0) {
+            custom_ext = 1;
         } else {
             fprintf(stderr, "unknown option %s\n", *argv);
             badop = 1;
@@ -780,6 +1022,48 @@ int main(int argc, char *argv[])
         SSL_CTX_set_tlsext_authz_server_audit_proof_cb_arg(c_ctx, &c_expected);
     }
 
+    if (serverinfo_sct)
+        SSL_CTX_set_custom_cli_ext(c_ctx, SCT_EXT_TYPE, NULL, serverinfo_cli_cb,
+                                   NULL);
+    if (serverinfo_tack)
+        SSL_CTX_set_custom_cli_ext(c_ctx, TACK_EXT_TYPE, NULL,
+                                   serverinfo_cli_cb, NULL);
+
+    if (serverinfo_file)
+        if (!SSL_CTX_use_serverinfo_file(s_ctx, serverinfo_file)) {
+            BIO_printf(bio_err, "missing serverinfo file\n");
+            ERR_print_errors_fp(stderr);
+            goto end;
+        }
+
+    if (custom_ext) {
+        SSL_CTX_set_custom_cli_ext(c_ctx, CUSTOM_EXT_TYPE_0,
+                                   custom_ext_0_cli_first_cb,
+                                   custom_ext_0_cli_second_cb, NULL);
+        SSL_CTX_set_custom_cli_ext(c_ctx, CUSTOM_EXT_TYPE_1,
+                                   custom_ext_1_cli_first_cb,
+                                   custom_ext_1_cli_second_cb, NULL);
+        SSL_CTX_set_custom_cli_ext(c_ctx, CUSTOM_EXT_TYPE_2,
+                                   custom_ext_2_cli_first_cb,
+                                   custom_ext_2_cli_second_cb, NULL);
+        SSL_CTX_set_custom_cli_ext(c_ctx, CUSTOM_EXT_TYPE_3,
+                                   custom_ext_3_cli_first_cb,
+                                   custom_ext_3_cli_second_cb, NULL);
+
+        SSL_CTX_set_custom_srv_ext(s_ctx, CUSTOM_EXT_TYPE_0,
+                                   custom_ext_0_srv_first_cb,
+                                   custom_ext_0_srv_second_cb, NULL);
+        SSL_CTX_set_custom_srv_ext(s_ctx, CUSTOM_EXT_TYPE_1,
+                                   custom_ext_1_srv_first_cb,
+                                   custom_ext_1_srv_second_cb, NULL);
+        SSL_CTX_set_custom_srv_ext(s_ctx, CUSTOM_EXT_TYPE_2,
+                                   custom_ext_2_srv_first_cb,
+                                   custom_ext_2_srv_second_cb, NULL);
+        SSL_CTX_set_custom_srv_ext(s_ctx, CUSTOM_EXT_TYPE_3,
+                                   custom_ext_3_srv_first_cb,
+                                   custom_ext_3_srv_second_cb, NULL);
+    }
+
     c_ssl = SSL_new(c_ctx);
     s_ssl = SSL_new(s_ctx);
 
@@ -796,6 +1080,7 @@ int main(int argc, char *argv[])
     if (!verbose) {
         print_details(c_ssl, "");
     }
+
     if ((number > 1) || (bytes > 1L))
         BIO_printf(bio_stdout, "%d handshakes of %ld bytes done\n",
                    number, bytes);
@@ -1179,6 +1464,16 @@ int doit_biopair(SSL *s_ssl, SSL *c_ssl, long count, clock_t *s_time,
     if (verbose)
         print_details(c_ssl, "DONE via BIO pair: ");
 
+    if (verify_serverinfo() < 0) {
+        ret = 1;
+        goto err;
+    }
+
+    if (custom_ext_error) {
+        ret = 1;
+        goto err;
+    }
+
     if (verify_npn(c_ssl, s_ssl) < 0) {
         ret = 1;
         goto err;
@@ -1439,6 +1734,15 @@ int doit(SSL *s_ssl, SSL *c_ssl, long count)
 
     if (verbose)
         print_details(c_ssl, "DONE: ");
+
+    if (verify_serverinfo() < 0) {
+        ret = 1;
+        goto err;
+    }
+    if (custom_ext_error) {
+        ret = 1;
+        goto err;
+    }
 
     if (verify_npn(c_ssl, s_ssl) < 0) {
         ret = 1;

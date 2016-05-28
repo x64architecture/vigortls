@@ -4,7 +4,8 @@ key="$1"
 cert="$2"
 CA="-CAfile $3"
 path="$4"
-extra="$5"
+serverinfo="$5"
+extra="$6"
 
 ssltest="$4/ssltest -key $key -cert $cert -c_key $key -c_cert $cert"
 
@@ -116,6 +117,22 @@ for protocol in SSLv3; do
     fi
   done
 done
+
+#############################################################################
+# Custom Extension tests
+
+echo test tls1 with custom extensions
+$ssltest -bio_pair -tls1 -custom_ext || exit 1
+
+#############################################################################
+# Serverinfo tests
+
+echo test tls1 with serverinfo
+$ssltest -bio_pair -tls1 -serverinfo_file $serverinfo || exit 1
+$ssltest -bio_pair -tls1 -serverinfo_file $serverinfo -serverinfo_sct || exit 1
+$ssltest -bio_pair -tls1 -serverinfo_file $serverinfo -serverinfo_tack || exit 1
+$ssltest -bio_pair -tls1 -serverinfo_file $serverinfo -serverinfo_sct -serverinfo_tack || exit 1
+$ssltest -bio_pair -tls1 -custom_ext -serverinfo_file $serverinfo -serverinfo_sct -serverinfo_tack || exit 1
 
 #
 # Next Protocol Negotiation tests

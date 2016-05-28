@@ -341,6 +341,15 @@ typedef struct cert_pkey_st {
      size_t authz_length;
 
     /*
+     * serverinfo data for this certificate.  The data is in TLS Extension
+     * wire format, specifically it's a series of records like:
+     *   uint16_t extension_type; // (RFC 5246, 7.4.1.4, Extension)
+     *   uint16_t length;
+     *   uint8_t data[length]; */
+     uint8_t *serverinfo;
+     size_t serverinfo_length;
+
+    /*
      * Set if CERT_PKEY can be used with current SSL session: e.g.
      * appropriate curve, signature algorithms etc. If zero it can't be
      * used at all.
@@ -630,6 +639,8 @@ int ssl_undefined_void_function(void);
 int ssl_undefined_const_function(const SSL *s);
 CERT_PKEY *ssl_get_server_send_pkey(const SSL *s);
 uint8_t *ssl_get_authz_data(const SSL *s, size_t *authz_length);
+int ssl_get_server_cert_serverinfo(SSL *s, const uint8_t **serverinfo,
+                                   size_t *serverinfo_length);
 EVP_PKEY *ssl_get_sign_pkey(SSL *s, const SSL_CIPHER *c, const EVP_MD **pmd);
 DH *ssl_get_auto_dh(SSL *s);
 int ssl_cert_type(X509 *x, EVP_PKEY *pkey);

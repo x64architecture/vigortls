@@ -173,6 +173,19 @@ CERT *ssl_cert_dup(CERT *cert)
             memcpy(ret->pkeys[i].authz, cert->pkeys[i].authz,
                    cert->pkeys[i].authz_length);
         }
+        if (cert->pkeys[i].serverinfo != NULL) {
+            /* Just copy everything. */
+            ret->pkeys[i].serverinfo_length =
+                cert->pkeys[i].serverinfo_length;
+                ret->pkeys[i].serverinfo =
+                    malloc(ret->pkeys[i].serverinfo_length);
+                if (ret->pkeys[i].serverinfo == NULL) {
+                    SSLerr(SSL_F_SSL_CERT_DUP, ERR_R_MALLOC_FAILURE);
+                    return NULL;
+                }
+                memcpy(ret->pkeys[i].serverinfo, cert->pkeys[i].serverinfo,
+                       cert->pkeys[i].serverinfo_length);
+        }
     }
 
     /*
@@ -256,7 +269,12 @@ void ssl_cert_clear_certs(CERT *c)
         sk_X509_pop_free(cpk->chain, X509_free);
         cpk->chain = NULL;
         free(cpk->authz);
-        cpk->valid_flags = 0;
+        cpk->authz = NULL;
+        free(cpk->serverinfo);
+        cpk->serverinfo = NULL;
+
+        /* Clear all flags apart from explicit sign */
+        cpk->valid_flags &= CERT_PKEY_EXPLICIT_SIGN;
     }
 }
 

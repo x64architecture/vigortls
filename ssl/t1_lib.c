@@ -1211,6 +1211,36 @@ skip_ext:
         *(ret++) = TLSEXT_AUTHZDATAFORMAT_audit_proof;
     }
 
+    /* Add custom TLS Extensions to ClientHello */
+    if (s->ctx->custom_cli_ext_records_count) {
+        size_t i;
+        custom_cli_ext_record *record;
+
+        for (i = 0; i < s->ctx->custom_cli_ext_records_count; i++) {
+            const uint8_t *out = NULL;
+            uint16_t outlen = 0;
+
+            record = &s->ctx->custom_cli_ext_records[i];
+            /* NULL callback sends empty extension */ 
+            /* -1 from callback omits extension */
+            if (record->fn1) {
+                int cb_retval = 0;
+                cb_retval = record->fn1(s, record->ext_type, &out, &outlen,
+                                        record->arg);
+                if (cb_retval == 0)
+                    return NULL; /* error */
+                if (cb_retval == -1)
+                    continue; /* skip this extension */
+            }
+            if (limit < ret + 4 + outlen)
+                return NULL;
+            s2n(record->ext_type, ret);
+            s2n(outlen, ret);
+            memcpy(ret, out, outlen);
+            ret += outlen;
+        }
+    }
+
     if ((extdatalen = ret - p - 2) == 0)
         return p;
 
@@ -1452,6 +1482,42 @@ uint8_t *ssl_add_serverhello_tlsext(SSL *s, uint8_t *p,
         }
     }
 
+    /* If custom types were sent in ClientHello, add ServerHello responses */
+    if (s->s3->tlsext_custom_types_count) {
+        size_t i;
+
+        for (i = 0; i < s->s3->tlsext_custom_types_count; i++) {
+            size_t j;
+            custom_srv_ext_record *record;
+
+            for (j = 0; j < s->ctx->custom_srv_ext_records_count; j++) {
+                record = &s->ctx->custom_srv_ext_records[j];
+                if (s->s3->tlsext_custom_types[i] == record->ext_type) {
+                    const uint8_t *out = NULL;
+                    uint16_t outlen = 0;
+                    int cb_retval = 0;
+
+                    /* NULL callback or -1 omits extension */
+                    if (!record->fn2)
+                        break;
+                    cb_retval = record->fn2(s, record->ext_type, &out, &outlen,
+                                            record->arg);
+                    if (cb_retval == 0)
+                        return NULL; /* error */
+                    if (cb_retval == -1)
+                        break; /* skip this extension */
+                    if (limit < ret + 4 + outlen)
+                        return NULL;
+                    s2n(record->ext_type, ret);
+                    s2n(outlen, ret);
+                    memcpy(ret, out, outlen);
+                    ret += outlen;
+                    break;
+                }
+            }
+        }
+    }
+
     if ((extdatalen = ret - p - 2) == 0)
         return p;
 
@@ -1523,7 +1589,8 @@ parse_error:
     return (0);
 }
 
-static int ssl_scan_clienthello_tlsext(SSL *s, uint8_t **p, uint8_t *limit, int *al)
+static int ssl_scan_clienthello_tlsext(SSL *s, uint8_t **p, uint8_t *limit,
+                                       int *al)
 {
     unsigned short type;
     unsigned short size;
@@ -1559,7 +1626,6 @@ static int ssl_scan_clienthello_tlsext(SSL *s, uint8_t **p, uint8_t *limit, int 
         if (s->tlsext_debug_cb)
             s->tlsext_debug_cb(s, 0, type, data, size, s->tlsext_debug_arg);
         /* The servername extension is treated as follows:
-
            - Only the hostname type is supported with a maximum length of 255.
            - The servername is rejected if too long or if it contains zeros,
              in which case an fatal alert is generated.
@@ -1613,13 +1679,17 @@ static int ssl_scan_clienthello_tlsext(SSL *s, uint8_t **p, uint8_t *limit, int 
                                     *al = TLS1_AD_UNRECOGNIZED_NAME;
                                     return 0;
                                 }
-                                if ((s->session->tlsext_hostname = malloc(len + 1)) == NULL) {
+                                if ((s->session->tlsext_hostname =
+                                         malloc(len + 1)) == NULL)
+                                {
                                     *al = TLS1_AD_INTERNAL_ERROR;
                                     return 0;
                                 }
                                 memcpy(s->session->tlsext_hostname, sdata, len);
                                 s->session->tlsext_hostname[len] = '\0';
-                                if (strlen(s->session->tlsext_hostname) != len) {
+                                if (strlen(s->session->tlsext_hostname) !=
+                                    len)
+                                {
                                     free(s->session->tlsext_hostname);
                                     s->session->tlsext_hostname = NULL;
                                     *al = TLS1_AD_UNRECOGNIZED_NAME;
@@ -1628,9 +1698,12 @@ static int ssl_scan_clienthello_tlsext(SSL *s, uint8_t **p, uint8_t *limit, int 
                                 s->servername_done = 1;
 
                             } else {
-                                s->servername_done = s->session->tlsext_hostname 
-                                    && strlen(s->session->tlsext_hostname) == len 
-                                    && strncmp(s->session->tlsext_hostname, (char *)sdata, len) == 0;
+                                s->servername_done =
+                                    s->session->tlsext_hostname &&
+                                    strlen(s->session->tlsext_hostname) ==
+                                        len &&
+                                    strncmp(s->session->tlsext_hostname,
+                                            (char *)sdata, len) == 0;
                             }
                             break;
 
@@ -1645,7 +1718,8 @@ static int ssl_scan_clienthello_tlsext(SSL *s, uint8_t **p, uint8_t *limit, int 
 
         }
 
-        else if (type == TLSEXT_TYPE_ec_point_formats && s->version != DTLS1_VERSION) {
+        else if (type == TLSEXT_TYPE_ec_point_formats &&
+                 s->version != DTLS1_VERSION) {
             uint8_t *sdata = data;
             size_t formats_len;
             uint8_t *formats;
@@ -1672,7 +1746,8 @@ static int ssl_scan_clienthello_tlsext(SSL *s, uint8_t **p, uint8_t *limit, int 
                 s->session->tlsext_ecpointformatlist = formats;
                 s->session->tlsext_ecpointformatlist_length = formats_len;
             }
-        } else if (type == TLSEXT_TYPE_elliptic_curves && s->version != DTLS1_VERSION) {
+        } else if (type == TLSEXT_TYPE_elliptic_curves &&
+                   s->version != DTLS1_VERSION) {
             uint8_t *sdata = data;
             size_t curves_len, i;
             uint16_t *curves;
@@ -1705,8 +1780,9 @@ static int ssl_scan_clienthello_tlsext(SSL *s, uint8_t **p, uint8_t *limit, int 
                 s->session->tlsext_ellipticcurvelist_length = curves_len;
             }
         } else if (type == TLSEXT_TYPE_session_ticket) {
-            if (s->tls_session_ticket_ext_cb 
-                && !s->tls_session_ticket_ext_cb(s, data, size, s->tls_session_ticket_ext_cb_arg)) {
+            if (s->tls_session_ticket_ext_cb &&
+                !s->tls_session_ticket_ext_cb(
+                    s, data, size, s->tls_session_ticket_ext_cb_arg)) {
                 *al = TLS1_AD_INTERNAL_ERROR;
                 return 0;
             }
@@ -1731,7 +1807,8 @@ static int ssl_scan_clienthello_tlsext(SSL *s, uint8_t **p, uint8_t *limit, int 
                 *al = SSL_AD_ILLEGAL_PARAMETER;
                 return 0;
             }
-        } else if (type == TLSEXT_TYPE_status_request && s->version != DTLS1_VERSION) {
+        } else if (type == TLSEXT_TYPE_status_request &&
+                   s->version != DTLS1_VERSION) {
 
             if (size < 5)
                 goto err;
@@ -1765,7 +1842,8 @@ static int ssl_scan_clienthello_tlsext(SSL *s, uint8_t **p, uint8_t *limit, int 
                         OCSP_RESPID_free(id);
                         goto err;
                     }
-                    if (!s->tlsext_ocsp_ids && !(s->tlsext_ocsp_ids = sk_OCSP_RESPID_new_null())) {
+                    if (!s->tlsext_ocsp_ids &&
+                        !(s->tlsext_ocsp_ids = sk_OCSP_RESPID_new_null())) {
                         OCSP_RESPID_free(id);
                         *al = SSL_AD_INTERNAL_ERROR;
                         return 0;
@@ -1791,7 +1869,8 @@ static int ssl_scan_clienthello_tlsext(SSL *s, uint8_t **p, uint8_t *limit, int 
                                                    X509_EXTENSION_free);
                     }
 
-                    s->tlsext_ocsp_exts = d2i_X509_EXTENSIONS(NULL, &sdata, dsize);
+                    s->tlsext_ocsp_exts =
+                        d2i_X509_EXTENSIONS(NULL, &sdata, dsize);
                     if (!s->tlsext_ocsp_exts || (data + dsize != sdata))
                         goto err;
                 }
@@ -1801,10 +1880,9 @@ static int ssl_scan_clienthello_tlsext(SSL *s, uint8_t **p, uint8_t *limit, int 
                  */
                 s->tlsext_status_type = -1;
             }
-        }
-        else if (type == TLSEXT_TYPE_next_proto_neg &&
-                 s->s3->tmp.finish_md_len == 0 &&
-                 s->s3->alpn_selected == NULL) {
+        } else if (type == TLSEXT_TYPE_next_proto_neg &&
+                   s->s3->tmp.finish_md_len == 0 &&
+                   s->s3->alpn_selected == NULL) {
             /* We shouldn't accept this extension on a
              * renegotiation.
              *
@@ -1821,11 +1899,9 @@ static int ssl_scan_clienthello_tlsext(SSL *s, uint8_t **p, uint8_t *limit, int 
              * in the Hello protocol round, well before a new
              * Finished message could have been computed.) */
             s->s3->next_proto_neg_seen = 1;
-        }
-        else if (type == TLSEXT_TYPE_application_layer_protocol_negotiation &&
-                 s->ctx->alpn_select_cb != NULL &&
-                 s->s3->tmp.finish_md_len == 0)
-        {
+        } else if (type == TLSEXT_TYPE_application_layer_protocol_negotiation &&
+                   s->ctx->alpn_select_cb != NULL &&
+                   s->s3->tmp.finish_md_len == 0) {
             if (tls1_alpn_handle_client_hello(s, data, size, al) != 1)
                 return (0);
             /* ALPN takes precedence over NPN. */
@@ -1882,13 +1958,56 @@ static int ssl_scan_clienthello_tlsext(SSL *s, uint8_t **p, uint8_t *limit, int 
                       byte_compare);
 
                 for (i = 0; i < server_authz_dataformatlist_length; i++) {
-                    if (i > 0 &&
-                        s->s3->tlsext_authz_client_types[i] ==
-                            s->s3->tlsext_authz_client_types[i - 1])
+                    if (i > 0 && s->s3->tlsext_authz_client_types[i] ==
+                        s->s3->tlsext_authz_client_types[i - 1])
                     {
                         *al = TLS1_AD_DECODE_ERROR;
                         return 0;
                     }
+                }
+            }
+        }
+        /*
+         * If this ClientHello extension was unhandled and this is
+         * a nonresumed connection, check whether the extension is a
+         * custom TLS Extension (has a custom_srv_ext_record), and if
+         * so call the callback and record the extension number so that
+         * an appropriate ServerHello may be later returned.
+         */
+        else if (!s->hit && s->ctx->custom_srv_ext_records_count) {
+            size_t i;
+            custom_srv_ext_record *record;
+
+            for (i = 0; i < s->ctx->custom_srv_ext_records_count; i++) {
+                record = &s->ctx->custom_srv_ext_records[i];
+                if (type == record->ext_type) {
+                    /* Error on duplicate TLS Extensions */
+                    size_t j;
+
+                    for (j = 0; j < s->s3->tlsext_custom_types_count; j++) {
+                        if (s->s3->tlsext_custom_types[j] == type) {
+                            *al = TLS1_AD_DECODE_ERROR;
+                            return 0;
+                        }
+                    }
+
+                    /* Callback */
+                    if (record->fn1 &&
+                        !record->fn1(s, type, data, size, al, record->arg))
+                        return 0;
+
+                    /* Add the (non-duplicated) entry */
+                    s->s3->tlsext_custom_types_count++;
+                    s->s3->tlsext_custom_types =
+                        reallocarray(s->s3->tlsext_custom_types,
+                                     s->s3->tlsext_custom_types_count, 2);
+                    if (s->s3->tlsext_custom_types == NULL) {
+                        s->s3->tlsext_custom_types = 0;
+                        *al = TLS1_AD_INTERNAL_ERROR;
+                        return 0;
+                    }
+                    s->s3->tlsext_custom_types[
+                        s->s3->tlsext_custom_types_count - 1] = type;
                 }
             }
         }
@@ -2171,6 +2290,25 @@ static int ssl_scan_serverhello_tlsext(SSL *s, uint8_t **p, uint8_t *d, int n, i
             }
 
             s->s3->tlsext_authz_server_promised = 1;
+        }
+
+        /*
+         * If this extension type was not otherwise handled, but 
+         * matches a custom_cli_ext_record, then send it to the
+         * callback
+         */
+        else if (s->ctx->custom_cli_ext_records_count) {
+            size_t i;
+            custom_cli_ext_record *record;
+
+            for (i = 0; i < s->ctx->custom_cli_ext_records_count; i++) {
+                record = &s->ctx->custom_cli_ext_records[i];
+                if (record->ext_type == type) {
+                    if (record->fn2 && !record->fn2(s, type, data, size, al, record->arg))
+                        return 0;
+                    break;
+                }
+            }                       
         }
 
         data += size;
