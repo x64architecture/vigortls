@@ -150,6 +150,7 @@ int DH_check(const DH *dh, int *codes);
 int DH_check_pub_key(const DH *dh, const BIGNUM *pub_key, int *codes);
 int DH_generate_key(DH *dh);
 int DH_compute_key(uint8_t *key, const BIGNUM *pub_key, DH *dh);
+int DH_compute_key_padded(uint8_t *key, const BIGNUM *pub_key, DH *dh);
 DH *d2i_DHparams(DH **a, const uint8_t **pp, long length);
 int i2d_DHparams(const DH *a, uint8_t **pp);
 DH *d2i_DHxparams(DH **a, const uint8_t **pp, long length);
