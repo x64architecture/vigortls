@@ -594,7 +594,8 @@ static int cms_SignerInfo_content_sign(CMS_ContentInfo *cms,
         pctx = si->pctx;
         if (!EVP_DigestFinal_ex(&mctx, md, &mdlen))
             goto err;
-        sig = malloc(EVP_PKEY_size(si->pkey));
+        siglen = EVP_PKEY_size(si->pkey);
+        sig = malloc(siglen);
         if (sig == NULL) {
             CMSerr(CMS_F_CMS_SIGNERINFO_CONTENT_SIGN,
                    ERR_R_MALLOC_FAILURE);
