@@ -8,12 +8,12 @@
  * in the file LICENSE in the source distribution or at
  * https://www.openssl.org/source/license.html
  */
-#define NUM_NID 953
-#define NUM_SN 930
-#define NUM_LN 930
-#define NUM_OBJ 871
+#define NUM_NID 954
+#define NUM_SN 931
+#define NUM_LN 931
+#define NUM_OBJ 872
 
-static const unsigned char lvalues[6098]={
+static const unsigned char lvalues[6107]={
 0x2A,0x86,0x48,0x86,0xF7,0x0D,               /* [  0] OBJ_rsadsi */
 0x2A,0x86,0x48,0x86,0xF7,0x0D,0x01,          /* [  6] OBJ_pkcs */
 0x2A,0x86,0x48,0x86,0xF7,0x0D,0x02,0x05,     /* [ 13] OBJ_md5 */
@@ -879,6 +879,7 @@ static const unsigned char lvalues[6098]={
 0x2A,0x85,0x03,0x07,0x01,0x01,0x03,0x03,     /* [6077] OBJ_id_tc26_signwithdigest_gost3410_2012_512 */
 0x2B,0x0E,0x03,0x02,0x09,                    /* [6085] OBJ_des_cfb64 */
 0x2A,0x86,0x48,0xCE,0x3E,0x02,0x01,          /* [6090] OBJ_dhpublicnumber */
+0x2A,0x86,0x48,0x86,0xF7,0x0D,0x01,0x01,0x09,/* [6097] OBJ_pSpecified */
 };
 
 static const ASN1_OBJECT nid_objs[NUM_NID]={
@@ -2415,6 +2416,7 @@ static const ASN1_OBJECT nid_objs[NUM_NID]={
 {"DES-CFB1","des-cfb1",NID_des_cfb1,0,NULL,0},
 {"DES-CFB8","des-cfb8",NID_des_cfb8,0,NULL,0},
 {"dhpublicnumber","X9.42 DH",NID_dhpublicnumber,7,&(lvalues[6090]),0},
+{"PSPECIFIED","pSpecified",NID_pSpecified,9,&(lvalues[6097]),0},
 };
 
 static const unsigned int sn_objs[NUM_SN]={
@@ -2548,6 +2550,7 @@ static const unsigned int sn_objs[NUM_SN]={
 69,	/* "PBKDF2" */
 162,	/* "PBMAC1" */
 127,	/* "PKIX" */
+953,	/* "PSPECIFIED" */
 98,	/* "RC2-40-CBC" */
 166,	/* "RC2-64-CBC" */
 37,	/* "RC2-CBC" */
@@ -3971,6 +3974,7 @@ static const unsigned int ln_objs[NUM_LN]={
 18,	/* "organizationalUnitName" */
 475,	/* "otherMailbox" */
 876,	/* "owner" */
+953,	/* "pSpecified" */
 489,	/* "pagerTelephoneNumber" */
 782,	/* "password based MAC" */
 374,	/* "path" */
@@ -4877,6 +4881,7 @@ static const unsigned int obj_objs[NUM_OBJ]={
 644,	/* OBJ_rsaOAEPEncryptionSET         1 2 840 113549 1 1 6 */
 919,	/* OBJ_rsaesOaep                    1 2 840 113549 1 1 7 */
 911,	/* OBJ_mgf1                         1 2 840 113549 1 1 8 */
+953,	/* OBJ_pSpecified                   1 2 840 113549 1 1 9 */
 912,	/* OBJ_rsassaPss                    1 2 840 113549 1 1 10 */
 668,	/* OBJ_sha256WithRSAEncryption      1 2 840 113549 1 1 11 */
 669,	/* OBJ_sha384WithRSAEncryption      1 2 840 113549 1 1 12 */
