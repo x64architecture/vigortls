@@ -8,12 +8,12 @@
  * in the file LICENSE in the source distribution or at
  * https://www.openssl.org/source/license.html
  */
-#define NUM_NID 954
-#define NUM_SN 931
-#define NUM_LN 931
-#define NUM_OBJ 872
+#define NUM_NID 966
+#define NUM_SN 943
+#define NUM_LN 943
+#define NUM_OBJ 882
 
-static const unsigned char lvalues[6107]={
+static const unsigned char lvalues[6173]={
 0x2A,0x86,0x48,0x86,0xF7,0x0D,               /* [  0] OBJ_rsadsi */
 0x2A,0x86,0x48,0x86,0xF7,0x0D,0x01,          /* [  6] OBJ_pkcs */
 0x2A,0x86,0x48,0x86,0xF7,0x0D,0x02,0x05,     /* [ 13] OBJ_md5 */
@@ -880,6 +880,16 @@ static const unsigned char lvalues[6107]={
 0x2B,0x0E,0x03,0x02,0x09,                    /* [6085] OBJ_des_cfb64 */
 0x2A,0x86,0x48,0xCE,0x3E,0x02,0x01,          /* [6090] OBJ_dhpublicnumber */
 0x2A,0x86,0x48,0x86,0xF7,0x0D,0x01,0x01,0x09,/* [6097] OBJ_pSpecified */
+0x2B,0x81,0x05,0x10,0x86,0x48,0x3F,0x00,0x02,/* [6106] OBJ_dhSinglePass_stdDH_sha1kdf_scheme */
+0x2B,0x81,0x04,0x01,0x0B,0x00,               /* [6115] OBJ_dhSinglePass_stdDH_sha224kdf_scheme */
+0x2B,0x81,0x04,0x01,0x0B,0x01,               /* [6121] OBJ_dhSinglePass_stdDH_sha256kdf_scheme */
+0x2B,0x81,0x04,0x01,0x0B,0x02,               /* [6127] OBJ_dhSinglePass_stdDH_sha384kdf_scheme */
+0x2B,0x81,0x04,0x01,0x0B,0x03,               /* [6133] OBJ_dhSinglePass_stdDH_sha512kdf_scheme */
+0x2B,0x81,0x05,0x10,0x86,0x48,0x3F,0x00,0x03,/* [6139] OBJ_dhSinglePass_cofactorDH_sha1kdf_scheme */
+0x2B,0x81,0x04,0x01,0x0E,0x00,               /* [6148] OBJ_dhSinglePass_cofactorDH_sha224kdf_scheme */
+0x2B,0x81,0x04,0x01,0x0E,0x01,               /* [6154] OBJ_dhSinglePass_cofactorDH_sha256kdf_scheme */
+0x2B,0x81,0x04,0x01,0x0E,0x02,               /* [6160] OBJ_dhSinglePass_cofactorDH_sha384kdf_scheme */
+0x2B,0x81,0x04,0x01,0x0E,0x03,               /* [6166] OBJ_dhSinglePass_cofactorDH_sha512kdf_scheme */
 };
 
 static const ASN1_OBJECT nid_objs[NUM_NID]={
@@ -2417,6 +2427,38 @@ static const ASN1_OBJECT nid_objs[NUM_NID]={
 {"DES-CFB8","des-cfb8",NID_des_cfb8,0,NULL,0},
 {"dhpublicnumber","X9.42 DH",NID_dhpublicnumber,7,&(lvalues[6090]),0},
 {"PSPECIFIED","pSpecified",NID_pSpecified,9,&(lvalues[6097]),0},
+{"dhSinglePass-stdDH-sha1kdf-scheme",
+	"dhSinglePass-stdDH-sha1kdf-scheme",
+	NID_dhSinglePass_stdDH_sha1kdf_scheme,9,&(lvalues[6106]),0},
+{"dhSinglePass-stdDH-sha224kdf-scheme",
+	"dhSinglePass-stdDH-sha224kdf-scheme",
+	NID_dhSinglePass_stdDH_sha224kdf_scheme,6,&(lvalues[6115]),0},
+{"dhSinglePass-stdDH-sha256kdf-scheme",
+	"dhSinglePass-stdDH-sha256kdf-scheme",
+	NID_dhSinglePass_stdDH_sha256kdf_scheme,6,&(lvalues[6121]),0},
+{"dhSinglePass-stdDH-sha384kdf-scheme",
+	"dhSinglePass-stdDH-sha384kdf-scheme",
+	NID_dhSinglePass_stdDH_sha384kdf_scheme,6,&(lvalues[6127]),0},
+{"dhSinglePass-stdDH-sha512kdf-scheme",
+	"dhSinglePass-stdDH-sha512kdf-scheme",
+	NID_dhSinglePass_stdDH_sha512kdf_scheme,6,&(lvalues[6133]),0},
+{"dhSinglePass-cofactorDH-sha1kdf-scheme",
+	"dhSinglePass-cofactorDH-sha1kdf-scheme",
+	NID_dhSinglePass_cofactorDH_sha1kdf_scheme,9,&(lvalues[6139]),0},
+{"dhSinglePass-cofactorDH-sha224kdf-scheme",
+	"dhSinglePass-cofactorDH-sha224kdf-scheme",
+	NID_dhSinglePass_cofactorDH_sha224kdf_scheme,6,&(lvalues[6148]),0},
+{"dhSinglePass-cofactorDH-sha256kdf-scheme",
+	"dhSinglePass-cofactorDH-sha256kdf-scheme",
+	NID_dhSinglePass_cofactorDH_sha256kdf_scheme,6,&(lvalues[6154]),0},
+{"dhSinglePass-cofactorDH-sha384kdf-scheme",
+	"dhSinglePass-cofactorDH-sha384kdf-scheme",
+	NID_dhSinglePass_cofactorDH_sha384kdf_scheme,6,&(lvalues[6160]),0},
+{"dhSinglePass-cofactorDH-sha512kdf-scheme",
+	"dhSinglePass-cofactorDH-sha512kdf-scheme",
+	NID_dhSinglePass_cofactorDH_sha512kdf_scheme,6,&(lvalues[6166]),0},
+{"dh-std-kdf","dh-std-kdf",NID_dh_std_kdf,0,NULL,0},
+{"dh-cofactor-kdf","dh-cofactor-kdf",NID_dh_cofactor_kdf,0,NULL,0},
 };
 
 static const unsigned int sn_objs[NUM_SN]={
@@ -2689,7 +2731,19 @@ static const unsigned int sn_objs[NUM_SN]={
 891,	/* "deltaRevocationList" */
 107,	/* "description" */
 871,	/* "destinationIndicator" */
+965,	/* "dh-cofactor-kdf" */
+964,	/* "dh-std-kdf" */
 28,	/* "dhKeyAgreement" */
+959,	/* "dhSinglePass-cofactorDH-sha1kdf-scheme" */
+960,	/* "dhSinglePass-cofactorDH-sha224kdf-scheme" */
+961,	/* "dhSinglePass-cofactorDH-sha256kdf-scheme" */
+962,	/* "dhSinglePass-cofactorDH-sha384kdf-scheme" */
+963,	/* "dhSinglePass-cofactorDH-sha512kdf-scheme" */
+954,	/* "dhSinglePass-stdDH-sha1kdf-scheme" */
+955,	/* "dhSinglePass-stdDH-sha224kdf-scheme" */
+956,	/* "dhSinglePass-stdDH-sha256kdf-scheme" */
+957,	/* "dhSinglePass-stdDH-sha384kdf-scheme" */
+958,	/* "dhSinglePass-stdDH-sha512kdf-scheme" */
 952,	/* "dhpublicnumber" */
 382,	/* "directory" */
 887,	/* "distinguishedName" */
@@ -3652,7 +3706,19 @@ static const unsigned int ln_objs[NUM_LN]={
 107,	/* "description" */
 871,	/* "destinationIndicator" */
 80,	/* "desx-cbc" */
+965,	/* "dh-cofactor-kdf" */
+964,	/* "dh-std-kdf" */
 28,	/* "dhKeyAgreement" */
+959,	/* "dhSinglePass-cofactorDH-sha1kdf-scheme" */
+960,	/* "dhSinglePass-cofactorDH-sha224kdf-scheme" */
+961,	/* "dhSinglePass-cofactorDH-sha256kdf-scheme" */
+962,	/* "dhSinglePass-cofactorDH-sha384kdf-scheme" */
+963,	/* "dhSinglePass-cofactorDH-sha512kdf-scheme" */
+954,	/* "dhSinglePass-stdDH-sha1kdf-scheme" */
+955,	/* "dhSinglePass-stdDH-sha224kdf-scheme" */
+956,	/* "dhSinglePass-stdDH-sha256kdf-scheme" */
+957,	/* "dhSinglePass-stdDH-sha384kdf-scheme" */
+958,	/* "dhSinglePass-stdDH-sha512kdf-scheme" */
 11,	/* "directory services (X.500)" */
 378,	/* "directory services - algorithms" */
 887,	/* "distinguishedName" */
@@ -4613,6 +4679,14 @@ static const unsigned int obj_objs[NUM_OBJ]={
 505,	/* OBJ_mime_mhs_headings            1 3 6 1 7 1 1 */
 506,	/* OBJ_mime_mhs_bodies              1 3 6 1 7 1 2 */
 119,	/* OBJ_ripemd160WithRSA             1 3 36 3 3 1 2 */
+955,	/* OBJ_dhSinglePass_stdDH_sha224kdf_scheme 1 3 132 1 11 0 */
+956,	/* OBJ_dhSinglePass_stdDH_sha256kdf_scheme 1 3 132 1 11 1 */
+957,	/* OBJ_dhSinglePass_stdDH_sha384kdf_scheme 1 3 132 1 11 2 */
+958,	/* OBJ_dhSinglePass_stdDH_sha512kdf_scheme 1 3 132 1 11 3 */
+960,	/* OBJ_dhSinglePass_cofactorDH_sha224kdf_scheme 1 3 132 1 14 0 */
+961,	/* OBJ_dhSinglePass_cofactorDH_sha256kdf_scheme 1 3 132 1 14 1 */
+962,	/* OBJ_dhSinglePass_cofactorDH_sha384kdf_scheme 1 3 132 1 14 2 */
+963,	/* OBJ_dhSinglePass_cofactorDH_sha512kdf_scheme 1 3 132 1 14 3 */
 631,	/* OBJ_setAttr_GenCryptgrm          2 23 42 3 3 3 1 */
 632,	/* OBJ_setAttr_T2Enc                2 23 42 3 3 4 1 */
 633,	/* OBJ_setAttr_T2cleartxt           2 23 42 3 3 4 2 */
@@ -4955,6 +5029,8 @@ static const unsigned int obj_objs[NUM_OBJ]={
 934,	/* OBJ_brainpoolP384t1              1 3 36 3 3 2 8 1 1 12 */
 935,	/* OBJ_brainpoolP512r1              1 3 36 3 3 2 8 1 1 13 */
 936,	/* OBJ_brainpoolP512t1              1 3 36 3 3 2 8 1 1 14 */
+954,	/* OBJ_dhSinglePass_stdDH_sha1kdf_scheme 1 3 133 16 840 63 0 2 */
+959,	/* OBJ_dhSinglePass_cofactorDH_sha1kdf_scheme 1 3 133 16 840 63 0 3 */
 418,	/* OBJ_aes_128_ecb                  2 16 840 1 101 3 4 1 1 */
 419,	/* OBJ_aes_128_cbc                  2 16 840 1 101 3 4 1 2 */
 420,	/* OBJ_aes_128_ofb128               2 16 840 1 101 3 4 1 3 */
