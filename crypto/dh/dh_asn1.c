@@ -47,11 +47,6 @@ int i2d_DHparams(const DH *a, uint8_t **out)
     return ASN1_item_i2d((ASN1_VALUE *)a, out, &DHparams_it);
 }
 
-DH *DHparams_dup(DH *dh)
-{
-    return ASN1_item_dup(ASN1_ITEM_rptr(DHparams), dh);
-}
-
 /*
   * Internal only structures for handling X9.42 DH: this gets translated
  * to or from a DH structure straight away.

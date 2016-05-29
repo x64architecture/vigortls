@@ -7,7 +7,7 @@
  * https://www.openssl.org/source/license.html
  */
 
-#include <stdio.h>
+#include <string.h>
 
 #include <openssl/asn1.h>
 #include <openssl/bn.h>
@@ -394,29 +394,68 @@ static int dh_cmp_parameters(const EVP_PKEY *a, const EVP_PKEY *b)
     return 1;
 }
 
-static int dh_copy_parameters(EVP_PKEY *to, const EVP_PKEY *from)
+static int int_dh_bn_cpy(BIGNUM **dst, const BIGNUM *src)
 {
     BIGNUM *a;
 
-    if ((a = BN_dup(from->pkey.dh->p)) == NULL)
-        return 0;
-    BN_free(to->pkey.dh->p);
-    to->pkey.dh->p = a;
-    if (from->ameth == &dhx_asn1_meth) {
-        a = BN_dup(from->pkey.dh->q);
-        if (!a)
+    if (src != NULL) {
+        a = BN_dup(src);
+        if (a == NULL)
             return 0;
-        if (to->pkey.dh->q)
-            BN_free(to->pkey.dh->q);
-        to->pkey.dh->q = a;
-    }
+    } else
+        a = NULL;
 
-    if ((a = BN_dup(from->pkey.dh->g)) == NULL)
-        return 0;
-    BN_free(to->pkey.dh->g);
-    to->pkey.dh->g = a;
+    BN_free(*dst);
+    *dst = a;
 
     return 1;
+}
+
+static int int_dh_param_copy(DH *to, const DH *from, int is_x942)
+{
+    if (is_x942 == -1)
+        is_x942 = !!from->q;
+    if (!int_dh_bn_cpy(&to->p, from->p))
+        return 0;
+    if (!int_dh_bn_cpy(&to->g, from->g))
+        return 0;
+    if (is_x942) {
+        if (!int_dh_bn_cpy(&to->q, from->q))
+            return 0;
+        if (!int_dh_bn_cpy(&to->j, from->j))
+            return 0;
+        free(to->seed);
+        to->seed = NULL;
+        to->seedlen = 0;
+        to->seed = malloc(from->seedlen);
+        if (to->seed == NULL)
+            return 0;
+        memcpy(from->seed, from->seed, from->seedlen);
+        to->seedlen = from->seedlen;
+    } else
+        to->length = from->length;
+
+    return 1;
+}
+
+DH *DHparams_dup(DH *dh)
+{
+    DH *ret;
+
+    ret = DH_new();
+    if (ret == NULL)
+        return NULL;
+    if (!int_dh_param_copy(ret, dh, -1)) {
+        DH_free(ret);
+        return NULL;
+    }
+    return ret;
+}
+
+static int dh_copy_parameters(EVP_PKEY *to, const EVP_PKEY *from)
+{
+    return int_dh_param_copy(to->pkey.dh, from->pkey.dh,
+                             from->ameth == &dhx_asn1_meth);
 }
 
 static int dh_missing_parameters(const EVP_PKEY *a)
