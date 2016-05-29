@@ -525,6 +525,8 @@ static ERR_STRING_DATA SSL_str_reasons[] = {
      "old session cipher not returned" },
     { ERR_REASON(SSL_R_OLD_SESSION_COMPRESSION_ALGORITHM_NOT_RETURNED),
      "old session compression algorithm not returned" },
+    { ERR_REASON(SSL_R_ONLY_DTLS_1_2_ALLOWED_IN_SUITEB_MODE),
+     "only DTLS 1.2 allowed in Suite B mode" },
     { ERR_REASON(SSL_R_ONLY_TLS_1_2_ALLOWED_IN_SUITEB_MODE),
      "only TLS 1.2 allowed in Suite B mode" },
     { ERR_REASON(SSL_R_ONLY_TLS_ALLOWED_IN_FIPS_MODE),

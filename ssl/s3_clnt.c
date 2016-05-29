@@ -479,6 +479,11 @@ int ssl3_client_hello(SSL *s)
             int options = s->options;
             /* If DTLS 1.2 disabled correct the version number */
             if (options & SSL_OP_NO_DTLSv1_2) {
+                if (tls1_suiteb(s)) {
+                    SSLerr(SSL_F_SSL3_CLIENT_HELLO,
+                           SSL_R_ONLY_DTLS_1_2_ALLOWED_IN_SUITEB_MODE);
+                    goto err;
+                }
                 /* Disabling all versions is silly: return an error. */
                 if (options & SSL_OP_NO_DTLSv1) {
                     SSLerr(SSL_F_SSL3_CLIENT_HELLO, SSL_R_WRONG_SSL_VERSION);
@@ -688,6 +693,13 @@ int ssl3_get_server_hello(SSL *s)
         int options = s->options;
         if (hversion == DTLS1_2_VERSION && !(options & SSL_OP_NO_DTLSv1_2))
             s->method = DTLSv1_2_client_method();
+        else if (tls1_suiteb(s)) {
+            SSLerr(SSL_F_SSL3_GET_SERVER_HELLO,
+                   SSL_R_ONLY_DTLS_1_2_ALLOWED_IN_SUITEB_MODE);
+            s->version = hversion;
+            al = SSL_AD_PROTOCOL_VERSION;
+            goto f_err;
+        }
         else if (hversion == DTLS1_VERSION && !(options & SSL_OP_NO_DTLSv1))
             s->method = DTLSv1_client_method();
         else {
