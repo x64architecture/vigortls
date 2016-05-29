@@ -1070,7 +1070,7 @@ int ssl3_get_key_exchange(SSL *s)
     uint8_t *q, md_buf[EVP_MAX_MD_SIZE * 2];
     EVP_MD_CTX md_ctx;
     uint8_t *param, *p;
-    int al, i, j, param_len, ok;
+    int i, j, param_len, ok;
     long n, alg_k, alg_a;
     EVP_PKEY *pkey = NULL;
     const EVP_MD *md = NULL;
@@ -1081,6 +1081,7 @@ int ssl3_get_key_exchange(SSL *s)
     EC_POINT *srvr_ecpoint = NULL;
     int curve_nid = 0;
     int encoded_pt_len = 0;
+    int al = SSL_AD_DECODE_ERROR;
     
     EVP_MD_CTX_init(&md_ctx);
 

@@ -1203,8 +1203,6 @@ skip_ext:
         const uint8_t list_len = 1;
 
         lenmax = limit - ret - 6;
-        if (lenmax < 0)
-            return NULL;
 
         s2n(TLSEXT_TYPE_server_authz, ret);
         /* Extension length: 2 bytes */
