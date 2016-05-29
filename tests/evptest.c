@@ -95,7 +95,7 @@ static void test1(const EVP_CIPHER *c, const uint8_t *key, int kn,
                   const uint8_t *plaintext, int pn,
                   const uint8_t *ciphertext, int cn,
                   const uint8_t *aad, int an,
-                  const uint8_t *tag,int tn,
+                  const uint8_t *tag, int tn,
                   int encdec)
 {
     EVP_CIPHER_CTX ctx;
