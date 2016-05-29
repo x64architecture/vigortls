@@ -39,7 +39,6 @@ add_library(
 
     aes_modes.c
     aes_ige.c
-    aes_wrap.c
 
     ${AES_ARCH_SOURCES}
 )

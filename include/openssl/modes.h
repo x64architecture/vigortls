@@ -116,3 +116,9 @@ typedef struct xts128_context XTS128_CONTEXT;
 int CRYPTO_xts128_encrypt(const XTS128_CONTEXT *ctx, const uint8_t iv[16],
                           const uint8_t *inp, uint8_t *out, size_t len,
                           int enc);
+
+size_t CRYPTO_128_wrap(void *key, const uint8_t *iv, uint8_t *out,
+                       const uint8_t *in, size_t inlen, block128_f block);
+
+size_t CRYPTO_128_unwrap(void *key, const uint8_t *iv, uint8_t *out,
+                         const uint8_t *in, size_t inlen, block128_f block);

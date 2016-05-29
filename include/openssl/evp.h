@@ -290,6 +290,7 @@ struct evp_cipher_st {
 #define EVP_CIPH_GCM_MODE 0x6
 #define EVP_CIPH_CCM_MODE 0x7
 #define EVP_CIPH_XTS_MODE 0x10001
+#define EVP_CIPH_WRAP_MODE 0x10002
 #define EVP_CIPH_MODE 0xF0007
 /* Set if variable length cipher */
 #define EVP_CIPH_VARIABLE_LENGTH 0x8
@@ -320,6 +321,14 @@ struct evp_cipher_st {
  */
 #define EVP_CIPH_FLAG_CUSTOM_CIPHER 0x100000
 #define EVP_CIPH_FLAG_AEAD_CIPHER 0x200000
+
+/*
+ * Cipher context flag to indicate we can handle
+ * wrap mode: if allowed in older applications it could
+ * overflow buffers.
+ */
+
+#define EVP_CIPHER_CTX_FLAG_WRAP_ALLOW 0x1
 
 /* ctrl() values */
 
@@ -643,6 +652,7 @@ const EVP_CIPHER *EVP_des_cbc(void);
 const EVP_CIPHER *EVP_des_ede_cbc(void);
 const EVP_CIPHER *EVP_des_ede3_cbc(void);
 const EVP_CIPHER *EVP_desx_cbc(void);
+const EVP_CIPHER *EVP_des_ede3_wrap(void);
 #endif
 const EVP_CIPHER *EVP_rc4(void);
 const EVP_CIPHER *EVP_rc4_40(void);
@@ -691,6 +701,7 @@ const EVP_CIPHER *EVP_aes_128_ctr(void);
 const EVP_CIPHER *EVP_aes_128_ccm(void);
 const EVP_CIPHER *EVP_aes_128_gcm(void);
 const EVP_CIPHER *EVP_aes_128_xts(void);
+const EVP_CIPHER *EVP_aes_128_wrap(void);
 const EVP_CIPHER *EVP_aes_192_ecb(void);
 const EVP_CIPHER *EVP_aes_192_cbc(void);
 const EVP_CIPHER *EVP_aes_192_cfb1(void);
@@ -701,6 +712,7 @@ const EVP_CIPHER *EVP_aes_192_ofb(void);
 const EVP_CIPHER *EVP_aes_192_ctr(void);
 const EVP_CIPHER *EVP_aes_192_ccm(void);
 const EVP_CIPHER *EVP_aes_192_gcm(void);
+const EVP_CIPHER *EVP_aes_192_wrap(void);
 const EVP_CIPHER *EVP_aes_256_ecb(void);
 const EVP_CIPHER *EVP_aes_256_cbc(void);
 const EVP_CIPHER *EVP_aes_256_cfb1(void);
@@ -712,6 +724,7 @@ const EVP_CIPHER *EVP_aes_256_ctr(void);
 const EVP_CIPHER *EVP_aes_256_ccm(void);
 const EVP_CIPHER *EVP_aes_256_gcm(void);
 const EVP_CIPHER *EVP_aes_256_xts(void);
+const EVP_CIPHER *EVP_aes_256_wrap(void);
 const EVP_CIPHER *EVP_aes_128_cbc_hmac_sha1(void);
 const EVP_CIPHER *EVP_aes_256_cbc_hmac_sha1(void);
 const EVP_CIPHER *EVP_aes_128_cbc_hmac_sha256(void);
@@ -1427,6 +1440,7 @@ void ERR_load_EVP_strings(void);
 # define EVP_R_UNSUPPORTED_PRF                            125
 # define EVP_R_UNSUPPORTED_PRIVATE_KEY_ALGORITHM          118
 # define EVP_R_UNSUPPORTED_SALT_TYPE                      126
+# define EVP_R_WRAP_MODE_NOT_ALLOWED                      170
 # define EVP_R_WRONG_FINAL_BLOCK_LENGTH                   109
 # define EVP_R_WRONG_PUBLIC_KEY_TYPE                      110
 
