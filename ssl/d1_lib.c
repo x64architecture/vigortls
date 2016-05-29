@@ -212,7 +212,10 @@ void dtls1_clear(SSL *s)
     }
 
     ssl3_clear(s);
-    s->version = s->method->version;
+    if (s->method->version == DTLS_ANY_VERSION)
+        s->version = DTLS1_2_VERSION;
+    else
+        s->version = s->method->version;
 }
 
 long dtls1_ctrl(SSL *s, int cmd, long larg, void *parg)

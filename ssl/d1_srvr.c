@@ -95,6 +95,43 @@ const SSL_METHOD *DTLSv1_2_server_method(void)
     return &DTLSv1_2_server_method_data;
 }
 
+const SSL_METHOD DTLS_server_method_data = {
+    .version = DTLS_ANY_VERSION,
+    .ssl_new = dtls1_new,
+    .ssl_clear = dtls1_clear,
+    .ssl_free = dtls1_free,
+    .ssl_accept = dtls1_accept,
+    .ssl_connect = ssl_undefined_function,
+    .ssl_read = ssl3_read,
+    .ssl_peek = ssl3_peek,
+    .ssl_write = ssl3_write,
+    .ssl_shutdown = dtls1_shutdown,
+    .ssl_renegotiate = ssl3_renegotiate,
+    .ssl_renegotiate_check = ssl3_renegotiate_check,
+    .ssl_get_message = dtls1_get_message,
+    .ssl_read_bytes = dtls1_read_bytes,
+    .ssl_write_bytes = dtls1_write_app_data_bytes,
+    .ssl_dispatch_alert = dtls1_dispatch_alert,
+    .ssl_ctrl = dtls1_ctrl,
+    .ssl_ctx_ctrl = ssl3_ctx_ctrl,
+    .get_cipher_by_char = ssl3_get_cipher_by_char,
+    .put_cipher_by_char = ssl3_put_cipher_by_char,
+    .ssl_pending = ssl3_pending,
+    .num_ciphers = ssl3_num_ciphers,
+    .get_cipher = dtls1_get_cipher,
+    .get_ssl_method = dtls1_get_server_method,
+    .get_timeout = dtls1_default_timeout,
+    .ssl3_enc = &DTLSv1_2_enc_data,
+    .ssl_version = ssl_undefined_void_function,
+    .ssl_callback_ctrl = ssl3_callback_ctrl,
+    .ssl_ctx_callback_ctrl = ssl3_ctx_callback_ctrl,
+};
+
+const SSL_METHOD *DTLS_server_method(void)
+{
+    return &DTLS_server_method_data;
+}
+
 static const SSL_METHOD *dtls1_get_server_method(int ver)
 {
     switch (ver) {
@@ -649,8 +686,9 @@ int dtls1_send_hello_verify_request(SSL *s)
         buf = (uint8_t *)s->init_buf->data;
 
         msg = p = &(buf[DTLS1_HM_HEADER_LENGTH]);
-        *(p++) = s->version >> 8;
-        *(p++) = s->version & 0xFF;
+        /* Always use DTLS 1.0 version: see RFC 6347 */
+        *(p++) = DTLS1_VERSION >> 8;
+        *(p++) = DTLS1_VERSION & 0xFF;
 
         if (s->ctx->app_gen_cookie_cb == NULL ||
             s->ctx->app_gen_cookie_cb(s, s->d1->cookie, &(s->d1->cookie_len)) == 0)

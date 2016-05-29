@@ -97,6 +97,43 @@ const SSL_METHOD *DTLSv1_2_client_method(void)
     return &DTLSv1_client_method_data;
 }
 
+const SSL_METHOD DTLS_client_method_data = {
+    .version = DTLS_ANY_VERSION,
+    .ssl_new = dtls1_new,
+    .ssl_clear = dtls1_clear,
+    .ssl_free = dtls1_free,
+    .ssl_accept = ssl_undefined_function,
+    .ssl_connect = dtls1_connect,
+    .ssl_read = ssl3_read,
+    .ssl_peek = ssl3_peek,
+    .ssl_write = ssl3_write,
+    .ssl_shutdown = dtls1_shutdown,
+    .ssl_renegotiate = ssl3_renegotiate,
+    .ssl_renegotiate_check = ssl3_renegotiate_check,
+    .ssl_get_message = dtls1_get_message,
+    .ssl_read_bytes = dtls1_read_bytes,
+    .ssl_write_bytes = dtls1_write_app_data_bytes,
+    .ssl_dispatch_alert = dtls1_dispatch_alert,
+    .ssl_ctrl = dtls1_ctrl,
+    .ssl_ctx_ctrl = ssl3_ctx_ctrl,
+    .get_cipher_by_char = ssl3_get_cipher_by_char,
+    .put_cipher_by_char = ssl3_put_cipher_by_char,
+    .ssl_pending = ssl3_pending,
+    .num_ciphers = ssl3_num_ciphers,
+    .get_cipher = dtls1_get_cipher,
+    .get_ssl_method = dtls1_get_client_method,
+    .get_timeout = dtls1_default_timeout,
+    .ssl3_enc = &DTLSv1_2_enc_data,
+    .ssl_version = ssl_undefined_void_function,
+    .ssl_callback_ctrl = ssl3_callback_ctrl,
+    .ssl_ctx_callback_ctrl = ssl3_ctx_callback_ctrl,
+};
+
+const SSL_METHOD *DTLS_client_method(void)
+{
+    return &DTLS_client_method_data;
+}
+
 static const SSL_METHOD *dtls1_get_client_method(int ver)
 {
     switch (ver) {
@@ -545,9 +582,11 @@ static int dtls1_get_hello_verify(SSL *s)
     uint16_t ssl_version;
     CBS hello_verify_request, cookie;
 
+    s->first_packet = 1;
     n = s->method->ssl_get_message(s, DTLS1_ST_CR_HELLO_VERIFY_REQUEST_A,
                                    DTLS1_ST_CR_HELLO_VERIFY_REQUEST_B, -1,
                                    s->max_cert_list, &ok);
+    s->first_packet = 0;
 
     if (!ok)
         return ((int)n);
@@ -566,12 +605,14 @@ static int dtls1_get_hello_verify(SSL *s)
     if (!CBS_get_u16(&hello_verify_request, &ssl_version))
         goto truncated;
 
-    if (ssl_version != s->version) {
+#if 0
+    if (s->method->version != DTLS_ANY_VERSION && ssl_version != s->version) {
         SSLerr(SSL_F_DTLS1_GET_HELLO_VERIFY, SSL_R_WRONG_SSL_VERSION);
         s->version = (s->version & 0xff00) | (ssl_version & 0xff);
         al = SSL_AD_PROTOCOL_VERSION;
         goto f_err;
     }
+#endif
 
     if (!CBS_get_u8_length_prefixed(&hello_verify_request, &cookie))
         goto truncated;

@@ -37,6 +37,8 @@ extern "C" {
 #define DTLS_MAX_VERSION DTLS1_VERSION
 #define DTLS1_VERSION_MAJOR 0xFE
 #define DTLS1_2_VERSION 0xFEFD
+/* Special value for method supporting multiple versions */
+#define DTLS_ANY_VERSION 0x1FFFF
 
 /* lengths of messages */
 #define DTLS1_COOKIE_LENGTH 256
