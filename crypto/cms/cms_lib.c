@@ -40,11 +40,6 @@ void CMS_ContentInfo_free(CMS_ContentInfo *a)
     ASN1_item_free((ASN1_VALUE *)a, &CMS_ContentInfo_it);
 }
 
-int CMS_ContentInfo_print_ctx(BIO *out, PKCS7 *x, int indent, const ASN1_PCTX *pctx)
-{
-    return ASN1_item_print(out, (ASN1_VALUE *)x, indent, CMS_ContentInfo_it, pctx);
-}
-
 DECLARE_ASN1_ITEM(CMS_CertificateChoices)
 DECLARE_ASN1_ITEM(CMS_RevocationInfoChoice)
 DECLARE_STACK_OF(CMS_CertificateChoices)

@@ -248,8 +248,8 @@ static int kek_wrap_key(uint8_t *out, size_t *outlen,
         out[3] = in[2] ^ 0xFF;
         memcpy(out + 4, in, inlen);
         /* Add random padding to end */
-        if (olen > inlen + 4)
-            && RAND_bytes(out + 4 + inlen, olen - 4 - inlen <= 0)
+        if (olen > inlen + 4
+            && (RAND_bytes(out + 4 + inlen, olen - 4 - inlen) <= 0))
             return 0;
         /* Encrypt twice */
         EVP_EncryptUpdate(ctx, out, &dummy, out, olen);

@@ -31,7 +31,7 @@ CMS_ReceiptRequest *d2i_CMS_ReceiptRequest(CMS_ReceiptRequest **a, const uint8_t
 
 int i2d_CMS_ReceiptRequest(CMS_ReceiptRequest *a, uint8_t **out)
 {
-    return ASN1_item_i2d((ASN1_VALUE **)a, out, &CMS_ReceiptRequest_it);
+    return ASN1_item_i2d((ASN1_VALUE *)a, out, &CMS_ReceiptRequest_it);
 }
 
 CMS_ReceiptRequest *CMS_ReceiptRequest_new(void)

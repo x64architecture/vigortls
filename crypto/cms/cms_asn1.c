@@ -46,15 +46,14 @@ ASN1_SEQUENCE(CMS_IssuerAndSerialNumber) = {
                 } ASN1_NDEF_SEQUENCE_END(CMS_EncapsulatedContentInfo)
 
                     /* Minor tweak to operation: free up signer key, cert */
-    static int cms_si_cb(int operation, ASN1_VALUE **pval, const ASN1_ITEM *it,
-                         void *exarg)
+static int cms_si_cb(int operation, ASN1_VALUE **pval, const ASN1_ITEM *it,
+                     void *exarg)
 {
     if (operation == ASN1_OP_FREE_POST) {
         CMS_SignerInfo *si = (CMS_SignerInfo *)*pval;
-        if (si->pkey)
-            EVP_PKEY_free(si->pkey);
-        if (si->signer)
-            X509_free(si->signer);
+        EVP_PKEY_free(si->pkey);
+        X509_free(si->signer);
+        EVP_MD_CTX_cleanup(&si->mctx);
     }
     return 1;
 }
@@ -179,10 +178,9 @@ ASN1_SEQUENCE_cb(CMS_SignerInfo, cms_si_cb) = {
         CMS_RecipientInfo *ri = (CMS_RecipientInfo *)*pval;
         if (ri->type == CMS_RECIPINFO_TRANS) {
             CMS_KeyTransRecipientInfo *ktri = ri->d.ktri;
-            if (ktri->pkey)
-                EVP_PKEY_free(ktri->pkey);
-            if (ktri->recip)
-                X509_free(ktri->recip);
+            EVP_PKEY_free(ktri->pkey);
+            X509_free(ktri->recip);
+            EVP_PKEY_CTX_free(ktri->pctx);
         } else if (ri->type == CMS_RECIPINFO_KEK) {
             CMS_KEKRecipientInfo *kekri = ri->d.kekri;
             if (kekri->key) {

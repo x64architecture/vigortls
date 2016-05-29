@@ -84,7 +84,6 @@ typedef enum OPTION_choice {
     OPT_ED_ENCRYPT,
     OPT_DEBUG_DECRYPT,
     OPT_TEXT,
-    OPT_ASCIICRLF,
     OPT_NOINTERN,
     OPT_NOVERIFY,
     OPT_NOCERTS,
@@ -127,10 +126,6 @@ typedef enum OPTION_choice {
     OPT_KEYOPT,
     OPT_RR_FROM,
     OPT_RR_TO,
-    OPT_AES128_WRAP,
-    OPT_AES192_WRAP,
-    OPT_AES256_WRAP,
-    OPT_3DES_WRAP,
     OPT_ENGINE,
     OPT_V_ENUM,
     OPT_CIPHER
@@ -164,7 +159,6 @@ OPTIONS cms_options[] = {
     { "EncryptedData_encrypt", OPT_ED_ENCRYPT, '-' },
     { "debug_decrypt", OPT_DEBUG_DECRYPT, '-' },
     { "text", OPT_TEXT, '-', "Include or delete text MIME headers" },
-    { "asciicrlf", OPT_ASCIICRLF, '-' },
     { "nointern", OPT_NOINTERN, '-', "Don't search certificates in message for signer" },
     { "noverify", OPT_NOVERIFY, '-', "Don't verify signers certificate" },
     { "nocerts", OPT_NOCERTS, '-', "Don't include signers certificate when signing" },
@@ -208,12 +202,6 @@ OPTIONS cms_options[] = {
     { "keyopt", OPT_KEYOPT, 's', "Set public key parameters as n:v pairs" },
     { "receipt_request_from", OPT_RR_FROM, 's' },
     { "receipt_request_to", OPT_RR_TO, 's' },
-    { "aes128-wrap", OPT_AES128_WRAP, '-', "Use AES128 to wrap key" },
-    { "aes192-wrap", OPT_AES192_WRAP, '-', "Use AES192 to wrap key" },
-    { "aes256-wrap", OPT_AES256_WRAP, '-', "Use AES256 to wrap key" },
-#ifndef OPENSSL_NO_DES
-    { "des3-wrap", OPT_3DES_WRAP, '-', "Use 3DES-EDE to wrap key" },
-#endif
 #ifndef OPENSSL_NO_ENGINE
     { "engine", OPT_ENGINE, 's', "Use engine e, possibly a hardware device" },
 #endif
@@ -230,7 +218,7 @@ int cms_main(int argc, char **argv)
     CMS_ReceiptRequest *rr = NULL;
     ENGINE *e = NULL;
     EVP_PKEY *key = NULL;
-    const EVP_CIPHER *cipher = NULL, *wrap_cipher = NULL;
+    const EVP_CIPHER *cipher = NULL;
     const EVP_MD *sign_md = NULL;
     STACK_OF(OPENSSL_STRING) *rr_to = NULL, *rr_from = NULL;
     STACK_OF(OPENSSL_STRING) *sksigners = NULL, *skkeys = NULL;
@@ -338,9 +326,6 @@ int cms_main(int argc, char **argv)
                 break;
             case OPT_TEXT:
                 flags |= CMS_TEXT;
-                break;
-            case OPT_ASCIICRLF:
-                flags |= CMS_ASCIICRLF;
                 break;
             case OPT_NOINTERN:
                 flags |= CMS_NOINTERN;
@@ -577,20 +562,6 @@ int cms_main(int argc, char **argv)
                 if (!opt_verify(o, vpm))
                     goto end;
                 vpmtouched++;
-                break;
-#ifndef OPENSSL_NO_DES
-            case OPT_3DES_WRAP:
-                wrap_cipher = EVP_des_ede3_wrap();
-                break;
-#endif
-            case OPT_AES128_WRAP:
-                wrap_cipher = EVP_aes_128_wrap();
-                break;
-            case OPT_AES192_WRAP:
-                wrap_cipher = EVP_aes_192_wrap();
-                break;
-            case OPT_AES256_WRAP:
-                wrap_cipher = EVP_aes_256_wrap();
                 break;
         }
     }
@@ -847,17 +818,6 @@ int cms_main(int argc, char **argv)
             ri = CMS_add1_recipient_cert(cms, x, tflags);
             if (!ri)
                 goto end;
-            if (kparam) {
-                EVP_PKEY_CTX *pctx;
-                pctx = CMS_RecipientInfo_get0_pkey_ctx(ri);
-                if (!cms_set_pkey_param(pctx, kparam->param))
-                    goto end;
-            }
-            if (CMS_RecipientInfo_type(ri) == CMS_RECIPINFO_AGREE && wrap_cipher) {
-                EVP_CIPHER_CTX *wctx;
-                wctx = CMS_RecipientInfo_kari_get0_ctx(ri);
-                EVP_EncryptInit_ex(wctx, wrap_cipher, NULL, NULL, NULL);
-            }
         }
 
         if (secret_key) {
@@ -869,7 +829,7 @@ int cms_main(int argc, char **argv)
             secret_keyid = NULL;
         }
         if (pwri_pass) {
-            pwri_tmp = (uint8_t *)BUF_strdup((char *)pwri_pass);
+            pwri_tmp = (uint8_t *)strdup((char *)pwri_pass);
             if (!pwri_tmp)
                 goto end;
             if (!CMS_add0_recipient_password(cms, -1, NID_undef, NID_undef, pwri_tmp, -1,
@@ -947,12 +907,6 @@ int cms_main(int argc, char **argv)
             si = CMS_add1_signer(cms, signer, key, sign_md, tflags);
             if (!si)
                 goto end;
-            if (kparam) {
-                EVP_PKEY_CTX *pctx;
-                pctx = CMS_SignerInfo_get0_pkey_ctx(si);
-                if (!cms_set_pkey_param(pctx, kparam->param))
-                    goto end;
-            }
             if (rr && !CMS_add1_ReceiptRequest(si, rr))
                 goto end;
             X509_free(signer);
@@ -1050,8 +1004,8 @@ int cms_main(int argc, char **argv)
         }
     } else {
         if (noout) {
-            if (print)
-                CMS_ContentInfo_print_ctx(out, cms, 0, NULL);
+            /*if (print)
+                CMS_ContentInfo_print_ctx(out, cms, 0, NULL);FIXME*/
         } else if (outformat == FORMAT_SMIME) {
             if (to)
                 BIO_printf(out, "To: %s\n", to);
