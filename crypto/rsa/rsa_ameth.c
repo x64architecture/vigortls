@@ -358,14 +358,14 @@ static int rsa_pkey_ctrl(EVP_PKEY *pkey, int op, long arg1, void *arg2)
         case ASN1_PKEY_CTRL_CMS_SIGN:
             if (arg1 == 0)
                 return rsa_cms_sign(arg2);
-            else if (argl == 1)
+            else if (arg1 == 1)
                 return rsa_cms_verify(arg2);
             break;
 
         case ASN1_PKEY_CTRL_CMS_ENVELOPE:
             if (arg1 == 0)
                 return rsa_cms_encrypt(arg2);
-            else if (argl == 1)
+            else if (arg1 == 1)
                 return rsa_cms_decrypt(arg2);
             break;
 #endif

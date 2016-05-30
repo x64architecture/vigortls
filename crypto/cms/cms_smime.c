@@ -523,24 +523,63 @@ err:
     return NULL;
 }
 
+static int cms_kari_set1_pkey(CMS_ContentInfo *cms, CMS_RecipientInfo *ri,
+                              EVP_PKEY *pk, X509 *cert)
+{
+    int i;
+    STACK_OF(CMS_RecipientEncryptedKey) *reks;
+    CMS_RecipientEncryptedKey *rek;
+
+    if (cert == NULL)
+        return 0;
+    reks = CMS_RecipientInfo_kari_get0_reks(ri);
+    for (i = 0; i < sk_CMS_RecipientEncryptedKey_num(reks); i++) {
+        int rv;
+        rek = sk_CMS_RecipientEncryptedKey_value(reks, i);
+        if (CMS_RecipientEncryptedKey_cert_cmp(rek, cert))
+            continue;
+        CMS_RecipientInfo_kari_set0_pkey(ri, pk);
+        rv = CMS_RecipientInfo_kari_decrypt(cms, ri, rek);
+        CMS_RecipientInfo_kari_set0_pkey(ri, NULL);
+        if (rv > 0)
+            return 1;
+        return -1;
+    }
+    return 0;
+}
+
 int CMS_decrypt_set1_pkey(CMS_ContentInfo *cms, EVP_PKEY *pk, X509 *cert)
 {
     STACK_OF(CMS_RecipientInfo) *ris;
     CMS_RecipientInfo *ri;
-    int i, r;
+    int i, r, ri_type;
     int debug = 0, ri_match = 0;
     ris = CMS_get0_RecipientInfos(cms);
     if (ris)
         debug = cms->d.envelopedData->encryptedContentInfo->debug;
+    ri_type = cms_pkey_get_ri_type(pk);
+    if (ri_type == CMS_RECIPINFO_NONE) {
+        CMSerr(CMS_F_CMS_DECRYPT_SET1_PKEY,
+               CMS_R_NOT_SUPPORTED_FOR_THIS_KEY_TYPE);
+        return 0;
+    }
     for (i = 0; i < sk_CMS_RecipientInfo_num(ris); i++) {
         ri = sk_CMS_RecipientInfo_value(ris, i);
-        if (CMS_RecipientInfo_type(ri) != CMS_RECIPINFO_TRANS)
+        if (CMS_RecipientInfo_type(ri) != ri_type)
             continue;
         ri_match = 1;
-        /* If we have a cert try matching RecipientInfo
+        if (ri_type == CMS_RECIPINFO_AGREE) {
+            r = cms_kari_set1_pkey(cms, ri, pk, cert);
+            if (r > 0)
+                return 1;
+            if (r < 0)
+                return 0;
+        }
+        /*
+         * If we have a cert try matching RecipientInfo
          * otherwise try them all.
          */
-        if (!cert || (CMS_RecipientInfo_ktri_cert_cmp(ri, cert) == 0)) {
+        else if (!cert || (CMS_RecipientInfo_ktri_cert_cmp(ri, cert) == 0)) {
             CMS_RecipientInfo_set0_pkey(ri, pk);
             r = CMS_RecipientInfo_decrypt(cms, ri);
             CMS_RecipientInfo_set0_pkey(ri, NULL);

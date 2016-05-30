@@ -14,6 +14,7 @@ add_library(
     cms_err.c
     cms_ess.c
     cms_io.c
+    cms_kari.c
     cms_lib.c
     cms_pwri.c
     cms_sd.c

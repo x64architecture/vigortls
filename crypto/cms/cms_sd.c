@@ -15,6 +15,7 @@
 
 #include <openssl/asn1t.h>
 #include <openssl/pem.h>
+#include <openssl/x509.h>
 #include <openssl/x509v3.h>
 #include <openssl/err.h>
 #include <openssl/cms.h>
@@ -154,27 +155,13 @@ int cms_set1_SignerIdentifier(CMS_SignerIdentifier *sid, X509 *cert, int type)
 {
     switch (type) {
         case CMS_SIGNERINFO_ISSUER_SERIAL:
-            sid->d.issuerAndSerialNumber = M_ASN1_new_of(CMS_IssuerAndSerialNumber);
-            if (!sid->d.issuerAndSerialNumber)
-                goto merr;
-            if (!X509_NAME_set(&sid->d.issuerAndSerialNumber->issuer,
-                               X509_get_issuer_name(cert)))
-                goto merr;
-            if (!ASN1_STRING_copy(
-                    sid->d.issuerAndSerialNumber->serialNumber,
-                    X509_get_serialNumber(cert)))
-                goto merr;
+            if (!cms_set1_ias(&sid->d.issuerAndSerialNumber, cert))
+                return 0;
             break;
 
         case CMS_SIGNERINFO_KEYIDENTIFIER:
-            if (!cert->skid) {
-                CMSerr(CMS_F_CMS_SET1_SIGNERIDENTIFIER,
-                       CMS_R_CERTIFICATE_HAS_NO_KEYID);
+            if (!cms_set1_keyid(&sid->d.subjectKeyIdentifier, cert))
                 return 0;
-            }
-            sid->d.subjectKeyIdentifier = ASN1_STRING_dup(cert->skid);
-            if (!sid->d.subjectKeyIdentifier)
-                goto merr;
             break;
 
         default:
@@ -185,10 +172,6 @@ int cms_set1_SignerIdentifier(CMS_SignerIdentifier *sid, X509 *cert, int type)
     sid->type = type;
 
     return 1;
-
-merr:
-    CMSerr(CMS_F_CMS_SET1_SIGNERIDENTIFIER, ERR_R_MALLOC_FAILURE);
-    return 0;
 }
 
 int cms_SignerIdentifier_get0_signer_id(CMS_SignerIdentifier *sid,
@@ -210,21 +193,11 @@ int cms_SignerIdentifier_get0_signer_id(CMS_SignerIdentifier *sid,
 
 int cms_SignerIdentifier_cert_cmp(CMS_SignerIdentifier *sid, X509 *cert)
 {
-    int ret;
-    if (sid->type == CMS_SIGNERINFO_ISSUER_SERIAL) {
-        ret = X509_NAME_cmp(sid->d.issuerAndSerialNumber->issuer,
-                            X509_get_issuer_name(cert));
-        if (ret)
-            return ret;
-        return ASN1_INTEGER_cmp(sid->d.issuerAndSerialNumber->serialNumber,
-                                X509_get_serialNumber(cert));
-    } else if (sid->type == CMS_SIGNERINFO_KEYIDENTIFIER) {
-        X509_check_purpose(cert, -1, -1);
-        if (!cert->skid)
-            return -1;
-        return ASN1_OCTET_STRING_cmp(sid->d.subjectKeyIdentifier,
-                                     cert->skid);
-    } else
+    if (sid->type == CMS_SIGNERINFO_ISSUER_SERIAL)
+        return cms_ias_cert_cmp(sid->d.issuerAndSerialNumber, cert);
+    else if (sid->type == CMS_SIGNERINFO_KEYIDENTIFIER)
+        return cms_keyid_cert_cmp(sid->d.subjectKeyIdentifier, cert);
+    else
         return -1;
 }
 
