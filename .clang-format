@@ -1,7 +1,7 @@
 Language:        Cpp
 AccessModifierOffset: -2
 ConstructorInitializerIndentWidth: 4
-AlignConsecutiveAssignments: true
+AlignConsecutiveAssignments: false
 AlignEscapedNewlinesLeft: true
 AlignTrailingComments: true
 AlignOperands: true

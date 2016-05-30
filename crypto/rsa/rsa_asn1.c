@@ -13,6 +13,14 @@
 #include <openssl/x509.h>
 #include <openssl/asn1t.h>
 
+ASN1_SEQUENCE(RSA_OAEP_PARAMS) = {
+    ASN1_EXP_OPT(RSA_OAEP_PARAMS, hashFunc, X509_ALGOR, 0),
+    ASN1_EXP_OPT(RSA_OAEP_PARAMS, maskGenFunc, X509_ALGOR, 1),
+    ASN1_EXP_OPT(RSA_OAEP_PARAMS, pSourceFunc, X509_ALGOR, 2),
+} ASN1_SEQUENCE_END(RSA_OAEP_PARAMS)
+
+IMPLEMENT_ASN1_FUNCTIONS(RSA_OAEP_PARAMS)
+
 /* Override the default free and new methods */
 static int rsa_cb(int operation, ASN1_VALUE **pval, const ASN1_ITEM *it,
                   void *exarg)
