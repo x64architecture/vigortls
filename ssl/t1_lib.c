@@ -1198,11 +1198,10 @@ skip_ext:
      * 1 byte for the list (we only support audit proofs)
      */
     if (s->ctx->tlsext_authz_server_audit_proof_cb != NULL) {
-        size_t lenmax;
         const uint16_t ext_len = 2;
         const uint8_t list_len = 1;
 
-        lenmax = limit - ret - 6;
+        /* UNSAFE EXTENSION TO TO BE REMOVED IN A FUTURE COMMIT */
 
         s2n(TLSEXT_TYPE_server_authz, ret);
         /* Extension length: 2 bytes */
