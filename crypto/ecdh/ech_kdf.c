@@ -40,7 +40,7 @@ int ECDH_KDF_X9_62(uint8_t *out, size_t outlen, const uint8_t *Z, size_t Zlen,
             goto err;
         if (!EVP_DigestUpdate(&mctx, sinfo, sinfolen))
             goto err;
-        if (outlen > mdlen) {
+        if (outlen >= mdlen) {
             if (!EVP_DigestFinal(&mctx, out, NULL))
                 goto err;
             outlen -= mdlen;

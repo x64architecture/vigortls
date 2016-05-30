@@ -19,7 +19,6 @@ add_library(
     ec2_mult.c
     ec2_oct.c
     ec2_smpl.c
-    ech_kdf.c
     eck_prn.c
     ecp_mont.c
     ecp_nist.c
