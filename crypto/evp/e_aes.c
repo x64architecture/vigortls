@@ -1622,7 +1622,7 @@ static int aes_wrap_cipher(EVP_CIPHER_CTX *ctx, uint8_t *out, const uint8_t *in,
 
 #define WRAP_FLAGS                                                           \
     (EVP_CIPH_WRAP_MODE | EVP_CIPH_CUSTOM_IV | EVP_CIPH_FLAG_CUSTOM_CIPHER | \
-     EVP_CIPH_ALWAYS_CALL_INIT)
+     EVP_CIPH_ALWAYS_CALL_INIT | EVP_CIPH_FLAG_DEFAULT_ASN1)
 
 static const EVP_CIPHER aes_128_wrap = {
     .nid = NID_id_aes128_wrap,
