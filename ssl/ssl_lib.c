@@ -336,32 +336,42 @@ int SSL_has_matching_session_id(const SSL *ssl, const uint8_t *id,
 
 int SSL_CTX_set_purpose(SSL_CTX *s, int purpose)
 {
-    return (X509_VERIFY_PARAM_set_purpose(s->param, purpose));
+    return X509_VERIFY_PARAM_set_purpose(s->param, purpose);
 }
 
 int SSL_set_purpose(SSL *s, int purpose)
 {
-    return (X509_VERIFY_PARAM_set_purpose(s->param, purpose));
+    return X509_VERIFY_PARAM_set_purpose(s->param, purpose);
 }
 
 int SSL_CTX_set_trust(SSL_CTX *s, int trust)
 {
-    return (X509_VERIFY_PARAM_set_trust(s->param, trust));
+    return X509_VERIFY_PARAM_set_trust(s->param, trust);
 }
 
 int SSL_set_trust(SSL *s, int trust)
 {
-    return (X509_VERIFY_PARAM_set_trust(s->param, trust));
+    return X509_VERIFY_PARAM_set_trust(s->param, trust);
 }
 
 int SSL_CTX_set1_param(SSL_CTX *ctx, X509_VERIFY_PARAM *vpm)
 {
-    return (X509_VERIFY_PARAM_set1(ctx->param, vpm));
+    return X509_VERIFY_PARAM_set1(ctx->param, vpm);
 }
 
 int SSL_set1_param(SSL *ssl, X509_VERIFY_PARAM *vpm)
 {
-    return (X509_VERIFY_PARAM_set1(ssl->param, vpm));
+    return X509_VERIFY_PARAM_set1(ssl->param, vpm);
+}
+
+X509_VERIFY_PARAM *SSL_CTX_get0_param(SSL_CTX *ctx)
+{
+    return ctx->param;
+}
+
+X509_VERIFY_PARAM *SSL_get0_param(SSL *ssl)
+{
+    return ssl->param;
 }
 
 void SSL_certs_clear(SSL *s)

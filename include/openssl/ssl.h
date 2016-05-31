@@ -1919,6 +1919,9 @@ int SSL_set_trust(SSL *s, int trust);
 int SSL_CTX_set1_param(SSL_CTX *ctx, X509_VERIFY_PARAM *vpm);
 int SSL_set1_param(SSL *ssl, X509_VERIFY_PARAM *vpm);
 
+X509_VERIFY_PARAM *SSL_CTX_get0_param(SSL_CTX *ctx);
+X509_VERIFY_PARAM *SSL_get0_param(SSL *ssl);
+
 void SSL_certs_clear(SSL *s);
 void SSL_free(SSL *ssl);
 int SSL_accept(SSL *ssl);
