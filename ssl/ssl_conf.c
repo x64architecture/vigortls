@@ -170,7 +170,7 @@ static int ctrl_str_option(SSL_CONF_CTX *cctx, const char *cmd)
 }
 
 /* Set supported signature algorithms */
-static int cmd_sigalgs(SSL_CONF_CTX *cctx, const char *value)
+static int cmd_SignatureAlgorithms(SSL_CONF_CTX *cctx, const char *value)
 {
     int rv;
     if (cctx->ssl != NULL)
@@ -181,7 +181,7 @@ static int cmd_sigalgs(SSL_CONF_CTX *cctx, const char *value)
     return rv > 0;
 }
 /* Set supported client signature algorithms */
-static int cmd_client_sigalgs(SSL_CONF_CTX *cctx, const char *value)
+static int cmd_ClientSignatureAlgorithms(SSL_CONF_CTX *cctx, const char *value)
 {
     int rv;
     if (cctx->ssl != NULL)
@@ -192,7 +192,7 @@ static int cmd_client_sigalgs(SSL_CONF_CTX *cctx, const char *value)
     return rv > 0;
 }
 
-static int cmd_curves(SSL_CONF_CTX *cctx, const char *value)
+static int cmd_Curves(SSL_CONF_CTX *cctx, const char *value)
 {
     int rv;
     if (cctx->ssl != NULL)
@@ -204,7 +204,7 @@ static int cmd_curves(SSL_CONF_CTX *cctx, const char *value)
 }
 
 /* ECDH temporary parameters */
-static int cmd_ecdhparam(SSL_CONF_CTX *cctx, const char *value)
+static int cmd_ECDHParameters(SSL_CONF_CTX *cctx, const char *value)
 {
     int onoff = -1, rv = 1;
     if (!(cctx->flags & SSL_CONF_FLAG_SERVER))
@@ -254,7 +254,7 @@ static int cmd_ecdhparam(SSL_CONF_CTX *cctx, const char *value)
     return rv > 0;
 }
 
-static int cmd_cipher_list(SSL_CONF_CTX *cctx, const char *value)
+static int cmd_CipherString(SSL_CONF_CTX *cctx, const char *value)
 {
     int rv = 1;
     if (cctx->ctx != NULL)
@@ -264,7 +264,7 @@ static int cmd_cipher_list(SSL_CONF_CTX *cctx, const char *value)
     return rv > 0;
 }
 
-static int cmd_protocol(SSL_CONF_CTX *cctx, const char *value)
+static int cmd_Protocol(SSL_CONF_CTX *cctx, const char *value)
 {
     static const ssl_flag_tbl ssl_protocol_list[] = {
         SSL_FLAG_TBL_INV("ALL", SSL_OP_NO_SSL_MASK),
@@ -281,7 +281,7 @@ static int cmd_protocol(SSL_CONF_CTX *cctx, const char *value)
     return CONF_parse_list(value, ',', 1, ssl_set_option_list, cctx);
 }
 
-static int cmd_options(SSL_CONF_CTX *cctx, const char *value)
+static int cmd_Options(SSL_CONF_CTX *cctx, const char *value)
 {
     static const ssl_flag_tbl ssl_option_list[] = {
         SSL_FLAG_TBL_INV("SessionTicket", SSL_OP_NO_TICKET),
@@ -303,71 +303,119 @@ static int cmd_options(SSL_CONF_CTX *cctx, const char *value)
     return CONF_parse_list(value, ',', 1, ssl_set_option_list, cctx);
 }
 
+static int cmd_Certificate(SSL_CONF_CTX *cctx, const char *value)
+{
+    int rv = 1;
+    if (!(cctx->flags & SSL_CONF_FLAG_CERTIFICATE))
+        return -2;
+    if (cctx->ctx)
+        rv = SSL_CTX_use_certificate_chain_file(cctx->ctx, value);
+    if (cctx->ssl)
+        rv = SSL_use_certificate_file(cctx->ssl, value, SSL_FILETYPE_PEM);
+    return rv > 0;
+}
+
+static int cmd_PrivateKey(SSL_CONF_CTX *cctx, const char *value)
+{
+    int rv = 1;
+    if (!(cctx->flags & SSL_CONF_FLAG_CERTIFICATE))
+        return -2;
+    if (cctx->ctx)
+        rv = SSL_CTX_use_PrivateKey_file(cctx->ctx, value, SSL_FILETYPE_PEM);
+    if (cctx->ssl)
+        rv = SSL_use_PrivateKey_file(cctx->ssl, value, SSL_FILETYPE_PEM);
+    return rv > 0;
+}
+
 typedef struct {
     int (*cmd)(SSL_CONF_CTX *cctx, const char *value);
     const char *str_file;
     const char *str_cmdline;
+    unsigned int value_type;
 } ssl_conf_cmd_tbl;
 
-/* Table of supported patameters */
+/* Table of supported parameters */
+#define SSL_CONF_CMD(name, cmdopt, type) \
+    { cmd_##name, #name, cmdopt, type }
 
-static ssl_conf_cmd_tbl ssl_conf_cmds[] = {
-    { cmd_sigalgs, "SignatureAlgorithms", "sigalgs" },
-    { cmd_client_sigalgs, "ClientSignatureAlgorithms", "client_sigalgs" },
-    { cmd_curves, "Curves", "curves" },
-    { cmd_ecdhparam, "ECDHParameters", "named_curve" },
-    { cmd_cipher_list, "CipherString", "cipher" },
-    { cmd_protocol, "Protocol", NULL },
-    { cmd_options, "Options", NULL },
+#define SSL_CONF_CMD_STRING(name, cmdopt) \
+    SSL_CONF_CMD(name, cmdopt, SSL_CONF_TYPE_STRING)
+
+static const ssl_conf_cmd_tbl ssl_conf_cmds[] = {
+    SSL_CONF_CMD_STRING(SignatureAlgorithms, "sigalgs"),
+    SSL_CONF_CMD_STRING(ClientSignatureAlgorithms, "client_sigalgs"),
+    SSL_CONF_CMD_STRING(Curves, "curves"),
+    SSL_CONF_CMD_STRING(ECDHParameters, "named_curve"),
+    SSL_CONF_CMD_STRING(CipherString, "cipher"),
+    SSL_CONF_CMD_STRING(Protocol, NULL),
+    SSL_CONF_CMD_STRING(Options, NULL),
+    SSL_CONF_CMD(Certificate, "cert", SSL_CONF_TYPE_FILE),
+    SSL_CONF_CMD(PrivateKey, "key", SSL_CONF_TYPE_FILE)
 };
+
+static int ssl_conf_cmd_skip_prefix(SSL_CONF_CTX *cctx, const char **pcmd)
+{
+    if (pcmd == NULL || *pcmd == NULL)
+        return 0;
+    /* If a prefix is set, check and skip */
+    if (cctx->prefix) {
+        if (strlen(*pcmd) <= cctx->prefixlen)
+            return 0;
+        if (cctx->flags & SSL_CONF_FLAG_CMDLINE &&
+            strncmp(*pcmd, cctx->prefix, cctx->prefixlen) != 0)
+            return 0;
+        if (cctx->flags & SSL_CONF_FLAG_FILE &&
+            strncasecmp(*pcmd, cctx->prefix, cctx->prefixlen) != 0)
+            return 0;
+        *pcmd += cctx->prefixlen;
+    } else if (cctx->flags & SSL_CONF_FLAG_CMDLINE) {
+        if (**pcmd != '-' || !(*pcmd)[1])
+            return 0;
+        *pcmd += 1;
+    }
+    return 1;
+}
+
+static const ssl_conf_cmd_tbl *ssl_conf_cmd_lookup(SSL_CONF_CTX *cctx, const char *cmd)
+{
+    const ssl_conf_cmd_tbl *t;
+    size_t i;
+
+    if (cmd == NULL)
+        return NULL;
+
+    /* Look for matching parameter name in table */
+    for (i = 0, t = ssl_conf_cmds;
+         i < sizeof(ssl_conf_cmds) / sizeof(ssl_conf_cmd_tbl); i++, t++)
+    {
+        if (cctx->flags & SSL_CONF_FLAG_CMDLINE)
+            return t;
+        if (cctx->flags & SSL_CONF_FLAG_FILE) {
+            if (t->str_file && !strcasecmp(t->str_file, cmd))
+                return t;
+        }
+    }
+    return NULL;
+}
 
 int SSL_CONF_cmd(SSL_CONF_CTX *cctx, const char *cmd, const char *value)
 {
-    ssl_conf_cmd_tbl *t, *runcmd = NULL;
-    size_t i;
+    const ssl_conf_cmd_tbl *runcmd;
     if (cmd == NULL) {
         SSLerr(SSL_F_SSL_CONF_CMD, SSL_R_INVALID_NULL_CMD_NAME);
         return 0;
     }
-    /* If a prefix is set, check and skip */
-    if (cctx->prefix) {
-        if (strlen(cmd) <= cctx->prefixlen)
-            return -2;
-        if (cctx->flags & SSL_CONF_FLAG_CMDLINE &&
-            strncmp(cmd, cctx->prefix, cctx->prefixlen) != 0)
-            return -2;
-        if (cctx->flags & SSL_CONF_FLAG_FILE &&
-            strncasecmp(cmd, cctx->prefix, cctx->prefixlen) != 0)
-            return -2;
-        cmd += cctx->prefixlen;
-    } else if (cctx->flags & SSL_CONF_FLAG_CMDLINE) {
-        if (*cmd != '-' || !cmd[1])
-            return -2;
-        cmd++;
-    }
 
-    /* Look for matching parameter name in table */
-    for (i = 0, t = ssl_conf_cmds;
-         i < sizeof(ssl_conf_cmds) / sizeof(ssl_conf_cmd_tbl); i++, t++) {
-        if (cctx->flags & SSL_CONF_FLAG_CMDLINE) {
-            if (t->str_cmdline && !strcmp(t->str_cmdline, cmd)) {
-                runcmd = t;
-                break;
-            }
-        }
-        if (cctx->flags & SSL_CONF_FLAG_FILE) {
-            if (t->str_file && !strcasecmp(t->str_file, cmd)) {
-                runcmd = t;
-                break;
-            }
-        }
-    }
+    if (!ssl_conf_cmd_skip_prefix(cctx, &cmd))
+        return -2;
+
+    runcmd = ssl_conf_cmd_lookup(cctx, cmd);
 
     if (runcmd) {
         int rv;
         if (value == NULL)
             return -3;
-        rv = t->cmd(cctx, value);
+        rv = runcmd->cmd(cctx, value);
         if (rv > 0)
             return 2;
         if (rv == -2)
@@ -416,7 +464,7 @@ int SSL_CONF_cmd_argv(SSL_CONF_CTX *cctx, int *pargc, char ***pargv)
             (*pargc) -= rv;
         return rv;
     }
-    /* Unknown swicth: indicate no arguments processed */
+    /* Unknown switch: indicate no arguments processed */
     if (rv == -2)
         return 0;
     /* Some error occurred processing command, return fatal error */
@@ -425,11 +473,27 @@ int SSL_CONF_cmd_argv(SSL_CONF_CTX *cctx, int *pargc, char ***pargv)
     return rv;
 }
 
+int SSL_CONF_cmd_value_type(SSL_CONF_CTX *cctx, const char *cmd)
+{
+    if (ssl_conf_cmd_skip_prefix(cctx, &cmd)) {
+        const ssl_conf_cmd_tbl *runcmd;
+        runcmd = ssl_conf_cmd_lookup(cctx, cmd);
+        if (runcmd != NULL)
+            return runcmd->value_type;
+    }
+    return SSL_CONF_TYPE_UNKNOWN;
+}
+
 SSL_CONF_CTX *SSL_CONF_CTX_new(void)
 {
     SSL_CONF_CTX *ret;
     ret = calloc(1, sizeof(SSL_CONF_CTX));
     return ret;
+}
+
+int SSL_CONF_CTX_finish(SSL_CONF_CTX *cctx)
+{
+    return 1;
 }
 
 void SSL_CONF_CTX_free(SSL_CONF_CTX *cctx)
