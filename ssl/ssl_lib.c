@@ -2493,38 +2493,52 @@ void ssl_clear_cipher_ctx(SSL *s)
     }
 }
 
-/* Fix this function so that it takes an optional type parameter */
 X509 *SSL_get_certificate(const SSL *s)
 {
     if (s->cert != NULL)
         return (s->cert->key->x509);
     else
-        return (NULL);
+        return NULL;
 }
 
-/* Fix this function so that it takes an optional type parameter */
-EVP_PKEY *SSL_get_privatekey(SSL *s)
+EVP_PKEY *SSL_get_privatekey(const SSL *s)
 {
     if (s->cert != NULL)
         return (s->cert->key->privatekey);
     else
-        return (NULL);
+        return NULL;
+}
+
+X509 *SSL_CTX_get0_certificate(const SSL_CTX *ctx)
+{
+    if (ctx->cert != NULL)
+        return ctx->cert->key->x509;
+    else
+        return NULL;
+}
+
+EVP_PKEY *SSL_CTX_get0_privatekey(const SSL_CTX *ctx)
+{
+    if (ctx->cert != NULL)
+        return ctx->cert->key->privatekey;
+    else
+        return NULL ;
 }
 
 const SSL_CIPHER *SSL_get_current_cipher(const SSL *s)
 {
     if ((s->session != NULL) && (s->session->cipher != NULL))
         return (s->session->cipher);
-    return (NULL);
+    return NULL;
 }
 const void *SSL_get_current_compression(SSL *s)
 {
-    return (NULL);
+    return NULL;
 }
 
 const void *SSL_get_current_expansion(SSL *s)
 {
-    return (NULL);
+    return NULL;
 }
 
 int ssl_init_wbio_buffer(SSL *s, int push)
