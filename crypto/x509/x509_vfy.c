@@ -24,6 +24,7 @@
 #include <openssl/objects.h>
 
 #include "x509_lcl.h"
+#include "vpm_int.h"
 
 /* CRL score values */
 
@@ -615,17 +616,18 @@ static int check_id_error(X509_STORE_CTX *ctx, int errcode)
 static int check_id(X509_STORE_CTX *ctx)
 {
     X509_VERIFY_PARAM *vpm = ctx->param;
+    X509_VERIFY_PARAM_ID *id = vpm->id;
     X509 *x = ctx->cert;
 
-    if (vpm->host && !X509_check_host(x, vpm->host, vpm->hostlen, 0)) {
+    if (id->host && !X509_check_host(x, id->host, id->hostlen, 0)) {
         if (!check_id_error(ctx, X509_V_ERR_HOSTNAME_MISMATCH))
             return 0;
     }
-    if (vpm->email && !X509_check_email(x, vpm->email, vpm->emaillen, 0)) {
+    if (id->email && !X509_check_email(x, id->email, id->emaillen, 0)) {
         if (!check_id_error(ctx, X509_V_ERR_EMAIL_MISMATCH))
             return 0;
     }
-    if (vpm->ip && !X509_check_ip(x, vpm->ip, vpm->iplen, 0)) {
+    if (id->ip && !X509_check_ip(x, id->ip, id->iplen, 0)) {
         if (!check_id_error(ctx, X509_V_ERR_IP_ADDRESS_MISMATCH))
             return 0;
     }
