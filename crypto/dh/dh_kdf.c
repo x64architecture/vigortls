@@ -6,6 +6,10 @@
  * in the file LICENSE in the source distribution or at
  * https://www.openssl.org/source/license.html
  */
+ 
+ #include <openssl/opensslconf.h>
+ 
+ #ifndef OPENSSL_NO_CMS
 
 #include <openssl/asn1.h>
 #include <openssl/cms.h>
@@ -138,3 +142,5 @@ err:
     EVP_MD_CTX_cleanup(&mctx);
     return rv;
 }
+
+#endif

@@ -605,7 +605,7 @@ static int ecdh_cms_set_peerkey(EVP_PKEY_CTX *pctx, X509_ALGOR *alg,
         pk = EVP_PKEY_CTX_get0_pkey(pctx);
         if (pk == NULL)
             goto err;
-        grp = EC_KEY_g et0_group(pk->pkey.ec);
+        grp = EC_KEY_get0_group(pk->pkey.ec);
         ecpeer = EC_KEY_new();
         if (ecpeer == NULL)
             goto err;
@@ -674,7 +674,8 @@ static int ecdh_cms_set_shared_info(EVP_PKEY_CTX *pctx, CMS_RecipientInfo *ri)
 
     X509_ALGOR *alg, *kekalg = NULL;
     ASN1_OCTET_STRING *ukm;
-    const uint8_t *p, *der = NULL;
+    const uint8_t *p;
+    uint8_t *der = NULL;
     int plen, keylen;
     const EVP_CIPHER *kekcipher;
     EVP_CIPHER_CTX *kekctx;
@@ -877,7 +878,7 @@ static int ecdh_cms_encrypt(CMS_RecipientInfo *ri)
      * parameter of another AlgorithmIdentifier.
      */
     penclen = i2d_X509_ALGOR(wrap_alg, &penc);
-    if (penc == NULL || penclen == NULL)
+    if (penc == NULL || penclen == 0)
         goto err;
     wrap_str = ASN1_STRING_new();
     if (wrap_str == NULL)

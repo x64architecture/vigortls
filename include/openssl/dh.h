@@ -24,15 +24,8 @@
 #define OPENSSL_DH_MAX_MODULUS_BITS 10000
 #endif
 
-#define DH_FLAG_CACHE_MONT_P 0x01
-#define DH_FLAG_NO_EXP_CONSTTIME                        \
-    0x02 /* new with 0.9.7h; the built-in DH            \
-          * implementation now uses constant time       \
-          * modular exponentiation for secret exponents \
-          * by default. This flag causes the            \
-          * faster variable sliding window method to    \
-          * be used for all exponents.                  \
-          */
+#define DH_FLAG_CACHE_MONT_P     0x01
+#define DH_FLAG_NO_EXP_CONSTTIME 0x02
 
 #ifdef __cplusplus
 extern "C" {
@@ -163,10 +156,12 @@ DH *DH_get_1024_160(void);
 DH *DH_get_2048_224(void);
 DH *DH_get_2048_256(void);
 
+#ifndef OPENSSL_NO_CMS
 /* RFC2631 KDF */
 int DH_KDF_X9_42(uint8_t *out, size_t outlen, const uint8_t *Z, size_t Zlen,
                  ASN1_OBJECT *key_oid, const uint8_t *ukm, size_t ukmlen,
                  const EVP_MD *md);
+#endif
 
 #define EVP_PKEY_CTX_set_dh_paramgen_prime_len(ctx, len)      \
     EVP_PKEY_CTX_ctrl(ctx, EVP_PKEY_DH, EVP_PKEY_OP_PARAMGEN, \
@@ -192,12 +187,64 @@ int DH_KDF_X9_42(uint8_t *out, size_t outlen, const uint8_t *Z, size_t Zlen,
     EVP_PKEY_CTX_ctrl(ctx, EVP_PKEY_DHX, EVP_PKEY_OP_PARAMGEN, \
                       EVP_PKEY_CTRL_DH_RFC5114, gen, NULL)
 
-#define EVP_PKEY_CTRL_DH_PARAMGEN_PRIME_LEN (EVP_PKEY_ALG_CTRL + 1)
-#define EVP_PKEY_CTRL_DH_PARAMGEN_GENERATOR (EVP_PKEY_ALG_CTRL + 2)
-#define EVP_PKEY_CTRL_DH_RFC5114            (EVP_PKEY_ALG_CTRL + 3)
+#define EVP_PKEY_CTX_set_dh_kdf_type(ctx, kdf)               \
+    EVP_PKEY_CTX_ctrl(ctx, EVP_PKEY_DHX, EVP_PKEY_OP_DERIVE, \
+                      EVP_PKEY_CTRL_DH_KDF_TYPE, kdf, NULL)
 
-#define EVP_PKEY_CTRL_DH_PARAMGEN_SUBPRIME_LEN (EVP_PKEY_ALG_CTRL + 4)
-#define EVP_PKEY_CTRL_DH_PARAMGEN_TYPE (EVP_PKEY_ALG_CTRL + 5)
+#define EVP_PKEY_CTX_get_dh_kdf_type(ctx)                    \
+    EVP_PKEY_CTX_ctrl(ctx, EVP_PKEY_DHX, EVP_PKEY_OP_DERIVE, \
+                      EVP_PKEY_CTRL_DH_KDF_TYPE, -2, NULL)
+
+#define EVP_PKEY_CTX_set0_dh_kdf_oid(ctx, oid)               \
+    EVP_PKEY_CTX_ctrl(ctx, EVP_PKEY_DHX, EVP_PKEY_OP_DERIVE, \
+                      EVP_PKEY_CTRL_DH_KDF_OID, 0, (void *)oid)
+
+#define EVP_PKEY_CTX_get0_dh_kdf_oid(ctx, poid)              \
+    EVP_PKEY_CTX_ctrl(ctx, EVP_PKEY_DHX, EVP_PKEY_OP_DERIVE, \
+                      EVP_PKEY_CTRL_GET_DH_KDF_OID, 0, (void *)poid)
+
+#define EVP_PKEY_CTX_set_dh_kdf_md(ctx, md)                  \
+    EVP_PKEY_CTX_ctrl(ctx, EVP_PKEY_DHX, EVP_PKEY_OP_DERIVE, \
+                      EVP_PKEY_CTRL_DH_KDF_MD, 0, (void *)md)
+
+#define EVP_PKEY_CTX_get_dh_kdf_md(ctx, pmd)                 \
+    EVP_PKEY_CTX_ctrl(ctx, EVP_PKEY_DHX, EVP_PKEY_OP_DERIVE, \
+                      EVP_PKEY_CTRL_GET_DH_KDF_MD, 0, (void *)pmd)
+
+#define EVP_PKEY_CTX_set_dh_kdf_outlen(ctx, len)             \
+    EVP_PKEY_CTX_ctrl(ctx, EVP_PKEY_DHX, EVP_PKEY_OP_DERIVE, \
+                      EVP_PKEY_CTRL_DH_KDF_OUTLEN, len, NULL)
+
+#define EVP_PKEY_CTX_get_dh_kdf_outlen(ctx, plen)            \
+    EVP_PKEY_CTX_ctrl(ctx, EVP_PKEY_DHX, EVP_PKEY_OP_DERIVE, \
+                      EVP_PKEY_CTRL_GET_DH_KDF_OUTLEN, 0, (void *)plen)
+
+#define EVP_PKEY_CTX_set0_dh_kdf_ukm(ctx, p, plen)           \
+    EVP_PKEY_CTX_ctrl(ctx, EVP_PKEY_DHX, EVP_PKEY_OP_DERIVE, \
+                      EVP_PKEY_CTRL_DH_KDF_UKM, plen, (void *)p)
+
+#define EVP_PKEY_CTX_get0_dh_kdf_ukm(ctx, p)                 \
+    EVP_PKEY_CTX_ctrl(ctx, EVP_PKEY_DHX, EVP_PKEY_OP_DERIVE, \
+                      EVP_PKEY_CTRL_GET_DH_KDF_UKM, 0, (void *)p)
+
+#define EVP_PKEY_CTRL_DH_PARAMGEN_PRIME_LEN     (EVP_PKEY_ALG_CTRL + 1)
+#define EVP_PKEY_CTRL_DH_PARAMGEN_GENERATOR     (EVP_PKEY_ALG_CTRL + 2)
+#define EVP_PKEY_CTRL_DH_RFC5114                (EVP_PKEY_ALG_CTRL + 3)
+#define EVP_PKEY_CTRL_DH_PARAMGEN_SUBPRIME_LEN  (EVP_PKEY_ALG_CTRL + 4)
+#define EVP_PKEY_CTRL_DH_PARAMGEN_TYPE          (EVP_PKEY_ALG_CTRL + 5)
+#define EVP_PKEY_CTRL_DH_KDF_TYPE               (EVP_PKEY_ALG_CTRL + 6)
+#define EVP_PKEY_CTRL_DH_KDF_MD	                (EVP_PKEY_ALG_CTRL + 7)
+#define EVP_PKEY_CTRL_GET_DH_KDF_MD             (EVP_PKEY_ALG_CTRL + 8)
+#define EVP_PKEY_CTRL_DH_KDF_OUTLEN             (EVP_PKEY_ALG_CTRL + 9)
+#define EVP_PKEY_CTRL_GET_DH_KDF_OUTLEN         (EVP_PKEY_ALG_CTRL + 10)
+#define EVP_PKEY_CTRL_DH_KDF_UKM                (EVP_PKEY_ALG_CTRL + 11)
+#define EVP_PKEY_CTRL_GET_DH_KDF_UKM            (EVP_PKEY_ALG_CTRL + 12)
+#define EVP_PKEY_CTRL_DH_KDF_OID                (EVP_PKEY_ALG_CTRL + 13)
+#define EVP_PKEY_CTRL_GET_DH_KDF_OID            (EVP_PKEY_ALG_CTRL + 14)
+
+/* KDF types */
+#define EVP_PKEY_DH_KDF_NONE  1
+#define EVP_PKEY_DH_KDF_X9_42 2
 
 /* BEGIN ERROR CODES */
 /*
@@ -212,6 +259,9 @@ void ERR_load_DH_strings(void);
 # define DH_F_COMPUTE_KEY                                 102
 # define DH_F_DHPARAMS_PRINT_FP                           101
 # define DH_F_DH_BUILTIN_GENPARAMS                        106
+# define DH_F_DH_CMS_DECRYPT                              117
+# define DH_F_DH_CMS_SET_PEERKEY                          118
+# define DH_F_DH_CMS_SET_SHARED_INFO                      119
 # define DH_F_DH_COMPUTE_KEY                              114
 # define DH_F_DH_GENERATE_KEY                             115
 # define DH_F_DH_GENERATE_PARAMETERS_EX                   116
@@ -233,12 +283,15 @@ void ERR_load_DH_strings(void);
 # define DH_R_BN_ERROR                                    106
 # define DH_R_DECODE_ERROR                                104
 # define DH_R_INVALID_PUBKEY                              102
+# define DH_R_KDF_PARAMETER_ERROR                         112
 # define DH_R_KEYS_NOT_SET                                108
 # define DH_R_KEY_SIZE_TOO_SMALL                          110
 # define DH_R_MODULUS_TOO_LARGE                           103
 # define DH_R_NO_PARAMETERS_SET                           107
 # define DH_R_NO_PRIVATE_VALUE                            100
 # define DH_R_PARAMETER_ENCODING_ERROR                    105
+# define DH_R_PEER_KEY_ERROR                              113
+# define DH_R_SHARED_INFO_ERROR                           114
 
 #ifdef  __cplusplus
 }
