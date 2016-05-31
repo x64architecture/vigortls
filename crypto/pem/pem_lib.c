@@ -400,8 +400,9 @@ int PEM_do_header(EVP_CIPHER_INFO *cipher, uint8_t *data, long *plen,
     EVP_CIPHER_CTX_cleanup(&ctx);
     vigortls_zeroize((char *)buf, sizeof(buf));
     vigortls_zeroize((char *)key, sizeof(key));
-    j += i;
-    if (!o) {
+    if (o)
+        j += i;
+    else {
         PEMerr(PEM_F_PEM_DO_HEADER, PEM_R_BAD_DECRYPT);
         return (0);
     }
