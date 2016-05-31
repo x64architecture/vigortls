@@ -275,7 +275,6 @@ ENGINE *ENGINE_by_id(const char *id);
 /* Add all the built-in engines. */
 void ENGINE_load_openssl(void);
 void ENGINE_load_dynamic(void);
-void ENGINE_load_rsax(void);
 void ENGINE_load_builtin_engines(void);
 
 /* Get and set global flags (ENGINE_TABLE_FLAG_***) for the implementation
