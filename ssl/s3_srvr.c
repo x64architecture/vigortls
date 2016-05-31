@@ -880,7 +880,7 @@ int ssl3_get_client_hello(SSL *s)
     {
         uint8_t *pos;
         pos = s->s3->server_random;
-        if (RAND_bytes(pos, SSL3_RANDOM_SIZE) <= 0) {
+        if (ssl_fill_hello_random(s, pos, SSL3_RANDOM_SIZE) <= 0) {
             SSLerr(SSL_F_SSL3_SEND_CLIENT_KEY_EXCHANGE, ERR_R_INTERNAL_ERROR);
             goto err;
         }
@@ -1004,6 +1004,9 @@ int ssl3_send_server_hello(SSL *s)
 
     if (s->state == SSL3_ST_SW_SRVR_HELLO_A) {
         buf = (uint8_t *)s->init_buf->data;
+        p = s->s3->server_random;
+        if (ssl_fill_hello_random(s, p, SSL3_RANDOM_SIZE) <= 0)
+            return -1;
         /* Do the message type and length last */
         d = p = ssl_handshake_start(s);
 

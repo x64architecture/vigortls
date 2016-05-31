@@ -128,6 +128,28 @@ end:
     return (ret);
 }
 
+/*
+ * Fill a ClientRandom or ServerRandom field of length len.
+ * Returns <= 0 on failure, 1 on success.
+ */
+int ssl_fill_hello_random(SSL *s, uint8_t *result, int len)
+{
+    int send_time = 0;
+    if (len < 4)
+        return 0;
+    if (s->server)
+        send_time = (s->mode & SSL_MODE_SEND_SERVERHELLO_TIME) != 0;
+    else
+        send_time = (s->mode & SSL_MODE_SEND_CLIENTHELLO_TIME) != 0;
+    if (send_time) {
+        unsigned long Time = time(NULL);
+        uint8_t *p = result;
+        l2n(Time, p);
+        return RAND_bytes(p, len - 4);
+    } else
+        return RAND_bytes(result, len);
+}
+
 static int ssl23_client_hello(SSL *s)
 {
     uint8_t *buf;
@@ -159,7 +181,7 @@ static int ssl23_client_hello(SSL *s)
     buf = (uint8_t *)s->init_buf->data;
     if (s->state == SSL23_ST_CW_CLNT_HELLO_A) {
         p = s->s3->client_random;
-        if (RAND_bytes(p, SSL3_RANDOM_SIZE) <= 0) {
+        if (ssl_fill_hello_random(s, p, SSL3_RANDOM_SIZE) <= 0) {
             SSLerr(SSL_F_SSL23_CLIENT_HELLO, ERR_R_INTERNAL_ERROR);
             return -1;
         }

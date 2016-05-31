@@ -521,7 +521,7 @@ int ssl3_client_hello(SSL *s)
             i = 1;
 
         if (i) {
-            if (RAND_bytes(p, sizeof(s->s3->client_random) - 4) <= 0)
+            if (ssl_fill_hello_random(s, p, sizeof(s->s3->client_random)) <= 0)
                 goto err;
         }
 
