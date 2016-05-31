@@ -1433,11 +1433,11 @@ int ssl3_send_certificate_request(SSL *s)
             for (i = 0; i < sk_X509_NAME_num(sk); i++) {
                 name = sk_X509_NAME_value(sk, i);
                 j = i2d_X509_NAME(name, NULL);
-                if (!BUF_MEM_grow_clean(buf, 4 + n + j + 2)) {
+                if (!BUF_MEM_grow_clean(buf, SSL_HM_HEADER_LENGTH(s) + n + j + 2)) {
                     SSLerr(SSL_F_SSL3_SEND_CERTIFICATE_REQUEST, ERR_R_BUF_LIB);
                     goto err;
                 }
-                p = (uint8_t *)&(buf->data[4 + n]);
+                p = ssl_handshake_start(s) + n;
                 s2n(j, p);
                 i2d_X509_NAME(name, &p);
                 n += 2 + j;
