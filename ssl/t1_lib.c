@@ -1168,40 +1168,6 @@ skip_ext:
 #endif
 
     /*
-     * Add padding to workaround bugs in F5 terminators.
-     * See https://tools.ietf.org/html/draft-ietf-tls-padding-01
-     *
-     * Note that this seems to trigger issues with IronPort SMTP
-     * appliances.
-     *
-     * NB: because this code works out the length of all existing
-     * extensions it MUST always appear last.
-     */
-    if (s->options & SSL_OP_TLSEXT_PADDING) {
-        int hlen = ret - (uint8_t *)s->init_buf->data;
-
-        /*
-         * The code in s23_clnt.c to build ClientHello messages includes the
-         * 5-byte record header in the buffer, while the code in s3_clnt.c does
-         * not.
-         */
-        if (s->state == SSL23_ST_CW_CLNT_HELLO_A)
-            hlen -= 5;
-        if (hlen > 0xff && hlen < 0x200) {
-            hlen = 0x200 - hlen;
-            if (hlen >= 4)
-                hlen -= 4;
-            else
-                hlen = 0;
-
-            s2n(TLSEXT_TYPE_padding, ret);
-            s2n(hlen, ret);
-            memset(ret, 0, hlen);
-            ret += hlen;
-        }
-    }
-
-    /*
      * Add TLS extension Server_Authz_DataFormats to the ClientHello
      *
      * 2 bytes for extension type
@@ -1249,6 +1215,40 @@ skip_ext:
             s2n(outlen, ret);
             memcpy(ret, out, outlen);
             ret += outlen;
+        }
+    }
+
+    /*
+     * Add padding to workaround bugs in F5 terminators.
+     * See https://tools.ietf.org/html/draft-ietf-tls-padding-01
+     *
+     * Note that this seems to trigger issues with IronPort SMTP
+     * appliances.
+     *
+     * NB: because this code works out the length of all existing
+     * extensions it MUST always appear last.
+     */
+    if (s->options & SSL_OP_TLSEXT_PADDING) {
+        int hlen = ret - (uint8_t *)s->init_buf->data;
+
+        /*
+         * The code in s23_clnt.c to build ClientHello messages includes the
+         * 5-byte record header in the buffer, while the code in s3_clnt.c does
+         * not.
+         */
+        if (s->state == SSL23_ST_CW_CLNT_HELLO_A)
+            hlen -= 5;
+        if (hlen > 0xff && hlen < 0x200) {
+            hlen = 0x200 - hlen;
+            if (hlen >= 4)
+                hlen -= 4;
+            else
+                hlen = 0;
+
+            s2n(TLSEXT_TYPE_padding, ret);
+            s2n(hlen, ret);
+            memset(ret, 0, hlen);
+            ret += hlen;
         }
     }
 
