@@ -140,6 +140,9 @@ static int nid_list[] = {
     NID_X9_62_prime256v1, /* secp256r1 (23) */
     NID_secp384r1,        /* secp384r1 (24) */
     NID_secp521r1,        /* secp521r1 (25) */
+    NID_brainpoolP256r1,  /* brainpoolP256r1 (26) */        
+    NID_brainpoolP384r1,  /* brainpoolP384r1 (27) */        
+    NID_brainpoolP512r1,  /* brainpoolP512r1 (28) */ 
 };
 
 static const uint8_t ecformats_default[] = {
@@ -152,11 +155,14 @@ static const uint16_t eccurves_default[] = {
     14,   /* sect571r1 (14) */
     13,   /* sect571k1 (13) */
     25,   /* secp521r1 (25) */
+    28,   /* brainpool512r1 (28) */ 
     11,   /* sect409k1 (11) */
     12,   /* sect409r1 (12) */
+    27,   /* brainpoolP384r1 (27) */ 
     24,   /* secp384r1 (24) */
     9,    /* sect283k1 (9) */
     10,   /* sect283r1 (10) */
+    26,   /* brainpoolP256r1 (26) */  
     22,   /* secp256k1 (22) */
     23,   /* secp256r1 (23) */
     8,    /* sect239k1 (8) */
