@@ -619,6 +619,7 @@ STACK_OF(CONF_VALUE) *X509V3_parse_list(const char *line);
 void *X509V3_EXT_d2i(X509_EXTENSION *ext);
 void *X509V3_get_d2i(STACK_OF(X509_EXTENSION) *x, int nid, int *crit,
                      int *idx);
+int X509V3_EXT_free(int nid, void *ext_data);
 
 X509_EXTENSION *X509V3_EXT_i2d(int ext_nid, int crit, void *ext_struc);
 int X509V3_add1_i2d(STACK_OF(X509_EXTENSION) **x, int nid, void *value,
@@ -752,6 +753,7 @@ void ERR_load_X509V3_strings(void);
 # define X509V3_F_X509V3_EXT_ADD                          104
 # define X509V3_F_X509V3_EXT_ADD_ALIAS                    106
 # define X509V3_F_X509V3_EXT_CONF                         107
+# define X509V3_F_X509V3_EXT_FREE                         165
 # define X509V3_F_X509V3_EXT_I2D                          136
 # define X509V3_F_X509V3_EXT_NCONF                        152
 # define X509V3_F_X509V3_GET_SECTION                      142
@@ -766,6 +768,7 @@ void ERR_load_X509V3_strings(void);
 # define X509V3_R_BAD_OBJECT                              119
 # define X509V3_R_BN_DEC2BN_ERROR                         100
 # define X509V3_R_BN_TO_ASN1_INTEGER_ERROR                101
+# define X509V3_R_CANNOT_FIND_FREE_FUNCTION               168
 # define X509V3_R_DIRNAME_ERROR                           149
 # define X509V3_R_DISTPOINT_ALREADY_SET                   160
 # define X509V3_R_DUPLICATE_ZONE_ID                       133
