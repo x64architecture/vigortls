@@ -109,7 +109,7 @@ int EVP_DigestSignFinal(EVP_MD_CTX *ctx, uint8_t *sigret, size_t *siglen)
     return 1;
 }
 
-int EVP_DigestVerifyFinal(EVP_MD_CTX *ctx, uint8_t *sig, size_t siglen)
+int EVP_DigestVerifyFinal(EVP_MD_CTX *ctx, const uint8_t *sig, size_t siglen)
 {
     EVP_MD_CTX tmp_ctx;
     uint8_t md[EVP_MAX_MD_SIZE];

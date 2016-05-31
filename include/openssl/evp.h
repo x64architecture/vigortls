@@ -582,7 +582,7 @@ int EVP_DigestSignFinal(EVP_MD_CTX *ctx, uint8_t *sigret, size_t *siglen);
 
 int EVP_DigestVerifyInit(EVP_MD_CTX *ctx, EVP_PKEY_CTX **pctx,
                          const EVP_MD *type, ENGINE *e, EVP_PKEY *pkey);
-int EVP_DigestVerifyFinal(EVP_MD_CTX *ctx, uint8_t *sig, size_t siglen);
+int EVP_DigestVerifyFinal(EVP_MD_CTX *ctx, const uint8_t *sig, size_t siglen);
 
 int EVP_OpenInit(EVP_CIPHER_CTX *ctx, const EVP_CIPHER *type, const uint8_t *ek,
                  int ekl, const uint8_t *iv, EVP_PKEY *priv);
