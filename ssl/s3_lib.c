@@ -1785,6 +1785,13 @@ long ssl3_ctrl(SSL *s, int cmd, long larg, void *parg)
             else
                 return ssl_cert_add0_chain_cert(s->cert, (X509 *)parg);
 
+        case SSL_CTRL_GET_CHAIN_CERTS:
+            *(STACK_OF(X509) **)parg = s->cert->key->chain;
+            break;
+
+        case SSL_CTRL_SELECT_CURRENT_CERT:
+            return ssl_cert_select_current(s->cert, (X509 *)parg);
+
         case SSL_CTRL_GET_CURVES: {
             uint16_t *clist;
             size_t clistlen;
@@ -2140,10 +2147,17 @@ long ssl3_ctx_ctrl(SSL_CTX *ctx, int cmd, long larg, void *parg)
             else
                 return ssl_cert_add0_chain_cert(ctx->cert, (X509 *)parg);
 
+        case SSL_CTRL_GET_CHAIN_CERTS:
+            *(STACK_OF(X509) **)parg = ctx->cert->key->chain;
+            break;
+
+        case SSL_CTRL_SELECT_CURRENT_CERT:
+            return ssl_cert_select_current(ctx->cert, (X509 *)parg);
+
         default:
-            return (0);
+            return 0;
     }
-    return (1);
+    return 1;
 }
 
 long ssl3_ctx_callback_ctrl(SSL_CTX *ctx, int cmd, void (*fp)(void))
