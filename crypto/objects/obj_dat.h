@@ -8,9 +8,9 @@
  * in the file LICENSE in the source distribution or at
  * https://www.openssl.org/source/license.html
  */
-#define NUM_NID 966
-#define NUM_SN 943
-#define NUM_LN 943
+#define NUM_NID 969
+#define NUM_SN 946
+#define NUM_LN 946
 #define NUM_OBJ 882
 
 static const unsigned char lvalues[6173]={
@@ -2459,12 +2459,19 @@ static const ASN1_OBJECT nid_objs[NUM_NID]={
 	NID_dhSinglePass_cofactorDH_sha512kdf_scheme,6,&(lvalues[6166]),0},
 {"dh-std-kdf","dh-std-kdf",NID_dh_std_kdf,0,NULL,0},
 {"dh-cofactor-kdf","dh-cofactor-kdf",NID_dh_cofactor_kdf,0,NULL,0},
+{"AES-128-CBC-HMAC-SHA256","aes-128-cbc-hmac-sha256",
+	NID_aes_128_cbc_hmac_sha256,0,NULL,0},
+{"AES-192-CBC-HMAC-SHA256","aes-192-cbc-hmac-sha256",
+	NID_aes_192_cbc_hmac_sha256,0,NULL,0},
+{"AES-256-CBC-HMAC-SHA256","aes-256-cbc-hmac-sha256",
+	NID_aes_256_cbc_hmac_sha256,0,NULL,0},
 };
 
 static const unsigned int sn_objs[NUM_SN]={
 364,	/* "AD_DVCS" */
 419,	/* "AES-128-CBC" */
 916,	/* "AES-128-CBC-HMAC-SHA1" */
+966,	/* "AES-128-CBC-HMAC-SHA256" */
 421,	/* "AES-128-CFB" */
 650,	/* "AES-128-CFB1" */
 653,	/* "AES-128-CFB8" */
@@ -2474,6 +2481,7 @@ static const unsigned int sn_objs[NUM_SN]={
 913,	/* "AES-128-XTS" */
 423,	/* "AES-192-CBC" */
 917,	/* "AES-192-CBC-HMAC-SHA1" */
+967,	/* "AES-192-CBC-HMAC-SHA256" */
 425,	/* "AES-192-CFB" */
 651,	/* "AES-192-CFB1" */
 654,	/* "AES-192-CFB8" */
@@ -2482,6 +2490,7 @@ static const unsigned int sn_objs[NUM_SN]={
 424,	/* "AES-192-OFB" */
 427,	/* "AES-256-CBC" */
 918,	/* "AES-256-CBC-HMAC-SHA1" */
+968,	/* "AES-256-CBC-HMAC-SHA256" */
 429,	/* "AES-256-CFB" */
 652,	/* "AES-256-CFB1" */
 655,	/* "AES-256-CFB8" */
@@ -3560,6 +3569,7 @@ static const unsigned int ln_objs[NUM_LN]={
 606,	/* "additional verification" */
 419,	/* "aes-128-cbc" */
 916,	/* "aes-128-cbc-hmac-sha1" */
+966,	/* "aes-128-cbc-hmac-sha256" */
 896,	/* "aes-128-ccm" */
 421,	/* "aes-128-cfb" */
 650,	/* "aes-128-cfb1" */
@@ -3571,6 +3581,7 @@ static const unsigned int ln_objs[NUM_LN]={
 913,	/* "aes-128-xts" */
 423,	/* "aes-192-cbc" */
 917,	/* "aes-192-cbc-hmac-sha1" */
+967,	/* "aes-192-cbc-hmac-sha256" */
 899,	/* "aes-192-ccm" */
 425,	/* "aes-192-cfb" */
 651,	/* "aes-192-cfb1" */
@@ -3581,6 +3592,7 @@ static const unsigned int ln_objs[NUM_LN]={
 424,	/* "aes-192-ofb" */
 427,	/* "aes-256-cbc" */
 918,	/* "aes-256-cbc-hmac-sha1" */
+968,	/* "aes-256-cbc-hmac-sha256" */
 902,	/* "aes-256-ccm" */
 429,	/* "aes-256-cfb" */
 652,	/* "aes-256-cfb1" */

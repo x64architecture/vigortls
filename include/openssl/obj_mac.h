@@ -3916,6 +3916,18 @@
 #define LN_aes_256_cbc_hmac_sha1        "aes-256-cbc-hmac-sha1"
 #define NID_aes_256_cbc_hmac_sha1        918
 
+#define SN_aes_128_cbc_hmac_sha256        "AES-128-CBC-HMAC-SHA256"
+#define LN_aes_128_cbc_hmac_sha256        "aes-128-cbc-hmac-sha256"
+#define NID_aes_128_cbc_hmac_sha256        966
+
+#define SN_aes_192_cbc_hmac_sha256        "AES-192-CBC-HMAC-SHA256"
+#define LN_aes_192_cbc_hmac_sha256        "aes-192-cbc-hmac-sha256"
+#define NID_aes_192_cbc_hmac_sha256        967
+
+#define SN_aes_256_cbc_hmac_sha256        "AES-256-CBC-HMAC-SHA256"
+#define LN_aes_256_cbc_hmac_sha256        "aes-256-cbc-hmac-sha256"
+#define NID_aes_256_cbc_hmac_sha256        968
+
 #define SN_chacha20        "ChaCha"
 #define LN_chacha20        "chacha"
 #define NID_chacha20        920

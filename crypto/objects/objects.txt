@@ -1269,10 +1269,13 @@ camellia 44		: CAMELLIA-256-CFB		: camellia-256-cfb
 			: CMAC				: cmac
 
 # Synthetic composite ciphersuites
-			: RC4-HMAC-MD5			: rc4-hmac-md5
-			: AES-128-CBC-HMAC-SHA1		: aes-128-cbc-hmac-sha1
-			: AES-192-CBC-HMAC-SHA1		: aes-192-cbc-hmac-sha1
-			: AES-256-CBC-HMAC-SHA1		: aes-256-cbc-hmac-sha1
+			: RC4-HMAC-MD5              : rc4-hmac-md5
+			: AES-128-CBC-HMAC-SHA1     : aes-128-cbc-hmac-sha1
+			: AES-192-CBC-HMAC-SHA1     : aes-192-cbc-hmac-sha1
+			: AES-256-CBC-HMAC-SHA1     : aes-256-cbc-hmac-sha1
+            : AES-128-CBC-HMAC-SHA256   : aes-128-cbc-hmac-sha256
+            : AES-192-CBC-HMAC-SHA256   : aes-192-cbc-hmac-sha256
+            : AES-256-CBC-HMAC-SHA256   : aes-256-cbc-hmac-sha256
 
 # ChaCha Stream Cipher
 !Cname chacha20
