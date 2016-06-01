@@ -319,8 +319,9 @@ struct evp_cipher_st {
 /* Cipher handles any and all padding logic as well
  * as finalisation.
  */
-#define EVP_CIPH_FLAG_CUSTOM_CIPHER 0x100000
-#define EVP_CIPH_FLAG_AEAD_CIPHER 0x200000
+#define EVP_CIPH_FLAG_CUSTOM_CIPHER        0x100000
+#define EVP_CIPH_FLAG_AEAD_CIPHER          0x200000
+#define EVP_CIPH_FLAG_TLS1_1_MULTIBLOCK    0x400000
 
 /*
  * Cipher context flag to indicate we can handle
@@ -332,36 +333,49 @@ struct evp_cipher_st {
 
 /* ctrl() values */
 
-#define EVP_CTRL_INIT 0x0
-#define EVP_CTRL_SET_KEY_LENGTH 0x1
-#define EVP_CTRL_GET_RC2_KEY_BITS 0x2
-#define EVP_CTRL_SET_RC2_KEY_BITS 0x3
-#define EVP_CTRL_GET_RC5_ROUNDS 0x4
-#define EVP_CTRL_SET_RC5_ROUNDS 0x5
-#define EVP_CTRL_RAND_KEY 0x6
-#define EVP_CTRL_PBE_PRF_NID 0x7
-#define EVP_CTRL_COPY 0x8
-#define EVP_CTRL_GCM_SET_IVLEN 0x9
-#define EVP_CTRL_GCM_GET_TAG 0x10
-#define EVP_CTRL_GCM_SET_TAG 0x11
-#define EVP_CTRL_GCM_SET_IV_FIXED 0x12
-#define EVP_CTRL_GCM_IV_GEN 0x13
-#define EVP_CTRL_CCM_SET_IVLEN EVP_CTRL_GCM_SET_IVLEN
-#define EVP_CTRL_CCM_GET_TAG EVP_CTRL_GCM_GET_TAG
-#define EVP_CTRL_CCM_SET_TAG EVP_CTRL_GCM_SET_TAG
-#define EVP_CTRL_CCM_SET_L 0x14
-#define EVP_CTRL_CCM_SET_MSGLEN 0x15
-/* AEAD cipher deduces payload length and returns number of bytes
+#define EVP_CTRL_INIT                           0x0
+#define EVP_CTRL_SET_KEY_LENGTH                 0x1
+#define EVP_CTRL_GET_RC2_KEY_BITS               0x2
+#define EVP_CTRL_SET_RC2_KEY_BITS               0x3
+#define EVP_CTRL_GET_RC5_ROUNDS                 0x4
+#define EVP_CTRL_SET_RC5_ROUNDS                 0x5
+#define EVP_CTRL_RAND_KEY                       0x6
+#define EVP_CTRL_PBE_PRF_NID                    0x7
+#define EVP_CTRL_COPY                           0x8
+#define EVP_CTRL_GCM_SET_IVLEN                  0x9
+#define EVP_CTRL_GCM_GET_TAG                    0x10
+#define EVP_CTRL_GCM_SET_TAG                    0x11
+#define EVP_CTRL_GCM_SET_IV_FIXED               0x12
+#define EVP_CTRL_GCM_IV_GEN                     0x13
+#define EVP_CTRL_CCM_SET_IVLEN                  EVP_CTRL_GCM_SET_IVLEN
+#define EVP_CTRL_CCM_GET_TAG                    EVP_CTRL_GCM_GET_TAG
+#define EVP_CTRL_CCM_SET_TAG                    EVP_CTRL_GCM_SET_TAG
+#define EVP_CTRL_CCM_SET_L                      0x14
+#define EVP_CTRL_CCM_SET_MSGLEN                 0x15
+/*
+ * AEAD cipher deduces payload length and returns number of bytes
  * required to store MAC and eventual padding. Subsequent call to
  * EVP_Cipher even appends/verifies MAC.
  */
-#define EVP_CTRL_AEAD_TLS1_AAD 0x16
+#define EVP_CTRL_AEAD_TLS1_AAD                  0x16
 /* Used by composite AEAD ciphers, no-op in GCM, CCM... */
-#define EVP_CTRL_AEAD_SET_MAC_KEY 0x17
+#define EVP_CTRL_AEAD_SET_MAC_KEY               0x17
 /* Set the GCM invocation field, decrypt only */
-#define EVP_CTRL_GCM_SET_IV_INV 0x18
+#define EVP_CTRL_GCM_SET_IV_INV                 0x18
 /* Set the S-BOX NID for GOST ciphers */
-#define EVP_CTRL_GOST_SET_SBOX 0x19
+#define EVP_CTRL_GOST_SET_SBOX                  0x19
+
+#define EVP_CTRL_TLS1_1_MULTIBLOCK_AAD          0x1a
+#define EVP_CTRL_TLS1_1_MULTIBLOCK_ENCRYPT      0x1b
+#define EVP_CTRL_TLS1_1_MULTIBLOCK_DECRYPT      0x1c
+#define EVP_CTRL_TLS1_1_MULTIBLOCK_MAX_BUFSIZE  0x1d
+
+typedef struct {
+    uint8_t *out;
+    const uint8_t *inp;
+    size_t len;
+    unsigned int interleave;
+} EVP_CTRL_TLS1_1_MULTIBLOCK_PARAM;
 
 /* GCM TLS constants */
 /* Length of fixed part of IV derived from PRF */
