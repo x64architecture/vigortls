@@ -73,21 +73,19 @@ extern "C" {
 #define TLS1_AD_UNKNOWN_PSK_IDENTITY 115 /* fatal */
 
 /* ExtensionType values from RFC3546 / RFC4366 / RFC6066 */
-#define TLSEXT_TYPE_server_name 0
-#define TLSEXT_TYPE_max_fragment_length 1
-#define TLSEXT_TYPE_client_certificate_url 2
-#define TLSEXT_TYPE_trusted_ca_keys 3
-#define TLSEXT_TYPE_truncated_hmac 4
-#define TLSEXT_TYPE_status_request 5
+#define TLSEXT_TYPE_server_name             0
+#define TLSEXT_TYPE_max_fragment_length     1
+#define TLSEXT_TYPE_client_certificate_url  2
+#define TLSEXT_TYPE_trusted_ca_keys         3
+#define TLSEXT_TYPE_truncated_hmac          4
+#define TLSEXT_TYPE_status_request          5
 /* ExtensionType values from RFC4681 */
-#define TLSEXT_TYPE_user_mapping 6
-
+#define TLSEXT_TYPE_user_mapping            6
 /* ExtensionType values from RFC5878 */
-#define TLSEXT_TYPE_client_authz 7
-#define TLSEXT_TYPE_server_authz 8
-
+#define TLSEXT_TYPE_client_authz            7
+#define TLSEXT_TYPE_server_authz            8
 /* ExtensionType values from RFC6091 */
-#define TLSEXT_TYPE_cert_type 9
+#define TLSEXT_TYPE_cert_type               9
 
 /* ExtensionType values from RFC4492 */
 #define TLSEXT_TYPE_elliptic_curves 10
@@ -165,14 +163,6 @@ extern "C" {
 #define TLSEXT_curve_P_384 24
 
 #define TLSEXT_MAXLEN_host_name 255
-
-/* From RFC 5878 */
-#define TLSEXT_SUPPLEMENTALDATATYPE_authz_data 16386
-/* This is not IANA assigned. See
- * https://www.iana.org/assignments/tls-parameters/tls-parameters.xml#authorization-data-rules */
-#define TLSEXT_AUTHZDATAFORMAT_audit_proof 182
-
-#define TLSEXT_MAXLEN_supplemental_data 1024 * 16 /* 16k limit */
 
 const char *SSL_get_servername(const SSL *s, const int type);
 int SSL_get_servername_type(const SSL *s);
@@ -253,13 +243,6 @@ int SSL_check_chain(SSL *s, X509 *x, EVP_PKEY *pk, STACK_OF(X509) *chain);
 #define SSL_CTX_set_tlsext_ticket_key_cb(ssl, cb)                 \
     SSL_CTX_callback_ctrl(ssl, SSL_CTRL_SET_TLSEXT_TICKET_KEY_CB, \
                           (void (*)(void))cb)
-
-/* Used by clients to process audit proofs. */
-#define SSL_CTX_set_tlsext_authz_server_audit_proof_cb(ctx, cb) \
-    SSL_CTX_callback_ctrl(ctx, SSL_CTRL_SET_TLSEXT_AUTHZ_SERVER_AUDIT_PROOF_CB,(void (*)(void))cb)
-
-#define SSL_CTX_set_tlsext_authz_server_audit_proof_cb_arg(ctx, arg) \
-    SSL_CTX_ctrl(ctx, SSL_CTRL_SET_TLSEXT_AUTHZ_SERVER_AUDIT_PROOF_CB_ARG, 0, arg);
 
 /* PSK ciphersuites from 4279 */
 #define TLS1_CK_PSK_WITH_RC4_128_SHA 0x0300008A

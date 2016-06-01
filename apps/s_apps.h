@@ -21,8 +21,6 @@ int verify_callback(int ok, X509_STORE_CTX *ctx);
 #ifdef HEADER_SSL_H
 int set_cert_stuff(SSL_CTX *ctx, char *cert_file, char *key_file);
 int set_cert_key_stuff(SSL_CTX *ctx, X509 *cert, EVP_PKEY *key);
-int set_cert_key_and_authz(SSL_CTX *ctx, X509 *cert, EVP_PKEY *key,
-                           uint8_t *authz, size_t authz_length);
 int ssl_print_sigalgs(BIO *out, SSL *s);
 int ssl_print_curves(BIO *out, SSL *s);
 int ssl_print_curves(BIO *out, SSL *s);

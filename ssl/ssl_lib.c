@@ -2101,24 +2101,6 @@ DH *ssl_get_auto_dh(SSL *s)
     return (dhp);
 }
 
-uint8_t *ssl_get_authz_data(const SSL *s, size_t *authz_length)
-{
-    CERT *c;
-    int i;
-
-    c = s->cert;
-    i = ssl_get_server_cert_index(s);
-    if (i == -1)
-        return NULL;
-
-    *authz_length = 0;
-    if (c->pkeys[i].authz == NULL)
-        return NULL;
-    *authz_length = c->pkeys[i].authz_length;
-
-    return c->pkeys[i].authz;
-}
-
 int ssl_get_server_cert_serverinfo(SSL *s, const uint8_t **serverinfo,
                                    size_t *serverinfo_length)
 {

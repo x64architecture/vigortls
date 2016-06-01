@@ -162,17 +162,6 @@ CERT *ssl_cert_dup(CERT *cert)
         }
         /* Clear all flags apart from explicit sign */
         cpk->valid_flags &= CERT_PKEY_EXPLICIT_SIGN;
-        if (cert->pkeys[i].authz != NULL) {
-            /* Just copy everything. */
-            ret->pkeys[i].authz_length = cert->pkeys[i].authz_length;
-            ret->pkeys[i].authz = malloc(ret->pkeys[i].authz_length);
-            if (ret->pkeys[i].authz == NULL) {
-                SSLerr(SSL_F_SSL_CERT_DUP, ERR_R_MALLOC_FAILURE);
-                return NULL;
-            }
-            memcpy(ret->pkeys[i].authz, cert->pkeys[i].authz,
-                   cert->pkeys[i].authz_length);
-        }
         if (cert->pkeys[i].serverinfo != NULL) {
             /* Just copy everything. */
             ret->pkeys[i].serverinfo_length =
@@ -268,8 +257,6 @@ void ssl_cert_clear_certs(CERT *c)
         cpk->privatekey = NULL;
         sk_X509_pop_free(cpk->chain, X509_free);
         cpk->chain = NULL;
-        free(cpk->authz);
-        cpk->authz = NULL;
         free(cpk->serverinfo);
         cpk->serverinfo = NULL;
 

@@ -46,7 +46,6 @@ static int c_Pause = 0;
 static int c_debug = 0;
 static int c_tlsextdebug = 0;
 static int c_status_req = 0;
-static int c_proof_debug = 0;
 static int c_msg = 0;
 static int c_showcerts = 0;
 
@@ -55,7 +54,6 @@ static int keymatexportlen = 20;
 
 static void print_stuff(BIO *berr, SSL *con, int full);
 static int ocsp_resp_cb(SSL *s, void *arg);
-static int audit_proof_cb(SSL *s, void *arg);
 static BIO *bio_c_out = NULL;
 static BIO *bio_c_msg = NULL;
 static int c_quiet = 0;
@@ -132,7 +130,6 @@ typedef enum OPTION_choice {
     OPT_PAUSE,
     OPT_DEBUG,
     OPT_TLSEXTDEBUG,
-    OPT_PROOF_DEBUG,
     OPT_STATUS,
     OPT_MSG,
     OPT_MSGFILE,
@@ -203,7 +200,6 @@ OPTIONS s_client_options[] = {
     { "servername", OPT_SERVERNAME, 's', "Set TLS extension servername in ClientHello" },
     { "tlsextdebug", OPT_TLSEXTDEBUG, '-', "Hex dump of all TLS extensions received" },
     { "status", OPT_STATUS, '-', "Request certificate status from server" },
-    { "proof_debug", OPT_PROOF_DEBUG, '-', "Request an audit proof and print its hex dump" },
     { "alpn", OPT_ALPN, 's', "Enable ALPN extension, considering named protocols supported "
                              "(comma-separated list)" },
     { "nextprotoneg", OPT_NEXTPROTONEG, 's', "Enable NPN extension, considering named "
@@ -398,9 +394,6 @@ int s_client_main(int argc, char **argv)
             break;
         case OPT_STATUS:
             c_status_req = 1;
-            break;
-        case OPT_PROOF_DEBUG:
-            c_proof_debug = 1;
             break;
         case OPT_MSG:
             c_msg = 1;
@@ -614,9 +607,6 @@ int s_client_main(int argc, char **argv)
         SSL_CTX_set_tlsext_servername_callback(ctx, ssl_servername_cb);
         SSL_CTX_set_tlsext_servername_arg(ctx, &tlsextcbp);
     }
-
-    if (c_proof_debug)
-        SSL_CTX_set_tlsext_authz_server_audit_proof_cb(ctx, audit_proof_cb);
 
     con = SSL_new(ctx);
     if (sess_in) {
@@ -1295,24 +1285,5 @@ static int ocsp_resp_cb(SSL *s, void *arg)
     OCSP_RESPONSE_print(arg, rsp, 0);
     BIO_puts(arg, "======================================\n");
     OCSP_RESPONSE_free(rsp);
-    return 1;
-}
-
-static int audit_proof_cb(SSL *s, void *arg)
-{
-    const uint8_t *proof;
-    size_t proof_len;
-    size_t i;
-    SSL_SESSION *sess = SSL_get_session(s);
-
-    proof = SSL_SESSION_get_tlsext_authz_server_audit_proof(sess, &proof_len);
-    if (proof != NULL) {
-        BIO_printf(bio_c_out, "Audit proof: ");
-        for (i = 0; i < proof_len; ++i)
-            BIO_printf(bio_c_out, "%02X", proof[i]);
-        BIO_printf(bio_c_out, "\n");
-    } else {
-        BIO_printf(bio_c_out, "No audit proof found.\n");
-    }
     return 1;
 }

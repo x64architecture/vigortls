@@ -664,8 +664,6 @@ void SSL_SESSION_free(SSL_SESSION *ss)
     free(ss->tlsext_ecpointformatlist);
     ss->tlsext_ellipticcurvelist_length = 0;
     free(ss->tlsext_ellipticcurvelist);
-    ss->audit_proof_length = 0;
-    free(ss->audit_proof);
     CRYPTO_thread_cleanup(ss->lock);
     vigortls_zeroize(ss, sizeof(*ss));
     free(ss);
@@ -768,14 +766,6 @@ int SSL_SESSION_set1_id_context(SSL_SESSION *s, const uint8_t *sid_ctx,
     memcpy(s->sid_ctx, sid_ctx, sid_ctx_len);
 
     return 1;
-}
-
-uint8_t *SSL_SESSION_get_tlsext_authz_server_audit_proof(SSL_SESSION *s,
-                                                         size_t *proof_length)
-{
-    if (s->audit_proof != NULL)
-        *proof_length = s->audit_proof_length;
-    return s->audit_proof;
 }
 
 long SSL_CTX_set_timeout(SSL_CTX *s, long t)

@@ -549,9 +549,6 @@ static void sv_usage(void)
     fprintf(stderr, " -alpn_client <string> - have client side offer ALPN\n");
     fprintf(stderr, " -alpn_server <string> - have server side offer ALPN\n");
     fprintf(stderr, " -alpn_expected <string> - the ALPN protocol that should be negotiated\n");
-    fprintf(stderr, " -server_authz arg - binary authz file for certificate\n");
-    fprintf(stderr, " -c_support_proof  - indicate client support for server_authz audit proofs\n");
-    fprintf(stderr, " -c_require_proof  - fail if no audit proof is sent\n");
     fprintf(stderr, " -serverinfo_file file - have server use this file\n");
     fprintf(stderr, " -serverinfo_sct  - have client offer and expect SCT\n");
     fprintf(stderr, " -serverinfo_tack - have client offer and expect TACK\n");
@@ -587,47 +584,6 @@ static void print_details(SSL *c_ssl, const char *prefix)
     BIO_printf(bio_stdout, "\n");
 }
 
-struct audit_proof_cb_arg_st {
-    uint8_t *expected_proof;
-    size_t expected_proof_length;
-    int require;
-};
-
-struct audit_proof_cb_arg_st c_expected = { NULL, 0, 0 };
-
-static int audit_proof_cb(SSL *s, void *arg)
-{
-    const uint8_t *proof;
-    size_t proof_len;
-    SSL_SESSION *sess = SSL_get_session(s);
-    struct audit_proof_cb_arg_st *cb_arg = (struct audit_proof_cb_arg_st *)arg;
-
-    proof = SSL_SESSION_get_tlsext_authz_server_audit_proof(sess, &proof_len);
-    if (proof != NULL) {
-        if (proof_len == cb_arg->expected_proof_length &&
-            cb_arg->expected_proof != NULL &&
-            memcmp(proof, cb_arg->expected_proof, proof_len) == 0) {
-            BIO_printf(bio_stdout, "Audit proof OK (%lu bytes).\n",
-                       (long)proof_len);
-            return 1;
-        } else {
-            BIO_printf(bio_stdout, "Audit proof mismatch.\n");
-            /* Cause handshake failure. */
-            return 0;
-        }
-    }
-
-    else /* proof == NULL */
-    {
-        BIO_printf(bio_stdout, "No audit proof found.\n");
-        if (cb_arg->require) {
-            /* Cause handshake failure. */
-            return 0;
-        }
-        return 1;
-    }
-}
-
 int main(int argc, char *argv[])
 {
     char *CApath = NULL, *CAfile = NULL;
@@ -657,9 +613,6 @@ int main(int argc, char *argv[])
     int print_time = 0;
     clock_t s_time = 0, c_time = 0;
     int test_cipherlist = 0;
-    char *s_authz_file = NULL;
-    int c_support_proof = 0;
-    int c_require_proof = 0;
 
     verbose = 0;
     debug = 0;
@@ -787,17 +740,6 @@ int main(int argc, char *argv[])
             if (--argc < 1)
                 goto bad;
             alpn_expected = *(++argv);
-        } else if (strcmp(*argv, "-server_authz") == 0) {
-            if (--argc < 1)
-                goto bad;
-            s_authz_file = *(++argv);
-            tls1 = 1;
-        } else if (strcmp(*argv, "-c_support_proof") == 0) {
-            c_support_proof = 1;
-            tls1 = 1;
-        } else if (strcmp(*argv, "-c_require_proof") == 0) {
-            c_require_proof = 1;
-            tls1 = 1;
         } else if (strcmp(*argv, "-serverinfo_sct") == 0) {
             serverinfo_sct = 1;
         } else if (strcmp(*argv, "-serverinfo_tack") == 0) {
@@ -836,15 +778,6 @@ int main(int argc, char *argv[])
                 "the test anyway (and\n-d to see what happens), "
                 "or add one of -dtls1, -tls1, -reuse\n"
                 "to avoid protocol mismatch.\n");
-        exit(1);
-    }
-
-    if (c_require_proof && s_authz_file == NULL && !force) {
-        fprintf(stderr, "This case cannot work. -c_require_proof "
-                        "requires an audit proof, but none was supplied. "
-                        "Use -f to perform the test anyway (and\n-d to see "
-                        "what happens), or use -server_authz to supply an "
-                        "audit proof.\n");
         exit(1);
     }
 
@@ -1001,27 +934,6 @@ int main(int argc, char *argv[])
         free(alpn);
     }
 
-    if (s_authz_file != NULL) {
-        if (!SSL_CTX_use_authz_file(s_ctx, s_authz_file)) {
-            BIO_printf(bio_err, "Unable to set authz data\n");
-            goto end;
-        }
-    }
-    if (c_support_proof || c_require_proof) {
-        size_t proof_length;
-        const uint8_t *proof = SSL_CTX_get_authz_data(
-            s_ctx, TLSEXT_AUTHZDATAFORMAT_audit_proof, &proof_length);
-        if (proof != NULL) {
-            /* Store a local copy. */
-            c_expected.expected_proof = malloc(proof_length);
-            c_expected.expected_proof_length = proof_length;
-            memcpy(c_expected.expected_proof, proof, proof_length);
-        }
-        c_expected.require = c_require_proof;
-        SSL_CTX_set_tlsext_authz_server_audit_proof_cb(c_ctx, audit_proof_cb);
-        SSL_CTX_set_tlsext_authz_server_audit_proof_cb_arg(c_ctx, &c_expected);
-    }
-
     if (serverinfo_sct)
         SSL_CTX_set_custom_cli_ext(c_ctx, SCT_EXT_TYPE, NULL, serverinfo_cli_cb,
                                    NULL);
@@ -1122,7 +1034,6 @@ end:
 #ifndef OPENSSL_NO_ENGINE
     ENGINE_cleanup();
 #endif
-    free(c_expected.expected_proof);
     CRYPTO_cleanup_all_ex_data();
     ERR_free_strings();
     ERR_remove_thread_state(NULL);
