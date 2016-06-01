@@ -92,6 +92,8 @@ option(OPENSSL_NO_RC5
     "Build without RC5 support" TRUE)
 option(OPENSSL_THREADS
     "Build with multi-threading support" TRUE)
+option(OPENSSL_NO_MULTIBLOCK
+    "Build with multi-block support" TRUE)
 
 if (OPENSSL_THREADS)
     list(APPEND VIGORTLS_OPTIONS "OPENSSL_THREADS")
@@ -110,6 +112,9 @@ if (OPENSSL_NO_IDEA)
 endif()
 if (OPENSSL_NO_RC5)
     list(APPEND VIGORTLS_OPTIONS "OPENSSL_NO_RC5")
+endif()
+if (OPENSSL_NO_MULTIBLOCK)
+    list(APPEND VIGORTLS_OPTIONS "OPENSSL_NO_MULTIBLOCK")
 endif()
 list(SORT VIGORTLS_OPTIONS)
 
