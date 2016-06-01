@@ -985,7 +985,7 @@ int ssl3_send_server_hello(SSL *s)
     uint8_t *buf;
     uint8_t *p, *d;
     unsigned long l;
-    int sl;
+    int sl, al;
 
     if (s->state == SSL3_ST_SW_SRVR_HELLO_A) {
         buf = (uint8_t *)s->init_buf->data;
@@ -1026,7 +1026,7 @@ int ssl3_send_server_hello(SSL *s)
         sl = s->session->session_id_length;
         if (sl > (int)sizeof(s->session->session_id)) {
             SSLerr(SSL_F_SSL3_SEND_SERVER_HELLO, ERR_R_INTERNAL_ERROR);
-            return (-1);
+            return -1;
         }
         *(p++) = sl;
         memcpy(p, s->session->session_id, sl);
@@ -1039,12 +1039,14 @@ int ssl3_send_server_hello(SSL *s)
         *(p++) = 0;
         if (ssl_prepare_serverhello_tlsext(s) <= 0) {
             SSLerr(SSL_F_SSL3_SEND_SERVER_HELLO, SSL_R_SERVERHELLO_TLSEXT);
-            return (-1);
+            return -1;
         }
-        if ((p = ssl_add_serverhello_tlsext(
-                 s, p, buf + SSL3_RT_MAX_PLAIN_LENGTH)) == NULL) {
+        p = ssl_add_serverhello_tlsext(s, p, buf + SSL3_RT_MAX_PLAIN_LENGTH,
+                                       &al);
+        if (p == NULL) {
+            ssl3_send_alert(s, SSL3_AL_FATAL, al);
             SSLerr(SSL_F_SSL3_SEND_SERVER_HELLO, ERR_R_INTERNAL_ERROR);
-            return (-1);
+            return -1;
         }
         /* do the header */
         l = p - d;

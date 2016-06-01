@@ -7,7 +7,7 @@
  * https://www.openssl.org/source/license.html
  */
 
-#include <stdio.h>
+#include <stdcompat.h>
 #include <openssl/bio.h>
 #include <openssl/objects.h>
 #include <openssl/evp.h>
@@ -684,20 +684,53 @@ static int serverinfo_find_extension(const uint8_t *serverinfo,
 static int serverinfo_srv_first_cb(SSL *s, uint16_t ext_type, const uint8_t *in,
                                    uint16_t inlen, int *al, void *arg)
 {
+    size_t i;
     if (inlen != 0) {
         *al = SSL_AD_DECODE_ERROR;
         return 0;
     }
+    /* If already in list, error out */
+    for (i = 0; i < s->s3->serverinfo_client_tlsext_custom_types_count; i++) {
+        if (s->s3->serverinfo_client_tlsext_custom_types[i] == ext_type) {
+            *al = SSL_AD_DECODE_ERROR;
+            return 0;
+        }
+    }
+    s->s3->serverinfo_client_tlsext_custom_types_count++;
+    s->s3->serverinfo_client_tlsext_custom_types =
+        reallocarray(s->s3->serverinfo_client_tlsext_custom_types,
+                     s->s3->serverinfo_client_tlsext_custom_types_count, 2);
+    if (s->s3->serverinfo_client_tlsext_custom_types == NULL) {
+        s->s3->serverinfo_client_tlsext_custom_types_count = 0;
+        *al = TLS1_AD_INTERNAL_ERROR;
+        return 0;
+    }
+    const size_t idx = s->s3->serverinfo_client_tlsext_custom_types_count;
+    s->s3->serverinfo_client_tlsext_custom_types[idx - 1] = ext_type;
+
     return 1;
 }
 
 static int serverinfo_srv_second_cb(SSL *s, uint16_t ext_type,
                                     const uint8_t **out, uint16_t *outlen,
-                                    void *arg)
+                                    int *al, void *arg)
 {
     const uint8_t *serverinfo = NULL;
     size_t serverinfo_length = 0;
+    size_t i;
+    uint8_t match = 0;
 
+    /* Did the client send a TLS extension for this type? */
+    for (i = 0; i < s->s3->serverinfo_client_tlsext_custom_types_count; i++) {
+        if (s->s3->serverinfo_client_tlsext_custom_types[i] == ext_type) {
+            match = 1;
+            break;
+        }
+    }
+    if (!match) {
+        /* Extension not sent by client, don't send extension */
+        return -1;
+    }
     /* Is there serverinfo data for the chosen server cert? */
     if ((ssl_get_server_cert_serverinfo(s, &serverinfo, &serverinfo_length)) !=
         0) {
@@ -722,8 +755,8 @@ static int serverinfo_process_buffer(const uint8_t *serverinfo,
     if (serverinfo == NULL || serverinfo_length == 0)
         return 0;
     for (;;) {
-        uint16_t ext_type = 0; /* uint16 */
-        uint16_t len = 0;      /* uint16 */
+        uint16_t ext_type = 0;
+        uint16_t len = 0;
 
         /* end of serverinfo */
         if (serverinfo_length == 0)

@@ -847,12 +847,10 @@ int tls1_set_curves(uint16_t **pext, size_t *pextlen, int *curves,
 int tls1_set_curves_list(uint16_t **pext, size_t *pextlen, const char *str);
 int tls1_check_curve(SSL *s, const uint8_t *p, size_t len);
 
-uint8_t *ssl_add_clienthello_tlsext(SSL *s, uint8_t *p,
-                                          uint8_t *limit);
-
-uint8_t *ssl_add_serverhello_tlsext(SSL *s, uint8_t *p,
-                                          uint8_t *limit);
-
+uint8_t *ssl_add_clienthello_tlsext(SSL *s, uint8_t *p, uint8_t *limit,
+                                    int *al);
+uint8_t *ssl_add_serverhello_tlsext(SSL *s, uint8_t *p, uint8_t *limit,
+                                    int *al);
 int ssl_parse_clienthello_tlsext(SSL *s, uint8_t **data, uint8_t *limit);
 int ssl_parse_serverhello_tlsext(SSL *s, uint8_t **data, uint8_t *d, int n);
 int ssl_prepare_clienthello_tlsext(SSL *s);

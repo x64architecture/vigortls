@@ -257,19 +257,18 @@ typedef int (*tls_session_secret_cb_fn)(SSL *s, void *secret, int *secret_len,
  */
 typedef int (*custom_cli_ext_first_cb_fn)(SSL *s, uint16_t ext_type,
                                           const uint8_t **out,
-                                          uint16_t *outlen, void *arg);
+                                          uint16_t *outlen, int *al, void *arg);
 typedef int (*custom_cli_ext_second_cb_fn)(SSL *s, uint16_t ext_type,
-                                          const uint8_t *in,
-                                          uint16_t inlen, int *al,
-                                          void *arg);
+                                           const uint8_t *in,
+                                           uint16_t inlen, int *al, void *arg);
 
 typedef int (*custom_srv_ext_first_cb_fn)(SSL *s, uint16_t ext_type,
-                                         const uint8_t *in,
-                                         uint16_t inlen, int *al,
-                                         void *arg);
+                                          const uint8_t *in, uint16_t inlen,
+                                          int *al, void *arg);
 typedef int (*custom_srv_ext_second_cb_fn)(SSL *s, uint16_t ext_type,
-                                          const uint8_t **out,
-                                          uint16_t *outlen, void *arg);
+                                           const uint8_t **out,
+                                           uint16_t *outlen, int *al,
+                                           void *arg);
 
 typedef struct {
        uint16_t ext_type;

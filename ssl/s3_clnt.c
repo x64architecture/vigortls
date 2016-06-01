@@ -446,7 +446,7 @@ int ssl3_client_hello(SSL *s)
 {
     uint8_t *buf;
     uint8_t *p, *d;
-    int i;
+    int i, al;
     unsigned long l;
 
     buf = (uint8_t *)s->init_buf->data;
@@ -605,10 +605,11 @@ int ssl3_client_hello(SSL *s)
                    SSL_R_CLIENTHELLO_TLSEXT);
             goto err;
         }
-        if ((p = ssl_add_clienthello_tlsext(s, p,
-                                            buf + SSL3_RT_MAX_PLAIN_LENGTH)) == NULL) {
-            SSLerr(SSL_F_SSL3_CLIENT_HELLO,
-                   ERR_R_INTERNAL_ERROR);
+        p = ssl_add_clienthello_tlsext(s, p, buf + SSL3_RT_MAX_PLAIN_LENGTH,
+                                       &al);
+        if (p == NULL) {
+            ssl3_send_alert(s, SSL3_AL_FATAL, al);
+            SSLerr(SSL_F_SSL3_CLIENT_HELLO, ERR_R_INTERNAL_ERROR);
             goto err;
         }
 

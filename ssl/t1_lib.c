@@ -887,7 +887,7 @@ void ssl_set_client_disabled(SSL *s)
     c->valid = 1;
 }
 
-uint8_t *ssl_add_clienthello_tlsext(SSL *s, uint8_t *p, uint8_t *limit)
+uint8_t *ssl_add_clienthello_tlsext(SSL *s, uint8_t *p, uint8_t *limit, int *al)
 {
     int extdatalen = 0;
     int using_ecc = 0;
@@ -1168,7 +1168,7 @@ skip_ext:
             /* -1 from callback omits extension */
             if (record->fn1) {
                 int cb_retval = 0;
-                cb_retval = record->fn1(s, record->ext_type, &out, &outlen,
+                cb_retval = record->fn1(s, record->ext_type, &out, &outlen, al,
                                         record->arg);
                 if (cb_retval == 0)
                     return NULL; /* error */
@@ -1225,12 +1225,13 @@ skip_ext:
     return ret;
 }
 
-uint8_t *ssl_add_serverhello_tlsext(SSL *s, uint8_t *p,
-                                          uint8_t *limit)
+uint8_t *ssl_add_serverhello_tlsext(SSL *s, uint8_t *p, uint8_t *limit, int *al)
 {
     int using_ecc, extdatalen = 0;
     unsigned long alg_a, alg_k;
     uint8_t *ret = p;
+    size_t i;
+    custom_srv_ext_record *record;
     int next_proto_neg_seen;
 
     alg_a = s->s3->tmp.new_cipher->algorithm_auth;
@@ -1387,40 +1388,27 @@ uint8_t *ssl_add_serverhello_tlsext(SSL *s, uint8_t *p,
         ret += len;
     }
 
-    /* If custom types were sent in ClientHello, add ServerHello responses */
-    if (s->s3->tlsext_custom_types_count) {
-        size_t i;
-
-        for (i = 0; i < s->s3->tlsext_custom_types_count; i++) {
-            size_t j;
-            custom_srv_ext_record *record;
-
-            for (j = 0; j < s->ctx->custom_srv_ext_records_count; j++) {
-                record = &s->ctx->custom_srv_ext_records[j];
-                if (s->s3->tlsext_custom_types[i] == record->ext_type) {
-                    const uint8_t *out = NULL;
-                    uint16_t outlen = 0;
-                    int cb_retval = 0;
-
-                    /* NULL callback or -1 omits extension */
-                    if (!record->fn2)
-                        break;
-                    cb_retval = record->fn2(s, record->ext_type, &out, &outlen,
-                                            record->arg);
-                    if (cb_retval == 0)
-                        return NULL; /* error */
-                    if (cb_retval == -1)
-                        break; /* skip this extension */
-                    if (limit < ret + 4 + outlen)
-                        return NULL;
-                    s2n(record->ext_type, ret);
-                    s2n(outlen, ret);
-                    memcpy(ret, out, outlen);
-                    ret += outlen;
-                    break;
-                }
-            }
-        }
+    for (i = 0; i < s->ctx->custom_srv_ext_records_count; i++) {
+        const uint8_t *out = NULL;
+        uint16_t outlen = 0;
+        int cb_retval = 0;
+        record = &s->ctx->custom_srv_ext_records[i];
+        
+        /* NULL callback or -1 omits extension */
+        if (record->fn2 == NULL)
+            continue;
+        cb_retval = record->fn2(s, record->ext_type, &out, &outlen, al,
+                                record->arg);
+        if (cb_retval == 0)
+            return NULL; /* error */
+        if (cb_retval == -1)
+            continue; /* skip this extension */
+        if (limit < ret + 4 + outlen)
+            return NULL;
+        s2n(record->ext_type, ret);
+        s2n(outlen, ret);
+        memcpy(ret, out, outlen);
+        ret += outlen;
     }
 
     if ((extdatalen = ret - p - 2) == 0)
@@ -1834,33 +1822,9 @@ static int ssl_scan_clienthello_tlsext(SSL *s, uint8_t **p, uint8_t *limit,
             for (i = 0; i < s->ctx->custom_srv_ext_records_count; i++) {
                 record = &s->ctx->custom_srv_ext_records[i];
                 if (type == record->ext_type) {
-                    /* Error on duplicate TLS Extensions */
-                    size_t j;
-
-                    for (j = 0; j < s->s3->tlsext_custom_types_count; j++) {
-                        if (s->s3->tlsext_custom_types[j] == type) {
-                            *al = TLS1_AD_DECODE_ERROR;
-                            return 0;
-                        }
-                    }
-
-                    /* Callback */
-                    if (record->fn1 &&
-                        !record->fn1(s, type, data, size, al, record->arg))
+                    if (record->fn1 && !record->fn1(s, type, data, size, al,
+                                                    record->arg))
                         return 0;
-
-                    /* Add the (non-duplicated) entry */
-                    s->s3->tlsext_custom_types_count++;
-                    s->s3->tlsext_custom_types =
-                        reallocarray(s->s3->tlsext_custom_types,
-                                     s->s3->tlsext_custom_types_count, 2);
-                    if (s->s3->tlsext_custom_types == NULL) {
-                        s->s3->tlsext_custom_types = 0;
-                        *al = TLS1_AD_INTERNAL_ERROR;
-                        return 0;
-                    }
-                    s->s3->tlsext_custom_types[
-                        s->s3->tlsext_custom_types_count - 1] = type;
                 }
             }
         }
@@ -1945,9 +1909,9 @@ static int ssl_scan_serverhello_tlsext(SSL *s, uint8_t **p, uint8_t *d, int n, i
     s->s3->alpn_selected = NULL;
 
     /* Clear observed custom extensions */
-    s->s3->tlsext_custom_types_count = 0;
-    free(s->s3->tlsext_custom_types);
-    s->s3->tlsext_custom_types = NULL;             
+    s->s3->serverinfo_client_tlsext_custom_types_count = 0;
+    free(s->s3->serverinfo_client_tlsext_custom_types);
+    s->s3->serverinfo_client_tlsext_custom_types = NULL;
 
     /* Clear any signature algorithms extension received */
     free(s->cert->peer_sigalgs);
