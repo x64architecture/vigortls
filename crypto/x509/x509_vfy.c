@@ -98,6 +98,16 @@ static int null_callback(int ok, X509_STORE_CTX *e)
     return ok;
 }
 
+/* Returns 1 if the certificate is self-signed */
+static int cert_self_signed(X509 *x)
+{
+    X509_check_purpose(x, -1, 0);
+    if (x->ex_flags & EXFLAG_SS)
+        return 1;
+    else
+        return 0;
+}
+
 /* Given a certificate try and find an exact match in the store */
 
 static X509 *lookup_cert_match(X509_STORE_CTX *ctx, X509 *x)
@@ -182,7 +192,7 @@ int X509_verify_cert(X509_STORE_CTX *ctx)
                                  */
 
         /* If we are self signed, we break */
-        if (ctx->check_issued(ctx, x, x))
+        if (cert_self_signed(x))
             break;
 
         /* If asked see if we can find issuer in trusted store first */
@@ -232,7 +242,7 @@ int X509_verify_cert(X509_STORE_CTX *ctx)
 
     i = sk_X509_num(ctx->chain);
     x = sk_X509_value(ctx->chain, i - 1);
-    if (ctx->check_issued(ctx, x, x)) {
+    if (cert_self_signed(x)) {
         /* we have a self signed certificate */
         if (sk_X509_num(ctx->chain) == 1) {
             /* We have a single self signed certificate: see if
@@ -275,7 +285,7 @@ int X509_verify_cert(X509_STORE_CTX *ctx)
             break;
 
         /* If we are self signed, we break */
-        if (ctx->check_issued(ctx, x, x))
+        if (cert_self_signed(x))
             break;
 
         ok = ctx->get_issuer(&xtmp, ctx, x);
