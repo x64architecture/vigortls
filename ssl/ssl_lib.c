@@ -2005,6 +2005,8 @@ CERT_PKEY *ssl_get_server_send_pkey(const SSL *s)
     int i;
 
     c = s->cert;
+    if (s->s3 == NULL || !s->s3->tmp.new_cipher)
+        return NULL;
     ssl_set_cert_masks(c, s->s3->tmp.new_cipher);
 
     i = ssl_get_server_cert_index(s);
