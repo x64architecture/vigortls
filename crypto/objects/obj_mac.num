@@ -955,3 +955,7 @@ dh_cofactor_kdf        965
 aes_128_cbc_hmac_sha256        966
 aes_192_cbc_hmac_sha256        967
 aes_256_cbc_hmac_sha256        968
+ct_precert_scts        969
+ct_precert_poison        970
+ct_precert_signer        971
+ct_cert_scts        972
