@@ -4119,7 +4119,22 @@
 #define OBJ_ct_precert_signer        1L,3L,6L,1L,4L,1L,11129L,2L,4L,4L
 
 #define SN_ct_cert_scts        "ct_cert_scts"
-#define LN_ct_cert_scts        "CT Certificate SCT"
+#define LN_ct_cert_scts        "CT Certificate SCTs"
 #define NID_ct_cert_scts        972
 #define OBJ_ct_cert_scts        1L,3L,6L,1L,4L,1L,11129L,2L,4L,5L
+
+#define SN_jurisdictionLocalityName        "jurisdictionL"
+#define LN_jurisdictionLocalityName        "jurisdictionLocalityName"
+#define NID_jurisdictionLocalityName        973
+#define OBJ_jurisdictionLocalityName        1L,3L,6L,1L,4L,1L,311L,60L,2L,1L,1L
+
+#define SN_jurisdictionStateOrProvinceName        "jurisdictionST"
+#define LN_jurisdictionStateOrProvinceName        "jurisdictionStateOrProvinceName"
+#define NID_jurisdictionStateOrProvinceName        974
+#define OBJ_jurisdictionStateOrProvinceName        1L,3L,6L,1L,4L,1L,311L,60L,2L,1L,2L
+
+#define SN_jurisdictionCountryNam        "jurisdictionC"
+#define LN_jurisdictionCountryNam        "jurisdictionCountryNam"
+#define NID_jurisdictionCountryNam        975
+#define OBJ_jurisdictionCountryNam        1L,3L,6L,1L,4L,1L,311L,60L,2L,1L,3L
 

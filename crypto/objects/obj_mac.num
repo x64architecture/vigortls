@@ -959,3 +959,6 @@ ct_precert_scts        969
 ct_precert_poison        970
 ct_precert_signer        971
 ct_cert_scts        972
+jurisdictionLocalityName        973
+jurisdictionStateOrProvinceName        974
+jurisdictionCountryNam        975

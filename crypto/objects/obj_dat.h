@@ -8,12 +8,12 @@
  * in the file LICENSE in the source distribution or at
  * https://www.openssl.org/source/license.html
  */
-#define NUM_NID 973
-#define NUM_SN 950
-#define NUM_LN 950
-#define NUM_OBJ 886
+#define NUM_NID 976
+#define NUM_SN 953
+#define NUM_LN 953
+#define NUM_OBJ 889
 
-static const unsigned char lvalues[6213]={
+static const unsigned char lvalues[6246]={
 0x2A,0x86,0x48,0x86,0xF7,0x0D,               /* [  0] OBJ_rsadsi */
 0x2A,0x86,0x48,0x86,0xF7,0x0D,0x01,          /* [  6] OBJ_pkcs */
 0x2A,0x86,0x48,0x86,0xF7,0x0D,0x02,0x05,     /* [ 13] OBJ_md5 */
@@ -894,6 +894,9 @@ static const unsigned char lvalues[6213]={
 0x2B,0x06,0x01,0x04,0x01,0xD6,0x79,0x02,0x04,0x03,/* [6182] OBJ_ct_precert_poison */
 0x2B,0x06,0x01,0x04,0x01,0xD6,0x79,0x02,0x04,0x04,/* [6192] OBJ_ct_precert_signer */
 0x2B,0x06,0x01,0x04,0x01,0xD6,0x79,0x02,0x04,0x05,/* [6202] OBJ_ct_cert_scts */
+0x2B,0x06,0x01,0x04,0x01,0x82,0x37,0x3C,0x02,0x01,0x01,/* [6212] OBJ_jurisdictionLocalityName */
+0x2B,0x06,0x01,0x04,0x01,0x82,0x37,0x3C,0x02,0x01,0x02,/* [6223] OBJ_jurisdictionStateOrProvinceName */
+0x2B,0x06,0x01,0x04,0x01,0x82,0x37,0x3C,0x02,0x01,0x03,/* [6234] OBJ_jurisdictionCountryNam */
 };
 
 static const ASN1_OBJECT nid_objs[NUM_NID]={
@@ -2475,8 +2478,14 @@ static const ASN1_OBJECT nid_objs[NUM_NID]={
 	10,&(lvalues[6182]),0},
 {"ct_precert_signer","CT Precertificate Signer",NID_ct_precert_signer,
 	10,&(lvalues[6192]),0},
-{"ct_cert_scts","CT Certificate SCT",NID_ct_cert_scts,10,
+{"ct_cert_scts","CT Certificate SCTs",NID_ct_cert_scts,10,
 	&(lvalues[6202]),0},
+{"jurisdictionL","jurisdictionLocalityName",
+	NID_jurisdictionLocalityName,11,&(lvalues[6212]),0},
+{"jurisdictionST","jurisdictionStateOrProvinceName",
+	NID_jurisdictionStateOrProvinceName,11,&(lvalues[6223]),0},
+{"jurisdictionC","jurisdictionCountryNam",NID_jurisdictionCountryNam,
+	11,&(lvalues[6234]),0},
 };
 
 static const unsigned int sn_objs[NUM_SN]={
@@ -3089,6 +3098,9 @@ static const unsigned int sn_objs[NUM_SN]={
 86,	/* "issuerAltName" */
 770,	/* "issuingDistributionPoint" */
 492,	/* "janetMailbox" */
+975,	/* "jurisdictionC" */
+973,	/* "jurisdictionL" */
+974,	/* "jurisdictionST" */
 150,	/* "keyBag" */
 83,	/* "keyUsage" */
 477,	/* "lastModifiedBy" */
@@ -3443,7 +3455,7 @@ static const unsigned int ln_objs[NUM_LN]={
 285,	/* "Biometric Info" */
 179,	/* "CA Issuers" */
 785,	/* "CA Repository" */
-972,	/* "CT Certificate SCT" */
+972,	/* "CT Certificate SCTs" */
 970,	/* "CT Precertificate Poison" */
 969,	/* "CT Precertificate SCTs" */
 971,	/* "CT Precertificate Signer" */
@@ -4043,6 +4055,9 @@ static const unsigned int ln_objs[NUM_LN]={
 645,	/* "itu-t" */
 492,	/* "janetMailbox" */
 646,	/* "joint-iso-itu-t" */
+975,	/* "jurisdictionCountryNam" */
+973,	/* "jurisdictionLocalityName" */
+974,	/* "jurisdictionStateOrProvinceName" */
 150,	/* "keyBag" */
 477,	/* "lastModifiedBy" */
 476,	/* "lastModifiedTime" */
@@ -5272,5 +5287,8 @@ static const unsigned int obj_objs[NUM_OBJ]={
 154,	/* OBJ_secretBag                    1 2 840 113549 1 12 10 1 5 */
 155,	/* OBJ_safeContentsBag              1 2 840 113549 1 12 10 1 6 */
 34,	/* OBJ_idea_cbc                     1 3 6 1 4 1 188 7 1 1 2 */
+973,	/* OBJ_jurisdictionLocalityName     1 3 6 1 4 1 311 60 2 1 1 */
+974,	/* OBJ_jurisdictionStateOrProvinceName 1 3 6 1 4 1 311 60 2 1 2 */
+975,	/* OBJ_jurisdictionCountryNam       1 3 6 1 4 1 311 60 2 1 3 */
 };
 
