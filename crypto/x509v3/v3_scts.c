@@ -14,6 +14,23 @@
 #include "cryptlib.h"
 #include "../ssl/ssl_locl.h"
 
+#if (defined(_WIN32) || defined(_WIN64)) && !defined(__MINGW32__)
+#define SCTS_TIMESTAMP unsigned __int64
+#elif defined(__arch64__)
+#define SCTS_TIMESTAMP unsigned long
+#else
+#define SCTS_TIMESTAMP unsigned long long
+#endif
+
+#define n2l8(c, l) (l = ((BN_ULLONG)(*((c)++))) << 56, \
+    l |= ((SCTS_TIMESTAMP)(*((c)++))) << 48,           \
+    l |= ((SCTS_TIMESTAMP)(*((c)++))) << 40,           \
+    l |= ((SCTS_TIMESTAMP)(*((c)++))) << 32,           \
+    l |= ((SCTS_TIMESTAMP)(*((c)++))) << 24,           \
+    l |= ((SCTS_TIMESTAMP)(*((c)++))) << 16,           \
+    l |= ((SCTS_TIMESTAMP)(*((c)++))) <<  8,           \
+    l |= ((SCTS_TIMESTAMP)(*((c)++)))      )
+
 static int i2r_scts(X509V3_EXT_METHOD *method, ASN1_OCTET_STRING *oct, BIO *out,
                     int indent);
 
@@ -46,7 +63,7 @@ static void tls12_signature_print(BIO *out, const uint8_t *data)
         BIO_printf(out, "%s", OBJ_nid2ln(nid));
 }
 
-static void timestamp_print(BIO *out, BN_ULLONG timestamp)
+static void timestamp_print(BIO *out, SCTS_TIMESTAMP timestamp)
 {
     ASN1_GENERALIZEDTIME *gen;
     char genstr[20];
@@ -67,7 +84,7 @@ static void timestamp_print(BIO *out, BN_ULLONG timestamp)
 static int i2r_scts(X509V3_EXT_METHOD *method, ASN1_OCTET_STRING *oct, BIO *out,
                     int indent)
 {
-    BN_ULLONG timestamp;
+    SCTS_TIMESTAMP timestamp;
     uint8_t *data = oct->data;
     unsigned short listlen, sctlen = 0, fieldlen;
     
