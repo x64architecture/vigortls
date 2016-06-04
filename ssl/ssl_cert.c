@@ -369,15 +369,17 @@ int ssl_cert_select_current(CERT *c, X509 *x)
     if (x == NULL)
         return 0;
     for (i = 0; i < SSL_PKEY_NUM; i++) {
-        if (c->pkeys[i].x509 == x) {
-            c->key = &c->pkeys[i];
+        CERT_PKEY *cpk = c->pkeys + i;
+        if (cpk->x509 == x && cpk->privatekey != NULL) {
+            c->key = cpk;
             return 1;
         }
     }
 
     for (i = 0; i < SSL_PKEY_NUM; i++) {
-        if (c->pkeys[i].x509 && !X509_cmp(c->pkeys[i].x509, x)) {
-            c->key = &c->pkeys[i];
+        CERT_PKEY *cpk = c->pkeys + i;
+        if (cpk->privatekey && cpk->x509 && !X509_cmp(cpk->x509, x)) {
+            c->key = cpk;
             return 1;
         }
     }
@@ -398,8 +400,9 @@ int ssl_cert_set_current(CERT *c, long op)
     } else
         return 0;
     for (i = idx; i < SSL_PKEY_NUM; i++) {
-        if (c->pkeys[i].x509) {
-            c->key = &c->pkeys[i];
+        CERT_PKEY *cpk = c->key + i;
+        if (cpk->x509 && cpk->privatekey != NULL) {
+            c->key = cpk;
             return 1;
         }
     }
