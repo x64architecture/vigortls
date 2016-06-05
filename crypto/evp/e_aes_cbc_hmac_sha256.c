@@ -47,11 +47,7 @@ typedef struct {
 
 #define NO_PAYLOAD_LENGTH ((size_t)-1)
 
-#if defined(VIGORTLS_X86_64) && !defined(OPENSSL_NO_ASM)
-#define AES_ASM
-#endif
-
-#if defined(AES_ASM)
+#if defined(AES_ASM) && defined(VIGORTLS_X86_64)
 
 extern unsigned int OPENSSL_ia32cap_P[3];
 #define AESNI_CAPABLE (1 << (57 - 32))
