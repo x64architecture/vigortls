@@ -14,6 +14,11 @@
 #include <openssl/err.h>
 #include <stdcompat.h>
 
+size_t BUF_strnlen(const char *str, size_t maxlen)
+{
+    return strnlen(str, maxlen);
+}
+
 char *BUF_strdup(const char *str)
 {
     char *ret = NULL;
