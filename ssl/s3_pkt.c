@@ -650,10 +650,6 @@ static int do_ssl3_write(SSL *s, int type, const uint8_t *buf,
     SSL3_BUFFER *wb = &(s->s3->wbuf);
     SSL_SESSION *sess;
 
-    if (wb->buf == NULL)
-        if (!ssl3_setup_write_buffer(s))
-            return -1;
-
     /* first check if there is a SSL3_BUFFER still being written
      * out.  This will happen with non blocking IO */
     if (wb->left != 0)
@@ -670,6 +666,10 @@ static int do_ssl3_write(SSL *s, int type, const uint8_t *buf,
             if (!ssl3_setup_write_buffer(s))
                 return -1;
     }
+    
+    if (wb->buf == NULL)
+        if (!ssl3_setup_write_buffer(s))
+            return -1;
 
     if (len == 0 && !create_empty_fragment)
         return 0;
