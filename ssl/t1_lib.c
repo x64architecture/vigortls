@@ -2736,6 +2736,9 @@ static int tls1_set_shared_sigalgs(SSL *s)
     CERT *c = s->cert;
     unsigned int is_suiteb = tls1_suiteb(s);
 
+    free(c->shared_sigalgs);
+    c->shared_sigalgs = NULL;
+
     /* If client use client signature algorithms if not NULL */
     if (!s->server && c->client_sigalgs != NULL && !is_suiteb) {
         conf = c->client_sigalgs;
