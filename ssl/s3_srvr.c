@@ -164,11 +164,9 @@ int ssl3_accept(SSL *s)
             case SSL3_ST_SR_CLNT_HELLO_C:
 
                 s->shutdown = 0;
-                if (s->rwstate != SSL_X509_LOOKUP) {
-                    ret = ssl3_get_client_hello(s);
-                    if (ret <= 0)
-                        goto end;
-                }
+                ret = ssl3_get_client_hello(s);
+                if (ret <= 0)
+                    goto end;
 
                 s->renegotiate = 2;
                 s->state = SSL3_ST_SW_SRVR_HELLO_A;
@@ -599,6 +597,9 @@ int ssl3_get_client_hello(SSL *s)
     uint8_t *p, *d;
     SSL_CIPHER *c;
     STACK_OF(SSL_CIPHER) *ciphers = NULL;
+    
+    if (s->state == SSL3_ST_SR_CLNT_HELLO_C && !s->first_packet)
+        goto retry_cert;
 
     /*
      * We do this so that we will respond with our native type.
@@ -921,12 +922,19 @@ int ssl3_get_client_hello(SSL *s)
         }
         ciphers = NULL;
         /* Let cert callback update server certificates if required */
-        if (s->cert->cert_cb &&
-            s->cert->cert_cb(s, s->cert->cert_cb_arg) <= 0)
-        {
-            al = SSL_AD_INTERNAL_ERROR;
-            SSLerr(SSL_F_SSL3_GET_CLIENT_HELLO,SSL_R_CERT_CB_ERROR);
-            goto f_err;
+        retry_cert:
+        if (s->cert->cert_cb) {
+            int rv = s->cert->cert_cb(s, s->cert->cert_cb_arg);
+            if (rv == 0) {
+                al = SSL_AD_INTERNAL_ERROR;
+                SSLerr(SSL_F_SSL3_GET_CLIENT_HELLO, SSL_R_CERT_CB_ERROR);
+                goto f_err;
+            }
+            if (rv < 0) {
+                s->rwstate = SSL_X509_LOOKUP;
+                return -1;
+            }
+            s->rwstate = SSL_NOTHING;
         }
         c = ssl3_choose_cipher(s, s->session->ciphers, SSL_get_ciphers(s));
 

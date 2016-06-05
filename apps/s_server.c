@@ -1645,6 +1645,17 @@ static int init_ssl_connection(SSL *con)
     uint8_t *exportedkeymat;
 
     i = SSL_accept(con);
+#ifdef CERT_CB_TEST_RETRY
+    {
+        while (i <= 0 && SSL_get_error(con, i) == SSL_ERROR_WANT_X509_LOOKUP &&
+               SSL_state(con) == SSL3_ST_SR_CLNT_HELLO_C)
+        {
+            BIO_printf(bio_err,
+                       "LOOKUP from certificate callback during accept\n");
+            i = SSL_accept(con);
+        }
+    }
+#endif
     if (i <= 0) {
         if (BIO_sock_should_retry(i)) {
             BIO_printf(bio_s_out, "DELAY\n");

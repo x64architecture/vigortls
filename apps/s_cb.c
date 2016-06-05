@@ -991,6 +991,15 @@ static int set_cert_cb(SSL *ssl, void *arg)
 {
     int i, rv;
     SSL_EXCERT *exc = arg;
+#ifdef CERT_CB_TEST_RETRY
+    static int retry_cnt;
+    if (retry_cnt < 5) {
+        retry_cnt++;
+        BIO_printf(bio_err, "Certificate callback retry test: count %d\n",
+                   retry_cnt);
+        return -1;
+    }
+#endif
     SSL_certs_clear(ssl);
     
     if (exc == NULL)
