@@ -1555,6 +1555,11 @@ STACK_OF(SSL_COMP) *SSL_COMP_set0_compression_methods(STACK_OF(SSL_COMP) *meths)
     return NULL;
 }
 
+void SSL_COMP_free_compression_methods(void)
+{
+    return;
+}
+
 int SSL_COMP_add_compression_method(int id, void *cm)
 {
     return 1;
