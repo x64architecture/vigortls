@@ -501,6 +501,8 @@ int X509_VERIFY_PARAM_set1_policies(X509_VERIFY_PARAM *param,
 
 int X509_VERIFY_PARAM_set1_host(X509_VERIFY_PARAM *param,
                                const uint8_t *name, size_t namelen);
+void X509_VERIFY_PARAM_set_hostflags(X509_VERIFY_PARAM *param,
+                                     unsigned int flags);
 int X509_VERIFY_PARAM_set1_email(X509_VERIFY_PARAM *param,
                                  const uint8_t *email, size_t emaillen);
 int X509_VERIFY_PARAM_set1_ip(X509_VERIFY_PARAM *param, const uint8_t *ip,

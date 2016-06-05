@@ -34,9 +34,10 @@
 static const char *names[] = {
     "a", "b", ".", "*", "@",
     ".a", "a.", ".b", "b.", ".*", "*.", "*@", "@*", "a@", "@a", "b@", "..",
-    "@@", "**",
-    "*.com", "*com", "*.*.com", "*com", "com*", "*example.com",
-    "*@example.com", "test@*.example.com",
+    "@@", "**", "*.com", "*com", "*.*.com", "*com", "com*", "*example.com",
+    "*@example.com", "test@*.example.com", "example.com", "www.example.com",
+    "test.www.example.com", "*.example.com", "*.www.example.com",
+    "test.*.example.com", "www.*.com",
     "example.com", "www.example.com", "test.www.example.com",
     "*.example.com", "*.www.example.com", "test.*.example.com", "www.*.com",
     "example.net", "xn--rger-koa.example.com",
@@ -46,14 +47,10 @@ static const char *names[] = {
 };
 
 static const char *exceptions[] = {
-    "set CN: host: [*.example.com] does not match [*.example.com]",
     "set CN: host: [*.example.com] matches [a.example.com]",
     "set CN: host: [*.example.com] matches [b.example.com]",
     "set CN: host: [*.example.com] matches [www.example.com]",
     "set CN: host: [*.example.com] matches [xn--rger-koa.example.com]",
-    "set CN: host: [test.*.example.com] does not match [test.*.example.com]",
-    "set CN: host: [test.*.example.com] matches [test.www.example.com]",
-    "set CN: host: [*.www.example.com] does not match [*.www.example.com]",
     "set CN: host: [*.www.example.com] matches [test.www.example.com]",
     "set emailAddress: email: [postmaster@example.com] does not match "
     "[Postmaster@example.com]",
@@ -64,15 +61,10 @@ static const char *exceptions[] = {
     "set emailAddress: email: [Postmaster@example.com] does not match "
     "[postmaster@EXAMPLE.COM]",
     "set dnsName: host: [*.example.com] matches [www.example.com]",
-    "set dnsName: host: [*.example.com] does not match [*.example.com]",
     "set dnsName: host: [*.example.com] matches [a.example.com]",
     "set dnsName: host: [*.example.com] matches [b.example.com]",
     "set dnsName: host: [*.example.com] matches [xn--rger-koa.example.com]",
     "set dnsName: host: [*.www.example.com] matches [test.www.example.com]",
-    "set dnsName: host: [*.www.example.com] does not match [*.www.example.com]",
-    "set dnsName: host: [test.*.example.com] matches [test.www.example.com]",
-    "set dnsName: host: [test.*.example.com] does not match "
-    "[test.*.example.com]",
     "set rfc822Name: email: [postmaster@example.com] does not match "
     "[Postmaster@example.com]",
     "set rfc822Name: email: [Postmaster@example.com] does not match "
