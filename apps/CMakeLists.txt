@@ -31,6 +31,7 @@ add_executable(
     crl.c
     crl2p7.c
     dgst.c
+    dh.c
     dhparam.c
     dsa.c
     dsaparam.c
@@ -39,13 +40,13 @@ add_executable(
     enc.c
     engine.c
     errstr.c
+    gendh.c
     gendsa.c
     genpkey.c
     genrsa.c
     nseq.c
     ocsp.c
     openssl.c # main
-    opt.c
     passwd.c
     pkey.c
     pkeyparam.c

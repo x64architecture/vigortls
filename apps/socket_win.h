@@ -36,7 +36,8 @@ static int ssl_sock_init(void)
         memset(&wsa_state, 0, sizeof(wsa_state));
         if (WSAStartup(0x0101, &wsa_state) != 0) {
             err = WSAGetLastError();
-            BIO_printf(bio_err, "unable to start WINSOCK, error code=%d\n", err);
+            BIO_printf(bio_err, "unable to start WINSOCK, error code=%d\n",
+                       err);
             return 0;
         }
     }

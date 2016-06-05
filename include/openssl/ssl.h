@@ -1808,6 +1808,7 @@ int (*SSL_get_verify_callback(const SSL *s))(int, X509_STORE_CTX *);
 void SSL_set_verify(SSL *s, int mode,
                     int (*callback)(int ok, X509_STORE_CTX *ctx));
 void SSL_set_verify_depth(SSL *s, int depth);
+void SSL_set_cert_cb(SSL *s, int (*cb)(SSL *ssl, void *arg), void *arg);
 int SSL_use_RSAPrivateKey(SSL *ssl, RSA *rsa);
 int SSL_use_RSAPrivateKey_ASN1(SSL *ssl, uint8_t *d, long len);
 int SSL_use_PrivateKey(SSL *ssl, EVP_PKEY *pkey);
@@ -1880,6 +1881,7 @@ void SSL_CTX_set_verify_depth(SSL_CTX *ctx, int depth);
 void SSL_CTX_set_cert_verify_callback(SSL_CTX *ctx,
                                       int (*cb)(X509_STORE_CTX *, void *),
                                       void *arg);
+void SSL_CTX_set_cert_cb(SSL_CTX *c, int (*cb)(SSL *ssl, void *arg), void *arg);
 int SSL_CTX_use_RSAPrivateKey(SSL_CTX *ctx, RSA *rsa);
 int SSL_CTX_use_RSAPrivateKey_ASN1(SSL_CTX *ctx, const uint8_t *d, long len);
 int SSL_CTX_use_PrivateKey(SSL_CTX *ctx, EVP_PKEY *pkey);

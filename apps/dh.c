@@ -8,11 +8,11 @@
  */
 
 #include "apps.h"
+#include <openssl/bio.h>
+#include <openssl/bn.h>
+#include <openssl/dh.h>
 #include <openssl/err.h>
-#include <openssl/evp.h>
-#include <openssl/objects.h>
 #include <openssl/pem.h>
-#include <openssl/pkcs7.h>
 #include <openssl/x509.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -23,22 +23,23 @@
  * -outform arg - output format - default PEM
  * -in arg    - input file - default stdin
  * -out arg    - output file - default stdout
- * -print_certs
+ * -check    - check the parameters are ok
+ * -noout
+ * -text
+ * -C
  */
 
-int pkcs7_main(int, char **);
+int dh_main(int, char **);
 
-int pkcs7_main(int argc, char **argv)
+int dh_main(int argc, char **argv)
 {
-    PKCS7 *p7 = NULL;
-    int i, badops = 0;
+    DH *dh = NULL;
+    int i, badops = 0, text = 0;
     BIO *in = NULL, *out = NULL;
-    int informat, outformat;
+    int informat, outformat, check = 0, noout = 0, C = 0, ret = 1;
     char *infile, *outfile, *prog;
-    int print_certs = 0, text = 0, noout = 0, p7_print = 0;
-    int ret = 1;
 #ifndef OPENSSL_NO_ENGINE
-    char *engine = NULL;
+    char *engine;
 #endif
 
     if (bio_err == NULL)
@@ -48,6 +49,9 @@ int pkcs7_main(int argc, char **argv)
     if (!load_config(bio_err, NULL))
         goto end;
 
+#ifndef OPENSSL_NO_ENGINE
+    engine = NULL;
+#endif
     infile = NULL;
     outfile = NULL;
     informat = FORMAT_PEM;
@@ -73,14 +77,7 @@ int pkcs7_main(int argc, char **argv)
             if (--argc < 1)
                 goto bad;
             outfile = *(++argv);
-        } else if (strcmp(*argv, "-noout") == 0)
-            noout = 1;
-        else if (strcmp(*argv, "-text") == 0)
-            text = 1;
-        else if (strcmp(*argv, "-print") == 0)
-            p7_print = 1;
-        else if (strcmp(*argv, "-print_certs") == 0)
-            print_certs = 1;
+        }
 #ifndef OPENSSL_NO_ENGINE
         else if (strcmp(*argv, "-engine") == 0) {
             if (--argc < 1)
@@ -88,6 +85,14 @@ int pkcs7_main(int argc, char **argv)
             engine = *(++argv);
         }
 #endif
+        else if (strcmp(*argv, "-check") == 0)
+            check = 1;
+        else if (strcmp(*argv, "-text") == 0)
+            text = 1;
+        else if (strcmp(*argv, "-C") == 0)
+            C = 1;
+        else if (strcmp(*argv, "-noout") == 0)
+            noout = 1;
         else {
             BIO_printf(bio_err, "unknown option %s\n", *argv);
             badops = 1;
@@ -101,21 +106,20 @@ int pkcs7_main(int argc, char **argv)
     bad:
         BIO_printf(bio_err, "%s [options] <infile >outfile\n", prog);
         BIO_printf(bio_err, "where options are\n");
-        BIO_printf(bio_err, " -inform arg   input format - DER or PEM\n");
-        BIO_printf(bio_err, " -outform arg  output format - DER or PEM\n");
+        BIO_printf(bio_err, " -inform arg   input format - one of DER PEM\n");
+        BIO_printf(bio_err, " -outform arg  output format - one of DER PEM\n");
         BIO_printf(bio_err, " -in arg       input file\n");
         BIO_printf(bio_err, " -out arg      output file\n");
+        BIO_printf(bio_err, " -check        check the DH parameters\n");
         BIO_printf(bio_err,
-                   " -print_certs  print any certs or crl in the input\n");
-        BIO_printf(bio_err,
-                   " -text         print full details of certificates\n");
-        BIO_printf(bio_err, " -noout        don't output encoded data\n");
+                   " -text         print a text form of the DH parameters\n");
+        BIO_printf(bio_err, " -C            Output C code\n");
+        BIO_printf(bio_err, " -noout        no output\n");
 #ifndef OPENSSL_NO_ENGINE
         BIO_printf(
             bio_err,
             " -engine e     use engine e, possibly a hardware device.\n");
 #endif
-        ret = 1;
         goto end;
     }
 
@@ -134,26 +138,10 @@ int pkcs7_main(int argc, char **argv)
         BIO_set_fp(in, stdin, BIO_NOCLOSE);
     else {
         if (BIO_read_filename(in, infile) <= 0) {
-            BIO_printf(bio_err, "unable to load input file\n");
-            ERR_print_errors(bio_err);
+            perror(infile);
             goto end;
         }
     }
-
-    if (informat == FORMAT_ASN1)
-        p7 = d2i_PKCS7_bio(in, NULL);
-    else if (informat == FORMAT_PEM)
-        p7 = PEM_read_bio_PKCS7(in, NULL, NULL, NULL);
-    else {
-        BIO_printf(bio_err, "bad input format specified for pkcs7 object\n");
-        goto end;
-    }
-    if (p7 == NULL) {
-        BIO_printf(bio_err, "unable to load PKCS7 object\n");
-        ERR_print_errors(bio_err);
-        goto end;
-    }
-
     if (outfile == NULL) {
         BIO_set_fp(out, stdout, BIO_NOCLOSE);
     } else {
@@ -163,83 +151,101 @@ int pkcs7_main(int argc, char **argv)
         }
     }
 
-    if (p7_print)
-        PKCS7_print_ctx(out, p7, 0, NULL);
-
-    if (print_certs) {
-        STACK_OF(X509) *certs = NULL;
-        STACK_OF(X509_CRL) *crls = NULL;
-
-        i = OBJ_obj2nid(p7->type);
-        switch (i) {
-            case NID_pkcs7_signed:
-                certs = p7->d.sign->cert;
-                crls = p7->d.sign->crl;
-                break;
-            case NID_pkcs7_signedAndEnveloped:
-                certs = p7->d.signed_and_enveloped->cert;
-                crls = p7->d.signed_and_enveloped->crl;
-                break;
-            default:
-                break;
-        }
-
-        if (certs != NULL) {
-            X509 *x;
-
-            for (i = 0; i < sk_X509_num(certs); i++) {
-                x = sk_X509_value(certs, i);
-                if (text)
-                    X509_print(out, x);
-                else
-                    dump_cert_text(out, x);
-
-                if (!noout)
-                    PEM_write_bio_X509(out, x);
-                BIO_puts(out, "\n");
-            }
-        }
-        if (crls != NULL) {
-            X509_CRL *crl;
-
-            for (i = 0; i < sk_X509_CRL_num(crls); i++) {
-                crl = sk_X509_CRL_value(crls, i);
-
-                X509_CRL_print(out, crl);
-
-                if (!noout)
-                    PEM_write_bio_X509_CRL(out, crl);
-                BIO_puts(out, "\n");
-            }
-        }
-
-        ret = 0;
+    if (informat == FORMAT_ASN1)
+        dh = d2i_DHparams_bio(in, NULL);
+    else if (informat == FORMAT_PEM)
+        dh = PEM_read_bio_DHparams(in, NULL, NULL, NULL);
+    else {
+        BIO_printf(bio_err, "bad input format specified\n");
         goto end;
+    }
+    if (dh == NULL) {
+        BIO_printf(bio_err, "unable to load DH parameters\n");
+        ERR_print_errors(bio_err);
+        goto end;
+    }
+
+    if (text)
+        DHparams_print(out, dh);
+
+    if (check) {
+        if (!DH_check(dh, &i)) {
+            ERR_print_errors(bio_err);
+            goto end;
+        }
+        if (i & DH_CHECK_P_NOT_PRIME)
+            printf("p value is not prime\n");
+        if (i & DH_CHECK_P_NOT_SAFE_PRIME)
+            printf("p value is not a safe prime\n");
+        if (i & DH_UNABLE_TO_CHECK_GENERATOR)
+            printf("unable to check the generator value\n");
+        if (i & DH_NOT_SUITABLE_GENERATOR)
+            printf("the g value is not a generator\n");
+        if (i == 0)
+            printf("DH parameters appear to be OK.\n");
+    }
+    if (C) {
+        uint8_t *data;
+        int len, l, bits;
+
+        len = BN_num_bytes(dh->p);
+        bits = BN_num_bits(dh->p);
+        data = malloc(len);
+        if (data == NULL) {
+            perror("malloc");
+            goto end;
+        }
+        l = BN_bn2bin(dh->p, data);
+        printf("static uint8_t dh%d_p[]={", bits);
+        for (i = 0; i < l; i++) {
+            if ((i % 12) == 0)
+                printf("\n\t");
+            printf("0x%02X,", data[i]);
+        }
+        printf("\n\t};\n");
+
+        l = BN_bn2bin(dh->g, data);
+        printf("static uint8_t dh%d_g[]={", bits);
+        for (i = 0; i < l; i++) {
+            if ((i % 12) == 0)
+                printf("\n\t");
+            printf("0x%02X,", data[i]);
+        }
+        printf("\n\t};\n\n");
+
+        printf("DH *get_dh%d()\n\t{\n", bits);
+        printf("\tDH *dh;\n\n");
+        printf("\tif ((dh=DH_new()) == NULL) return (NULL);\n");
+        printf("\tdh->p=BN_bin2bn(dh%d_p,sizeof(dh%d_p),NULL);\n", bits, bits);
+        printf("\tdh->g=BN_bin2bn(dh%d_g,sizeof(dh%d_g),NULL);\n", bits, bits);
+        printf("\tif ((dh->p == NULL) || (dh->g == NULL))\n");
+        printf("\t\treturn (NULL);\n");
+        printf("\treturn (dh);\n\t}\n");
+        free(data);
     }
 
     if (!noout) {
         if (outformat == FORMAT_ASN1)
-            i = i2d_PKCS7_bio(out, p7);
+            i = i2d_DHparams_bio(out, dh);
         else if (outformat == FORMAT_PEM)
-            i = PEM_write_bio_PKCS7(out, p7);
+            i = PEM_write_bio_DHparams(out, dh);
         else {
             BIO_printf(bio_err, "bad output format specified for outfile\n");
             goto end;
         }
-
         if (!i) {
-            BIO_printf(bio_err, "unable to write pkcs7 object\n");
+            BIO_printf(bio_err, "unable to write DH parameters\n");
             ERR_print_errors(bio_err);
             goto end;
         }
     }
     ret = 0;
 end:
-    if (p7 != NULL)
-        PKCS7_free(p7);
     if (in != NULL)
         BIO_free(in);
     if (out != NULL)
         BIO_free_all(out);
+    if (dh != NULL)
+        DH_free(dh);
     return (ret);
 }
