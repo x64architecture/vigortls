@@ -22,9 +22,12 @@
  * https://www.openssl.org/source/license.html
  */
 
+#include <stdcompat.h>
+#include <string.h>
+#include <strings.h>
+
 #include <openssl/x509.h>
 #include <openssl/x509v3.h>
-#include <string.h>
 
 #define NELEMS(x) sizeof(x) / sizeof(x[0])
 
