@@ -23,6 +23,10 @@ static void ill_handler(int sig)
  * ARM compilers support inline assembler...
  */
 void _armv7_neon_probe(void);
+void _armv8_aes_probe(void);
+void _armv8_sha1_probe(void);
+void _armv8_sha256_probe(void);
+void _armv8_pmull_probe(void);
 #endif
 
 #if defined(__GNUC__) && __GNUC__ >= 2
@@ -60,6 +64,22 @@ void OPENSSL_cpuid_setup(void)
     if (sigsetjmp(ill_jmp, 1) == 0) {
         _armv7_neon_probe();
         OPENSSL_armcap_P |= ARMV7_NEON;
+    }
+    if (sigsetjmp(ill_jmp, 1) == 0) {
+        _armv8_aes_probe();
+        OPENSSL_armcap_P |= ARMV8_AES;
+    }
+    if (sigsetjmp(ill_jmp, 1) == 0) {
+        _armv8_sha1_probe();
+        OPENSSL_armcap_P |= ARMV8_SHA1;
+    }
+    if (sigsetjmp(ill_jmp, 1) == 0) {
+        _armv8_sha256_probe();
+        OPENSSL_armcap_P |= ARMV8_SHA256;
+    }
+    if (sigsetjmp(ill_jmp, 1) == 0) {
+        _armv8_pmull_probe();
+        OPENSSL_armcap_P |= ARMV8_PMULL;
     }
 
     sigaction(SIGILL, &ill_oact, NULL);
