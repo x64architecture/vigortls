@@ -164,3 +164,11 @@ $ssltest -bio_pair -tls1 -alpn_client bar,foo -alpn_server bar,foo \
 $ssltest -bio_pair -tls1 -alpn_client foo,bar -alpn_server bar,foo \
   -alpn_expected bar || exit 1
 $ssltest -bio_pair -tls1 -alpn_client baz -alpn_server bar,foo || exit 1
+
+#############################################################################
+# Multi-buffer tests
+
+if [ -z "$extra" -a `uname -m` = "x86_64" ]; then
+  $ssltest -cipher AES128-SHA    -bytes 8m     || exit 1
+  $ssltest -cipher AES128-SHA256 -bytes 8m     || exit 1
+fi
