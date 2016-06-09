@@ -7,8 +7,8 @@
  * https://www.openssl.org/source/license.html
  */
 
-#include <machine/endian.h>
 #include <assert.h>
+#include <machine/endian.h>
 #include <string.h>
 
 #include <openssl/crypto.h>
@@ -30,7 +30,8 @@
             uint64_t T = U64(0xe100000000000000) & (0 - (V.lo & 1)); \
             V.lo = (V.hi << 63) | (V.lo >> 1);                       \
             V.hi = (V.hi >> 1) ^ T;                                  \
-        } else {                                                     \
+        }                                                            \
+        else {                                                       \
             uint32_t T = 0xe1000000U & (0 - (uint32_t)(V.lo & 1));   \
             V.lo = (V.hi << 63) | (V.lo >> 1);                       \
             V.hi = (V.hi >> 1) ^ ((uint64_t)T << 32);                \
@@ -109,11 +110,12 @@ static void gcm_init_4bit(u128 Htable[16], uint64_t H[2])
 }
 
 #ifndef GHASH_ASM
-static const size_t rem_4bit[16]
-    = { PACK(0x0000), PACK(0x1C20), PACK(0x3840), PACK(0x2460),
-        PACK(0x7080), PACK(0x6CA0), PACK(0x48C0), PACK(0x54E0),
-        PACK(0xE100), PACK(0xFD20), PACK(0xD940), PACK(0xC560),
-        PACK(0x9180), PACK(0x8DA0), PACK(0xA9C0), PACK(0xB5E0) };
+static const size_t rem_4bit[16] = {
+    PACK(0x0000), PACK(0x1C20), PACK(0x3840), PACK(0x2460), PACK(0x7080),
+    PACK(0x6CA0), PACK(0x48C0), PACK(0x54E0), PACK(0xE100), PACK(0xFD20),
+    PACK(0xD940), PACK(0xC560), PACK(0x9180), PACK(0x8DA0), PACK(0xA9C0),
+    PACK(0xB5E0)
+};
 
 static void gcm_gmult_4bit(uint64_t Xi[2], const u128 Htable[16])
 {
@@ -175,7 +177,8 @@ static void gcm_gmult_4bit(uint64_t Xi[2], const u128 Htable[16])
         v = (uint32_t)(Z.lo);
         PUTU32(p + 12, v);
 #endif
-    } else {
+    }
+    else {
         Xi[0] = Z.hi;
         Xi[1] = Z.lo;
     }
@@ -254,7 +257,8 @@ static void gcm_ghash_4bit(uint64_t Xi[2], const u128 Htable[16],
             v = (uint32_t)(Z.lo);
             PUTU32(p + 12, v);
 #endif
-        } else {
+        }
+        else {
             Xi[0] = Z.hi;
             Xi[1] = Z.lo;
         }
@@ -288,9 +292,9 @@ void gcm_ghash_clmul(uint64_t Xi[2], const u128 Htable[16], const uint8_t *inp,
                      size_t len);
 
 #if defined(VIGORTLS_X86)
-# define gcm_init_avx  gcm_init_clmul
-# define gcm_gmult_avx gcm_gmult_clmul
-# define gcm_ghash_avx gcm_ghash_clmul
+#define gcm_init_avx gcm_init_clmul
+#define gcm_gmult_avx gcm_gmult_clmul
+#define gcm_ghash_avx gcm_ghash_clmul
 #else
 void gcm_init_avx(u128 Htable[16], const uint64_t Xi[2]);
 void gcm_gmult_avx(uint64_t Xi[2], const u128 Htable[16]);
@@ -301,21 +305,29 @@ void gcm_ghash_avx(uint64_t Xi[2], const u128 Htable[16], const uint8_t *inp,
 #if defined(VIGORTLS_X86)
 #define GHASH_ASM_X86
 void gcm_gmult_4bit_mmx(uint64_t Xi[2], const u128 Htable[16]);
-void gcm_ghash_4bit_mmx(uint64_t Xi[2], const u128 Htable[16], const uint8_t *inp,
-                        size_t len);
+void gcm_ghash_4bit_mmx(uint64_t Xi[2], const u128 Htable[16],
+                        const uint8_t *inp, size_t len);
 
 void gcm_gmult_4bit_x86(uint64_t Xi[2], const u128 Htable[16]);
-void gcm_ghash_4bit_x86(uint64_t Xi[2], const u128 Htable[16], const uint8_t *inp,
-                        size_t len);
+void gcm_ghash_4bit_x86(uint64_t Xi[2], const u128 Htable[16],
+                        const uint8_t *inp, size_t len);
 #endif
 #elif defined(VIGORTLS_ARM)
 #include "arm_arch.h"
 #if __ARM_MAX_ARCH__ >= 7
 #define GHASH_ASM_ARM
 #define GCM_FUNCREF_4BIT
+#define PMULL_CAPABLE (OPENSSL_armcap_P & ARMV8_PMULL)
+#if defined(VIGORTLS_ARM)
+#define NEON_CAPABLE (OPENSSL_armcap_P & ARMV7_NEON)
+#endif
 void gcm_gmult_neon(uint64_t Xi[2], const u128 Htable[16]);
 void gcm_ghash_neon(uint64_t Xi[2], const u128 Htable[16], const uint8_t *inp,
                     size_t len);
+void gcm_init_v8(u128 Htable[16], const uint64_t Xi[2]);
+void gcm_gmult_v8(uint64_t Xi[2], const u128 Htable[16]);
+void gcm_ghash_v8(uint64_t Xi[2], const u128 Htable[16], const uint8_t *inp,
+                  size_t len);
 #endif
 #endif
 #endif
@@ -356,11 +368,12 @@ void CRYPTO_gcm128_init(GCM128_CONTEXT *ctx, void *key, block128_f block)
 #if !defined(GHASH_ASM_X86) || defined(OPENSSL_IA32_SSE2)
     if (OPENSSL_ia32cap_P[0] & (1 << 24) && /* check FXSR bit */
         OPENSSL_ia32cap_P[1] & (1 << 1)) {  /* check PCLMULQDQ bit */
-        if (((OPENSSL_ia32cap_P[1] >> 22) & 0x41) == 0x41) {  /* AVX+MOVBE */
+        if (((OPENSSL_ia32cap_P[1] >> 22) & 0x41) == 0x41) { /* AVX+MOVBE */
             gcm_init_avx(ctx->Htable, ctx->H.u);
             ctx->gmult = gcm_gmult_avx;
             ctx->ghash = gcm_ghash_avx;
-        } else {
+        }
+        else {
             gcm_init_clmul(ctx->Htable, ctx->H.u);
             ctx->gmult = gcm_gmult_clmul;
             ctx->ghash = gcm_ghash_clmul;
@@ -377,7 +390,8 @@ void CRYPTO_gcm128_init(GCM128_CONTEXT *ctx, void *key, block128_f block)
 #endif
         ctx->gmult = gcm_gmult_4bit_mmx;
         ctx->ghash = gcm_ghash_4bit_mmx;
-    } else {
+    }
+    else {
         ctx->gmult = gcm_gmult_4bit_x86;
         ctx->ghash = gcm_ghash_4bit_x86;
     }
@@ -389,7 +403,8 @@ void CRYPTO_gcm128_init(GCM128_CONTEXT *ctx, void *key, block128_f block)
     if (OPENSSL_armcap_P & ARMV7_NEON) {
         ctx->gmult = gcm_gmult_neon;
         ctx->ghash = gcm_ghash_neon;
-    } else {
+    }
+    else {
         gcm_init_4bit(ctx->Htable, ctx->H.u);
         ctx->gmult = gcm_gmult_4bit;
         ctx->ghash = gcm_ghash_4bit;
@@ -419,7 +434,8 @@ void CRYPTO_gcm128_setiv(GCM128_CONTEXT *ctx, const uint8_t *iv, size_t len)
         memcpy(ctx->Yi.c, iv, 12);
         ctx->Yi.c[15] = 1;
         ctr = 1;
-    } else {
+    }
+    else {
         size_t i;
         uint64_t len0 = len;
 
@@ -449,7 +465,8 @@ void CRYPTO_gcm128_setiv(GCM128_CONTEXT *ctx, const uint8_t *iv, size_t len)
             ctx->Yi.c[14] ^= (uint8_t)(len0 >> 8);
             ctx->Yi.c[15] ^= (uint8_t)(len0);
 #endif
-        } else
+        }
+        else
             ctx->Yi.u[1] ^= len0;
 
         GCM_MUL(ctx, Yi);
@@ -484,8 +501,8 @@ int CRYPTO_gcm128_aad(GCM128_CONTEXT *ctx, const uint8_t *aad, size_t len)
 #ifdef GCM_FUNCREF_4BIT
     void (*gcm_gmult_p)(uint64_t Xi[2], const u128 Htable[16]) = ctx->gmult;
 #ifdef GHASH
-    void (*gcm_ghash_p)(uint64_t Xi[2], const u128 Htable[16], const uint8_t *inp,
-                        size_t len) = ctx->ghash;
+    void (*gcm_ghash_p)(uint64_t Xi[2], const u128 Htable[16],
+                        const uint8_t *inp, size_t len) = ctx->ghash;
 #endif
 #endif
 
@@ -548,8 +565,8 @@ int CRYPTO_gcm128_encrypt(GCM128_CONTEXT *ctx, const uint8_t *in, uint8_t *out,
 #ifdef GCM_FUNCREF_4BIT
     void (*gcm_gmult_p)(uint64_t Xi[2], const u128 Htable[16]) = ctx->gmult;
 #ifdef GHASH
-    void (*gcm_ghash_p)(uint64_t Xi[2], const u128 Htable[16], const uint8_t *inp,
-                        size_t len) = ctx->ghash;
+    void (*gcm_ghash_p)(uint64_t Xi[2], const u128 Htable[16],
+                        const uint8_t *inp, size_t len) = ctx->ghash;
 #endif
 #endif
 
@@ -724,8 +741,8 @@ int CRYPTO_gcm128_decrypt(GCM128_CONTEXT *ctx, const uint8_t *in, uint8_t *out,
 #ifdef GCM_FUNCREF_4BIT
     void (*gcm_gmult_p)(uint64_t Xi[2], const u128 Htable[16]) = ctx->gmult;
 #ifdef GHASH
-    void (*gcm_ghash_p)(uint64_t Xi[2], const u128 Htable[16], const uint8_t *inp,
-                        size_t len) = ctx->ghash;
+    void (*gcm_ghash_p)(uint64_t Xi[2], const u128 Htable[16],
+                        const uint8_t *inp, size_t len) = ctx->ghash;
 #endif
 #endif
 
@@ -907,8 +924,8 @@ int CRYPTO_gcm128_encrypt_ctr32(GCM128_CONTEXT *ctx, const uint8_t *in,
 #ifdef GCM_FUNCREF_4BIT
     void (*gcm_gmult_p)(uint64_t Xi[2], const u128 Htable[16]) = ctx->gmult;
 #ifdef GHASH
-    void (*gcm_ghash_p)(uint64_t Xi[2], const u128 Htable[16], const uint8_t *inp,
-                        size_t len) = ctx->ghash;
+    void (*gcm_ghash_p)(uint64_t Xi[2], const u128 Htable[16],
+                        const uint8_t *inp, size_t len) = ctx->ghash;
 #endif
 #endif
 
@@ -1022,8 +1039,8 @@ int CRYPTO_gcm128_decrypt_ctr32(GCM128_CONTEXT *ctx, const uint8_t *in,
 #ifdef GCM_FUNCREF_4BIT
     void (*gcm_gmult_p)(uint64_t Xi[2], const u128 Htable[16]) = ctx->gmult;
 #ifdef GHASH
-    void (*gcm_ghash_p)(uint64_t Xi[2], const u128 Htable[16], const uint8_t *inp,
-                        size_t len) = ctx->ghash;
+    void (*gcm_ghash_p)(uint64_t Xi[2], const u128 Htable[16],
+                        const uint8_t *inp, size_t len) = ctx->ghash;
 #endif
 #endif
 
