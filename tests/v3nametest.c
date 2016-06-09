@@ -38,6 +38,7 @@ static const char *names[] = {
     "*@example.com", "test@*.example.com", "example.com", "www.example.com",
     "test.www.example.com", "*.example.com", "*.www.example.com",
     "test.*.example.com", "www.*.com",
+    ".www.example.com", "*www.example.com",
     "example.com", "www.example.com", "test.www.example.com",
     "*.example.com", "*.www.example.com", "test.*.example.com", "www.*.com",
     "example.net", "xn--rger-koa.example.com",
@@ -52,6 +53,11 @@ static const char *exceptions[] = {
     "set CN: host: [*.example.com] matches [www.example.com]",
     "set CN: host: [*.example.com] matches [xn--rger-koa.example.com]",
     "set CN: host: [*.www.example.com] matches [test.www.example.com]",
+    "set CN: host: [*.www.example.com] matches [.www.example.com]",
+    "set CN: host: [*www.example.com] matches [www.example.com]",
+    "set CN: host: [test.www.example.com] matches [.www.example.com]",
+    "set CN: host-no-wildcards: [*.www.example.com] matches [.www.example.com]",
+    "set CN: host-no-wildcards: [test.www.example.com] matches [.www.example.com]",
     "set emailAddress: email: [postmaster@example.com] does not match "
     "[Postmaster@example.com]",
     "set emailAddress: email: [postmaster@EXAMPLE.COM] does not match "
@@ -65,6 +71,11 @@ static const char *exceptions[] = {
     "set dnsName: host: [*.example.com] matches [b.example.com]",
     "set dnsName: host: [*.example.com] matches [xn--rger-koa.example.com]",
     "set dnsName: host: [*.www.example.com] matches [test.www.example.com]",
+    "set dnsName: host-no-wildcards: [*.www.example.com] matches [.www.example.com]",
+    "set dnsName: host-no-wildcards: [test.www.example.com] matches [.www.example.com]",
+    "set dnsName: host: [*.www.example.com] matches [.www.example.com]",
+    "set dnsName: host: [*www.example.com] matches [www.example.com]",
+    "set dnsName: host: [test.www.example.com] matches [.www.example.com]",
     "set rfc822Name: email: [postmaster@example.com] does not match "
     "[Postmaster@example.com]",
     "set rfc822Name: email: [Postmaster@example.com] does not match "
