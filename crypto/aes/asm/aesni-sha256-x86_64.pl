@@ -72,7 +72,7 @@ if (!$avx && `$cc -v 2>&1` =~ /((?:^clang|LLVM) version|.*based on LLVM) ([3-9]\
 	$avx = ($2>=3.0) + ($2>3.0);
 }
 
-$shaext=$avx;	### set to zero if compiling for 1.0.1
+$shaext=1;	### set to zero if compiling for 1.0.1
 $avx=1		if (!$shaext && $avx);
 
 open OUT,"| \"$^X\" $xlate $flavour $output";
@@ -122,8 +122,7 @@ $code=<<___;
 .align	16
 $func:
 ___
-						if ($avx) {
-$code.=<<___;
+$code.=<<___ if ($avx);
 	lea	OPENSSL_ia32cap_P(%rip),%r11
 	mov	\$1,%eax
 	cmp	\$0,`$win64?"%rcx":"%rdi"`
@@ -147,12 +146,14 @@ $code.=<<___ if ($avx>1);
 	cmp	\$`1<<8|1<<5|1<<3`,%r11d
 	je	${func}_avx2
 ___
-$code.=<<___;
-	and	\$`1<<28`,%r10d			# check for AVX
-	jnz	${func}_avx
+$code.=<<___ if ($avx);
+	and	\$`1<<30`,%eax			# mask "Intel CPU" bit
+	and	\$`1<<28|1<<9`,%r10d		# mask AVX+SSSE3 bits
+	or	%eax,%r10d
+	cmp	\$`1<<28|1<<9|1<<30`,%r10d
+	je	${func}_avx
 	ud2
 ___
-						}
 $code.=<<___;
 	xor	%eax,%eax
 	cmp	\$0,`$win64?"%rcx":"%rdi"`
@@ -1505,13 +1506,13 @@ ___
 
 # EXCEPTION_DISPOSITION handler (EXCEPTION_RECORD *rec,ULONG64 frame,
 #		CONTEXT *context,DISPATCHER_CONTEXT *disp)
-if ($win64 && $avx) {
+if ($win64) {
 $rec="%rcx";
 $frame="%rdx";
 $context="%r8";
 $disp="%r9";
 
-$code.=<<___;
+$code.=<<___ if ($avx);
 .extern	__imp_RtlVirtualUnwind
 .type	se_handler,\@abi-omnipotent
 .align	16
@@ -1649,7 +1650,7 @@ $code.=<<___ if ($shaext);
 	.rva	.LSEH_end_${func}_shaext
 	.rva	.LSEH_info_${func}_shaext
 ___
-$code.=<<___;
+$code.=<<___ if ($avx);
 .section	.xdata
 .align	8
 .LSEH_info_${func}_xop:
@@ -1696,7 +1697,7 @@ sub rex {
   sub sha256op38 {
     my $instr = shift;
 
-    if (defined($opcodelet{$instr}) && @_[0] =~ /%xmm([0-9]+),\s*%xmm([0-9]+)/) {
+    if (defined($opcodelet{$instr}) && @_[0] =~ /%xmm([0-7]),\s*%xmm([0-7])/) {
       my @opcode=(0x0f,0x38);
 	rex(\@opcode,$2,$1);
 	push @opcode,$opcodelet{$instr};

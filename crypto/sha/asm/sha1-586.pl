@@ -300,7 +300,7 @@ if ($alt) {
 
 &function_begin("sha1_block_data_order");
 if ($xmm) {
-  &static_label("shaext_shortcut");
+  &static_label("shaext_shortcut")	if ($shaext);
   &static_label("ssse3_shortcut");
   &static_label("avx_shortcut")		if ($ymm);
   &static_label("K_XX_XX");
@@ -318,8 +318,10 @@ if ($xmm) {
 	&mov	($C,&DWP(8,$T));
 	&test	($A,1<<24);		# check FXSR bit
 	&jz	(&label("x86"));
-	&test	($C,1<<29);		# check SHA bit
-	&jnz	(&label("shaext_shortcut"));
+	if ($shaext) {
+		&test	($C,1<<29);		# check SHA bit
+		&jnz	(&label("shaext_shortcut"));
+	}
 	if ($ymm) {
 		&and	($D,1<<28);		# mask AVX bit
 		&and	($A,1<<30);		# mask "Intel CPU" bit
@@ -398,7 +400,7 @@ if ($xmm) {
 &function_end("sha1_block_data_order");
 
 if ($xmm) {
-{
+if ($shaext) {
 ######################################################################
 # Intel SHA Extensions implementation of SHA1 update function.
 #
