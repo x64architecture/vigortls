@@ -426,7 +426,9 @@ int X509_NAME_print(BIO *bp, X509_NAME *name, int obase)
     l = 80 - 2 - obase;
 
     b = X509_NAME_oneline(name, NULL, 0);
-    if (!*b) {
+    if (b == NULL)
+        return 0;
+    if (*b == '\0') {
         free(b);
         return 1;
     }
