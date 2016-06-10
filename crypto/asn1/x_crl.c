@@ -187,12 +187,12 @@ static int crl_cb(int operation, ASN1_VALUE **pval, const ASN1_ITEM *it,
                 crl->flags |= EXFLAG_INVALID;
 
             /* See if we have any unhandled critical CRL extensions and
-         * indicate this in a flag. We only currently handle IDP so
-         * anything else critical sets the flag.
-         *
-         * This code accesses the X509_CRL structure directly:
-         * applications shouldn't do this.
-         */
+             * indicate this in a flag. We only currently handle IDP so
+             * anything else critical sets the flag.
+             *
+             * This code accesses the X509_CRL structure directly:
+             * applications shouldn't do this.
+             */
 
             exts = crl->crl->extensions;
 
@@ -205,6 +205,7 @@ static int crl_cb(int operation, ASN1_VALUE **pval, const ASN1_ITEM *it,
                 if (ext->critical > 0) {
                     /* We handle IDP and deltas */
                     if ((nid == NID_issuing_distribution_point)
+                        || (nid == NID_authority_key_identifier)
                         || (nid == NID_delta_crl))
                         break;
                     ;
