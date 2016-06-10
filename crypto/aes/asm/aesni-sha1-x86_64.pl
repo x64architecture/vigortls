@@ -92,7 +92,7 @@ $avx=1 if (`$cc -Wa,-v -c -o /dev/null -x assembler /dev/null 2>&1`
 $avx=1 if (!$avx && $win64 && ($flavour =~ /nasm/ || $ENV{ASM} =~ /nasm/) &&
 	   `nasm -v 2>&1` =~ /NASM version ([2-9]\.[0-9]+)/ &&
 	   $1>=2.09);
-$avx=1 if (!$avx && `$cc -v 2>&1` =~ /(^clang version|based on LLVM) ([3-9]\.[0-9]+)/ && $2>=3.0);
+$avx=1 if (!$avx && `$cc -v 2>&1` =~ /((?:^clang|LLVM) version|.*based on LLVM) ([3-9]\.[0-9]+)/ && $2>=3.0);
 
 $shaext=1;	### set to zero if compiling for 1.0.1
 
