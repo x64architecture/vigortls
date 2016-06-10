@@ -38,7 +38,6 @@ static void x509_verify_param_zero(X509_VERIFY_PARAM *param)
     paramid = param->id;
     free(paramid->host);
     paramid->host = NULL;
-    paramid->hostlen = 0;
     free(paramid->email);
     paramid->email = NULL;
     paramid->emaillen = 0;
@@ -168,7 +167,7 @@ int X509_VERIFY_PARAM_inherit(X509_VERIFY_PARAM *dest,
     }
 
     if (test_x509_verify_param_copy_id(host, NULL)) {
-        if (!X509_VERIFY_PARAM_set1_host(dest, id->host, id->hostlen))
+        if (!X509_VERIFY_PARAM_set1_host(dest, id->host, 0))
             return 0;
         dest->id->hostflags = id->hostflags;
     }
@@ -321,8 +320,7 @@ int X509_VERIFY_PARAM_set1_policies(X509_VERIFY_PARAM *param,
 int X509_VERIFY_PARAM_set1_host(X509_VERIFY_PARAM *param,
                                 const uint8_t *name, size_t namelen)
 {
-    return int_x509_param_set1(&param->id->host, &param->id->hostlen,
-                               name, namelen);
+    return int_x509_param_set1(&param->id->host, NULL, name, namelen);
 }
 
 void X509_VERIFY_PARAM_set_hostflags(X509_VERIFY_PARAM *param,
@@ -369,7 +367,7 @@ const char *X509_VERIFY_PARAM_get0_name(const X509_VERIFY_PARAM *param)
     return param->name;
 }
 
-static X509_VERIFY_PARAM_ID _empty_id = { NULL, 0, 0U, NULL, 0, NULL, 0 };
+static X509_VERIFY_PARAM_ID _empty_id = { NULL, 0U, NULL, 0, NULL, 0 };
 
 #define vpm_empty_id (X509_VERIFY_PARAM_ID *)&_empty_id
 

@@ -917,6 +917,10 @@ static int do_x509_check(X509 *x, const uint8_t *chk, size_t chklen,
 int X509_check_host(X509 *x, const uint8_t *chk, size_t chklen,
                     unsigned int flags)
 {
+    if (chklen == 0)
+        chklen = chk ? strlen((char *)chk) : 0;
+    else if (chk != NULL && memchr(chk, '\0', chklen) != NULL)
+        return 0;
     return do_x509_check(x, chk, chklen, flags, GEN_DNS);
 }
 

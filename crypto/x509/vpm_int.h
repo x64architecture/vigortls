@@ -4,7 +4,6 @@
 struct X509_VERIFY_PARAM_ID_st
 {
     uint8_t *host;          /* If not NULL hostname to match */
-    size_t hostlen;
     unsigned int hostflags; /* Flags to control matching features */
     uint8_t *email;         /* If not NULL email address to match */
     size_t emaillen;
