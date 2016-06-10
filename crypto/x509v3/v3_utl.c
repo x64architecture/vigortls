@@ -555,13 +555,9 @@ static void skip_prefix(const uint8_t **p, size_t *plen, const uint8_t *subject,
      * If subject starts with a leading '.' followed by more octets, and
      * pattern is longer, compare just an equal-length suffix with the
      * full subject (starting at the '.'), provided the prefix contains
-     * no NULs.  (We check again that subject starts with '.' and
-     * contains at least one subsequent character, just in case the
-     * internal _X509_CHECK_FLAG_DOT_SUBDOMAINS flag was erroneously
-     * set by the user).
+     * no NULs.
      */
-    if ((flags & _X509_CHECK_FLAG_DOT_SUBDOMAINS) == 0 || subject_len <= 1 ||
-        subject[0] != '.')
+    if ((flags & _X509_CHECK_FLAG_DOT_SUBDOMAINS) == 0)
         return;
 
     while (pattern_len > subject_len && *pattern) {
@@ -850,6 +846,8 @@ static int do_x509_check(X509 *x, const uint8_t *chk, size_t chklen,
     int san_present = 0;
     equal_fn equal;
 
+    /* See below, this flag is internal-only */
+    flags &= ~_X509_CHECK_FLAG_DOT_SUBDOMAINS;
     if (check_type == GEN_EMAIL) {
         cnid = NID_pkcs9_emailAddress;
         alt_type = V_ASN1_IA5STRING;
