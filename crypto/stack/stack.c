@@ -53,6 +53,41 @@ err:
     return (NULL);
 }
 
+_STACK *sk_deep_copy(_STACK *sk, void *(*copy_func)(void *),
+                     void (*free_func)(void *))
+{
+    _STACK *ret;
+    int i;
+
+    ret = malloc(sizeof(_STACK));
+    if (ret == NULL)
+        return ret;
+    ret->comp = sk->comp;
+    ret->sorted = sk->sorted;
+    ret->num = sk->num;
+    ret->num_alloc = sk->num > MIN_NODES ? sk->num : MIN_NODES;
+    ret->data = reallocarray(NULL, ret->num_alloc, sizeof(char *));
+    if (ret->data == NULL) {
+        free(ret);
+        return NULL;
+    }
+    for (i = 0; i < ret->num_alloc; i++)
+        ret->data[i] = NULL;
+
+    for (i = 0; i < ret->num; ++i) {
+        if (sk->data[i] == NULL)
+            continue;
+        if ((ret->data[i] = copy_func(sk->data[i])) == NULL) {
+            while (--i >= 0)
+                if (ret->data[i] != NULL)
+                    free_func(ret->data[i]);
+            sk_free(ret);
+            return NULL;
+        }
+    }
+    return ret;
+}
+
 _STACK *sk_new_null(void)
 {
     return sk_new((int (*)(const void *, const void *))0);
