@@ -86,6 +86,9 @@ int ASN1_get_object(const uint8_t **pp, long *plength, int *ptag,
     if (!asn1_get_length(&p, &inf, plength, max))
         goto err;
 
+    if (inf && !(ret & V_ASN1_CONSTRUCTED))
+        goto err;
+
     if (*plength > (omax - (p - *pp))) {
         ASN1err(ASN1_F_ASN1_GET_OBJECT, ASN1_R_TOO_LONG);
         /* Set this so that even if things are not long enough
