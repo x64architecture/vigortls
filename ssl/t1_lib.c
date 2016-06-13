@@ -887,11 +887,12 @@ void ssl_set_client_disabled(SSL *s)
     c->valid = 1;
 }
 
-uint8_t *ssl_add_clienthello_tlsext(SSL *s, uint8_t *p, uint8_t *limit, int *al)
+uint8_t *ssl_add_clienthello_tlsext(SSL *s, uint8_t *buf, uint8_t *limit, int *al)
 {
     int extdatalen = 0;
     int using_ecc = 0;
-    uint8_t *ret = p;
+    uint8_t *orig = buf;
+    uint8_t *ret = buf;
 
     /* See if we support any ECC ciphersuites. */
     if (s->version != DTLS1_VERSION && s->version >= TLS1_VERSION) {
@@ -1218,18 +1219,19 @@ skip_ext:
         }
     }
 
-    if ((extdatalen = ret - p - 2) == 0)
-        return p;
+    if ((extdatalen = ret - orig - 2) == 0)
+        return orig;
 
-    s2n(extdatalen, p);
+    s2n(extdatalen, orig);
     return ret;
 }
 
-uint8_t *ssl_add_serverhello_tlsext(SSL *s, uint8_t *p, uint8_t *limit, int *al)
+uint8_t *ssl_add_serverhello_tlsext(SSL *s, uint8_t *buf, uint8_t *limit, int *al)
 {
     int using_ecc, extdatalen = 0;
     unsigned long alg_a, alg_k;
-    uint8_t *ret = p;
+    uint8_t *orig = buf;
+    uint8_t *ret = buf;
     size_t i;
     custom_srv_ext_record *record;
     int next_proto_neg_seen;
@@ -1411,10 +1413,10 @@ uint8_t *ssl_add_serverhello_tlsext(SSL *s, uint8_t *p, uint8_t *limit, int *al)
         ret += outlen;
     }
 
-    if ((extdatalen = ret - p - 2) == 0)
-        return p;
+    if ((extdatalen = ret - orig - 2) == 0)
+        return orig;
 
-    s2n(extdatalen, p);
+    s2n(extdatalen, orig);
     return ret;
 }
 
