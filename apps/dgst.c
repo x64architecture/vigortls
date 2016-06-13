@@ -406,7 +406,8 @@ int dgst_main(int argc, char **argv)
                     EVP_PKEY_asn1_get0_info(NULL, NULL, NULL, NULL, &sig_name,
                                             ameth);
             }
-            md_name = EVP_MD_name(md);
+            if (md)
+                md_name = EVP_MD_name(md);
         }
         err = 0;
         for (i = 0; i < argc; i++) {
@@ -502,9 +503,12 @@ int do_fp(BIO *out, uint8_t *buf, BIO *bp, int sep, int binout, EVP_PKEY *key,
             BIO_printf(out, "%02x", buf[i]);
         BIO_printf(out, " *%s\n", file);
     } else {
-        if (sig_name)
-            BIO_printf(out, "%s-%s(%s)= ", sig_name, md_name, file);
-        else if (md_name)
+        if (sig_name) {
+            BIO_puts(out, sig_name);
+            if (md_name)
+                BIO_printf(out, "-%s", md_name);
+            BIO_printf(out, "(%s)= ", file);
+        } else if (md_name)
             BIO_printf(out, "%s(%s)= ", md_name, file);
         else
             BIO_printf(out, "(%s)= ", file);
