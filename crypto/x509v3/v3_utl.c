@@ -833,9 +833,9 @@ static int do_check_string(ASN1_STRING *a, int cmp_type, equal_fn equal,
         if (astrlen < 0)
             return -1;
         rv = equal(astr, astrlen, (uint8_t *)b, blen, flags);
-        free(astr);
         if (rv > 0 && peername)
             *peername = strndup((char *)astr, astrlen);
+        free(astr);
     }
     return rv;
 }
