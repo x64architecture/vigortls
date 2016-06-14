@@ -27,7 +27,7 @@ size_t CRYPTO_128_wrap(void *key, const uint8_t *iv, uint8_t *out,
 {
     uint8_t *A, B[16], *R;
     size_t i, j, t;
-    if ((inlen & 0x7) || (inlen < 8) || (inlen > CRYPTO128_WRAP_MAX))
+    if ((inlen & 0x7) || (inlen < 16) || (inlen > CRYPTO128_WRAP_MAX))
         return 0;
     A = B;
     t = 1;
