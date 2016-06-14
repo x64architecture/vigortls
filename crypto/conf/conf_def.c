@@ -254,7 +254,7 @@ static int def_load_bio(CONF *conf, BIO *in, long *line)
             end = eat_alpha_numeric(conf, ss);
             p = eat_ws(conf, end);
             if (*p != ']') {
-                if (*p != '\0') {
+                if (*p != '\0' && ss != p) {
                     ss = p;
                     goto again;
                 }
