@@ -311,7 +311,7 @@ static void run_cert(X509 *crt, const char *nameincert,
         int match, ret;
         memcpy(name, *pname, namelen);
 
-        ret = X509_check_host(crt, (const uint8_t *)name, namelen, 0, NULL);
+        ret = X509_check_host(crt, name, namelen, 0, NULL);
         match = -1;
         if (ret < 0) {
             fprintf(stderr, "internal error in X509_check_host");
@@ -325,8 +325,8 @@ static void run_cert(X509 *crt, const char *nameincert,
             match = 1;
         check_message(fn, "host", nameincert, match, *pname);
 
-        ret = X509_check_host(crt, (const uint8_t *)name, namelen,
-                              X509_CHECK_FLAG_NO_WILDCARDS, NULL);
+        ret = X509_check_host(crt, name, namelen, X509_CHECK_FLAG_NO_WILDCARDS,
+                              NULL);
         match = -1;
         if (ret < 0) {
             fprintf(stderr, "internal error in X509_check_host");
@@ -340,7 +340,7 @@ static void run_cert(X509 *crt, const char *nameincert,
             match = 1;
         check_message(fn, "host-no-wildcards", nameincert, match, *pname);
 
-        ret = X509_check_email(crt, (const uint8_t *)name, namelen, 0);
+        ret = X509_check_email(crt, name, namelen, 0);
         match = -1;
         if (fn->email) {
             if (ret && !samename)

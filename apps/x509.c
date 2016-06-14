@@ -151,7 +151,8 @@ int x509_main(int argc, char **argv)
     char *extsect = NULL, *extfile = NULL, *passin = NULL, *passargin = NULL;
     int checkend = 0, checkoffset = 0;
     unsigned long nmflag = 0, certflag = 0;
-    uint8_t *checkhost = NULL, *checkemail = NULL;
+    const char *checkhost = NULL;
+    const char *checkemail = NULL;
     char *checkip = NULL;
 #ifndef OPENSSL_NO_ENGINE
     char *engine = NULL;
@@ -367,11 +368,11 @@ int x509_main(int argc, char **argv)
         } else if (strcmp(*argv, "-checkhost") == 0) {
             if (--argc < 1)
                 goto bad;
-            checkhost = (uint8_t *)*(++argv);
+            checkhost = *(++argv);
         } else if (strcmp(*argv, "-checkemail") == 0) {
             if (--argc < 1)
                 goto bad;
-            checkemail = (uint8_t *)*(++argv);
+            checkemail = *(++argv);
         } else if (strcmp(*argv, "-checkip") == 0) {
             if (--argc < 1)
                 goto bad;

@@ -1926,7 +1926,8 @@ int args_verify(char ***pargs, int *pargc, int *badarg, BIO *err,
     char **oldargs = *pargs;
     char *arg = **pargs, *argn = (*pargs)[1];
     time_t at_time = 0;
-    const uint8_t *hostname = NULL, *email = NULL;
+    const char *hostname = NULL;
+    const char *email = NULL;
     char *ipasc = NULL;
     if (!strcmp(arg, "-policy")) {
         if (!argn)
@@ -1984,12 +1985,12 @@ int args_verify(char ***pargs, int *pargc, int *badarg, BIO *err,
     } else if (strcmp(arg, "-verify_hostname") == 0) {
         if (!argn)
             *badarg = 1;
-        hostname = (uint8_t *)argn;
+        hostname = argn;
         (*pargs)++;
     } else if (strcmp(arg, "-verify_email") == 0) {
         if (!argn)
             *badarg = 1;
-        email = (uint8_t *)argn;
+        email = argn;
         (*pargs)++;
     } else if (strcmp(arg, "-verify_ip") == 0) {
         if (!argn)
@@ -2206,8 +2207,8 @@ uint8_t *next_protos_parse(unsigned short *outlen, const char *in)
     return out;
 }
 
-void print_cert_checks(BIO *bio, X509 *x, const uint8_t *checkhost,
-                       const uint8_t *checkemail, const char *checkip)
+void print_cert_checks(BIO *bio, X509 *x, const char *checkhost,
+                       const char *checkemail, const char *checkip)
 {
     if (x == NULL)
         return;

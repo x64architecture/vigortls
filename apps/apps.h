@@ -147,8 +147,8 @@ int do_X509_CRL_sign(BIO *err, X509_CRL *x, EVP_PKEY *pkey, const EVP_MD *md,
 
 uint8_t *next_protos_parse(unsigned short *outlen, const char *in);
 
-void print_cert_checks(BIO *bio, X509 *x, const uint8_t *checkhost,
-                       const uint8_t *checkemail, const char *checkip);
+void print_cert_checks(BIO *bio, X509 *x, const char *checkhost,
+                       const char *checkemail, const char *checkip);
 void store_setup_crl_download(X509_STORE *st);;
 
 #define FORMAT_UNDEF    0
