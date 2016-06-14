@@ -10,6 +10,10 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#ifdef  __cplusplus
+extern "C" {
+#endif
+
 typedef void (*block128_f)(const uint8_t in[16], uint8_t out[16],
                            const void *key);
 
@@ -122,3 +126,7 @@ size_t CRYPTO_128_wrap(void *key, const uint8_t *iv, uint8_t *out,
 
 size_t CRYPTO_128_unwrap(void *key, const uint8_t *iv, uint8_t *out,
                          const uint8_t *in, size_t inlen, block128_f block);
+
+#ifdef  __cplusplus
+}
+#endif
