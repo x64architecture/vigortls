@@ -281,6 +281,11 @@ int enc_main(int argc, char **argv)
         goto end;
     }
 
+    if (cipher && (EVP_CIPHER_mode(cipher) == EVP_CIPH_XTS_MODE)) {
+        BIO_printf(bio_err, "Ciphers in XTS mode are not supported by the enc utility\n");
+        goto end;
+    }
+
     if (md && (dgst = EVP_get_digestbyname(md)) == NULL) {
         BIO_printf(bio_err, "%s is an unsupported message digest type\n", md);
         goto end;
