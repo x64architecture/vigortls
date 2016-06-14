@@ -528,7 +528,7 @@ static unsigned long dtls1_max_handshake_message_len(const SSL *s)
     return max_len;
 }
 
-static int dtls1_reassemble_fragment(SSL *s, struct hm_header_st *msg_hdr,
+static int dtls1_reassemble_fragment(SSL *s, const struct hm_header_st *msg_hdr,
                                      int *ok)
 {
     hm_fragment *frag = NULL;
@@ -607,10 +607,6 @@ static int dtls1_reassemble_fragment(SSL *s, struct hm_header_st *msg_hdr,
     }
 
     if (item == NULL) {
-        memset(seq64be, 0, sizeof(seq64be));
-        seq64be[6] = (uint8_t)(msg_hdr->seq >> 8);
-        seq64be[7] = (uint8_t)(msg_hdr->seq);
-
         item = pitem_new(seq64be, frag);
         if (item == NULL) {
             i = -1;
@@ -629,7 +625,8 @@ err:
     return i;
 }
 
-static int dtls1_process_out_of_seq_message(SSL *s, struct hm_header_st *msg_hdr,
+static int dtls1_process_out_of_seq_message(SSL *s,
+                                            const struct hm_header_st *msg_hdr,
                                             int *ok)
 {
     int i = -1;
@@ -651,7 +648,7 @@ static int dtls1_process_out_of_seq_message(SSL *s, struct hm_header_st *msg_hdr
      * If we already have an entry and this one is a fragment,
      * don't discard it and rather try to reassemble it.
      */
-    if (item != NULL && frag_len < msg_hdr->msg_len)
+    if (item != NULL && frag_len != msg_hdr->msg_len)
         item = NULL;
 
     /*
@@ -675,7 +672,7 @@ static int dtls1_process_out_of_seq_message(SSL *s, struct hm_header_st *msg_hdr
             frag_len -= i;
         }
     } else {
-        if (frag_len < msg_hdr->msg_len)
+        if (frag_len != msg_hdr->msg_len)
             return dtls1_reassemble_fragment(s, msg_hdr, ok);
 
         if (frag_len > dtls1_max_handshake_message_len(s))
@@ -696,10 +693,6 @@ static int dtls1_process_out_of_seq_message(SSL *s, struct hm_header_st *msg_hdr
             if (i <= 0)
                 goto err;
         }
-
-        memset(seq64be, 0, sizeof(seq64be));
-        seq64be[6] = (uint8_t)(msg_hdr->seq >> 8);
-        seq64be[7] = (uint8_t)(msg_hdr->seq);
 
         item = pitem_new(seq64be, frag);
         if (item == NULL)
