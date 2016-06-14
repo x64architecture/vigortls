@@ -1601,6 +1601,8 @@ static int aes_wrap_cipher(EVP_CIPHER_CTX *ctx, uint8_t *out, const uint8_t *in,
 {
     EVP_AES_WRAP_CTX *wctx = ctx->cipher_data;
     size_t rv;
+    if (in == NULL)
+        return 0;
     if (inlen % 8)
         return -1;
     if (ctx->encrypt && inlen < 8)
@@ -1613,8 +1615,6 @@ static int aes_wrap_cipher(EVP_CIPHER_CTX *ctx, uint8_t *out, const uint8_t *in,
         else
             return inlen - 8;
     }
-    if (in == NULL)
-        return 0;
     if (ctx->encrypt)
         rv = CRYPTO_128_wrap(&wctx->ks.ks, wctx->iv, out, in, inlen,
                              (block128_f)AES_encrypt);
