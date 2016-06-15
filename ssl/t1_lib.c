@@ -1156,34 +1156,8 @@ skip_ext:
 #endif
 
     /* Add custom TLS Extensions to ClientHello */
-    if (s->cert->custom_cli_ext_records_count) {
-        size_t i;
-        custom_cli_ext_record *record;
-
-        for (i = 0; i < s->cert->custom_cli_ext_records_count; i++) {
-            const uint8_t *out = NULL;
-            uint16_t outlen = 0;
-
-            record = &s->cert->custom_cli_ext_records[i];
-            /* NULL callback sends empty extension */ 
-            /* -1 from callback omits extension */
-            if (record->fn1) {
-                int cb_retval = 0;
-                cb_retval = record->fn1(s, record->ext_type, &out, &outlen, al,
-                                        record->arg);
-                if (cb_retval == 0)
-                    return NULL; /* error */
-                if (cb_retval == -1)
-                    continue; /* skip this extension */
-            }
-            if (limit < ret + 4 + outlen)
-                return NULL;
-            s2n(record->ext_type, ret);
-            s2n(outlen, ret);
-            memcpy(ret, out, outlen);
-            ret += outlen;
-        }
-    }
+    if (!custom_ext_add(s, 0, &ret, limit, al))
+        return NULL;
 
     /*
      * Add padding to workaround bugs in F5 terminators.
@@ -1232,8 +1206,6 @@ uint8_t *ssl_add_serverhello_tlsext(SSL *s, uint8_t *buf, uint8_t *limit, int *a
     unsigned long alg_a, alg_k;
     uint8_t *orig = buf;
     uint8_t *ret = buf;
-    size_t i;
-    custom_srv_ext_record *record;
     int next_proto_neg_seen;
 
     alg_a = s->s3->tmp.new_cipher->algorithm_auth;
@@ -1376,6 +1348,9 @@ uint8_t *ssl_add_serverhello_tlsext(SSL *s, uint8_t *buf, uint8_t *limit, int *a
         }
     }
 
+    if (!custom_ext_add(s, 1, &ret, limit, al))
+        return NULL;
+
     if (s->s3->alpn_selected != NULL) {
         const uint8_t *selected = s->s3->alpn_selected;
         unsigned int len = s->s3->alpn_selected_len;
@@ -1388,29 +1363,6 @@ uint8_t *ssl_add_serverhello_tlsext(SSL *s, uint8_t *buf, uint8_t *limit, int *a
         *ret++ = len;
         memcpy(ret, selected, len);
         ret += len;
-    }
-
-    for (i = 0; i < s->cert->custom_srv_ext_records_count; i++) {
-        const uint8_t *out = NULL;
-        uint16_t outlen = 0;
-        int cb_retval = 0;
-        record = &s->cert->custom_srv_ext_records[i];
-        
-        /* NULL callback or -1 omits extension */
-        if (record->fn2 == NULL)
-            continue;
-        cb_retval = record->fn2(s, record->ext_type, &out, &outlen, al,
-                                record->arg);
-        if (cb_retval == 0)
-            return NULL; /* error */
-        if (cb_retval == -1)
-            continue; /* skip this extension */
-        if (limit < ret + 4 + outlen)
-            return NULL;
-        s2n(record->ext_type, ret);
-        s2n(outlen, ret);
-        memcpy(ret, out, outlen);
-        ret += outlen;
     }
 
     if ((extdatalen = ret - orig - 2) == 0)
@@ -1817,18 +1769,9 @@ static int ssl_scan_clienthello_tlsext(SSL *s, uint8_t **p, uint8_t *limit,
          * so call the callback and record the extension number so that
          * an appropriate ServerHello may be later returned.
          */
-        else if (!s->hit && s->cert->custom_srv_ext_records_count) {
-            size_t i;
-            custom_srv_ext_record *record;
-
-            for (i = 0; i < s->cert->custom_srv_ext_records_count; i++) {
-                record = &s->cert->custom_srv_ext_records[i];
-                if (type == record->ext_type) {
-                    if (record->fn1 && !record->fn1(s, type, data, size, al,
-                                                    record->arg))
-                        return 0;
-                }
-            }
+        else if (!s->hit) {
+            if (!custom_ext_parse(s, 1, type, data, size, al))
+                return 0;
         }
 
         data += size;
@@ -2084,19 +2027,8 @@ static int ssl_scan_serverhello_tlsext(SSL *s, uint8_t **p, uint8_t *d, int n, i
          * matches a custom_cli_ext_record, then send it to the
          * callback
          */
-        else if (s->cert->custom_cli_ext_records_count) {
-            size_t i;
-            custom_cli_ext_record *record;
-
-            for (i = 0; i < s->cert->custom_cli_ext_records_count; i++) {
-                record = &s->cert->custom_cli_ext_records[i];
-                if (record->ext_type == type) {
-                    if (record->fn2 && !record->fn2(s, type, data, size, al, record->arg))
-                        return 0;
-                    break;
-                }
-            }                       
-        }
+        else if (!custom_ext_parse(s, 0, type, data, size, al))
+            return 0;
 
         data += size;
     }

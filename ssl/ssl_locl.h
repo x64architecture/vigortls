@@ -363,17 +363,15 @@ typedef struct cert_pkey_st {
 
 typedef struct {
     uint16_t ext_type;
-    custom_cli_ext_first_cb_fn fn1;
-    custom_cli_ext_second_cb_fn fn2;
+    custom_ext_add_cb add_cb;
+    custom_ext_parse_cb parse_cb;
     void *arg;
-} custom_cli_ext_record;
+} custom_ext_method;
 
 typedef struct {
-    uint16_t ext_type;
-    custom_srv_ext_first_cb_fn fn1;
-    custom_srv_ext_second_cb_fn fn2;
-    void *arg;
-} custom_srv_ext_record;
+    custom_ext_method *meths;
+    size_t meths_count;
+} custom_ext_methods;
 
 typedef struct cert_st {
     /* Current active set */
@@ -471,11 +469,9 @@ typedef struct cert_st {
     uint8_t *ciphers_raw;
     size_t ciphers_rawlen;
 
-    /* Arrays containing the callbacks for custom TLS Extensions. */
-    custom_cli_ext_record *custom_cli_ext_records;
-    size_t custom_cli_ext_records_count;
-    custom_srv_ext_record *custom_srv_ext_records;
-    size_t custom_srv_ext_records_count;
+    /* Custom extension methods for server and client */
+    custom_ext_methods cli_ext;
+    custom_ext_methods srv_ext;
 
     int references; /* >1 only if SSL_copy_session_id is used */
     CRYPTO_MUTEX *lock;
@@ -752,9 +748,9 @@ int dtls1_send_change_cipher_spec(SSL *s, int a, int b);
 int dtls1_send_finished(SSL *s, int a, int b, const char *sender, int slen);
 int dtls1_read_failed(SSL *s, int code);
 int dtls1_buffer_message(SSL *s, int ccs);
-int dtls1_retransmit_message(SSL *s, unsigned short seq, unsigned long frag_off,
+int dtls1_retransmit_message(SSL *s, uint16_t seq, unsigned long frag_off,
                              int *found);
-int dtls1_get_queue_priority(unsigned short seq, int is_ccs);
+int dtls1_get_queue_priority(uint16_t seq, int is_ccs);
 int dtls1_retransmit_buffered_messages(SSL *s);
 void dtls1_clear_record_buffer(SSL *s);
 int dtls1_get_message_header(const uint8_t *data,
@@ -762,7 +758,7 @@ int dtls1_get_message_header(const uint8_t *data,
 void dtls1_get_ccs_header(uint8_t *data, struct ccs_header_st *ccs_hdr);
 void dtls1_reset_seq_numbers(SSL *s, int rw);
 void dtls1_build_sequence_number(uint8_t *dst, uint8_t *seq,
-                                 unsigned short epoch);
+                                 uint16_t epoch);
 long dtls1_default_timeout(void);
 struct timeval *dtls1_get_timeout(SSL *s, struct timeval *timeleft);
 int dtls1_check_timeout_num(SSL *s);
@@ -835,6 +831,13 @@ int dtls1_get_record(SSL *s);
 int do_dtls1_write(SSL *s, int type, const uint8_t *buf,
                    unsigned int len);
 int dtls1_dispatch_alert(SSL *s);
+
+int custom_ext_parse(SSL *s, int server, uint16_t ext_type,
+                     const uint8_t *ext_data, uint16_t ext_size, int *al);
+int custom_ext_add(SSL *s, int server, uint8_t **pret, uint8_t *limit, int *al);
+
+int custom_exts_copy(custom_ext_methods *dst, const custom_ext_methods *src);
+void custom_exts_free(custom_ext_methods *exts);
 
 int ssl_init_wbio_buffer(SSL *s, int push);
 void ssl_free_wbio_buffer(SSL *s);

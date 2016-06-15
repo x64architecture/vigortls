@@ -255,20 +255,14 @@ typedef int (*tls_session_secret_cb_fn)(SSL *s, void *secret, int *secret_len,
  *   "al" is a TLS "AlertDescription" from 0-255 which WILL be sent as a
  *     fatal TLS alert, if the callback returns zero.
  */
-typedef int (*custom_cli_ext_first_cb_fn)(SSL *s, uint16_t ext_type,
-                                          const uint8_t **out,
-                                          uint16_t *outlen, int *al, void *arg);
-typedef int (*custom_cli_ext_second_cb_fn)(SSL *s, uint16_t ext_type,
-                                           const uint8_t *in,
-                                           uint16_t inlen, int *al, void *arg);
-
-typedef int (*custom_srv_ext_first_cb_fn)(SSL *s, uint16_t ext_type,
-                                          const uint8_t *in, uint16_t inlen,
-                                          int *al, void *arg);
-typedef int (*custom_srv_ext_second_cb_fn)(SSL *s, uint16_t ext_type,
-                                           const uint8_t **out,
-                                           uint16_t *outlen, int *al,
-                                           void *arg);
+typedef int (*custom_ext_add_cb)(SSL *s, uint16_t ext_type, const uint8_t **out,
+                                 uint16_t *outlen, int *al, void *arg);
+typedef int (*custom_ext_parse_cb)(SSL *s, uint16_t ext_type, const uint8_t *in,
+                                   uint16_t inlen, int *al, void *arg);
+typedef custom_ext_add_cb custom_cli_ext_first_cb_fn;
+typedef custom_ext_parse_cb custom_cli_ext_second_cb_fn;
+typedef custom_ext_add_cb custom_srv_ext_second_cb_fn;
+typedef custom_ext_parse_cb custom_srv_ext_first_cb_fn;
 
 #ifndef OPENSSL_NO_SSL_INTERN
 

@@ -37,6 +37,7 @@ add_library(
     ssl_txt.c
     t1_clnt.c
     t1_enc.c
+    t1_ext.c
     t1_lib.c
     t1_meth.c
     t1_reneg.c
