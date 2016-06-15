@@ -363,10 +363,28 @@ typedef struct cert_pkey_st {
 
 typedef struct {
     uint16_t ext_type;
+    /*
+     * Per-connection flags relating to this extension type: not used
+     * if part of an SSL_CTX structure.
+     */
+    uint16_t ext_flags;
     custom_ext_add_cb add_cb;
     custom_ext_parse_cb parse_cb;
     void *arg;
 } custom_ext_method;
+
+/* ext_flags values */
+
+/*
+ * Indicates an extension has been received.
+ * Used to check for unsolicited or duplicate extensions.
+ */
+#define SSL_EXT_FLAG_RECEIVED  0x1
+/*
+ * Indicates an extension has been sent: used to
+ * enable sending of corresponding ServerHello extension.
+ */
+#define SSL_EXT_FLAG_SENT      0x2
 
 typedef struct {
     custom_ext_method *meths;
@@ -831,6 +849,8 @@ int dtls1_get_record(SSL *s);
 int do_dtls1_write(SSL *s, int type, const uint8_t *buf,
                    unsigned int len);
 int dtls1_dispatch_alert(SSL *s);
+
+void custom_ext_init(custom_ext_methods *meths);
 
 int custom_ext_parse(SSL *s, int server, uint16_t ext_type,
                      const uint8_t *ext_data, uint16_t ext_size, int *al);

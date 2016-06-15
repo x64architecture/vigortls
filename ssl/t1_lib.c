@@ -1155,6 +1155,7 @@ skip_ext:
     }
 #endif
 
+    custom_ext_init(&s->cert->cli_ext);
     /* Add custom TLS Extensions to ClientHello */
     if (!custom_ext_add(s, 0, &ret, limit, al))
         return NULL;
@@ -1807,6 +1808,7 @@ int ssl_parse_clienthello_tlsext(SSL *s, uint8_t **p, uint8_t *d)
 {
     int al = -1;
 
+    custom_ext_init(&s->cert->srv_ext);
     if (ssl_scan_clienthello_tlsext(s, p, d, &al) <= 0) {
         ssl3_send_alert(s, SSL3_AL_FATAL, al); 
         return 0;
