@@ -229,11 +229,35 @@ CERT *ssl_cert_dup(CERT *cert)
         ret->chain_store = cert->chain_store;
     }
 
+    if (cert->custom_cli_ext_records_count) {
+        ret->custom_cli_ext_records =
+            reallocarray(NULL, cert->custom_cli_ext_records_count,
+                sizeof(custom_cli_ext_record));
+        if (ret->custom_cli_ext_records == NULL)
+            goto err;
+        memcpy(ret->custom_cli_ext_records, cert->custom_cli_ext_records,
+            cert->custom_cli_ext_records_count * sizeof(custom_cli_ext_record));
+        ret->custom_cli_ext_records_count = cert->custom_cli_ext_records_count;
+    }
+
+    if (cert->custom_srv_ext_records_count) {
+        ret->custom_srv_ext_records =
+            reallocarray(NULL, cert->custom_srv_ext_records_count, sizeof(custom_srv_ext_record));
+        if (ret->custom_srv_ext_records == NULL)
+            goto err;
+        memcpy(ret->custom_srv_ext_records, cert->custom_srv_ext_records,
+            cert->custom_srv_ext_records_count * sizeof(custom_srv_ext_record));
+        ret->custom_srv_ext_records_count = cert->custom_srv_ext_records_count;
+    }
+
     return ret;
 
 err:
     DH_free(ret->dh_tmp);
     EC_KEY_free(ret->ecdh_tmp);
+
+    free(ret->custom_cli_ext_records);
+    free(ret->custom_srv_ext_records);
 
     ssl_cert_clear_certs(ret);
     free(ret);
@@ -288,6 +312,8 @@ void ssl_cert_free(CERT *c)
     X509_STORE_free(c->verify_store);
     X509_STORE_free(c->chain_store);
     free(c->ciphers_raw);
+    free(c->custom_cli_ext_records);
+    free(c->custom_srv_ext_records);
     CRYPTO_thread_cleanup(c->lock);
     free(c);
 }

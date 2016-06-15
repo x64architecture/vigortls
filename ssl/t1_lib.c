@@ -1156,15 +1156,15 @@ skip_ext:
 #endif
 
     /* Add custom TLS Extensions to ClientHello */
-    if (s->ctx->custom_cli_ext_records_count) {
+    if (s->cert->custom_cli_ext_records_count) {
         size_t i;
         custom_cli_ext_record *record;
 
-        for (i = 0; i < s->ctx->custom_cli_ext_records_count; i++) {
+        for (i = 0; i < s->cert->custom_cli_ext_records_count; i++) {
             const uint8_t *out = NULL;
             uint16_t outlen = 0;
 
-            record = &s->ctx->custom_cli_ext_records[i];
+            record = &s->cert->custom_cli_ext_records[i];
             /* NULL callback sends empty extension */ 
             /* -1 from callback omits extension */
             if (record->fn1) {
@@ -1390,11 +1390,11 @@ uint8_t *ssl_add_serverhello_tlsext(SSL *s, uint8_t *buf, uint8_t *limit, int *a
         ret += len;
     }
 
-    for (i = 0; i < s->ctx->custom_srv_ext_records_count; i++) {
+    for (i = 0; i < s->cert->custom_srv_ext_records_count; i++) {
         const uint8_t *out = NULL;
         uint16_t outlen = 0;
         int cb_retval = 0;
-        record = &s->ctx->custom_srv_ext_records[i];
+        record = &s->cert->custom_srv_ext_records[i];
         
         /* NULL callback or -1 omits extension */
         if (record->fn2 == NULL)
@@ -1817,12 +1817,12 @@ static int ssl_scan_clienthello_tlsext(SSL *s, uint8_t **p, uint8_t *limit,
          * so call the callback and record the extension number so that
          * an appropriate ServerHello may be later returned.
          */
-        else if (!s->hit && s->ctx->custom_srv_ext_records_count) {
+        else if (!s->hit && s->cert->custom_srv_ext_records_count) {
             size_t i;
             custom_srv_ext_record *record;
 
-            for (i = 0; i < s->ctx->custom_srv_ext_records_count; i++) {
-                record = &s->ctx->custom_srv_ext_records[i];
+            for (i = 0; i < s->cert->custom_srv_ext_records_count; i++) {
+                record = &s->cert->custom_srv_ext_records[i];
                 if (type == record->ext_type) {
                     if (record->fn1 && !record->fn1(s, type, data, size, al,
                                                     record->arg))
@@ -2084,12 +2084,12 @@ static int ssl_scan_serverhello_tlsext(SSL *s, uint8_t **p, uint8_t *d, int n, i
          * matches a custom_cli_ext_record, then send it to the
          * callback
          */
-        else if (s->ctx->custom_cli_ext_records_count) {
+        else if (s->cert->custom_cli_ext_records_count) {
             size_t i;
             custom_cli_ext_record *record;
 
-            for (i = 0; i < s->ctx->custom_cli_ext_records_count; i++) {
-                record = &s->ctx->custom_cli_ext_records[i];
+            for (i = 0; i < s->cert->custom_cli_ext_records_count; i++) {
+                record = &s->cert->custom_cli_ext_records[i];
                 if (record->ext_type == type) {
                     if (record->fn2 && !record->fn2(s, type, data, size, al, record->arg))
                         return 0;

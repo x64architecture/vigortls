@@ -1499,29 +1499,29 @@ void SSL_CTX_set_next_proto_select_cb(SSL_CTX *ctx,
     ctx->next_proto_select_cb_arg = arg;
 }
 
-int SSL_CTX_set_custom_cli_ext(SSL_CTX *ctx, uint16_t ext_type,
-                               custom_cli_ext_first_cb_fn fn1,
-                               custom_cli_ext_second_cb_fn fn2, void *arg)
+static int cert_set_custom_cli_ext(CERT *cert, uint16_t ext_type,
+                                   custom_cli_ext_first_cb_fn fn1,
+                                   custom_cli_ext_second_cb_fn fn2, void *arg)
 {
     /* Check for duplicates */
     size_t i;
     custom_cli_ext_record *record;
 
-    for (i = 0; i < ctx->custom_cli_ext_records_count; i++)
-        if (ext_type == ctx->custom_cli_ext_records[i].ext_type)
+    for (i = 0; i < cert->custom_cli_ext_records_count; i++)
+        if (ext_type == cert->custom_cli_ext_records[i].ext_type)
             return 0;
 
-    ctx->custom_cli_ext_records =
-        reallocarray(ctx->custom_cli_ext_records,
-                     ctx->custom_cli_ext_records_count + 1,
+    cert->custom_cli_ext_records =
+        reallocarray(cert->custom_cli_ext_records,
+                     cert->custom_cli_ext_records_count + 1,
                      sizeof(custom_cli_ext_record));
-    if (ctx->custom_cli_ext_records == NULL) {
-        ctx->custom_cli_ext_records_count = 0;
+    if (cert->custom_cli_ext_records == NULL) {
+        cert->custom_cli_ext_records_count = 0;
         return 0;
     }
-    ctx->custom_cli_ext_records_count++;
+    cert->custom_cli_ext_records_count++;
     record =
-        &ctx->custom_cli_ext_records[ctx->custom_cli_ext_records_count - 1];
+        &cert->custom_cli_ext_records[cert->custom_cli_ext_records_count - 1];
     record->ext_type = ext_type;
     record->fn1 = fn1;
     record->fn2 = fn2;
@@ -1529,35 +1529,49 @@ int SSL_CTX_set_custom_cli_ext(SSL_CTX *ctx, uint16_t ext_type,
     return 1;
 }
 
-int SSL_CTX_set_custom_srv_ext(SSL_CTX *ctx, uint16_t ext_type,
-                               custom_srv_ext_first_cb_fn fn1,
-                               custom_srv_ext_second_cb_fn fn2, void *arg)
+static int cert_set_custom_srv_ext(CERT *cert, uint16_t ext_type,
+                                   custom_srv_ext_first_cb_fn fn1,
+                                   custom_srv_ext_second_cb_fn fn2, void *arg)
 {
     /* Check for duplicates */
     size_t i;
     custom_srv_ext_record *record;
 
-    for (i = 0; i < ctx->custom_srv_ext_records_count; i++) {
-        if (ext_type == ctx->custom_srv_ext_records[i].ext_type)
+    for (i = 0; i < cert->custom_srv_ext_records_count; i++) {
+        if (ext_type == cert->custom_srv_ext_records[i].ext_type)
             return 0;
     }
 
-    ctx->custom_srv_ext_records =
-        reallocarray(ctx->custom_srv_ext_records,
-                     ctx->custom_srv_ext_records_count + 1,
+    cert->custom_srv_ext_records =
+        reallocarray(cert->custom_srv_ext_records,
+                     cert->custom_srv_ext_records_count + 1,
                      sizeof(custom_srv_ext_record));
-    if (ctx->custom_srv_ext_records == NULL) {
-        ctx->custom_srv_ext_records_count = 0;
+    if (cert->custom_srv_ext_records == NULL) {
+        cert->custom_srv_ext_records_count = 0;
         return 0;
     }
-    ctx->custom_srv_ext_records_count++;
+    cert->custom_srv_ext_records_count++;
     record =
-        &ctx->custom_srv_ext_records[ctx->custom_srv_ext_records_count - 1];
+        &cert->custom_srv_ext_records[cert->custom_srv_ext_records_count - 1];
     record->ext_type = ext_type;
     record->fn1 = fn1;
     record->fn2 = fn2;
     record->arg = arg;
     return 1;
+}
+
+int SSL_CTX_set_custom_cli_ext(SSL_CTX *ctx, uint16_t ext_type,
+                               custom_cli_ext_first_cb_fn fn1,
+                               custom_cli_ext_second_cb_fn fn2, void *arg)
+{
+    return cert_set_custom_cli_ext(ctx->cert, ext_type, fn1, fn2, arg);
+}
+
+int SSL_CTX_set_custom_srv_ext(SSL_CTX *ctx, uint16_t ext_type,
+                               custom_srv_ext_first_cb_fn fn1,
+                               custom_srv_ext_second_cb_fn fn2, void *arg)
+{
+    return cert_set_custom_srv_ext(ctx->cert, ext_type, fn1, fn2, arg);
 }
 
 /*
@@ -1827,8 +1841,6 @@ void SSL_CTX_free(SSL_CTX *a)
     ssl_cert_free(a->cert);
     sk_X509_NAME_pop_free(a->client_CA, X509_NAME_free);
     sk_X509_pop_free(a->extra_certs, X509_free);
-    free(a->custom_cli_ext_records);
-    free(a->custom_srv_ext_records);
 #ifndef OPENSSL_NO_ENGINE
     if (a->client_cert_engine)
         ENGINE_finish(a->client_cert_engine);

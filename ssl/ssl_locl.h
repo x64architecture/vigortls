@@ -361,6 +361,19 @@ typedef struct cert_pkey_st {
 #define SSL_CERT_FLAGS_CHECK_TLS_STRICT \
     (SSL_CERT_FLAG_SUITEB_128_LOS | SSL_CERT_FLAG_TLS_STRICT)
 
+typedef struct {
+    uint16_t ext_type;
+    custom_cli_ext_first_cb_fn fn1;
+    custom_cli_ext_second_cb_fn fn2;
+    void *arg;
+} custom_cli_ext_record;
+
+typedef struct {
+    uint16_t ext_type;
+    custom_srv_ext_first_cb_fn fn1;
+    custom_srv_ext_second_cb_fn fn2;
+    void *arg;
+} custom_srv_ext_record;
 
 typedef struct cert_st {
     /* Current active set */
@@ -457,6 +470,12 @@ typedef struct cert_st {
     /* Raw values of the cipher list from a client */
     uint8_t *ciphers_raw;
     size_t ciphers_rawlen;
+
+    /* Arrays containing the callbacks for custom TLS Extensions. */
+    custom_cli_ext_record *custom_cli_ext_records;
+    size_t custom_cli_ext_records_count;
+    custom_srv_ext_record *custom_srv_ext_records;
+    size_t custom_srv_ext_records_count;
 
     int references; /* >1 only if SSL_copy_session_id is used */
     CRYPTO_MUTEX *lock;

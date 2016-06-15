@@ -270,20 +270,6 @@ typedef int (*custom_srv_ext_second_cb_fn)(SSL *s, uint16_t ext_type,
                                            uint16_t *outlen, int *al,
                                            void *arg);
 
-typedef struct {
-       uint16_t ext_type;
-       custom_cli_ext_first_cb_fn fn1;
-       custom_cli_ext_second_cb_fn fn2;
-       void *arg;
-} custom_cli_ext_record;
-
-typedef struct {
-       uint16_t ext_type;
-       custom_srv_ext_first_cb_fn fn1;
-       custom_srv_ext_second_cb_fn fn2;
-       void *arg;
-} custom_srv_ext_record;
-
 #ifndef OPENSSL_NO_SSL_INTERN
 
 /* used to hold info on the particular ciphers used */
@@ -902,12 +888,6 @@ struct ssl_ctx_st {
     uint16_t *tlsext_ecpointformatlist;
     size_t tlsext_ellipticcurvelist_length;
     uint16_t *tlsext_ellipticcurvelist;
-
-    /* Arrays containing the callbacks for custom TLS Extensions. */
-    custom_cli_ext_record *custom_cli_ext_records;
-    size_t custom_cli_ext_records_count;
-    custom_srv_ext_record *custom_srv_ext_records;
-    size_t custom_srv_ext_records_count;
 
     CRYPTO_MUTEX *lock;
 };
