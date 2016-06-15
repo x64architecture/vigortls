@@ -397,17 +397,6 @@ typedef struct ssl3_state_st {
      */
     uint8_t *alpn_selected;
     unsigned int alpn_selected_len;
-
-    /*
-     * serverinfo_client_tlsext_custom_types contains an array of TLS Extension
-     * types which were advertised by the client in its ClientHello and
-     * leveraged by ServerInfo TLS extension callbacks.
-     * The array does not contain any duplicates, and is in the same order
-     * as the types were received in the client hello.
-     */
-    uint16_t *serverinfo_client_tlsext_custom_types;
-    /* how many serverinfo_client_tlsext_custom_types */
-    size_t serverinfo_client_tlsext_custom_types_count;
 } SSL3_STATE;
 
 #endif
