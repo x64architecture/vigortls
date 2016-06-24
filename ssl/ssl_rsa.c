@@ -738,11 +738,11 @@ static int serverinfo_process_buffer(const uint8_t *serverinfo,
 
         /* Register callbacks for extensions */
         ext_type = (serverinfo[0] << 8) + serverinfo[1];
-        if (ctx && !SSL_CTX_set_custom_srv_ext(ctx, ext_type,
-                                               serverinfo_srv_add_cb,
-                                               NULL, NULL,
-                                               serverinfo_srv_parse_cb,
-                                               NULL))
+        if (ctx && !SSL_CTX_add_server_custom_ext(ctx, ext_type,
+                                                  serverinfo_srv_add_cb,
+                                                  NULL, NULL,
+                                                  serverinfo_srv_parse_cb,
+                                                  NULL))
             return 0;
 
         serverinfo += 2;

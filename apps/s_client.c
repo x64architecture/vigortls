@@ -782,8 +782,8 @@ int s_client_main(int argc, char **argv)
     }
     if (serverinfo_types_count) {
         for (i = 0; i < serverinfo_types_count; i++) {
-            SSL_CTX_set_custom_cli_ext(ctx, serverinfo_types[i], NULL, NULL,
-                                       NULL, serverinfo_cli_cb, NULL);
+            SSL_CTX_add_client_custom_ext(ctx, serverinfo_types[i], NULL, NULL,
+                                          NULL, serverinfo_cli_cb, NULL);
         }
     }
 
