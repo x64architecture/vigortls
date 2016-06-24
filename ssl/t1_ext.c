@@ -13,9 +13,8 @@
 #include "ssl_locl.h"
 
 /* Find a custom extension from the list */
-
 static custom_ext_method *custom_ext_find(custom_ext_methods *exts,
-                                          uint16_t ext_type)
+                                          unsigned int ext_type)
 {
     size_t i;
     custom_ext_method *meth = exts->meths;
@@ -37,15 +36,13 @@ void custom_ext_init(custom_ext_methods *exts)
         exts->meths[i].ext_flags = 0;
 }
 
-/* pass received custom extension data to the application for parsing */
-
+/* Pass received custom extension data to the application for parsing. */
 int custom_ext_parse(SSL *s, int server, unsigned int ext_type,
                      const uint8_t *ext_data, size_t ext_size, int *al)
 {
     custom_ext_methods *exts = server ? &s->cert->srv_ext : &s->cert->cli_ext;
     custom_ext_method *meth;
     meth = custom_ext_find(exts, ext_type);
-    /* If not found or no parse function set, return success */
     /* If not found return success */
     if (meth == NULL)
         return 1;
@@ -65,6 +62,7 @@ int custom_ext_parse(SSL *s, int server, unsigned int ext_type,
         return 0;
     }
     meth->ext_flags |= SSL_EXT_FLAG_RECEIVED;
+    /* If no parse function set return success */
     if (!meth->parse_cb)
         return 1;
 
@@ -72,8 +70,8 @@ int custom_ext_parse(SSL *s, int server, unsigned int ext_type,
 }
 
 /*
- * request custom extension data from the application and add to the
- * return buffer
+ * Request custom extension data from the application and add to the
+ * return buffer.
  */
 
 int custom_ext_add(SSL *s, int server, uint8_t **pret, uint8_t *limit, int *al)
@@ -114,12 +112,12 @@ int custom_ext_add(SSL *s, int server, uint8_t **pret, uint8_t *limit, int *al)
             memcpy(ret, out, outlen);
             ret += outlen;
         }
-        /* We can't send duplicates: code logic should prevent this */
+        /* We can't send duplicates: code logic should prevent this. */
         OPENSSL_assert(!(meth->ext_flags & SSL_EXT_FLAG_SENT));
         /*
          * Indicate extension has been sent: this is both a sanity check to
-         * ensure we don't send duplicate extensions and indicates to servers
-         * that an extension can be sent in ServerHello.
+         * ensure we don't send duplicate extensions and indicates that it is
+         * not an error if the extension is present in ServerHello.
          */
         meth->ext_flags |= SSL_EXT_FLAG_SENT;
         if (meth->free_cb)
@@ -150,7 +148,7 @@ void custom_exts_free(custom_ext_methods *exts)
     free(exts->meths);
 }
 
-/* Set callbacks for a custom extension */
+/* Set callbacks for a custom extension. */
 static int custom_ext_meth_add(custom_ext_methods *exts,
                                unsigned int ext_type,
                                custom_ext_add_cb add_cb,
@@ -160,7 +158,13 @@ static int custom_ext_meth_add(custom_ext_methods *exts,
 {
     custom_ext_method *meth;
 
-    /* Don't add if extension supported internally */
+    /*
+     * Check application error: if add_cb is not set free_cb will never
+     * be called.
+     */
+    if (!add_cb && free_cb)
+        return 0;
+    /* Don't add if extension supported internally. */
     if (SSL_extension_supported(ext_type))
             return 0;
     /* Extension type must fit in 16 bits */
@@ -217,8 +221,8 @@ int SSL_CTX_add_server_custom_ext(SSL_CTX *ctx,
 
 int SSL_extension_supported(unsigned int ext_type)
 {
-    /* See if it is a supported internally */
     switch (ext_type) {
+        /* Internally supported extensions. */
         case TLSEXT_TYPE_application_layer_protocol_negotiation:
         case TLSEXT_TYPE_ec_point_formats:
         case TLSEXT_TYPE_elliptic_curves:

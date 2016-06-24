@@ -230,9 +230,9 @@ static int next_proto_cb(SSL *s, uint8_t **out, unsigned char *outlen,
     return SSL_TLSEXT_ERR_OK;
 }
 
-static int serverinfo_cli_cb(SSL *s, unsigned int ext_type,
-                             const uint8_t *in, size_t inlen,
-                             int *al, void *arg)
+static int serverinfo_cli_parse_cb(SSL *s, unsigned int ext_type,
+                                   const uint8_t *in, size_t inlen,
+                                   int *al, void *arg)
 {
     char pem_name[100];
     uint8_t ext_buf[4 + 65536];
@@ -780,11 +780,9 @@ int s_client_main(int argc, char **argv)
         SSL_CTX_set_alpn_protos(ctx, alpn, alpn_len);
         free(alpn);
     }
-    if (serverinfo_types_count) {
-        for (i = 0; i < serverinfo_types_count; i++) {
-            SSL_CTX_add_client_custom_ext(ctx, serverinfo_types[i], NULL, NULL,
-                                          NULL, serverinfo_cli_cb, NULL);
-        }
+    for (i = 0; i < serverinfo_types_count; i++) {
+        SSL_CTX_add_client_custom_ext(ctx, serverinfo_types[i], NULL, NULL,
+                                      NULL, serverinfo_cli_parse_cb, NULL);
     }
 
     if (state)

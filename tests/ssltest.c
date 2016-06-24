@@ -108,8 +108,9 @@ int custom_ext = 0;
 /* This set based on extension callbacks */
 int custom_ext_error = 0;
 
-static int serverinfo_cli_cb(SSL *s, unsigned int ext_type, const uint8_t *in,
-                             size_t inlen, int *al, void *arg)
+static int serverinfo_cli_parse_cb(SSL *s, unsigned int ext_type,
+                                   const uint8_t *in, size_t inlen, int *al,
+                                   void *arg)
 {
     if (ext_type == SCT_EXT_TYPE)
         serverinfo_sct_seen++;
@@ -939,10 +940,10 @@ int main(int argc, char *argv[])
 
     if (serverinfo_sct)
         SSL_CTX_add_client_custom_ext(c_ctx, SCT_EXT_TYPE, NULL, NULL, NULL,
-                                      serverinfo_cli_cb, NULL);
+                                      serverinfo_cli_parse_cb, NULL);
     if (serverinfo_tack)
         SSL_CTX_add_client_custom_ext(c_ctx, TACK_EXT_TYPE, NULL, NULL, NULL,
-                                      serverinfo_cli_cb, NULL);
+                                      serverinfo_cli_parse_cb, NULL);
 
     if (serverinfo_file)
         if (!SSL_CTX_use_serverinfo_file(s_ctx, serverinfo_file)) {
