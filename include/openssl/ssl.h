@@ -234,33 +234,18 @@ typedef int (*tls_session_secret_cb_fn)(SSL *s, void *secret, int *secret_len,
                                         STACK_OF(SSL_CIPHER) *peer_ciphers,
                                         SSL_CIPHER **cipher, void *arg);
 
-/*
- * Callbacks and structures for handling custom TLS Extensions:
- *   cli_ext_add_cb   - sends data for ClientHello TLS Extension
- *   cli_ext_parse_cb - receives data from ServerHello TLS Extension
- *   srv_ext_parse_cb - receives data from ClientHello TLS Extension
- *   srv_ext_add_cb   - sends data for ServerHello TLS Extension
- *
- *   All these functions return nonzero on success.  Zero will terminate
- *   the handshake (and return a specific TLS Fatal alert, if the function
- *   declaration has an "al" parameter).  -1 for the "sending" functions
- *   will cause the TLS Extension to be omitted.
- * 
- *   "ext_type" is a TLS "ExtensionType" from 0-65535.
- *   "in" is a pointer to TLS "extension_data" being provided to the cb.
- *   "out" is used by the callback to return a pointer to "extension data"
- *     which OpenSSL will later copy into the TLS handshake.  The contents
- *     of this buffer should not be changed until the handshake is complete.
- *   "inlen" and "outlen" are TLS Extension lengths from 0-65535.
- *   "al" is a TLS "AlertDescription" from 0-255 which WILL be sent as a
- *     fatal TLS alert, if the callback returns zero.
- */
+/* Typedefs for handling custom extensions */
+
 typedef int (*custom_ext_add_cb)(SSL *s, unsigned int ext_type,
                                  const uint8_t **out, size_t *outlen, int *al,
-                                 void *arg);
+                                 void *add_arg);
+
+typedef void (*custom_ext_free_cb)(SSL *s, unsigned int ext_type,
+                                   const uint8_t *out, void *add_arg);
+
 typedef int (*custom_ext_parse_cb)(SSL *s, unsigned int ext_type,
                                    const uint8_t *in, size_t inlen, int *al,
-                                   void *arg);
+                                   void *parse_arg);
 
 #ifndef OPENSSL_NO_SSL_INTERN
 
@@ -988,30 +973,19 @@ void SSL_CTX_set_alpn_select_cb(SSL_CTX *ctx,
 void SSL_get0_alpn_selected(const SSL *ssl, const uint8_t **data,
                             unsigned int *len);
 
-/*
- * Register callbacks to handle custom TLS Extensions as client or server.
- * 
- * Returns nonzero on success.  You cannot register twice for the same
- * extension number, and registering for an extension number already
- * handled by OpenSSL will fail.
- *
- * NULL can be registered for any callback function.  For the client
- * functions, a NULL custom_ext_add_cb sends an empty ClientHello
- * Extension, and a NULL custom_ext_parse_cb ignores the ServerHello
- * response (if any).
- *
- * For the server functions, a NULL custom_ext_parse means the
- * ClientHello extension's data will be ignored, but the extension will still
- * be noted and custom_ext_add_cb will still be invoked. A NULL
- * custom_srv_ext_second_cb doesn't send a ServerHello extension.
- */
+/* Register callbacks to handle custom TLS Extensions for client or server. */
+
 int SSL_CTX_set_custom_cli_ext(SSL_CTX *ctx, unsigned int ext_type,
                                custom_ext_add_cb add_cb,
-                               custom_ext_parse_cb parse_cb, void *arg);
+                               custom_ext_free_cb free_cb,
+                               void *add_arg,
+                               custom_ext_parse_cb parse_cb, void *parse_arg);
 
 int SSL_CTX_set_custom_srv_ext(SSL_CTX *ctx, unsigned int ext_type,
-                               custom_ext_parse_cb parse_cb,
-                               custom_ext_add_cb add_cb, void *arg);
+                               custom_ext_add_cb add_cb,
+                               custom_ext_free_cb free_cb,
+                               void *add_arg,
+                               custom_ext_parse_cb parse_cb, void *parse_arg);
 
 #define SSL_NOTHING 1
 #define SSL_WRITING 2

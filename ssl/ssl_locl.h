@@ -369,8 +369,10 @@ typedef struct {
      */
     uint16_t ext_flags;
     custom_ext_add_cb add_cb;
+    custom_ext_free_cb free_cb;
+    void *add_arg;
     custom_ext_parse_cb parse_cb;
-    void *arg;
+    void *parse_arg;
 } custom_ext_method;
 
 /* ext_flags values */

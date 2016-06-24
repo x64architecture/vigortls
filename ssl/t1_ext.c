@@ -68,7 +68,7 @@ int custom_ext_parse(SSL *s, int server, unsigned int ext_type,
     if (!meth->parse_cb)
         return 1;
 
-    return meth->parse_cb(s, ext_type, ext_data, ext_size, al, meth->arg);
+    return meth->parse_cb(s, ext_type, ext_data, ext_size, al, meth->parse_arg);
 }
 
 /*
@@ -99,10 +99,11 @@ int custom_ext_add(SSL *s, int server, uint8_t **pret, uint8_t *limit, int *al)
         if (meth->add_cb) {
             int cb_retval = 0;
             cb_retval =
-                meth->add_cb(s, meth->ext_type, &out, &outlen, al, meth->arg);
-            if (cb_retval == 0)
+                meth->add_cb(s, meth->ext_type, &out, &outlen, al,
+                             meth->add_arg);
+            if (cb_retval < 0)
                 return 0; /* error */
-            if (cb_retval == -1)
+            if (cb_retval == 0)
                 continue; /* skip this extension */
         }
         if (4 > limit - ret || outlen > (size_t)(limit - ret - 4))
@@ -121,6 +122,8 @@ int custom_ext_add(SSL *s, int server, uint8_t **pret, uint8_t *limit, int *al)
          * that an extension can be sent in ServerHello.
          */
         meth->ext_flags |= SSL_EXT_FLAG_SENT;
+        if (meth->free_cb)
+            meth->free_cb(s, meth->ext_type, out, meth->add_arg);
     }
     *pret = ret;
     return 1;
@@ -148,9 +151,12 @@ void custom_exts_free(custom_ext_methods *exts)
 }
 
 /* Set callbacks for a custom extension */
-static int custom_ext_set(custom_ext_methods *exts, unsigned int ext_type,
-                          custom_ext_parse_cb parse_cb,
-                          custom_ext_add_cb add_cb, void *arg)
+static int custom_ext_set(custom_ext_methods *exts,
+                          unsigned int ext_type,
+                          custom_ext_add_cb add_cb,
+                          custom_ext_free_cb free_cb,
+                          void *add_arg,
+                          custom_ext_parse_cb parse_cb, void *parse_arg)
 {
     custom_ext_method *meth;
 
@@ -194,25 +200,37 @@ static int custom_ext_set(custom_ext_methods *exts, unsigned int ext_type,
     memset(meth, 0, sizeof(custom_ext_method));
     meth->parse_cb = parse_cb;
     meth->add_cb = add_cb;
+    meth->free_cb = free_cb;
     meth->ext_type = ext_type;
-    meth->arg = arg;
+    meth->add_arg = add_arg;
+    meth->parse_arg = parse_arg;
     exts->meths_count++;
     return 1;
 }
 
 /* Application level functions to add custom extension callbacks */
 
-int SSL_CTX_set_custom_cli_ext(SSL_CTX *ctx, unsigned int ext_type,
+int SSL_CTX_set_custom_cli_ext(SSL_CTX *ctx,
+                               unsigned int ext_type,
                                custom_ext_add_cb add_cb,
-                               custom_ext_parse_cb parse_cb, void *arg)
+                               custom_ext_free_cb free_cb,
+                               void *add_arg,
+                               custom_ext_parse_cb parse_cb,
+                               void *parse_arg)
 
 {
-    return custom_ext_set(&ctx->cert->cli_ext, ext_type, parse_cb, add_cb, arg);
+    return custom_ext_set(&ctx->cert->cli_ext, ext_type, add_cb, free_cb,
+                          add_arg, parse_cb, parse_arg);
 }
 
-int SSL_CTX_set_custom_srv_ext(SSL_CTX *ctx, unsigned int ext_type,
+int SSL_CTX_set_custom_srv_ext(SSL_CTX *ctx,
+                               unsigned int ext_type,
+                               custom_ext_add_cb add_cb,
+                               custom_ext_free_cb free_cb,
+                               void *add_arg,
                                custom_ext_parse_cb parse_cb,
-                               custom_ext_add_cb add_cb, void *arg)
+                               void *parse_arg)
 {
-    return custom_ext_set(&ctx->cert->srv_ext, ext_type, parse_cb, add_cb, arg);
+    return custom_ext_set(&ctx->cert->srv_ext, ext_type, add_cb, free_cb,
+                          add_arg, parse_cb, parse_arg);
 }

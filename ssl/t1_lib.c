@@ -1771,7 +1771,7 @@ static int ssl_scan_clienthello_tlsext(SSL *s, uint8_t **p, uint8_t *limit,
          * an appropriate ServerHello may be later returned.
          */
         else if (!s->hit) {
-            if (!custom_ext_parse(s, 1, type, data, size, al))
+            if (custom_ext_parse(s, 1, type, data, size, al) <= 0)
                 return 0;
         }
 
@@ -2024,7 +2024,7 @@ static int ssl_scan_serverhello_tlsext(SSL *s, uint8_t **p, uint8_t *d, int n, i
          * matches a custom_cli_ext_record, then send it to the
          * callback
          */
-        else if (!custom_ext_parse(s, 0, type, data, size, al))
+        else if (custom_ext_parse(s, 0, type, data, size, al) <= 0)
             return 0;
 
         data += size;
