@@ -636,17 +636,17 @@ end:
 
 static int serverinfo_find_extension(const uint8_t *serverinfo,
                                      size_t serverinfo_length,
-                                     uint16_t extension_type,
+                                     unsigned int extension_type,
                                      const uint8_t **extension_data,
-                                     uint16_t *extension_length)
+                                     size_t *extension_length)
 {
     *extension_data = NULL;
     *extension_length = 0;
     if (serverinfo == NULL || serverinfo_length == 0)
         return 0;
     for (;;) {
-        uint16_t type = 0;
-        uint16_t len = 0;
+        unsigned int type = 0;
+        size_t len = 0;
 
         /* end of serverinfo */
         if (serverinfo_length == 0)
@@ -681,8 +681,9 @@ static int serverinfo_find_extension(const uint8_t *serverinfo,
     return 0; /* Error */
 }
 
-static int serverinfo_srv_first_cb(SSL *s, uint16_t ext_type, const uint8_t *in,
-                                   uint16_t inlen, int *al, void *arg)
+static int serverinfo_srv_parse_cb(SSL *s, unsigned int ext_type,
+                                   const uint8_t *in, size_t inlen, int *al,
+                                   void *arg)
 {
     if (inlen != 0) {
         *al = SSL_AD_DECODE_ERROR;
@@ -692,9 +693,9 @@ static int serverinfo_srv_first_cb(SSL *s, uint16_t ext_type, const uint8_t *in,
     return 1;
 }
 
-static int serverinfo_srv_second_cb(SSL *s, uint16_t ext_type,
-                                    const uint8_t **out, uint16_t *outlen,
-                                    int *al, void *arg)
+static int serverinfo_srv_add_cb(SSL *s, unsigned int ext_type,
+                                 const uint8_t **out, size_t *outlen,
+                                 int *al, void *arg)
 {
     const uint8_t *serverinfo = NULL;
     size_t serverinfo_length = 0;
@@ -723,8 +724,8 @@ static int serverinfo_process_buffer(const uint8_t *serverinfo,
     if (serverinfo == NULL || serverinfo_length == 0)
         return 0;
     for (;;) {
-        uint16_t ext_type = 0;
-        uint16_t len = 0;
+        unsigned int ext_type = 0;
+        size_t len = 0;
 
         /* end of serverinfo */
         if (serverinfo_length == 0)
@@ -738,8 +739,8 @@ static int serverinfo_process_buffer(const uint8_t *serverinfo,
         /* Register callbacks for extensions */
         ext_type = (serverinfo[0] << 8) + serverinfo[1];
         if (ctx &&
-            !SSL_CTX_set_custom_srv_ext(ctx, ext_type, serverinfo_srv_first_cb,
-                                        serverinfo_srv_second_cb, NULL))
+            !SSL_CTX_set_custom_srv_ext(ctx, ext_type, serverinfo_srv_parse_cb,
+                                        serverinfo_srv_add_cb, NULL))
             return 0;
 
         serverinfo += 2;

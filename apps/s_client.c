@@ -230,8 +230,8 @@ static int next_proto_cb(SSL *s, uint8_t **out, unsigned char *outlen,
     return SSL_TLSEXT_ERR_OK;
 }
 
-static int serverinfo_cli_cb(SSL *s, uint16_t ext_type,
-                             const uint8_t *in, uint16_t inlen,
+static int serverinfo_cli_cb(SSL *s, unsigned int ext_type,
+                             const uint8_t *in, size_t inlen,
                              int *al, void *arg)
 {
     char pem_name[100];

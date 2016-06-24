@@ -852,8 +852,8 @@ int dtls1_dispatch_alert(SSL *s);
 
 void custom_ext_init(custom_ext_methods *meths);
 
-int custom_ext_parse(SSL *s, int server, uint16_t ext_type,
-                     const uint8_t *ext_data, uint16_t ext_size, int *al);
+int custom_ext_parse(SSL *s, int server, unsigned int ext_type,
+                     const uint8_t *ext_data, size_t ext_size, int *al);
 int custom_ext_add(SSL *s, int server, uint8_t **pret, uint8_t *limit, int *al);
 
 int custom_exts_copy(custom_ext_methods *dst, const custom_ext_methods *src);
