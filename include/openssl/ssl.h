@@ -987,6 +987,8 @@ int SSL_CTX_set_custom_srv_ext(SSL_CTX *ctx, unsigned int ext_type,
                                void *add_arg,
                                custom_ext_parse_cb parse_cb, void *parse_arg);
 
+int SSL_extension_supported(unsigned int ext_type);
+
 #define SSL_NOTHING 1
 #define SSL_WRITING 2
 #define SSL_READING 3
