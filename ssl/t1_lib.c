@@ -1440,9 +1440,9 @@ parse_error:
 static int ssl_scan_clienthello_tlsext(SSL *s, uint8_t **p, uint8_t *limit,
                                        int *al)
 {
-    unsigned short type;
-    unsigned short size;
-    unsigned short len;
+    uint16_t type;
+    uint16_t size;
+    uint16_t len;
     uint8_t *data = *p;
     int renegotiate_seen = 0;
 
@@ -1763,17 +1763,6 @@ static int ssl_scan_clienthello_tlsext(SSL *s, uint8_t **p, uint8_t *limit,
                 return 0;
         }
 #endif
-        /*
-         * If this ClientHello extension was unhandled and this is
-         * a nonresumed connection, check whether the extension is a
-         * custom TLS Extension (has a custom_srv_ext_record), and if
-         * so call the callback and record the extension number so that
-         * an appropriate ServerHello may be later returned.
-         */
-        else if (!s->hit) {
-            if (custom_ext_parse(s, 1, type, data, size, al) <= 0)
-                return 0;
-        }
 
         data += size;
     }
@@ -1804,11 +1793,51 @@ err:
     return 0;
 }
 
+/*
+ * Parse any custom extensions found.  "data" is the start of the extension data
+ * and "limit" is the end of the record. TODO: add strict syntax checking.
+ */
+static int ssl_scan_clienthello_custom_tlsext(SSL *s, const uint8_t *data,
+                                              const uint8_t *limit,
+                                              int *al)
+{
+    uint16_t type, size, len;
+    /* If resumed session or no custom extensions nothing to do */
+    if (s->hit || s->cert->srv_ext.meths_count == 0)
+        return 1;
+
+    if (data >= limit - 2)
+        return 1;
+    n2s(data, len);
+
+    if (data > limit - len)
+        return 1;
+
+    while (data <= limit - 4) {
+        n2s(data, type);
+        n2s(data, size);
+
+        if (data + size > limit)
+            return 1;
+        if (custom_ext_parse(s, 1 /* server */, type, data, size, al) <= 0)
+            return 0;
+
+        data += size;
+    }
+
+    return 1;
+}
+
 int ssl_parse_clienthello_tlsext(SSL *s, uint8_t **p, uint8_t *d)
 {
     int al = -1;
-
-    custom_ext_init(&s->cert->srv_ext);
+    uint8_t *ptmp = *p;
+    /*
+     * Internally supported extensions are parsed first so SNI can be handled
+     * before custom extensions. An application processing SNI will typically
+     * switch the parent context using SSL_set_SSL_CTX and custom extensions
+     * need to be handled by the new SSL_CTX structure.
+     */
     if (ssl_scan_clienthello_tlsext(s, p, d, &al) <= 0) {
         ssl3_send_alert(s, SSL3_AL_FATAL, al); 
         return 0;
@@ -1816,6 +1845,12 @@ int ssl_parse_clienthello_tlsext(SSL *s, uint8_t **p, uint8_t *d)
 
     if (ssl_check_clienthello_tlsext_early(s) <= 0) {
         SSLerr(SSL_F_SSL_PARSE_CLIENTHELLO_TLSEXT, SSL_R_CLIENTHELLO_TLSEXT);
+        return 0;
+    }
+
+    custom_ext_init(&s->cert->srv_ext);
+    if (ssl_scan_clienthello_custom_tlsext(s, ptmp, d, &al) <= 0) {
+        ssl3_send_alert(s, SSL3_AL_FATAL, al);
         return 0;
     }
 
@@ -1844,9 +1879,9 @@ static char ssl_next_proto_validate(const uint8_t *d, unsigned int len)
 static int ssl_scan_serverhello_tlsext(SSL *s, uint8_t **p, uint8_t *d, int n, int *al)
 {
     int i;
-    unsigned short length;
-    unsigned short type;
-    unsigned short size;
+    uint16_t length;
+    uint16_t type;
+    uint16_t size;
     uint8_t *data = *p;
     int tlsext_servername = 0;
     int renegotiate_seen = 0;
