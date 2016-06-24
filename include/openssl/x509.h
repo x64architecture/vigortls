@@ -692,6 +692,8 @@ void *X509_get_ex_data(X509 *r, int idx);
 int i2d_X509_AUX(X509 *a, uint8_t **pp);
 X509 *d2i_X509_AUX(X509 **a, const uint8_t **pp, long length);
 
+int i2d_re_X509_tbs(X509 *x, uint8_t **pp);
+
 void X509_get0_signature(ASN1_BIT_STRING **psig, X509_ALGOR **palg,
                          const X509 *x);
 int X509_get_signature_nid(const X509 *x);
