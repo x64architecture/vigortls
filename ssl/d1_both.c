@@ -122,14 +122,8 @@ void dtls1_hm_fragment_free(hm_fragment *frag)
     free(frag);
 }
 
-/* send s->init_buf in records of type 'type' (SSL3_RT_HANDSHAKE or
- * SSL3_RT_CHANGE_CIPHER_SPEC) */
-int dtls1_do_write(SSL *s, int type)
+static void dtls1_query_mtu(SSL *s)
 {
-    int ret;
-    unsigned int curr_mtu;
-    unsigned int len, frag_off, mac_size, blocksize, used_len;
-
     /* AHA!  Figure out the MTU, and stick to the right size */
     if (s->d1->mtu < dtls1_min_mtu() && !(SSL_get_options(s) & SSL_OP_NO_QUERY_MTU)) {
         s->d1->mtu = BIO_ctrl(SSL_get_wbio(s), BIO_CTRL_DGRAM_QUERY_MTU, 0, NULL);
@@ -145,6 +139,16 @@ int dtls1_do_write(SSL *s, int type)
             BIO_ctrl(SSL_get_wbio(s), BIO_CTRL_DGRAM_SET_MTU, s->d1->mtu, NULL);
         }
     }
+}
+
+/* send s->init_buf in records of type 'type' (SSL3_RT_HANDSHAKE or SSL3_RT_CHANGE_CIPHER_SPEC) */
+int dtls1_do_write(SSL *s, int type)
+{
+    int ret;
+    unsigned int curr_mtu;
+    unsigned int len, frag_off, mac_size, blocksize, used_len;
+
+    dtls1_query_mtu(s);
 
     OPENSSL_assert(s->d1->mtu >= dtls1_min_mtu());
     /* should have something reasonable now */
@@ -263,8 +267,7 @@ int dtls1_do_write(SSL *s, int type)
              * handle the retransmit
              */
             if (!(SSL_get_options(s) & SSL_OP_NO_QUERY_MTU))
-                s->d1->mtu = BIO_ctrl(SSL_get_wbio(s), BIO_CTRL_DGRAM_QUERY_MTU,
-                                      0, NULL);
+                dtls1_query_mtu(s);
             else
                 return -1;
         } else {
