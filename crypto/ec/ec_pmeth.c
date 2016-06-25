@@ -177,8 +177,8 @@ static int pkey_ec_derive(EVP_PKEY_CTX *ctx, uint8_t *key, size_t *keylen)
     outlen = *keylen;
 
     ret = ECDH_compute_key(key, outlen, pubkey, eckey, 0);
-    if (ret < 0)
-        return ret;
+    if (ret <= 0)
+        return 0;
     *keylen = ret;
     return 1;
 }
