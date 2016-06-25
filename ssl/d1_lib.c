@@ -371,8 +371,11 @@ int dtls1_check_timeout_num(SSL *s)
     s->d1->timeout.num_alerts++;
 
     /* Reduce MTU after 2 unsuccessful retransmissions */
-    if (s->d1->timeout.num_alerts > 2) {
-        s->d1->mtu = BIO_ctrl(SSL_get_wbio(s), BIO_CTRL_DGRAM_GET_FALLBACK_MTU, 0, NULL);
+    if (s->d1->timeout.num_alerts > 2 &&
+        !(SSL_get_options(s) & SSL_OP_NO_QUERY_MTU))
+    {
+        s->d1->mtu = BIO_ctrl(SSL_get_wbio(s), BIO_CTRL_DGRAM_GET_FALLBACK_MTU,
+                              0, NULL);
     }
 
     if (s->d1->timeout.num_alerts > DTLS1_TMO_ALERT_COUNT) {

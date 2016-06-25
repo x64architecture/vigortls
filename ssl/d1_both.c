@@ -262,10 +262,11 @@ int dtls1_do_write(SSL *s, int type)
              * if everything is fine and wait for an alert to
              * handle the retransmit
              */
-            if (BIO_ctrl(SSL_get_wbio(s), BIO_CTRL_DGRAM_MTU_EXCEEDED, 0, NULL) > 0)
-                s->d1->mtu = BIO_ctrl(SSL_get_wbio(s), BIO_CTRL_DGRAM_QUERY_MTU, 0, NULL);
+            if (!(SSL_get_options(s) & SSL_OP_NO_QUERY_MTU))
+                s->d1->mtu = BIO_ctrl(SSL_get_wbio(s), BIO_CTRL_DGRAM_QUERY_MTU,
+                                      0, NULL);
             else
-                return (-1);
+                return -1;
         } else {
 
             /*
