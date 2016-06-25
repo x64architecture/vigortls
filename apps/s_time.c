@@ -258,6 +258,8 @@ int s_time_main(int argc, char **argv)
     if (bio_err == NULL)
         bio_err = BIO_new_fp(stderr, BIO_NOCLOSE);
 
+    s_time_meth = TLS_client_method();
+
     /* parse the command line arguments */
     if (parseArgs(argc, argv) < 0)
         goto end;

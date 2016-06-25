@@ -1216,12 +1216,7 @@ OCSP_RESPONSE *process_responder(BIO *err, OCSP_REQUEST *req, char *host,
         BIO_set_conn_port(cbio, port);
     if (use_ssl == 1) {
         BIO *sbio;
-#if !defined(OPENSSL_NO_SSL3)
-        ctx = SSL_CTX_new(SSLv3_client_method());
-#else
-        BIO_printf(err, "SSL is disabled\n");
-        goto end;
-#endif
+        ctx = SSL_CTX_new(TLS_client_method());
         if (ctx == NULL) {
             BIO_printf(err, "Error creating SSL context.\n");
             goto end;
