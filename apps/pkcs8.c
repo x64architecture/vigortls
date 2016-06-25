@@ -15,8 +15,6 @@
 #include <stdio.h>
 #include <string.h>
 
-int pkcs8_main(int, char **);
-
 int pkcs8_main(int argc, char **argv)
 {
     ENGINE *e = NULL;

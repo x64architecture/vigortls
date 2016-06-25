@@ -30,20 +30,6 @@ static int do_passwd(int passed_salt, char **salt_p, char **salt_malloc_p,
                      char *passwd, BIO *out, int quiet, int table, int reverse,
                      size_t pw_maxlen, int usecrypt, int use1, int useapr1);
 
-/* -crypt        - standard Unix password algorithm (default)
- * -1            - MD5-based password algorithm
- * -apr1         - MD5-based password algorithm, Apache variant
- * -salt string  - salt
- * -in file      - read passwords from file
- * -stdin        - read passwords from stdin
- * -noverify     - never verify when reading password from terminal
- * -quiet        - no warnings
- * -table        - format output as table
- * -reverse      - switch table columns
- */
-
-int passwd_main(int, char **);
-
 int passwd_main(int argc, char **argv)
 {
     int ret = 1;

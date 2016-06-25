@@ -17,19 +17,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-/* -inform arg    - input format - default PEM (one of DER, NET or PEM)
- * -outform arg   - output format - default PEM
- * -in arg        - input file - default stdin
- * -out arg       - output file - default stdout
- * -des           - encrypt output if PEM format with DES in cbc mode
- * -text          - print a text version
- * -param_out     - print the elliptic curve parameters
- * -conv_form arg - specifies the point encoding form
- * -param_enc arg - specifies the parameter encoding
- */
-
-int ec_main(int, char **);
-
 int ec_main(int argc, char **argv)
 {
     int ret = 1;

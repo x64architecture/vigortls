@@ -23,8 +23,6 @@
 
 #define DEFBITS 2048
 
-int gendsa_main(int, char **);
-
 int gendsa_main(int argc, char **argv)
 {
     DSA *dsa = NULL;

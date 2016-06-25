@@ -50,25 +50,6 @@
 #define DEFAULT_KEY_LENGTH 512
 #define MIN_KEY_LENGTH 384
 
-/* -inform arg    - input format - default PEM (DER or PEM)
- * -outform arg - output format - default PEM
- * -in arg    - input file - default stdin
- * -out arg    - output file - default stdout
- * -verify    - check request signature
- * -noout    - don't print stuff out.
- * -text    - print out human readable text.
- * -nodes    - no des encryption
- * -config file    - Load configuration file.
- * -key file    - make a request using key in file (or use it for verification).
- * -keyform arg    - key file format.
- * -newkey    - make a key and a request.
- * -modulus    - print RSA modulus.
- * -pubkey    - output Public Key.
- * -x509    - output a self signed X509 structure instead.
- * -asn1-kludge    - output new certificate request in a format that some CA's
- *          require.  This format is wrong
- */
-
 static int make_REQ(X509_REQ *req, EVP_PKEY *pkey, char *dn, int mutlirdn,
                     int attribs, unsigned long chtype);
 static int build_subject(X509_REQ *req, char *subj, unsigned long chtype,
@@ -93,8 +74,6 @@ static EVP_PKEY_CTX *set_keygen_ctx(BIO *err, const char *gstr, int *pkey_type,
                                     ENGINE *keygen_engine);
 static CONF *req_conf = NULL;
 static int batch = 0;
-
-int req_main(int, char **);
 
 int req_main(int argc, char **argv)
 {

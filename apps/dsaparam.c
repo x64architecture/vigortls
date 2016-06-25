@@ -41,8 +41,6 @@ static void timebomb_sigalarm(int foo)
 
 static int dsa_cb(int p, int n, BN_GENCB *cb);
 
-int dsaparam_main(int, char **);
-
 int dsaparam_main(int argc, char **argv)
 {
     DSA *dsa = NULL;

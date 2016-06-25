@@ -43,8 +43,6 @@ int alg_print(BIO *x, X509_ALGOR *alg);
 int cert_load(BIO *in, STACK_OF(X509) *sk);
 static int set_pbe(BIO *err, int *ppbe, const char *str);
 
-int pkcs12_main(int, char **);
-
 int pkcs12_main(int argc, char **argv)
 {
     ENGINE *e = NULL;

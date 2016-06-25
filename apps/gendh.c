@@ -30,8 +30,6 @@
 
 static int dh_cb(int p, int n, BN_GENCB *cb);
 
-int gendh_main(int, char **);
-
 int gendh_main(int argc, char **argv)
 {
     BN_GENCB cb;

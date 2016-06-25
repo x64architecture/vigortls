@@ -46,8 +46,6 @@ static void list_md_fn(const EVP_MD *m, const char *from, const char *to,
                mname);
 }
 
-int dgst_main(int, char **);
-
 int dgst_main(int argc, char **argv)
 {
     ENGINE *e = NULL;

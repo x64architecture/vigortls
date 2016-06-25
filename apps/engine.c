@@ -264,8 +264,6 @@ static void util_do_cmds(ENGINE *e, STACK_OF(OPENSSL_STRING) *cmds,
     }
 }
 
-int engine_main(int, char **);
-
 int engine_main(int argc, char **argv)
 {
     int ret = 1, i;

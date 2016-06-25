@@ -19,18 +19,6 @@
 #include <string.h>
 #include <time.h>
 
-/* -inform arg    - input format - default PEM (DER or PEM)
- * -outform arg - output format - default PEM
- * -in arg    - input file - default stdin
- * -out arg    - output file - default stdout
- * -check    - check the parameters are ok
- * -noout
- * -text
- * -C
- */
-
-int dh_main(int, char **);
-
 int dh_main(int argc, char **argv)
 {
     DH *dh = NULL;

@@ -22,8 +22,6 @@
 #include <string.h>
 #include <time.h>
 
-int dsa_main(int, char **);
-
 int dsa_main(int argc, char **argv)
 {
     ENGINE *e = NULL;

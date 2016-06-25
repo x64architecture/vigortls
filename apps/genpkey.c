@@ -21,8 +21,6 @@ static int init_keygen_file(BIO *err, EVP_PKEY_CTX **pctx, const char *file,
                             ENGINE *e);
 static int genpkey_cb(EVP_PKEY_CTX *ctx);
 
-int genpkey_main(int, char **);
-
 int genpkey_main(int argc, char **argv)
 {
     ENGINE *e = NULL;

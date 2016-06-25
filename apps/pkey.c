@@ -14,8 +14,6 @@
 #include <stdio.h>
 #include <string.h>
 
-int pkey_main(int, char **);
-
 int pkey_main(int argc, char **argv)
 {
     ENGINE *e = NULL;

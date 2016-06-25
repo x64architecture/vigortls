@@ -20,14 +20,6 @@
 
 #include "apps.h"
 
-/* -inform arg    - input format - default PEM (DER or PEM)
- * -in arg    - input file - default stdin
- * -i        - indent the details by depth
- * -offset    - where in the file to start
- * -length    - how many bytes to use
- * -oid file    - extra oid description file
- */
-
 static int do_generate(BIO *bio, char *genstr, char *genconf, BUF_MEM *buf);
 
 int asn1parse_main(int argc, char **argv)

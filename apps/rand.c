@@ -17,14 +17,6 @@
 #include <openssl/err.h>
 #include <openssl/rand.h>
 
-/* -out file         - write to file
- * -base64           - base64 encode output
- * -hex              - hex encode output
- * num               - write 'num' bytes
- */
-
-int rand_main(int, char **);
-
 int rand_main(int argc, char **argv)
 {
     int i, r, ret = 1;

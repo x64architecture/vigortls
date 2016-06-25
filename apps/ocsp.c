@@ -54,8 +54,6 @@ static OCSP_RESPONSE *query_responder(BIO *err, BIO *cbio, char *path,
                                       STACK_OF(CONF_VALUE) *headers,
                                       OCSP_REQUEST *req, int req_timeout);
 
-int ocsp_main(int, char **);
-
 int ocsp_main(int argc, char **argv)
 {
     ENGINE *e = NULL;

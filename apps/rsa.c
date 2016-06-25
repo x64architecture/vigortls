@@ -21,29 +21,6 @@
 #include <string.h>
 #include <time.h>
 
-/* -inform arg    - input format - default PEM (one of DER, NET or PEM)
- * -outform arg - output format - default PEM
- * -in arg    - input file - default stdin
- * -out arg    - output file - default stdout
- * -des        - encrypt output if PEM format with DES in cbc mode
- * -des3    - encrypt output if PEM format
- * -idea    - encrypt output if PEM format
- * -seed    - encrypt output if PEM format
- * -aes128    - encrypt output if PEM format
- * -aes192    - encrypt output if PEM format
- * -aes256    - encrypt output if PEM format
- * -camellia128 - encrypt output if PEM format
- * -camellia192 - encrypt output if PEM format
- * -camellia256 - encrypt output if PEM format
- * -text    - print a text version
- * -modulus    - print the RSA key modulus
- * -check    - verify key consistency
- * -pubin    - Expect a public key in input file.
- * -pubout    - Output a public key.
- */
-
-int rsa_main(int, char **);
-
 int rsa_main(int argc, char **argv)
 {
     ENGINE *e = NULL;

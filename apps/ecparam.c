@@ -37,8 +37,6 @@
 
 static int ecparam_print_var(BIO *, BIGNUM *, const char *, int, uint8_t *);
 
-int ecparam_main(int, char **);
-
 int ecparam_main(int argc, char **argv)
 {
     EC_GROUP *group = NULL;

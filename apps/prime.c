@@ -15,8 +15,6 @@
 
 #include "apps.h"
 
-int prime_main(int, char **);
-
 int prime_main(int argc, char **argv)
 {
     int hex = 0;

@@ -34,8 +34,6 @@
 
 static int genrsa_cb(int p, int n, BN_GENCB *cb);
 
-int genrsa_main(int, char **);
-
 int genrsa_main(int argc, char **argv)
 {
     BN_GENCB cb;

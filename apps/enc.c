@@ -49,8 +49,6 @@ static void show_ciphers(const OBJ_NAME *name, void *bio_)
         BIO_printf(bio, " ");
 }
 
-int enc_main(int, char **);
-
 int enc_main(int argc, char **argv)
 {
     static const char magic[] = "Salted__";

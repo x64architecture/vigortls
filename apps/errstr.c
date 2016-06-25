@@ -16,8 +16,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-int errstr_main(int, char **);
-
 int errstr_main(int argc, char **argv)
 {
     int i, ret = 0;

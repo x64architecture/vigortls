@@ -13,8 +13,6 @@
 #include <stdio.h>
 #include <string.h>
 
-int nseq_main(int, char **);
-
 int nseq_main(int argc, char **argv)
 {
     char **args, *infile = NULL, *outfile = NULL;

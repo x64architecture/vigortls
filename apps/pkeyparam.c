@@ -14,8 +14,6 @@
 #include <stdio.h>
 #include <string.h>
 
-int pkeyparam_main(int, char **);
-
 int pkeyparam_main(int argc, char **argv)
 {
     char **args, *infile = NULL, *outfile = NULL;

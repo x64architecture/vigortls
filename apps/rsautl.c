@@ -27,8 +27,6 @@
 
 static void usage(void);
 
-int rsautl_main(int argc, char **);
-
 int rsautl_main(int argc, char **argv)
 {
     ENGINE *e = NULL;
