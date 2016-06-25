@@ -241,15 +241,27 @@ long dtls1_ctrl(SSL *s, int cmd, long larg, void *parg)
             ret = dtls1_listen(s, parg);
             break;
         case SSL_CTRL_CHECK_PROTO_VERSION:
-            /* For library-internal use; checks that the current protocol
+            /*
+             * For library-internal use; checks that the current protocol
              * is the highest enabled version (according to s->ctx->method,
-             * as version negotiation may have changed s->method). */
-#if DTLS_MAX_VERSION != DTLS1_VERSION
-# error Code needs to be updated for DTLS_method() to support beyond DTLS1_VERSION.
+             * as version negotiation may have changed s->method).
+             */
+            if (s->version == s->ctx->method->version)
+                return 1;
+            /*
+             * Apparently we're using a version-flexible SSL_METHOD
+             * (not at its highest protocol version).
+             */
+            if (s->ctx->method->version == DTLS_method()->version) {
+#if DTLS_MAX_VERSION != DTLS1_2_VERSION
+#error Code needs update for DTLS_method() support beyond DTLS1_2_VERSION.
 #endif
-            /* Just one protocol version is supported so far;
-             * fail closed if the version is not as expected. */
-            return s->version == DTLS_MAX_VERSION;
+                if (!(s->options & SSL_OP_NO_DTLSv1_2))
+                    return s->version == DTLS1_2_VERSION;
+                if (!(s->options & SSL_OP_NO_DTLSv1))
+                    return s->version == DTLS1_VERSION;
+            }
+            return 0; /* Unexpected state; fail closed. */
         case DTLS_CTRL_SET_LINK_MTU:
             if (larg < (long)dtls1_link_min_mtu())
                 return 0;
