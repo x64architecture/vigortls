@@ -126,25 +126,18 @@ int dhparam_main(int argc, char **argv)
         BIO_printf(bio_err, " -in arg       input file\n");
         BIO_printf(bio_err, " -out arg      output file\n");
 #ifndef OPENSSL_NO_DSA
-        BIO_printf(
-            bio_err,
-            " -dsaparam     read or generate DSA parameters, convert to DH\n");
+        BIO_printf(bio_err, " -dsaparam     read or generate DSA parameters, convert to DH\n");
 #endif
         BIO_printf(bio_err, " -check        check the DH parameters\n");
-        BIO_printf(bio_err,
-                   " -text         print a text form of the DH parameters\n");
+        BIO_printf(bio_err, " -text         print a text form of the DH parameters\n");
         BIO_printf(bio_err, " -C            Output C code\n");
         BIO_printf(bio_err, " -2            generate parameters using  2 as "
                             "the generator value\n");
         BIO_printf(bio_err, " -5            generate parameters using  5 as "
                             "the generator value\n");
-        BIO_printf(
-            bio_err,
-            " numbits       number of bits in to generate (default 2048)\n");
+        BIO_printf(bio_err, " numbits       number of bits in to generate (default 2048)\n");
 #ifndef OPENSSL_NO_ENGINE
-        BIO_printf(
-            bio_err,
-            " -engine e     use engine e, possibly a hardware device.\n");
+        BIO_printf(bio_err, " -engine e     use engine e, possibly a hardware device.\n");
 #endif
         BIO_printf(bio_err, " -noout        no output\n");
         goto end;

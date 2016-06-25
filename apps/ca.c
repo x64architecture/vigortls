@@ -129,7 +129,8 @@ static const char *ca_usage[] = {
     " -engine e       - use engine e, possibly a hardware device.\n",
 #endif
     " -status serial  - Shows certificate status given the serial number\n",
-    " -updatedb       - Updates db for expired certificates\n", NULL
+    " -updatedb       - Updates db for expired certificates\n",
+    NULL
 };
 
 #ifdef EFENCE

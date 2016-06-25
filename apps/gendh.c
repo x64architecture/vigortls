@@ -88,8 +88,7 @@ int gendh_main(int argc, char **argv)
          */
         BIO_printf(bio_err, " -5        - use 5 as the generator value\n");
 #ifndef OPENSSL_NO_ENGINE
-        BIO_printf(bio_err,
-                   " -engine e - use engine e, possibly a hardware device.\n");
+        BIO_printf(bio_err, " -engine e - use engine e, possibly a hardware device.\n");
 #endif
         goto end;
     }

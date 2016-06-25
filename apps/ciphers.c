@@ -15,10 +15,12 @@
 #include <string.h>
 
 static const char *ciphers_usage[] = {
-    "usage: ciphers args\n", " -v          - verbose mode, a textual listing "
-                             "of the SSL/TLS ciphers in OpenSSL\n",
-    " -V          - even more verbose\n", " -ssl3       - SSL3 mode\n",
-    " -tls1       - TLS1 mode\n", NULL
+    "usage: ciphers args\n",
+    " -v          - verbose mode, a textual listing of the SSL/TLS ciphers in OpenSSL\n",
+    " -V          - even more verbose\n",
+    " -ssl3       - SSL3 mode\n",
+    " -tls1       - TLS1 mode\n",
+    NULL
 };
 
 int ciphers_main(int argc, char **argv)

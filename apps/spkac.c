@@ -116,9 +116,7 @@ int spkac_main(int argc, char **argv)
         BIO_printf(bio_err, " -pubkey        output public key\n");
         BIO_printf(bio_err, " -verify        verify SPKAC signature\n");
 #ifndef OPENSSL_NO_ENGINE
-        BIO_printf(
-            bio_err,
-            " -engine e      use engine e, possibly a hardware device.\n");
+        BIO_printf(bio_err, " -engine e      use engine e, possibly a hardware device.\n");
 #endif
         goto end;
     }

@@ -18,9 +18,10 @@
 #include <stdcompat.h>
 
 static const char *engine_usage[] = {
-    "usage: engine opts [engine ...]\n", " -v[v[v[v]]] - verbose mode, for "
-                                         "each engine, list its 'control "
-                                         "commands'\n",
+    "usage: engine opts [engine ...]\n",
+    " -v[v[v[v]]] - verbose mode, for "
+    "each engine, list its 'control "
+    "commands'\n",
     "               -vv will additionally display each command's description\n",
     "               -vvv will also add the input flags for each command\n",
     "               -vvvv will also show internal input flags\n",
@@ -37,7 +38,8 @@ static const char *engine_usage[] = {
     " line, or all supported ENGINEs if none are specified.\n",
     " Eg. '-pre \"SO_PATH:/lib/libdriver.so\"' calls command \"SO_PATH\" "
     "with\n",
-    " argument \"/lib/libdriver.so\".\n", NULL
+    " argument \"/lib/libdriver.so\".\n",
+    NULL
 };
 
 static void identity(char *ptr)

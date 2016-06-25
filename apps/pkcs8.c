@@ -149,24 +149,16 @@ int pkcs8_main(int argc, char **argv)
         BIO_printf(bio_err, "-out file       output file\n");
         BIO_printf(bio_err, "-passout arg    output file pass phrase source\n");
         BIO_printf(bio_err, "-topk8          output PKCS8 file\n");
-        BIO_printf(bio_err,
-                   "-nooct          use (nonstandard) no octet format\n");
+        BIO_printf(bio_err, "-nooct          use (nonstandard) no octet format\n");
         BIO_printf(bio_err, "-embed          use (nonstandard) embedded DSA "
                             "parameters format\n");
-        BIO_printf(
-            bio_err,
-            "-nsdb           use (nonstandard) DSA Netscape DB format\n");
+        BIO_printf(bio_err, "-nsdb           use (nonstandard) DSA Netscape DB format\n");
         BIO_printf(bio_err, "-noiter         use 1 as iteration count\n");
-        BIO_printf(bio_err,
-                   "-nocrypt        use or expect unencrypted private key\n");
-        BIO_printf(bio_err,
-                   "-v2 alg         use PKCS#5 v2.0 and cipher \"alg\"\n");
-        BIO_printf(bio_err,
-                   "-v1 obj         use PKCS#5 v1.5 and cipher \"alg\"\n");
+        BIO_printf(bio_err, "-nocrypt        use or expect unencrypted private key\n");
+        BIO_printf(bio_err, "-v2 alg         use PKCS#5 v2.0 and cipher \"alg\"\n");
+        BIO_printf(bio_err, "-v1 obj         use PKCS#5 v1.5 and cipher \"alg\"\n");
 #ifndef OPENSSL_NO_ENGINE
-        BIO_printf(
-            bio_err,
-            " -engine e       use engine e, possibly a hardware device.\n");
+        BIO_printf(bio_err, " -engine e       use engine e, possibly a hardware device.\n");
 #endif
         goto end;
     }

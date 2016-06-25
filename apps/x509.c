@@ -60,19 +60,16 @@ static const char *x509_usage[] = {
     " -fingerprint    - print the certificate fingerprint\n",
     " -alias          - output certificate alias\n",
     " -noout          - no certificate output\n",
-    " -ocspid         - print OCSP hash values for the subject name and public "
-    "key\n",
+    " -ocspid         - print OCSP hash values for the subject name and public key\n",
     " -ocsp_uri       - print OCSP Responder URL(s)\n",
     " -trustout       - output a \"trusted\" certificate\n",
     " -clrtrust       - clear all trusted purposes\n",
     " -clrreject      - clear all rejected purposes\n",
     " -addtrust arg   - trust certificate for a given purpose\n",
     " -addreject arg  - reject certificate for a given purpose\n",
-    " -setalias arg   - set certificate alias\n", " -days arg       - How long "
-                                                  "till expiry of a signed "
-                                                  "certificate - def 30 days\n",
-    " -checkend arg   - check whether the cert expires in the next arg "
-    "seconds\n",
+    " -setalias arg   - set certificate alias\n",
+    " -days arg       - How long till expiry of a signed certificate - def 30 days\n",
+    " -checkend arg   - check whether the cert expires in the next arg seconds\n",
     "                   exit 1 if so, 0 if not\n",
     " -signkey arg    - self sign cert with arg\n",
     " -x509toreq      - output a certification request object\n",
@@ -87,15 +84,14 @@ static const char *x509_usage[] = {
     " -C              - print out C code forms\n",
     " -md2/-md5/-sha1/-mdc2 - digest to use\n",
     " -extfile        - configuration file with X509V3 extensions to add\n",
-    " -extensions     - section from config file with X509V3 extensions to "
-    "add\n",
-    " -clrext         - delete extensions before signing and input "
-    "certificate\n",
+    " -extensions     - section from config file with X509V3 extensions to add\n",
+    " -clrext         - delete extensions before signing and input certificate\n",
     " -nameopt arg    - various certificate name options\n",
 #ifndef OPENSSL_NO_ENGINE
     " -engine e       - use engine e, possibly a hardware device.\n",
 #endif
-    " -certopt arg    - various certificate text options\n", NULL
+    " -certopt arg    - various certificate text options\n",
+    NULL
 };
 
 static int callb(int ok, X509_STORE_CTX *ctx);

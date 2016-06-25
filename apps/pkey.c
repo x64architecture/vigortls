@@ -118,9 +118,7 @@ int pkey_main(int argc, char **argv)
         BIO_printf(bio_err, "-out file       output file\n");
         BIO_printf(bio_err, "-passout arg    output file pass phrase source\n");
 #ifndef OPENSSL_NO_ENGINE
-        BIO_printf(
-            bio_err,
-            "-engine e       use engine e, possibly a hardware device.\n");
+        BIO_printf(bio_err, "-engine e       use engine e, possibly a hardware device.\n");
 #endif
         return 1;
     }

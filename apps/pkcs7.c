@@ -105,15 +105,11 @@ int pkcs7_main(int argc, char **argv)
         BIO_printf(bio_err, " -outform arg  output format - DER or PEM\n");
         BIO_printf(bio_err, " -in arg       input file\n");
         BIO_printf(bio_err, " -out arg      output file\n");
-        BIO_printf(bio_err,
-                   " -print_certs  print any certs or crl in the input\n");
-        BIO_printf(bio_err,
-                   " -text         print full details of certificates\n");
+        BIO_printf(bio_err, " -print_certs  print any certs or crl in the input\n");
+        BIO_printf(bio_err, " -text         print full details of certificates\n");
         BIO_printf(bio_err, " -noout        don't output encoded data\n");
 #ifndef OPENSSL_NO_ENGINE
-        BIO_printf(
-            bio_err,
-            " -engine e     use engine e, possibly a hardware device.\n");
+        BIO_printf(bio_err, " -engine e     use engine e, possibly a hardware device.\n");
 #endif
         ret = 1;
         goto end;

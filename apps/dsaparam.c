@@ -28,20 +28,6 @@
 #include <string.h>
 #include <time.h>
 
-/* -inform arg    - input format - default PEM (DER or PEM)
- * -outform arg - output format - default PEM
- * -in arg    - input file - default stdin
- * -out arg    - output file - default stdout
- * -noout
- * -text
- * -C
- * -noout
- * -genkey
- *  #ifdef GENCB_TEST
- * -timebomb n  - interrupt keygen after <n> seconds
- *  #endif
- */
-
 #ifdef GENCB_TEST
 
 static int stop_keygen_flag = 0;
@@ -155,13 +141,10 @@ int dsaparam_main(int argc, char **argv)
         BIO_printf(bio_err, " -noout        no output\n");
         BIO_printf(bio_err, " -genkey       generate a DSA key\n");
 #ifndef OPENSSL_NO_ENGINE
-        BIO_printf(
-            bio_err,
-            " -engine e     use engine e, possibly a hardware device.\n");
+        BIO_printf(bio_err, " -engine e     use engine e, possibly a hardware device.\n");
 #endif
 #ifdef GENCB_TEST
-        BIO_printf(bio_err,
-                   " -timebomb n   interrupt keygen after <n> seconds\n");
+        BIO_printf(bio_err, " -timebomb n   interrupt keygen after <n> seconds\n");
 #endif
         BIO_printf(bio_err, " number        number of bits to use for "
                             "generating private key\n");

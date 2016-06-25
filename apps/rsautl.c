@@ -278,9 +278,7 @@ static void usage()
     BIO_printf(bio_err, "-inkey file     input key\n");
     BIO_printf(bio_err, "-keyform arg    private key format - default PEM\n");
     BIO_printf(bio_err, "-pubin          input is an RSA public\n");
-    BIO_printf(
-        bio_err,
-        "-certin         input is a certificate carrying an RSA public key\n");
+    BIO_printf(bio_err, "-certin         input is a certificate carrying an RSA public key\n");
     BIO_printf(bio_err, "-ssl            use SSL v2 padding\n");
     BIO_printf(bio_err, "-raw            use no padding\n");
     BIO_printf(bio_err, "-pkcs           use PKCS#1 v1.5 padding (default)\n");
@@ -291,8 +289,7 @@ static void usage()
     BIO_printf(bio_err, "-decrypt        decrypt with private key\n");
     BIO_printf(bio_err, "-hexdump        hex dump output\n");
 #ifndef OPENSSL_NO_ENGINE
-    BIO_printf(bio_err,
-               "-engine e       use engine e, possibly a hardware device.\n");
+    BIO_printf(bio_err, "-engine e       use engine e, possibly a hardware device.\n");
     BIO_printf(bio_err, "-passin arg    pass phrase source\n");
 #endif
 }

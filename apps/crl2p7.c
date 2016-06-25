@@ -96,13 +96,9 @@ int crl2pkcs7_main(int argc, char **argv)
         BIO_printf(bio_err, " -outform arg   output format - DER or PEM\n");
         BIO_printf(bio_err, " -in arg        input file\n");
         BIO_printf(bio_err, " -out arg       output file\n");
-        BIO_printf(
-            bio_err,
-            " -certfile arg  certificates file of chain to a trusted CA\n");
+        BIO_printf(bio_err, " -certfile arg  certificates file of chain to a trusted CA\n");
         BIO_printf(bio_err, "                (can be used more than once)\n");
-        BIO_printf(
-            bio_err,
-            " -nocrl         no crl to load, just certs from '-certfile'\n");
+        BIO_printf(bio_err, " -nocrl         no crl to load, just certs from '-certfile'\n");
         ret = 1;
         goto end;
     }

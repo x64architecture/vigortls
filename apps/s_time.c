@@ -114,8 +114,7 @@ static void s_time_usage(void)
 
     printf("usage: s_time <args>\n\n");
 
-    printf("-connect host:port - host:port to connect to (default is %s)\n",
-           SSL_CONNECT_NAME);
+    printf("-connect host:port - host:port to connect to (default is %s)\n", SSL_CONNECT_NAME);
     printf("-nbio         - Run with non-blocking IO\n");
     printf("-bugs         - Turn on SSL bug compatibility\n");
     printf("-new          - Just time new connections\n");

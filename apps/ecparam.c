@@ -35,30 +35,6 @@
 #include <string.h>
 #include <time.h>
 
-/* -inform arg      - input format - default PEM (DER or PEM)
- * -outform arg     - output format - default PEM
- * -in  arg         - input file  - default stdin
- * -out arg         - output file - default stdout
- * -noout           - do not print the ec parameter
- * -text            - print the ec parameters in text form
- * -check           - validate the ec parameters
- * -C               - print a 'C' function creating the parameters
- * -name arg        - use the ec parameters with 'short name' name
- * -list_curves     - prints a list of all currently available curve 'short
- * names'
- * -conv_form arg   - specifies the point conversion form
- *                  - possible values: compressed
- *                                     uncompressed (default)
- *                                     hybrid
- * -param_enc arg   - specifies the way the ec parameters are encoded
- *                    in the asn1 der encoding
- *                    possible values: named_curve (default)
- *                                     explicit
- * -no_seed         - if 'explicit' parameters are chosen do not use the seed
- * -genkey          - generate ec key
- * -engine e        - use engine e, possibly a hardware device
- */
-
 static int ecparam_print_var(BIO *, BIGNUM *, const char *, int, uint8_t *);
 
 int ecparam_main(int, char **);

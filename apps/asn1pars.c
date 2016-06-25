@@ -130,8 +130,7 @@ int asn1parse_main(int argc, char **argv)
         BIO_printf(bio_err, "where options are\n");
         BIO_printf(bio_err, " -inform arg   input format - one of DER PEM\n");
         BIO_printf(bio_err, " -in arg       input file\n");
-        BIO_printf(bio_err,
-                   " -out arg      output file (output format is always DER\n");
+        BIO_printf(bio_err, " -out arg      output file (output format is always DER\n");
         BIO_printf(bio_err, " -noout arg    don't produce any output\n");
         BIO_printf(bio_err, " -offset arg   offset into file\n");
         BIO_printf(bio_err, " -length arg   length of section in file\n");
@@ -144,10 +143,8 @@ int asn1parse_main(int argc, char **argv)
         BIO_printf(bio_err, "               a series of these can be used to "
                             "'dig' into multiple\n");
         BIO_printf(bio_err, "               ASN1 blob wrappings\n");
-        BIO_printf(bio_err,
-                   " -genstr str   string to generate ASN1 structure from\n");
-        BIO_printf(bio_err,
-                   " -genconf file file to generate ASN1 structure from\n");
+        BIO_printf(bio_err, " -genstr str   string to generate ASN1 structure from\n");
+        BIO_printf(bio_err, " -genconf file file to generate ASN1 structure from\n");
         goto end;
     }
 

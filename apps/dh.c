@@ -111,14 +111,11 @@ int dh_main(int argc, char **argv)
         BIO_printf(bio_err, " -in arg       input file\n");
         BIO_printf(bio_err, " -out arg      output file\n");
         BIO_printf(bio_err, " -check        check the DH parameters\n");
-        BIO_printf(bio_err,
-                   " -text         print a text form of the DH parameters\n");
+        BIO_printf(bio_err, " -text         print a text form of the DH parameters\n");
         BIO_printf(bio_err, " -C            Output C code\n");
         BIO_printf(bio_err, " -noout        no output\n");
 #ifndef OPENSSL_NO_ENGINE
-        BIO_printf(
-            bio_err,
-            " -engine e     use engine e, possibly a hardware device.\n");
+        BIO_printf(bio_err, " -engine e     use engine e, possibly a hardware device.\n");
 #endif
         goto end;
     }

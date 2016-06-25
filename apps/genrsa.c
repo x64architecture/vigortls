@@ -135,21 +135,15 @@ int genrsa_main(int argc, char **argv)
                             "IDEA in cbc mode\n");
 #endif
         BIO_printf(bio_err, " -aes128, -aes192, -aes256\n");
-        BIO_printf(bio_err,
-                   "                 encrypt PEM output with cbc aes\n");
+        BIO_printf(bio_err, "                 encrypt PEM output with cbc aes\n");
         BIO_printf(bio_err, " -camellia128, -camellia192, -camellia256\n");
-        BIO_printf(bio_err,
-                   "                 encrypt PEM output with cbc camellia\n");
+        BIO_printf(bio_err, "                 encrypt PEM output with cbc camellia\n");
         BIO_printf(bio_err, " -out file       output the key to 'file\n");
-        BIO_printf(bio_err,
-                   " -passout arg    output file pass phrase source\n");
-        BIO_printf(bio_err,
-                   " -f4             use F4 (0x10001) for the E value\n");
+        BIO_printf(bio_err, " -passout arg    output file pass phrase source\n");
+        BIO_printf(bio_err, " -f4             use F4 (0x10001) for the E value\n");
         BIO_printf(bio_err, " -3              use 3 for the E value\n");
 #ifndef OPENSSL_NO_ENGINE
-        BIO_printf(
-            bio_err,
-            " -engine e       use engine e, possibly a hardware device.\n");
+        BIO_printf(bio_err, " -engine e       use engine e, possibly a hardware device.\n");
 #endif
         goto err;
     }

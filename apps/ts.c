@@ -261,21 +261,19 @@ usage:
                         "[-md2|-md4|-md5|-sha|-sha1|-mdc2|-ripemd160] "
                         "[-policy object_id] [-no_nonce] [-cert] "
                         "[-in request.tsq] [-out request.tsq] [-text]\n");
-    BIO_printf(bio_err,
-               "or\n"
-               "ts -reply [-config configfile] [-section tsa_section] "
-               "[-queryfile request.tsq] [-passin password] "
-               "[-signer tsa_cert.pem] [-inkey private_key.pem] "
-               "[-chain certs_file.pem] [-policy object_id] "
-               "[-in response.tsr] [-token_in] "
-               "[-out response.tsr] [-token_out] [-text] [-engine id]\n");
-    BIO_printf(bio_err,
-               "or\n"
-               "ts -verify [-data file_to_hash] [-digest digest_bytes] "
-               "[-queryfile request.tsq] "
-               "-in response.tsr [-token_in] "
-               "-CApath ca_path -CAfile ca_file.pem "
-               "-untrusted cert_file.pem\n");
+    BIO_printf(bio_err, "or\n"
+                        "ts -reply [-config configfile] [-section tsa_section] "
+                        "[-queryfile request.tsq] [-passin password] "
+                        "[-signer tsa_cert.pem] [-inkey private_key.pem] "
+                        "[-chain certs_file.pem] [-policy object_id] "
+                        "[-in response.tsr] [-token_in] "
+                        "[-out response.tsr] [-token_out] [-text] [-engine id]\n");
+    BIO_printf(bio_err, "or\n"
+                        "ts -verify [-data file_to_hash] [-digest digest_bytes] "
+                        "[-queryfile request.tsq] "
+                        "-in response.tsr [-token_in] "
+                        "-CApath ca_path -CAfile ca_file.pem "
+                        "-untrusted cert_file.pem\n");
 cleanup:
     /* Clean up. */
     NCONF_free(conf);
