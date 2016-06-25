@@ -230,6 +230,33 @@ static int dgram_write(BIO *b, const char *in, int inl)
     return (ret);
 }
 
+static long dgram_get_mtu_overhead(bio_dgram_data *data)
+{
+    long ret;
+
+    switch (data->peer.sa.sa_family) {
+        case AF_INET:
+            /* Assume this is UDP - 20 bytes for IP, 8 bytes for UDP */
+            ret = 28;
+            break;
+        case AF_INET6:
+#ifdef IN6_IS_ADDR_V4MAPPED
+            if (IN6_IS_ADDR_V4MAPPED(&data->peer.sa_in6.sin6_addr))
+                /* Assume this is UDP - 20 bytes for IP, 8 bytes for UDP */
+                ret = 28;
+            else
+#endif
+                /* Assume this is UDP - 40 bytes for IP, 8 bytes for UDP */
+                ret = 48;
+            break;
+        default:
+            /* We don't know. Go with the historical default */
+            ret = 28;
+            break;
+    }
+    return ret;
+}
+
 static long dgram_ctrl(BIO *b, int cmd, long num, void *ptr)
 {
     long ret = 1;
@@ -381,20 +408,21 @@ static long dgram_ctrl(BIO *b, int cmd, long num, void *ptr)
 #endif
             break;
         case BIO_CTRL_DGRAM_GET_FALLBACK_MTU:
+            ret = -dgram_get_mtu_overhead(data);
             switch (data->peer.sa.sa_family) {
                 case AF_INET:
-                    ret = 576 - 20 - 8;
+                    ret += 576;
                     break;
                 case AF_INET6:
 #ifdef IN6_IS_ADDR_V4MAPPED
                     if (IN6_IS_ADDR_V4MAPPED(&data->peer.sa_in6.sin6_addr))
-                        ret = 576 - 20 - 8;
+                        ret += 576;
                     else
 #endif
-                        ret = 1280 - 40 - 8;
+                        ret += 1280;
                     break;
                 default:
-                    ret = 576 - 20 - 8;
+                    ret += 576;
                     break;
             }
             break;
@@ -527,6 +555,9 @@ static long dgram_ctrl(BIO *b, int cmd, long num, void *ptr)
                 ret = 0;
             break;
 #endif
+        case BIO_CTRL_DGRAM_GET_MTU_OVERHEAD:
+            ret = dgram_get_mtu_overhead(data);
+            break;
         default:
             ret = 0;
             break;
