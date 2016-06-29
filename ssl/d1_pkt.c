@@ -451,14 +451,15 @@ again:
     if (bitmap == NULL)
         goto again;
 
-        /* Check whether this is a repeat, or aged record.
-         * Don't check if we're listening and this message is
-         * a ClientHello. They can look as if they're replayed,
-         * since they arrive from different connections and
-         * would be dropped unnecessarily.
-         */
+    /* Check whether this is a repeat, or aged record.
+     * Don't check if we're listening and this message is
+     * a ClientHello. They can look as if they're replayed,
+     * since they arrive from different connections and
+     * would be dropped unnecessarily.
+     */
     if (!(s->d1->listen && rr->type == SSL3_RT_HANDSHAKE &&
-        p != NULL && *p == SSL3_MT_CLIENT_HELLO) &&
+          s->packet_length > DTLS1_RT_HEADER_LENGTH &&
+          s->packet[DTLS1_RT_HEADER_LENGTH] == SSL3_MT_CLIENT_HELLO) &&
         !dtls1_record_replay_check(s, bitmap))
     {
         goto again;
