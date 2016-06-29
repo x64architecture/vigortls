@@ -2140,6 +2140,7 @@ int tls1_set_server_sigalgs(SSL *s)
     /* Clear any shared sigtnature algorithms */
     free(s->cert->shared_sigalgs);
     s->cert->shared_sigalgs = NULL;
+    s->cert->shared_sigalgslen = 0;
     /* Clear certificate digests and validity flags */
     for (i = 0; i < SSL_PKEY_NUM; i++) {
         s->cert->pkeys[i].digest = NULL;
@@ -2723,6 +2724,7 @@ static int tls1_set_shared_sigalgs(SSL *s)
 
     free(c->shared_sigalgs);
     c->shared_sigalgs = NULL;
+    c->shared_sigalgslen = 0;
 
     /* If client use client signature algorithms if not NULL */
     if (!s->server && c->client_sigalgs != NULL && !is_suiteb) {
@@ -2746,12 +2748,15 @@ static int tls1_set_shared_sigalgs(SSL *s)
         preflen = c->peer_sigalgslen;
     }
     nmatch = tls12_do_shared_sigalgs(NULL, pref, preflen, allow, allowlen);
-    if (!nmatch)
-        return 1;
-    salgs = reallocarray(NULL, nmatch, sizeof(TLS_SIGALGS));
-    if (salgs == NULL)
-        return 0;
-    nmatch = tls12_do_shared_sigalgs(salgs, pref, preflen, allow, allowlen);
+    if (nmatch) {
+        salgs = reallocarray(NULL, nmatch, sizeof(TLS_SIGALGS));
+        if (salgs == NULL)
+            return 0;
+        nmatch = tls12_do_shared_sigalgs(salgs, pref, preflen, allow, allowlen);
+    }
+    else {
+        salgs = NULL;
+    }
     c->shared_sigalgs = salgs;
     c->shared_sigalgslen = nmatch;
     return 1;
