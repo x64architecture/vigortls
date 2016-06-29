@@ -188,6 +188,8 @@ static int kek_unwrap_key(uint8_t *out, size_t *outlen,
         return 0;
     }
     tmp = malloc(inlen);
+    if (tmp == NULL)
+        return 0;
     /* setup IV by decrypting last two blocks */
     EVP_DecryptUpdate(ctx, tmp + inlen - 2 * blocklen, &outl,
                       in + inlen - 2 * blocklen, blocklen * 2);

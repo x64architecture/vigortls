@@ -278,16 +278,19 @@ void OBJ_NAME_do_all_sorted(int type, void (*fn)(const OBJ_NAME *, void *arg),
 
     d.type = type;
     d.names = reallocarray(NULL, lh_OBJ_NAME_num_items(names_lh),
-                           sizeof *d.names);
-    d.n = 0;
-    OBJ_NAME_do_all(type, do_all_sorted_fn, &d);
+                           sizeof(*d.names));
+    /* Really should return an error if !d.names...but its a void function! */
+    if (d.names) {
+        d.n = 0;
+        OBJ_NAME_do_all(type, do_all_sorted_fn, &d);
 
-    qsort((void *)d.names, d.n, sizeof *d.names, do_all_sorted_cmp);
+        qsort((void *)d.names, d.n, sizeof *d.names, do_all_sorted_cmp);
 
-    for (n = 0; n < d.n; ++n)
-        fn(d.names[n], arg);
+        for (n = 0; n < d.n; ++n)
+            fn(d.names[n], arg);
 
-    free((void *)d.names);
+        free((void *)d.names);
+    }
 }
 
 static int free_type;

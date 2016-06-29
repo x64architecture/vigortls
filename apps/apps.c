@@ -294,9 +294,14 @@ int password_callback(char *buf, int bufsiz, int verify, PW_CB_DATA *cb_tmp)
         int ok = 0;
         char *buff = NULL;
         int ui_flags = 0;
-        char *prompt = NULL;
+        char *prompt;
 
         prompt = UI_construct_prompt(ui, "pass phrase", prompt_info);
+        if (prompt == NULL) {
+            BIO_printf(bio_err, "Out of memory\n");
+            UI_free(ui);
+            return 0;
+        }
 
         ui_flags |= UI_INPUT_FLAG_DEFAULT_PWD;
         UI_ctrl(ui, UI_CTRL_PRINT_ERRORS, 1, 0, 0);
@@ -306,6 +311,12 @@ int password_callback(char *buf, int bufsiz, int verify, PW_CB_DATA *cb_tmp)
                                      bufsiz - 1);
         if (ok >= 0 && verify) {
             buff = malloc(bufsiz);
+            if (buff == NULL) {
+                BIO_printf(bio_err, "Out of memory\n");
+                UI_free(ui);
+                free(prompt);
+                return 0;
+            }
             ok = UI_add_verify_string(ui, prompt, ui_flags, buff, PW_MIN_LENGTH,
                                       bufsiz - 1, buf);
         }

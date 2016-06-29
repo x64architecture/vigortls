@@ -202,6 +202,11 @@ int rsautl_main(int argc, char **argv)
 
     rsa_in = reallocarray(NULL, keysize, 2);
     rsa_out = malloc(keysize);
+    if (rsa_in == NULL || rsa_out == NULL) {
+        BIO_printf(bio_err, "Out of memory\n");
+        ERR_print_errors(bio_err);
+        goto end;
+    }
 
     /* Read the input data */
     rsa_inlen = BIO_read(in, rsa_in, keysize * 2);
@@ -259,12 +264,9 @@ end:
     RSA_free(rsa);
     BIO_free(in);
     BIO_free_all(out);
-    if (rsa_in)
-        free(rsa_in);
-    if (rsa_out)
-        free(rsa_out);
-    if (passin)
-        free(passin);
+    free(rsa_in);
+    free(rsa_out);
+    free(passin);
     return ret;
 }
 

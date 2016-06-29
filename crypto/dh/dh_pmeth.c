@@ -421,6 +421,8 @@ static int pkey_dh_derive(EVP_PKEY_CTX *ctx, uint8_t *key, size_t *keylen)
         ret = 0;
         Zlen = DH_size(dh);
         Z = malloc(Zlen);
+        if (Z == NULL)
+            goto err;
         if (DH_compute_key_padded(Z, dhpub, dh) <= 0)
             goto err;
         if (!DH_KDF_X9_42(key, *keylen, Z, Zlen, dctx->kdf_oid,
