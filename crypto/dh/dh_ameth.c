@@ -197,6 +197,7 @@ decerr:
     DHerr(DH_F_DH_PRIV_DECODE, EVP_R_DECODE_ERROR);
 dherr:
     DH_free(dh);
+    ASN1_INTEGER_free(privkey);
     return 0;
 }
 
