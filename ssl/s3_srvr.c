@@ -2192,7 +2192,10 @@ int ssl3_send_server_certificate(SSL *s)
             return (0);
         }
 
-        ssl3_output_cert_chain(s, cpk);
+        if (!ssl3_output_cert_chain(s, cpk)) {
+            SSLerr(SSL_F_SSL3_SEND_SERVER_CERTIFICATE, ERR_R_INTERNAL_ERROR);
+            return 0;
+        }
         s->state = SSL3_ST_SW_CERT_B;
     }
 
