@@ -654,8 +654,6 @@ int main(int argc, char *argv[])
             no_dhe = 1;
         else if (strcmp(*argv, "-no_ecdhe") == 0)
             no_ecdhe = 1;
-        else if (strcmp(*argv, "-dtls1") == 0)
-            dtls1 = 1;
         else if (strcmp(*argv, "-tls1") == 0)
             tls1 = 1;
         else if (strcmp(*argv, "-dtls1") == 0)

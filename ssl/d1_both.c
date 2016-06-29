@@ -975,9 +975,10 @@ int dtls1_buffer_message(SSL *s, int is_ccs)
 
     if (is_ccs) {
         OPENSSL_assert(s->d1->w_msg_hdr.msg_len +
-                       ((s->version == DTLS1_VERSION) ? DTLS1_CCS_HEADER_LENGTH : 3) == (unsigned int)s->init_num);
+            DTLS1_CCS_HEADER_LENGTH == (unsigned int)s->init_num);
     } else {
-        OPENSSL_assert(s->d1->w_msg_hdr.msg_len + DTLS1_HM_HEADER_LENGTH == (unsigned int)s->init_num);
+        OPENSSL_assert(s->d1->w_msg_hdr.msg_len +
+            DTLS1_HM_HEADER_LENGTH == (unsigned int)s->init_num);
     }
 
     frag->msg_header.msg_len = s->d1->w_msg_hdr.msg_len;

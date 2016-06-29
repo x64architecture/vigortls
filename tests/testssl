@@ -104,6 +104,18 @@ $ssltest -dtls1 -client_auth $CA $extra || exit 1
 echo test dtlsv1 with both client and server authentication
 $ssltest -dtls1 -server_auth -client_auth $CA $extra || exit 1
 
+echo test dtlsv1.2
+$ssltest -dtls12 $extra || exit 1
+
+echo test dtlsv1.2 with server authentication
+$ssltest -dtls12 -server_auth $CA $extra || exit 1
+
+echo test dtlsv1.2 with client authentication
+$ssltest -dtls12 -client_auth $CA $extra || exit 1
+
+echo test dtlsv1.2 with both client and server authentication
+$ssltest -dtls12 -server_auth -client_auth $CA $extra || exit 1
+
 echo "Testing DTLS ciphersuites"
 for protocol in SSLv3; do
   echo "Testing ciphersuites for $protocol"
