@@ -80,3 +80,4 @@ add_test(ssltest ${CMAKE_CURRENT_SOURCE_DIR}/ssltest.sh ${CMAKE_CURRENT_BINARY_D
 endif()
 add_test_suite(wptest wptest.c)
 add_test_suite(v3nametest v3nametest.c)
+add_test_suite(evp_extra_test evp_extra_test.c)
