@@ -323,6 +323,15 @@ void ASN1_STRING_free(ASN1_STRING *a)
     free(a);
 }
 
+void ASN1_STRING_clear_free(ASN1_STRING *a)
+{
+    if (a == NULL)
+        return;
+    if (!(a->flags & ASN1_STRING_FLAG_NDEF))
+        vigortls_zeroize(a->data, a->length);
+    ASN1_STRING_free(a);
+}
+
 int ASN1_STRING_cmp(const ASN1_STRING *a, const ASN1_STRING *b)
 {
     int i;

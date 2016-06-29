@@ -189,7 +189,7 @@ static int dh_priv_decode(EVP_PKEY *pkey, PKCS8_PRIV_KEY_INFO *p8)
 
     EVP_PKEY_assign(pkey, pkey->ameth->pkey_id, dh);
 
-    ASN1_INTEGER_free(privkey);
+    ASN1_STRING_clear_free(privkey);
 
     return 1;
 
@@ -197,7 +197,7 @@ decerr:
     DHerr(DH_F_DH_PRIV_DECODE, EVP_R_DECODE_ERROR);
 dherr:
     DH_free(dh);
-    ASN1_INTEGER_free(privkey);
+    ASN1_STRING_clear_free(privkey);
     return 0;
 }
 
@@ -232,7 +232,7 @@ static int dh_priv_encode(PKCS8_PRIV_KEY_INFO *p8, const EVP_PKEY *pkey)
 
     dplen = i2d_ASN1_INTEGER(prkey, &dp);
 
-    ASN1_INTEGER_free(prkey);
+    ASN1_STRING_clear_free(prkey);
     prkey = NULL;
 
     if (!PKCS8_pkey_set0(p8, OBJ_nid2obj(pkey->ameth->pkey_id), 0,
@@ -244,7 +244,7 @@ static int dh_priv_encode(PKCS8_PRIV_KEY_INFO *p8, const EVP_PKEY *pkey)
 err:
     free(dp);
     ASN1_STRING_free(params);
-    ASN1_INTEGER_free(prkey);
+    ASN1_STRING_clear_free(prkey);
     return 0;
 }
 
