@@ -85,7 +85,7 @@ void EVP_EncodeUpdate(EVP_ENCODE_CTX *ctx, uint8_t *out, int *outl,
     unsigned int total = 0;
 
     *outl = 0;
-    if (inl == 0)
+    if (inl <= 0)
         return;
     OPENSSL_assert(ctx->length <= (int)sizeof(ctx->enc_data));
     if (ctx->length - ctx->num > inl) {
