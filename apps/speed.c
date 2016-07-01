@@ -2162,7 +2162,7 @@ static void multiblock_speed(const EVP_CIPHER *evp_cipher)
         print_message(alg_name, 0, mblengths[j]);
         Time_F(START);
         for (count = 0, run = 1; run && count < 0x7fffffff; count++) {
-            uint8_t aad[13];
+            uint8_t aad[EVP_AEAD_TLS1_AAD_LEN];
             EVP_CTRL_TLS1_1_MULTIBLOCK_PARAM mb_param;
             size_t len = mblengths[j];
             int packlen;
@@ -2199,7 +2199,8 @@ static void multiblock_speed(const EVP_CIPHER *evp_cipher)
                 aad[11] = len >> 8;
                 aad[12] = len;
                 pad =
-                    EVP_CIPHER_CTX_ctrl(&ctx, EVP_CTRL_AEAD_TLS1_AAD, 13, aad);
+                    EVP_CIPHER_CTX_ctrl(&ctx, EVP_CTRL_AEAD_TLS1_AAD,
+                                        EVP_AEAD_TLS1_AAD_LEN, aad);
                 EVP_Cipher(&ctx, out, inp, len + pad);
             }
         }

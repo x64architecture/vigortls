@@ -836,7 +836,7 @@ int tls1_enc(SSL *s, int send)
         bs = EVP_CIPHER_block_size(ds->cipher);
 
         if (EVP_CIPHER_flags(ds->cipher) & EVP_CIPH_FLAG_AEAD_CIPHER) {
-            uint8_t buf[13];
+            uint8_t buf[EVP_AEAD_TLS1_AAD_LEN];
 
             if (SSL_IS_DTLS(s)) {
                 dtls1_build_sequence_number(buf, seq,
@@ -851,7 +851,10 @@ int tls1_enc(SSL *s, int send)
             buf[10] = (uint8_t)(s->version);
             buf[11] = rec->length >> 8;
             buf[12] = rec->length & 0xff;
-            pad = EVP_CIPHER_CTX_ctrl(ds, EVP_CTRL_AEAD_TLS1_AAD, 13, buf);
+            pad = EVP_CIPHER_CTX_ctrl(ds, EVP_CTRL_AEAD_TLS1_AAD,
+                                      EVP_AEAD_TLS1_AAD_LEN, buf);
+            if (pad <= 0)
+                return -1;
             if (send) {
                 l += pad;
                 rec->length += pad;
