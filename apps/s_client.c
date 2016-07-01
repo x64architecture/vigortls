@@ -86,6 +86,7 @@ static void sc_usage(void)
     BIO_printf(bio_err, " -pass arg     - private key file pass phrase source\n");
     BIO_printf(bio_err, " -CApath arg   - PEM format directory of CA's\n");
     BIO_printf(bio_err, " -CAfile arg   - PEM format file of CA's\n");
+    BIO_printf(bio_err, " -no_alt_chains - only ever use the first certificate chain found\n");
     BIO_printf(bio_err, " -reconnect    - Drop and re-make the connection with "
                         "the same Session-ID\n");
     BIO_printf(bio_err, " -pause        - sleep(1) after each read(2) and "
