@@ -130,12 +130,18 @@ static int pkey_rsa_sign(EVP_PKEY_CTX *ctx, uint8_t *sig, size_t *siglen,
         }
 
        if (rctx->pad_mode == RSA_X931_PADDING) {
-            if (!setup_tbuf(rctx, ctx))
-                return -1;
-            memcpy(rctx->tbuf, tbs, tbslen);
-            rctx->tbuf[tbslen] = RSA_X931_hash_id(EVP_MD_type(rctx->md));
-            ret = RSA_private_encrypt(tbslen + 1, rctx->tbuf,
-                                      sig, rsa, RSA_X931_PADDING);
+           if ((size_t)EVP_PKEY_size(ctx->pkey) < tbslen + 1) {
+               RSAerr(RSA_F_PKEY_RSA_SIGN, RSA_R_KEY_SIZE_TOO_SMALL);
+               return -1;
+           }
+           if (!setup_tbuf(rctx, ctx)) {
+               RSAerr(RSA_F_PKEY_RSA_SIGN, ERR_R_MALLOC_FAILURE);
+               return -1;
+           }
+           memcpy(rctx->tbuf, tbs, tbslen);
+           rctx->tbuf[tbslen] = RSA_X931_hash_id(EVP_MD_type(rctx->md));
+           ret = RSA_private_encrypt(tbslen + 1, rctx->tbuf, sig, rsa,
+                                     RSA_X931_PADDING);
         } else if (rctx->pad_mode == RSA_PKCS1_PADDING) {
             unsigned int sltmp;
             ret = RSA_sign(EVP_MD_type(rctx->md),
