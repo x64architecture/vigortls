@@ -329,8 +329,10 @@ static int obj_cmp(const ASN1_OBJECT *const *ap, const unsigned int *bp)
 
     j = (a->length - b->length);
     if (j)
-        return (j);
-    return (memcmp(a->data, b->data, a->length));
+        return j;
+    if (a->length == 0)
+        return 0;
+    return memcmp(a->data, b->data, a->length);
 }
 
 IMPLEMENT_OBJ_BSEARCH_CMP_FN(const ASN1_OBJECT *, unsigned int, obj);
