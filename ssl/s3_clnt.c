@@ -2003,8 +2003,6 @@ int ssl3_send_client_key_exchange(SSL *s)
             n += 2;
 
             DH_free(dh_clnt);
-
-            /* perhaps clean things up a bit EAY EAY EAY EAY*/
         } else if (alg_k & SSL_kECDHE) {
             const EC_GROUP *srvr_group = NULL;
             EC_KEY *tkey;
