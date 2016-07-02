@@ -10,6 +10,7 @@
 #include <netinet/in.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #define USE_SOCKETS
 #include "apps.h"
 #undef USE_SOCKETS
