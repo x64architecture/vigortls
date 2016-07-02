@@ -52,18 +52,38 @@ $ssltest -bio_pair -server_auth -client_auth $CA $extra || exit 1
 echo test sslv2/sslv3 with both client and server authentication via BIO pair and app verify
 $ssltest -bio_pair -server_auth -client_auth -app_verify $CA $extra || exit 1
 
-echo "Testing ciphersuites"
-for protocol in TLSv1.2; do
-  echo "Testing ciphersuites for $protocol"
-  for cipher in `openssl ciphers "$protocol+RSA" | tr ':' ' '`; do
+test_cipher() {
+  local cipher=$1
+  local protocol=$2
     echo "Testing $cipher"
     $ssltest -cipher $cipher
     if [ $? -ne 0 ] ; then
       echo "Failed $cipher"
       exit 1
     fi
-  done
-done
+}
+
+echo "Testing ciphersuites"
+for protocol in TLSv1.2; do
+  echo "Testing ciphersuites for $protocol"
+  for cipher in `../apps/openssl ciphers "RSA+$protocol" | tr ':' ' '`; do
+    test_cipher $cipher $protocol
+   done
+  if ../apps/openssl no-dh; then
+    echo "skipping RSA+DHE tests"
+  else
+    for cipher in `../apps/openssl ciphers "EDH+aRSA+$protocol:-EXP" | tr ':' ' '`; do
+      test_cipher $cipher $protocol
+    done
+  fi
+  if ../apps/openssl no-ec; then
+    echo "skipping RSA+ECDHE tests"
+  else
+    for cipher in `../apps/openssl ciphers "EECDH+aRSA+$protocol:-EXP" | tr ':' ' '`; do
+      test_cipher $cipher $protocol
+    done
+  fi
+ done
 
 #############################################################################
 
