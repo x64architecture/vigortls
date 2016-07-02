@@ -163,6 +163,8 @@ err:
 
 static void cleanup(X509_OBJECT *a)
 {
+    if (a == NULL)
+        return;
     if (a->type == X509_LU_X509) {
         X509_free(a->data.x509);
     } else if (a->type == X509_LU_CRL) {
