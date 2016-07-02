@@ -168,7 +168,8 @@ int dtls1_do_write(SSL *s, int type)
 
     if (s->write_hash) {
         if (s->enc_write_ctx &&
-            EVP_CIPHER_CTX_mode(s->enc_write_ctx) == EVP_CIPH_GCM_MODE)
+            (EVP_CIPHER_CTX_flags(s->enc_write_ctx) &
+            EVP_CIPH_FLAG_AEAD_CIPHER) != 0)
             mac_size = 0;
         else
             mac_size = EVP_MD_CTX_size(s->write_hash);
@@ -769,6 +770,7 @@ again:
      * We must have at least frag_len bytes left in the record to be read.
      * Fragments must not span records.
      */
+    printf("frag_len=%lu\ns->s3->rrec.length=%u\n", frag_len, s->s3->rrec.length);
     if (frag_len > s->s3->rrec.length) {
         al = SSL3_AD_ILLEGAL_PARAMETER;
         SSLerr(SSL_F_DTLS1_GET_MESSAGE_FRAGMENT, SSL_R_BAD_LENGTH);
