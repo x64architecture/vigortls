@@ -135,6 +135,8 @@ const SSL_METHOD *DTLS_server_method(void)
 static const SSL_METHOD *dtls1_get_server_method(int ver)
 {
     switch (ver) {
+        case DTLS_ANY_VERSION:
+            return DTLS_server_method();
         case DTLS1_VERSION:
             return DTLSv1_server_method();
         case DTLS1_2_VERSION:
