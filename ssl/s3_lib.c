@@ -1907,7 +1907,7 @@ long ssl3_ctrl(SSL *s, int cmd, long larg, void *parg)
             return ssl_cert_set_cert_store(s->cert, parg, 1, larg);
 
         case SSL_CTRL_GET_PEER_SIGNATURE_NID:
-            if (TLS1_get_version(s) >= TLS1_2_VERSION) {
+            if (SSL_USE_SIGALGS(s)) {
                 if (s->session && s->session->sess_cert) {
                     const EVP_MD *sig;
                     sig = s->session->sess_cert->peer_key->digest;
