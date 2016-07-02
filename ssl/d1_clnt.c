@@ -94,7 +94,7 @@ const SSL_METHOD DTLSv1_2_client_method_data = {
 
 const SSL_METHOD *DTLSv1_2_client_method(void)
 {
-    return &DTLSv1_client_method_data;
+    return &DTLSv1_2_client_method_data;
 }
 
 const SSL_METHOD DTLS_client_method_data = {
