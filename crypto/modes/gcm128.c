@@ -284,7 +284,7 @@ void gcm_ghash_4bit(uint64_t Xi[2], const u128 Htable[16], const uint8_t *inp,
 #if defined(VIGORTLS_X86) || defined(VIGORTLS_X86_64)
 #define GHASH_ASM_X86_OR_64
 #define GCM_FUNCREF_4BIT
-extern unsigned int OPENSSL_ia32cap_P[2];
+extern unsigned int OPENSSL_ia32cap_P[];
 
 void gcm_init_clmul(u128 Htable[16], const uint64_t Xi[2]);
 void gcm_gmult_clmul(uint64_t Xi[2], const u128 Htable[16]);
