@@ -61,6 +61,7 @@ static void sc_usage(void);
 static void print_stuff(BIO *berr, SSL *con, int full);
 static int ocsp_resp_cb(SSL *s, void *arg);
 static BIO *bio_c_out = NULL;
+static BIO *bio_c_msg = NULL;
 static int c_quiet = 0;
 static int c_ign_eof = 0;
 static int c_brief = 0;
@@ -424,6 +425,15 @@ int s_client_main(int argc, char **argv)
             c_status_req = 1;
         else if (strcmp(*argv, "-msg") == 0)
             c_msg = 1;
+        else if (strcmp(*argv, "-msgfile") == 0) {
+            if (--argc < 1)
+                goto bad;
+            bio_c_msg = BIO_new_file(*(++argv), "w");
+        }
+#ifndef OPENSSL_NO_SSL_TRACE
+        else if (strcmp(*argv, "-trace") == 0)
+            c_msg = 2;
+#endif
         else if (strcmp(*argv, "-showcerts") == 0)
             c_showcerts = 1;
         else if (strcmp(*argv, "-state") == 0)
@@ -689,8 +699,10 @@ int s_client_main(int argc, char **argv)
     }
 
     if (bio_c_out == NULL) {
-        if (c_quiet && !c_debug && !c_msg) {
+        if (c_quiet && !c_debug) {
             bio_c_out = BIO_new(BIO_s_null());
+            if (c_msg && !bio_c_msg)
+                bio_c_msg = BIO_new_fp(stdout, BIO_NOCLOSE);
         } else {
             if (bio_c_out == NULL)
                 bio_c_out = BIO_new_fp(stdout, BIO_NOCLOSE);
@@ -878,8 +890,13 @@ re_start:
         BIO_set_callback_arg(sbio, (char *)bio_c_out);
     }
     if (c_msg) {
-        SSL_set_msg_callback(con, msg_cb);
-        SSL_set_msg_callback_arg(con, bio_c_out);
+#ifndef OPENSSL_NO_SSL_TRACE
+        if (c_msg == 2)
+            SSL_set_msg_callback(con, SSL_trace);
+        else
+#endif
+            SSL_set_msg_callback(con, msg_cb);
+        SSL_set_msg_callback_arg(con, bio_c_msg ? bio_c_msg : bio_c_out);
     }
     if (c_tlsextdebug) {
         SSL_set_tlsext_debug_callback(con, tlsext_cb);
@@ -1307,10 +1324,10 @@ end:
     free(sbuf);
     vigortls_zeroize(mbuf, BUFSIZZ);
     free(mbuf);
-    if (bio_c_out != NULL) {
-        BIO_free(bio_c_out);
-        bio_c_out = NULL;
-    }
+    BIO_free(bio_c_out);
+    bio_c_out = NULL;
+    BIO_free(bio_c_msg);
+    bio_c_msg = NULL;
     return ret;
 }
 

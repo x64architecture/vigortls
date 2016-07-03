@@ -305,7 +305,8 @@ static int ssl23_client_hello(SSL *s)
 
     if ((ret >= 2) && s->msg_callback) {
         /* Client Hello has been sent; tell msg_callback */
-
+        s->msg_callback(1, version, SSL3_RT_HEADER, s->init_buf->data, 5, s,
+                        s->msg_callback_arg);
         s->msg_callback(1, version, SSL3_RT_HANDSHAKE, s->init_buf->data + 5,
                         ret - 5, s, s->msg_callback_arg);
     }
@@ -372,9 +373,12 @@ static int ssl23_get_server_hello(SSL *s)
                 cb(s, SSL_CB_READ_ALERT, j);
             }
 
-            if (s->msg_callback)
+            if (s->msg_callback) {
+                s->msg_callback(0, s->version, SSL3_RT_HEADER, p, 5, s,
+                                s->msg_callback_arg);
                 s->msg_callback(0, s->version, SSL3_RT_ALERT, p + 5, 2, s,
                                 s->msg_callback_arg);
+            }
 
             s->rwstate = SSL_NOTHING;
             SSLerr(SSL_F_SSL23_GET_SERVER_HELLO, SSL_AD_REASON_OFFSET + p[6]);

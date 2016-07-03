@@ -78,7 +78,6 @@ set(VIGORTLS_OPTIONS
     "OPENSSL_NO_SSL3"
     "OPENSSL_NO_STORE"
     "OPENSSL_USE_IPV6"
-    "OPENSSL_NO_SSL_TRACE" # TODO: Add feature
 )
 
 option(OPENSSL_NO_ASM
@@ -95,6 +94,8 @@ option(OPENSSL_THREADS
     "Build with multi-threading support" TRUE)
 option(OPENSSL_NO_MULTIBLOCK
     "Build with multi-block support" TRUE)
+option(OPENSSL_NO_SSL_TRACE
+    "Build without TLS record tracing support" TRUE)
 
 if (OPENSSL_THREADS)
     list(APPEND VIGORTLS_OPTIONS "OPENSSL_THREADS")
@@ -116,6 +117,9 @@ if (OPENSSL_NO_RC5)
 endif()
 if (OPENSSL_NO_MULTIBLOCK)
     list(APPEND VIGORTLS_OPTIONS "OPENSSL_NO_MULTIBLOCK")
+endif()
+if (OPENSSL_NO_SSL_TRACE)
+    list(APPEND VIGORTLS_OPTIONS "OPENSSL_NO_SSL_TRACE")
 endif()
 list(SORT VIGORTLS_OPTIONS)
 

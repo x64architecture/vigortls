@@ -42,6 +42,7 @@ add_library(
     t1_meth.c
     t1_reneg.c
     t1_srvr.c
+    t1_trce.c
 
     $<TARGET_OBJECTS:pqueue>
 )

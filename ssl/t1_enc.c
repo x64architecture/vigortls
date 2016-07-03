@@ -523,6 +523,22 @@ int tls1_change_cipher_state(SSL *s, int which)
         s->s3->write_mac_secret_size = mac_secret_size;
     }
 
+#ifdef OPENSSL_SSL_TRACE_CRYPTO
+    if (s->msg_callback) {
+        int wh =
+            is_read ?TLS1_RT_CRYPTO_READ : TLS1_RT_CRYPTO_WRITE;
+        s->msg_callback(2, s->version, wh | TLS1_RT_CRYPTO_MAC, mac_secret,
+                        EVP_MD_size(m), s, s->msg_callback_arg);
+        if (c->key_len)
+            s->msg_callback(2, s->version, wh | TLS1_RT_CRYPTO_KEY, key,
+                            c->key_len, s, s->msg_callback_arg);
+        if (k) {
+            s->msg_callback(2, s->version, wh | TLS1_RT_CRYPTO_IV, iv, k, s,
+                            s->msg_callback_arg);
+        }
+    }
+#endif
+
     if (aead != NULL) {
         return tls1_change_cipher_state_aead(s, is_read, key, key_len, iv, iv_len);
     }
@@ -1037,6 +1053,9 @@ int tls1_generate_master_secret(SSL *s, uint8_t *out, uint8_t *p,
                                 int len)
 {
     uint8_t buff[SSL_MAX_MASTER_KEY_LENGTH];
+#ifdef OPENSSL_SSL_TRACE_CRYPTO
+    uint8_t *tmpout = out;
+#endif
 
     tls1_PRF(ssl_get_algorithm2(s),
              TLS_MD_MASTER_SECRET_CONST, TLS_MD_MASTER_SECRET_CONST_SIZE,
@@ -1045,6 +1064,21 @@ int tls1_generate_master_secret(SSL *s, uint8_t *out, uint8_t *p,
              p, len, s->session->master_key, buff, sizeof buff);
 
     vigortls_zeroize(buff, sizeof buff);
+
+#ifdef OPENSSL_SSL_TRACE_CRYPTO
+    if (s->msg_callback) {
+        s->msg_callback(2, s->version, TLS1_RT_CRYPTO_PREMASTER, p, len, s,
+                        s->msg_callback_arg);
+        s->msg_callback(2, s->version, TLS1_RT_CRYPTO_CLIENT_RANDOM,
+                        s->s3->client_random, SSL3_RANDOM_SIZE, s,
+                        s->msg_callback_arg);
+        s->msg_callback(2, s->version, TLS1_RT_CRYPTO_SERVER_RANDOM,
+                        s->s3->server_random, SSL3_RANDOM_SIZE, s,
+                        s->msg_callback_arg);
+        s->msg_callback(2, s->version, TLS1_RT_CRYPTO_MASTER, tmpout,
+                        SSL3_MASTER_SECRET_SIZE, s, s->msg_callback_arg);
+    }
+#endif
 
     return SSL3_MASTER_SECRET_SIZE;
 }

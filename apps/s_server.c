@@ -117,6 +117,7 @@ static SSL_CTX *ctx2 = NULL;
 static int www = 0;
 
 static BIO *bio_s_out = NULL;
+static BIO *bio_s_msg = NULL;
 static int s_debug = 0;
 static int s_tlsextdebug = 0;
 static int s_tlsextstatus = 0;
@@ -763,7 +764,17 @@ int s_server_main(int argc, char *argv[])
             }
         } else if (strcmp(*argv, "-msg") == 0) {
             s_msg = 1;
-        } else if (strcmp(*argv, "-state") == 0) {
+        } else if (strcmp(*argv, "-msgfile") == 0) {
+            if (--argc < 1)
+                goto bad;
+            bio_s_msg = BIO_new_file(*(++argv), "w");
+        }
+#ifndef OPENSSL_NO_SSL_TRACE
+        else if (strcmp(*argv, "-trace") == 0) {
+            s_msg = 2;
+        }
+#endif
+        else if (strcmp(*argv, "-state") == 0) {
             state = 1;
         } else if (strcmp(*argv, "-crlf") == 0) {
             s_crlf = 1;
@@ -1272,10 +1283,10 @@ end:
     ssl_excert_free(exc);
     sk_OPENSSL_STRING_free(ssl_args);
     SSL_CONF_CTX_free(cctx);
-    if (bio_s_out != NULL) {
-        BIO_free(bio_s_out);
-        bio_s_out = NULL;
-    }
+    BIO_free(bio_s_out);
+    bio_s_out = NULL;
+    BIO_free(bio_s_msg);
+    bio_s_msg = NULL;
     return ret;
 }
 
@@ -1395,8 +1406,13 @@ static int sv_body(char *hostname, int s, int stype, uint8_t *context)
         BIO_set_callback_arg(SSL_get_rbio(con), (char *)bio_s_out);
     }
     if (s_msg) {
-        SSL_set_msg_callback(con, msg_cb);
-        SSL_set_msg_callback_arg(con, bio_s_out);
+#ifndef OPENSSL_NO_SSL_TRACE
+        if (s_msg == 2)
+            SSL_set_msg_callback(con, SSL_trace);
+        else
+#endif
+            SSL_set_msg_callback(con, msg_cb);
+        SSL_set_msg_callback_arg(con, bio_s_msg ? bio_s_msg : bio_s_out);
     }
     if (s_tlsextdebug) {
         SSL_set_tlsext_debug_callback(con, tlsext_cb);
@@ -1799,8 +1815,13 @@ static int www_body(char *hostname, int s, int stype, uint8_t *context)
         BIO_set_callback_arg(SSL_get_rbio(con), (char *)bio_s_out);
     }
     if (s_msg) {
-        SSL_set_msg_callback(con, msg_cb);
-        SSL_set_msg_callback_arg(con, bio_s_out);
+#ifndef OPENSSL_NO_SSL_TRACE
+        if (s_msg == 2)
+            SSL_set_msg_callback(con, SSL_trace);
+        else
+#endif
+            SSL_set_msg_callback(con, msg_cb);
+        SSL_set_msg_callback_arg(con, bio_s_msg ? bio_s_msg : bio_s_out);
     }
 
     for (;;) {
