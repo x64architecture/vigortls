@@ -49,7 +49,7 @@ typedef struct {
 
 #if defined(AES_ASM) && defined(VIGORTLS_X86_64)
 
-extern unsigned int OPENSSL_ia32cap_P[3];
+extern unsigned int OPENSSL_ia32cap_P[];
 #define AESNI_CAPABLE (1 << (57 - 32))
 
 int aesni_set_encrypt_key(const uint8_t *userKey, int bits, AES_KEY *key);
