@@ -928,7 +928,7 @@ uint8_t *ssl_add_clienthello_tlsext(SSL *s, uint8_t *buf, uint8_t *limit, int *a
     uint8_t *ret = buf;
 
     /* See if we support any ECC ciphersuites. */
-    if (s->version != DTLS1_VERSION && s->version >= TLS1_VERSION) {
+    if (s->version >= TLS1_VERSION || SSL_IS_DTLS(s)) {
         STACK_OF(SSL_CIPHER) *cipher_stack = SSL_get_ciphers(s);
         unsigned long alg_k, alg_a;
         int i;
@@ -1105,7 +1105,7 @@ skip_ext:
         ret += salglen;
     }
 
-    if (s->tlsext_status_type == TLSEXT_STATUSTYPE_ocsp && s->version != DTLS1_VERSION) {
+    if (s->tlsext_status_type == TLSEXT_STATUSTYPE_ocsp) {
         int i;
         long extlen, idlen, itmp;
         OCSP_RESPID *id;
@@ -1282,7 +1282,7 @@ uint8_t *ssl_add_serverhello_tlsext(SSL *s, uint8_t *buf, uint8_t *limit, int *a
         ret += el;
     }
 
-    if (using_ecc && s->version != DTLS1_VERSION) {
+    if (using_ecc) {
         const uint8_t *formats;
         size_t formats_len, lenmax;
 
@@ -1597,10 +1597,7 @@ static int ssl_scan_clienthello_tlsext(SSL *s, uint8_t **p, uint8_t *limit,
             if (dsize != 0)
                 goto err;
 
-        }
-
-        else if (type == TLSEXT_TYPE_ec_point_formats &&
-                 s->version != DTLS1_VERSION) {
+        } else if (type == TLSEXT_TYPE_ec_point_formats) {
             uint8_t *sdata = data;
             size_t formats_len;
             uint8_t *formats;
@@ -1627,8 +1624,7 @@ static int ssl_scan_clienthello_tlsext(SSL *s, uint8_t **p, uint8_t *limit,
                 s->session->tlsext_ecpointformatlist = formats;
                 s->session->tlsext_ecpointformatlist_length = formats_len;
             }
-        } else if (type == TLSEXT_TYPE_elliptic_curves &&
-                   s->version != DTLS1_VERSION) {
+        } else if (type == TLSEXT_TYPE_elliptic_curves) {
             uint8_t *sdata = data;
             size_t curves_len, i;
             uint16_t *curves;
@@ -1681,8 +1677,9 @@ static int ssl_scan_clienthello_tlsext(SSL *s, uint8_t **p, uint8_t *limit,
                 goto err;
             if (!tls1_save_sigalgs(s, data, dsize))
                 goto err;
-        } else if (type == TLSEXT_TYPE_status_request &&
-                   s->version != DTLS1_VERSION) {
+        } else if (type == TLSEXT_TYPE_status_request
+                   && s->ctx->tlsext_status_cb)
+        {
 
             if (size < 5)
                 goto err;
@@ -1942,7 +1939,7 @@ static int ssl_scan_serverhello_tlsext(SSL *s, uint8_t **p, uint8_t *d, int n, i
             }
             tlsext_servername = 1;
 
-        } else if (type == TLSEXT_TYPE_ec_point_formats && s->version != DTLS1_VERSION) {
+        } else if (type == TLSEXT_TYPE_ec_point_formats) {
             uint8_t *sdata = data;
             size_t formats_len;
             uint8_t *formats;
@@ -1981,7 +1978,7 @@ static int ssl_scan_serverhello_tlsext(SSL *s, uint8_t **p, uint8_t *d, int n, i
                 return 0;
             }
             s->tlsext_ticket_expected = 1;
-        } else if (type == TLSEXT_TYPE_status_request && s->version != DTLS1_VERSION) {
+        } else if (type == TLSEXT_TYPE_status_request) {
             /* MUST be empty and only sent if we've requested
              * a status request message.
              */
