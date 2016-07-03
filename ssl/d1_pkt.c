@@ -396,6 +396,9 @@ again:
 
         CBS_init(&header, s->packet, s->packet_length);
 
+        if (s->msg_callback)
+            s->msg_callback(0, 0, SSL3_RT_HEADER, p, DTLS1_RT_HEADER_LENGTH, s, s->msg_callback_arg);
+
         /* Pull apart the header into the DTLS1_RECORD */
         if (!CBS_get_u8(&header, &type))
             goto again;
@@ -1191,6 +1194,10 @@ int do_dtls1_write(SSL *s, int type, const uint8_t *buf,
     memcpy(pseq, &(s->s3->write_sequence[2]), 6);
     pseq += 6;
     s2n(wr->length, pseq);
+
+    if (s->msg_callback)
+        s->msg_callback(1, 0, SSL3_RT_HEADER, pseq - DTLS1_RT_HEADER_LENGTH,
+                        DTLS1_RT_HEADER_LENGTH, s, s->msg_callback_arg);
 
     /* we should now have
      * wr->data pointing to the encrypted data, which is
