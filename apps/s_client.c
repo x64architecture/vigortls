@@ -88,10 +88,8 @@ static void sc_usage(void)
     BIO_printf(bio_err, " -CApath arg   - PEM format directory of CA's\n");
     BIO_printf(bio_err, " -CAfile arg   - PEM format file of CA's\n");
     BIO_printf(bio_err, " -no_alt_chains - only ever use the first certificate chain found\n");
-    BIO_printf(bio_err, " -reconnect    - Drop and re-make the connection with "
-                        "the same Session-ID\n");
-    BIO_printf(bio_err, " -pause        - sleep(1) after each read(2) and "
-                        "write(2) system call\n");
+    BIO_printf(bio_err, " -reconnect    - Drop and re-make the connection with the same Session-ID\n");
+    BIO_printf(bio_err, " -pause        - sleep(1) after each read(2) and write(2) system call\n");
     BIO_printf(bio_err, " -prexit       - print session information even on connection failure\n");
     BIO_printf(bio_err, " -showcerts    - show all certificates in the chain\n");
     BIO_printf(bio_err, " -debug        - extra output\n");
@@ -112,14 +110,12 @@ static void sc_usage(void)
     BIO_printf(bio_err, " -no_tls1_2/-no_tls1_1/-no_tls1/-no_ssl3 - turn off that protocol\n");
     BIO_printf(bio_err, " -bugs         - Switch on all SSL implementation bug workarounds\n");
     BIO_printf(bio_err, " -serverpref   - Use server's cipher preferences (only SSLv2)\n");
-    BIO_printf(bio_err, " -cipher       - preferred cipher to use, use the "
-                        "'openssl ciphers'\n");
+    BIO_printf(bio_err, " -cipher       - preferred cipher to use, use the 'openssl ciphers'\n");
     BIO_printf(bio_err, "                 command to see what is available\n");
     BIO_printf(bio_err, " -starttls prot - use the STARTTLS command before starting TLS\n");
     BIO_printf(bio_err, "                 for those protocols that support it, where\n");
     BIO_printf(bio_err, "                 'prot' defines which one to assume.  Currently,\n");
-    BIO_printf(bio_err, "                 only \"smtp\", \"pop3\", \"imap\", "
-                        "\"ftp\" and \"xmpp\"\n");
+    BIO_printf(bio_err, "                 only \"smtp\", \"pop3\", \"imap\", \"ftp\" and \"xmpp\"\n");
     BIO_printf(bio_err, "                 are supported.\n");
 #ifndef OPENSSL_NO_ENGINE
     BIO_printf(bio_err, " -engine id    - Initialize and use the specified engine\n");
@@ -130,18 +126,16 @@ static void sc_usage(void)
     BIO_printf(bio_err, " -tlsextdebug      - hex dump of all TLS extensions received\n");
     BIO_printf(bio_err, " -status           - request certificate status from server\n");
     BIO_printf(bio_err, " -no_ticket        - disable use of RFC4507bis session tickets\n");
-    BIO_printf(bio_err, " -nextprotoneg arg - enable NPN extension, "
-                        "considering named protocols supported "
-                        "(comma-separated list)\n");
-    BIO_printf(bio_err, " -alpn arg - enable ALPN extension, considering named "
-                        "protocols supported (comma-separated list)\n");
-    BIO_printf(bio_err, " -serverinfo types - send empty ClientHello "
-                        "extensions (comma-separated numbers)\n");
-    BIO_printf(bio_err, " -legacy_renegotiation - enable use of legacy "
-                        "renegotiation (dangerous)\n");
+    BIO_printf(bio_err, " -nextprotoneg arg - enable NPN extension, considering named protocols supported (comma-separated list)\n");
+    BIO_printf(bio_err, " -alpn arg - enable ALPN extension, considering named protocols supported (comma-separated list)\n");
+    BIO_printf(bio_err, " -serverinfo types - send empty ClientHello extensions (comma-separated numbers)\n");
+    BIO_printf(bio_err, " -curves arg       - Elliptic curves to advertise (colon-separated list)\n");
+    BIO_printf(bio_err, " -sigalgs arg      - Signature algorithms to support (colon-separated list)\n");
+    BIO_printf(bio_err, " -client_sigalgs arg - Signature algorithms to support for client\n");
+    BIO_printf(bio_err, "                       certificate authentication (colon-separated list)\n");
+    BIO_printf(bio_err, " -legacy_renegotiation - enable use of legacy renegotiation (dangerous)\n");
 #ifndef OPENSSL_NO_SRTP
-    BIO_printf(bio_err, " -use_srtp profiles - Offer SRTP key management with "
-                        "a colon-separated profile list\n");
+    BIO_printf(bio_err, " -use_srtp profiles - Offer SRTP key management with a colon-separated profile list\n");
 #endif
     BIO_printf(bio_err, " -keymatexport label   - Export keying material using label\n");
     BIO_printf(bio_err, " -keymatexportlen len  - Export len bytes of keying "

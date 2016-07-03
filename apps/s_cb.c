@@ -788,7 +788,7 @@ void tlsext_cb(SSL *s, int client_server, int type, uint8_t *data, int len,
         case TLSEXT_TYPE_application_layer_protocol_negotiation:
             extname = "application layer protocol negotiation";
             break;
-+#endif
+#endif
 
         case TLSEXT_TYPE_padding:
             extname = "TLS padding";
