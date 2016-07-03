@@ -256,20 +256,27 @@ int main(int argc, char *argv[])
 
         /* Try decrypting corrupted ciphertexts */
         for (n = 0; n < clen; ++n) {
-            int b;
-            uint8_t saved = ctext[n];
-            for (b = 0; b < 256; ++b) {
-                if (b == saved)
-                    continue;
-                ctext[n] = b;
-                num = RSA_private_decrypt(num, ctext, ptext, key,
-                                          RSA_PKCS1_OAEP_PADDING);
-                if (num > 0) {
-                    printf("Corrupt data decrypted!\n");
-                    err = 1;
-                }
+            ctext[n] ^= 1;
+            num = RSA_private_decrypt(clen, ctext, ptext, key,
+                                      RSA_PKCS1_OAEP_PADDING);
+            if (num > 0) {
+                printf("Corrupt data decrypted!\n");
+                err = 1;
+            }
+            ctext[n] ^= 1;
+        }
+
+        /* Test truncated ciphertexts, as well as negative length. */
+        for (n = -1; n < clen; ++n) {
+            num = RSA_private_decrypt(n, ctext, ptext, key,
+                                      RSA_PKCS1_OAEP_PADDING);
+            if (num > 0) {
+                printf("Truncated data decrypted!\n");
+                err = 1;
+                break;
             }
         }
+
     next:
         RSA_free(key);
     }
