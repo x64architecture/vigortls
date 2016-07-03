@@ -962,8 +962,9 @@ EC_GROUP *d2i_ECPKParameters(EC_GROUP **a, const uint8_t **in, long len)
 {
     EC_GROUP *group = NULL;
     ECPKPARAMETERS *params = NULL;
+    const uint8_t *p = *in;
 
-    if ((params = d2i_ECPKPARAMETERS(NULL, in, len)) == NULL) {
+    if ((params = d2i_ECPKPARAMETERS(NULL, &p, len)) == NULL) {
         ECerr(EC_F_D2I_ECPKPARAMETERS, EC_R_D2I_ECPKPARAMETERS_FAILURE);
         ECPKPARAMETERS_free(params);
         return NULL;
@@ -975,13 +976,14 @@ EC_GROUP *d2i_ECPKParameters(EC_GROUP **a, const uint8_t **in, long len)
         return NULL;
     }
 
-    if (a && *a)
+    if (a != NULL && *a)
         EC_GROUP_clear_free(*a);
-    if (a)
+    if (a != NULL)
         *a = group;
 
     ECPKPARAMETERS_free(params);
-    return (group);
+    *in = p;
+    return group;
 }
 
 int i2d_ECPKParameters(const EC_GROUP *a, uint8_t **out)
@@ -998,7 +1000,7 @@ int i2d_ECPKParameters(const EC_GROUP *a, uint8_t **out)
         return 0;
     }
     ECPKPARAMETERS_free(tmp);
-    return (ret);
+    return ret;
 }
 
 /* some EC_KEY functions */
@@ -1008,8 +1010,9 @@ EC_KEY *d2i_ECPrivateKey(EC_KEY **a, const uint8_t **in, long len)
     int ok = 0;
     EC_KEY *ret = NULL;
     EC_PRIVATEKEY *priv_key = NULL;
+    const uint8_t *p = *in;
 
-    if ((priv_key = d2i_EC_PRIVATEKEY(NULL, in, len)) == NULL) {
+    if ((priv_key = d2i_EC_PRIVATEKEY(NULL, &p, len)) == NULL) {
         ECerr(EC_F_D2I_ECPRIVATEKEY, ERR_R_EC_LIB);
         return NULL;
     }
@@ -1046,8 +1049,7 @@ EC_KEY *d2i_ECPrivateKey(EC_KEY **a, const uint8_t **in, long len)
             goto err;
         }
     } else {
-        ECerr(EC_F_D2I_ECPRIVATEKEY,
-              EC_R_MISSING_PRIVATE_KEY);
+        ECerr(EC_F_D2I_ECPRIVATEKEY, EC_R_MISSING_PRIVATE_KEY);
         goto err;
     }
     
@@ -1088,6 +1090,7 @@ EC_KEY *d2i_ECPrivateKey(EC_KEY **a, const uint8_t **in, long len)
 
     if (a)
         *a = ret;
+    *in = p;
     ok = 1;
 err:
     if (!ok) {
@@ -1096,10 +1099,9 @@ err:
         ret = NULL;
     }
 
-    if (priv_key)
-        EC_PRIVATEKEY_free(priv_key);
+    EC_PRIVATEKEY_free(priv_key);
 
-    return (ret);
+    return ret;
 }
 
 int i2d_ECPrivateKey(EC_KEY *a, uint8_t **out)

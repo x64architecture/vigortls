@@ -164,14 +164,16 @@ EVP_PKEY *d2i_PUBKEY(EVP_PKEY **a, const uint8_t **pp,
 {
     X509_PUBKEY *xpk;
     EVP_PKEY *pktmp;
-    xpk = d2i_X509_PUBKEY(NULL, pp, length);
-    if (!xpk)
+    const uint8_t *q = *pp;
+
+    xpk = d2i_X509_PUBKEY(NULL, &q, length);
+    if (xpk == NULL)
         return NULL;
     pktmp = X509_PUBKEY_get(xpk);
     X509_PUBKEY_free(xpk);
-    if (!pktmp)
+    if (pktmp == NULL)
         return NULL;
-    if (a) {
+    if (a != NULL) {
         EVP_PKEY_free(*a);
         *a = pktmp;
     }

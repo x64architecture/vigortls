@@ -141,8 +141,9 @@ static STACK_OF(SCT) *d2i_SCT_LIST(STACK_OF(SCT) **a, const uint8_t **pp,
     SCT *sct;
     uint8_t *p, *p2;
     uint16_t listlen, sctlen = 0, fieldlen;
+    const uint8_t *q = *pp;
 
-    if (d2i_ASN1_OCTET_STRING(&oct, pp, length) == NULL)
+    if (d2i_ASN1_OCTET_STRING(&oct, &q, length) == NULL)
         return NULL;
     if (oct->length < 2)
         goto done;
@@ -230,6 +231,7 @@ static STACK_OF(SCT) *d2i_SCT_LIST(STACK_OF(SCT) **a, const uint8_t **pp,
 
 done:
     ASN1_OCTET_STRING_free(oct);
+    *pp = q;
     return sk;
 
 err:
