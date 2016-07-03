@@ -227,10 +227,11 @@ int dtls1_accept(SSL *s)
                 s->s3->change_cipher_spec = 0;
 
                 if (s->state != SSL_ST_RENEGOTIATE) {
-/* Ok, we now need to push on a buffering BIO so that
- * the output is sent in a way that TCP likes :-)
- * ...but not with SCTP :-)
- */
+                    /*
+                     * Ok, we now need to push on a buffering BIO so that
+                     * the output is sent in a way that TCP likes :-)
+                     * ...but not with SCTP :-)
+                     */
                     if (!ssl_init_wbio_buffer(s, 1)) {
                         ret = -1;
                         s->state = SSL_ST_ERR;
@@ -307,9 +308,10 @@ int dtls1_accept(SSL *s)
                 if (listen && s->state == SSL3_ST_SW_SRVR_HELLO_A) {
                     ret = 2;
                     s->d1->listen = 0;
-                    /* Set expected sequence numbers
-         * to continue the handshake.
-         */
+                    /*
+                     * Set expected sequence numbers
+                     * to continue the handshake.
+                     */
                     s->d1->handshake_read_seq = 2;
                     s->d1->handshake_write_seq = 1;
                     s->d1->next_handshake_write_seq = 1;
@@ -374,7 +376,7 @@ int dtls1_accept(SSL *s)
                 alg_k = s->s3->tmp.new_cipher->algorithm_mkey;
 
                 /* only send if a DH key exchange */
-                if (alg_k & (SSL_kDHE|SSL_kECDHE)) {
+                if (alg_k & (SSL_kDHE | SSL_kECDHE)) {
                     dtls1_start_timer(s);
                     ret = ssl3_send_server_key_exchange(s);
                     if (ret <= 0)
@@ -405,10 +407,11 @@ int dtls1_accept(SSL *s)
                  *   insists on verification (against the specs, but
                  *   s3_clnt.c accepts this for SSL 3).
                  */
-                if (!(s->verify_mode & SSL_VERIFY_PEER) || ((s->session->peer != NULL)
-                    && (s->verify_mode & SSL_VERIFY_CLIENT_ONCE))
-                    || ((s->s3->tmp.new_cipher->algorithm_auth & SSL_aNULL)
-                    && !(s->verify_mode & SSL_VERIFY_FAIL_IF_NO_PEER_CERT)))
+                if (!(s->verify_mode & SSL_VERIFY_PEER) ||
+                    ((s->session->peer != NULL) &&
+                    (s->verify_mode & SSL_VERIFY_CLIENT_ONCE)) ||
+                    ((s->s3->tmp.new_cipher->algorithm_auth & SSL_aNULL) &&
+                    !(s->verify_mode & SSL_VERIFY_FAIL_IF_NO_PEER_CERT)))
                 {
                     /* no cert request */
                     skip = 1;
@@ -677,7 +680,7 @@ end:
 
     if (cb != NULL)
         cb(s, SSL_CB_ACCEPT_EXIT, ret);
-    return (ret);
+    return ret;
 }
 
 int dtls1_send_hello_verify_request(SSL *s)
@@ -716,5 +719,5 @@ int dtls1_send_hello_verify_request(SSL *s)
     }
 
     /* s->state = DTLS1_ST_SW_HELLO_VERIFY_REQUEST_B */
-    return (dtls1_do_write(s, SSL3_RT_HANDSHAKE));
+    return dtls1_do_write(s, SSL3_RT_HANDSHAKE);
 }

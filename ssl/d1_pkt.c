@@ -97,7 +97,7 @@ static int dtls1_copy_record(SSL *s, pitem *item)
     /* Set proper sequence number for mac calculation */
     memcpy(&(s->s3->read_sequence[2]), &(rdata->packet[5]), 6);
 
-    return (1);
+    return 1;
 }
 
 static int dtls1_buffer_record(SSL *s, record_pqueue *queue,
@@ -135,7 +135,7 @@ static int dtls1_buffer_record(SSL *s, record_pqueue *queue,
     if (pqueue_insert(queue->q, item) == NULL)
         goto err;
 
-    return (1);
+    return 1;
 
 err:
     SSLerr(SSL_F_DTLS1_BUFFER_RECORD, ERR_R_INTERNAL_ERROR);
@@ -144,7 +144,7 @@ err:
         free(rdata);
     }
     pitem_free(item);
-    return (-1);
+    return -1;
 }
 
 static int dtls1_retrieve_buffered_record(SSL *s, record_pqueue *queue)
@@ -189,7 +189,7 @@ static int dtls1_process_buffered_records(SSL *s)
         while (pqueue_peek(s->d1->unprocessed_rcds.q)) {
             dtls1_get_unprocessed_record(s);
             if (!dtls1_process_record(s))
-                return (0);
+                return 0;
             if (dtls1_buffer_record(s, &(s->d1->processed_rcds),
                                     s->s3->rrec.seq_num) < 0)
             {
@@ -203,7 +203,7 @@ static int dtls1_process_buffered_records(SSL *s)
     s->d1->processed_rcds.epoch = s->d1->r_epoch;
     s->d1->unprocessed_rcds.epoch = s->d1->r_epoch + 1;
 
-    return (1);
+    return 1;
 }
 
 static int dtls1_process_record(SSL *s)
@@ -256,7 +256,9 @@ static int dtls1_process_record(SSL *s)
     }
 
     /* r->length is now the compressed data plus mac */
-    if ((sess != NULL) && (s->enc_read_ctx != NULL) && (EVP_MD_CTX_md(s->read_hash) != NULL)) {
+    if ((sess != NULL) && (s->enc_read_ctx != NULL) &&
+        (EVP_MD_CTX_md(s->read_hash) != NULL))
+    {
         /* s->read_hash != NULL => mac_size != -1 */
         uint8_t *mac = NULL;
         uint8_t mac_tmp[EVP_MAX_MD_SIZE];
@@ -273,7 +275,9 @@ static int dtls1_process_record(SSL *s)
          */
         if (orig_len < mac_size ||
             /* CBC records must have a padding length byte too. */
-            (EVP_CIPHER_CTX_mode(s->enc_read_ctx) == EVP_CIPH_CBC_MODE && orig_len < mac_size + 1)) {
+            (EVP_CIPHER_CTX_mode(s->enc_read_ctx) == EVP_CIPH_CBC_MODE &&
+            orig_len < mac_size + 1))
+        {
             al = SSL_AD_DECODE_ERROR;
             SSLerr(SSL_F_DTLS1_PROCESS_RECORD, SSL_R_LENGTH_TOO_SHORT);
             goto f_err;
@@ -327,12 +331,12 @@ static int dtls1_process_record(SSL *s)
 
     /* we have pulled in a full packet so zero things */
     s->packet_length = 0;
-    return (1);
+    return 1;
 
 f_err:
     ssl3_send_alert(s, SSL3_AL_FATAL, al);
 err:
-    return (0);
+    return 0;
 }
 
 /* Call this to get a new input record.
@@ -529,7 +533,7 @@ int dtls1_read_bytes(SSL *s, int type, uint8_t *buf, int len, int peek)
 
     if (s->s3->rbuf.buf == NULL) /* Not initialized yet */
         if (!ssl3_setup_buffers(s))
-            return (-1);
+            return -1;
 
     if ((type && type != SSL3_RT_APPLICATION_DATA && type != SSL3_RT_HANDSHAKE)
         || (peek && (type != SSL3_RT_APPLICATION_DATA)))
@@ -549,10 +553,10 @@ int dtls1_read_bytes(SSL *s, int type, uint8_t *buf, int len, int peek)
         /* type == SSL3_RT_APPLICATION_DATA */
         i = s->handshake_func(s);
         if (i < 0)
-            return (i);
+            return i;
         if (i == 0) {
             SSLerr(SSL_F_DTLS1_READ_BYTES, SSL_R_SSL_HANDSHAKE_FAILURE);
-            return (-1);
+            return -1;
         }
     }
 
@@ -592,7 +596,7 @@ start:
             ret = dtls1_read_failed(s, ret);
             /* anything other than a timeout is an error */
             if (ret <= 0)
-                return (ret);
+                return ret;
             else
                 goto start;
         }
@@ -629,11 +633,12 @@ start:
         return (0);
     }
 
-    if (type == rr->type) /* SSL3_RT_APPLICATION_DATA or SSL3_RT_HANDSHAKE */
-    {
+    if (type == rr->type) { /* SSL3_RT_APPLICATION_DATA or SSL3_RT_HANDSHAKE */
         /* make sure that we are not getting application data when we
          * are doing a handshake for the first time */
-        if (SSL_in_init(s) && (type == SSL3_RT_APPLICATION_DATA) && (s->enc_read_ctx == NULL)) {
+        if (SSL_in_init(s) && (type == SSL3_RT_APPLICATION_DATA) &&
+            (s->enc_read_ctx == NULL))
+        {
             al = SSL_AD_UNEXPECTED_MESSAGE;
             SSLerr(SSL_F_DTLS1_READ_BYTES, SSL_R_APP_DATA_IN_HANDSHAKE);
             goto f_err;
@@ -657,7 +662,7 @@ start:
             }
         }
 
-        return (n);
+        return n;
     }
 
     /* If we get here, then type != rr->type; if we have a handshake
@@ -691,7 +696,7 @@ start:
                 s->rwstate = SSL_READING;
                 BIO_clear_retry_flags(bio);
                 BIO_set_retry_read(bio);
-                return (-1);
+                return -1;
             }
 
             /* Not certain if this is the right error handling */
@@ -712,7 +717,7 @@ start:
                  */
                 FIX ME
 #endif
-                    s->rstate = SSL_ST_READ_HEADER;
+                s->rstate = SSL_ST_READ_HEADER;
                 rr->length = 0;
                 goto start;
             }
@@ -733,7 +738,8 @@ start:
     /* If we are a client, check for an incoming 'Hello Request': */
     if ((!s->server) && (s->d1->handshake_fragment_len >= DTLS1_HM_HEADER_LENGTH) 
         && (s->d1->handshake_fragment[0] == SSL3_MT_HELLO_REQUEST)
-        && (s->session != NULL) && (s->session->cipher != NULL)) {
+        && (s->session != NULL) && (s->session->cipher != NULL))
+    {
 
         s->d1->handshake_fragment_len = 0;
 
@@ -751,22 +757,24 @@ start:
             s->msg_callback(0, s->version, SSL3_RT_HANDSHAKE,
                             s->d1->handshake_fragment, 4, s, s->msg_callback_arg);
 
-        if (SSL_is_init_finished(s) && !(s->s3->flags & SSL3_FLAGS_NO_RENEGOTIATE_CIPHERS) && !s->s3->renegotiate) {
+        if (SSL_is_init_finished(s) &&
+            !(s->s3->flags & SSL3_FLAGS_NO_RENEGOTIATE_CIPHERS)
+            && !s->s3->renegotiate)
+        {
             s->d1->handshake_read_seq++;
             s->new_session = 1;
             ssl3_renegotiate(s);
             if (ssl3_renegotiate_check(s)) {
                 i = s->handshake_func(s);
                 if (i < 0)
-                    return (i);
+                    return i;
                 if (i == 0) {
                     SSLerr(SSL_F_DTLS1_READ_BYTES, SSL_R_SSL_HANDSHAKE_FAILURE);
-                    return (-1);
+                    return -1;
                 }
 
                 if (!(s->mode & SSL_MODE_AUTO_RETRY)) {
-                    if (s->s3->rbuf.left == 0) /* no read-ahead left? */
-                    {
+                    if (s->s3->rbuf.left == 0) { /* no read-ahead left? */
                         BIO *bio;
                         /* In the case where we try to read application data,
                          * but we trigger an SSL handshake, we return -1 with
@@ -776,7 +784,7 @@ start:
                         bio = SSL_get_rbio(s);
                         BIO_clear_retry_flags(bio);
                         BIO_set_retry_read(bio);
-                        return (-1);
+                        return -1;
                     }
                 }
             }
@@ -810,7 +818,7 @@ start:
             s->s3->warn_alert = alert_descr;
             if (alert_descr == SSL_AD_CLOSE_NOTIFY) {
                 s->shutdown |= SSL_RECEIVED_SHUTDOWN;
-                return (0);
+                return 0;
             }
         } else if (alert_level == SSL3_AL_FATAL) {
             s->rwstate = SSL_NOTHING;
@@ -819,7 +827,7 @@ start:
             ERR_asprintf_error_data("SSL alert number %d", alert_descr);
             s->shutdown |= SSL_RECEIVED_SHUTDOWN;
             SSL_CTX_remove_session(s->ctx, s->session);
-            return (0);
+            return 0;
         } else {
             al = SSL_AD_ILLEGAL_PARAMETER;
             SSLerr(SSL_F_DTLS1_READ_BYTES, SSL_R_UNKNOWN_ALERT_TYPE);
@@ -829,11 +837,10 @@ start:
         goto start;
     }
 
-    if (s->shutdown & SSL_SENT_SHUTDOWN) /* but we have not received a shutdown */
-    {
+    if (s->shutdown & SSL_SENT_SHUTDOWN) { /* but we have not received a shutdown */
         s->rwstate = SSL_NOTHING;
         rr->length = 0;
-        return (0);
+        return 0;
     }
 
     if (rr->type == SSL3_RT_CHANGE_CIPHER_SPEC) {
@@ -845,7 +852,9 @@ start:
         /* 'Change Cipher Spec' is just a single byte, so we know
          * exactly what the record payload has to look like */
         /* XDTLS: check that epoch is consistent */
-        if ((rr->length != ccs_hdr_len) || (rr->off != 0) || (rr->data[0] != SSL3_MT_CCS)) {
+        if ((rr->length != ccs_hdr_len) || (rr->off != 0) ||
+            (rr->data[0] != SSL3_MT_CCS))
+        {
             i = SSL_AD_ILLEGAL_PARAMETER;
             SSLerr(SSL_F_DTLS1_READ_BYTES, SSL_R_BAD_CHANGE_CIPHER_SPEC);
             goto err;
@@ -854,10 +863,11 @@ start:
         rr->length = 0;
 
         if (s->msg_callback)
-            s->msg_callback(0, s->version, SSL3_RT_CHANGE_CIPHER_SPEC, rr->data, 1, s,
-                            s->msg_callback_arg);
+            s->msg_callback(0, s->version, SSL3_RT_CHANGE_CIPHER_SPEC, rr->data,
+                            1, s, s->msg_callback_arg);
 
-        /* We can't process a CCS now, because previous handshake
+        /*
+         * We can't process a CCS now, because previous handshake
          * messages are still missing, so just drop it.
          */
         if (!s->d1->change_cipher_spec_ok) {
@@ -877,7 +887,9 @@ start:
     }
 
     /* Unexpected handshake message (Client Hello, or protocol violation) */
-    if ((s->d1->handshake_fragment_len >= DTLS1_HM_HEADER_LENGTH) && !s->in_handshake) {
+    if ((s->d1->handshake_fragment_len >= DTLS1_HM_HEADER_LENGTH) &&
+        !s->in_handshake)
+    {
         struct hm_header_st msg_hdr;
 
         /* this may just be a stale retransmit */
@@ -888,7 +900,8 @@ start:
             goto start;
         }
 
-        /* If we are server, we may have a repeated FINISHED of the
+        /*
+         * If we are server, we may have a repeated FINISHED of the
          * client here, then retransmit our CCS and FINISHED.
          */
         if (msg_hdr.type == SSL3_MT_FINISHED) {
@@ -900,22 +913,23 @@ start:
             goto start;
         }
 
-        if (((s->state & SSL_ST_MASK) == SSL_ST_OK) && !(s->s3->flags & SSL3_FLAGS_NO_RENEGOTIATE_CIPHERS)) {
+        if (((s->state & SSL_ST_MASK) == SSL_ST_OK) &&
+            !(s->s3->flags & SSL3_FLAGS_NO_RENEGOTIATE_CIPHERS))
+        {
             s->state = s->server ? SSL_ST_ACCEPT : SSL_ST_CONNECT;
             s->renegotiate = 1;
             s->new_session = 1;
         }
         i = s->handshake_func(s);
         if (i < 0)
-            return (i);
+            return i;
         if (i == 0) {
             SSLerr(SSL_F_DTLS1_READ_BYTES, SSL_R_SSL_HANDSHAKE_FAILURE);
-            return (-1);
+            return -1;
         }
 
         if (!(s->mode & SSL_MODE_AUTO_RETRY)) {
-            if (s->s3->rbuf.left == 0) /* no read-ahead left? */
-            {
+            if (s->s3->rbuf.left == 0) { /* no read-ahead left? */
                 BIO *bio;
                 /* In the case where we try to read application data,
                  * but we trigger an SSL handshake, we return -1 with
@@ -925,7 +939,7 @@ start:
                 bio = SSL_get_rbio(s);
                 BIO_clear_retry_flags(bio);
                 BIO_set_retry_read(bio);
-                return (-1);
+                return -1;
             }
         }
         goto start;
@@ -944,14 +958,17 @@ start:
         case SSL3_RT_CHANGE_CIPHER_SPEC:
         case SSL3_RT_ALERT:
         case SSL3_RT_HANDSHAKE:
-            /* we already handled all of these, with the possible exception
+            /*
+             * We already handled all of these, with the possible exception
              * of SSL3_RT_HANDSHAKE when s->in_handshake is set, but that
-             * should not happen when type != rr->type */
+             * should not happen when type != rr->type
+             */
             al = SSL_AD_UNEXPECTED_MESSAGE;
             SSLerr(SSL_F_DTLS1_READ_BYTES, ERR_R_INTERNAL_ERROR);
             goto f_err;
         case SSL3_RT_APPLICATION_DATA:
-            /* At this point, we were expecting handshake data,
+            /*
+             * At this point, we were expecting handshake data,
              * but have application data.  If the library was
              * running inside ssl3_read() (i.e. in_read_app_data
              * is set) and it makes sense to read application data
@@ -964,7 +981,7 @@ start:
                 && (s->state <= SSL3_ST_SW_HELLO_REQ_A) && (s->state >= SSL3_ST_SR_CLNT_HELLO_A))))
             {
                 s->s3->in_read_app_data = 2;
-                return (-1);
+                return -1;
             } else {
                 al = SSL_AD_UNEXPECTED_MESSAGE;
                 SSLerr(SSL_F_DTLS1_READ_BYTES, SSL_R_UNEXPECTED_RECORD);
@@ -976,15 +993,14 @@ start:
 f_err:
     ssl3_send_alert(s, SSL3_AL_FATAL, al);
 err:
-    return (-1);
+    return -1;
 }
 
 int dtls1_write_app_data_bytes(SSL *s, int type, const void *buf_, int len)
 {
     int i;
 
-    if (SSL_in_init(s) && !s->in_handshake)
-    {
+    if (SSL_in_init(s) && !s->in_handshake) {
         i = s->handshake_func(s);
         if (i < 0)
             return (i);
@@ -1009,9 +1025,8 @@ static int have_handshake_fragment(SSL *s, int type, uint8_t *buf,
                                    int len, int peek)
 {
 
-    if ((type == SSL3_RT_HANDSHAKE) && (s->d1->handshake_fragment_len > 0))
-    /* (partially) satisfy request from storage */
-    {
+    if ((type == SSL3_RT_HANDSHAKE) && (s->d1->handshake_fragment_len > 0)) {
+        /* (partially) satisfy request from storage */
         uint8_t *src = s->d1->handshake_fragment;
         uint8_t *dst = buf;
         unsigned int k, n;
@@ -1038,12 +1053,9 @@ static int have_handshake_fragment(SSL *s, int type, uint8_t *buf,
  */
 int dtls1_write_bytes(SSL *s, int type, const void *buf, int len)
 {
-    int i;
-
     OPENSSL_assert(len <= SSL3_RT_MAX_PLAIN_LENGTH);
     s->rwstate = SSL_NOTHING;
-    i = do_dtls1_write(s, type, buf, len);
-    return i;
+    return do_dtls1_write(s, type, buf, len);
 }
 
 int do_dtls1_write(SSL *s, int type, const uint8_t *buf,
@@ -1061,14 +1073,14 @@ int do_dtls1_write(SSL *s, int type, const uint8_t *buf,
      * out.  This will happen with non blocking IO */
     if (s->s3->wbuf.left != 0) {
         OPENSSL_assert(0); /* XDTLS:  want to see if we ever get here */
-        return (ssl3_write_pending(s, type, buf, len));
+        return ssl3_write_pending(s, type, buf, len);
     }
 
     /* If we have an alert to send, lets send it */
     if (s->s3->alert_dispatch) {
         i = s->method->ssl_dispatch_alert(s);
         if (i <= 0)
-            return (i);
+            return i;
         /* if it went, fall through and send more stuff */
     }
 
@@ -1079,7 +1091,8 @@ int do_dtls1_write(SSL *s, int type, const uint8_t *buf,
     wb = &(s->s3->wbuf);
     sess = s->session;
 
-    if ((sess == NULL) || (s->enc_write_ctx == NULL) || (EVP_MD_CTX_md(s->write_hash) == NULL))
+    if ((sess == NULL) || (s->enc_write_ctx == NULL) ||
+        (EVP_MD_CTX_md(s->write_hash) == NULL))
         clear = 1;
 
     if (clear)
@@ -1114,7 +1127,6 @@ int do_dtls1_write(SSL *s, int type, const uint8_t *buf,
 
     /* field where we are to write out packet epoch, seq num and len */
     pseq = p;
-
     p += 10;
 
     /* Explicit IV length, block ciphers appropriate version flag */
@@ -1293,7 +1305,7 @@ int dtls1_dispatch_alert(SSL *s)
             cb(s, SSL_CB_WRITE_ALERT, j);
         }
     }
-    return (i);
+    return i;
 }
 
 static DTLS1_BITMAP *dtls1_get_bitmap(SSL *s, SSL3_RECORD *rr,
@@ -1307,7 +1319,9 @@ static DTLS1_BITMAP *dtls1_get_bitmap(SSL *s, SSL3_RECORD *rr,
         return &s->d1->bitmap;
 
     /* Only HM and ALERT messages can be from the next epoch */
-    else if (rr->epoch == (unsigned long)(s->d1->r_epoch + 1) && (rr->type == SSL3_RT_HANDSHAKE || rr->type == SSL3_RT_ALERT)) {
+    else if (rr->epoch == (unsigned long)(s->d1->r_epoch + 1) &&
+            (rr->type == SSL3_RT_HANDSHAKE || rr->type == SSL3_RT_ALERT))
+    {
         *is_next_epoch = 1;
         return &s->d1->next_bitmap;
     }
