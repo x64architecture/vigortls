@@ -31,7 +31,7 @@ size_t CRYPTO_128_wrap(void *key, const uint8_t *iv, uint8_t *out,
         return 0;
     A = B;
     t = 1;
-    memcpy(out + 8, in, inlen);
+    memmove(out + 8, in, inlen);
     if (!iv)
         iv = default_iv;
 
@@ -66,7 +66,7 @@ size_t CRYPTO_128_unwrap(void *key, const uint8_t *iv, uint8_t *out,
     A = B;
     t = 6 * (inlen >> 3);
     memcpy(A, in, 8);
-    memcpy(out, in + 8, inlen);
+    memmove(out, in + 8, inlen);
     for (j = 0; j < 6; j++) {
         R = out + inlen - 8;
         for (i = 0; i < inlen; i += 8, t--, R -= 8) {
