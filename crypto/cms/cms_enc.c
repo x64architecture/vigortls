@@ -157,7 +157,7 @@ BIO *cms_EncryptedContent_init_bio(CMS_EncryptedContentInfo *ec)
     ok = 1;
 
 err:
-    if (ec->key && !keep_key) {
+    if (ec->key && (!keep_key || !ok)) {
         vigortls_zeroize(ec->key, ec->keylen);
         free(ec->key);
         ec->key = NULL;
