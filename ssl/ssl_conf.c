@@ -438,8 +438,10 @@ static const ssl_conf_cmd_tbl *ssl_conf_cmd_lookup(SSL_CONF_CTX *cctx, const cha
     for (i = 0, t = ssl_conf_cmds;
          i < sizeof(ssl_conf_cmds) / sizeof(ssl_conf_cmd_tbl); i++, t++)
     {
-        if (cctx->flags & SSL_CONF_FLAG_CMDLINE)
-            return t;
+        if (cctx->flags & SSL_CONF_FLAG_CMDLINE) {
+            if (t->str_cmdline && strcmp(t->str_cmdline, cmd) == 0)
+                return t;
+        }
         if (cctx->flags & SSL_CONF_FLAG_FILE) {
             if (t->str_file && !strcasecmp(t->str_file, cmd))
                 return t;
