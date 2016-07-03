@@ -180,6 +180,14 @@ static int ssl23_client_hello(SSL *s)
 
     buf = (uint8_t *)s->init_buf->data;
     if (s->state == SSL23_ST_CW_CLNT_HELLO_A) {
+        /*
+         * Since we're sending s23 client hello, we're not reusing a session, as
+         * we'd be using the method from the saved session instead
+         */
+        if (!ssl_get_new_session(s, 0)) {
+            return -1;
+        }
+
         p = s->s3->client_random;
         if (ssl_fill_hello_random(s, p, SSL3_RANDOM_SIZE) <= 0) {
             SSLerr(SSL_F_SSL23_CLIENT_HELLO, ERR_R_INTERNAL_ERROR);
@@ -409,13 +417,6 @@ static int ssl23_get_server_hello(SSL *s)
         goto err;
     }
     s->init_num = 0;
-
-    /*
-     * Since, if we are sending a ssl23 client hello, we are not
-     * reusing a session-id
-     */
-    if (!ssl_get_new_session(s, 0))
-        goto err;
 
     return (SSL_connect(s));
 err:
