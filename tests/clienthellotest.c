@@ -43,7 +43,6 @@ int main(int argc, char *argv[])
     SSL *con;
     BIO *rbio;
     BIO *wbio;
-    BIO *err;
     long len;
     uint8_t *data;
     uint8_t *dataend;
@@ -56,8 +55,6 @@ int main(int argc, char *argv[])
 
     SSL_library_init();
     SSL_load_error_strings();
-
-    err = BIO_new_fp(stderr, BIO_NOCLOSE | BIO_FP_TEXT);
 
     /*
      * For each test set up an SSL_CTX and SSL and see what ClientHello gets
