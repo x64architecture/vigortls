@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 - 2015, Kurt Cancemi (kurt@x64architecture.com)
+ * Copyright (c) 2014 - 2016, Kurt Cancemi (kurt@x64architecture.com)
  *
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -25,24 +25,17 @@
 #endif
 
 #if __has_builtin(__builtin_umul_overflow) || __GNUC__ >= 5
-
-static inline int reallocarray_umul(size_t newmem, size_t size, size_t *prod)
-{
-#ifdef VIGORTLS_32_BIT
-    return __builtin_umul_overflow(size, newmem, prod);
-#else
-    return __builtin_umull_overflow(size, newmem, prod);
-#endif
-}
-
-#else /* __has_builtin(__builtin_umull_overflow) || __GNUC__ >= 5 */
-
-#if !defined(OPENSSL_NO_ASM) && \
-        (defined(VIGORTLS_X86) || defined(VIGORTLS_X86_64))
+ #ifdef VIGORTLS_32_BIT
+  #define reallocarray_umul(x, y, z) __builtin_umul_overflow(x, y, z)
+ #else
+  #define reallocarray_umul(x, y, z) __builtin_umull_overflow(x, y, z)
+ #endif
+#elif !defined(OPENSSL_NO_ASM) && \
+    (defined(VIGORTLS_X86) || defined(VIGORTLS_X86_64))
 
 extern int reallocarray_umul(size_t newmem, size_t size, size_t *prod);
 
-#else /* !OPENSSL_NO_ASM && (VIGORTLS_X86 || VIGORTLS_X86_64) */
+#else
 
 #define SQRT_SIZE_MAX ((size_t)1 << (sizeof(size_t) * 4))
 
@@ -56,8 +49,6 @@ static inline int reallocarray_umul(size_t newmem, size_t size, size_t *prod)
 
     return 0;
 }
-
-#endif /* !OPENSSL_NO_ASM && (VIGORTLS_X86 || VIGORTLS_X86_64) */
 
 #endif /* __has_builtin(__builtin_umull_overflow) || __GNUC__ >= 5 */
 
