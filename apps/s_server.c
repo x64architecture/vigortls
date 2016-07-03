@@ -709,8 +709,6 @@ int s_server_main(int argc, char *argv[])
                 goto bad;
             continue;
         } else if (args_ssl(&argv, &argc, cctx, &badarg, bio_err, &ssl_args)) {
-            if (--argc < 1)
-                goto bad;
             if (badarg)
                 goto bad;
             continue;
@@ -1077,9 +1075,6 @@ int s_server_main(int argc, char *argv[])
     
     ssl_ctx_add_crls(ctx, crls, crl_download);
 
-    if (!args_ssl_call(ctx, bio_err, cctx, ssl_args, no_ecdhe))
-        goto end;
-
     if (!ssl_load_stores(ctx, vfyCApath, vfyCAfile, chCApath, chCAfile, crls,
                          crl_download))
     {
@@ -1133,6 +1128,9 @@ int s_server_main(int argc, char *argv[])
         }
         if (vpm)
             SSL_CTX_set1_param(ctx2, vpm);
+
+        if (!args_ssl_call(ctx, bio_err, cctx, ssl_args, no_ecdhe))
+            goto end;
         
         ssl_ctx_add_crls(ctx2, crls, 0);
             
