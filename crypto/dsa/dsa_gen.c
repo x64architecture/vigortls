@@ -76,15 +76,19 @@ int dsa_builtin_paramgen(DSA *ret, size_t bits, size_t qbits,
 
     bits = (bits + 63) / 64 * 64;
 
-    if (seed_in != NULL) {
-        if (seed_len < (size_t)qsize)
-            return 0;
-        if (seed_len > (size_t)qsize) {
-            /* Don't overflow seed local variable. */
-            seed_len = qsize;
-        }
-        memcpy(seed, seed_in, seed_len);
+    if (seed_len < (size_t)qsize) {
+        seed_in = NULL; /* seed buffer too small -- ignore */
+        seed_len = 0;
     }
+    /*
+     * App. 2.2 of FIPS PUB 186 allows larger SEED,
+     * but our internal buffers are restricted to 160 bits
+     */
+    if (seed_len > (size_t)qsize)
+        seed_len = qsize;
+
+    if (seed_in != NULL)
+        memcpy(seed, seed_in, seed_len);
 
     if ((ctx = BN_CTX_new()) == NULL)
         goto err;
@@ -109,18 +113,19 @@ int dsa_builtin_paramgen(DSA *ret, size_t bits, size_t qbits,
     for (;;) {
         for (;;) /* find q */
         {
-            int seed_is_random = (seed_in == NULL);
+            int seed_is_random;
 
             /* step 1 */
             if (!BN_GENCB_call(cb, 0, m++))
                 goto err;
 
-            if (seed_is_random) {
+            if (seed_len == 0) {
                 if (RAND_bytes(seed, qsize) <= 0)
                     goto err;
+                seed_is_random = 1;
             } else {
-                /* If we come back through, use random seed next time. */
-                seed_in = NULL;
+                seed_is_random = 0;
+                seed_len = 0; /* use random seed if 'seed_in' turns out to be bad*/
             }
             memcpy(buf, seed, qsize);
             memcpy(buf2, seed, qsize);
