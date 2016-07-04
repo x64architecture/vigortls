@@ -387,7 +387,7 @@ int dsa_builtin_paramgen2(DSA *ret, size_t L, size_t N, const EVP_MD *evpmd,
             if (!BN_GENCB_call(cb, 0, m++))
                 goto err;
 
-            if (!seed_in) {
+            if (!seed_len || !seed_in) {
                 if (RAND_bytes(seed, seed_len) <= 0)
                     goto err;
             }
