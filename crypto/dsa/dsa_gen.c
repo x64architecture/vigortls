@@ -28,21 +28,12 @@ int DSA_generate_parameters_ex(DSA *ret, int bits,
     if (ret->meth->dsa_paramgen)
         return ret->meth->dsa_paramgen(ret, bits, seed_in, seed_len,
                                        counter_ret, h_ret, cb);
-    else {
-        const EVP_MD *evpmd;
-        size_t qbits = bits >= 2048 ? 256 : 160;
 
-        if (bits >= 2048) {
-            qbits = 256;
-            evpmd = EVP_sha256();
-        } else {
-            qbits = 160;
-            evpmd = EVP_sha1();
-        }
-
-        return dsa_builtin_paramgen(ret, bits, qbits, evpmd,
-                                    seed_in, seed_len, NULL, counter_ret, h_ret, cb);
-    }
+    const EVP_MD *evpmd = (bits >= 2048) ? EVP_sha256() : EVP_sha1();
+    const size_t qsize = EVP_MD_size(evpmd) * 8;
+    
+    return dsa_builtin_paramgen(ret, bits, qsize, evpmd, seed_in, seed_len,
+                                NULL, counter_ret, h_ret, cb);
 }
 
 int dsa_builtin_paramgen(DSA *ret, size_t bits, size_t qbits,
