@@ -80,6 +80,8 @@ CMS_RecipientInfo *CMS_add0_recipient_password(CMS_ContentInfo *cms,
 
     /* Setup algorithm identifier for cipher */
     encalg = X509_ALGOR_new();
+    if (encalg == NULL)
+        goto err;
     EVP_CIPHER_CTX_init(&ctx);
 
     if (EVP_EncryptInit_ex(&ctx, kekciph, NULL, NULL, NULL) <= 0) {
