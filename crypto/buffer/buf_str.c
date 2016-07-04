@@ -7,6 +7,7 @@
  * https://www.openssl.org/source/license.html
  */
 
+#include <limits.h>
 #include <stdio.h>
 #include <string.h>
 
@@ -40,6 +41,9 @@ char *BUF_strndup(const char *str, size_t siz)
     char *ret = NULL;
 
     if (str == NULL)
+        return NULL;
+
+    if (siz >= INT_MAX)
         return NULL;
 
     ret = strndup(str, siz);
