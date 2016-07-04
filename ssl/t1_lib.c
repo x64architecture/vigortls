@@ -346,7 +346,7 @@ static void tls1_get_curvelist(SSL *s, int client_curves, const uint16_t **pcurv
             break;
     }
     if (*pcurves == NULL) {
-        if (!s->server || (s->cert && s->cert->ecdh_tmp_auto)) {
+        if (!s->server || s->cert->ecdh_tmp_auto) {
             *pcurves = eccurves_auto;
             *pcurveslen = sizeof(eccurves_auto) / 2;
         } else {
