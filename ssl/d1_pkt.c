@@ -1133,20 +1133,20 @@ int do_dtls1_write(SSL *s, int type, const uint8_t *buf,
     p += 10;
 
     /* Explicit IV length, block ciphers appropriate version flag */
-    if (s->enc_write_ctx) {
-        int mode = EVP_CIPHER_CTX_mode(s->enc_write_ctx);
-        if (mode == EVP_CIPH_CBC_MODE) {
-            eivlen = EVP_CIPHER_CTX_iv_length(s->enc_write_ctx);
-            if (eivlen <= 1)
-                eivlen = 0;
-        } else if (mode == EVP_CIPH_GCM_MODE)
-            /* Need explicit part of IV for GCM mode */
-            eivlen = EVP_GCM_TLS_EXPLICIT_IV_LEN;
-        else
+    if (s->enc_write_ctx && SSL_USE_EXPLICIT_IV(s) &&
+        EVP_CIPHER_CTX_mode(s->enc_write_ctx) == EVP_CIPH_CBC_MODE)
+    {
+        eivlen = EVP_CIPHER_CTX_iv_length(s->enc_write_ctx);
+        if (eivlen <= 1)
             eivlen = 0;
-    } else 
+    } else if (s->aead_write_ctx != NULL &&
+               s->aead_write_ctx->variable_nonce_in_record)
+    {
+        eivlen = s->aead_write_ctx->variable_nonce_len;
+    } else {
         eivlen = 0;
- 
+    }
+
     /* lets setup the record stuff. */
     wr->data = p + eivlen; /* make room for IV in case of CBC */
     wr->length = (int)len;
