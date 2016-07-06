@@ -154,7 +154,7 @@ static int dtls1_query_mtu(SSL *s)
 int dtls1_do_write(SSL *s, int type)
 {
     int ret;
-    unsigned int curr_mtu, retry;
+    unsigned int curr_mtu, retry = 1;
     unsigned int len, frag_off, mac_size, blocksize, used_len;
 
     if (!dtls1_query_mtu(s))

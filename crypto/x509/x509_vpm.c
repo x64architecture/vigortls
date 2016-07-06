@@ -9,6 +9,8 @@
 
 #include <string.h>
 
+#include <stdcompat.h>
+
 #include <openssl/crypto.h>
 #include <openssl/lhash.h>
 #include <openssl/buffer.h>

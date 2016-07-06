@@ -160,7 +160,9 @@ static void *KDF1_SHA1(const void *in, size_t inlen, void *out, size_t *outlen)
     return SHA1(in, inlen, out);
 }
 
+#ifndef OPENSSL_NO_MULTIBLOCK
 static void multiblock_speed(const EVP_CIPHER *evp_cipher);
+#endif
 
 int speed_main(int argc, char **argv)
 {
@@ -1397,6 +1399,7 @@ int speed_main(int argc, char **argv)
 #endif
 
     if (doit[D_EVP]) {
+#ifndef OPENSSL_NO_MULTIBLOCK
 #ifdef EVP_CIPH_FLAG_TLS1_1_MULTIBLOCK
         if (multiblock && evp_cipher) {
             if (!(EVP_CIPHER_flags(evp_cipher) & EVP_CIPH_FLAG_TLS1_1_MULTIBLOCK)) {
@@ -1407,6 +1410,7 @@ int speed_main(int argc, char **argv)
             mret = 0;
             goto end;
         }
+#endif
 #endif
         for (j = 0; j < SIZE_NUM; j++) {
             if (evp_cipher) {
@@ -2135,6 +2139,8 @@ static int do_multi(int multi)
     return 1;
 }
 
+#ifndef OPENSSL_NO_MULTIBLOCK
+
 static void multiblock_speed(const EVP_CIPHER *evp_cipher)
 {
     static int mblengths[] = { 8 * 1024, 2 * 8 * 1024, 4 * 8 * 1024,
@@ -2242,4 +2248,6 @@ err:
     free(inp);
     free(out);
 }
+#endif
+
 #endif

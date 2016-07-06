@@ -10,7 +10,10 @@
 /* X509 v3 extension utilities */
 
 #include <string.h>
+#include <strings.h>
 #include <ctype.h>
+
+#include <stdcompat.h>
 
 #include <openssl/bn.h>
 #include <openssl/conf.h>
