@@ -269,8 +269,9 @@ void CRYPTO_free_ex_data(int class_index, void *obj, CRYPTO_EX_DATA *ad)
     for (i = 0; i < mx; i++) {
         if (storage[i] && storage[i]->free_func) {
             ptr = CRYPTO_get_ex_data(ad, i);
-            storage[i]->free_func(obj, ptr, ad, i,
-                                  storage[i]->argl, storage[i]->argp);
+            if (ptr != NULL)
+                storage[i]->free_func(obj, ptr, ad, i, storage[i]->argl,
+                                      storage[i]->argp);
         }
     }
     if (storage != stack)
