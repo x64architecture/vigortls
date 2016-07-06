@@ -493,6 +493,11 @@ typedef struct cert_st {
     custom_ext_methods cli_ext;
     custom_ext_methods srv_ext;
 
+    /* non-optimal, but here due to compatibility */
+    uint8_t *alpn_proposed;         /* server */
+    size_t alpn_proposed_len;
+    int alpn_sent;                  /* client */
+
     int references; /* >1 only if SSL_copy_session_id is used */
     CRYPTO_MUTEX *lock;
 } CERT;

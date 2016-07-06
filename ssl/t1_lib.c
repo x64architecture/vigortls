@@ -1166,6 +1166,7 @@ skip_ext:
         s2n(s->alpn_client_proto_list_len, ret);
         memcpy(ret, s->alpn_client_proto_list, s->alpn_client_proto_list_len);
         ret += s->alpn_client_proto_list_len;
+        s->cert->alpn_sent = 1;
     }
 
 #ifndef OPENSSL_NO_SRTP
@@ -1407,7 +1408,7 @@ uint8_t *ssl_add_serverhello_tlsext(SSL *s, uint8_t *buf, uint8_t *limit, int *a
 }
 
 /*
- * tls1_alpn_handle_client_hello is called to process the ALPN extension in a
+ * tls1_alpn_handle_client_hello is called to save the ALPN extension in a
  * ClientHello.
  *   data: the contents of the extension, not including the type and length.
  *   data_len: the number of bytes in data.
@@ -1419,12 +1420,6 @@ static int tls1_alpn_handle_client_hello(SSL *s, const uint8_t *data,
                                          unsigned int data_len, int *al)
 {
     CBS cbs, proto_name_list, alpn;
-    const uint8_t *selected;
-    uint8_t selected_len;
-    int r;
-
-    if (s->ctx->alpn_select_cb == NULL)
-        return (1);
 
     if (data_len < 2)
         goto parse_error;
@@ -1450,24 +1445,52 @@ static int tls1_alpn_handle_client_hello(SSL *s, const uint8_t *data,
             goto parse_error;
     }
 
-    r = s->ctx->alpn_select_cb(s, &selected, &selected_len,
-                               CBS_data(&alpn), CBS_len(&alpn),
-                               s->ctx->alpn_select_cb_arg);
-    if (r == SSL_TLSEXT_ERR_OK) {
-        free(s->s3->alpn_selected);
-        if ((s->s3->alpn_selected = malloc(selected_len)) == NULL) {
-            *al = SSL_AD_INTERNAL_ERROR;
-            return (-1);
-        }
-        memcpy(s->s3->alpn_selected, selected, selected_len);
-        s->s3->alpn_selected_len = selected_len;
+    if (!CBS_stow(&alpn, &s->cert->alpn_proposed, &s->cert->alpn_proposed_len))
+    {
+        *al = SSL_AD_INTERNAL_ERROR;
+        return 0;
     }
 
-    return (1);
+    return 1;
 
 parse_error:
     *al = SSL_AD_DECODE_ERROR;
-    return (0);
+    return 0;
+}
+
+/*
+ * Process the ALPN extension in a ClientHello.
+ * ret: a pointer to the TLSEXT return value: SSL_TLSEXT_ERR_*
+ * al: a pointer to the alert value to send in the event of a failure.
+ * returns 1 on success, 0 on failure: al/ret set only on failure
+ */
+static int tls1_alpn_handle_client_hello_late(SSL *s, int *ret, int *al)
+{
+    const uint8_t *selected = NULL;
+    uint8_t selected_len = 0;
+
+    if (s->ctx->alpn_select_cb != NULL && s->cert->alpn_proposed != NULL) {
+        int r = s->ctx->alpn_select_cb(s, &selected, &selected_len,
+                                       s->cert->alpn_proposed,
+                                       s->cert->alpn_proposed_len,
+                                       s->ctx->alpn_select_cb_arg);
+
+        if (r == SSL_TLSEXT_ERR_OK) {
+            free(s->s3->alpn_selected);
+            s->s3->alpn_selected = malloc(selected_len);
+            if (s->s3->alpn_selected == NULL) {
+                *al = SSL_AD_INTERNAL_ERROR;
+                *ret = SSL_TLSEXT_ERR_ALERT_FATAL;
+                return 0;
+            }
+            memcpy(s->s3->alpn_selected, selected, selected_len);
+            s->s3->alpn_selected_len = selected_len;
+            /* ALPN takes precedence over NPN. */
+            s->s3->next_proto_neg_seen = 0;
+        }
+    }
+
+    return 1;
 }
 
 static int ssl_scan_clienthello_tlsext(SSL *s, uint8_t **p, uint8_t *limit,
@@ -1486,6 +1509,10 @@ static int ssl_scan_clienthello_tlsext(SSL *s, uint8_t **p, uint8_t *limit,
 
     free(s->s3->alpn_selected);
     s->s3->alpn_selected = NULL;
+    s->s3->alpn_selected_len = 0;
+    free(s->cert->alpn_proposed);
+    s->cert->alpn_proposed = NULL;
+    s->cert->alpn_proposed_len = 0;
 
     if (data == limit)
         goto ri_check;
@@ -1752,8 +1779,8 @@ static int ssl_scan_clienthello_tlsext(SSL *s, uint8_t **p, uint8_t *limit,
                 s->tlsext_status_type = -1;
             }
         } else if (type == TLSEXT_TYPE_next_proto_neg &&
-                   s->s3->tmp.finish_md_len == 0 &&
-                   s->s3->alpn_selected == NULL) {
+                   s->s3->tmp.finish_md_len == 0)
+        {
             /* We shouldn't accept this extension on a
              * renegotiation.
              *
@@ -1771,12 +1798,10 @@ static int ssl_scan_clienthello_tlsext(SSL *s, uint8_t **p, uint8_t *limit,
              * Finished message could have been computed.) */
             s->s3->next_proto_neg_seen = 1;
         } else if (type == TLSEXT_TYPE_application_layer_protocol_negotiation &&
-                   s->ctx->alpn_select_cb != NULL &&
-                   s->s3->tmp.finish_md_len == 0) {
+                   s->s3->tmp.finish_md_len == 0)
+        {
             if (tls1_alpn_handle_client_hello(s, data, size, al) != 1)
                 return (0);
-            /* ALPN takes precedence over NPN. */
-            s->s3->next_proto_neg_seen = 0;
         }
 
 /* session ticket processed earlier */
@@ -2021,7 +2046,7 @@ static int ssl_scan_serverhello_tlsext(SSL *s, uint8_t **p, uint8_t *d, int n, i
             unsigned int len;
 
             /* We must have requested it. */
-            if (s->alpn_client_proto_list == NULL) {
+            if (!s->cert->alpn_sent) {
                 *al = TLS1_AD_UNSUPPORTED_EXTENSION;
                 return 0;
             }
@@ -2120,6 +2145,7 @@ ri_check:
 
 int ssl_prepare_clienthello_tlsext(SSL *s)
 {
+    s->cert->alpn_sent = 0;
     return 1;
 }
 
@@ -2242,6 +2268,10 @@ int ssl_check_clienthello_tlsext_late(SSL *s)
         }
     } else
         s->tlsext_status_expected = 0;
+
+    if (!tls1_alpn_handle_client_hello_late(s, &ret, &al)) {
+        goto err;
+    }
 
 err:
     switch (ret) {

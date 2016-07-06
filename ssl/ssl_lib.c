@@ -98,6 +98,13 @@ int SSL_clear(SSL *s)
 
     s->first_packet = 0;
 
+    if (s->cert != NULL) {
+        free(s->cert->alpn_proposed);
+        s->cert->alpn_proposed = NULL;
+        s->cert->alpn_proposed_len = 0;
+        s->cert->alpn_sent = 0;
+    }
+
     /*
      * Check to see if we were changed into a different method, if
      * so, revert back if we are not doing session-id reuse.
@@ -2568,6 +2575,10 @@ SSL_CTX *SSL_set_SSL_CTX(SSL *ssl, SSL_CTX *ctx)
             CERT_PKEY *rpk = ssl->cert->pkeys + i;
             rpk->digest = cpk->digest;
         }
+        ssl->cert->alpn_proposed = ocert->alpn_proposed;
+        ssl->cert->alpn_proposed_len = ocert->alpn_proposed_len;
+        ocert->alpn_proposed = NULL;
+        ssl->cert->alpn_sent = ocert->alpn_sent;
         ssl_cert_free(ocert);
     }
 

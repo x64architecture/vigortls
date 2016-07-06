@@ -298,6 +298,7 @@ void ssl_cert_free(CERT *c)
     free(c->ciphers_raw);
     custom_exts_free(&c->cli_ext);
     custom_exts_free(&c->srv_ext);
+    free(c->alpn_proposed);
     CRYPTO_thread_cleanup(c->lock);
     free(c);
 }

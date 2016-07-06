@@ -178,24 +178,37 @@ $ssltest -bio_pair -tls1 -npn_client -npn_server || exit 1
 $ssltest -bio_pair -tls1 -npn_client -npn_server -num 2 || exit 1
 $ssltest -bio_pair -tls1 -npn_client -npn_server -num 2 -reuse || exit 1
 
+#############################################################################
+# SNI tests
+echo "Testing SNI..."
+$ssltest -bio_pair -sn_client foo || exit 1
+$ssltest -bio_pair -sn_server1 foo || exit 1
+$ssltest -bio_pair -sn_client foo -sn_server1 foo -sn_expect1 || exit 1
+$ssltest -bio_pair -sn_client foo -sn_server1 bar -sn_expect1 || exit 1
+$ssltest -bio_pair -sn_client foo -sn_server1 foo -sn_server2 bar -sn_expect1 || exit 1
+$ssltest -bio_pair -sn_client bar -sn_server1 foo -sn_server2 bar -sn_expect2 || exit 1
+# Negative test - make sure it doesn't crash, and doesn't switch contexts
+$ssltest -bio_pair -sn_client foobar -sn_server1 foo -sn_server2 bar -sn_expect1 || exit 1
+
 #
 # ALPN tests
 #
 echo "Testing ALPN..."
 $ssltest -bio_pair -tls1 -alpn_client foo -alpn_server bar || exit 1
-$ssltest -bio_pair -tls1 -alpn_client foo -alpn_server foo \
-  -alpn_expected foo || exit 1
-$ssltest -bio_pair -tls1 -alpn_client foo,bar -alpn_server foo \
-  -alpn_expected foo || exit 1
-$ssltest -bio_pair -tls1 -alpn_client bar,foo -alpn_server foo \
-  -alpn_expected foo || exit 1
-$ssltest -bio_pair -tls1 -alpn_client bar,foo -alpn_server foo,bar \
-  -alpn_expected foo || exit 1
-$ssltest -bio_pair -tls1 -alpn_client bar,foo -alpn_server bar,foo \
-  -alpn_expected bar || exit 1
-$ssltest -bio_pair -tls1 -alpn_client foo,bar -alpn_server bar,foo \
-  -alpn_expected bar || exit 1
+$ssltest -bio_pair -tls1 -alpn_client foo -alpn_server foo -alpn_expected foo || exit 1
+$ssltest -bio_pair -tls1 -alpn_client foo,bar -alpn_server foo -alpn_expected foo || exit 1
+$ssltest -bio_pair -tls1 -alpn_client bar,foo -alpn_server foo -alpn_expected foo || exit 1
+$ssltest -bio_pair -tls1 -alpn_client bar,foo -alpn_server foo,bar -alpn_expected foo || exit 1
+$ssltest -bio_pair -tls1 -alpn_client bar,foo -alpn_server bar,foo -alpn_expected bar || exit 1
+$ssltest -bio_pair -tls1 -alpn_client foo,bar -alpn_server bar,foo -alpn_expected bar || exit 1
 $ssltest -bio_pair -tls1 -alpn_client baz -alpn_server bar,foo || exit 1
+
+#############################################################################
+# ALPN + SNI
+echo "Testing ALPN + SNI..."
+$ssltest -bio_pair -alpn_client foo,bar -sn_client alice -alpn_server1 foo,123 -sn_server1 alice -alpn_server2 bar,456 -sn_server2 bob -alpn_expected foo || exit 1
+$ssltest -bio_pair -alpn_client foo,bar -sn_client bob -alpn_server1 foo,123 -sn_server1 alice -alpn_server2 bar,456 -sn_server2 bob -alpn_expected bar || exit 1
+$ssltest -bio_pair -alpn_client foo,bar -sn_client bob -sn_server1 alice -alpn_server2 bar,456 -sn_server2 bob -alpn_expected bar || exit 1
 
 #############################################################################
 # Multi-buffer tests
