@@ -348,6 +348,15 @@ static EVP_PKEY_CTX *init_ctx(int *pkeysize, char *keyfile, int keyform,
 
     ctx = EVP_PKEY_CTX_new(pkey, e);
 
+    if ((keyform == FORMAT_ENGINE) &&
+        (strncmp(ENGINE_get_name(e), "pkcs11 engine", 13) == 0))
+    {
+      fprintf(stderr, "engine name = \"%s\"\n", ENGINE_get_name(e));
+      ctx = EVP_PKEY_CTX_new(pkey, NULL);
+    } else {
+      ctx = EVP_PKEY_CTX_new(pkey, e);
+    }
+
     EVP_PKEY_free(pkey);
 
     if (!ctx)
