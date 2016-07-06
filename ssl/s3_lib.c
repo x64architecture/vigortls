@@ -2405,7 +2405,7 @@ int ssl3_shutdown(SSL *s)
      */
     if ((s->quiet_shutdown) || (s->state == SSL_ST_BEFORE)) {
         s->shutdown = (SSL_SENT_SHUTDOWN | SSL_RECEIVED_SHUTDOWN);
-        return (1);
+        return 1;
     }
 
     if (!(s->shutdown & SSL_SENT_SHUTDOWN)) {
@@ -2416,7 +2416,7 @@ int ssl3_shutdown(SSL *s)
          * to be written, s->s3->alert_dispatch will be true
          */
         if (s->s3->alert_dispatch)
-            return (-1); /* return WANT_WRITE */
+            return -1; /* return WANT_WRITE */
     } else if (s->s3->alert_dispatch) {
         /* resend it if not sent */
         ret = s->method->ssl_dispatch_alert(s);
@@ -2427,20 +2427,36 @@ int ssl3_shutdown(SSL *s)
              * return 0 upon a previous invocation,
              * return WANT_WRITE
              */
-            return (ret);
+            return ret;
         }
     } else if (!(s->shutdown & SSL_RECEIVED_SHUTDOWN)) {
+        if (SSL_in_init(s)) {
+            /*
+             * We can't shutdown properly if we are in the middle of a
+             * handshake. Doing so is problematic because the peer may send a
+             * CCS before it acts on our close_notify. However we should not
+             * continue to process received handshake messages or CCS once our
+             * close_notify has been sent. Therefore any close_notify from
+             * the peer will be unreadable because we have not moved to the next
+             * cipher state. Its best just to avoid this can-of-worms. Return
+             * an error if we are wanting to wait for a close_notify from the
+             * peer and we are in init.
+             */
+            SSLerr(SSL_F_SSL3_SHUTDOWN, SSL_R_SHUTDOWN_WHILE_IN_INIT);
+            return -1;
+        }
         /* If we are waiting for a close from our peer, we are closed */
         s->method->ssl_read_bytes(s, 0, NULL, 0, 0);
         if (!(s->shutdown & SSL_RECEIVED_SHUTDOWN)) {
-            return (-1); /* return WANT_READ */
+            return -1; /* return WANT_READ */
         }
     }
 
-    if ((s->shutdown == (SSL_SENT_SHUTDOWN | SSL_RECEIVED_SHUTDOWN)) && !s->s3->alert_dispatch)
-        return (1);
+    if ((s->shutdown == (SSL_SENT_SHUTDOWN | SSL_RECEIVED_SHUTDOWN)) &&
+        !s->s3->alert_dispatch)
+        return 1;
     else
-        return (0);
+        return 0;
 }
 
 int ssl3_write(SSL *s, const void *buf, int len)
