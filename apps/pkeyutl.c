@@ -21,7 +21,7 @@ static void usage(void);
 
 static EVP_PKEY_CTX *init_ctx(int *pkeysize, char *keyfile, int keyform,
                               int key_type, char *passargin, int pkey_op,
-                              ENGINE *e);
+                              ENGINE *e, int impl);
 
 static int setup_peer(BIO *err, EVP_PKEY_CTX *ctx, int peerform,
                       const char *file);
@@ -43,6 +43,7 @@ int pkeyutl_main(int argc, char **argv)
     EVP_PKEY_CTX *ctx = NULL;
     char *passargin = NULL;
     int keysize = -1;
+    int engine_impl = 0;
 
     uint8_t *buf_in = NULL, *buf_out = NULL, *sig = NULL;
     size_t buf_outlen;
@@ -80,7 +81,7 @@ int pkeyutl_main(int argc, char **argv)
                 badarg = 1;
             else {
                 ctx = init_ctx(&keysize, *(++argv), keyform, key_type,
-                               passargin, pkey_op, e);
+                               passargin, pkey_op, e, engine_impl);
                 if (!ctx) {
                     BIO_puts(bio_err, "Error initializing context\n");
                     ERR_print_errors(bio_err);
@@ -114,6 +115,8 @@ int pkeyutl_main(int argc, char **argv)
                 badarg = 1;
             else
                 e = setup_engine(bio_err, *(++argv), 0);
+        } else if (!strcmp(*argv, "-engine_impl")) {
+            engine_impl = 1;
         }
 #endif
         else if (!strcmp(*argv, "-pubin"))
@@ -298,16 +301,18 @@ static void usage()
     BIO_printf(bio_err, "-hexdump        hex dump output\n");
 #ifndef OPENSSL_NO_ENGINE
     BIO_printf(bio_err, "-engine e       use engine e, possibly a hardware device.\n");
+    BIO_printf(bio_err, "-engine_impl    access key through the engine\n");
 #endif
     BIO_printf(bio_err, "-passin arg     pass phrase source\n");
 }
 
 static EVP_PKEY_CTX *init_ctx(int *pkeysize, char *keyfile, int keyform,
                               int key_type, char *passargin, int pkey_op,
-                              ENGINE *e)
+                              ENGINE *e, int engine_impl)
 {
     EVP_PKEY *pkey = NULL;
     EVP_PKEY_CTX *ctx = NULL;
+    ENGINE *impl = NULL;
     char *passin = NULL;
     int rv = -1;
     X509 *x;
@@ -346,15 +351,12 @@ static EVP_PKEY_CTX *init_ctx(int *pkeysize, char *keyfile, int keyform,
     if (!pkey)
         goto end;
 
-    ctx = EVP_PKEY_CTX_new(pkey, e);
-
-    if ((keyform == FORMAT_ENGINE) &&
-        (strncmp(ENGINE_get_name(e), "pkcs11 engine", 13) == 0))
-    {
-      ctx = EVP_PKEY_CTX_new(pkey, NULL);
-    } else {
-      ctx = EVP_PKEY_CTX_new(pkey, e);
-    }
+#ifndef OPENSSL_NO_ENGINE
+    if (engine_impl)
+        impl = e;
+#endif
+    
+    ctx = EVP_PKEY_CTX_new(pkey, impl);
 
     EVP_PKEY_free(pkey);
 
