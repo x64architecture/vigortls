@@ -26,6 +26,7 @@
 
 #define DH_FLAG_CACHE_MONT_P     0x01
 #define DH_FLAG_NO_EXP_CONSTTIME 0x02
+#define DH_CHECK_PUBKEY_INVALID  0x03
 
 #ifdef __cplusplus
 extern "C" {
