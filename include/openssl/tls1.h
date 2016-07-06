@@ -73,21 +73,19 @@ extern "C" {
 #define TLS1_AD_UNKNOWN_PSK_IDENTITY 115 /* fatal */
 
 /* ExtensionType values from RFC3546 / RFC4366 / RFC6066 */
-#define TLSEXT_TYPE_server_name 0
-#define TLSEXT_TYPE_max_fragment_length 1
-#define TLSEXT_TYPE_client_certificate_url 2
-#define TLSEXT_TYPE_trusted_ca_keys 3
-#define TLSEXT_TYPE_truncated_hmac 4
-#define TLSEXT_TYPE_status_request 5
+#define TLSEXT_TYPE_server_name             0
+#define TLSEXT_TYPE_max_fragment_length     1
+#define TLSEXT_TYPE_client_certificate_url  2
+#define TLSEXT_TYPE_trusted_ca_keys         3
+#define TLSEXT_TYPE_truncated_hmac          4
+#define TLSEXT_TYPE_status_request          5
 /* ExtensionType values from RFC4681 */
-#define TLSEXT_TYPE_user_mapping 6
-
+#define TLSEXT_TYPE_user_mapping            6
 /* ExtensionType values from RFC5878 */
-#define TLSEXT_TYPE_client_authz 7
-#define TLSEXT_TYPE_server_authz 8
-
+#define TLSEXT_TYPE_client_authz            7
+#define TLSEXT_TYPE_server_authz            8
 /* ExtensionType values from RFC6091 */
-#define TLSEXT_TYPE_cert_type 9
+#define TLSEXT_TYPE_cert_type               9
 
 /* ExtensionType values from RFC4492 */
 #define TLSEXT_TYPE_elliptic_curves 10
@@ -142,6 +140,9 @@ extern "C" {
 #define TLSEXT_signature_dsa 2
 #define TLSEXT_signature_ecdsa 3
 
+/* Total number of different signature algorithms */
+#define TLSEXT_signature_num 4
+
 #define TLSEXT_hash_none 0
 #define TLSEXT_hash_md5 1
 #define TLSEXT_hash_sha1 2
@@ -149,6 +150,17 @@ extern "C" {
 #define TLSEXT_hash_sha256 4
 #define TLSEXT_hash_sha384 5
 #define TLSEXT_hash_sha512 6
+
+/* Total number of different digest algorithms */
+#define TLSEXT_hash_num 7
+
+/* Flag set for unrecognised algorithms */
+#define TLSEXT_nid_unknown 0x1000000
+
+/* ECC curves */
+
+#define TLSEXT_curve_P_256 23
+#define TLSEXT_curve_P_384 24
 
 #define TLSEXT_MAXLEN_host_name 255
 
@@ -164,6 +176,14 @@ int SSL_get_servername_type(const SSL *s);
 int SSL_export_keying_material(SSL *s, uint8_t *out, size_t olen,
                                const char *label, size_t llen, const uint8_t *p,
                                size_t plen, int use_context);
+
+int SSL_get_sigalgs(SSL *s, int idx, int *psign, int *phash, int *psignandhash,
+                    uint8_t *rsig, uint8_t *rhash);
+
+int SSL_get_shared_sigalgs(SSL *s, int idx, int *psign, int *phash,
+                           int *psignandhash, uint8_t *rsig, uint8_t *rhash);
+
+int SSL_check_chain(SSL *s, X509 *x, EVP_PKEY *pk, STACK_OF(X509) *chain);
 
 #define SSL_set_tlsext_host_name(s, name)                                \
     SSL_ctrl(s, SSL_CTRL_SET_TLSEXT_HOSTNAME, TLSEXT_NAMETYPE_host_name, \

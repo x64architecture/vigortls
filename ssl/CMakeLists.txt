@@ -8,7 +8,6 @@ add_library(
     bio_ssl.c
     d1_both.c
     d1_clnt.c
-    d1_enc.c
     d1_lib.c
     d1_meth.c
     d1_pkt.c
@@ -28,6 +27,7 @@ add_library(
     ssl_asn1.c
     ssl_cert.c
     ssl_ciph.c
+    ssl_conf.c
     ssl_err.c
     ssl_err2.c
     ssl_lib.c
@@ -37,10 +37,12 @@ add_library(
     ssl_txt.c
     t1_clnt.c
     t1_enc.c
+    t1_ext.c
     t1_lib.c
     t1_meth.c
     t1_reneg.c
     t1_srvr.c
+    t1_trce.c
 
     $<TARGET_OBJECTS:pqueue>
 )

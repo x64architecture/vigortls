@@ -45,7 +45,7 @@ int SSL_get_ex_data_X509_STORE_CTX_idx(void)
     return ssl_x509_store_ctx_idx;
 }
 
-static void ssl_cert_set_default_md(CERT *cert)
+void ssl_cert_set_default_md(CERT *cert)
 {
     /* Set digest values to defaults */
     cert->pkeys[SSL_PKEY_DSA_SIGN].digest = EVP_sha1();
@@ -141,14 +141,39 @@ CERT *ssl_cert_dup(CERT *cert)
     ret->ecdh_tmp_auto = cert->ecdh_tmp_auto;
 
     for (i = 0; i < SSL_PKEY_NUM; i++) {
-        if (cert->pkeys[i].x509 != NULL) {
-            ret->pkeys[i].x509 = cert->pkeys[i].x509;
+        CERT_PKEY *cpk = cert->pkeys + i;
+        CERT_PKEY *rpk = ret->pkeys + i;
+        if (cpk->x509 != NULL) {
+            rpk->x509 = cpk->x509;
             X509_up_ref(ret->pkeys[i].x509);
         }
 
-        if (cert->pkeys[i].privatekey != NULL) {
-            ret->pkeys[i].privatekey = cert->pkeys[i].privatekey;
+        if (cpk->privatekey != NULL) {
+            rpk->privatekey = cpk->privatekey;
             EVP_PKEY_up_ref(ret->pkeys[i].privatekey);
+        }
+
+        if (cpk->chain) {
+            rpk->chain = X509_chain_up_ref(cpk->chain);
+            if (rpk->chain == NULL) {
+                SSLerr(SSL_F_SSL_CERT_DUP, ERR_R_MALLOC_FAILURE);
+                goto err;
+            }
+        }
+        /* Clear all flags apart from explicit sign */
+        cpk->valid_flags &= CERT_PKEY_EXPLICIT_SIGN;
+        if (cert->pkeys[i].serverinfo != NULL) {
+            /* Just copy everything. */
+            ret->pkeys[i].serverinfo_length =
+                cert->pkeys[i].serverinfo_length;
+                ret->pkeys[i].serverinfo =
+                    malloc(ret->pkeys[i].serverinfo_length);
+                if (ret->pkeys[i].serverinfo == NULL) {
+                    SSLerr(SSL_F_SSL_CERT_DUP, ERR_R_MALLOC_FAILURE);
+                    return NULL;
+                }
+                memcpy(ret->pkeys[i].serverinfo, cert->pkeys[i].serverinfo,
+                       cert->pkeys[i].serverinfo_length);
         }
     }
 
@@ -163,18 +188,89 @@ CERT *ssl_cert_dup(CERT *cert)
      */
     ssl_cert_set_default_md(ret);
 
+    /* Configure sigalgs however we copy across */
+    if (cert->conf_sigalgs) {
+        ret->conf_sigalgs = malloc(cert->conf_sigalgslen);
+        if (ret->conf_sigalgs == NULL)
+            goto err;
+        memcpy(ret->conf_sigalgs, cert->conf_sigalgs, cert->conf_sigalgslen);
+        ret->conf_sigalgslen = cert->conf_sigalgslen;
+    }
+
+    if (cert->client_sigalgs != NULL) {
+        ret->client_sigalgs = malloc(cert->client_sigalgslen);
+        if (ret->client_sigalgs == NULL)
+            goto err;
+        memcpy(ret->client_sigalgs, cert->client_sigalgs,
+               cert->client_sigalgslen);
+        ret->client_sigalgslen = cert->client_sigalgslen;
+    }
+    /* Copy any custom client certificate types */
+    if (cert->ctypes != NULL) {
+        ret->ctypes = malloc(cert->ctype_num);
+        if (ret->ctypes == NULL)
+            goto err;
+        memcpy(ret->ctypes, cert->ctypes, cert->ctype_num);
+        ret->ctype_num = cert->ctype_num;
+    }
+
+    ret->cert_flags = cert->cert_flags;
+ 
+    ret->cert_cb = cert->cert_cb;
+    ret->cert_cb_arg = cert->cert_cb_arg;
+
+    if (cert->verify_store) {
+        X509_STORE_up_ref(cert->verify_store);
+        ret->verify_store = cert->verify_store;
+    }
+
+    if (cert->chain_store) {
+        X509_STORE_up_ref(cert->chain_store);
+        ret->chain_store = cert->chain_store;
+    }
+
+    if (!custom_exts_copy(&ret->cli_ext, &cert->cli_ext))
+        goto err;
+    if (!custom_exts_copy(&ret->srv_ext, &cert->srv_ext))
+        goto err;
+
     return ret;
 
 err:
     DH_free(ret->dh_tmp);
     EC_KEY_free(ret->ecdh_tmp);
 
-    for (i = 0; i < SSL_PKEY_NUM; i++) {
-        X509_free(ret->pkeys[i].x509);
-        EVP_PKEY_free(ret->pkeys[i].privatekey);
-    }
+    custom_exts_free(&ret->cli_ext);
+    custom_exts_free(&ret->srv_ext);
+
+    ssl_cert_clear_certs(ret);
     free(ret);
     return NULL;
+}
+
+/* Free up and clear all certificates and chains */
+
+void ssl_cert_clear_certs(CERT *c)
+{
+    int i;
+
+    if (c == NULL)
+        return;
+
+    for (i = 0; i < SSL_PKEY_NUM; i++) {
+        CERT_PKEY *cpk = c->pkeys + i;
+        X509_free(cpk->x509);
+        cpk->x509 = NULL;
+        EVP_PKEY_free(cpk->privatekey);
+        cpk->privatekey = NULL;
+        sk_X509_pop_free(cpk->chain, X509_free);
+        cpk->chain = NULL;
+        free(cpk->serverinfo);
+        cpk->serverinfo = NULL;
+
+        /* Clear all flags apart from explicit sign */
+        cpk->valid_flags &= CERT_PKEY_EXPLICIT_SIGN;
+    }
 }
 
 void ssl_cert_free(CERT *c)
@@ -191,10 +287,18 @@ void ssl_cert_free(CERT *c)
     DH_free(c->dh_tmp);
     EC_KEY_free(c->ecdh_tmp);
 
-    for (i = 0; i < SSL_PKEY_NUM; i++) {
-        X509_free(c->pkeys[i].x509);
-        EVP_PKEY_free(c->pkeys[i].privatekey);
-    }
+    ssl_cert_clear_certs(c);
+    free(c->peer_sigalgs);
+    free(c->conf_sigalgs);
+    free(c->client_sigalgs);
+    free(c->shared_sigalgs);
+    free(c->ctypes);
+    X509_STORE_free(c->verify_store);
+    X509_STORE_free(c->chain_store);
+    free(c->ciphers_raw);
+    custom_exts_free(&c->cli_ext);
+    custom_exts_free(&c->srv_ext);
+    free(c->alpn_proposed);
     CRYPTO_thread_cleanup(c->lock);
     free(c);
 }
@@ -223,6 +327,103 @@ int ssl_cert_inst(CERT **o)
         }
     }
     return (1);
+}
+
+int ssl_cert_set0_chain(CERT *c, STACK_OF(X509) *chain)
+{
+    CERT_PKEY *cpk = c->key;
+    if (cpk == NULL)
+        return 0;
+    sk_X509_pop_free(cpk->chain, X509_free);
+    cpk->chain = chain;
+    return 1;
+}
+
+int ssl_cert_set1_chain(CERT *c, STACK_OF(X509) *chain)
+{
+    STACK_OF(X509) *dchain;
+    if (chain == NULL)
+        return ssl_cert_set0_chain(c, NULL);
+    dchain = X509_chain_up_ref(chain);
+    if (dchain == NULL)
+        return 0;
+    if (!ssl_cert_set0_chain(c, dchain)) {
+        sk_X509_pop_free(dchain, X509_free);
+        return 0;
+    }
+    return 1;
+}
+
+int ssl_cert_add0_chain_cert(CERT *c, X509 *x)
+{
+    CERT_PKEY *cpk = c->key;
+    if (cpk == NULL)
+        return 0;
+    if (!cpk->chain)
+        cpk->chain = sk_X509_new_null();
+    if (!cpk->chain || !sk_X509_push(cpk->chain, x))
+        return 0;
+    return 1;
+}
+
+int ssl_cert_add1_chain_cert(CERT *c, X509 *x)
+{
+    if (!ssl_cert_add0_chain_cert(c, x))
+        return 0;
+    X509_up_ref(x);
+    return 1;
+}
+
+int ssl_cert_select_current(CERT *c, X509 *x)
+{
+    int i;
+    if (x == NULL)
+        return 0;
+    for (i = 0; i < SSL_PKEY_NUM; i++) {
+        CERT_PKEY *cpk = c->pkeys + i;
+        if (cpk->x509 == x && cpk->privatekey != NULL) {
+            c->key = cpk;
+            return 1;
+        }
+    }
+
+    for (i = 0; i < SSL_PKEY_NUM; i++) {
+        CERT_PKEY *cpk = c->pkeys + i;
+        if (cpk->privatekey && cpk->x509 && !X509_cmp(cpk->x509, x)) {
+            c->key = cpk;
+            return 1;
+        }
+    }
+    return 0;
+}
+
+int ssl_cert_set_current(CERT *c, long op)
+{
+    int i, idx;
+    if (c == NULL)
+        return 0;
+    if (op == SSL_CERT_SET_FIRST)
+        idx = 0;
+    else if (op == SSL_CERT_SET_NEXT) {
+        idx = (int)(c->key - c->pkeys + 1);
+        if (idx >= SSL_PKEY_NUM)
+            return 0;
+    } else
+        return 0;
+    for (i = idx; i < SSL_PKEY_NUM; i++) {
+        CERT_PKEY *cpk = c->pkeys + i;
+        if (cpk->x509 && cpk->privatekey != NULL) {
+            c->key = cpk;
+            return 1;
+        }
+    }
+    return 0;
+}
+
+void ssl_cert_set_cert_cb(CERT *c, int (*cb)(SSL *ssl, void *arg), void *arg)
+{
+    c->cert_cb = cb;
+    c->cert_cb_arg = arg;
 }
 
 SESS_CERT *ssl_sess_cert_new(void)
@@ -278,17 +479,26 @@ void SSL_CERT_up_ref(SESS_CERT *sc)
 int ssl_verify_cert_chain(SSL *s, STACK_OF(X509) *sk)
 {
     X509_STORE_CTX ctx;
+    X509_STORE *verify_store;
     X509 *x;
     int ret;
+
+    if (s->cert->verify_store)
+        verify_store = s->cert->verify_store;
+    else
+        verify_store = s->ctx->cert_store;
 
     if ((sk == NULL) || (sk_X509_num(sk) == 0))
         return (0);
 
     x = sk_X509_value(sk, 0);
-    if (!X509_STORE_CTX_init(&ctx, s->ctx->cert_store, x, sk)) {
+    if (!X509_STORE_CTX_init(&ctx, verify_store, x, sk)) {
         SSLerr(SSL_F_SSL_VERIFY_CERT_CHAIN, ERR_R_X509_LIB);
         return (0);
     }
+    /* Set suite B flags if needed */
+    X509_STORE_CTX_set_flags(&ctx, tls1_suiteb(s));
+
     X509_STORE_CTX_set_ex_data(&ctx, SSL_get_ex_data_X509_STORE_CTX_idx(), s);
 
     /*
@@ -596,11 +806,31 @@ static int ssl_add_cert_to_buf(BUF_MEM *buf, unsigned long *l, X509 *x)
 }
 
 /* Add certificate chain to internal SSL BUF_MEM strcuture */
-int ssl_add_cert_chain(SSL *s, X509 *x, unsigned long *l)
+int ssl_add_cert_chain(SSL *s, CERT_PKEY *cpk, unsigned long *l)
 {
     BUF_MEM *buf = s->init_buf;
     int no_chain;
     int i;
+    X509 *x = NULL;
+    STACK_OF(X509) *extra_certs;
+    X509_STORE *chain_store;
+
+    if (cpk != NULL)
+        x = cpk->x509;
+
+    if (s->cert->chain_store)
+        chain_store = s->cert->chain_store;
+    else
+        chain_store = s->ctx->cert_store;
+
+    /*
+     * If we have a certificate specific chain use it, else use
+     * parent ctx.
+     */
+    if (cpk && cpk->chain)
+        extra_certs = cpk->chain;
+    else
+        extra_certs = s->ctx->extra_certs;
 
     if ((s->mode & SSL_MODE_NO_AUTO_CHAIN) || s->ctx->extra_certs)
         no_chain = 1;
@@ -619,7 +849,7 @@ int ssl_add_cert_chain(SSL *s, X509 *x, unsigned long *l)
         } else {
             X509_STORE_CTX xs_ctx;
 
-            if (!X509_STORE_CTX_init(&xs_ctx, s->ctx->cert_store, x, NULL)) {
+            if (!X509_STORE_CTX_init(&xs_ctx, chain_store, x, NULL)) {
                 SSLerr(SSL_F_SSL_ADD_CERT_CHAIN, ERR_R_X509_LIB);
                 return 0;
             }
@@ -637,12 +867,124 @@ int ssl_add_cert_chain(SSL *s, X509 *x, unsigned long *l)
             X509_STORE_CTX_cleanup(&xs_ctx);
         }
     }
-    /* Thawte special :-) */
-    for (i = 0; i < sk_X509_num(s->ctx->extra_certs); i++) {
-        x = sk_X509_value(s->ctx->extra_certs, i);
+    for (i = 0; i < sk_X509_num(extra_certs); i++) {
+        x = sk_X509_value(extra_certs, i);
         if (!ssl_add_cert_to_buf(buf, l, x))
             return 0;
     }
 
+    return 1;
+}
+
+/* Build a certificate chain for current certificate */
+int ssl_build_cert_chain(CERT *c, X509_STORE *chain_store, int flags)
+{
+    CERT_PKEY *cpk = c->key;
+    X509_STORE_CTX xs_ctx;
+    STACK_OF(X509) *chain = NULL, *untrusted = NULL;
+    X509 *x;
+    int i, rv = 0;
+    unsigned long error;
+
+    if (cpk->x509 == NULL) {
+        SSLerr(SSL_F_SSL_BUILD_CERT_CHAIN, SSL_R_NO_CERTIFICATE_SET);
+        goto err;
+    }
+    
+    /* Rearranging and check the chain: add everything to a store */
+    if (flags & SSL_BUILD_CHAIN_FLAG_CHECK) {
+        chain_store = X509_STORE_new();
+        if (chain_store == NULL)
+            goto err;
+        for (i = 0; i < sk_X509_num(cpk->chain); i++) {
+            x = sk_X509_value(cpk->chain, i);
+            if (!X509_STORE_add_cert(chain_store, x)) {
+                error = ERR_peek_last_error();
+                if (ERR_GET_LIB(error) != ERR_LIB_X509 ||
+                    ERR_GET_REASON(error) != X509_R_CERT_ALREADY_IN_HASH_TABLE)
+                {
+                        goto err;
+                }
+                ERR_clear_error();
+            }
+        }
+        /* Add EE cert too: it might be self signed */
+        if (!X509_STORE_add_cert(chain_store, cpk->x509)) {
+            error = ERR_peek_last_error();
+            if (ERR_GET_LIB(error) != ERR_LIB_X509 ||
+                ERR_GET_REASON(error) != X509_R_CERT_ALREADY_IN_HASH_TABLE)
+            {
+                goto err;
+            }
+            ERR_clear_error();
+        }
+        } else {
+            if (c->chain_store != NULL)
+                chain_store = c->chain_store;
+
+            if (flags & SSL_BUILD_CHAIN_FLAG_UNTRUSTED)
+                untrusted = cpk->chain;
+        }
+
+    if (!X509_STORE_CTX_init(&xs_ctx, chain_store, cpk->x509, untrusted)) {
+        SSLerr(SSL_F_SSL_BUILD_CERT_CHAIN, ERR_R_X509_LIB);
+        goto err;
+    }
+    /* Set suite B flags if needed */
+    X509_STORE_CTX_set_flags(&xs_ctx, c->cert_flags & SSL_CERT_FLAG_SUITEB_128_LOS);
+
+    i = X509_verify_cert(&xs_ctx);
+    if (i <= 0 && flags & SSL_BUILD_CHAIN_FLAG_IGNORE_ERROR) {
+        if (flags & SSL_BUILD_CHAIN_FLAG_CLEAR_ERROR)
+            ERR_clear_error();
+        i = 1;
+        rv = 2;
+    }
+    if (i > 0)
+        chain = X509_STORE_CTX_get1_chain(&xs_ctx);
+    if (i <= 0) {
+        SSLerr(SSL_F_SSL_BUILD_CERT_CHAIN, SSL_R_CERTIFICATE_VERIFY_FAILED);
+        ERR_asprintf_error_data("Verify error:%s",
+                                X509_verify_cert_error_string(i));
+        X509_STORE_CTX_cleanup(&xs_ctx);
+        goto err;
+    }
+    X509_STORE_CTX_cleanup(&xs_ctx);
+    sk_X509_pop_free(cpk->chain, X509_free);
+    /* Remove EE certificate from chain */
+    x = sk_X509_shift(chain);
+    X509_free(x);
+    if (flags & SSL_BUILD_CHAIN_FLAG_NO_ROOT) {
+        if (sk_X509_num(chain) > 0) {
+            /* See if last cert is self signed */
+            x = sk_X509_value(chain, sk_X509_num(chain) - 1);
+            X509_check_purpose(x, -1, 0);
+            if (x->ex_flags & EXFLAG_SS) {
+                x = sk_X509_pop(chain);
+                X509_free(x);
+            }
+        }
+    }
+    cpk->chain = chain;
+    if (rv == 0)
+        rv = 1;
+err:
+    if (flags & SSL_BUILD_CHAIN_FLAG_CHECK)
+        X509_STORE_free(chain_store);
+
+    return rv;
+}
+
+int ssl_cert_set_cert_store(CERT *c, X509_STORE *store, int chain, int ref)
+{
+    X509_STORE **pstore;
+    if (chain)
+        pstore = &c->chain_store;
+    else
+        pstore = &c->verify_store;
+    X509_STORE_free(*pstore);
+    *pstore = store;
+    if (ref && store)
+        X509_STORE_up_ref(store);
     return 1;
 }

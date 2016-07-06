@@ -26,6 +26,7 @@
 #include <openssl/md5.h>
 #include <openssl/objects.h>
 
+#include "bytestring.h"
 #include "ssl_locl.h"
 
 #define SSL3_NUM_CIPHERS (sizeof(ssl3_ciphers) / sizeof(SSL_CIPHER))
@@ -1493,6 +1494,11 @@ const SSL_CIPHER *ssl3_get_cipher_by_id(unsigned int id)
     return (NULL);
 }
 
+const SSL_CIPHER *ssl3_get_cipher_by_value(uint16_t value)
+{
+    return ssl3_get_cipher_by_id(SSL3_CK_ID | value);
+}
+
 uint16_t ssl3_cipher_get_value(const SSL_CIPHER *cipher)
 {
     return (cipher->id & SSL3_CK_VALUE_MASK);
@@ -1606,6 +1612,8 @@ void ssl3_clear(SSL *s)
     s->next_proto_negotiated = NULL;
     s->next_proto_negotiated_len = 0;
 }
+
+static int ssl3_set_req_cert_type(CERT *c, const uint8_t *p, size_t len);
 
 long ssl3_ctrl(SSL *s, int cmd, long larg, void *parg)
 {
@@ -1758,6 +1766,80 @@ long ssl3_ctrl(SSL *s, int cmd, long larg, void *parg)
             ret = 1;
             break;
 
+        case SSL_CTRL_CHAIN:
+            if (larg)
+                return ssl_cert_set1_chain(s->cert, (STACK_OF (X509) *)parg);
+            else
+                return ssl_cert_set0_chain(s->cert, (STACK_OF (X509) *)parg);
+
+        case SSL_CTRL_CHAIN_CERT:
+            if (larg)
+                return ssl_cert_add1_chain_cert(s->cert, (X509 *)parg);
+            else
+                return ssl_cert_add0_chain_cert(s->cert, (X509 *)parg);
+
+        case SSL_CTRL_GET_CHAIN_CERTS:
+            *(STACK_OF(X509) **)parg = s->cert->key->chain;
+            break;
+
+        case SSL_CTRL_SELECT_CURRENT_CERT:
+            return ssl_cert_select_current(s->cert, (X509 *)parg);
+            
+        case SSL_CTRL_SET_CURRENT_CERT:
+            if (larg == SSL_CERT_SET_SERVER) {
+                CERT_PKEY *cpk;
+                const SSL_CIPHER *cipher;
+                if (!s->server)
+                    return 0;
+                cipher = s->s3->tmp.new_cipher;
+                if (cipher == NULL)
+                    return 0;
+                /* No certificate for unauthenticated ciphersuites */
+                if (cipher->algorithm_auth & SSL_aNULL)
+                    return 2;
+                cpk = ssl_get_server_send_pkey(s);
+                if (cpk == NULL)
+                    return 0;
+                s->cert->key = cpk;
+                return 1;
+            }
+            return ssl_cert_set_current(s->cert, larg);
+
+        case SSL_CTRL_GET_CURVES: {
+            uint16_t *clist;
+            size_t clistlen;
+            if (!s->session)
+                return 0;
+            clist = s->session->tlsext_ellipticcurvelist;
+            clistlen = s->session->tlsext_ellipticcurvelist_length;
+            if (parg) {
+                size_t i;
+                int *cptr = parg;
+                unsigned int nid;
+                for (i = 0; i < clistlen; i++) {
+                    nid = tls1_ec_curve_id2nid(clist[i]);
+                    if (nid != 0)
+                        cptr[i] = nid;
+                    else
+                        cptr[i] = TLSEXT_nid_unknown | clist[i];
+                }
+            }
+            return (int)clistlen;
+        }
+
+        case SSL_CTRL_SET_CURVES:
+            return tls1_set_curves(&s->tlsext_ellipticcurvelist,
+                                   &s->tlsext_ellipticcurvelist_length,
+                                   parg, larg);
+
+        case SSL_CTRL_SET_CURVES_LIST:
+            return tls1_set_curves_list(&s->tlsext_ellipticcurvelist,
+                                        &s->tlsext_ellipticcurvelist_length,
+                                        parg);
+
+        case SSL_CTRL_GET_SHARED_CURVE:
+            return tls1_shared_curve(s, larg);
+
         case SSL_CTRL_CHECK_PROTO_VERSION:
             /* For library-internal use; checks that the current protocol
              * is the highest enabled version (according to s->ctx->method,
@@ -1783,6 +1865,97 @@ long ssl3_ctrl(SSL *s, int cmd, long larg, void *parg)
             s->cert->ecdh_tmp_auto = larg;
             ret = 1;
             break;
+
+        case SSL_CTRL_SET_SIGALGS:
+            return tls1_set_sigalgs(s->cert, parg, larg, 0);
+
+        case SSL_CTRL_SET_SIGALGS_LIST:
+            return tls1_set_sigalgs_list(s->cert, parg, 0 );
+
+        case SSL_CTRL_SET_CLIENT_SIGALGS:
+            return tls1_set_sigalgs(s->cert, parg, larg, 1);
+
+        case SSL_CTRL_SET_CLIENT_SIGALGS_LIST:
+            return tls1_set_sigalgs_list(s->cert, parg, 1);
+
+        case SSL_CTRL_GET_CLIENT_CERT_TYPES: {
+            const uint8_t **pctype = parg;
+            if (s->server || !s->s3->tmp.cert_req)
+                return 0;
+            if (s->cert->ctypes != NULL) {
+                if (pctype != NULL)
+                    *pctype = s->cert->ctypes;
+                return (int)s->cert->ctype_num;
+            }
+            if (pctype != NULL)
+                *pctype = (uint8_t *)s->s3->tmp.ctype;
+            return s->s3->tmp.ctype_num;
+        }
+
+        case SSL_CTRL_SET_CLIENT_CERT_TYPES:
+            if (!s->server)
+                return 0;
+            return ssl3_set_req_cert_type(s->cert, parg, larg);
+
+        case SSL_CTRL_BUILD_CERT_CHAIN:
+            return ssl_build_cert_chain(s->cert, s->ctx->cert_store, larg);
+
+        case SSL_CTRL_SET_VERIFY_CERT_STORE:
+            return ssl_cert_set_cert_store(s->cert, parg, 0, larg);
+
+        case SSL_CTRL_SET_CHAIN_CERT_STORE:
+            return ssl_cert_set_cert_store(s->cert, parg, 1, larg);
+
+        case SSL_CTRL_GET_PEER_SIGNATURE_NID:
+            if (SSL_USE_SIGALGS(s)) {
+                if (s->session && s->session->sess_cert) {
+                    const EVP_MD *sig;
+                    sig = s->session->sess_cert->peer_key->digest;
+                    if (sig != NULL) {
+                        *(int *)parg = EVP_MD_type(sig);
+                        return 1;
+                    }
+                }
+                return 0;
+            } else /* Might want to do something here for other versions */
+                return 0;
+
+        case SSL_CTRL_GET_SERVER_TMP_KEY:
+            if (s->server || !s->session || !s->session->sess_cert)
+                return 0;
+            else {
+                SESS_CERT *sc;
+                EVP_PKEY *ptmp;
+                int rv = 0;
+                sc = s->session->sess_cert;
+                if (!sc->peer_rsa_tmp && !sc->peer_dh_tmp &&
+                    !sc->peer_ecdh_tmp)
+                    return 0;
+                ptmp = EVP_PKEY_new();
+                if (ptmp == NULL)
+                    return 0;
+                if (sc->peer_rsa_tmp)
+                    rv = EVP_PKEY_set1_RSA(ptmp, sc->peer_rsa_tmp);
+                else if (sc->peer_dh_tmp)
+                    rv = EVP_PKEY_set1_DH(ptmp, sc->peer_dh_tmp);
+                else if (sc->peer_ecdh_tmp)
+                    rv = EVP_PKEY_set1_EC_KEY(ptmp, sc->peer_ecdh_tmp);
+                if (rv) {
+                    *(EVP_PKEY **)parg = ptmp;
+                    return 1;
+                }
+                EVP_PKEY_free(ptmp);
+                return 0;
+            }
+
+        case SSL_CTRL_GET_EC_POINT_FORMATS: {
+            SSL_SESSION *sess = s->session;
+            const uint8_t **pformat = parg;
+            if (sess == NULL || sess->tlsext_ecpointformatlist == NULL)
+                return 0;
+            *pformat = sess->tlsext_ecpointformatlist;
+            return (int)sess->tlsext_ecpointformatlist_length;
+        }
 
         default:
             break;
@@ -1811,6 +1984,7 @@ long ssl3_callback_ctrl(SSL *s, int cmd, void (*fp)(void))
         case SSL_CTRL_SET_TMP_ECDH_CB:
             s->cert->ecdh_tmp_cb = (EC_KEY * (*)(SSL *, int, int))fp;
             break;
+
         case SSL_CTRL_SET_TLSEXT_DEBUG_CB:
             s->tlsext_debug_cb = (void (*)(SSL *, int, int, uint8_t *, int, void *))fp;
             break;
@@ -1916,6 +2090,40 @@ long ssl3_ctx_ctrl(SSL_CTX *ctx, int cmd, long larg, void *parg)
             ctx->cert->ecdh_tmp_auto = larg;
             return 1;
 
+        case SSL_CTRL_SET_SIGALGS:
+            return tls1_set_sigalgs(ctx->cert, parg, larg, 0);
+
+        case SSL_CTRL_SET_SIGALGS_LIST:
+            return tls1_set_sigalgs_list(ctx->cert, parg, 0);
+
+        case SSL_CTRL_SET_CLIENT_SIGALGS:
+            return tls1_set_sigalgs(ctx->cert, parg, larg, 1);
+
+        case SSL_CTRL_SET_CLIENT_SIGALGS_LIST:
+            return tls1_set_sigalgs_list(ctx->cert, parg, 1);
+
+        case SSL_CTRL_SET_CLIENT_CERT_TYPES:
+            return ssl3_set_req_cert_type(ctx->cert, parg, larg);
+
+        case SSL_CTRL_BUILD_CERT_CHAIN:
+            return ssl_build_cert_chain(ctx->cert, ctx->cert_store, larg);
+
+        case SSL_CTRL_SET_VERIFY_CERT_STORE:
+            return ssl_cert_set_cert_store(ctx->cert, parg, 0, larg);
+
+        case SSL_CTRL_SET_CHAIN_CERT_STORE:
+            return ssl_cert_set_cert_store(ctx->cert, parg, 1, larg);
+
+        case SSL_CTRL_SET_CURVES:
+            return tls1_set_curves(&ctx->tlsext_ellipticcurvelist,
+                                   &ctx->tlsext_ellipticcurvelist_length,
+                                   parg, larg);
+
+        case SSL_CTRL_SET_CURVES_LIST:
+            return tls1_set_curves_list(&ctx->tlsext_ellipticcurvelist,
+                                        &ctx->tlsext_ellipticcurvelist_length,
+                                        parg);
+
         /* A Thawte special :-) */
         case SSL_CTRL_EXTRA_CHAIN_CERT:
             if (ctx->extra_certs == NULL) {
@@ -1926,7 +2134,10 @@ long ssl3_ctx_ctrl(SSL_CTX *ctx, int cmd, long larg, void *parg)
             break;
 
         case SSL_CTRL_GET_EXTRA_CHAIN_CERTS:
-            *(STACK_OF(X509) **)parg = ctx->extra_certs;
+            if (ctx->extra_certs == NULL && larg == 0)
+                *(STACK_OF(X509) **)parg = ctx->cert->key->chain;
+            else
+                *(STACK_OF(X509) **)parg = ctx->extra_certs;
             break;
 
         case SSL_CTRL_CLEAR_EXTRA_CHAIN_CERTS:
@@ -1936,10 +2147,32 @@ long ssl3_ctx_ctrl(SSL_CTX *ctx, int cmd, long larg, void *parg)
             }
             break;
 
+        case SSL_CTRL_CHAIN:
+            if (larg)
+                return ssl_cert_set1_chain(ctx->cert, (STACK_OF (X509) *)parg);
+            else
+                return ssl_cert_set0_chain(ctx->cert, (STACK_OF (X509) *)parg);
+
+        case SSL_CTRL_CHAIN_CERT:
+            if (larg)
+                return ssl_cert_add1_chain_cert(ctx->cert, (X509 *)parg);
+            else
+                return ssl_cert_add0_chain_cert(ctx->cert, (X509 *)parg);
+
+        case SSL_CTRL_GET_CHAIN_CERTS:
+            *(STACK_OF(X509) **)parg = ctx->cert->key->chain;
+            break;
+
+        case SSL_CTRL_SELECT_CURRENT_CERT:
+            return ssl_cert_select_current(ctx->cert, (X509 *)parg);
+            
+        case SSL_CTRL_SET_CURRENT_CERT:
+            return ssl_cert_set_current(ctx->cert, larg);
+
         default:
-            return (0);
+            return 0;
     }
-    return (1);
+    return 1;
 }
 
 long ssl3_ctx_callback_ctrl(SSL_CTX *ctx, int cmd, void (*fp)(void))
@@ -1977,6 +2210,32 @@ long ssl3_ctx_callback_ctrl(SSL_CTX *ctx, int cmd, void (*fp)(void))
     return (1);
 }
 
+/*
+ * This function needs to check if the ciphers required are actually available.
+ */
+const SSL_CIPHER *ssl3_get_cipher_by_char(const unsigned char *p)
+{
+    CBS cipher;
+    uint16_t cipher_value;
+
+    /* We have to assume it is at least 2 bytes due to existing API. */
+    CBS_init(&cipher, p, 2);
+    if (!CBS_get_u16(&cipher, &cipher_value))
+        return NULL;
+
+    return ssl3_get_cipher_by_value(cipher_value);
+}
+
+int ssl3_put_cipher_by_char(const SSL_CIPHER *c, unsigned char *p)
+{
+    if (p != NULL) {
+        if ((c->id & ~SSL3_CK_VALUE_MASK) != SSL3_CK_ID)
+            return 0;
+        s2n(ssl3_cipher_get_value(c), p); 
+    }
+    return 2;
+}
+
 SSL_CIPHER *ssl3_choose_cipher(SSL *s, STACK_OF(SSL_CIPHER) *clnt,
                                STACK_OF(SSL_CIPHER) *srvr)
 {
@@ -1996,7 +2255,7 @@ SSL_CIPHER *ssl3_choose_cipher(SSL *s, STACK_OF(SSL_CIPHER) *clnt,
      * but would have to pay with the price of sk_SSL_CIPHER_dup().
      */
 
-    if (s->options & SSL_OP_CIPHER_SERVER_PREFERENCE) {
+    if (s->options & SSL_OP_CIPHER_SERVER_PREFERENCE || tls1_suiteb(s)) {
         prio = srvr;
         allow = clnt;
         /* Use ChaCha20+Poly1305 if it's the client's most preferred cipher suite */
@@ -2011,6 +2270,8 @@ SSL_CIPHER *ssl3_choose_cipher(SSL *s, STACK_OF(SSL_CIPHER) *clnt,
         allow = srvr;
         use_chacha = 1;
     }
+
+    tls1_set_cert_validity(s);
 
     for (i = 0; i < sk_SSL_CIPHER_num(prio); i++) {
         c = sk_SSL_CIPHER_value(prio, i);
@@ -2032,18 +2293,11 @@ SSL_CIPHER *ssl3_choose_cipher(SSL *s, STACK_OF(SSL_CIPHER) *clnt,
         ok = (alg_k & mask_k) && (alg_a & mask_a);
 
         /*
-         * If we are considering an ECC cipher suite that uses our
-         * certificate check it.
-         */
-        if (alg_a & SSL_aECDSA)
-            ok = ok && tls1_check_ec_server_key(s);
-
-        /*
          * If we are considering an ECC cipher suite that uses
          * an ephemeral EC key check it.
          */
         if (alg_k & SSL_kECDHE)
-            ok = ok && tls1_check_ec_tmp_key(s);
+            ok = ok && tls1_check_ec_tmp_key(s, c->id);
 
         if (!ok)
             continue;
@@ -2059,7 +2313,36 @@ SSL_CIPHER *ssl3_choose_cipher(SSL *s, STACK_OF(SSL_CIPHER) *clnt,
 int ssl3_get_req_cert_type(SSL *s, uint8_t *p)
 {
     int ret = 0;
+    const uint8_t *sig;
+    size_t i, siglen;
+    int have_rsa_sign = 0, have_dsa_sign = 0, have_ecdsa_sign = 0;
+    int nostrict = 1;
     unsigned long alg_k;
+
+    /* If we have custom certificate types set, use them */
+    if (s->cert->ctypes != NULL) {
+        memcpy(p, s->cert->ctypes, s->cert->ctype_num);
+        return (int)s->cert->ctype_num;
+    }
+    /* get configured sigalgs */
+    siglen = tls12_get_psigalgs(s, &sig);
+    if (s->cert->cert_flags & SSL_CERT_FLAGS_CHECK_TLS_STRICT)
+        nostrict = 0;
+    for (i = 0; i < siglen; i += 2, sig += 2) {
+        switch(sig[1]) {
+            case TLSEXT_signature_rsa:
+                have_rsa_sign = 1;
+                break;
+
+            case TLSEXT_signature_dsa:
+                have_dsa_sign = 1;
+                break;
+
+            case TLSEXT_signature_ecdsa:
+                have_ecdsa_sign = 1;
+                break;
+        }
+    }
 
     alg_k = s->s3->tmp.new_cipher->algorithm_mkey;
 
@@ -2074,19 +2357,42 @@ int ssl3_get_req_cert_type(SSL *s, uint8_t *p)
 #endif
 
     if (alg_k & SSL_kDHE) {
-        p[ret++] = SSL3_CT_RSA_FIXED_DH;
-        p[ret++] = SSL3_CT_DSS_FIXED_DH;
+        if (nostrict || have_rsa_sign)
+            p[ret++] = SSL3_CT_RSA_FIXED_DH;
+        if (nostrict || have_dsa_sign)
+            p[ret++] = SSL3_CT_DSS_FIXED_DH;
     }
-    p[ret++] = SSL3_CT_RSA_SIGN;
-    p[ret++] = SSL3_CT_DSS_SIGN;
+    if (have_rsa_sign)
+        p[ret++] = SSL3_CT_RSA_SIGN;
+    if (have_dsa_sign)
+        p[ret++] = SSL3_CT_DSS_SIGN;
 
     /*
      * ECDSA certs can be used with RSA cipher suites as well
      * so we don't need to check for SSL_kECDH or SSL_kECDHE
      */
-    p[ret++] = TLS_CT_ECDSA_SIGN;
+    if (nostrict || have_ecdsa_sign)
+        p[ret++] = TLS_CT_ECDSA_SIGN;
 
     return (ret);
+}
+
+static int ssl3_set_req_cert_type(CERT *c, const uint8_t *p, size_t len)
+{
+    free(c->ctypes);
+    c->ctypes = NULL;
+
+    if (p == NULL || !len)
+        return 1;
+    if (len > 0xff)
+        return 0;
+    c->ctypes = malloc(len);
+    if (c->ctypes == NULL)
+        return 0;
+    memcpy(c->ctypes, p, len);
+    c->ctype_num = len;
+
+    return 1;
 }
 
 int ssl3_shutdown(SSL *s)
@@ -2099,7 +2405,7 @@ int ssl3_shutdown(SSL *s)
      */
     if ((s->quiet_shutdown) || (s->state == SSL_ST_BEFORE)) {
         s->shutdown = (SSL_SENT_SHUTDOWN | SSL_RECEIVED_SHUTDOWN);
-        return (1);
+        return 1;
     }
 
     if (!(s->shutdown & SSL_SENT_SHUTDOWN)) {
@@ -2110,7 +2416,7 @@ int ssl3_shutdown(SSL *s)
          * to be written, s->s3->alert_dispatch will be true
          */
         if (s->s3->alert_dispatch)
-            return (-1); /* return WANT_WRITE */
+            return -1; /* return WANT_WRITE */
     } else if (s->s3->alert_dispatch) {
         /* resend it if not sent */
         ret = s->method->ssl_dispatch_alert(s);
@@ -2121,20 +2427,21 @@ int ssl3_shutdown(SSL *s)
              * return 0 upon a previous invocation,
              * return WANT_WRITE
              */
-            return (ret);
+            return ret;
         }
     } else if (!(s->shutdown & SSL_RECEIVED_SHUTDOWN)) {
         /* If we are waiting for a close from our peer, we are closed */
         s->method->ssl_read_bytes(s, 0, NULL, 0, 0);
         if (!(s->shutdown & SSL_RECEIVED_SHUTDOWN)) {
-            return (-1); /* return WANT_READ */
+            return -1; /* return WANT_READ */
         }
     }
 
-    if ((s->shutdown == (SSL_SENT_SHUTDOWN | SSL_RECEIVED_SHUTDOWN)) && !s->s3->alert_dispatch)
-        return (1);
+    if ((s->shutdown == (SSL_SENT_SHUTDOWN | SSL_RECEIVED_SHUTDOWN)) &&
+        !s->s3->alert_dispatch)
+        return 1;
     else
-        return (0);
+        return 0;
 }
 
 int ssl3_write(SSL *s, const void *buf, int len)
@@ -2266,7 +2573,8 @@ long ssl_get_algorithm2(SSL *s)
 {
     long alg2 = s->s3->tmp.new_cipher->algorithm2;
 
-    if (s->method->version == TLS1_2_VERSION && alg2 == (SSL_HANDSHAKE_MAC_DEFAULT | TLS1_PRF))
+    if (s->method->ssl3_enc->enc_flags & SSL_ENC_FLAG_SHA256_PRF &&
+        alg2 == (SSL_HANDSHAKE_MAC_DEFAULT | TLS1_PRF))
         return SSL_HANDSHAKE_MAC_SHA256 | TLS1_PRF_SHA256;
     return alg2;
 }

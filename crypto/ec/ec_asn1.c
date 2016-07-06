@@ -962,8 +962,9 @@ EC_GROUP *d2i_ECPKParameters(EC_GROUP **a, const uint8_t **in, long len)
 {
     EC_GROUP *group = NULL;
     ECPKPARAMETERS *params = NULL;
+    const uint8_t *p = *in;
 
-    if ((params = d2i_ECPKPARAMETERS(NULL, in, len)) == NULL) {
+    if ((params = d2i_ECPKPARAMETERS(NULL, &p, len)) == NULL) {
         ECerr(EC_F_D2I_ECPKPARAMETERS, EC_R_D2I_ECPKPARAMETERS_FAILURE);
         ECPKPARAMETERS_free(params);
         return NULL;
@@ -975,13 +976,14 @@ EC_GROUP *d2i_ECPKParameters(EC_GROUP **a, const uint8_t **in, long len)
         return NULL;
     }
 
-    if (a && *a)
+    if (a != NULL && *a)
         EC_GROUP_clear_free(*a);
-    if (a)
+    if (a != NULL)
         *a = group;
 
     ECPKPARAMETERS_free(params);
-    return (group);
+    *in = p;
+    return group;
 }
 
 int i2d_ECPKParameters(const EC_GROUP *a, uint8_t **out)
@@ -998,7 +1000,7 @@ int i2d_ECPKParameters(const EC_GROUP *a, uint8_t **out)
         return 0;
     }
     ECPKPARAMETERS_free(tmp);
-    return (ret);
+    return ret;
 }
 
 /* some EC_KEY functions */
@@ -1008,8 +1010,9 @@ EC_KEY *d2i_ECPrivateKey(EC_KEY **a, const uint8_t **in, long len)
     int ok = 0;
     EC_KEY *ret = NULL;
     EC_PRIVATEKEY *priv_key = NULL;
+    const uint8_t *p = *in;
 
-    if ((priv_key = d2i_EC_PRIVATEKEY(NULL, in, len)) == NULL) {
+    if ((priv_key = d2i_EC_PRIVATEKEY(NULL, &p, len)) == NULL) {
         ECerr(EC_F_D2I_ECPRIVATEKEY, ERR_R_EC_LIB);
         return NULL;
     }
@@ -1046,35 +1049,48 @@ EC_KEY *d2i_ECPrivateKey(EC_KEY **a, const uint8_t **in, long len)
             goto err;
         }
     } else {
-        ECerr(EC_F_D2I_ECPRIVATEKEY,
-              EC_R_MISSING_PRIVATE_KEY);
+        ECerr(EC_F_D2I_ECPRIVATEKEY, EC_R_MISSING_PRIVATE_KEY);
+        goto err;
+    }
+    
+    if (ret->pub_key)
+        EC_POINT_clear_free(ret->pub_key);
+    ret->pub_key = EC_POINT_new(ret->group);
+    if (ret->pub_key == NULL) {
+        ECerr(EC_F_D2I_ECPRIVATEKEY, ERR_R_EC_LIB);
         goto err;
     }
 
     if (priv_key->publicKey) {
         const uint8_t *pub_oct;
-        size_t pub_oct_len;
+        int pub_oct_len;
 
-        if (ret->pub_key)
-            EC_POINT_clear_free(ret->pub_key);
-        ret->pub_key = EC_POINT_new(ret->group);
-        if (ret->pub_key == NULL) {
-            ECerr(EC_F_D2I_ECPRIVATEKEY, ERR_R_EC_LIB);
-            goto err;
-        }
         pub_oct = ASN1_STRING_data(priv_key->publicKey);
         pub_oct_len = ASN1_STRING_length(priv_key->publicKey);
-        /* save the point conversion form */
+        /* The first byte - point conversion form - must be present. */
+        if (pub_oct_len <= 0) {
+            ECerr(EC_F_D2I_ECPRIVATEKEY, EC_R_BUFFER_TOO_SMALL);
+            goto err;
+        }
+        /* Save the point conversion form. */
         ret->conv_form = (point_conversion_form_t)(pub_oct[0] & ~0x01);
         if (!EC_POINT_oct2point(ret->group, ret->pub_key,
-                                pub_oct, pub_oct_len, NULL)) {
+                                pub_oct, (size_t)(pub_oct_len), NULL)) {
             ECerr(EC_F_D2I_ECPRIVATEKEY, ERR_R_EC_LIB);
             goto err;
         }
+    } else {
+        if (!EC_POINT_mul(ret->group, ret->pub_key, ret->priv_key, NULL, NULL, NULL)) {
+            ECerr(EC_F_D2I_ECPRIVATEKEY, ERR_R_EC_LIB);
+            goto err;
+        }
+        /* Remember the original private-key-only encoding. */
+        ret->enc_flag |= EC_PKEY_NO_PUBKEY;
     }
 
     if (a)
         *a = ret;
+    *in = p;
     ok = 1;
 err:
     if (!ok) {
@@ -1083,10 +1099,9 @@ err:
         ret = NULL;
     }
 
-    if (priv_key)
-        EC_PRIVATEKEY_free(priv_key);
+    EC_PRIVATEKEY_free(priv_key);
 
-    return (ret);
+    return ret;
 }
 
 int i2d_ECPrivateKey(EC_KEY *a, uint8_t **out)
@@ -1096,7 +1111,9 @@ int i2d_ECPrivateKey(EC_KEY *a, uint8_t **out)
     size_t buf_len = 0, tmp_len, bn_len;
     EC_PRIVATEKEY *priv_key = NULL;
 
-    if (a == NULL || a->group == NULL || a->priv_key == NULL) {
+    if (a == NULL || a->group == NULL || a->priv_key == NULL ||
+        (!(a->enc_flag & EC_PKEY_NO_PUBKEY) && a->pub_key == NULL))
+    {
         ECerr(EC_F_I2D_ECPRIVATEKEY,
               ERR_R_PASSED_NULL_PARAMETER);
         goto err;

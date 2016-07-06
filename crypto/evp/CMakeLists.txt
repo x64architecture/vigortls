@@ -23,6 +23,7 @@ add_library(
     evp_pkey.c
     e_aes.c
     e_aes_cbc_hmac_sha1.c
+    e_aes_cbc_hmac_sha256.c
     e_camellia.c
     e_chacha.c
     e_chacha20poly1305.c

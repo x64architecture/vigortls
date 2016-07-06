@@ -86,6 +86,9 @@ int ASN1_get_object(const uint8_t **pp, long *plength, int *ptag,
     if (!asn1_get_length(&p, &inf, plength, max))
         goto err;
 
+    if (inf && !(ret & V_ASN1_CONSTRUCTED))
+        goto err;
+
     if (*plength > (omax - (p - *pp))) {
         ASN1err(ASN1_F_ASN1_GET_OBJECT, ASN1_R_TOO_LONG);
         /* Set this so that even if things are not long enough
@@ -318,6 +321,15 @@ void ASN1_STRING_free(ASN1_STRING *a)
     if (!(a->flags & ASN1_STRING_FLAG_NDEF))
         free(a->data);
     free(a);
+}
+
+void ASN1_STRING_clear_free(ASN1_STRING *a)
+{
+    if (a == NULL)
+        return;
+    if (!(a->flags & ASN1_STRING_FLAG_NDEF))
+        vigortls_zeroize(a->data, a->length);
+    ASN1_STRING_free(a);
 }
 
 int ASN1_STRING_cmp(const ASN1_STRING *a, const ASN1_STRING *b)

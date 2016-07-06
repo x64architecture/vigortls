@@ -128,6 +128,28 @@ end:
     return (ret);
 }
 
+/*
+ * Fill a ClientRandom or ServerRandom field of length len.
+ * Returns <= 0 on failure, 1 on success.
+ */
+int ssl_fill_hello_random(SSL *s, uint8_t *result, int len)
+{
+    int send_time = 0;
+    if (len < 4)
+        return 0;
+    if (s->server)
+        send_time = (s->mode & SSL_MODE_SEND_SERVERHELLO_TIME) != 0;
+    else
+        send_time = (s->mode & SSL_MODE_SEND_CLIENTHELLO_TIME) != 0;
+    if (send_time) {
+        unsigned long Time = time(NULL);
+        uint8_t *p = result;
+        l2n(Time, p);
+        return RAND_bytes(p, len - 4);
+    } else
+        return RAND_bytes(result, len);
+}
+
 static int ssl23_client_hello(SSL *s)
 {
     uint8_t *buf;
@@ -135,7 +157,7 @@ static int ssl23_client_hello(SSL *s)
     int i;
     unsigned long l;
     int version = 0, version_major, version_minor;
-    int ret;
+    int ret, al;
     unsigned long mask, options = s->options;
 
     /*
@@ -158,8 +180,16 @@ static int ssl23_client_hello(SSL *s)
 
     buf = (uint8_t *)s->init_buf->data;
     if (s->state == SSL23_ST_CW_CLNT_HELLO_A) {
+        /*
+         * Since we're sending s23 client hello, we're not reusing a session, as
+         * we'd be using the method from the saved session instead
+         */
+        if (!ssl_get_new_session(s, 0)) {
+            return -1;
+        }
+
         p = s->s3->client_random;
-        if (RAND_bytes(p, SSL3_RANDOM_SIZE) <= 0) {
+        if (ssl_fill_hello_random(s, p, SSL3_RANDOM_SIZE) <= 0) {
             SSLerr(SSL_F_SSL23_CLIENT_HELLO, ERR_R_INTERNAL_ERROR);
             return -1;
         }
@@ -167,6 +197,10 @@ static int ssl23_client_hello(SSL *s)
         if (version == TLS1_2_VERSION) {
             version_major = TLS1_2_VERSION_MAJOR;
             version_minor = TLS1_2_VERSION_MINOR;
+        } else if (tls1_suiteb(s)) {
+            SSLerr(SSL_F_SSL23_CLIENT_HELLO,
+                   SSL_R_ONLY_TLS_1_2_ALLOWED_IN_SUITEB_MODE);
+            return -1;
         } else if (version == TLS1_1_VERSION) {
             version_major = TLS1_1_VERSION_MAJOR;
             version_minor = TLS1_1_VERSION_MINOR;
@@ -226,8 +260,10 @@ static int ssl23_client_hello(SSL *s)
             SSLerr(SSL_F_SSL23_CLIENT_HELLO, SSL_R_CLIENTHELLO_TLSEXT);
             return -1;
         }
-        if ((p = ssl_add_clienthello_tlsext(
-                 s, p, buf + SSL3_RT_MAX_PLAIN_LENGTH)) == NULL) {
+        p = ssl_add_clienthello_tlsext(s, p, buf + SSL3_RT_MAX_PLAIN_LENGTH,
+                                       &al);
+        if (p == NULL) {
+            ssl3_send_alert(s, SSL3_AL_FATAL, al);
             SSLerr(SSL_F_SSL23_CLIENT_HELLO, ERR_R_INTERNAL_ERROR);
             return -1;
         }
@@ -277,7 +313,8 @@ static int ssl23_client_hello(SSL *s)
 
     if ((ret >= 2) && s->msg_callback) {
         /* Client Hello has been sent; tell msg_callback */
-
+        s->msg_callback(1, version, SSL3_RT_HEADER, s->init_buf->data, 5, s,
+                        s->msg_callback_arg);
         s->msg_callback(1, version, SSL3_RT_HANDSHAKE, s->init_buf->data + 5,
                         ret - 5, s, s->msg_callback_arg);
     }
@@ -325,6 +362,8 @@ static int ssl23_get_server_hello(SSL *s)
             goto err;
         }
 
+        s->session->ssl_version = s->version;
+
         /* ensure that TLS_MAX_VERSION is up-to-date */
         OPENSSL_assert(s->version <= TLS_MAX_VERSION);
 
@@ -344,9 +383,12 @@ static int ssl23_get_server_hello(SSL *s)
                 cb(s, SSL_CB_READ_ALERT, j);
             }
 
-            if (s->msg_callback)
+            if (s->msg_callback) {
+                s->msg_callback(0, s->version, SSL3_RT_HEADER, p, 5, s,
+                                s->msg_callback_arg);
                 s->msg_callback(0, s->version, SSL3_RT_ALERT, p + 5, 2, s,
                                 s->msg_callback_arg);
+            }
 
             s->rwstate = SSL_NOTHING;
             SSLerr(SSL_F_SSL23_GET_SERVER_HELLO, SSL_AD_REASON_OFFSET + p[6]);
@@ -377,13 +419,6 @@ static int ssl23_get_server_hello(SSL *s)
         goto err;
     }
     s->init_num = 0;
-
-    /*
-     * Since, if we are sending a ssl23 client hello, we are not
-     * reusing a session-id
-     */
-    if (!ssl_get_new_session(s, 0))
-        goto err;
 
     return (SSL_connect(s));
 err:

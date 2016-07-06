@@ -150,12 +150,14 @@ int EVP_PBE_alg_add_type(int pbe_type, int pbe_nid, int cipher_nid, int md_nid,
                          EVP_PBE_KEYGEN *keygen)
 {
     EVP_PBE_CTL *pbe_tmp;
-    if (!pbe_algs)
+    if (pbe_algs == NULL) {
         pbe_algs = sk_EVP_PBE_CTL_new(pbe_cmp);
-    if (!(pbe_tmp = malloc(sizeof(EVP_PBE_CTL)))) {
-        EVPerr(EVP_F_EVP_PBE_ALG_ADD_TYPE, ERR_R_MALLOC_FAILURE);
-        return 0;
+        if (pbe_algs == NULL)
+            goto err;
     }
+    pbe_tmp = malloc(sizeof(*pbe_tmp));
+    if (pbe_tmp == NULL)
+        goto err;
     pbe_tmp->pbe_type = pbe_type;
     pbe_tmp->pbe_nid = pbe_nid;
     pbe_tmp->cipher_nid = cipher_nid;
@@ -164,6 +166,10 @@ int EVP_PBE_alg_add_type(int pbe_type, int pbe_nid, int cipher_nid, int md_nid,
 
     sk_EVP_PBE_CTL_push(pbe_algs, pbe_tmp);
     return 1;
+
+err:
+    EVPerr(EVP_F_EVP_PBE_ALG_ADD_TYPE, ERR_R_MALLOC_FAILURE);
+    return 0;
 }
 
 int EVP_PBE_alg_add(int nid, const EVP_CIPHER *cipher, const EVP_MD *md,
@@ -171,7 +177,7 @@ int EVP_PBE_alg_add(int nid, const EVP_CIPHER *cipher, const EVP_MD *md,
 {
     int cipher_nid, md_nid;
     if (cipher)
-        cipher_nid = EVP_CIPHER_type(cipher);
+        cipher_nid = EVP_CIPHER_nid(cipher);
     else
         cipher_nid = -1;
     if (md)

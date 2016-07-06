@@ -70,6 +70,8 @@ EVP_CIPHER_CTX *CMAC_CTX_get0_cipher_ctx(CMAC_CTX *ctx)
 
 void CMAC_CTX_free(CMAC_CTX *ctx)
 {
+    if (ctx == NULL)
+        return;
     CMAC_CTX_cleanup(ctx);
     free(ctx);
 }

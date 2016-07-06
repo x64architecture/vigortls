@@ -40,6 +40,8 @@ const SSL_METHOD DTLSv1_server_method_data = {
     .ssl_dispatch_alert = dtls1_dispatch_alert,
     .ssl_ctrl = dtls1_ctrl,
     .ssl_ctx_ctrl = ssl3_ctx_ctrl,
+    .get_cipher_by_char = ssl3_get_cipher_by_char,
+    .put_cipher_by_char = ssl3_put_cipher_by_char,
     .ssl_pending = ssl3_pending,
     .num_ciphers = ssl3_num_ciphers,
     .get_cipher = dtls1_get_cipher,
@@ -56,11 +58,92 @@ const SSL_METHOD *DTLSv1_server_method(void)
     return &DTLSv1_server_method_data;
 }
 
+const SSL_METHOD DTLSv1_2_server_method_data = {
+    .version = DTLS1_2_VERSION,
+    .ssl_new = dtls1_new,
+    .ssl_clear = dtls1_clear,
+    .ssl_free = dtls1_free,
+    .ssl_accept = dtls1_accept,
+    .ssl_connect = ssl_undefined_function,
+    .ssl_read = ssl3_read,
+    .ssl_peek = ssl3_peek,
+    .ssl_write = ssl3_write,
+    .ssl_shutdown = dtls1_shutdown,
+    .ssl_renegotiate = ssl3_renegotiate,
+    .ssl_renegotiate_check = ssl3_renegotiate_check,
+    .ssl_get_message = dtls1_get_message,
+    .ssl_read_bytes = dtls1_read_bytes,
+    .ssl_write_bytes = dtls1_write_app_data_bytes,
+    .ssl_dispatch_alert = dtls1_dispatch_alert,
+    .ssl_ctrl = dtls1_ctrl,
+    .ssl_ctx_ctrl = ssl3_ctx_ctrl,
+    .get_cipher_by_char = ssl3_get_cipher_by_char,
+    .put_cipher_by_char = ssl3_put_cipher_by_char,
+    .ssl_pending = ssl3_pending,
+    .num_ciphers = ssl3_num_ciphers,
+    .get_cipher = dtls1_get_cipher,
+    .get_ssl_method = dtls1_get_server_method,
+    .get_timeout = dtls1_default_timeout,
+    .ssl3_enc = &DTLSv1_2_enc_data,
+    .ssl_version = ssl_undefined_void_function,
+    .ssl_callback_ctrl = ssl3_callback_ctrl,
+    .ssl_ctx_callback_ctrl = ssl3_ctx_callback_ctrl,
+};
+
+const SSL_METHOD *DTLSv1_2_server_method(void)
+{
+    return &DTLSv1_2_server_method_data;
+}
+
+const SSL_METHOD DTLS_server_method_data = {
+    .version = DTLS_ANY_VERSION,
+    .ssl_new = dtls1_new,
+    .ssl_clear = dtls1_clear,
+    .ssl_free = dtls1_free,
+    .ssl_accept = dtls1_accept,
+    .ssl_connect = ssl_undefined_function,
+    .ssl_read = ssl3_read,
+    .ssl_peek = ssl3_peek,
+    .ssl_write = ssl3_write,
+    .ssl_shutdown = dtls1_shutdown,
+    .ssl_renegotiate = ssl3_renegotiate,
+    .ssl_renegotiate_check = ssl3_renegotiate_check,
+    .ssl_get_message = dtls1_get_message,
+    .ssl_read_bytes = dtls1_read_bytes,
+    .ssl_write_bytes = dtls1_write_app_data_bytes,
+    .ssl_dispatch_alert = dtls1_dispatch_alert,
+    .ssl_ctrl = dtls1_ctrl,
+    .ssl_ctx_ctrl = ssl3_ctx_ctrl,
+    .get_cipher_by_char = ssl3_get_cipher_by_char,
+    .put_cipher_by_char = ssl3_put_cipher_by_char,
+    .ssl_pending = ssl3_pending,
+    .num_ciphers = ssl3_num_ciphers,
+    .get_cipher = dtls1_get_cipher,
+    .get_ssl_method = dtls1_get_server_method,
+    .get_timeout = dtls1_default_timeout,
+    .ssl3_enc = &DTLSv1_2_enc_data,
+    .ssl_version = ssl_undefined_void_function,
+    .ssl_callback_ctrl = ssl3_callback_ctrl,
+    .ssl_ctx_callback_ctrl = ssl3_ctx_callback_ctrl,
+};
+
+const SSL_METHOD *DTLS_server_method(void)
+{
+    return &DTLS_server_method_data;
+}
+
 static const SSL_METHOD *dtls1_get_server_method(int ver)
 {
-    if (ver == DTLS1_VERSION)
-        return (DTLSv1_server_method());
-    return (NULL);
+    switch (ver) {
+        case DTLS_ANY_VERSION:
+            return DTLS_server_method();
+        case DTLS1_VERSION:
+            return DTLSv1_server_method();
+        case DTLS1_2_VERSION:
+            return DTLSv1_2_server_method();
+        default:
+            return NULL;
+    }
 }
 
 int dtls1_accept(SSL *s)
@@ -120,11 +203,13 @@ int dtls1_accept(SSL *s)
                     BUF_MEM *buf;
                     if ((buf = BUF_MEM_new()) == NULL) {
                         ret = -1;
+                        s->state = SSL_ST_ERR;
                         goto end;
                     }
                     if (!BUF_MEM_grow(buf, SSL3_RT_MAX_PLAIN_LENGTH)) {
                         BUF_MEM_free(buf);
                         ret = -1;
+                        s->state = SSL_ST_ERR;
                         goto end;
                     }
                     s->init_buf = buf;
@@ -132,6 +217,7 @@ int dtls1_accept(SSL *s)
 
                 if (!ssl3_setup_buffers(s)) {
                     ret = -1;
+                    s->state = SSL_ST_ERR;
                     goto end;
                 }
 
@@ -141,12 +227,14 @@ int dtls1_accept(SSL *s)
                 s->s3->change_cipher_spec = 0;
 
                 if (s->state != SSL_ST_RENEGOTIATE) {
-/* Ok, we now need to push on a buffering BIO so that
- * the output is sent in a way that TCP likes :-)
- * ...but not with SCTP :-)
- */
+                    /*
+                     * Ok, we now need to push on a buffering BIO so that
+                     * the output is sent in a way that TCP likes :-)
+                     * ...but not with SCTP :-)
+                     */
                     if (!ssl_init_wbio_buffer(s, 1)) {
                         ret = -1;
+                        s->state = SSL_ST_ERR;
                         goto end;
                     }
 
@@ -220,9 +308,10 @@ int dtls1_accept(SSL *s)
                 if (listen && s->state == SSL3_ST_SW_SRVR_HELLO_A) {
                     ret = 2;
                     s->d1->listen = 0;
-                    /* Set expected sequence numbers
-         * to continue the handshake.
-         */
+                    /*
+                     * Set expected sequence numbers
+                     * to continue the handshake.
+                     */
                     s->d1->handshake_read_seq = 2;
                     s->d1->handshake_write_seq = 1;
                     s->d1->next_handshake_write_seq = 1;
@@ -287,7 +376,7 @@ int dtls1_accept(SSL *s)
                 alg_k = s->s3->tmp.new_cipher->algorithm_mkey;
 
                 /* only send if a DH key exchange */
-                if (alg_k & (SSL_kDHE|SSL_kECDHE)) {
+                if (alg_k & (SSL_kDHE | SSL_kECDHE)) {
                     dtls1_start_timer(s);
                     ret = ssl3_send_server_key_exchange(s);
                     if (ret <= 0)
@@ -318,10 +407,11 @@ int dtls1_accept(SSL *s)
                  *   insists on verification (against the specs, but
                  *   s3_clnt.c accepts this for SSL 3).
                  */
-                if (!(s->verify_mode & SSL_VERIFY_PEER) || ((s->session->peer != NULL)
-                    && (s->verify_mode & SSL_VERIFY_CLIENT_ONCE))
-                    || ((s->s3->tmp.new_cipher->algorithm_auth & SSL_aNULL)
-                    && !(s->verify_mode & SSL_VERIFY_FAIL_IF_NO_PEER_CERT)))
+                if (!(s->verify_mode & SSL_VERIFY_PEER) ||
+                    ((s->session->peer != NULL) &&
+                    (s->verify_mode & SSL_VERIFY_CLIENT_ONCE)) ||
+                    ((s->s3->tmp.new_cipher->algorithm_auth & SSL_aNULL) &&
+                    !(s->verify_mode & SSL_VERIFY_FAIL_IF_NO_PEER_CERT)))
                 {
                     /* no cert request */
                     skip = 1;
@@ -393,6 +483,25 @@ int dtls1_accept(SSL *s)
                      */
                     s->state = SSL3_ST_SR_FINISHED_A;
                     s->init_num = 0;
+                } else if (SSL_USE_SIGALGS(s)) {
+                    s->state = SSL3_ST_SR_CERT_VRFY_A;
+                    s->init_num = 0;
+                    if (!s->session->peer)
+                        break;
+                    /*
+                     * For sigalgs freeze the handshake buffer
+                     * at this point and digest cached records.
+                     */
+                    if (!s->s3->handshake_buffer) {
+                        SSLerr(SSL_F_DTLS1_ACCEPT, ERR_R_INTERNAL_ERROR);
+                        s->state = SSL_ST_ERR;
+                        return -1;
+                    }
+                    s->s3->flags |= TLS1_FLAGS_KEEP_HANDSHAKE;
+                    if (!tls1_digest_cached_records(s)) {
+                        s->state = SSL_ST_ERR;
+                        return -1;
+                    }
                 } else {
                     s->state = SSL3_ST_SR_CERT_VRFY_A;
                     s->init_num = 0;
@@ -408,15 +517,6 @@ int dtls1_accept(SSL *s)
 
             case SSL3_ST_SR_CERT_VRFY_A:
             case SSL3_ST_SR_CERT_VRFY_B:
-                /*
-                 * This *should* be the first time we enable CCS, but be
-                 * extra careful about surrounding code changes. We need
-                 * to set this here because we don't know if we're
-                 * expecting a CertificateVerify or not.
-                 */
-                if (!s->s3->change_cipher_spec)
-                    s->d1->change_cipher_spec_ok = 1;
-                /* we should decide if we expected this one */
                 ret = ssl3_get_cert_verify(s);
                 if (ret <= 0)
                     goto end;
@@ -427,11 +527,10 @@ int dtls1_accept(SSL *s)
             case SSL3_ST_SR_FINISHED_A:
             case SSL3_ST_SR_FINISHED_B:
                 /*
-                 * Enable CCS for resumed handshakes.
-                 * In a full handshake, we end up here through
-                 * SSL3_ST_SR_CERT_VRFY_B, so change_cipher_spec_ok was
-                 * already set. Receiving a CCS clears the flag, so make
-                 * sure not to re-enable it to ban duplicates.
+                 * Enable CCS. Receiving a CCS clears the flag, so make
+                 * sure not to re-enable it to ban duplicates. This *should* be the
+                 * first time we have received one - but we check anyway to be
+                 * cautious.
                  * s->s3->change_cipher_spec is set when a CCS is
                  * processed in d1_pkt.c, and remains set until
                  * the client's Finished message is read.
@@ -475,6 +574,7 @@ int dtls1_accept(SSL *s)
                 s->session->cipher = s->s3->tmp.new_cipher;
                 if (!s->method->ssl3_enc->setup_key_block(s)) {
                     ret = -1;
+                    s->state = SSL_ST_ERR;
                     goto end;
                 }
 
@@ -488,9 +588,11 @@ int dtls1_accept(SSL *s)
                 s->state = SSL3_ST_SW_FINISHED_A;
                 s->init_num = 0;
 
-                if (!s->method->ssl3_enc->change_cipher_state(
-                        s, SSL3_CHANGE_CIPHER_SERVER_WRITE)) {
+                if (!s->method->ssl3_enc->change_cipher_state(s,
+                        SSL3_CHANGE_CIPHER_SERVER_WRITE))
+                {
                     ret = -1;
+                    s->state = SSL_ST_ERR;
                     goto end;
                 }
 
@@ -548,6 +650,7 @@ int dtls1_accept(SSL *s)
                 goto end;
             /* break; */
 
+            case SSL_ST_ERR:
             default:
                 SSLerr(SSL_F_DTLS1_ACCEPT, SSL_R_UNKNOWN_STATE);
                 ret = -1;
@@ -577,7 +680,7 @@ end:
 
     if (cb != NULL)
         cb(s, SSL_CB_ACCEPT_EXIT, ret);
-    return (ret);
+    return ret;
 }
 
 int dtls1_send_hello_verify_request(SSL *s)
@@ -589,13 +692,15 @@ int dtls1_send_hello_verify_request(SSL *s)
         buf = (uint8_t *)s->init_buf->data;
 
         msg = p = &(buf[DTLS1_HM_HEADER_LENGTH]);
-        *(p++) = s->version >> 8;
-        *(p++) = s->version & 0xFF;
+        /* Always use DTLS 1.0 version: see RFC 6347 */
+        *(p++) = DTLS1_VERSION >> 8;
+        *(p++) = DTLS1_VERSION & 0xFF;
 
         if (s->ctx->app_gen_cookie_cb == NULL ||
             s->ctx->app_gen_cookie_cb(s, s->d1->cookie, &(s->d1->cookie_len)) == 0)
         {
             SSLerr(SSL_F_DTLS1_SEND_HELLO_VERIFY_REQUEST, ERR_R_INTERNAL_ERROR);
+            s->state = SSL_ST_ERR;
             return 0;
         }
 
@@ -614,5 +719,5 @@ int dtls1_send_hello_verify_request(SSL *s)
     }
 
     /* s->state = DTLS1_ST_SW_HELLO_VERIFY_REQUEST_B */
-    return (dtls1_do_write(s, SSL3_RT_HANDSHAKE));
+    return dtls1_do_write(s, SSL3_RT_HANDSHAKE);
 }

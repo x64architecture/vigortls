@@ -34,8 +34,11 @@ extern "C" {
 #endif
 
 #define DTLS1_VERSION 0xFEFF
-#define DTLS_MAX_VERSION DTLS1_VERSION
 #define DTLS1_VERSION_MAJOR 0xFE
+#define DTLS1_2_VERSION 0xFEFD
+#define DTLS_MAX_VERSION DTLS1_2_VERSION
+/* Special value for method supporting multiple versions */
+#define DTLS_ANY_VERSION 0x1FFFF
 
 /* lengths of messages */
 #define DTLS1_COOKIE_LENGTH 256
@@ -56,6 +59,9 @@ extern "C" {
 #endif
 
 #ifndef OPENSSL_NO_SSL_INTERN
+
+/* Max MTU overhead we know about so far is 40 for IPv6 + 8 for UDP */
+#define DTLS1_MAX_MTU_OVERHEAD 48
 
 typedef struct dtls1_bitmap_st {
     unsigned long map;      /* track 32 packets on 32-bit systems
@@ -160,6 +166,7 @@ typedef struct dtls1_state_st {
     /* Is set when listening for new connections with dtls1_listen() */
     unsigned int listen;
 
+    unsigned int link_mtu; /* max on-the-wire DTLS packet size */
     unsigned int mtu; /* max DTLS packet size */
 
     struct hm_header_st w_msg_hdr;

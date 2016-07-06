@@ -205,10 +205,10 @@
 #define SSL_AEAD 0x00000040L
 
 /* Bits for algorithm_ssl (protocol version) */
-#define SSL_SSLV2 0x00000001L
-#define SSL_SSLV3 0x00000002L
+#define SSL_SSLV2 0x00000001UL
+#define SSL_SSLV3 0x00000002UL
 #define SSL_TLSV1 SSL_SSLV3 /* for now */
-#define SSL_TLSV1_2 0x00000004L
+#define SSL_TLSV1_2 0x00000004UL
 
 /* Bits for algorithm2 (handshake digests and other extra flags) */
 
@@ -290,6 +290,14 @@
 /* Allow TLS 1.2 ciphersuites: applies to DTLS 1.2 as well as TLS 1.2. */
 #define SSL_USE_TLS1_2_CIPHERS(s) \
     (s->method->ssl3_enc->enc_flags & SSL_ENC_FLAG_TLS1_2_CIPHERS)
+/*
+ * Determine if a client can use TLS 1.2 ciphersuites: can't rely on method
+ * flags because it may not be set to correct version yet.
+ */
+#define SSL_CLIENT_USE_TLS1_2_CIPHERS(s) \
+    ((SSL_IS_DTLS(s) && s->client_version <= DTLS1_2_VERSION) || \
+    (!SSL_IS_DTLS(s) && s->client_version >= TLS1_2_VERSION))
+
 
 /* Mostly for SSLv3 */
 #define SSL_PKEY_RSA_ENC 0
@@ -328,7 +336,62 @@ typedef struct cert_pkey_st {
     EVP_PKEY *privatekey;
     /* Digest to use when signing */
     const EVP_MD *digest;
+    /* Chain for this certificate */
+    STACK_OF(X509) *chain;
+
+    /*
+     * serverinfo data for this certificate.  The data is in TLS Extension
+     * wire format, specifically it's a series of records like:
+     *   uint16_t extension_type; // (RFC 5246, 7.4.1.4, Extension)
+     *   uint16_t length;
+     *   uint8_t data[length]; */
+     uint8_t *serverinfo;
+     size_t serverinfo_length;
+
+    /*
+     * Set if CERT_PKEY can be used with current SSL session: e.g.
+     * appropriate curve, signature algorithms etc. If zero it can't be
+     * used at all.
+     */
+    int valid_flags;
 } CERT_PKEY;
+/* Retrieve Suite B flags */
+#define tls1_suiteb(s) (s->cert->cert_flags & SSL_CERT_FLAG_SUITEB_128_LOS)
+/* Uses to check strict mode: suite B modes are always strict */
+#define SSL_CERT_FLAGS_CHECK_TLS_STRICT \
+    (SSL_CERT_FLAG_SUITEB_128_LOS | SSL_CERT_FLAG_TLS_STRICT)
+
+typedef struct {
+    uint16_t ext_type;
+    /*
+     * Per-connection flags relating to this extension type: not used
+     * if part of an SSL_CTX structure.
+     */
+    uint16_t ext_flags;
+    custom_ext_add_cb add_cb;
+    custom_ext_free_cb free_cb;
+    void *add_arg;
+    custom_ext_parse_cb parse_cb;
+    void *parse_arg;
+} custom_ext_method;
+
+/* ext_flags values */
+
+/*
+ * Indicates an extension has been received.
+ * Used to check for unsolicited or duplicate extensions.
+ */
+#define SSL_EXT_FLAG_RECEIVED  0x1
+/*
+ * Indicates an extension has been sent: used to
+ * enable sending of corresponding ServerHello extension.
+ */
+#define SSL_EXT_FLAG_SENT      0x2
+
+typedef struct {
+    custom_ext_method *meths;
+    size_t meths_count;
+} custom_ext_methods;
 
 typedef struct cert_st {
     /* Current active set */
@@ -336,11 +399,17 @@ typedef struct cert_st {
                    * Probably it would make more sense to store
                    * an index, not a pointer. */
 
-    /* The following masks are for the key and auth
-     * algorithms that are supported by the certs below */
+    /*
+     * For servers the following masks are for the key and auth
+     * algorithms that are supported by the certs below.
+     * For clients they are masks of *disabled* algorithms based
+     * on the current session.
+     */
     int valid;
     unsigned long mask_k;
     unsigned long mask_a;
+    /* Client only */
+    unsigned long mask_ssl;
 
     DH *dh_tmp;
     DH *(*dh_tmp_cb)(SSL *ssl, int is_export, int keysize);
@@ -348,9 +417,86 @@ typedef struct cert_st {
 
     EC_KEY *ecdh_tmp;
     EC_KEY *(*ecdh_tmp_cb)(SSL *ssl, int is_export, int keysize);
+    /* Select ECDH parameters automatically */
     int ecdh_tmp_auto;
 
+    /* Flags related to certificates */
+    unsigned int cert_flags;
+
     CERT_PKEY pkeys[SSL_PKEY_NUM];
+
+    /*
+     * Certificate types (received or sent) in certificate request
+     * message. On receive this is only set if number of certificate
+     * types exceeds SSL3_CT_NUMBER.
+     */
+    uint8_t *ctypes;
+    size_t ctype_num;
+
+    /*
+     * signature algorithms peer reports: e.g. supported signature
+     * algorithms extension for server or as part of a certificate
+     * request for client.
+     */
+    uint8_t *peer_sigalgs;
+    /* Size of above array */
+    size_t peer_sigalgslen;
+    /*
+     * Suppported signature algorithms
+     * When set on a client this is sent in the client hello as the 
+     * supported signature algorithms extension. For servers
+     * it represents the signature algorithms we are willing to use.
+     */
+    uint8_t *conf_sigalgs;
+    /* Size of above array */
+    size_t conf_sigalgslen;
+    /*
+     * Client authentication signature algorithms, if not set then
+     * uses conf_sigalgs. On servers these will be the signature
+     * algorithms sent to the client in a cerificate request for TLS 1.2.
+     * On a client this represents the signature algortithms we are
+     * willing to use for client authentication.
+     */
+    uint8_t *client_sigalgs;
+    /* Size of above array */
+    size_t client_sigalgslen;
+    /*
+     * Signature algorithms shared by client and server: cached because
+     * these are used most often.
+     */
+    TLS_SIGALGS *shared_sigalgs;
+    size_t shared_sigalgslen;
+
+    /*
+     * Certificate setup callback: if set is called whenever a
+     * certificate may be required (client or server). the callback
+     * can then examine any appropriate parameters and setup any
+     * certificates required. This allows advanced applications
+     * to select certificates on the fly: for example based on
+     * supported signature algorithms or curves.
+     */
+    int (*cert_cb)(SSL *ssl, void *arg);
+    void *cert_cb_arg;
+
+    /*
+     * Optional X509_STORE for chain building or certificate validation
+     * If NULL the parent SSL_CTX store is used instead.
+     */
+    X509_STORE *chain_store;
+    X509_STORE *verify_store;
+
+    /* Raw values of the cipher list from a client */
+    uint8_t *ciphers_raw;
+    size_t ciphers_rawlen;
+
+    /* Custom extension methods for server and client */
+    custom_ext_methods cli_ext;
+    custom_ext_methods srv_ext;
+
+    /* non-optimal, but here due to compatibility */
+    uint8_t *alpn_proposed;         /* server */
+    size_t alpn_proposed_len;
+    int alpn_sent;                  /* client */
 
     int references; /* >1 only if SSL_copy_session_id is used */
     CRYPTO_MUTEX *lock;
@@ -375,8 +521,24 @@ typedef struct sess_cert_st {
     CRYPTO_MUTEX *lock;
 } SESS_CERT;
 
+/* Structure containing decoded values of signature algorithms extension */
+struct tls_sigalgs_st {
+    /* NID of hash algorithm */
+    int hash_nid;
+    /* NID of signature algorithm */
+    int sign_nid;
+    /* Combined hash and signature NID */
+    int signandhash_nid;
+    /* Raw values used in extension */
+    uint8_t rsign;
+    uint8_t rhash;
+};
+
 /*#define SSL_DEBUG    */
 /*#define RSA_DEBUG    */
+
+#define ssl_put_cipher_by_char(ssl, ciph, ptr) \
+    ((ssl)->method->put_cipher_by_char((ciph), (ptr)))
 
 /* This is for the SSLv3/TLSv1.0 differences in crypto/hash stuff
  * It is a bit of a mess of functions, but hell, think of it as
@@ -461,16 +623,19 @@ extern SSL_CIPHER ssl3_ciphers[];
 
 const char *ssl_version_string(int ver);
 
-extern SSL3_ENC_METHOD DTLSv1_enc_data;
 extern SSL3_ENC_METHOD TLSv1_enc_data;
 extern SSL3_ENC_METHOD TLSv1_1_enc_data;
 extern SSL3_ENC_METHOD TLSv1_2_enc_data;
+extern SSL3_ENC_METHOD DTLSv1_enc_data;
+extern SSL3_ENC_METHOD DTLSv1_2_enc_data;
 
 void ssl_clear_cipher_ctx(SSL *s);
 int ssl_clear_bad_session(SSL *s);
 CERT *ssl_cert_new(void);
 CERT *ssl_cert_dup(CERT *cert);
+void ssl_cert_set_default_md(CERT *cert);
 int ssl_cert_inst(CERT **o);
+void ssl_cert_clear_certs(CERT *c);
 void ssl_cert_free(CERT *c);
 SESS_CERT *ssl_sess_cert_new(void);
 void ssl_sess_cert_free(SESS_CERT *sc);
@@ -490,21 +655,34 @@ int ssl_cipher_list_to_bytes(SSL *s, STACK_OF(SSL_CIPHER) *sk,
 STACK_OF(SSL_CIPHER) *ssl_create_cipher_list(const SSL_METHOD *meth,
                                              STACK_OF(SSL_CIPHER) **pref,
                                              STACK_OF(SSL_CIPHER) **sorted,
-                                             const char *rule_str);
+                                             const char *rule_str, CERT *c);
 void ssl_update_cache(SSL *s, int mode);
 int ssl_cipher_get_evp(const SSL_SESSION *s, const EVP_CIPHER **enc,
                        const EVP_MD **md, int *mac_pkey_type,
                        int *mac_secret_size);
 int ssl_cipher_get_evp_aead(const SSL_SESSION *s, const EVP_AEAD **aead);
 int ssl_get_handshake_digest(int i, long *mask, const EVP_MD **md);
+int ssl_cipher_get_cert_index(const SSL_CIPHER *c);
+const SSL_CIPHER *ssl_get_cipher_by_char(SSL *ssl, const uint8_t *ptr);
+int ssl_cert_set0_chain(CERT *c, STACK_OF(X509) *chain);
+int ssl_cert_set1_chain(CERT *c, STACK_OF(X509) *chain);
+int ssl_cert_add0_chain_cert(CERT *c, X509 *x);
+int ssl_cert_add1_chain_cert(CERT *c, X509 *x);
+int ssl_cert_select_current(CERT *c, X509 *x);
+int ssl_cert_set_current(CERT *c, long arg);
+X509 *ssl_cert_get0_next_certificate(CERT *c, int first);
+void ssl_cert_set_cert_cb(CERT *c, int (*cb)(SSL *ssl, void *arg), void *arg);
 
 int ssl_verify_cert_chain(SSL *s, STACK_OF(X509) *sk);
-int ssl_add_cert_chain(SSL *s, X509 *x, unsigned long *l);
+int ssl_add_cert_chain(SSL *s, CERT_PKEY *cpk, unsigned long *l);
+int ssl_build_cert_chain(CERT *c, X509_STORE *chain_store, int flags);
+int ssl_cert_set_cert_store(CERT *c, X509_STORE *store, int chain, int ref);
 int ssl_undefined_function(SSL *s);
 int ssl_undefined_void_function(void);
 int ssl_undefined_const_function(const SSL *s);
 CERT_PKEY *ssl_get_server_send_pkey(const SSL *s);
-X509 *ssl_get_server_send_cert(const SSL *);
+int ssl_get_server_cert_serverinfo(SSL *s, const uint8_t **serverinfo,
+                                   size_t *serverinfo_length);
 EVP_PKEY *ssl_get_sign_pkey(SSL *s, const SSL_CIPHER *c, const EVP_MD **pmd);
 DH *ssl_get_auto_dh(SSL *s);
 int ssl_cert_type(X509 *x, EVP_PKEY *pkey);
@@ -512,8 +690,11 @@ void ssl_set_cert_masks(CERT *c, const SSL_CIPHER *cipher);
 STACK_OF(SSL_CIPHER) *ssl_get_ciphers_by_id(SSL *s);
 int ssl_verify_alarm_type(long type);
 void ssl_load_ciphers(void);
+int ssl_fill_hello_random(SSL *s, uint8_t *field, int len);
 
 void tls1_init_finished_mac(SSL *s);
+const SSL_CIPHER *ssl3_get_cipher_by_char(const uint8_t *p);
+int ssl3_put_cipher_by_char(const SSL_CIPHER *c, uint8_t *p);
 int ssl3_send_server_certificate(SSL *s);
 int ssl3_send_newsession_ticket(SSL *s);
 int ssl3_send_cert_status(SSL *s);
@@ -528,6 +709,7 @@ int ssl3_send_finished(SSL *s, int a, int b, const char *sender, int slen);
 int ssl3_num_ciphers(void);
 const SSL_CIPHER *ssl3_get_cipher(unsigned int u);
 const SSL_CIPHER *ssl3_get_cipher_by_id(unsigned int id);
+const SSL_CIPHER *ssl3_get_cipher_by_value(uint16_t value);
 uint16_t ssl3_cipher_get_value(const SSL_CIPHER *cipher);
 int ssl3_renegotiate(SSL *ssl);
 
@@ -538,7 +720,7 @@ int ssl3_read_bytes(SSL *s, int type, uint8_t *buf, int len, int peek);
 int ssl3_write_bytes(SSL *s, int type, const void *buf, int len);
 void tls1_finish_mac(SSL *s, const uint8_t *buf, int len);
 void tls1_free_digest_list(SSL *s);
-unsigned long ssl3_output_cert_chain(SSL *s, X509 *x);
+unsigned long ssl3_output_cert_chain(SSL *s, CERT_PKEY *cpk);
 SSL_CIPHER *ssl3_choose_cipher(SSL *ssl, STACK_OF(SSL_CIPHER) *clnt,
                                STACK_OF(SSL_CIPHER) *srvr);
 int ssl3_setup_buffers(SSL *s);
@@ -588,13 +770,11 @@ int dtls1_write_app_data_bytes(SSL *s, int type, const void *buf, int len);
 int dtls1_write_bytes(SSL *s, int type, const void *buf, int len);
 
 int dtls1_send_change_cipher_spec(SSL *s, int a, int b);
-int dtls1_send_finished(SSL *s, int a, int b, const char *sender, int slen);
-unsigned long dtls1_output_cert_chain(SSL *s, X509 *x);
 int dtls1_read_failed(SSL *s, int code);
 int dtls1_buffer_message(SSL *s, int ccs);
-int dtls1_retransmit_message(SSL *s, unsigned short seq, unsigned long frag_off,
+int dtls1_retransmit_message(SSL *s, uint16_t seq, unsigned long frag_off,
                              int *found);
-int dtls1_get_queue_priority(unsigned short seq, int is_ccs);
+int dtls1_get_queue_priority(uint16_t seq, int is_ccs);
 int dtls1_retransmit_buffered_messages(SSL *s);
 void dtls1_clear_record_buffer(SSL *s);
 int dtls1_get_message_header(const uint8_t *data,
@@ -602,7 +782,7 @@ int dtls1_get_message_header(const uint8_t *data,
 void dtls1_get_ccs_header(uint8_t *data, struct ccs_header_st *ccs_hdr);
 void dtls1_reset_seq_numbers(SSL *s, int rw);
 void dtls1_build_sequence_number(uint8_t *dst, uint8_t *seq,
-                                 unsigned short epoch);
+                                 uint16_t epoch);
 long dtls1_default_timeout(void);
 struct timeval *dtls1_get_timeout(SSL *s, struct timeval *timeleft);
 int dtls1_check_timeout_num(SSL *s);
@@ -613,7 +793,8 @@ void dtls1_stop_timer(SSL *s);
 int dtls1_is_timer_expired(SSL *s);
 void dtls1_double_timeout(SSL *s);
 int dtls1_send_newsession_ticket(SSL *s);
-unsigned int dtls1_min_mtu(void);
+unsigned int dtls1_min_mtu(SSL *s);
+unsigned int dtls1_link_min_mtu(void);
 void dtls1_hm_fragment_free(hm_fragment *frag);
 
 /* some client-only functions */
@@ -630,7 +811,6 @@ int ssl3_send_client_key_exchange(SSL *s);
 int ssl3_get_key_exchange(SSL *s);
 int ssl3_get_server_certificate(SSL *s);
 int ssl3_check_cert_and_algorithm(SSL *s);
-int ssl3_check_finished(SSL *s);
 #ifndef OPENSSL_NO_NEXTPROTONEG
 int ssl3_send_next_proto(SSL *s);
 #endif
@@ -675,7 +855,15 @@ int dtls1_get_record(SSL *s);
 int do_dtls1_write(SSL *s, int type, const uint8_t *buf,
                    unsigned int len);
 int dtls1_dispatch_alert(SSL *s);
-int dtls1_enc(SSL *s, int snd);
+
+void custom_ext_init(custom_ext_methods *meths);
+
+int custom_ext_parse(SSL *s, int server, unsigned int ext_type,
+                     const uint8_t *ext_data, size_t ext_size, int *al);
+int custom_ext_add(SSL *s, int server, uint8_t **pret, uint8_t *limit, int *al);
+
+int custom_exts_copy(custom_ext_methods *dst, const custom_ext_methods *src);
+void custom_exts_free(custom_ext_methods *exts);
 
 int ssl_init_wbio_buffer(SSL *s, int push);
 void ssl_free_wbio_buffer(SSL *s);
@@ -701,24 +889,23 @@ SSL_COMP *ssl3_comp_find(STACK_OF(SSL_COMP) *sk, int n);
 
 int tls1_ec_curve_id2nid(uint16_t curve_id);
 uint16_t tls1_ec_nid2curve_id(int nid);
+int tls1_shared_curve(SSL *s, int nmatch);
+int tls1_set_curves(uint16_t **pext, size_t *pextlen, int *curves,
+                    size_t ncurves);
+int tls1_set_curves_list(uint16_t **pext, size_t *pextlen, const char *str);
 int tls1_check_curve(SSL *s, const uint8_t *p, size_t len);
-int tls1_get_shared_curve(SSL *s);
 
-uint8_t *ssl_add_clienthello_tlsext(SSL *s, uint8_t *p,
-                                          uint8_t *limit);
-
-uint8_t *ssl_add_serverhello_tlsext(SSL *s, uint8_t *p,
-                                          uint8_t *limit);
-
-int ssl_parse_clienthello_tlsext(SSL *s, uint8_t **data, uint8_t *limit,
-                                 int *al);
-int ssl_parse_serverhello_tlsext(SSL *s, uint8_t **data, uint8_t *d,
-                                 int n, int *al);
+uint8_t *ssl_add_clienthello_tlsext(SSL *s, uint8_t *p, uint8_t *limit,
+                                    int *al);
+uint8_t *ssl_add_serverhello_tlsext(SSL *s, uint8_t *p, uint8_t *limit,
+                                    int *al);
+int ssl_parse_clienthello_tlsext(SSL *s, uint8_t **data, uint8_t *limit);
+int tls1_set_server_sigalgs(SSL *s);
+int ssl_parse_serverhello_tlsext(SSL *s, uint8_t **data, uint8_t *d, int n);
 int ssl_prepare_clienthello_tlsext(SSL *s);
 int ssl_prepare_serverhello_tlsext(SSL *s);
 int ssl_check_clienthello_tlsext_early(SSL *s);
 int ssl_check_clienthello_tlsext_late(SSL *s);
-int ssl_check_serverhello_tlsext(SSL *s);
 
 int tls1_process_ticket(SSL *s, const uint8_t *session, int session_len,
                         const uint8_t *limit, SSL_SESSION **ret);
@@ -727,6 +914,12 @@ int tls12_get_sigandhash(uint8_t *p, const EVP_PKEY *pk,
                          const EVP_MD *md);
 int tls12_get_sigid(const EVP_PKEY *pk);
 const EVP_MD *tls12_get_hash(uint8_t hash_alg);
+
+int tls1_set_sigalgs_list(CERT *c, const char *str, int client);
+int tls1_set_sigalgs(CERT *c, const int *salg, size_t salglen, int client);
+int tls1_check_chain(SSL *s, X509 *x, EVP_PKEY *pk, STACK_OF(X509) *chain,
+                     int idx);
+void tls1_set_cert_validity(SSL *s);
 
 void ssl_clear_hash_ctx(EVP_MD_CTX **hash);
 int ssl_add_serverhello_renegotiate_ext(SSL *s, uint8_t *p, int *len,
@@ -738,11 +931,15 @@ int ssl_add_clienthello_renegotiate_ext(SSL *s, uint8_t *p, int *len,
 int ssl_parse_clienthello_renegotiate_ext(SSL *s, const uint8_t *d, int len,
                                           int *al);
 long ssl_get_algorithm2(SSL *s);
-int tls1_process_sigalgs(SSL *s, const uint8_t *data, int dsize);
-int tls12_get_req_sig_algs(SSL *s, uint8_t *p);
+int tls1_save_sigalgs(SSL *s, const uint8_t *data, int dsize);
+int tls1_process_sigalgs(SSL *s);
+size_t tls12_get_psigalgs(SSL *s, const uint8_t **psigs);
+int tls12_check_peer_sigalg(const EVP_MD **pmd, SSL *s, const uint8_t *sig,
+                            EVP_PKEY *pkey);
+void ssl_set_client_disabled(SSL *s);
 
-int tls1_check_ec_server_key(SSL *s);
-int tls1_check_ec_tmp_key(SSL *s);
+
+int tls1_check_ec_tmp_key(SSL *s, unsigned long id);
 
 int ssl_add_clienthello_use_srtp_ext(SSL *s, uint8_t *p, int *len,
                                      int maxlen);

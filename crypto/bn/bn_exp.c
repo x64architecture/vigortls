@@ -552,7 +552,7 @@ int BN_mod_exp_mont_consttime(BIGNUM *rr, const BIGNUM *a, const BIGNUM *p,
 
     top = m->top;
 
-    if (!(m->d[0] & 1)) {
+    if (!BN_is_odd(m)) {
         BNerr(BN_F_BN_MOD_EXP_MONT_CONSTTIME, BN_R_CALLED_WITH_EVEN_MODULUS);
         return (0);
     }
@@ -686,7 +686,7 @@ int BN_mod_exp_mont_consttime(BIGNUM *rr, const BIGNUM *a, const BIGNUM *p,
      * Dedicated window==4 case improves 512-bit RSA sign by ~15%, but as
      * 512-bit RSA is hardly relevant, we omit it to spare size...
      */
-    if (window == 5) {
+    if (window == 5 && top > 1) {
         void bn_mul_mont_gather5(BN_ULONG * rp, const BN_ULONG *ap,
                                  const void *table, const BN_ULONG *np,
                                  const BN_ULONG *n0, int num, int power);

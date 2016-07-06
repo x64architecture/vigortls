@@ -23,6 +23,17 @@ const char *AES_options(void)
     return "aes(partial)";
 }
 
+const char *BF_options(void)
+{
+#ifdef BF_PTR
+    return("blowfish(ptr)");
+#elif defined(BF_PTR2)
+    return("blowfish(ptr2)");
+#else
+    return("blowfish(idx)");
+#endif
+}
+
 char *BN_options(void)
 {
     static int init = 0;

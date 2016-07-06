@@ -44,7 +44,6 @@
 #define EVP_PKS_RSA 0x0100
 #define EVP_PKS_DSA 0x0200
 #define EVP_PKS_EC 0x0400
-#define EVP_PKT_EXP 0x1000 /* <= 512 bit key */
 
 #define EVP_PKEY_NONE NID_undef
 #define EVP_PKEY_RSA NID_rsaEncryption
@@ -55,6 +54,7 @@
 #define EVP_PKEY_DSA3 NID_dsaWithSHA1
 #define EVP_PKEY_DSA4 NID_dsaWithSHA1_2
 #define EVP_PKEY_DH NID_dhKeyAgreement
+#define EVP_PKEY_DHX NID_dhpublicnumber
 #define EVP_PKEY_EC NID_X9_62_id_ecPublicKey
 #define EVP_PKEY_GOSTR01 NID_id_GostR3410_2001
 #define EVP_PKEY_GOSTIMIT NID_id_Gost28147_89_MAC
@@ -289,6 +289,7 @@ struct evp_cipher_st {
 #define EVP_CIPH_GCM_MODE 0x6
 #define EVP_CIPH_CCM_MODE 0x7
 #define EVP_CIPH_XTS_MODE 0x10001
+#define EVP_CIPH_WRAP_MODE 0x10002
 #define EVP_CIPH_MODE 0xF0007
 /* Set if variable length cipher */
 #define EVP_CIPH_VARIABLE_LENGTH 0x8
@@ -317,41 +318,66 @@ struct evp_cipher_st {
 /* Cipher handles any and all padding logic as well
  * as finalisation.
  */
-#define EVP_CIPH_FLAG_CUSTOM_CIPHER 0x100000
-#define EVP_CIPH_FLAG_AEAD_CIPHER 0x200000
+#define EVP_CIPH_FLAG_CUSTOM_CIPHER        0x100000
+#define EVP_CIPH_FLAG_AEAD_CIPHER          0x200000
+#define EVP_CIPH_FLAG_TLS1_1_MULTIBLOCK    0x400000
+
+/*
+ * Cipher context flag to indicate we can handle
+ * wrap mode: if allowed in older applications it could
+ * overflow buffers.
+ */
+
+#define EVP_CIPHER_CTX_FLAG_WRAP_ALLOW 0x1
 
 /* ctrl() values */
 
-#define EVP_CTRL_INIT 0x0
-#define EVP_CTRL_SET_KEY_LENGTH 0x1
-#define EVP_CTRL_GET_RC2_KEY_BITS 0x2
-#define EVP_CTRL_SET_RC2_KEY_BITS 0x3
-#define EVP_CTRL_GET_RC5_ROUNDS 0x4
-#define EVP_CTRL_SET_RC5_ROUNDS 0x5
-#define EVP_CTRL_RAND_KEY 0x6
-#define EVP_CTRL_PBE_PRF_NID 0x7
-#define EVP_CTRL_COPY 0x8
-#define EVP_CTRL_GCM_SET_IVLEN 0x9
-#define EVP_CTRL_GCM_GET_TAG 0x10
-#define EVP_CTRL_GCM_SET_TAG 0x11
-#define EVP_CTRL_GCM_SET_IV_FIXED 0x12
-#define EVP_CTRL_GCM_IV_GEN 0x13
-#define EVP_CTRL_CCM_SET_IVLEN EVP_CTRL_GCM_SET_IVLEN
-#define EVP_CTRL_CCM_GET_TAG EVP_CTRL_GCM_GET_TAG
-#define EVP_CTRL_CCM_SET_TAG EVP_CTRL_GCM_SET_TAG
-#define EVP_CTRL_CCM_SET_L 0x14
-#define EVP_CTRL_CCM_SET_MSGLEN 0x15
-/* AEAD cipher deduces payload length and returns number of bytes
+#define EVP_CTRL_INIT                           0x0
+#define EVP_CTRL_SET_KEY_LENGTH                 0x1
+#define EVP_CTRL_GET_RC2_KEY_BITS               0x2
+#define EVP_CTRL_SET_RC2_KEY_BITS               0x3
+#define EVP_CTRL_GET_RC5_ROUNDS                 0x4
+#define EVP_CTRL_SET_RC5_ROUNDS                 0x5
+#define EVP_CTRL_RAND_KEY                       0x6
+#define EVP_CTRL_PBE_PRF_NID                    0x7
+#define EVP_CTRL_COPY                           0x8
+#define EVP_CTRL_GCM_SET_IVLEN                  0x9
+#define EVP_CTRL_GCM_GET_TAG                    0x10
+#define EVP_CTRL_GCM_SET_TAG                    0x11
+#define EVP_CTRL_GCM_SET_IV_FIXED               0x12
+#define EVP_CTRL_GCM_IV_GEN                     0x13
+#define EVP_CTRL_CCM_SET_IVLEN                  EVP_CTRL_GCM_SET_IVLEN
+#define EVP_CTRL_CCM_GET_TAG                    EVP_CTRL_GCM_GET_TAG
+#define EVP_CTRL_CCM_SET_TAG                    EVP_CTRL_GCM_SET_TAG
+#define EVP_CTRL_CCM_SET_L                      0x14
+#define EVP_CTRL_CCM_SET_MSGLEN                 0x15
+/*
+ * AEAD cipher deduces payload length and returns number of bytes
  * required to store MAC and eventual padding. Subsequent call to
  * EVP_Cipher even appends/verifies MAC.
  */
-#define EVP_CTRL_AEAD_TLS1_AAD 0x16
+#define EVP_CTRL_AEAD_TLS1_AAD                  0x16
 /* Used by composite AEAD ciphers, no-op in GCM, CCM... */
-#define EVP_CTRL_AEAD_SET_MAC_KEY 0x17
+#define EVP_CTRL_AEAD_SET_MAC_KEY               0x17
 /* Set the GCM invocation field, decrypt only */
-#define EVP_CTRL_GCM_SET_IV_INV 0x18
+#define EVP_CTRL_GCM_SET_IV_INV                 0x18
 /* Set the S-BOX NID for GOST ciphers */
-#define EVP_CTRL_GOST_SET_SBOX 0x19
+#define EVP_CTRL_GOST_SET_SBOX                  0x19
+
+#define EVP_CTRL_TLS1_1_MULTIBLOCK_AAD          0x1a
+#define EVP_CTRL_TLS1_1_MULTIBLOCK_ENCRYPT      0x1b
+#define EVP_CTRL_TLS1_1_MULTIBLOCK_DECRYPT      0x1c
+#define EVP_CTRL_TLS1_1_MULTIBLOCK_MAX_BUFSIZE  0x1d
+
+/* RFC 5246 defines additional data to be 13 bytes in length */
+#define EVP_AEAD_TLS1_AAD_LEN                   13
+
+typedef struct {
+    uint8_t *out;
+    const uint8_t *inp;
+    size_t len;
+    unsigned int interleave;
+} EVP_CTRL_TLS1_1_MULTIBLOCK_PARAM;
 
 /* GCM TLS constants */
 /* Length of fixed part of IV derived from PRF */
@@ -572,7 +598,7 @@ int EVP_DigestSignFinal(EVP_MD_CTX *ctx, uint8_t *sigret, size_t *siglen);
 
 int EVP_DigestVerifyInit(EVP_MD_CTX *ctx, EVP_PKEY_CTX **pctx,
                          const EVP_MD *type, ENGINE *e, EVP_PKEY *pkey);
-int EVP_DigestVerifyFinal(EVP_MD_CTX *ctx, uint8_t *sig, size_t siglen);
+int EVP_DigestVerifyFinal(EVP_MD_CTX *ctx, const uint8_t *sig, size_t siglen);
 
 int EVP_OpenInit(EVP_CIPHER_CTX *ctx, const EVP_CIPHER *type, const uint8_t *ek,
                  int ekl, const uint8_t *iv, EVP_PKEY *priv);
@@ -642,6 +668,7 @@ const EVP_CIPHER *EVP_des_cbc(void);
 const EVP_CIPHER *EVP_des_ede_cbc(void);
 const EVP_CIPHER *EVP_des_ede3_cbc(void);
 const EVP_CIPHER *EVP_desx_cbc(void);
+const EVP_CIPHER *EVP_des_ede3_wrap(void);
 #endif
 const EVP_CIPHER *EVP_rc4(void);
 const EVP_CIPHER *EVP_rc4_40(void);
@@ -690,6 +717,7 @@ const EVP_CIPHER *EVP_aes_128_ctr(void);
 const EVP_CIPHER *EVP_aes_128_ccm(void);
 const EVP_CIPHER *EVP_aes_128_gcm(void);
 const EVP_CIPHER *EVP_aes_128_xts(void);
+const EVP_CIPHER *EVP_aes_128_wrap(void);
 const EVP_CIPHER *EVP_aes_192_ecb(void);
 const EVP_CIPHER *EVP_aes_192_cbc(void);
 const EVP_CIPHER *EVP_aes_192_cfb1(void);
@@ -700,6 +728,7 @@ const EVP_CIPHER *EVP_aes_192_ofb(void);
 const EVP_CIPHER *EVP_aes_192_ctr(void);
 const EVP_CIPHER *EVP_aes_192_ccm(void);
 const EVP_CIPHER *EVP_aes_192_gcm(void);
+const EVP_CIPHER *EVP_aes_192_wrap(void);
 const EVP_CIPHER *EVP_aes_256_ecb(void);
 const EVP_CIPHER *EVP_aes_256_cbc(void);
 const EVP_CIPHER *EVP_aes_256_cfb1(void);
@@ -711,8 +740,11 @@ const EVP_CIPHER *EVP_aes_256_ctr(void);
 const EVP_CIPHER *EVP_aes_256_ccm(void);
 const EVP_CIPHER *EVP_aes_256_gcm(void);
 const EVP_CIPHER *EVP_aes_256_xts(void);
+const EVP_CIPHER *EVP_aes_256_wrap(void);
 const EVP_CIPHER *EVP_aes_128_cbc_hmac_sha1(void);
 const EVP_CIPHER *EVP_aes_256_cbc_hmac_sha1(void);
+const EVP_CIPHER *EVP_aes_128_cbc_hmac_sha256(void);
+const EVP_CIPHER *EVP_aes_256_cbc_hmac_sha256(void);
 const EVP_CIPHER *EVP_camellia_128_ecb(void);
 const EVP_CIPHER *EVP_camellia_128_cbc(void);
 const EVP_CIPHER *EVP_camellia_128_cfb1(void);
@@ -900,6 +932,7 @@ void EVP_PBE_cleanup(void);
 #define ASN1_PKEY_CTRL_DEFAULT_MD_NID 0x3
 #define ASN1_PKEY_CTRL_CMS_SIGN 0x5
 #define ASN1_PKEY_CTRL_CMS_ENVELOPE 0x7
+#define ASN1_PKEY_CTRL_CMS_RI_TYPE 0x8
 
 int EVP_PKEY_asn1_get_count(void);
 const EVP_PKEY_ASN1_METHOD *EVP_PKEY_asn1_get0(int idx);
@@ -948,6 +981,12 @@ void EVP_PKEY_asn1_set_free(EVP_PKEY_ASN1_METHOD *ameth,
 void EVP_PKEY_asn1_set_ctrl(EVP_PKEY_ASN1_METHOD *ameth,
                             int (*pkey_ctrl)(EVP_PKEY *pkey, int op, long arg1,
                                              void *arg2));
+void EVP_PKEY_asn1_set_item(
+    EVP_PKEY_ASN1_METHOD *ameth,
+    int (*item_verify)(EVP_MD_CTX *ctx, const ASN1_ITEM *it, void *asn,
+                       X509_ALGOR *a, ASN1_BIT_STRING *sig, EVP_PKEY *pkey),
+    int (*item_sign)(EVP_MD_CTX *ctx, const ASN1_ITEM *it, void *asn,
+                     X509_ALGOR *alg1, X509_ALGOR *alg2, ASN1_BIT_STRING *sig));
 
 #define EVP_PKEY_OP_UNDEFINED 0
 #define EVP_PKEY_OP_PARAMGEN (1 << 1)
@@ -976,6 +1015,10 @@ void EVP_PKEY_asn1_set_ctrl(EVP_PKEY_ASN1_METHOD *ameth,
     EVP_PKEY_CTX_ctrl(ctx, -1, EVP_PKEY_OP_TYPE_SIG, EVP_PKEY_CTRL_MD, 0, \
                       (void *)md)
 
+#define EVP_PKEY_CTX_get_signature_md(ctx, pmd)      \
+    EVP_PKEY_CTX_ctrl(ctx, -1, EVP_PKEY_OP_TYPE_SIG, \
+    EVP_PKEY_CTRL_GET_MD, 0, (void *)pmd)
+
 #define EVP_PKEY_CTRL_MD 1
 #define EVP_PKEY_CTRL_PEER_KEY 2
 
@@ -996,6 +1039,8 @@ void EVP_PKEY_asn1_set_ctrl(EVP_PKEY_ASN1_METHOD *ameth,
 #define EVP_PKEY_CTRL_CMS_SIGN 11
 
 #define EVP_PKEY_CTRL_CIPHER 12
+
+#define EVP_PKEY_CTRL_GET_MD 13
 
 #define EVP_PKEY_ALG_CTRL 0x1000
 
@@ -1424,6 +1469,7 @@ void ERR_load_EVP_strings(void);
 # define EVP_R_UNSUPPORTED_PRF                            125
 # define EVP_R_UNSUPPORTED_PRIVATE_KEY_ALGORITHM          118
 # define EVP_R_UNSUPPORTED_SALT_TYPE                      126
+# define EVP_R_WRAP_MODE_NOT_ALLOWED                      170
 # define EVP_R_WRONG_FINAL_BLOCK_LENGTH                   109
 # define EVP_R_WRONG_PUBLIC_KEY_TYPE                      110
 

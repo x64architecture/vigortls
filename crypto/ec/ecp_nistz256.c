@@ -550,11 +550,11 @@ static int ecp_nistz256_bignum_to_field_elem(BN_ULONG out[P256_LIMBS],
 }
 
 /* r = sum(scalar[i]*point[i]) */
-static void ecp_nistz256_windowed_mul(const EC_GROUP *group, P256_POINT *r,
-                                      const BIGNUM **scalar, const EC_POINT **point,
-                                      int num, BN_CTX *ctx)
+static int ecp_nistz256_windowed_mul(const EC_GROUP *group, P256_POINT *r,
+                                     const BIGNUM **scalar, const EC_POINT **point,
+                                     int num, BN_CTX *ctx)
 {
-    int i, j;
+    int i, j, ret = 0;
     unsigned int index;
     uint8_t(*p_str)[33] = NULL;
     const unsigned int window_size = 5;
@@ -695,10 +695,12 @@ static void ecp_nistz256_windowed_mul(const EC_GROUP *group, P256_POINT *r,
         ecp_nistz256_point_add(r, r, &h);
     }
 
+    ret = 1;
 err:
     free(table_storage);
     free(p_str);
     free(scalars);
+    return ret;
 }
 
 /* Coordinates of G, for which we have precomputed tables */
@@ -1080,6 +1082,8 @@ static int ecp_nistz256_points_mul(const EC_GROUP *group, EC_POINT *r,
     const EC_POINT *generator = NULL;
     unsigned int index = 0;
     BN_CTX *new_ctx = NULL;
+    const BIGNUM **new_scalars = NULL;
+    const EC_POINT **new_points = NULL;
     const unsigned int window_size = 7;
     const unsigned int mask = (1 << (window_size + 1)) - 1;
     unsigned int wvalue;
@@ -1225,10 +1229,10 @@ static int ecp_nistz256_points_mul(const EC_GROUP *group, EC_POINT *r,
         p_is_infinity = 1;
 
     if (no_precomp_for_generator) {
-        /* Without a precomputed table for the generator, it has to be
-         * handled like a normal point. */
-        const BIGNUM **new_scalars;
-        const EC_POINT **new_points;
+        /*
+         * Without a precomputed table for the generator, it has to be
+         * handled like a normal point.
+         */
 
         new_scalars = reallocarray(NULL, (num + 1), sizeof(BIGNUM *));
         if (new_scalars == NULL) {
@@ -1238,7 +1242,6 @@ static int ecp_nistz256_points_mul(const EC_GROUP *group, EC_POINT *r,
 
         new_points = reallocarray(NULL, (num + 1), sizeof(EC_POINT *));
         if (new_points == NULL) {
-            free(new_scalars);
             ECerr(EC_F_ECP_NISTZ256_POINTS_MUL, ERR_R_MALLOC_FAILURE);
             goto err;
         }
@@ -1258,15 +1261,11 @@ static int ecp_nistz256_points_mul(const EC_GROUP *group, EC_POINT *r,
         if (p_is_infinity)
             out = &p.p;
 
-        ecp_nistz256_windowed_mul(group, out, scalars, points, num, ctx);
+        if (!ecp_nistz256_windowed_mul(group, out, scalars, points, num, ctx))
+            goto err;
 
         if (!p_is_infinity)
             ecp_nistz256_point_add(&p.p, &p.p, out);
-    }
-
-    if (no_precomp_for_generator) {
-        free(points);
-        free(scalars);
     }
 
     if (!ecp_nistz256_set_words(&r->X, p.p.X) ||
@@ -1274,13 +1273,15 @@ static int ecp_nistz256_points_mul(const EC_GROUP *group, EC_POINT *r,
         !ecp_nistz256_set_words(&r->Z, p.p.Z)) {
         goto err;
     }
-    r->Z_is_one = is_one(p.p.Z);
+    r->Z_is_one = is_one(p.p.Z) & 1;
 
     ret = 1;
 
 err:
     BN_CTX_end(ctx);
     BN_CTX_free(new_ctx);
+    free(new_points);
+    free(new_scalars);
     return ret;
 }
 

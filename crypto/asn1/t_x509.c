@@ -83,7 +83,9 @@ int X509_print_ex(BIO *bp, X509 *x, unsigned long nmflags, unsigned long cflag)
             goto err;
 
         bs = X509_get_serialNumber(x);
-        if (bs->length <= (int)sizeof(long)) {
+        if (bs->length <= (int)sizeof(long) ||
+            (bs->length == sizeof(long) && (bs->data[0] & 0x80) == 0))
+        {
             l = ASN1_INTEGER_get(bs);
             if (bs->type == V_ASN1_NEG_INTEGER) {
                 l = -l;
@@ -106,7 +108,7 @@ int X509_print_ex(BIO *bp, X509 *x, unsigned long nmflags, unsigned long cflag)
     }
 
     if (!(cflag & X509_FLAG_NO_SIGNAME)) {
-        if (X509_signature_print(bp, x->sig_alg, NULL) <= 0)
+        if (X509_signature_print(bp, ci->signature, NULL) <= 0)
             goto err;
     }
 
@@ -157,6 +159,21 @@ int X509_print_ex(BIO *bp, X509 *x, unsigned long nmflags, unsigned long cflag)
         } else {
             EVP_PKEY_print_public(bp, pkey, 16, NULL);
             EVP_PKEY_free(pkey);
+        }
+    }
+
+    if (!(cflag & X509_FLAG_NO_IDS)) {
+        if (ci->issuerUID) {
+            if (BIO_printf(bp,"%8sIssuer Unique ID: ","") <= 0)
+                goto err;
+            if (!X509_signature_dump(bp, ci->issuerUID, 12))
+                goto err;
+        }
+        if (ci->subjectUID) {
+            if (BIO_printf(bp,"%8sSubject Unique ID: ","") <= 0) 
+                goto err;
+            if (!X509_signature_dump(bp, ci->subjectUID, 12))
+                goto err;
         }
     }
 
@@ -411,7 +428,9 @@ int X509_NAME_print(BIO *bp, X509_NAME *name, int obase)
     l = 80 - 2 - obase;
 
     b = X509_NAME_oneline(name, NULL, 0);
-    if (!*b) {
+    if (b == NULL)
+        return 0;
+    if (*b == '\0') {
         free(b);
         return 1;
     }

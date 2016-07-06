@@ -37,6 +37,7 @@ add_library(
     cts128.c
     gcm128.c
     ofb128.c
+    wrap128.c
     xts128.c
 
     ${MODES_ARCH_SOURCES}

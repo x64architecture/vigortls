@@ -22,14 +22,17 @@ long BIO_debug_callback(BIO *bio, int cmd, const char *argp,
     char buf[256];
     char *p;
     long r = 1;
+    int len;
     size_t p_maxlen;
 
     if (BIO_CB_RETURN & cmd)
         r = ret;
 
-    snprintf(buf, sizeof buf, "BIO[%p]:", bio);
-    p = &(buf[14]);
-    p_maxlen = sizeof buf - 14;
+    len = snprintf(buf, sizeof buf, "BIO[%p]: ", (void *)bio);
+
+    p = buf + len;
+    p_maxlen = sizeof(buf) - len;
+
     switch (cmd) {
         case BIO_CB_FREE:
             snprintf(p, p_maxlen, "Free - %s\n", bio->method->name);

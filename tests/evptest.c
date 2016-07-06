@@ -95,7 +95,7 @@ static void test1(const EVP_CIPHER *c, const uint8_t *key, int kn,
                   const uint8_t *plaintext, int pn,
                   const uint8_t *ciphertext, int cn,
                   const uint8_t *aad, int an,
-                  const uint8_t *tag,int tn,
+                  const uint8_t *tag, int tn,
                   int encdec)
 {
     EVP_CIPHER_CTX ctx;
@@ -122,6 +122,7 @@ static void test1(const EVP_CIPHER *c, const uint8_t *key, int kn,
         test1_exit(5);
     }
     EVP_CIPHER_CTX_init(&ctx);
+    EVP_CIPHER_CTX_set_flags(&ctx, EVP_CIPHER_CTX_FLAG_WRAP_ALLOW);
     if (encdec != 0) {
         if (mode == EVP_CIPH_GCM_MODE) {
             if (!EVP_EncryptInit_ex(&ctx, c, NULL, NULL, NULL)) {
@@ -174,6 +175,12 @@ static void test1(const EVP_CIPHER *c, const uint8_t *key, int kn,
                 fprintf(stderr, "AAD set failed\n");
                 ERR_print_errors_fp(stderr);
                 test1_exit(13);
+            }
+        } else if (mode == EVP_CIPH_WRAP_MODE) {
+            if (!EVP_EncryptInit_ex(&ctx, c, NULL, key, in ? iv : NULL)) {
+                fprintf(stderr, "EncryptInit failed\n");
+                ERR_print_errors_fp(stderr);
+                test1_exit(10);
             }
         } else if (!EVP_EncryptInit_ex(&ctx, c, NULL, key, iv)) {
             fprintf(stderr, "EncryptInit failed\n");
@@ -283,6 +290,12 @@ static void test1(const EVP_CIPHER *c, const uint8_t *key, int kn,
                 fprintf(stderr, "AAD set failed\n");
                 ERR_print_errors_fp(stderr);
                 test1_exit(13);
+            }
+        } else if (mode == EVP_CIPH_WRAP_MODE) {
+            if (!EVP_DecryptInit_ex(&ctx, c, NULL, key, in ? iv : NULL)) {
+                fprintf(stderr, "EncryptInit failed\n");
+                ERR_print_errors_fp(stderr);
+                test1_exit(10);
             }
         } else if (!EVP_DecryptInit_ex(&ctx, c, NULL, key, iv)) {
             fprintf(stderr, "DecryptInit failed\n");
@@ -408,6 +421,7 @@ int main(int argc, char **argv)
         exit(2);
     }
 
+    ERR_load_crypto_strings();
     /* Load up the software EVP_CIPHER and EVP_MD definitions */
     OpenSSL_add_all_ciphers();
     OpenSSL_add_all_digests();

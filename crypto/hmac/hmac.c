@@ -156,6 +156,7 @@ uint8_t *HMAC(const EVP_MD *evp_md, const void *key, int key_len,
 
     if (md == NULL)
         md = m;
+
     HMAC_CTX_init(&c);
     if (!HMAC_Init(&c, key, key_len, evp_md))
         goto err;
@@ -163,9 +164,12 @@ uint8_t *HMAC(const EVP_MD *evp_md, const void *key, int key_len,
         goto err;
     if (!HMAC_Final(&c, md, md_len))
         goto err;
+
     HMAC_CTX_cleanup(&c);
     return md;
+
 err:
+    HMAC_CTX_cleanup(&c);
     return NULL;
 }
 

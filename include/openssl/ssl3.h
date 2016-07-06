@@ -193,6 +193,23 @@ extern "C" {
 #define SSL3_RT_APPLICATION_DATA 23
 #define TLS1_RT_HEARTBEAT 24
 
+/* Pseudo content types to indicate additional parameters */
+#define TLS1_RT_CRYPTO                  0x1000
+#define TLS1_RT_CRYPTO_PREMASTER        (TLS1_RT_CRYPTO | 0x1)
+#define TLS1_RT_CRYPTO_CLIENT_RANDOM    (TLS1_RT_CRYPTO | 0x2)
+#define TLS1_RT_CRYPTO_SERVER_RANDOM    (TLS1_RT_CRYPTO | 0x3)
+#define TLS1_RT_CRYPTO_MASTER           (TLS1_RT_CRYPTO | 0x4)
+
+#define TLS1_RT_CRYPTO_READ             0x0000
+#define TLS1_RT_CRYPTO_WRITE            0x0100
+#define TLS1_RT_CRYPTO_MAC              (TLS1_RT_CRYPTO | 0x5)
+#define TLS1_RT_CRYPTO_KEY              (TLS1_RT_CRYPTO | 0x6)
+#define TLS1_RT_CRYPTO_IV               (TLS1_RT_CRYPTO | 0x7)
+#define TLS1_RT_CRYPTO_FIXED_IV         (TLS1_RT_CRYPTO | 0x8)
+
+/* Pseudo content type for SSL/TLS header info */
+#define SSL3_RT_HEADER                  0x100
+
 #define SSL3_AL_WARNING 1
 #define SSL3_AL_FATAL 2
 
@@ -421,6 +438,7 @@ typedef struct ssl3_state_st {
 #define SSL3_ST_CR_CERT_REQ_B (0x151 | SSL_ST_CONNECT)
 #define SSL3_ST_CR_SRVR_DONE_A (0x160 | SSL_ST_CONNECT)
 #define SSL3_ST_CR_SRVR_DONE_B (0x161 | SSL_ST_CONNECT)
+
 /* write to server */
 #define SSL3_ST_CW_CERT_A (0x170 | SSL_ST_CONNECT)
 #define SSL3_ST_CW_CERT_B (0x171 | SSL_ST_CONNECT)
@@ -454,6 +472,7 @@ typedef struct ssl3_state_st {
 #define SSL3_ST_SR_CLNT_HELLO_A (0x110 | SSL_ST_ACCEPT)
 #define SSL3_ST_SR_CLNT_HELLO_B (0x111 | SSL_ST_ACCEPT)
 #define SSL3_ST_SR_CLNT_HELLO_C (0x112 | SSL_ST_ACCEPT)
+#define SSL3_ST_SR_CLNT_HELLO_D (0x115 | SSL_ST_ACCEPT)
 /* write to client */
 #define DTLS1_ST_SW_HELLO_VERIFY_REQUEST_A (0x113 | SSL_ST_ACCEPT)
 #define DTLS1_ST_SW_HELLO_VERIFY_REQUEST_B (0x114 | SSL_ST_ACCEPT)
@@ -505,7 +524,6 @@ typedef struct ssl3_state_st {
 #define SSL3_MT_CLIENT_KEY_EXCHANGE 16
 #define SSL3_MT_FINISHED 20
 #define SSL3_MT_CERTIFICATE_STATUS 22
-
 #define SSL3_MT_NEXT_PROTO 67
 
 #define DTLS1_MT_HELLO_VERIFY_REQUEST 3

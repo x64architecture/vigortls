@@ -21,6 +21,26 @@ function(
 endfunction(add_test_suite)
 
 function(
+    add_ssl_test_suite
+
+    testname
+
+    sources
+)
+
+    add_executable(${testname} ${sources})
+
+    add_test(
+        NAME ${testname}
+        COMMAND ${testname}
+        WORKING_DIRECTORY "${PROJECT_SOURCE_DIR}/tests/data"
+    )
+
+    target_link_libraries(${testname} crypto ssl)
+
+endfunction(add_ssl_test_suite)
+
+function(
     build_ssl_test
 
     testname
@@ -76,5 +96,10 @@ add_test_suite(sha256test sha256test.c)
 add_test_suite(sha512test sha512test.c)
 if (NOT WIN32)
 add_test(ssltest ${CMAKE_CURRENT_SOURCE_DIR}/ssltest.sh ${CMAKE_CURRENT_BINARY_DIR}/../apps ${CMAKE_CURRENT_SOURCE_DIR})
+#add_test(ocsptest ${CMAKE_CURRENT_SOURCE_DIR}/ocsptest.sh ${CMAKE_CURRENT_BINARY_DIR}/../apps ${CMAKE_CURRENT_SOURCE_DIR})
 endif()
 add_test_suite(wptest wptest.c)
+add_test_suite(v3nametest v3nametest.c)
+add_test_suite(evp_extra_test evp_extra_test.c)
+add_test_suite(verify_extra_test verify_extra_test.c)
+add_ssl_test_suite(clienthellotest clienthellotest.c)

@@ -7,6 +7,8 @@ if (${ARCH} STREQUAL "x86_64")
         sha1-x86_64.${ASM_EXT}
         sha256-x86_64.${ASM_EXT}
         sha512-x86_64.${ASM_EXT}
+        sha1-mb-x86_64.${ASM_EXT}
+        sha256-mb-x86_64.${ASM_EXT}
     )
 endif()
 
@@ -43,11 +45,13 @@ add_library(
 )
 
 perlasm(sha1-x86_64.${ASM_EXT} asm/sha1-x86_64.pl ${CMAKE_C_COMPILER})
-perlasm(sha256-x86_64.${ASM_EXT} asm/sha512-x86_64.pl sha256)
-perlasm(sha512-x86_64.${ASM_EXT} asm/sha512-x86_64.pl sha512)
+perlasm(sha256-x86_64.${ASM_EXT} asm/sha512-x86_64.pl ${CMAKE_C_COMPILER} sha256)
+perlasm(sha512-x86_64.${ASM_EXT} asm/sha512-x86_64.pl ${CMAKE_C_COMPILER} sha512)
 perlasm(sha1-586.${ASM_EXT} asm/sha1-586.pl)
 perlasm(sha256-586.${ASM_EXT} asm/sha256-586.pl)
 perlasm(sha512-586.${ASM_EXT} asm/sha512-586.pl)
 perlasm(sha1-armv4-large.${ASM_EXT} asm/sha1-armv4-large.pl)
 perlasm(sha256-armv4.${ASM_EXT} asm/sha256-armv4.pl)
 perlasm(sha512-armv4.${ASM_EXT} asm/sha512-armv4.pl)
+perlasm(sha1-mb-x86_64.${ASM_EXT} asm/sha1-mb-x86_64.pl ${CMAKE_C_COMPILER})
+perlasm(sha256-mb-x86_64.${ASM_EXT} asm/sha256-mb-x86_64.pl ${CMAKE_C_COMPILER})

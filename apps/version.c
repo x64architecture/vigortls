@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 - 2015, Kurt Cancemi (kurt@x64architecture.com)
+ * Copyright (c) 2014 - 2016, Kurt Cancemi (kurt@x64architecture.com)
  *
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -36,77 +36,90 @@
 #include "apps.h"
 #include "buildinf.h"
 
-typedef enum OPTION_choice {
-    OPT_ERR = -1,
-    OPT_EOF = 0,
-    OPT_HELP,
-    OPT_B,
-    OPT_F,
-    OPT_O,
-    OPT_P,
-    OPT_V,
-    OPT_A
-} OPTION_CHOICE;
+static struct {
+    int cflags;
+    int date;
+    int options;
+    int platform;
+    int version;
+} version_opts;
 
-OPTIONS version_options[] = {
-    { "help", OPT_HELP, '-', "Display this summary" },
-    { "a", OPT_A, '-', "Show all data" },
-    { "b", OPT_B, '-', "Show build date" },
-    { "f", OPT_F, '-', "Show compiler flags used" },
-    { "o", OPT_O, '-', "Show some internal datatype options" },
-    { "p", OPT_P, '-', "Show target build platform" },
-    { "v", OPT_V, '-', "Show library version" },
-    { NULL }
+static int version_print_all_opts(struct OPTION *opt, char *arg)
+{
+    version_opts.cflags = 1;
+    version_opts.date = 1;
+    version_opts.options = 1;
+    version_opts.platform = 1;
+    version_opts.version = 1;
+
+    return (0);
+}
+
+static struct OPTION version_options[] = {
+    {
+        .name = "a",
+        .desc = "Print all the information (equivalent to setting all the "
+                "other flags)",
+        .type = OPTION_FUNC,
+        .func = version_print_all_opts,
+    },
+    {
+        .name = "b",
+        .desc = "Print the date the current version of VigorTLS was built",
+        .type = OPTION_FLAG,
+        .opt.flag = &version_opts.date,
+    },
+    {
+        .name = "f",
+        .desc = "Print the compilation flags",
+        .type = OPTION_FLAG,
+        .opt.flag = &version_opts.cflags,
+    },
+    {
+        .name = "o",
+        .desc = "Print the cipher options",
+        .type = OPTION_FLAG,
+        .opt.flag = &version_opts.options,
+    },
+    {
+        .name = "p",
+        .desc = "Print the Platform",
+        .type = OPTION_FLAG,
+        .opt.flag = &version_opts.platform,
+    },
+    {
+        .name = "v",
+        .desc = "Print the current VigorTLS version",
+        .type = OPTION_FLAG,
+        .opt.flag = &version_opts.version,
+    },
 };
+
+static void version_usage(void)
+{
+    fprintf(stderr, "usage: version [-abfopv]\n");
+    options_usage(version_options);
+}
 
 int version_main(int argc, char **argv)
 {
-    int ret = 1, dirty = 0;
-    int cflags = 0, version = 0, date = 0, options = 0, platform = 0, dir = 0;
-    char *prog;
-    OPTION_CHOICE o;
+    memset(&version_opts, 0, sizeof(version_opts));
 
-    prog = opt_init(argc, argv, version_options);
-    while ((o = opt_next()) != OPT_EOF) {
-        switch (o) {
-            case OPT_EOF:
-            case OPT_ERR:
-                BIO_printf(bio_err, "%s: Use -help for summary.\n", prog);
-                goto end;
-            case OPT_HELP:
-                opt_help(version_options);
-                ret = 0;
-                goto end;
-            case OPT_B:
-                dirty = date = 1;
-                break;
-            case OPT_F:
-                dirty = cflags = 1;
-                break;
-            case OPT_O:
-                dirty = options = 1;
-                break;
-            case OPT_P:
-                dirty = platform = 1;
-                break;
-            case OPT_V:
-                dirty = version = 1;
-                break;
-            case OPT_A:
-                cflags = version = date = platform = dir = 1;
-                break;
-        }
+    if (options_parse(argc, argv, version_options, NULL) != 0) {
+        version_usage();
+        return (1);
     }
-    if (!dirty)
-        version = 1;
 
-    if (version)
+    if (argc == 1)
+        version_opts.version = 1;
+
+    if (version_opts.version)
         printf("%s\n", OPENSSL_VERSION_TEXT);
-    if (date)
+    if (version_opts.date)
         printf("Built on: %s at %s\n", BUILDDATE, BUILDTIME);
-    if (platform)
+    if (version_opts.platform)
         printf("Platform: %s\n", PLATFORM);
-    if (options) {
+    if (version_opts.options) {
         printf("Options:  ");
         printf("%s ", BN_options());
         printf("%s ", RC4_options());
@@ -116,11 +129,13 @@ int version_main(int argc, char **argv)
 #ifndef OPENSSL_NO_IDEA
         printf("%s ", idea_options());
 #endif
+#ifndef OPENSSL_NO_BF
+        printf("%s ", BF_options());
+#endif
         printf("\n");
     }
-    if (cflags)
+    if (version_opts.cflags)
         printf("Compiler: %s\n", CFLAGS);
-    ret = 0;
-end:
-    return ret;
+
+    return (0);
 }

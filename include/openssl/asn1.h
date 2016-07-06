@@ -496,7 +496,7 @@ DECLARE_ASN1_FUNCTIONS_fname(ASN1_TYPE, ASN1_ANY, ASN1_TYPE)
 int ASN1_TYPE_get(ASN1_TYPE *a);
 void ASN1_TYPE_set(ASN1_TYPE *a, int type, void *value);
 int ASN1_TYPE_set1(ASN1_TYPE *a, int type, const void *value);
-int ASN1_TYPE_cmp(const ASN1_TYPE *a, ASN1_TYPE *b);
+int ASN1_TYPE_cmp(const ASN1_TYPE *a, const ASN1_TYPE *b);
 
 ASN1_TYPE *ASN1_TYPE_pack_sequence(const ASN1_ITEM *it, void *s, ASN1_TYPE **t);
 void *ASN1_TYPE_unpack_sequence(const ASN1_ITEM *it, const ASN1_TYPE *t);
@@ -513,6 +513,7 @@ DECLARE_ASN1_SET_OF(ASN1_OBJECT)
 
 ASN1_STRING *ASN1_STRING_new(void);
 void ASN1_STRING_free(ASN1_STRING *a);
+void ASN1_STRING_clear_free(ASN1_STRING *a);
 int ASN1_STRING_copy(ASN1_STRING *dst, const ASN1_STRING *str);
 ASN1_STRING *ASN1_STRING_dup(const ASN1_STRING *a);
 ASN1_STRING *ASN1_STRING_type_new(int type);

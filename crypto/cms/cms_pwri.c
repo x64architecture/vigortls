@@ -53,9 +53,10 @@ CMS_RecipientInfo *CMS_add0_recipient_password(CMS_ContentInfo *cms,
     X509_ALGOR *encalg = NULL;
     uint8_t iv[EVP_MAX_IV_LENGTH];
     int ivlen;
+
     env = cms_get0_enveloped(cms);
-    if (!env)
-        goto err;
+    if (env == NULL)
+        return NULL;
 
     if (wrap_nid <= 0)
         wrap_nid = NID_id_alg_PWRI_KEK;
@@ -79,6 +80,8 @@ CMS_RecipientInfo *CMS_add0_recipient_password(CMS_ContentInfo *cms,
 
     /* Setup algorithm identifier for cipher */
     encalg = X509_ALGOR_new();
+    if (encalg == NULL)
+        goto err;
     EVP_CIPHER_CTX_init(&ctx);
 
     if (EVP_EncryptInit_ex(&ctx, kekciph, NULL, NULL, NULL) <= 0) {
@@ -187,6 +190,8 @@ static int kek_unwrap_key(uint8_t *out, size_t *outlen,
         return 0;
     }
     tmp = malloc(inlen);
+    if (tmp == NULL)
+        return 0;
     /* setup IV by decrypting last two blocks */
     EVP_DecryptUpdate(ctx, tmp + inlen - 2 * blocklen, &outl,
                       in + inlen - 2 * blocklen, blocklen * 2);
@@ -248,8 +253,8 @@ static int kek_wrap_key(uint8_t *out, size_t *outlen,
         out[3] = in[2] ^ 0xFF;
         memcpy(out + 4, in, inlen);
         /* Add random padding to end */
-        if (olen > inlen + 4)
-            && RAND_bytes(out + 4 + inlen, olen - 4 - inlen <= 0)
+        if (olen > inlen + 4
+            && (RAND_bytes(out + 4 + inlen, olen - 4 - inlen) <= 0))
             return 0;
         /* Encrypt twice */
         EVP_EncryptUpdate(ctx, out, &dummy, out, olen);

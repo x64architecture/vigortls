@@ -15,6 +15,7 @@
 #ifndef OPENSSL_NO_ENGINE
 #include <openssl/engine.h>
 #endif
+#include <openssl/dh.h>
 #include <openssl/evp.h>
 #include <openssl/objects.h>
 #include <openssl/pkcs12.h>
@@ -158,9 +159,8 @@ int PEM_write_bio_Parameters(BIO *bp, EVP_PKEY *x)
         return 0;
 
     snprintf(pem_str, 80, "%s PARAMETERS", x->ameth->pem_str);
-    return PEM_ASN1_write_bio(
-        (i2d_of_void *)x->ameth->param_encode,
-        pem_str, bp, x, NULL, NULL, 0, 0, NULL);
+    return PEM_ASN1_write_bio((i2d_of_void *)x->ameth->param_encode, pem_str,
+                              bp, x, NULL, NULL, 0, 0, NULL);
 }
 
 EVP_PKEY *PEM_read_PrivateKey(FILE *fp, EVP_PKEY **x, pem_password_cb *cb, void *u)
@@ -170,17 +170,17 @@ EVP_PKEY *PEM_read_PrivateKey(FILE *fp, EVP_PKEY **x, pem_password_cb *cb, void 
 
     if ((b = BIO_new(BIO_s_file())) == NULL) {
         PEMerr(PEM_F_PEM_READ_PRIVATEKEY, ERR_R_BUF_LIB);
-        return (0);
+        return 0;
     }
     BIO_set_fp(b, fp, BIO_NOCLOSE);
     ret = PEM_read_bio_PrivateKey(b, x, cb, u);
     BIO_free(b);
-    return (ret);
+    return ret;
 }
 
 int PEM_write_PrivateKey(FILE *fp, EVP_PKEY *x, const EVP_CIPHER *enc,
-                         uint8_t *kstr, int klen,
-                         pem_password_cb *cb, void *u)
+                         uint8_t *kstr, int klen, pem_password_cb *cb,
+                         void *u)
 {
     BIO *b;
     int ret;
@@ -190,6 +190,47 @@ int PEM_write_PrivateKey(FILE *fp, EVP_PKEY *x, const EVP_CIPHER *enc,
         return 0;
     }
     ret = PEM_write_bio_PrivateKey(b, x, enc, kstr, klen, cb, u);
+    BIO_free(b);
+    return ret;
+}
+
+/* Transparently read in PKCS#3 or X9.42 DH parameters */
+
+DH *PEM_read_bio_DHparams(BIO *bp, DH **x, pem_password_cb *cb, void *u)
+{
+    char *nm = NULL;
+    const uint8_t *p = NULL;
+    uint8_t *data = NULL;
+    long len;
+    DH *ret = NULL;
+
+    if (!PEM_bytes_read_bio(&data, &len, &nm, PEM_STRING_DHPARAMS, bp, cb, u))
+        return NULL;
+    p = data;
+
+    if (strcmp(nm, PEM_STRING_DHXPARAMS) == 0)
+        ret = d2i_DHxparams(x, &p, len);
+    else
+        ret = d2i_DHparams(x, &p, len);
+
+    if (ret == NULL)
+        PEMerr(PEM_F_PEM_READ_BIO_DHPARAMS, ERR_R_ASN1_LIB);
+    free(nm);
+    free(data);
+    return ret;
+}
+
+DH *PEM_read_DHparams(FILE *fp, DH **x, pem_password_cb *cb, void *u)
+{
+    BIO *b;
+    DH *ret;
+
+    if ((b = BIO_new(BIO_s_file())) == NULL) {
+        PEMerr(PEM_F_PEM_READ_DHPARAMS, ERR_R_BUF_LIB);
+        return 0;
+    }
+    BIO_set_fp(b, fp, BIO_NOCLOSE);
+    ret = PEM_read_bio_DHparams(b, x, cb, u);
     BIO_free(b);
     return ret;
 }

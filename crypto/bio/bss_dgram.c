@@ -121,16 +121,18 @@ static void dgram_adjust_rcv_timeout(BIO *b)
 
         /* Calculate time left until timer expires */
         memcpy(&timeleft, &(data->next_timeout), sizeof(struct timeval));
-        timeleft.tv_sec -= timenow.tv_sec;
-        timeleft.tv_usec -= timenow.tv_usec;
-        if (timeleft.tv_usec < 0) {
+        if (timeleft.tv_usec < timenow.tv_usec) {
+            timeleft.tv_usec = 1000000 - timenow.tv_usec + timeleft.tv_usec;
             timeleft.tv_sec--;
-            timeleft.tv_usec += 1000000;
+        } else {
+            timeleft.tv_usec -= timenow.tv_usec;
         }
 
-        if (timeleft.tv_sec < 0) {
+        if (timeleft.tv_sec < timenow.tv_sec) {
             timeleft.tv_sec = 0;
             timeleft.tv_usec = 1;
+        } else {
+            timeleft.tv_sec -= timenow.tv_sec;
         }
 
         /* Adjust socket timeout if next handhake message timer
@@ -228,6 +230,33 @@ static int dgram_write(BIO *b, const char *in, int inl)
         }
     }
     return (ret);
+}
+
+static long dgram_get_mtu_overhead(bio_dgram_data *data)
+{
+    long ret;
+
+    switch (data->peer.sa.sa_family) {
+        case AF_INET:
+            /* Assume this is UDP - 20 bytes for IP, 8 bytes for UDP */
+            ret = 28;
+            break;
+        case AF_INET6:
+#ifdef IN6_IS_ADDR_V4MAPPED
+            if (IN6_IS_ADDR_V4MAPPED(&data->peer.sa_in6.sin6_addr))
+                /* Assume this is UDP - 20 bytes for IP, 8 bytes for UDP */
+                ret = 28;
+            else
+#endif
+                /* Assume this is UDP - 40 bytes for IP, 8 bytes for UDP */
+                ret = 48;
+            break;
+        default:
+            /* We don't know. Go with the historical default */
+            ret = 28;
+            break;
+    }
+    return ret;
 }
 
 static long dgram_ctrl(BIO *b, int cmd, long num, void *ptr)
@@ -381,20 +410,21 @@ static long dgram_ctrl(BIO *b, int cmd, long num, void *ptr)
 #endif
             break;
         case BIO_CTRL_DGRAM_GET_FALLBACK_MTU:
+            ret = -dgram_get_mtu_overhead(data);
             switch (data->peer.sa.sa_family) {
                 case AF_INET:
-                    ret = 576 - 20 - 8;
+                    ret += 576;
                     break;
                 case AF_INET6:
 #ifdef IN6_IS_ADDR_V4MAPPED
                     if (IN6_IS_ADDR_V4MAPPED(&data->peer.sa_in6.sin6_addr))
-                        ret = 576 - 20 - 8;
+                        ret += 576;
                     else
 #endif
-                        ret = 1280 - 40 - 8;
+                        ret += 1280;
                     break;
                 default:
-                    ret = 576 - 20 - 8;
+                    ret += 576;
                     break;
             }
             break;
@@ -527,6 +557,9 @@ static long dgram_ctrl(BIO *b, int cmd, long num, void *ptr)
                 ret = 0;
             break;
 #endif
+        case BIO_CTRL_DGRAM_GET_MTU_OVERHEAD:
+            ret = dgram_get_mtu_overhead(data);
+            break;
         default:
             ret = 0;
             break;

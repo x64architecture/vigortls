@@ -91,3 +91,17 @@ void AES_ofb128_encrypt(const uint8_t *in, uint8_t *out, size_t length,
 {
     CRYPTO_ofb128_encrypt(in, out, length, key, ivec, num, (block128_f)AES_encrypt);
 }
+
+/* Wrap Mode */
+
+int AES_wrap_key(AES_KEY *key, const uint8_t *iv, uint8_t *out, const uint8_t *in,
+                 unsigned int inlen)
+{
+    return CRYPTO_128_wrap(key, iv, out, in, inlen, (block128_f)AES_encrypt);
+}
+
+int AES_unwrap_key(AES_KEY *key, const uint8_t *iv, uint8_t *out, const uint8_t *in,
+                   unsigned int inlen)
+{
+    return CRYPTO_128_unwrap(key, iv, out, in, inlen, (block128_f)AES_decrypt);
+}

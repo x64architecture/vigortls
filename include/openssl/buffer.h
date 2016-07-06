@@ -37,11 +37,12 @@ void BUF_MEM_free(BUF_MEM *a);
 int BUF_MEM_grow(BUF_MEM *str, size_t len);
 int BUF_MEM_grow_clean(BUF_MEM *str, size_t len);
 #ifndef VIGORTLS_INTERNAL
+size_t BUF_strnlen(const char *str, size_t maxlen);
 char *BUF_strdup(const char *str);
 char *BUF_strndup(const char *str, size_t siz);
 void *BUF_memdup(const void *data, size_t siz);
-void BUF_reverse(uint8_t *out, const uint8_t *in, size_t siz);
 #endif
+void BUF_reverse(uint8_t *out, const uint8_t *in, size_t siz);
 
 /* safe string functions */
 size_t BUF_strlcpy(char *dst, const char *src, size_t siz);

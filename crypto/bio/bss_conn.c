@@ -502,7 +502,7 @@ static BIO_METHOD methods_connectp = {
     .callback_ctrl = conn_callback_ctrl,
 };
 
-BIO *BIO_new_connect(char *str)
+BIO *BIO_new_connect(const char *str)
 {
     BIO *ret;
 

@@ -1,7 +1,6 @@
 Language:        Cpp
-AccessModifierOffset: -2
 ConstructorInitializerIndentWidth: 4
-AlignConsecutiveAssignments: true
+AlignConsecutiveAssignments: false
 AlignEscapedNewlinesLeft: true
 AlignTrailingComments: true
 AlignOperands: true
@@ -22,12 +21,6 @@ DerivePointerBinding: false
 ExperimentalAutoDetectBinPacking: false
 IndentCaseLabels: true
 MaxEmptyLinesToKeep: 1
-PenaltyBreakBeforeFirstCallParameter: 19
-PenaltyBreakComment: 300
-PenaltyBreakString: 1000
-PenaltyBreakFirstLessLess: 120
-PenaltyExcessCharacter: 1000000
-PenaltyReturnTypeOnItsOwnLine: 60
 PointerBindsToType: false
 SpacesBeforeTrailingComments: 1
 Cpp11BracedListStyle: false

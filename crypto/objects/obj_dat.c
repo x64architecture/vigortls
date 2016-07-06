@@ -329,8 +329,10 @@ static int obj_cmp(const ASN1_OBJECT *const *ap, const unsigned int *bp)
 
     j = (a->length - b->length);
     if (j)
-        return (j);
-    return (memcmp(a->data, b->data, a->length));
+        return j;
+    if (a->length == 0)
+        return 0;
+    return memcmp(a->data, b->data, a->length);
 }
 
 IMPLEMENT_OBJ_BSEARCH_CMP_FN(const ASN1_OBJECT *, unsigned int, obj);
@@ -341,21 +343,24 @@ int OBJ_obj2nid(const ASN1_OBJECT *a)
     ADDED_OBJ ad, *adp;
 
     if (a == NULL)
-        return (NID_undef);
+        return NID_undef;
     if (a->nid != 0)
-        return (a->nid);
+        return a->nid;
+
+    if (a->length == 0)
+        return NID_undef;
 
     if (added != NULL) {
         ad.type = ADDED_DATA;
         ad.obj = (ASN1_OBJECT *)a; /* XXX: ugly but harmless */
         adp = lh_ADDED_OBJ_retrieve(added, &ad);
         if (adp != NULL)
-            return (adp->obj->nid);
+            return adp->obj->nid;
     }
     op = OBJ_bsearch_obj(&a, obj_objs, NUM_OBJ);
     if (op == NULL)
-        return (NID_undef);
-    return (nid_objs[*op].nid);
+        return NID_undef;
+    return nid_objs[*op].nid;
 }
 
 /* Convert an object name into an ASN1_OBJECT

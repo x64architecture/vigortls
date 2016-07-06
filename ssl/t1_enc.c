@@ -121,7 +121,7 @@ static int tls1_P_hash(const EVP_MD *md, const uint8_t *sec, int sec_len,
 {
     int chunk;
     size_t j;
-    EVP_MD_CTX ctx, ctx_tmp;
+    EVP_MD_CTX ctx, ctx_tmp, ctx_init;
     EVP_PKEY *mac_key;
     uint8_t A1[EVP_MAX_MD_SIZE];
     size_t A1_len;
@@ -132,12 +132,14 @@ static int tls1_P_hash(const EVP_MD *md, const uint8_t *sec, int sec_len,
 
     EVP_MD_CTX_init(&ctx);
     EVP_MD_CTX_init(&ctx_tmp);
+    EVP_MD_CTX_init(&ctx_init);
+    
     mac_key = EVP_PKEY_new_mac_key(EVP_PKEY_HMAC, NULL, sec, sec_len);
-    if (!mac_key)
+    if (mac_key == NULL)
         goto err;
-    if (!EVP_DigestSignInit(&ctx, NULL, md, NULL, mac_key))
+    if (!EVP_DigestSignInit(&ctx_init, NULL, md, NULL, mac_key))
         goto err;
-    if (!EVP_DigestSignInit(&ctx_tmp, NULL, md, NULL, mac_key))
+    if (!EVP_MD_CTX_copy_ex(&ctx, &ctx_init))
         goto err;
     if (seed1 && !EVP_DigestSignUpdate(&ctx, seed1, seed1_len))
         goto err;
@@ -154,13 +156,11 @@ static int tls1_P_hash(const EVP_MD *md, const uint8_t *sec, int sec_len,
 
     for (;;) {
         /* Reinit mac contexts */
-        if (!EVP_DigestSignInit(&ctx, NULL, md, NULL, mac_key))
-            goto err;
-        if (!EVP_DigestSignInit(&ctx_tmp, NULL, md, NULL, mac_key))
+        if (!EVP_MD_CTX_copy_ex(&ctx, &ctx_init))
             goto err;
         if (!EVP_DigestSignUpdate(&ctx, A1, A1_len))
             goto err;
-        if (!EVP_DigestSignUpdate(&ctx_tmp, A1, A1_len))
+        if (olen > chunk && !EVP_MD_CTX_copy_ex(&ctx_tmp, &ctx))
             goto err;
         if (seed1 && !EVP_DigestSignUpdate(&ctx, seed1, seed1_len))
             goto err;
@@ -195,6 +195,7 @@ err:
     EVP_PKEY_free(mac_key);
     EVP_MD_CTX_cleanup(&ctx);
     EVP_MD_CTX_cleanup(&ctx_tmp);
+    EVP_MD_CTX_cleanup(&ctx_init);
     vigortls_zeroize(A1, sizeof(A1));
     return ret;
 }
@@ -522,6 +523,22 @@ int tls1_change_cipher_state(SSL *s, int which)
         s->s3->write_mac_secret_size = mac_secret_size;
     }
 
+#ifdef OPENSSL_SSL_TRACE_CRYPTO
+    if (s->msg_callback) {
+        int wh =
+            is_read ?TLS1_RT_CRYPTO_READ : TLS1_RT_CRYPTO_WRITE;
+        s->msg_callback(2, s->version, wh | TLS1_RT_CRYPTO_MAC, mac_secret,
+                        EVP_MD_size(m), s, s->msg_callback_arg);
+        if (c->key_len)
+            s->msg_callback(2, s->version, wh | TLS1_RT_CRYPTO_KEY, key,
+                            c->key_len, s, s->msg_callback_arg);
+        if (k) {
+            s->msg_callback(2, s->version, wh | TLS1_RT_CRYPTO_IV, iv, k, s,
+                            s->msg_callback_arg);
+        }
+    }
+#endif
+
     if (aead != NULL) {
         return tls1_change_cipher_state_aead(s, is_read, key, key_len, iv, iv_len);
     }
@@ -531,7 +548,7 @@ int tls1_change_cipher_state(SSL *s, int which)
                                            key_len, iv, iv_len);
 
 err2:
-    return (0);
+    return 0;
 }
 
 int tls1_setup_key_block(SSL *s)
@@ -594,7 +611,9 @@ int tls1_setup_key_block(SSL *s)
     if (!tls1_generate_key_block(s, key_block, tmp_block, key_block_len))
         goto err;
 
-    if (!(s->options & SSL_OP_DONT_INSERT_EMPTY_FRAGMENTS) && s->method->version <= TLS1_VERSION) {
+    if (!(s->options & SSL_OP_DONT_INSERT_EMPTY_FRAGMENTS) &&
+        s->method->version <= TLS1_VERSION)
+    {
         /*
          * Enable vulnerability countermeasure for CBC ciphers with
          * known-IV problem (http://www.openssl.org/~bodo/tls-cbc.txt)
@@ -617,7 +636,7 @@ err:
         vigortls_zeroize(tmp_block, key_block_len);
         free(tmp_block);
     }
-    return (ret);
+    return ret;
 }
 
 /* tls1_enc encrypts/decrypts the record in |s->wrec| / |s->rrec|, respectively.
@@ -835,7 +854,7 @@ int tls1_enc(SSL *s, int send)
         bs = EVP_CIPHER_block_size(ds->cipher);
 
         if (EVP_CIPHER_flags(ds->cipher) & EVP_CIPH_FLAG_AEAD_CIPHER) {
-            uint8_t buf[13];
+            uint8_t buf[EVP_AEAD_TLS1_AAD_LEN];
 
             if (SSL_IS_DTLS(s)) {
                 dtls1_build_sequence_number(buf, seq,
@@ -850,7 +869,10 @@ int tls1_enc(SSL *s, int send)
             buf[10] = (uint8_t)(s->version);
             buf[11] = rec->length >> 8;
             buf[12] = rec->length & 0xff;
-            pad = EVP_CIPHER_CTX_ctrl(ds, EVP_CTRL_AEAD_TLS1_AAD, 13, buf);
+            pad = EVP_CIPHER_CTX_ctrl(ds, EVP_CTRL_AEAD_TLS1_AAD,
+                                      EVP_AEAD_TLS1_AAD_LEN, buf);
+            if (pad <= 0)
+                return -1;
             if (send) {
                 l += pad;
                 rec->length += pad;
@@ -874,7 +896,8 @@ int tls1_enc(SSL *s, int send)
         }
 
         i = EVP_Cipher(ds, rec->data, rec->input, l);
-        if ((EVP_CIPHER_flags(ds->cipher) & EVP_CIPH_FLAG_CUSTOM_CIPHER) ? (i < 0) : (i == 0))
+        if ((EVP_CIPHER_flags(ds->cipher) & EVP_CIPH_FLAG_CUSTOM_CIPHER) ?
+            (i < 0) : (i == 0))
             return -1; /* AEAD can fail to verify MAC */
         if (EVP_CIPHER_mode(enc) == EVP_CIPH_GCM_MODE && !send) {
             rec->data += EVP_GCM_TLS_EXPLICIT_IV_LEN;
@@ -956,7 +979,8 @@ int tls1_mac(SSL *ssl, uint8_t *md, int send)
     size_t md_size, orig_len;
     EVP_MD_CTX hmac, *mac_ctx;
     uint8_t header[13];
-    int stream_mac = (send ? (ssl->mac_flags & SSL_MAC_FLAG_WRITE_MAC_STREAM) : (ssl->mac_flags & SSL_MAC_FLAG_READ_MAC_STREAM));
+    int stream_mac = (send ? (ssl->mac_flags & SSL_MAC_FLAG_WRITE_MAC_STREAM) :
+                             (ssl->mac_flags & SSL_MAC_FLAG_READ_MAC_STREAM));
     int t;
 
     if (send) {
@@ -999,10 +1023,12 @@ int tls1_mac(SSL *ssl, uint8_t *md, int send)
     header[12] = (rec->length) & 0xff;
 
     if (!send && EVP_CIPHER_CTX_mode(ssl->enc_read_ctx) == EVP_CIPH_CBC_MODE && ssl3_cbc_record_digest_supported(mac_ctx)) {
-        /* This is a CBC-encrypted record. We must avoid leaking any
-     * timing-side channel information about how many blocks of
-     * data we are hashing because that gives an attacker a
-     * timing-oracle. */
+        /*
+         * This is a CBC-encrypted record. We must avoid leaking any
+         * timing-side channel information about how many blocks of
+         * data we are hashing because that gives an attacker a
+         * timing-oracle.
+         */
         ssl3_cbc_digest_record(mac_ctx, md, &md_size, header, rec->input,
                                rec->length + md_size, orig_len,
                                ssl->s3->read_mac_secret,
@@ -1027,6 +1053,9 @@ int tls1_generate_master_secret(SSL *s, uint8_t *out, uint8_t *p,
                                 int len)
 {
     uint8_t buff[SSL_MAX_MASTER_KEY_LENGTH];
+#ifdef OPENSSL_SSL_TRACE_CRYPTO
+    uint8_t *tmpout = out;
+#endif
 
     tls1_PRF(ssl_get_algorithm2(s),
              TLS_MD_MASTER_SECRET_CONST, TLS_MD_MASTER_SECRET_CONST_SIZE,
@@ -1036,7 +1065,22 @@ int tls1_generate_master_secret(SSL *s, uint8_t *out, uint8_t *p,
 
     vigortls_zeroize(buff, sizeof buff);
 
-    return (SSL3_MASTER_SECRET_SIZE);
+#ifdef OPENSSL_SSL_TRACE_CRYPTO
+    if (s->msg_callback) {
+        s->msg_callback(2, s->version, TLS1_RT_CRYPTO_PREMASTER, p, len, s,
+                        s->msg_callback_arg);
+        s->msg_callback(2, s->version, TLS1_RT_CRYPTO_CLIENT_RANDOM,
+                        s->s3->client_random, SSL3_RANDOM_SIZE, s,
+                        s->msg_callback_arg);
+        s->msg_callback(2, s->version, TLS1_RT_CRYPTO_SERVER_RANDOM,
+                        s->s3->server_random, SSL3_RANDOM_SIZE, s,
+                        s->msg_callback_arg);
+        s->msg_callback(2, s->version, TLS1_RT_CRYPTO_MASTER, tmpout,
+                        SSL3_MASTER_SECRET_SIZE, s, s->msg_callback_arg);
+    }
+#endif
+
+    return SSL3_MASTER_SECRET_SIZE;
 }
 
 int tls1_export_keying_material(SSL *s, uint8_t *out, size_t olen,
@@ -1054,10 +1098,10 @@ int tls1_export_keying_material(SSL *s, uint8_t *out, size_t olen,
         goto err2;
 
     /* construct PRF arguments
-   * we construct the PRF argument ourself rather than passing separate
-   * values into the TLS PRF to ensure that the concatenation of values
-   * does not create a prohibited label.
-   */
+     * we construct the PRF argument ourself rather than passing separate
+     * values into the TLS PRF to ensure that the concatenation of values
+     * does not create a prohibited label.
+     */
     vallen = llen + SSL3_RANDOM_SIZE * 2;
     if (use_context) {
         vallen += 2 + contextlen;
@@ -1084,11 +1128,12 @@ int tls1_export_keying_material(SSL *s, uint8_t *out, size_t olen,
         }
     }
 
-    /* disallow prohibited labels
-   * note that SSL3_RANDOM_SIZE > max(prohibited label len) =
-   * 15, so size of val > max(prohibited label len) = 15 and the
-   * comparisons won't have buffer overflow
-   */
+    /*
+     * disallow prohibited labels
+     * note that SSL3_RANDOM_SIZE > max(prohibited label len) =
+     * 15, so size of val > max(prohibited label len) = 15 and the
+     * comparisons won't have buffer overflow
+     */
     if (memcmp(val, TLS_MD_CLIENT_FINISH_CONST,
                TLS_MD_CLIENT_FINISH_CONST_SIZE) == 0)
         goto err1;
@@ -1127,68 +1172,68 @@ int tls1_alert_code(int code)
 {
     switch (code) {
         case SSL_AD_CLOSE_NOTIFY:
-            return (SSL3_AD_CLOSE_NOTIFY);
+            return SSL3_AD_CLOSE_NOTIFY;
         case SSL_AD_UNEXPECTED_MESSAGE:
-            return (SSL3_AD_UNEXPECTED_MESSAGE);
+            return SSL3_AD_UNEXPECTED_MESSAGE;
         case SSL_AD_BAD_RECORD_MAC:
-            return (SSL3_AD_BAD_RECORD_MAC);
+            return SSL3_AD_BAD_RECORD_MAC;
         case SSL_AD_DECRYPTION_FAILED:
-            return (TLS1_AD_DECRYPTION_FAILED);
+            return TLS1_AD_DECRYPTION_FAILED;
         case SSL_AD_RECORD_OVERFLOW:
-            return (TLS1_AD_RECORD_OVERFLOW);
+            return TLS1_AD_RECORD_OVERFLOW;
         case SSL_AD_DECOMPRESSION_FAILURE:
-            return (SSL3_AD_DECOMPRESSION_FAILURE);
+            return SSL3_AD_DECOMPRESSION_FAILURE;
         case SSL_AD_HANDSHAKE_FAILURE:
-            return (SSL3_AD_HANDSHAKE_FAILURE);
+            return SSL3_AD_HANDSHAKE_FAILURE;
         case SSL_AD_NO_CERTIFICATE:
-            return (-1);
+            return -1;
         case SSL_AD_BAD_CERTIFICATE:
-            return (SSL3_AD_BAD_CERTIFICATE);
+            return SSL3_AD_BAD_CERTIFICATE;
         case SSL_AD_UNSUPPORTED_CERTIFICATE:
-            return (SSL3_AD_UNSUPPORTED_CERTIFICATE);
+            return SSL3_AD_UNSUPPORTED_CERTIFICATE;
         case SSL_AD_CERTIFICATE_REVOKED:
-            return (SSL3_AD_CERTIFICATE_REVOKED);
+            return SSL3_AD_CERTIFICATE_REVOKED;
         case SSL_AD_CERTIFICATE_EXPIRED:
-            return (SSL3_AD_CERTIFICATE_EXPIRED);
+            return SSL3_AD_CERTIFICATE_EXPIRED;
         case SSL_AD_CERTIFICATE_UNKNOWN:
-            return (SSL3_AD_CERTIFICATE_UNKNOWN);
+            return SSL3_AD_CERTIFICATE_UNKNOWN;
         case SSL_AD_ILLEGAL_PARAMETER:
-            return (SSL3_AD_ILLEGAL_PARAMETER);
+            return SSL3_AD_ILLEGAL_PARAMETER;
         case SSL_AD_UNKNOWN_CA:
-            return (TLS1_AD_UNKNOWN_CA);
+            return TLS1_AD_UNKNOWN_CA;
         case SSL_AD_ACCESS_DENIED:
-            return (TLS1_AD_ACCESS_DENIED);
+            return TLS1_AD_ACCESS_DENIED;
         case SSL_AD_DECODE_ERROR:
-            return (TLS1_AD_DECODE_ERROR);
+            return TLS1_AD_DECODE_ERROR;
         case SSL_AD_DECRYPT_ERROR:
-            return (TLS1_AD_DECRYPT_ERROR);
+            return TLS1_AD_DECRYPT_ERROR;
         case SSL_AD_EXPORT_RESTRICTION:
-            return (TLS1_AD_EXPORT_RESTRICTION);
+            return TLS1_AD_EXPORT_RESTRICTION;
         case SSL_AD_PROTOCOL_VERSION:
-            return (TLS1_AD_PROTOCOL_VERSION);
+            return TLS1_AD_PROTOCOL_VERSION;
         case SSL_AD_INSUFFICIENT_SECURITY:
-            return (TLS1_AD_INSUFFICIENT_SECURITY);
+            return TLS1_AD_INSUFFICIENT_SECURITY;
         case SSL_AD_INTERNAL_ERROR:
-            return (TLS1_AD_INTERNAL_ERROR);
+            return TLS1_AD_INTERNAL_ERROR;
         case SSL_AD_USER_CANCELLED:
-            return (TLS1_AD_USER_CANCELLED);
+            return TLS1_AD_USER_CANCELLED;
         case SSL_AD_NO_RENEGOTIATION:
-            return (TLS1_AD_NO_RENEGOTIATION);
+            return TLS1_AD_NO_RENEGOTIATION;
         case SSL_AD_UNSUPPORTED_EXTENSION:
-            return (TLS1_AD_UNSUPPORTED_EXTENSION);
+            return TLS1_AD_UNSUPPORTED_EXTENSION;
         case SSL_AD_CERTIFICATE_UNOBTAINABLE:
-            return (TLS1_AD_CERTIFICATE_UNOBTAINABLE);
+            return TLS1_AD_CERTIFICATE_UNOBTAINABLE;
         case SSL_AD_UNRECOGNIZED_NAME:
-            return (TLS1_AD_UNRECOGNIZED_NAME);
+            return TLS1_AD_UNRECOGNIZED_NAME;
         case SSL_AD_BAD_CERTIFICATE_STATUS_RESPONSE:
-            return (TLS1_AD_BAD_CERTIFICATE_STATUS_RESPONSE);
+            return TLS1_AD_BAD_CERTIFICATE_STATUS_RESPONSE;
         case SSL_AD_BAD_CERTIFICATE_HASH_VALUE:
-            return (TLS1_AD_BAD_CERTIFICATE_HASH_VALUE);
+            return TLS1_AD_BAD_CERTIFICATE_HASH_VALUE;
         case SSL_AD_UNKNOWN_PSK_IDENTITY:
-            return (TLS1_AD_UNKNOWN_PSK_IDENTITY);
+            return TLS1_AD_UNKNOWN_PSK_IDENTITY;
         case SSL_AD_INAPPROPRIATE_FALLBACK:
-            return (TLS1_AD_INAPPROPRIATE_FALLBACK);
+            return TLS1_AD_INAPPROPRIATE_FALLBACK;
         default:
-            return (-1);
+            return -1;
     }
 }

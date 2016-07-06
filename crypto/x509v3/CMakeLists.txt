@@ -36,6 +36,7 @@ add_library(
     v3_pmaps.c
     v3_prn.c
     v3_purp.c
+    v3_scts.c
     v3_skey.c
     v3_sxnet.c
     v3_utl.c

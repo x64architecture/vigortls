@@ -122,6 +122,7 @@ extern "C" {
 #define BIO_CTRL_DGRAM_SET_NEXT_TIMEOUT  \
     45 /* Next DTLS handshake timeout to \
         * adjust socket timeouts */
+#define BIO_CTRL_DGRAM_GET_MTU_OVERHEAD 49
 
 /* modifiers */
 #define BIO_FP_READ 0x02
@@ -528,6 +529,8 @@ int BIO_ctrl_reset_read_request(BIO *b);
     (int)BIO_ctrl(b, BIO_CTRL_DGRAM_GET_PEER, 0, (char *)peer)
 #define BIO_dgram_set_peer(b, peer) \
     (int)BIO_ctrl(b, BIO_CTRL_DGRAM_SET_PEER, 0, (char *)peer)
+#define BIO_dgram_get_mtu_overhead(b) \
+      (unsigned int)BIO_ctrl((b), BIO_CTRL_DGRAM_GET_MTU_OVERHEAD, 0, NULL)
 
 /* These two aren't currently implemented */
 /* int BIO_get_ex_num(BIO *bio); */
@@ -587,7 +590,7 @@ long BIO_debug_callback(BIO *bio, int cmd, const char *argp, int argi,
                         long argl, long ret);
 
 BIO_METHOD *BIO_s_mem(void);
-BIO *BIO_new_mem_buf(void *buf, int len);
+BIO *BIO_new_mem_buf(const void *buf, int len);
 BIO_METHOD *BIO_s_socket(void);
 BIO_METHOD *BIO_s_connect(void);
 BIO_METHOD *BIO_s_accept(void);
@@ -617,6 +620,7 @@ int BIO_dump(BIO *b, const char *bytes, int len);
 int BIO_dump_indent(BIO *b, const char *bytes, int len, int indent);
 int BIO_dump_fp(FILE *fp, const char *s, int len);
 int BIO_dump_indent_fp(FILE *fp, const char *s, int len, int indent);
+int BIO_hex_string(BIO *out, int indent, int width, uint8_t *data, int datalen);
 struct hostent *BIO_gethostbyname(const char *name);
 /* We might want a thread-safe interface too:
  * struct hostent *BIO_gethostbyname_r(const char *name,
@@ -640,8 +644,8 @@ int BIO_set_tcp_ndelay(int sock, int turn_on);
 BIO *BIO_new_socket(int sock, int close_flag);
 BIO *BIO_new_dgram(int fd, int close_flag);
 BIO *BIO_new_fd(int fd, int close_flag);
-BIO *BIO_new_connect(char *host_port);
-BIO *BIO_new_accept(char *host_port);
+BIO *BIO_new_connect(const char *host_port);
+BIO *BIO_new_accept(const char *host_port);
 
 int BIO_new_bio_pair(BIO **bio1, size_t writebuf1, BIO **bio2,
                      size_t writebuf2);

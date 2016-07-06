@@ -8,6 +8,8 @@
 #elif defined(__arm) || defined(__arm__) || defined(_M_ARM)
 #define VIGORTLS_32_BIT
 #define VIGORTLS_ARM
+#elif defined(__aarch64__)
+#define VIGORTLS_AARCH64
 #else
 #error "Unknown target CPU"
 #endif

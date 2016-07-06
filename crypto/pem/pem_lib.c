@@ -172,6 +172,11 @@ static int check_pem(const char *nm, const char *name)
         return 0;
     }
 
+    /* If reading DH parameters handle X9.42 DH format too */
+    if (strcmp(nm, PEM_STRING_DHXPARAMS) == 0 &&
+        strcmp(name, PEM_STRING_DHPARAMS) == 0)
+        return 1;
+
     /* Permit older strings */
 
     if (strcmp(nm, PEM_STRING_X509_OLD) == 0 && strcmp(name, PEM_STRING_X509) == 0)
@@ -395,8 +400,9 @@ int PEM_do_header(EVP_CIPHER_INFO *cipher, uint8_t *data, long *plen,
     EVP_CIPHER_CTX_cleanup(&ctx);
     vigortls_zeroize((char *)buf, sizeof(buf));
     vigortls_zeroize((char *)key, sizeof(key));
-    j += i;
-    if (!o) {
+    if (o)
+        j += i;
+    else {
         PEMerr(PEM_F_PEM_DO_HEADER, PEM_R_BAD_DECRYPT);
         return (0);
     }
@@ -491,8 +497,8 @@ static int load_iv(char **fromp, uint8_t *to, int num)
     return (1);
 }
 
-int PEM_write(FILE *fp, char *name, char *header, uint8_t *data,
-              long len)
+int PEM_write(FILE *fp, const char *name, const char *header,
+              const uint8_t *data, long len)
 {
     BIO *b;
     int ret;
@@ -507,8 +513,8 @@ int PEM_write(FILE *fp, char *name, char *header, uint8_t *data,
     return (ret);
 }
 
-int PEM_write_bio(BIO *bp, const char *name, char *header, uint8_t *data,
-                  long len)
+int PEM_write_bio(BIO *bp, const char *name, const char *header,
+                  const uint8_t *data, long len)
 {
     int nlen, n, i, j, outl;
     uint8_t *buf = NULL;

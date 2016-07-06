@@ -115,6 +115,8 @@ STACK_OF(X509_INFO) *PEM_X509_INFO_read_bio(BIO *bp, STACK_OF(X509_INFO) *sk, pe
             xi->enc_len = 0;
 
             xi->x_pkey = X509_PKEY_new();
+            if (xi->x_pkey == NULL)
+                goto err;
             ptype = EVP_PKEY_RSA;
             pp = &xi->x_pkey->dec_pkey;
             if ((int)strlen(header) > 10) /* assume encrypted */
@@ -135,6 +137,8 @@ STACK_OF(X509_INFO) *PEM_X509_INFO_read_bio(BIO *bp, STACK_OF(X509_INFO) *sk, pe
             xi->enc_len = 0;
 
             xi->x_pkey = X509_PKEY_new();
+            if (xi->x_pkey == NULL)
+                goto err;
             ptype = EVP_PKEY_DSA;
             pp = &xi->x_pkey->dec_pkey;
             if ((int)strlen(header) > 10) /* assume encrypted */
@@ -155,6 +159,8 @@ STACK_OF(X509_INFO) *PEM_X509_INFO_read_bio(BIO *bp, STACK_OF(X509_INFO) *sk, pe
             xi->enc_len = 0;
 
             xi->x_pkey = X509_PKEY_new();
+            if (xi->x_pkey == NULL)
+                goto err;
             ptype = EVP_PKEY_EC;
             pp = &xi->x_pkey->dec_pkey;
             if ((int)strlen(header) > 10) /* assume encrypted */

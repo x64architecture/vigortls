@@ -36,6 +36,8 @@
 extern "C" {
 #endif
 
+#define EC_FLAG_COFACTOR_ECDH 0x1000
+
 const ECDH_METHOD *ECDH_OpenSSL(void);
 
 void ECDH_set_default_method(const ECDH_METHOD *);
@@ -50,6 +52,9 @@ int ECDH_get_ex_new_index(long argl, void *argp, CRYPTO_EX_new *new_func,
                           CRYPTO_EX_dup *dup_func, CRYPTO_EX_free *free_func);
 int ECDH_set_ex_data(EC_KEY *d, int idx, void *arg);
 void *ECDH_get_ex_data(EC_KEY *d, int idx);
+
+int ECDH_KDF_X9_62(uint8_t *out, size_t outlen, const uint8_t *Z, size_t Zlen,
+                   const uint8_t *sinfo, size_t sinfolen, const EVP_MD *md);
 
 /* BEGIN ERROR CODES */
 /*

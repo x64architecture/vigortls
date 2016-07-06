@@ -13,11 +13,11 @@
 
 #include <errno.h>
 #include <netdb.h>
+#include <stdcompat.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-#include <stdcompat.h>
 
 #include "apps.h"
 
@@ -44,14 +44,14 @@ int init_client(int *sock, char *host, char *port, int type, int af)
 {
     struct addrinfo hints, *ai_top, *ai;
     int i, s = 0;
-
+    
     if (!ssl_sock_init())
         return 0;
-
+    
     memset(&hints, '\0', sizeof(hints));
     hints.ai_family = af;
     hints.ai_socktype = type;
-
+    
     if ((i = getaddrinfo(host, port, &hints, &ai_top)) != 0) {
         BIO_printf(bio_err, "getaddrinfo: %s\n", gai_strerror(i));
         return 0;
@@ -85,25 +85,27 @@ int init_client(int *sock, char *host, char *port, int type, int af)
         close(s);
         s = -1;
     }
-
+    
     perror("connect");
 out:
-	if (s != -1)
-		close(s);
-	freeaddrinfo(ai_top);
-	return (0);
+    if (s != -1)
+        close(s);
+    freeaddrinfo(ai_top);
+    return 0;
 }
 
-int do_server(int port, int type, int *ret, int (*cb)(char *hostname, int s, uint8_t *context), uint8_t *context)
+int do_server(int port, int type, int *ret,
+              int (*cb)(char *hostname, int s, int stype, uint8_t *context),
+              uint8_t *context, int naccept)
 {
     int sock = 0;
     char *name = NULL;
     int accept_socket = 0;
     int i;
-
+    
     if (!init_server(&accept_socket, port, type))
         return 0;
-
+    
     if (ret != NULL) {
         *ret = accept_socket;
         /* return 1; */
@@ -117,13 +119,15 @@ int do_server(int port, int type, int *ret, int (*cb)(char *hostname, int s, uin
             }
         } else
             sock = accept_socket;
-        i = (*cb)(name, sock, context);
+        i = (*cb)(name, sock, type, context);
         free(name);
         if (type == SOCK_STREAM) {
             shutdown((sock), SHUT_RDWR);
             close(sock);
         }
-        if (i < 0) {
+        if (naccept != -1)
+            naccept--;
+        if (i < 0 || naccept == 0) {
             shutdown((accept_socket), SHUT_RDWR);
             close(accept_socket);
             return i;
@@ -158,10 +162,7 @@ static int init_server_long(int *sock, int port, char *ip, int type)
 #if defined SOL_SOCKET && defined SO_REUSEADDR
     {
         int j = 1;
-        if (setsockopt(s, SOL_SOCKET, SO_REUSEADDR, (void *)&j, sizeof j) == -1) {
-            perror("setsockopt");
-            goto err;
-        }
+        setsockopt(s, SOL_SOCKET, SO_REUSEADDR, (void *)&j, sizeof j);
     }
 #endif
     if (bind(s, (struct sockaddr *)&server, sizeof(server)) == -1) {
@@ -254,8 +255,7 @@ end:
     return (1);
 }
 
-int extract_host_port(char *str, char **host_ptr, uint8_t *ip,
-                      char **port_ptr)
+int extract_host_port(char *str, char **host_ptr, uint8_t *ip, char **port_ptr)
 {
     char *h, *p;
 

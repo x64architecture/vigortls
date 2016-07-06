@@ -382,6 +382,14 @@ int test_div(BIO *bp, BN_CTX *ctx)
     BN_init(&d);
     BN_init(&e);
 
+    BN_one(&a);
+    BN_zero(&b);
+
+    if (BN_div(&d, &c, &a, &b, ctx)) {
+        fprintf(stderr, "Division by zero succeeded!\n");
+        return 0;
+    }
+
     for (i = 0; i < num0 + num1; i++) {
         if (i < num1) {
             BN_bntest_rand(&a, 400, 0, 0);
@@ -458,9 +466,9 @@ int test_div_word(BIO *bp)
         do {
             BN_bntest_rand(&a, 512, -1, 0);
             BN_bntest_rand(&b, BN_BITS2, -1, 0);
-            s = b.d[0];
-        } while (!s);
+        } while (BN_is_zero(&b));
 
+        s = b.d[0];
         BN_copy(&b, &a);
         r = BN_div_word(&b, s);
 
@@ -719,6 +727,18 @@ int test_mont(BIO *bp, BN_CTX *ctx)
     if (mont == NULL)
         return 0;
 
+    BN_zero(&n);
+    if (BN_MONT_CTX_set(mont, &n, ctx)) {
+        fprintf(stderr, "BN_MONT_CTX_set succeeded for zero modulus!\n");
+        return 0;
+    }
+
+    BN_set_word(&n, 16);
+    if (BN_MONT_CTX_set(mont, &n, ctx)) {
+        fprintf(stderr, "BN_MONT_CTX_set succeeded for even modulus!\n");
+        return 0;
+    }
+
     BN_bntest_rand(&a, 100, 0, 0); /**/
     BN_bntest_rand(&b, 100, 0, 0); /**/
     for (i = 0; i < num2; i++) {
@@ -778,6 +798,14 @@ int test_mod(BIO *bp, BN_CTX *ctx)
     d = BN_new();
     e = BN_new();
 
+    BN_one(a);
+    BN_one(b);
+    BN_zero(c);
+    if (BN_mod_mul(e, a, b, c, ctx)) {
+        fprintf(stderr, "BN_mod_mul with zero modulus succeeded!\n");
+        return 0;
+    }
+
     BN_bntest_rand(a, 1024, 0, 0); /**/
     for (i = 0; i < num0; i++) {
         BN_bntest_rand(b, 450 + i * 10, 0, 0); /**/
@@ -819,6 +847,14 @@ int test_mod_mul(BIO *bp, BN_CTX *ctx)
     c = BN_new();
     d = BN_new();
     e = BN_new();
+
+    BN_one(a);
+    BN_one(b);
+    BN_zero(c);
+    if (BN_mod_mul(e, a, b, c, ctx)) {
+        fprintf(stderr, "BN_mod_mul with zero modulus succeeded!\n");
+        return 0;
+    }
 
     for (j = 0; j < 3; j++) {
         BN_bntest_rand(c, 1024, 0, 0); /**/
@@ -884,6 +920,14 @@ int test_mod_exp(BIO *bp, BN_CTX *ctx)
     c = BN_new();
     d = BN_new();
     e = BN_new();
+
+    BN_one(a);
+    BN_one(b);
+    BN_zero(c);
+    if (BN_mod_exp(d, a, b, c, ctx)) {
+        fprintf(stderr, "BN_mod_exp with zero modulus succeeded!\n");
+        return 0;
+    }
 
     BN_bntest_rand(c, 30, 0, 1); /* must be odd for montgomery */
     for (i = 0; i < num2; i++) {
@@ -962,6 +1006,20 @@ int test_mod_exp_mont_consttime(BIO *bp, BN_CTX *ctx)
     c = BN_new();
     d = BN_new();
     e = BN_new();
+
+    BN_one(a);
+    BN_one(b);
+    BN_zero(c);
+    if (BN_mod_exp_mont_consttime(d, a, b, c, ctx, NULL)) {
+        fprintf(stderr, "BN_mod_exp_mont_consttime with zero modulus succeeded\n");
+        return 0;
+    }
+
+    BN_set_word(c, 16);
+    if (BN_mod_exp_mont_consttime(d, a, b, c, ctx, NULL)) {
+        fprintf(stderr, "BN_mod_exp_mont_consttime with even modulus succeeded\n");
+        return 0;
+    }
 
     BN_bntest_rand(c, 30, 0, 1); /* must be odd for montgomery */
     for (i = 0; i < num2; i++) {

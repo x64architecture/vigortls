@@ -491,9 +491,17 @@ int ssl_cipher_get_evp(const SSL_SESSION *s, const EVP_CIPHER **enc,
         else if (c->algorithm_enc == SSL_AES256 && c->algorithm_mac == SSL_SHA1
             && (evp = EVP_get_cipherbyname("AES-256-CBC-HMAC-SHA1")))
             *enc = evp, *md = NULL;
-        return (1);
+        else if (c->algorithm_enc == SSL_AES128 &&
+                 c->algorithm_mac == SSL_SHA256 &&
+                (evp = EVP_get_cipherbyname("AES-128-CBC-HMAC-SHA256")))
+                *enc = evp, *md = NULL;
+        else if (c->algorithm_enc == SSL_AES256 &&
+                 c->algorithm_mac == SSL_SHA256 &&
+                (evp = EVP_get_cipherbyname("AES-256-CBC-HMAC-SHA256")))
+                *enc = evp, *md = NULL;
+        return 1;
     } else
-        return (0);
+        return 0;
 }
 
 /*
@@ -1134,10 +1142,65 @@ static int ssl_cipher_process_rulestr(const char *rule_str,
     return (retval);
 }
 
+static int check_suiteb_cipher_list(const SSL_METHOD *meth, CERT *c,
+                                    const char **prule_str)
+{
+    unsigned int suiteb_flags = 0, suiteb_comb2 = 0;
+    if (strncmp(*prule_str, "SUITEB128ONLY", 13) == 0) {
+        suiteb_flags = SSL_CERT_FLAG_SUITEB_128_LOS_ONLY;
+    } else if (strncmp(*prule_str, "SUITEB128C2", 11) == 0) {
+        suiteb_comb2 = 1;
+        suiteb_flags = SSL_CERT_FLAG_SUITEB_128_LOS;
+    } else if (strncmp(*prule_str, "SUITEB128", 9) == 0) {
+        suiteb_flags = SSL_CERT_FLAG_SUITEB_128_LOS;
+    } else if (strncmp(*prule_str, "SUITEB192", 9) == 0) {
+        suiteb_flags = SSL_CERT_FLAG_SUITEB_192_LOS;
+    }
+
+    if (suiteb_flags) {
+        c->cert_flags &= ~SSL_CERT_FLAG_SUITEB_128_LOS;
+        c->cert_flags |= suiteb_flags;
+    } else
+        suiteb_flags = c->cert_flags & SSL_CERT_FLAG_SUITEB_128_LOS;
+
+    if (!suiteb_flags)
+        return 1;
+    /* Check version: if TLS 1.2 ciphers allowed we can use Suite B */
+
+    if (!(meth->ssl3_enc->enc_flags & SSL_ENC_FLAG_TLS1_2_CIPHERS)) {
+        if (meth->ssl3_enc->enc_flags & SSL_ENC_FLAG_DTLS)
+            SSLerr(SSL_F_CHECK_SUITEB_CIPHER_LIST,
+                   SSL_R_ONLY_DTLS_1_2_ALLOWED_IN_SUITEB_MODE);
+        else
+            SSLerr(SSL_F_CHECK_SUITEB_CIPHER_LIST,
+                   SSL_R_ONLY_TLS_1_2_ALLOWED_IN_SUITEB_MODE);
+        return 0;
+    }
+
+    switch (suiteb_flags) {
+        case SSL_CERT_FLAG_SUITEB_128_LOS:
+            if (suiteb_comb2)
+                *prule_str = "ECDHE-ECDSA-AES256-GCM-SHA384";
+            else
+                *prule_str = "ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384";
+            break;
+        case SSL_CERT_FLAG_SUITEB_128_LOS_ONLY:
+            *prule_str = "ECDHE-ECDSA-AES128-GCM-SHA256";
+            break;
+        case SSL_CERT_FLAG_SUITEB_192_LOS:
+            *prule_str = "ECDHE-ECDSA-AES256-GCM-SHA384";
+            break;
+    }
+    /* Set auto ECDH parameter determination */
+    c->ecdh_tmp_auto = 1;
+
+    return 1;
+}
+
 STACK_OF(SSL_CIPHER) *ssl_create_cipher_list(const SSL_METHOD *ssl_method,
                                               STACK_OF(SSL_CIPHER) **cipher_list,
                                               STACK_OF(SSL_CIPHER) **cipher_list_by_id,
-                                              const char *rule_str)
+                                              const char *rule_str, CERT *c)
 {
     int ok, num_of_ciphers, num_of_alias_max, num_of_group_aliases;
     unsigned long disabled_mkey, disabled_auth, disabled_enc, disabled_mac,
@@ -1151,6 +1214,9 @@ STACK_OF(SSL_CIPHER) *ssl_create_cipher_list(const SSL_METHOD *ssl_method,
      * Return with error if nothing to do.
      */
     if (rule_str == NULL || cipher_list == NULL || cipher_list_by_id == NULL)
+        return NULL;
+
+    if (!check_suiteb_cipher_list(ssl_method, c, &rule_str))
         return NULL;
 
     /*
@@ -1485,6 +1551,16 @@ void *SSL_COMP_get_compression_methods(void)
     return NULL;
 }
 
+STACK_OF(SSL_COMP) *SSL_COMP_set0_compression_methods(STACK_OF(SSL_COMP) *meths)
+{
+    return NULL;
+}
+
+void SSL_COMP_free_compression_methods(void)
+{
+    return;
+}
+
 int SSL_COMP_add_compression_method(int id, void *cm)
 {
     return 1;
@@ -1493,4 +1569,41 @@ int SSL_COMP_add_compression_method(int id, void *cm)
 const char *SSL_COMP_get_name(const void *comp)
 {
     return NULL;
+}
+
+/* For a cipher return the index corresponding to the certificate type */
+int ssl_cipher_get_cert_index(const SSL_CIPHER *c)
+{
+    unsigned long alg_a;
+
+    alg_a = c->algorithm_auth;
+
+    if (alg_a & SSL_aECDSA) {
+        return SSL_PKEY_ECC;
+    } else if (alg_a & SSL_aDSS) {
+        return SSL_PKEY_DSA_SIGN;
+    } else if (alg_a & SSL_aRSA) {
+        return SSL_PKEY_RSA_ENC;
+    } else if (alg_a & SSL_aGOST94) {
+        return SSL_PKEY_GOST94;
+    } else if (alg_a & SSL_aGOST01) {
+        return SSL_PKEY_GOST01;
+    }
+
+    return -1;
+}
+
+const SSL_CIPHER *ssl_get_cipher_by_char(SSL *ssl, const uint8_t *ptr)
+{
+    const SSL_CIPHER *c;
+
+    c = ssl->method->get_cipher_by_char(ptr);
+    if (c == NULL || c->valid == 0)
+        return NULL;
+    return c;
+}
+
+const SSL_CIPHER *SSL_CIPHER_find(SSL *ssl, const uint8_t *ptr)
+{
+    return ssl->method->get_cipher_by_char(ptr);
 }

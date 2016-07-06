@@ -52,6 +52,7 @@ int OCSP_basic_verify(OCSP_BASICRESP *bs, STACK_OF(X509) *certs,
     }
     if (!(flags & OCSP_NOVERIFY)) {
         int init_res;
+
         if (flags & OCSP_NOCHAIN) {
             untrusted = NULL;
         } else if (bs->certs && certs) {
@@ -82,6 +83,7 @@ int OCSP_basic_verify(OCSP_BASICRESP *bs, STACK_OF(X509) *certs,
             ERR_asprintf_error_data("Verify error: %s", X509_verify_cert_error_string(i));
             goto end;
         }
+
         if (flags & OCSP_NOCHECKS) {
             ret = 1;
             goto end;

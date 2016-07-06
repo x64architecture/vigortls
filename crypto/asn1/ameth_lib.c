@@ -22,6 +22,7 @@
 extern const EVP_PKEY_ASN1_METHOD rsa_asn1_meths[];
 extern const EVP_PKEY_ASN1_METHOD dsa_asn1_meths[];
 extern const EVP_PKEY_ASN1_METHOD dh_asn1_meth;
+extern const EVP_PKEY_ASN1_METHOD dhx_asn1_meth;
 extern const EVP_PKEY_ASN1_METHOD eckey_asn1_meth;
 extern const EVP_PKEY_ASN1_METHOD gostr01_asn1_meths[];
 extern const EVP_PKEY_ASN1_METHOD gostimit_asn1_meth;
@@ -47,6 +48,7 @@ static const EVP_PKEY_ASN1_METHOD *standard_methods[] = {
 #endif
     &hmac_asn1_meth,
     &cmac_asn1_meth,
+    &dhx_asn1_meth,
 #ifndef OPENSSL_NO_GOST
     &gostr01_asn1_meths[1],
     &gostr01_asn1_meths[2],
@@ -192,7 +194,11 @@ int EVP_PKEY_asn1_add_alias(int to, int from)
     if (!ameth)
         return 0;
     ameth->pkey_base_id = to;
-    return EVP_PKEY_asn1_add0(ameth);
+    if (!EVP_PKEY_asn1_add0(ameth)) {
+        EVP_PKEY_asn1_free(ameth);
+        return 0;
+    }
+    return 1;
 }
 
 int EVP_PKEY_asn1_get0_info(int *ppkey_id, int *ppkey_base_id, int *ppkey_flags,
@@ -382,4 +388,15 @@ void EVP_PKEY_asn1_set_ctrl(EVP_PKEY_ASN1_METHOD *ameth,
                                              long arg1, void *arg2))
 {
     ameth->pkey_ctrl = pkey_ctrl;
+}
+
+void EVP_PKEY_asn1_set_item(
+    EVP_PKEY_ASN1_METHOD *ameth,
+    int (*item_verify)(EVP_MD_CTX *ctx, const ASN1_ITEM *it, void *asn,
+                       X509_ALGOR *a, ASN1_BIT_STRING *sig, EVP_PKEY *pkey),
+    int (*item_sign)(EVP_MD_CTX *ctx, const ASN1_ITEM *it, void *asn,
+                     X509_ALGOR *alg1, X509_ALGOR *alg2, ASN1_BIT_STRING *sig))
+{
+    ameth->item_sign = item_sign;
+    ameth->item_verify = item_verify;
 }

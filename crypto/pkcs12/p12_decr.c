@@ -96,30 +96,33 @@ ASN1_OCTET_STRING *PKCS12_item_i2d_encrypt(X509_ALGOR *algor, const ASN1_ITEM *i
                                            const char *pass, int passlen,
                                            void *obj, int zbuf)
 {
-    ASN1_OCTET_STRING *oct;
+    ASN1_OCTET_STRING *oct = NULL;
     uint8_t *in = NULL;
     int inlen;
     if (!(oct = ASN1_OCTET_STRING_new())) {
         PKCS12err(PKCS12_F_PKCS12_ITEM_I2D_ENCRYPT, ERR_R_MALLOC_FAILURE);
-        return NULL;
+        goto err;
     }
     inlen = ASN1_item_i2d(obj, &in, it);
     if (!in) {
         PKCS12err(PKCS12_F_PKCS12_ITEM_I2D_ENCRYPT, PKCS12_R_ENCODE_ERROR);
         ASN1_OCTET_STRING_free(oct);
-        return NULL;
+        goto err;
     }
     if (!PKCS12_pbe_crypt(algor, pass, passlen, in, inlen, &oct->data,
                           &oct->length, 1)) {
         PKCS12err(PKCS12_F_PKCS12_ITEM_I2D_ENCRYPT, PKCS12_R_ENCRYPT_ERROR);
         free(in);
         ASN1_OCTET_STRING_free(oct);
-        return NULL;
+        goto err;
     }
     if (zbuf)
         vigortls_zeroize(in, inlen);
     free(in);
     return oct;
+err:
+    ASN1_OCTET_STRING_free(oct);
+    return NULL;
 }
 
 IMPLEMENT_PKCS12_STACK_OF(PKCS7)

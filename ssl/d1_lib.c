@@ -24,7 +24,7 @@ static int dtls1_handshake_write(SSL *s);
 int dtls1_listen(SSL *s, struct sockaddr *client);
 
 SSL3_ENC_METHOD DTLSv1_enc_data = {
-    .enc = dtls1_enc,
+    .enc = tls1_enc,
     .mac = tls1_mac,
     .setup_key_block = tls1_setup_key_block,
     .generate_master_secret = tls1_generate_master_secret,
@@ -39,6 +39,29 @@ SSL3_ENC_METHOD DTLSv1_enc_data = {
     .alert_value = tls1_alert_code,
     .export_keying_material = tls1_export_keying_material,
     .enc_flags = SSL_ENC_FLAG_DTLS | SSL_ENC_FLAG_EXPLICIT_IV,
+    .hhlen = DTLS1_HM_HEADER_LENGTH,
+    .set_handshake_header = dtls1_set_handshake_header,
+    .do_write = dtls1_handshake_write,
+};
+
+SSL3_ENC_METHOD DTLSv1_2_enc_data = {
+    .enc = tls1_enc,
+    .mac = tls1_mac,
+    .setup_key_block = tls1_setup_key_block,
+    .generate_master_secret = tls1_generate_master_secret,
+    .change_cipher_state = tls1_change_cipher_state,
+    .final_finish_mac = tls1_final_finish_mac,
+    .finish_mac_length = TLS1_FINISH_MAC_LENGTH,
+    .cert_verify_mac = tls1_cert_verify_mac,
+    .client_finished_label = TLS_MD_CLIENT_FINISH_CONST,
+    .client_finished_label_len = TLS_MD_CLIENT_FINISH_CONST_SIZE,
+    .server_finished_label = TLS_MD_SERVER_FINISH_CONST,
+    .server_finished_label_len = TLS_MD_SERVER_FINISH_CONST_SIZE,
+    .alert_value = tls1_alert_code,
+    .export_keying_material = tls1_export_keying_material,
+    .enc_flags = SSL_ENC_FLAG_DTLS | SSL_ENC_FLAG_EXPLICIT_IV |
+                 SSL_ENC_FLAG_SIGALGS | SSL_ENC_FLAG_SHA256_PRF |
+                 SSL_ENC_FLAG_TLS1_2_CIPHERS,
     .hhlen = DTLS1_HM_HEADER_LENGTH,
     .set_handshake_header = dtls1_set_handshake_header,
     .do_write = dtls1_handshake_write,
@@ -73,6 +96,9 @@ int dtls1_new(SSL *s)
     if (s->server) {
         d1->cookie_len = sizeof(s->d1->cookie);
     }
+
+    d1->link_mtu = 0;
+    d1->mtu = 0;
 
     if (!d1->unprocessed_rcds.q || !d1->processed_rcds.q || !d1->buffered_messages || !d1->sent_messages || !d1->buffered_app_data.q) {
         if (d1->unprocessed_rcds.q)
@@ -160,6 +186,7 @@ void dtls1_clear(SSL *s)
     pqueue sent_messages;
     pqueue buffered_app_data;
     unsigned int mtu;
+    unsigned int link_mtu;
 
     if (s->d1) {
         unprocessed_rcds = s->d1->unprocessed_rcds.q;
@@ -168,6 +195,7 @@ void dtls1_clear(SSL *s)
         sent_messages = s->d1->sent_messages;
         buffered_app_data = s->d1->buffered_app_data.q;
         mtu = s->d1->mtu;
+        link_mtu = s->d1->link_mtu;
 
         dtls1_clear_queues(s);
 
@@ -179,6 +207,7 @@ void dtls1_clear(SSL *s)
 
         if (SSL_get_options(s) & SSL_OP_NO_QUERY_MTU) {
             s->d1->mtu = mtu;
+            s->d1->link_mtu = link_mtu;
         }
 
         s->d1->unprocessed_rcds.q = unprocessed_rcds;
@@ -189,7 +218,10 @@ void dtls1_clear(SSL *s)
     }
 
     ssl3_clear(s);
-    s->version = DTLS1_VERSION;
+    if (s->method->version == DTLS_ANY_VERSION)
+        s->version = DTLS1_2_VERSION;
+    else
+        s->version = s->method->version;
 }
 
 long dtls1_ctrl(SSL *s, int cmd, long larg, void *parg)
@@ -209,16 +241,43 @@ long dtls1_ctrl(SSL *s, int cmd, long larg, void *parg)
             ret = dtls1_listen(s, parg);
             break;
         case SSL_CTRL_CHECK_PROTO_VERSION:
-            /* For library-internal use; checks that the current protocol
+            /*
+             * For library-internal use; checks that the current protocol
              * is the highest enabled version (according to s->ctx->method,
-             * as version negotiation may have changed s->method). */
-#if DTLS_MAX_VERSION != DTLS1_VERSION
-# error Code needs to be updated for DTLS_method() to support beyond DTLS1_VERSION.
+             * as version negotiation may have changed s->method).
+             */
+            if (s->version == s->ctx->method->version)
+                return 1;
+            /*
+             * Apparently we're using a version-flexible SSL_METHOD
+             * (not at its highest protocol version).
+             */
+            if (s->ctx->method->version == DTLS_method()->version) {
+#if DTLS_MAX_VERSION != DTLS1_2_VERSION
+#error Code needs update for DTLS_method() support beyond DTLS1_2_VERSION.
 #endif
-            /* Just one protocol version is supported so far;
-             * fail closed if the version is not as expected. */
-            return s->version == DTLS_MAX_VERSION;
-
+                if (!(s->options & SSL_OP_NO_DTLSv1_2))
+                    return s->version == DTLS1_2_VERSION;
+                if (!(s->options & SSL_OP_NO_DTLSv1))
+                    return s->version == DTLS1_VERSION;
+            }
+            return 0; /* Unexpected state; fail closed. */
+        case DTLS_CTRL_SET_LINK_MTU:
+            if (larg < (long)dtls1_link_min_mtu())
+                return 0;
+            s->d1->link_mtu = larg;
+            return 1;
+        case DTLS_CTRL_GET_LINK_MIN_MTU:
+            return (long)dtls1_link_min_mtu();
+        case SSL_CTRL_SET_MTU:
+            /*
+             *  We may not have a BIO set yet so can't call dtls1_min_mtu()
+             *  We'll have to make do with dtls1_link_min_mtu() and max overhead
+             */
+            if (larg < (long)dtls1_link_min_mtu() - DTLS1_MAX_MTU_OVERHEAD)
+                return 0;
+            s->d1->mtu = larg;
+            return larg;
         default:
             ret = ssl3_ctrl(s, cmd, larg, parg);
             break;
@@ -342,11 +401,18 @@ void dtls1_stop_timer(SSL *s)
 
 int dtls1_check_timeout_num(SSL *s)
 {
+    unsigned int mtu;
+
     s->d1->timeout.num_alerts++;
 
     /* Reduce MTU after 2 unsuccessful retransmissions */
-    if (s->d1->timeout.num_alerts > 2) {
-        s->d1->mtu = BIO_ctrl(SSL_get_wbio(s), BIO_CTRL_DGRAM_GET_FALLBACK_MTU, 0, NULL);
+    if (s->d1->timeout.num_alerts > 2 &&
+        !(SSL_get_options(s) & SSL_OP_NO_QUERY_MTU))
+    {
+        mtu = BIO_ctrl(SSL_get_wbio(s), BIO_CTRL_DGRAM_GET_FALLBACK_MTU, 0,
+                       NULL);
+        if (mtu < s->d1->mtu)
+            s->d1->mtu = mtu;
     }
 
     if (s->d1->timeout.num_alerts > DTLS1_TMO_ALERT_COUNT) {

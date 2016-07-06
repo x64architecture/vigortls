@@ -346,6 +346,14 @@ static void setup_crldp(X509 *x)
         setup_dp(x, sk_DIST_POINT_value(x->crldp, i));
 }
 
+#define V1_ROOT (EXFLAG_V1 | EXFLAG_SS)
+#define ku_reject(x, usage) \
+    (((x)->ex_flags & EXFLAG_KUSAGE) && !((x)->ex_kusage & (usage)))
+#define xku_reject(x, usage) \
+    (((x)->ex_flags & EXFLAG_XKUSAGE) && !((x)->ex_xkusage & (usage)))
+#define ns_reject(x, usage) \
+    (((x)->ex_flags & EXFLAG_NSCERT) && !((x)->ex_nscert & (usage)))
+
 static void x509v3_cache_extensions(X509 *x)
 {
     BASIC_CONSTRAINTS *bs;
@@ -359,9 +367,6 @@ static void x509v3_cache_extensions(X509 *x)
     if (x->ex_flags & EXFLAG_SET)
         return;
     X509_digest(x, EVP_sha1(), x->sha1_hash, NULL);
-    /* Does subject name match issuer ? */
-    if (!X509_NAME_cmp(X509_get_subject_name(x), X509_get_issuer_name(x)))
-        x->ex_flags |= EXFLAG_SI;
     /* V1 should mean no extensions ... */
     if (!X509_get_version(x))
         x->ex_flags |= EXFLAG_V1;
@@ -443,6 +448,10 @@ static void x509v3_cache_extensions(X509 *x)
                 case NID_dvcs:
                     x->ex_xkusage |= XKU_DVCS;
                     break;
+
+                case NID_anyExtendedKeyUsage:
+                    x->ex_xkusage |= XKU_ANYEKU;
+                    break;
             }
         }
         sk_ASN1_OBJECT_pop_free(extusage, ASN1_OBJECT_free);
@@ -458,6 +467,16 @@ static void x509v3_cache_extensions(X509 *x)
     }
     x->skid = X509_get_ext_d2i(x, NID_subject_key_identifier, NULL, NULL);
     x->akid = X509_get_ext_d2i(x, NID_authority_key_identifier, NULL, NULL);
+    /* Does subject name match issuer ? */
+    if(!X509_NAME_cmp(X509_get_subject_name(x), X509_get_issuer_name(x))) {
+        x->ex_flags |= EXFLAG_SI;
+        /* If SKID matches AKID also indicate self signed */
+        if (X509_check_akid(x, x->akid) == X509_V_OK &&
+            !ku_reject(x, KU_KEY_CERT_SIGN))
+        {
+            x->ex_flags |= EXFLAG_SS;
+        }
+    }
     x->altname = X509_get_ext_d2i(x, NID_subject_alt_name, NULL, NULL);
     x->nc = X509_get_ext_d2i(x, NID_name_constraints, &i, NULL);
     if (!x->nc && (i != -1))
@@ -487,14 +506,6 @@ static void x509v3_cache_extensions(X509 *x)
  * 3 basicConstraints absent but self signed V1.
  * 4 basicConstraints absent but keyUsage present and keyCertSign asserted.
  */
-
-#define V1_ROOT (EXFLAG_V1 | EXFLAG_SS)
-#define ku_reject(x, usage) \
-    (((x)->ex_flags & EXFLAG_KUSAGE) && !((x)->ex_kusage & (usage)))
-#define xku_reject(x, usage) \
-    (((x)->ex_flags & EXFLAG_XKUSAGE) && !((x)->ex_xkusage & (usage)))
-#define ns_reject(x, usage) \
-    (((x)->ex_flags & EXFLAG_NSCERT) && !((x)->ex_nscert & (usage)))
 
 static int check_ca(const X509 *x)
 {

@@ -90,6 +90,26 @@ int RSA_sign(int type, const uint8_t *m, unsigned int m_len,
     return (ret);
 }
 
+/*
+ * Check DigestInfo structure does not contain extraneous data by re-encoding
+ * using DER and checking the encoding against original.
+ */
+static int rsa_check_digestinfo(X509_SIG *sig, uint8_t *dinfo, int dinfolen)
+{
+    uint8_t *der = NULL;
+    int derlen;
+    int ret = 0;
+
+    derlen = i2d_X509_SIG(sig, &der);
+    if (derlen <= 0)
+        return 0;
+    if (derlen == dinfolen && memcmp(dinfo, der, derlen) == 0)
+        ret = 1;
+    vigortls_zeroize(der, derlen);
+    free(der);
+    return ret;
+}
+
 int int_rsa_verify(int dtype, const uint8_t *m,
                    unsigned int m_len,
                    uint8_t *rm, size_t *prm_len,
@@ -142,7 +162,7 @@ int int_rsa_verify(int dtype, const uint8_t *m,
             goto err;
 
         /* Excess data can be used to create forgeries */
-        if (p != s + i) {
+        if (p != s + i || !rsa_check_digestinfo(sig, s, i)) {
             RSAerr(RSA_F_INT_RSA_VERIFY, RSA_R_BAD_SIGNATURE);
             goto err;
         }

@@ -111,7 +111,7 @@ extern unsigned int OPENSSL_ia32cap_P[2];
 #define VPAES_CAPABLE (OPENSSL_ia32cap_P[1] & (1 << (41 - 32)))
 #endif
 #ifdef BSAES_ASM
-#define BSAES_CAPABLE VPAES_CAPABLE
+#define BSAES_CAPABLE (OPENSSL_ia32cap_P[1] & (1 << (41 - 32)))
 #endif
 /*
  * AES-NI section
@@ -773,7 +773,7 @@ aes_gcm_ctrl(EVP_CIPHER_CTX *c, int type, int arg, void *ptr)
 
         case EVP_CTRL_AEAD_TLS1_AAD:
             /* Save the AAD for later use */
-            if (arg != 13)
+            if (arg != EVP_AEAD_TLS1_AAD_LEN)
                 return 0;
             memcpy(c->buf, ptr, arg);
             gctx->tls_aad_len = arg;
@@ -1566,3 +1566,112 @@ const EVP_AEAD *EVP_aead_aes_256_gcm(void)
     return &aead_aes_256_gcm;
 }
 
+typedef struct {
+    union {
+        double align;
+        AES_KEY ks;
+    } ks;
+    /* Indicates if IV has been set */
+    uint8_t *iv;
+} EVP_AES_WRAP_CTX;
+
+static int aes_wrap_init_key(EVP_CIPHER_CTX *ctx, const uint8_t *key,
+                             const uint8_t *iv, int enc)
+{
+    EVP_AES_WRAP_CTX *wctx = ctx->cipher_data;
+    if (iv == NULL && key == NULL)
+        return 1;
+    if (key != NULL) {
+        if (ctx->encrypt)
+            AES_set_encrypt_key(key, ctx->key_len * 8, &wctx->ks.ks);
+        else
+            AES_set_decrypt_key(key, ctx->key_len * 8, &wctx->ks.ks);
+        if (iv == NULL)
+            wctx->iv = NULL;
+    }
+    if (iv != NULL) {
+        memcpy(ctx->iv, iv, 8);
+        wctx->iv = ctx->iv;
+    }
+    return 1;
+}
+
+static int aes_wrap_cipher(EVP_CIPHER_CTX *ctx, uint8_t *out, const uint8_t *in,
+                           size_t inlen)
+{
+    EVP_AES_WRAP_CTX *wctx = ctx->cipher_data;
+    size_t rv;
+    if (in == NULL)
+        return 0;
+    if (inlen % 8)
+        return -1;
+    if (ctx->encrypt && inlen < 8)
+        return -1;
+    if (!ctx->encrypt && inlen < 16)
+        return -1;
+    if (out == NULL) {
+        if (ctx->encrypt)
+            return inlen + 8;
+        else
+            return inlen - 8;
+    }
+    if (ctx->encrypt)
+        rv = CRYPTO_128_wrap(&wctx->ks.ks, wctx->iv, out, in, inlen,
+                             (block128_f)AES_encrypt);
+    else
+        rv = CRYPTO_128_unwrap(&wctx->ks.ks, wctx->iv, out, in, inlen,
+                               (block128_f)AES_decrypt);
+    return rv ? (int)rv : -1;
+}
+
+#define WRAP_FLAGS                                                           \
+    (EVP_CIPH_WRAP_MODE | EVP_CIPH_CUSTOM_IV | EVP_CIPH_FLAG_CUSTOM_CIPHER | \
+     EVP_CIPH_ALWAYS_CALL_INIT | EVP_CIPH_FLAG_DEFAULT_ASN1)
+
+static const EVP_CIPHER aes_128_wrap = {
+    .nid = NID_id_aes128_wrap,
+    .block_size = 8,
+    .key_len = 16,
+    .iv_len = 8,
+    .flags = WRAP_FLAGS,
+    .init = aes_wrap_init_key,
+    .do_cipher = aes_wrap_cipher,
+    .ctx_size = sizeof(EVP_AES_WRAP_CTX),
+};
+
+const EVP_CIPHER *EVP_aes_128_wrap(void)
+{
+    return &aes_128_wrap;
+}
+
+static const EVP_CIPHER aes_192_wrap = {
+    .nid = NID_id_aes192_wrap,
+    .block_size = 8,
+    .key_len = 24,
+    .iv_len = 8,
+    .flags = WRAP_FLAGS,
+    .init = aes_wrap_init_key,
+    .do_cipher = aes_wrap_cipher,
+    .ctx_size = sizeof(EVP_AES_WRAP_CTX),
+};
+
+const EVP_CIPHER *EVP_aes_192_wrap(void)
+{
+    return &aes_192_wrap;
+}
+
+static const EVP_CIPHER aes_256_wrap = {
+    .nid = NID_id_aes256_wrap,
+    .block_size = 8,
+    .key_len = 32,
+    .iv_len = 8,
+    .flags = WRAP_FLAGS,
+    .init = aes_wrap_init_key,
+    .do_cipher = aes_wrap_cipher,
+    .ctx_size = sizeof(EVP_AES_WRAP_CTX),
+};
+
+const EVP_CIPHER *EVP_aes_256_wrap(void)
+{
+    return &aes_256_wrap;
+}

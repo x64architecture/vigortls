@@ -7,12 +7,18 @@
  * https://www.openssl.org/source/license.html
  */
 
+#include <limits.h>
 #include <stdio.h>
 #include <string.h>
 
 #include <openssl/buffer.h>
 #include <openssl/err.h>
 #include <stdcompat.h>
+
+size_t BUF_strnlen(const char *str, size_t maxlen)
+{
+    return strnlen(str, maxlen);
+}
 
 char *BUF_strdup(const char *str)
 {
@@ -35,6 +41,9 @@ char *BUF_strndup(const char *str, size_t siz)
     char *ret = NULL;
 
     if (str == NULL)
+        return NULL;
+
+    if (siz >= INT_MAX)
         return NULL;
 
     ret = strndup(str, siz);
