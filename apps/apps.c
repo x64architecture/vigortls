@@ -2115,7 +2115,11 @@ int bio_to_mem(uint8_t **out, int maxlen, BIO *in)
         else
             len = 1024;
         len = BIO_read(in, tbuf, len);
-        if (len <= 0)
+        if (len < 0) {
+            BIO_free(mem);
+            return -1;
+        }
+        if (len == 0)
             break;
         if (BIO_write(mem, tbuf, len) != len) {
             BIO_free(mem);
@@ -2132,7 +2136,7 @@ int bio_to_mem(uint8_t **out, int maxlen, BIO *in)
     return ret;
 }
 
-int pkey_ctrl_string(EVP_PKEY_CTX *ctx, char *value)
+int pkey_ctrl_string(EVP_PKEY_CTX *ctx, const char *value)
 {
     int rv;
     char *stmp, *vtmp = NULL;

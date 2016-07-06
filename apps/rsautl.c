@@ -190,7 +190,7 @@ int rsautl_main(int argc, char **argv)
 
     if (outfile) {
         if (!(out = BIO_new_file(outfile, "wb"))) {
-            BIO_printf(bio_err, "Error Reading Output File\n");
+            BIO_printf(bio_err, "Error Writing Output File\n");
             ERR_print_errors(bio_err);
             goto end;
         }
@@ -210,7 +210,7 @@ int rsautl_main(int argc, char **argv)
 
     /* Read the input data */
     rsa_inlen = BIO_read(in, rsa_in, keysize * 2);
-    if (rsa_inlen <= 0) {
+    if (rsa_inlen < 0) {
         BIO_printf(bio_err, "Error reading input Data\n");
         exit(1);
     }
@@ -246,7 +246,7 @@ int rsautl_main(int argc, char **argv)
             break;
     }
 
-    if (rsa_outlen <= 0) {
+    if (rsa_outlen < 0) {
         BIO_printf(bio_err, "RSA operation error\n");
         ERR_print_errors(bio_err);
         goto end;
