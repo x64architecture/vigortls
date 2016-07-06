@@ -198,7 +198,7 @@ static size_t tls1_1_multi_block_encrypt(EVP_AES_HMAC_SHA1 *key,
         last -= x4 - 1;
     }
     
-    paclen = 5 + 16 + ((frag + 20 + 16) & ~16);
+    packlen = 5 + 16 + ((frag + 20 + 16) & ~16);
 
     /* populate descriptors with pointers and IVs */
     hash_d[0].ptr = inp;

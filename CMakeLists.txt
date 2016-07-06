@@ -93,7 +93,7 @@ option(OPENSSL_NO_RC5
 option(OPENSSL_THREADS
     "Build with multi-threading support" TRUE)
 option(OPENSSL_NO_MULTIBLOCK
-    "Build with multi-block support" TRUE)
+    "Build without multi-block support" FALSE)
 option(OPENSSL_NO_SSL_TRACE
     "Build without TLS record tracing support" TRUE)
 
