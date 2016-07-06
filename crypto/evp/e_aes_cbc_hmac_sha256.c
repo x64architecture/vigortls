@@ -17,6 +17,8 @@
 #include <openssl/sha.h>
 #include <openssl/rand.h>
 
+#include <constant_time_locl.h>
+
 #include "modes_lcl.h"
 
 #ifndef EVP_CIPH_FLAG_AEAD_CIPHER
