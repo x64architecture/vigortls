@@ -34,6 +34,7 @@
 static const char *names[] = {
     "a", "b", ".", "*", "@",
     ".a", "a.", ".b", "b.", ".*", "*.", "*@", "@*", "a@", "@a", "b@", "..",
+    "-example.com", "example-.com",
     "@@", "**", "*.com", "*com", "*.*.com", "*com", "com*", "*example.com",
     "*@example.com", "test@*.example.com", "example.com", "www.example.com",
     "test.www.example.com", "*.example.com", "*.www.example.com",
@@ -42,6 +43,9 @@ static const char *names[] = {
     "example.com", "www.example.com", "test.www.example.com",
     "*.example.com", "*.www.example.com", "test.*.example.com", "www.*.com",
     "example.net", "xn--rger-koa.example.com",
+    "*.xn--rger-koa.example.com", "www.xn--rger-koa.example.com",
+    "*.good--example.com", "www.good--example.com",
+    "*.xn--bar.com", "xn--foo.xn--bar.com",
     "a.example.com", "b.example.com",
     "postmaster@example.com", "Postmaster@example.com",
     "postmaster@EXAMPLE.COM",
@@ -56,6 +60,9 @@ static const char *exceptions[] = {
     "set CN: host: [*.www.example.com] matches [.www.example.com]",
     "set CN: host: [*www.example.com] matches [www.example.com]",
     "set CN: host: [test.www.example.com] matches [.www.example.com]",
+    "set CN: host: [*.xn--rger-koa.example.com] matches [www.xn--rger-koa.example.com]",
+    "set CN: host: [*.xn--bar.com] matches [xn--foo.xn--bar.com]",
+    "set CN: host: [*.good--example.com] matches [www.good--example.com]",
     "set CN: host-no-wildcards: [*.www.example.com] matches [.www.example.com]",
     "set CN: host-no-wildcards: [test.www.example.com] matches [.www.example.com]",
     "set emailAddress: email: [postmaster@example.com] does not match "
@@ -76,6 +83,9 @@ static const char *exceptions[] = {
     "set dnsName: host: [*.www.example.com] matches [.www.example.com]",
     "set dnsName: host: [*www.example.com] matches [www.example.com]",
     "set dnsName: host: [test.www.example.com] matches [.www.example.com]",
+    "set dnsName: host: [*.xn--rger-koa.example.com] matches [www.xn--rger-koa.example.com]",
+    "set dnsName: host: [*.xn--bar.com] matches [xn--foo.xn--bar.com]",
+    "set dnsName: host: [*.good--example.com] matches [www.good--example.com]",
     "set rfc822Name: email: [postmaster@example.com] does not match "
     "[Postmaster@example.com]",
     "set rfc822Name: email: [Postmaster@example.com] does not match "

@@ -752,7 +752,8 @@ static const uint8_t *valid_star(const uint8_t *p, size_t len,
             ++dots;
         }
         else if (p[i] == '-') {
-            if ((state & LABEL_HYPHEN) != 0)
+            /* no domain/subdomain starts with '-' */
+            if ((state & LABEL_START) != 0)
                 return NULL;
             state |= LABEL_HYPHEN;
         }
