@@ -348,7 +348,9 @@ int speed_main(int argc, char **argv)
     const EVP_MD *evp_md = NULL;
     int decrypt = 0;
     int multi = 0;
+#ifndef OPENSSL_NO_MULTIBLOCK
     int multiblock = 0;
+#endif
     const char *stnerr = NULL;
 
 #ifndef TIMES
@@ -469,9 +471,11 @@ int speed_main(int argc, char **argv)
             mr = 1;
             j--; /* Otherwise, -mr gets confused with
                    an algorithm. */
+#ifndef OPENSSL_NO_MULTIBLOCK
         } else if (argc > 0 && !strcmp(*argv, "-mb")) {
             multiblock = 1;
             j--;
+#endif
         } else if (strcmp(*argv, "md5") == 0)
             doit[D_MD5] = 1;
         else if (strcmp(*argv, "hmac") == 0)
