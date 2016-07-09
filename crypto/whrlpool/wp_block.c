@@ -75,21 +75,44 @@ typedef uint64_t u64;
 #endif
 #endif
 
+#undef ROTATE
+#if defined(__GNUC__) && __GNUC__ >= 2
+#if defined(VIGORTLS_X86_64)
+#define ROTATE(a, n)                                           \
+    ({                                                         \
+        u64 ret;                                               \
+        asm("rolq %1,%0" : "=r"(ret) : "J"(n), "0"(a) : "cc"); \
+        ret;                                                   \
+    })
+#elif defined(__ia64) || defined(__ia64__)
 #if BYTE_ORDER == LITTLE_ENDIAN
-static inline u64 ROTATE(u64 a, unsigned int n)
-{
-    return ((a << n) | (a >> (64 - n)));
-}
-#elif BYTE_ORDER == BIG_ENDIAN
-static inline u64 ROTATE(u64 a, unsigned int n)
-{
-    return ((a >> n) | (a << (64 - n)));
-}
+#define ROTATE(a, n)                                                 \
+    ({                                                               \
+        u64 ret;                                                     \
+        asm("shrp %0=%1,%1,%2" : "=r"(ret) : "r"(a), "M"(64 - (n))); \
+        ret;                                                         \
+    })
+#else
+#define ROTATE(a, n)                                          \
+    ({                                                        \
+        u64 ret;                                              \
+        asm("shrp %0=%1,%1,%2" : "=r"(ret) : "r"(a), "M"(n)); \
+        ret;                                                  \
+    })
+#endif
+#endif
 #endif
 
 #if defined(OPENSSL_SMALL_FOOTPRINT)
-#if defined(ROTATE) && !defined(STRICT_ALIGNMENT)
-#define STRICT_ALIGNMENT /* ensure smallest table size */
+#if !defined(ROTATE)
+#if BYTE_ORDER == LITTLE_ENDIAN /* little-endians have to rotate left */
+#define ROTATE(i, n) ((i) << (n) ^ (i) >> (64 - n))
+#else /* big-endians have to rotate right */
+#define ROTATE(i, n) ((i) >> (n) ^ (i) << (64 - n))
+#endif
+#endif
+#if defined(ROTATE) && !defined(__STRICT_ALIGNMENT)
+#define __STRICT_ALIGNMENT /* ensure smallest table size */
 #endif
 #endif
 
