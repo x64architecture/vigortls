@@ -856,8 +856,8 @@ static EVP_CIPHER aesni_128_cbc_hmac_sha256_cipher = {
 #else
     .nid = NID_undef,
 #endif
-    .key_len = 16,
     .block_size = 16,
+    .key_len = 16,
     .iv_len = 16,
     .flags = EVP_CIPH_CBC_MODE | EVP_CIPH_FLAG_DEFAULT_ASN1 |
              EVP_CIPH_FLAG_AEAD_CIPHER | EVP_CIPH_FLAG_TLS1_1_MULTIBLOCK,
@@ -877,8 +877,8 @@ static EVP_CIPHER aesni_256_cbc_hmac_sha256_cipher = {
 #else
     .nid = NID_undef,
 #endif
-    .key_len = 16,
-    .block_size = 32,
+    .block_size = 16,
+    .key_len = 32,
     .iv_len = 16,
     .flags = EVP_CIPH_CBC_MODE | EVP_CIPH_FLAG_DEFAULT_ASN1 |
     EVP_CIPH_FLAG_AEAD_CIPHER | EVP_CIPH_FLAG_TLS1_1_MULTIBLOCK,
