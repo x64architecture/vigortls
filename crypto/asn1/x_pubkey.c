@@ -45,22 +45,22 @@ ASN1_SEQUENCE_cb(X509_PUBKEY, pubkey_cb) = {
 
 X509_PUBKEY *d2i_X509_PUBKEY(X509_PUBKEY **a, const uint8_t **in, long len)
 {
-    return (X509_PUBKEY *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, &X509_PUBKEY_it);
+    return (X509_PUBKEY *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, ASN1_ITEM_rptr(X509_PUBKEY));
 }
 
 int i2d_X509_PUBKEY(X509_PUBKEY *a, uint8_t **out)
 {
-    return ASN1_item_i2d((ASN1_VALUE *)a, out, &X509_PUBKEY_it);
+    return ASN1_item_i2d((ASN1_VALUE *)a, out, ASN1_ITEM_rptr(X509_PUBKEY));
 }
 
 X509_PUBKEY *X509_PUBKEY_new(void)
 {
-    return (X509_PUBKEY *)ASN1_item_new(&X509_PUBKEY_it);
+    return (X509_PUBKEY *)ASN1_item_new(ASN1_ITEM_rptr(X509_PUBKEY));
 }
 
 void X509_PUBKEY_free(X509_PUBKEY *a)
 {
-    ASN1_item_free((ASN1_VALUE *)a, &X509_PUBKEY_it);
+    ASN1_item_free((ASN1_VALUE *)a, ASN1_ITEM_rptr(X509_PUBKEY));
 }
 
 int X509_PUBKEY_set(X509_PUBKEY * *x, EVP_PKEY *pkey)

@@ -10,10 +10,10 @@
 #ifndef HEADER_MD5_H
 #define HEADER_MD5_H
 
-#include <openssl/opensslconf.h>
-
 #include <stddef.h>
 #include <stdint.h>
+
+#include <openssl/base.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -39,11 +39,11 @@ typedef struct MD5state_st {
     unsigned int num;
 } MD5_CTX;
 
-int MD5_Init(MD5_CTX *ctx);
-int MD5_Update(MD5_CTX *ctx, const void *data, size_t len);
-int MD5_Final(uint8_t *md, MD5_CTX *ctx);
-uint8_t *MD5(const uint8_t *data, size_t len, uint8_t *out);
-void MD5_Transform(MD5_CTX *ctx, const uint8_t *b);
+VIGORTLS_EXPORT int MD5_Init(MD5_CTX *ctx);
+VIGORTLS_EXPORT int MD5_Update(MD5_CTX *ctx, const void *data, size_t len);
+VIGORTLS_EXPORT int MD5_Final(uint8_t *md, MD5_CTX *ctx);
+VIGORTLS_EXPORT uint8_t *MD5(const uint8_t *data, size_t len, uint8_t *out);
+VIGORTLS_EXPORT void MD5_Transform(MD5_CTX *ctx, const uint8_t *b);
 #ifdef __cplusplus
 }
 #endif

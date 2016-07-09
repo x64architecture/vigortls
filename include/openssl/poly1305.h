@@ -17,7 +17,7 @@
 #ifndef HEADER_POLY1305_H
 #define HEADER_POLY1305_H
 
-#include <openssl/opensslconf.h>
+#include <openssl/base.h>
 
 #if defined(OPENSSL_NO_POLY1305)
 #error Poly1305 is disabled.
@@ -51,9 +51,12 @@ typedef struct {
     } func;
 } poly1305_state;
 
-void CRYPTO_poly1305_init(poly1305_state *ctx, const uint8_t key[32]);
-void CRYPTO_poly1305_update(poly1305_state *ctx, const uint8_t *in, size_t len);
-void CRYPTO_poly1305_finish(poly1305_state *ctx, uint8_t mac[16]);
+VIGORTLS_EXPORT void CRYPTO_poly1305_init(poly1305_state *ctx,
+                                          const uint8_t key[32]);
+VIGORTLS_EXPORT void CRYPTO_poly1305_update(poly1305_state *ctx,
+                                            const uint8_t *in, size_t len);
+VIGORTLS_EXPORT void CRYPTO_poly1305_finish(poly1305_state *ctx,
+                                            uint8_t mac[16]);
 
 #ifdef __cplusplus
 }

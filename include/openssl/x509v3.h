@@ -10,6 +10,7 @@
 #ifndef HEADER_X509V3_H
 #define HEADER_X509V3_H
 
+#include <openssl/base.h>
 #include <openssl/bio.h>
 #include <openssl/conf.h>
 #include <openssl/x509.h>
@@ -123,15 +124,15 @@ typedef struct EDIPartyName_st {
 
 typedef struct GENERAL_NAME_st {
 
-#define GEN_OTHERNAME 0
-#define GEN_EMAIL 1
-#define GEN_DNS 2
-#define GEN_X400 3
-#define GEN_DIRNAME 4
-#define GEN_EDIPARTY 5
-#define GEN_URI 6
-#define GEN_IPADD 7
-#define GEN_RID 8
+#define GEN_OTHERNAME   0
+#define GEN_EMAIL       1
+#define GEN_DNS         2
+#define GEN_X400        3
+#define GEN_DIRNAME     4
+#define GEN_EDIPARTY    5
+#define GEN_URI         6
+#define GEN_IPADD       7
+#define GEN_RID         8
 
     int type;
     union {
@@ -149,7 +150,7 @@ typedef struct GENERAL_NAME_st {
         /* Old names */
         ASN1_OCTET_STRING *ip; /* iPAddress */
         X509_NAME *dirn;       /* dirn */
-        ASN1_IA5STRING *ia5;   /* rfc822Name, dNSName, uniformResourceIdentifier */
+        ASN1_IA5STRING *ia5; /* rfc822Name, dNSName, uniformResourceIdentifier */
         ASN1_OBJECT *rid; /* registeredID */
         ASN1_TYPE *other; /* x400Address */
     } d;
@@ -184,17 +185,17 @@ typedef struct DIST_POINT_NAME_st {
 /* All existing reasons */
 #define CRLDP_ALL_REASONS 0x807f
 
-#define CRL_REASON_NONE -1
-#define CRL_REASON_UNSPECIFIED 0
-#define CRL_REASON_KEY_COMPROMISE 1
-#define CRL_REASON_CA_COMPROMISE 2
-#define CRL_REASON_AFFILIATION_CHANGED 3
-#define CRL_REASON_SUPERSEDED 4
-#define CRL_REASON_CESSATION_OF_OPERATION 5
-#define CRL_REASON_CERTIFICATE_HOLD 6
-#define CRL_REASON_REMOVE_FROM_CRL 8
-#define CRL_REASON_PRIVILEGE_WITHDRAWN 9
-#define CRL_REASON_AA_COMPROMISE 10
+#define CRL_REASON_NONE                     -1
+#define CRL_REASON_UNSPECIFIED              0
+#define CRL_REASON_KEY_COMPROMISE           1
+#define CRL_REASON_CA_COMPROMISE            2
+#define CRL_REASON_AFFILIATION_CHANGED      3
+#define CRL_REASON_SUPERSEDED               4
+#define CRL_REASON_CESSATION_OF_OPERATION   5
+#define CRL_REASON_CERTIFICATE_HOLD         6
+#define CRL_REASON_REMOVE_FROM_CRL          8
+#define CRL_REASON_PRIVILEGE_WITHDRAWN      9
+#define CRL_REASON_AA_COMPROMISE            10
 
 struct DIST_POINT_st {
     DIST_POINT_NAME *distpoint;
@@ -313,19 +314,19 @@ struct ISSUING_DIST_POINT_st {
 
 /* Values in idp_flags field */
 /* IDP present */
-#define IDP_PRESENT 0x1
+#define IDP_PRESENT     0x1
 /* IDP values inconsistent */
-#define IDP_INVALID 0x2
+#define IDP_INVALID     0x2
 /* onlyuser true */
-#define IDP_ONLYUSER 0x4
+#define IDP_ONLYUSER    0x4
 /* onlyCA true */
-#define IDP_ONLYCA 0x8
+#define IDP_ONLYCA      0x8
 /* onlyattr true */
-#define IDP_ONLYATTR 0x10
+#define IDP_ONLYATTR    0x10
 /* indirectCRL true */
-#define IDP_INDIRECT 0x20
+#define IDP_INDIRECT    0x20
 /* onlysomereasons present */
-#define IDP_REASONS 0x40
+#define IDP_REASONS     0x40
 
 #define X509V3_conf_err(val)                                             \
     ERR_asprintf_error_data("section:%s,name:%s,value:%s", val->section, \
@@ -356,53 +357,53 @@ struct ISSUING_DIST_POINT_st {
 
 /* X509_PURPOSE stuff */
 
-#define EXFLAG_BCONS 0x1
-#define EXFLAG_KUSAGE 0x2
-#define EXFLAG_XKUSAGE 0x4
-#define EXFLAG_NSCERT 0x8
+#define EXFLAG_BCONS            0x1
+#define EXFLAG_KUSAGE           0x2
+#define EXFLAG_XKUSAGE          0x4
+#define EXFLAG_NSCERT           0x8
 
-#define EXFLAG_CA              0x10
+#define EXFLAG_CA               0x10
 /* Really self issued not necessarily self signed */
-#define EXFLAG_SI              0x20
-#define EXFLAG_V1              0x40
-#define EXFLAG_INVALID         0x80
-#define EXFLAG_SET             0x100
-#define EXFLAG_CRITICAL        0x200
-#define EXFLAG_PROXY           0x400
+#define EXFLAG_SI               0x20
+#define EXFLAG_V1               0x40
+#define EXFLAG_INVALID          0x80
+#define EXFLAG_SET              0x100
+#define EXFLAG_CRITICAL         0x200
+#define EXFLAG_PROXY            0x400
 
-#define EXFLAG_INVALID_POLICY  0x800
-#define EXFLAG_FRESHEST        0x1000
+#define EXFLAG_INVALID_POLICY   0x800
+#define EXFLAG_FRESHEST         0x1000
 /* Self signed */
-#define EXFLAG_SS              0x2000
+#define EXFLAG_SS               0x2000
 
-#define KU_DIGITAL_SIGNATURE 0x0080
-#define KU_NON_REPUDIATION 0x0040
-#define KU_KEY_ENCIPHERMENT 0x0020
-#define KU_DATA_ENCIPHERMENT 0x0010
-#define KU_KEY_AGREEMENT 0x0008
-#define KU_KEY_CERT_SIGN 0x0004
-#define KU_CRL_SIGN 0x0002
-#define KU_ENCIPHER_ONLY 0x0001
-#define KU_DECIPHER_ONLY 0x8000
+#define KU_DIGITAL_SIGNATURE    0x0080
+#define KU_NON_REPUDIATION      0x0040
+#define KU_KEY_ENCIPHERMENT     0x0020
+#define KU_DATA_ENCIPHERMENT    0x0010
+#define KU_KEY_AGREEMENT        0x0008
+#define KU_KEY_CERT_SIGN        0x0004
+#define KU_CRL_SIGN             0x0002
+#define KU_ENCIPHER_ONLY        0x0001
+#define KU_DECIPHER_ONLY        0x8000
 
-#define NS_SSL_CLIENT 0x80
-#define NS_SSL_SERVER 0x40
-#define NS_SMIME 0x20
-#define NS_OBJSIGN 0x10
-#define NS_SSL_CA 0x04
-#define NS_SMIME_CA 0x02
-#define NS_OBJSIGN_CA 0x01
-#define NS_ANY_CA (NS_SSL_CA | NS_SMIME_CA | NS_OBJSIGN_CA)
+#define NS_SSL_CLIENT           0x80
+#define NS_SSL_SERVER           0x40
+#define NS_SMIME                0x20
+#define NS_OBJSIGN              0x10
+#define NS_SSL_CA               0x04
+#define NS_SMIME_CA             0x02
+#define NS_OBJSIGN_CA           0x01
+#define NS_ANY_CA               (NS_SSL_CA | NS_SMIME_CA | NS_OBJSIGN_CA)
 
-#define XKU_SSL_SERVER 0x1
-#define XKU_SSL_CLIENT 0x2
-#define XKU_SMIME 0x4
-#define XKU_CODE_SIGN 0x8
-#define XKU_SGC 0x10
-#define XKU_OCSP_SIGN 0x20
-#define XKU_TIMESTAMP 0x40
-#define XKU_DVCS 0x80
-#define XKU_ANYEKU 0x100
+#define XKU_SSL_SERVER          0x1
+#define XKU_SSL_CLIENT          0x2
+#define XKU_SMIME               0x4
+#define XKU_CODE_SIGN           0x8
+#define XKU_SGC                 0x10
+#define XKU_OCSP_SIGN           0x20
+#define XKU_TIMESTAMP           0x40
+#define XKU_DVCS                0x80
+#define XKU_ANYEKU              0x100
 
 #define X509_PURPOSE_DYNAMIC 0x1
 #define X509_PURPOSE_DYNAMIC_NAME 0x2
@@ -417,41 +418,41 @@ typedef struct x509_purpose_st {
     void *usr_data;
 } X509_PURPOSE;
 
-#define X509_PURPOSE_SSL_CLIENT 1
-#define X509_PURPOSE_SSL_SERVER 2
-#define X509_PURPOSE_NS_SSL_SERVER 3
-#define X509_PURPOSE_SMIME_SIGN 4
-#define X509_PURPOSE_SMIME_ENCRYPT 5
-#define X509_PURPOSE_CRL_SIGN 6
-#define X509_PURPOSE_ANY 7
-#define X509_PURPOSE_OCSP_HELPER 8
-#define X509_PURPOSE_TIMESTAMP_SIGN 9
+#define X509_PURPOSE_SSL_CLIENT         1
+#define X509_PURPOSE_SSL_SERVER         2
+#define X509_PURPOSE_NS_SSL_SERVER      3
+#define X509_PURPOSE_SMIME_SIGN         4
+#define X509_PURPOSE_SMIME_ENCRYPT      5
+#define X509_PURPOSE_CRL_SIGN           6
+#define X509_PURPOSE_ANY                7
+#define X509_PURPOSE_OCSP_HELPER        8
+#define X509_PURPOSE_TIMESTAMP_SIGN     9
 
 #define X509_PURPOSE_MIN 1
 #define X509_PURPOSE_MAX 9
 
 /* Flags for X509V3_EXT_print() */
 
-#define X509V3_EXT_UNKNOWN_MASK (0xfL << 16)
+#define X509V3_EXT_UNKNOWN_MASK     (0xfL << 16)
 /* Return error for unknown extensions */
-#define X509V3_EXT_DEFAULT 0
+#define X509V3_EXT_DEFAULT          0
 /* Print error for unknown extensions */
-#define X509V3_EXT_ERROR_UNKNOWN (1L << 16)
+#define X509V3_EXT_ERROR_UNKNOWN    (1L << 16)
 /* ASN1 parse unknown extensions */
-#define X509V3_EXT_PARSE_UNKNOWN (2L << 16)
+#define X509V3_EXT_PARSE_UNKNOWN    (2L << 16)
 /* BIO_dump unknown extensions */
-#define X509V3_EXT_DUMP_UNKNOWN (3L << 16)
+#define X509V3_EXT_DUMP_UNKNOWN     (3L << 16)
 
 /* Flags for X509V3_add1_i2d */
 
-#define X509V3_ADD_OP_MASK 0xfL
-#define X509V3_ADD_DEFAULT 0L
-#define X509V3_ADD_APPEND 1L
-#define X509V3_ADD_REPLACE 2L
+#define X509V3_ADD_OP_MASK          0xfL
+#define X509V3_ADD_DEFAULT          0L
+#define X509V3_ADD_APPEND           1L
+#define X509V3_ADD_REPLACE          2L
 #define X509V3_ADD_REPLACE_EXISTING 3L
-#define X509V3_ADD_KEEP_EXISTING 4L
-#define X509V3_ADD_DELETE 5L
-#define X509V3_ADD_SILENT 0x10
+#define X509V3_ADD_KEEP_EXISTING    4L
+#define X509V3_ADD_DELETE           5L
+#define X509V3_ADD_SILENT           0x10
 
 DECLARE_STACK_OF(X509_PURPOSE)
 
@@ -460,59 +461,68 @@ DECLARE_ASN1_FUNCTIONS(BASIC_CONSTRAINTS)
 DECLARE_ASN1_FUNCTIONS(SXNET)
 DECLARE_ASN1_FUNCTIONS(SXNETID)
 
-int SXNET_add_id_asc(SXNET **psx, char *zone, char *user, int userlen);
-int SXNET_add_id_ulong(SXNET **psx, unsigned long lzone, char *user,
-                       int userlen);
-int SXNET_add_id_INTEGER(SXNET **psx, ASN1_INTEGER *izone, char *user,
-                         int userlen);
+VIGORTLS_EXPORT int SXNET_add_id_asc(SXNET **psx, char *zone, char *user,
+                                     int userlen);
+VIGORTLS_EXPORT int SXNET_add_id_ulong(SXNET **psx, unsigned long lzone,
+                                       char *user, int userlen);
+VIGORTLS_EXPORT int SXNET_add_id_INTEGER(SXNET **psx, ASN1_INTEGER *izone,
+                                         char *user, int userlen);
 
-ASN1_OCTET_STRING *SXNET_get_id_asc(SXNET *sx, char *zone);
-ASN1_OCTET_STRING *SXNET_get_id_ulong(SXNET *sx, unsigned long lzone);
-ASN1_OCTET_STRING *SXNET_get_id_INTEGER(SXNET *sx, ASN1_INTEGER *zone);
+VIGORTLS_EXPORT ASN1_OCTET_STRING *SXNET_get_id_asc(SXNET *sx, char *zone);
+VIGORTLS_EXPORT ASN1_OCTET_STRING *SXNET_get_id_ulong(SXNET *sx,
+                                                      unsigned long lzone);
+VIGORTLS_EXPORT ASN1_OCTET_STRING *SXNET_get_id_INTEGER(SXNET *sx,
+                                                        ASN1_INTEGER *zone);
 
 DECLARE_ASN1_FUNCTIONS(AUTHORITY_KEYID)
 
 DECLARE_ASN1_FUNCTIONS(PKEY_USAGE_PERIOD)
 
 DECLARE_ASN1_FUNCTIONS(GENERAL_NAME)
-GENERAL_NAME *GENERAL_NAME_dup(GENERAL_NAME *a);
-int GENERAL_NAME_cmp(GENERAL_NAME *a, GENERAL_NAME *b);
+VIGORTLS_EXPORT GENERAL_NAME *GENERAL_NAME_dup(GENERAL_NAME *a);
+VIGORTLS_EXPORT int GENERAL_NAME_cmp(GENERAL_NAME *a, GENERAL_NAME *b);
 
-ASN1_BIT_STRING *v2i_ASN1_BIT_STRING(X509V3_EXT_METHOD *method, X509V3_CTX *ctx,
-                                     STACK_OF(CONF_VALUE) *nval);
-STACK_OF(CONF_VALUE) *i2v_ASN1_BIT_STRING(X509V3_EXT_METHOD *method,
-                                           ASN1_BIT_STRING *bits,
-                                           STACK_OF(CONF_VALUE) *extlist);
+VIGORTLS_EXPORT ASN1_BIT_STRING *
+v2i_ASN1_BIT_STRING(X509V3_EXT_METHOD *method, X509V3_CTX *ctx,
+                    STACK_OF(CONF_VALUE) *nval);
+VIGORTLS_EXPORT STACK_OF(CONF_VALUE) *
+    i2v_ASN1_BIT_STRING(X509V3_EXT_METHOD *method, ASN1_BIT_STRING *bits,
+                        STACK_OF(CONF_VALUE) *extlist);
 
-STACK_OF(CONF_VALUE) *i2v_GENERAL_NAME(X509V3_EXT_METHOD *method,
-                                        GENERAL_NAME *gen,
-                                        STACK_OF(CONF_VALUE) *ret);
-int GENERAL_NAME_print(BIO *out, GENERAL_NAME *gen);
+VIGORTLS_EXPORT STACK_OF(CONF_VALUE) *
+    i2v_GENERAL_NAME(X509V3_EXT_METHOD *method, GENERAL_NAME *gen,
+                     STACK_OF(CONF_VALUE) *ret);
+VIGORTLS_EXPORT int GENERAL_NAME_print(BIO *out, GENERAL_NAME *gen);
 
 DECLARE_ASN1_FUNCTIONS(GENERAL_NAMES)
 
-STACK_OF(CONF_VALUE) *i2v_GENERAL_NAMES(X509V3_EXT_METHOD *method,
-                                         GENERAL_NAMES *gen,
-                                         STACK_OF(CONF_VALUE) *extlist);
-GENERAL_NAMES *v2i_GENERAL_NAMES(const X509V3_EXT_METHOD *method,
-                                 X509V3_CTX *ctx, STACK_OF(CONF_VALUE) *nval);
+VIGORTLS_EXPORT STACK_OF(CONF_VALUE) *
+    i2v_GENERAL_NAMES(X509V3_EXT_METHOD *method, GENERAL_NAMES *gen,
+                      STACK_OF(CONF_VALUE) *extlist);
+VIGORTLS_EXPORT GENERAL_NAMES *
+v2i_GENERAL_NAMES(const X509V3_EXT_METHOD *method, X509V3_CTX *ctx,
+                  STACK_OF(CONF_VALUE) *nval);
 
 DECLARE_ASN1_FUNCTIONS(OTHERNAME)
 DECLARE_ASN1_FUNCTIONS(EDIPARTYNAME)
-int OTHERNAME_cmp(OTHERNAME *a, OTHERNAME *b);
-void GENERAL_NAME_set0_value(GENERAL_NAME *a, int type, void *value);
-void *GENERAL_NAME_get0_value(GENERAL_NAME *a, int *ptype);
-int GENERAL_NAME_set0_othername(GENERAL_NAME *gen, ASN1_OBJECT *oid,
-                                ASN1_TYPE *value);
-int GENERAL_NAME_get0_otherName(GENERAL_NAME *gen, ASN1_OBJECT **poid,
-                                ASN1_TYPE **pvalue);
+VIGORTLS_EXPORT int OTHERNAME_cmp(OTHERNAME *a, OTHERNAME *b);
+VIGORTLS_EXPORT void GENERAL_NAME_set0_value(GENERAL_NAME *a, int type,
+                                             void *value);
+VIGORTLS_EXPORT void *GENERAL_NAME_get0_value(GENERAL_NAME *a, int *ptype);
+VIGORTLS_EXPORT int GENERAL_NAME_set0_othername(GENERAL_NAME *gen,
+                                                ASN1_OBJECT *oid,
+                                                ASN1_TYPE *value);
+VIGORTLS_EXPORT int GENERAL_NAME_get0_otherName(GENERAL_NAME *gen,
+                                                ASN1_OBJECT **poid,
+                                                ASN1_TYPE **pvalue);
 
-char *i2s_ASN1_OCTET_STRING(X509V3_EXT_METHOD *method, ASN1_OCTET_STRING *ia5);
-ASN1_OCTET_STRING *s2i_ASN1_OCTET_STRING(X509V3_EXT_METHOD *method,
-                                         X509V3_CTX *ctx, char *str);
+VIGORTLS_EXPORT char *i2s_ASN1_OCTET_STRING(X509V3_EXT_METHOD *method,
+                                            ASN1_OCTET_STRING *ia5);
+VIGORTLS_EXPORT ASN1_OCTET_STRING *
+s2i_ASN1_OCTET_STRING(X509V3_EXT_METHOD *method, X509V3_CTX *ctx, char *str);
 
 DECLARE_ASN1_FUNCTIONS(EXTENDED_KEY_USAGE)
-int i2a_ACCESS_DESCRIPTION(BIO *bp, ACCESS_DESCRIPTION *a);
+VIGORTLS_EXPORT int i2a_ACCESS_DESCRIPTION(BIO *bp, ACCESS_DESCRIPTION *a);
 
 DECLARE_ASN1_FUNCTIONS(CERTIFICATEPOLICIES)
 DECLARE_ASN1_FUNCTIONS(POLICYINFO)
@@ -525,9 +535,10 @@ DECLARE_ASN1_FUNCTIONS(DIST_POINT)
 DECLARE_ASN1_FUNCTIONS(DIST_POINT_NAME)
 DECLARE_ASN1_FUNCTIONS(ISSUING_DIST_POINT)
 
-int DIST_POINT_set_dpname(DIST_POINT_NAME *dpn, X509_NAME *iname);
+VIGORTLS_EXPORT int DIST_POINT_set_dpname(DIST_POINT_NAME *dpn,
+                                          X509_NAME *iname);
 
-int NAME_CONSTRAINTS_check(X509 *x, NAME_CONSTRAINTS *nc);
+VIGORTLS_EXPORT int NAME_CONSTRAINTS_check(X509 *x, NAME_CONSTRAINTS *nc);
 
 DECLARE_ASN1_FUNCTIONS(ACCESS_DESCRIPTION)
 DECLARE_ASN1_FUNCTIONS(AUTHORITY_INFO_ACCESS)
@@ -545,124 +556,146 @@ DECLARE_ASN1_ALLOC_FUNCTIONS(NAME_CONSTRAINTS)
 DECLARE_ASN1_ALLOC_FUNCTIONS(POLICY_CONSTRAINTS)
 DECLARE_ASN1_ITEM(POLICY_CONSTRAINTS)
 
-GENERAL_NAME *a2i_GENERAL_NAME(GENERAL_NAME *out,
-                               const X509V3_EXT_METHOD *method, X509V3_CTX *ctx,
-                               int gen_type, char *value, int is_nc);
+VIGORTLS_EXPORT GENERAL_NAME *a2i_GENERAL_NAME(GENERAL_NAME *out,
+                                               const X509V3_EXT_METHOD *method,
+                                               X509V3_CTX *ctx, int gen_type,
+                                               char *value, int is_nc);
 
 #ifdef HEADER_CONF_H
-GENERAL_NAME *v2i_GENERAL_NAME(const X509V3_EXT_METHOD *method, X509V3_CTX *ctx,
-                               CONF_VALUE *cnf);
-GENERAL_NAME *v2i_GENERAL_NAME_ex(GENERAL_NAME *out,
-                                  const X509V3_EXT_METHOD *method,
-                                  X509V3_CTX *ctx, CONF_VALUE *cnf, int is_nc);
-void X509V3_conf_free(CONF_VALUE *val);
+VIGORTLS_EXPORT GENERAL_NAME *v2i_GENERAL_NAME(const X509V3_EXT_METHOD *method,
+                                               X509V3_CTX *ctx,
+                                               CONF_VALUE *cnf);
+VIGORTLS_EXPORT GENERAL_NAME *
+v2i_GENERAL_NAME_ex(GENERAL_NAME *out, const X509V3_EXT_METHOD *method,
+                    X509V3_CTX *ctx, CONF_VALUE *cnf, int is_nc);
+VIGORTLS_EXPORT void X509V3_conf_free(CONF_VALUE *val);
 
-X509_EXTENSION *X509V3_EXT_nconf_nid(CONF *conf, X509V3_CTX *ctx, int ext_nid,
-                                     char *value);
-X509_EXTENSION *X509V3_EXT_nconf(CONF *conf, X509V3_CTX *ctx, char *name,
-                                 char *value);
-int X509V3_EXT_add_nconf_sk(CONF *conf, X509V3_CTX *ctx, char *section,
-                            STACK_OF(X509_EXTENSION) **sk);
-int X509V3_EXT_add_nconf(CONF *conf, X509V3_CTX *ctx, char *section,
-                         X509 *cert);
-int X509V3_EXT_REQ_add_nconf(CONF *conf, X509V3_CTX *ctx, char *section,
-                             X509_REQ *req);
-int X509V3_EXT_CRL_add_nconf(CONF *conf, X509V3_CTX *ctx, char *section,
-                             X509_CRL *crl);
+VIGORTLS_EXPORT X509_EXTENSION *
+X509V3_EXT_nconf_nid(CONF *conf, X509V3_CTX *ctx, int ext_nid, char *value);
+VIGORTLS_EXPORT X509_EXTENSION *X509V3_EXT_nconf(CONF *conf, X509V3_CTX *ctx,
+                                                 char *name, char *value);
+VIGORTLS_EXPORT int X509V3_EXT_add_nconf_sk(CONF *conf, X509V3_CTX *ctx,
+                                            char *section,
+                                            STACK_OF(X509_EXTENSION) **sk);
+VIGORTLS_EXPORT int X509V3_EXT_add_nconf(CONF *conf, X509V3_CTX *ctx,
+                                         char *section, X509 *cert);
+VIGORTLS_EXPORT int X509V3_EXT_REQ_add_nconf(CONF *conf, X509V3_CTX *ctx,
+                                             char *section, X509_REQ *req);
+VIGORTLS_EXPORT int X509V3_EXT_CRL_add_nconf(CONF *conf, X509V3_CTX *ctx,
+                                             char *section, X509_CRL *crl);
 
-X509_EXTENSION *X509V3_EXT_conf_nid(LHASH_OF(CONF_VALUE) *conf,
-                                    X509V3_CTX *ctx, int ext_nid, char *value);
-X509_EXTENSION *X509V3_EXT_conf(LHASH_OF(CONF_VALUE) *conf, X509V3_CTX *ctx,
-                                char *name, char *value);
-int X509V3_EXT_add_conf(LHASH_OF(CONF_VALUE) *conf, X509V3_CTX *ctx,
-                        char *section, X509 *cert);
-int X509V3_EXT_REQ_add_conf(LHASH_OF(CONF_VALUE) *conf, X509V3_CTX *ctx,
-                            char *section, X509_REQ *req);
-int X509V3_EXT_CRL_add_conf(LHASH_OF(CONF_VALUE) *conf, X509V3_CTX *ctx,
-                            char *section, X509_CRL *crl);
+VIGORTLS_EXPORT X509_EXTENSION *X509V3_EXT_conf_nid(LHASH_OF(CONF_VALUE) * conf,
+                                                    X509V3_CTX *ctx,
+                                                    int ext_nid, char *value);
+VIGORTLS_EXPORT X509_EXTENSION *X509V3_EXT_conf(LHASH_OF(CONF_VALUE) * conf,
+                                                X509V3_CTX *ctx, char *name,
+                                                char *value);
+VIGORTLS_EXPORT int X509V3_EXT_add_conf(LHASH_OF(CONF_VALUE) * conf,
+                                        X509V3_CTX *ctx, char *section,
+                                        X509 *cert);
+VIGORTLS_EXPORT int X509V3_EXT_REQ_add_conf(LHASH_OF(CONF_VALUE) * conf,
+                                            X509V3_CTX *ctx, char *section,
+                                            X509_REQ *req);
+VIGORTLS_EXPORT int X509V3_EXT_CRL_add_conf(LHASH_OF(CONF_VALUE) * conf,
+                                            X509V3_CTX *ctx, char *section,
+                                            X509_CRL *crl);
 
-int X509V3_add_value_bool_nf(char *name, int asn1_bool,
-                             STACK_OF(CONF_VALUE) **extlist);
-int X509V3_get_value_bool(CONF_VALUE *value, int *asn1_bool);
-int X509V3_get_value_int(CONF_VALUE *value, ASN1_INTEGER **aint);
-void X509V3_set_nconf(X509V3_CTX *ctx, CONF *conf);
-void X509V3_set_conf_lhash(X509V3_CTX *ctx, LHASH_OF(CONF_VALUE) *lhash);
+VIGORTLS_EXPORT int X509V3_add_value_bool_nf(char *name, int asn1_bool,
+                                             STACK_OF(CONF_VALUE) **extlist);
+VIGORTLS_EXPORT int X509V3_get_value_bool(CONF_VALUE *value, int *asn1_bool);
+VIGORTLS_EXPORT int X509V3_get_value_int(CONF_VALUE *value,
+                                         ASN1_INTEGER **aint);
+VIGORTLS_EXPORT void X509V3_set_nconf(X509V3_CTX *ctx, CONF *conf);
+VIGORTLS_EXPORT void X509V3_set_conf_lhash(X509V3_CTX *ctx,
+                                           LHASH_OF(CONF_VALUE) * lhash);
 #endif
 
-char *X509V3_get_string(X509V3_CTX *ctx, char *name, char *section);
-STACK_OF(CONF_VALUE) *X509V3_get_section(X509V3_CTX *ctx, char *section);
-void X509V3_string_free(X509V3_CTX *ctx, char *str);
-void X509V3_section_free(X509V3_CTX *ctx, STACK_OF(CONF_VALUE) *section);
-void X509V3_set_ctx(X509V3_CTX *ctx, X509 *issuer, X509 *subject, X509_REQ *req,
-                    X509_CRL *crl, int flags);
+VIGORTLS_EXPORT char *X509V3_get_string(X509V3_CTX *ctx, char *name,
+                                        char *section);
+VIGORTLS_EXPORT STACK_OF(CONF_VALUE) *
+    X509V3_get_section(X509V3_CTX *ctx, char *section);
+VIGORTLS_EXPORT void X509V3_string_free(X509V3_CTX *ctx, char *str);
+VIGORTLS_EXPORT void X509V3_section_free(X509V3_CTX *ctx,
+                                         STACK_OF(CONF_VALUE) *section);
+VIGORTLS_EXPORT void X509V3_set_ctx(X509V3_CTX *ctx, X509 *issuer,
+                                    X509 *subject, X509_REQ *req, X509_CRL *crl,
+                                    int flags);
 
-int X509V3_add_value(const char *name, const char *value,
-                     STACK_OF(CONF_VALUE) **extlist);
-int X509V3_add_value_uchar(const char *name, const uint8_t *value,
-                           STACK_OF(CONF_VALUE) **extlist);
-int X509V3_add_value_bool(const char *name, int asn1_bool,
-                          STACK_OF(CONF_VALUE) **extlist);
-int X509V3_add_value_int(const char *name, ASN1_INTEGER *aint,
-                         STACK_OF(CONF_VALUE) **extlist);
-char *i2s_ASN1_INTEGER(X509V3_EXT_METHOD *meth, ASN1_INTEGER *aint);
-ASN1_INTEGER *s2i_ASN1_INTEGER(X509V3_EXT_METHOD *meth, char *value);
-char *i2s_ASN1_ENUMERATED(X509V3_EXT_METHOD *meth, ASN1_ENUMERATED *aint);
-char *i2s_ASN1_ENUMERATED_TABLE(X509V3_EXT_METHOD *meth, ASN1_ENUMERATED *aint);
-int X509V3_EXT_add(X509V3_EXT_METHOD *ext);
-int X509V3_EXT_add_list(X509V3_EXT_METHOD *extlist);
-int X509V3_EXT_add_alias(int nid_to, int nid_from);
-void X509V3_EXT_cleanup(void);
+VIGORTLS_EXPORT int X509V3_add_value(const char *name, const char *value,
+                                     STACK_OF(CONF_VALUE) **extlist);
+VIGORTLS_EXPORT int X509V3_add_value_uchar(const char *name,
+                                           const uint8_t *value,
+                                           STACK_OF(CONF_VALUE) **extlist);
+VIGORTLS_EXPORT int X509V3_add_value_bool(const char *name, int asn1_bool,
+                                          STACK_OF(CONF_VALUE) **extlist);
+VIGORTLS_EXPORT int X509V3_add_value_int(const char *name, ASN1_INTEGER *aint,
+                                         STACK_OF(CONF_VALUE) **extlist);
+VIGORTLS_EXPORT char *i2s_ASN1_INTEGER(X509V3_EXT_METHOD *meth,
+                                       ASN1_INTEGER *aint);
+VIGORTLS_EXPORT ASN1_INTEGER *s2i_ASN1_INTEGER(X509V3_EXT_METHOD *meth,
+                                               char *value);
+VIGORTLS_EXPORT char *i2s_ASN1_ENUMERATED(X509V3_EXT_METHOD *meth,
+                                          ASN1_ENUMERATED *aint);
+VIGORTLS_EXPORT char *i2s_ASN1_ENUMERATED_TABLE(X509V3_EXT_METHOD *meth,
+                                                ASN1_ENUMERATED *aint);
+VIGORTLS_EXPORT int X509V3_EXT_add(X509V3_EXT_METHOD *ext);
+VIGORTLS_EXPORT int X509V3_EXT_add_list(X509V3_EXT_METHOD *extlist);
+VIGORTLS_EXPORT int X509V3_EXT_add_alias(int nid_to, int nid_from);
+VIGORTLS_EXPORT void X509V3_EXT_cleanup(void);
 
-const X509V3_EXT_METHOD *X509V3_EXT_get(X509_EXTENSION *ext);
-const X509V3_EXT_METHOD *X509V3_EXT_get_nid(int nid);
-int X509V3_add_standard_extensions(void);
-STACK_OF(CONF_VALUE) *X509V3_parse_list(const char *line);
-void *X509V3_EXT_d2i(X509_EXTENSION *ext);
-void *X509V3_get_d2i(STACK_OF(X509_EXTENSION) *x, int nid, int *crit,
-                     int *idx);
-int X509V3_EXT_free(int nid, void *ext_data);
+VIGORTLS_EXPORT const X509V3_EXT_METHOD *X509V3_EXT_get(X509_EXTENSION *ext);
+VIGORTLS_EXPORT const X509V3_EXT_METHOD *X509V3_EXT_get_nid(int nid);
+VIGORTLS_EXPORT int X509V3_add_standard_extensions(void);
+VIGORTLS_EXPORT STACK_OF(CONF_VALUE) *X509V3_parse_list(const char *line);
+VIGORTLS_EXPORT void *X509V3_EXT_d2i(X509_EXTENSION *ext);
+VIGORTLS_EXPORT void *X509V3_get_d2i(STACK_OF(X509_EXTENSION) *x, int nid,
+                                     int *crit, int *idx);
+VIGORTLS_EXPORT int X509V3_EXT_free(int nid, void *ext_data);
 
-X509_EXTENSION *X509V3_EXT_i2d(int ext_nid, int crit, void *ext_struc);
-int X509V3_add1_i2d(STACK_OF(X509_EXTENSION) **x, int nid, void *value,
-                    int crit, unsigned long flags);
+VIGORTLS_EXPORT X509_EXTENSION *X509V3_EXT_i2d(int ext_nid, int crit,
+                                               void *ext_struc);
+VIGORTLS_EXPORT int X509V3_add1_i2d(STACK_OF(X509_EXTENSION) **x, int nid,
+                                    void *value, int crit, unsigned long flags);
 
-char *hex_to_string(const uint8_t *buffer, long len);
-uint8_t *string_to_hex(const char *str, long *len);
-int name_cmp(const char *name, const char *cmp);
+VIGORTLS_EXPORT char *hex_to_string(const uint8_t *buffer, long len);
+VIGORTLS_EXPORT uint8_t *string_to_hex(const char *str, long *len);
+VIGORTLS_EXPORT int name_cmp(const char *name, const char *cmp);
 
-void X509V3_EXT_val_prn(BIO *out, STACK_OF(CONF_VALUE) *val, int indent,
-                        int ml);
-int X509V3_EXT_print(BIO *out, X509_EXTENSION *ext, unsigned long flag,
-                     int indent);
-int X509V3_EXT_print_fp(FILE *out, X509_EXTENSION *ext, int flag, int indent);
+VIGORTLS_EXPORT void X509V3_EXT_val_prn(BIO *out, STACK_OF(CONF_VALUE) *val,
+                                        int indent, int ml);
+VIGORTLS_EXPORT int X509V3_EXT_print(BIO *out, X509_EXTENSION *ext,
+                                     unsigned long flag, int indent);
+VIGORTLS_EXPORT int X509V3_EXT_print_fp(FILE *out, X509_EXTENSION *ext,
+                                        int flag, int indent);
 
-int X509V3_extensions_print(BIO *out, char *title,
-                            STACK_OF(X509_EXTENSION) *exts, unsigned long flag,
-                            int indent);
+VIGORTLS_EXPORT int X509V3_extensions_print(BIO *out, char *title,
+                                            STACK_OF(X509_EXTENSION) *exts,
+                                            unsigned long flag, int indent);
 
-int X509_check_ca(X509 *x);
-int X509_check_purpose(X509 *x, int id, int ca);
-int X509_supported_extension(X509_EXTENSION *ex);
-int X509_PURPOSE_set(int *p, int purpose);
-int X509_check_issued(X509 *issuer, X509 *subject);
-int X509_check_akid(X509 *issuer, AUTHORITY_KEYID *akid);
-int X509_PURPOSE_get_count(void);
-X509_PURPOSE *X509_PURPOSE_get0(int idx);
-int X509_PURPOSE_get_by_sname(char *sname);
-int X509_PURPOSE_get_by_id(int id);
-int X509_PURPOSE_add(int id, int trust, int flags,
-                     int (*ck)(const X509_PURPOSE *, const X509 *, int),
-                     char *name, char *sname, void *arg);
-char *X509_PURPOSE_get0_name(X509_PURPOSE *xp);
-char *X509_PURPOSE_get0_sname(X509_PURPOSE *xp);
-int X509_PURPOSE_get_trust(X509_PURPOSE *xp);
-void X509_PURPOSE_cleanup(void);
-int X509_PURPOSE_get_id(X509_PURPOSE *);
+VIGORTLS_EXPORT int X509_check_ca(X509 *x);
+VIGORTLS_EXPORT int X509_check_purpose(X509 *x, int id, int ca);
+VIGORTLS_EXPORT int X509_supported_extension(X509_EXTENSION *ex);
+VIGORTLS_EXPORT int X509_PURPOSE_set(int *p, int purpose);
+VIGORTLS_EXPORT int X509_check_issued(X509 *issuer, X509 *subject);
+VIGORTLS_EXPORT int X509_check_akid(X509 *issuer, AUTHORITY_KEYID *akid);
+VIGORTLS_EXPORT int X509_PURPOSE_get_count(void);
+VIGORTLS_EXPORT X509_PURPOSE *X509_PURPOSE_get0(int idx);
+VIGORTLS_EXPORT int X509_PURPOSE_get_by_sname(char *sname);
+VIGORTLS_EXPORT int X509_PURPOSE_get_by_id(int id);
+VIGORTLS_EXPORT int X509_PURPOSE_add(int id, int trust, int flags,
+                                     int (*ck)(const X509_PURPOSE *,
+                                               const X509 *, int),
+                                     char *name, char *sname, void *arg);
+VIGORTLS_EXPORT char *X509_PURPOSE_get0_name(X509_PURPOSE *xp);
+VIGORTLS_EXPORT char *X509_PURPOSE_get0_sname(X509_PURPOSE *xp);
+VIGORTLS_EXPORT int X509_PURPOSE_get_trust(X509_PURPOSE *xp);
+VIGORTLS_EXPORT void X509_PURPOSE_cleanup(void);
+VIGORTLS_EXPORT int X509_PURPOSE_get_id(X509_PURPOSE *);
 
-STACK_OF(OPENSSL_STRING) *X509_get1_email(X509 *x);
-STACK_OF(OPENSSL_STRING) *X509_REQ_get1_email(X509_REQ *x);
-void X509_email_free(STACK_OF(OPENSSL_STRING) *sk);
-STACK_OF(OPENSSL_STRING) *X509_get1_ocsp(X509 *x);
+VIGORTLS_EXPORT STACK_OF(OPENSSL_STRING) *X509_get1_email(X509 *x);
+VIGORTLS_EXPORT STACK_OF(OPENSSL_STRING) *X509_REQ_get1_email(X509_REQ *x);
+VIGORTLS_EXPORT void X509_email_free(STACK_OF(OPENSSL_STRING) *sk);
+VIGORTLS_EXPORT STACK_OF(OPENSSL_STRING) *X509_get1_ocsp(X509 *x);
 
 /* Flags for X509_check_* functions */
 /* Always check subject name for host match even if subject alt names present */
@@ -680,23 +713,26 @@ STACK_OF(OPENSSL_STRING) *X509_get1_ocsp(X509 *x);
  * This is a non-public flag, turned on implicitly when the subject
  * reference identity is a DNS name.
  */
-#define _X509_CHECK_FLAG_DOT_SUBDOMAINS 0x8000
+#define _X509_CHECK_FLAG_DOT_SUBDOMAINS         0x8000
 
-int X509_check_host(X509 *x, const char *chk, size_t chklen,
-                    unsigned int flags, char **peername);
-int X509_check_email(X509 *x, const char *chk, size_t chklen,
-                     unsigned int flags);
-int X509_check_ip(X509 *x, const uint8_t *chk, size_t chklen,
-                  unsigned int flags);
-int X509_check_ip_asc(X509 *x, const char *ipasc, unsigned int flags);
+VIGORTLS_EXPORT int X509_check_host(X509 *x, const char *chk, size_t chklen,
+                                    unsigned int flags, char **peername);
+VIGORTLS_EXPORT int X509_check_email(X509 *x, const char *chk, size_t chklen,
+                                     unsigned int flags);
+VIGORTLS_EXPORT int X509_check_ip(X509 *x, const uint8_t *chk, size_t chklen,
+                                  unsigned int flags);
+VIGORTLS_EXPORT int X509_check_ip_asc(X509 *x, const char *ipasc,
+                                      unsigned int flags);
 
-ASN1_OCTET_STRING *a2i_IPADDRESS(const char *ipasc);
-ASN1_OCTET_STRING *a2i_IPADDRESS_NC(const char *ipasc);
-int a2i_ipadd(uint8_t *ipout, const char *ipasc);
-int X509V3_NAME_from_section(X509_NAME *nm, STACK_OF(CONF_VALUE) *dn_sk,
-                             unsigned long chtype);
+VIGORTLS_EXPORT ASN1_OCTET_STRING *a2i_IPADDRESS(const char *ipasc);
+VIGORTLS_EXPORT ASN1_OCTET_STRING *a2i_IPADDRESS_NC(const char *ipasc);
+VIGORTLS_EXPORT int a2i_ipadd(uint8_t *ipout, const char *ipasc);
+VIGORTLS_EXPORT int X509V3_NAME_from_section(X509_NAME *nm,
+                                             STACK_OF(CONF_VALUE) *dn_sk,
+                                             unsigned long chtype);
 
-void X509_POLICY_NODE_print(BIO *out, X509_POLICY_NODE *node, int indent);
+VIGORTLS_EXPORT void X509_POLICY_NODE_print(BIO *out, X509_POLICY_NODE *node,
+                                            int indent);
 DECLARE_STACK_OF(X509_POLICY_NODE)
 
 /* BEGIN ERROR CODES */
@@ -704,7 +740,7 @@ DECLARE_STACK_OF(X509_POLICY_NODE)
  * The following lines are auto generated by the script mkerr.pl. Any changes
  * made after this point may be overwritten when the script is next run.
  */
-void ERR_load_X509V3_strings(void);
+VIGORTLS_EXPORT void ERR_load_X509V3_strings(void);
 
 /* Error codes for the X509V3 functions. */
 

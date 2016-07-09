@@ -10,7 +10,7 @@
 #ifndef HEADER_RC4_H
 #define HEADER_RC4_H
 
-#include <openssl/opensslconf.h>
+#include <openssl/base.h>
 
 #include <stddef.h>
 #include <stdint.h>
@@ -24,9 +24,9 @@ typedef struct rc4_key_st {
     uint32_t data[256];
 } RC4_KEY;
 
-const char *RC4_options(void);
-void RC4_set_key(RC4_KEY *key, int len, const uint8_t *data);
-void RC4(RC4_KEY *key, size_t len, const uint8_t *in, uint8_t *out);
+VIGORTLS_EXPORT const char *RC4_options(void);
+VIGORTLS_EXPORT void RC4_set_key(RC4_KEY *key, int len, const uint8_t *data);
+VIGORTLS_EXPORT void RC4(RC4_KEY *key, size_t len, const uint8_t *in, uint8_t *out);
 
 #ifdef __cplusplus
 }

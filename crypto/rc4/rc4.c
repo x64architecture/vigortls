@@ -16,7 +16,11 @@
 
 #include <openssl/rc4.h>
 
-/* RC4 as implemented from a posting from
+#if defined(OPENSSL_NO_ASM) || \
+    (!defined(VIGORTLS_X86) || !defined(VIGORTLS_X86_64))
+
+/*
+ * RC4 as implemented from a posting from
  * Newsgroups: sci.crypt
  * From: sterndark@netcom.com (David Sterndark)
  * Subject: RC4 Algorithm revealed.
@@ -107,3 +111,18 @@ void RC4_set_key(RC4_KEY *key, int len, const uint8_t *data)
     }
 }
 
+#else
+
+void asm_RC4(RC4_KEY *key, size_t len, const uint8_t *in, uint8_t *out);
+void RC4(RC4_KEY *key, size_t len, const uint8_t *in, uint8_t *out)
+{
+    asm_RC4(key, len, in, out);
+}
+
+void asm_RC4_set_key(RC4_KEY *rc4key, unsigned len, const uint8_t *key);
+void RC4_set_key(RC4_KEY *rc4key, unsigned len, const uint8_t *key)
+{
+    asm_RC4_set_key(rc4key, len, key);
+}
+
+#endif

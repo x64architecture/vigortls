@@ -54,27 +54,27 @@ ASN1_SEQUENCE(X509_NAME_ENTRY) = {
 
 X509_NAME_ENTRY *d2i_X509_NAME_ENTRY(X509_NAME_ENTRY **a, const uint8_t **in, long len)
 {
-    return (X509_NAME_ENTRY *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, &X509_NAME_ENTRY_it);
+    return (X509_NAME_ENTRY *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, ASN1_ITEM_rptr(X509_NAME_ENTRY));
 }
 
 int i2d_X509_NAME_ENTRY(X509_NAME_ENTRY *a, uint8_t **out)
 {
-    return ASN1_item_i2d((ASN1_VALUE *)a, out, &X509_NAME_ENTRY_it);
+    return ASN1_item_i2d((ASN1_VALUE *)a, out, ASN1_ITEM_rptr(X509_NAME_ENTRY));
 }
 
 X509_NAME_ENTRY *X509_NAME_ENTRY_new(void)
 {
-    return (X509_NAME_ENTRY *)ASN1_item_new(&X509_NAME_ENTRY_it);
+    return (X509_NAME_ENTRY *)ASN1_item_new(ASN1_ITEM_rptr(X509_NAME_ENTRY));
 }
 
 void X509_NAME_ENTRY_free(X509_NAME_ENTRY *a)
 {
-    ASN1_item_free((ASN1_VALUE *)a, &X509_NAME_ENTRY_it);
+    ASN1_item_free((ASN1_VALUE *)a, ASN1_ITEM_rptr(X509_NAME_ENTRY));
 }
 
 X509_NAME_ENTRY *X509_NAME_ENTRY_dup(X509_NAME_ENTRY *x)
 {
-    return ASN1_item_dup(&X509_NAME_ENTRY_it, x);
+    return ASN1_item_dup(ASN1_ITEM_rptr(X509_NAME_ENTRY), x);
 }
 
 /* For the "Name" type we need a SEQUENCE OF { SET OF X509_NAME_ENTRY }
@@ -107,27 +107,27 @@ IMPLEMENT_EXTERN_ASN1(X509_NAME, V_ASN1_SEQUENCE, x509_name_ff)
 
 X509_NAME *d2i_X509_NAME(X509_NAME **a, const uint8_t **in, long len)
 {
-    return (X509_NAME *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, &X509_NAME_it);
+    return (X509_NAME *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, ASN1_ITEM_rptr(X509_NAME));
 }
 
 int i2d_X509_NAME(X509_NAME *a, uint8_t **out)
 {
-    return ASN1_item_i2d((ASN1_VALUE *)a, out, &X509_NAME_it);
+    return ASN1_item_i2d((ASN1_VALUE *)a, out, ASN1_ITEM_rptr(X509_NAME));
 }
 
 X509_NAME *X509_NAME_new(void)
 {
-    return (X509_NAME *)ASN1_item_new(&X509_NAME_it);
+    return (X509_NAME *)ASN1_item_new(ASN1_ITEM_rptr(X509_NAME));
 }
 
 void X509_NAME_free(X509_NAME *a)
 {
-    ASN1_item_free((ASN1_VALUE *)a, &X509_NAME_it);
+    ASN1_item_free((ASN1_VALUE *)a, ASN1_ITEM_rptr(X509_NAME));
 }
 
 X509_NAME *X509_NAME_dup(X509_NAME *x)
 {
-    return ASN1_item_dup(&X509_NAME_it, x);
+    return ASN1_item_dup(ASN1_ITEM_rptr(X509_NAME), x);
 }
 
 static int x509_name_ex_new(ASN1_VALUE **val, const ASN1_ITEM *it)

@@ -10,6 +10,7 @@
 #ifndef HEADER_PKCS12_H
 #define HEADER_PKCS12_H
 
+#include <openssl/base.h>
 #include <openssl/bio.h>
 #include <openssl/x509.h>
 
@@ -17,9 +18,9 @@
 extern "C" {
 #endif
 
-#define PKCS12_KEY_ID 1
-#define PKCS12_IV_ID 2
-#define PKCS12_MAC_ID 3
+#define PKCS12_KEY_ID   1
+#define PKCS12_IV_ID    2
+#define PKCS12_MAC_ID   3
 
 /* Default iteration count */
 #ifndef PKCS12_DEFAULT_ITER
@@ -44,7 +45,7 @@ extern "C" {
 
 /* MS key usage constants */
 
-#define KEY_EX 0x10
+#define KEY_EX  0x10
 #define KEY_SIG 0x80
 
 typedef struct {
@@ -117,73 +118,86 @@ typedef struct pkcs12_bag_st {
 
 #define PKCS12_mac_present(p12) ((p12)->mac ? 1 : 0)
 
-PKCS12_SAFEBAG *PKCS12_x5092certbag(X509 *x509);
-PKCS12_SAFEBAG *PKCS12_x509crl2certbag(X509_CRL *crl);
-X509 *PKCS12_certbag2x509(PKCS12_SAFEBAG *bag);
-X509_CRL *PKCS12_certbag2x509crl(PKCS12_SAFEBAG *bag);
+VIGORTLS_EXPORT PKCS12_SAFEBAG *PKCS12_x5092certbag(X509 *x509);
+VIGORTLS_EXPORT PKCS12_SAFEBAG *PKCS12_x509crl2certbag(X509_CRL *crl);
+VIGORTLS_EXPORT X509 *PKCS12_certbag2x509(PKCS12_SAFEBAG *bag);
+VIGORTLS_EXPORT X509_CRL *PKCS12_certbag2x509crl(PKCS12_SAFEBAG *bag);
 
-PKCS12_SAFEBAG *PKCS12_item_pack_safebag(void *obj, const ASN1_ITEM *it,
-                                         int nid1, int nid2);
-PKCS12_SAFEBAG *PKCS12_MAKE_KEYBAG(PKCS8_PRIV_KEY_INFO *p8);
-PKCS8_PRIV_KEY_INFO *PKCS8_decrypt(X509_SIG *p8, const char *pass, int passlen);
-PKCS8_PRIV_KEY_INFO *PKCS12_decrypt_skey(PKCS12_SAFEBAG *bag, const char *pass,
-                                         int passlen);
-X509_SIG *PKCS8_encrypt(int pbe_nid, const EVP_CIPHER *cipher, const char *pass,
-                        int passlen, uint8_t *salt, int saltlen, int iter,
-                        PKCS8_PRIV_KEY_INFO *p8);
-PKCS12_SAFEBAG *PKCS12_MAKE_SHKEYBAG(int pbe_nid, const char *pass, int passlen,
-                                     uint8_t *salt, int saltlen, int iter,
-                                     PKCS8_PRIV_KEY_INFO *p8);
-PKCS7 *PKCS12_pack_p7data(STACK_OF(PKCS12_SAFEBAG) *sk);
-STACK_OF(PKCS12_SAFEBAG) *PKCS12_unpack_p7data(PKCS7 *p7);
-PKCS7 *PKCS12_pack_p7encdata(int pbe_nid, const char *pass, int passlen,
-                             uint8_t *salt, int saltlen, int iter,
-                             STACK_OF(PKCS12_SAFEBAG) *bags);
-STACK_OF(PKCS12_SAFEBAG) *
+VIGORTLS_EXPORT PKCS12_SAFEBAG *
+PKCS12_item_pack_safebag(void *obj, const ASN1_ITEM *it, int nid1, int nid2);
+VIGORTLS_EXPORT PKCS12_SAFEBAG *PKCS12_MAKE_KEYBAG(PKCS8_PRIV_KEY_INFO *p8);
+VIGORTLS_EXPORT PKCS8_PRIV_KEY_INFO *
+PKCS8_decrypt(X509_SIG *p8, const char *pass, int passlen);
+VIGORTLS_EXPORT PKCS8_PRIV_KEY_INFO *
+PKCS12_decrypt_skey(PKCS12_SAFEBAG *bag, const char *pass, int passlen);
+VIGORTLS_EXPORT X509_SIG *PKCS8_encrypt(int pbe_nid, const EVP_CIPHER *cipher,
+                                        const char *pass, int passlen,
+                                        uint8_t *salt, int saltlen, int iter,
+                                        PKCS8_PRIV_KEY_INFO *p8);
+VIGORTLS_EXPORT PKCS12_SAFEBAG *
+PKCS12_MAKE_SHKEYBAG(int pbe_nid, const char *pass, int passlen, uint8_t *salt,
+                     int saltlen, int iter, PKCS8_PRIV_KEY_INFO *p8);
+VIGORTLS_EXPORT PKCS7 *PKCS12_pack_p7data(STACK_OF(PKCS12_SAFEBAG) *sk);
+VIGORTLS_EXPORT STACK_OF(PKCS12_SAFEBAG) *PKCS12_unpack_p7data(PKCS7 *p7);
+VIGORTLS_EXPORT PKCS7 *PKCS12_pack_p7encdata(int pbe_nid, const char *pass,
+                                             int passlen, uint8_t *salt,
+                                             int saltlen, int iter,
+                                             STACK_OF(PKCS12_SAFEBAG) *bags);
+VIGORTLS_EXPORT STACK_OF(PKCS12_SAFEBAG) *
     PKCS12_unpack_p7encdata(PKCS7 *p7, const char *pass, int passlen);
 
-int PKCS12_pack_authsafes(PKCS12 *p12, STACK_OF(PKCS7) *safes);
-STACK_OF(PKCS7) *PKCS12_unpack_authsafes(PKCS12 *p12);
+VIGORTLS_EXPORT int PKCS12_pack_authsafes(PKCS12 *p12, STACK_OF(PKCS7) *safes);
+VIGORTLS_EXPORT STACK_OF(PKCS7) * PKCS12_unpack_authsafes(PKCS12 *p12);
 
-int PKCS12_add_localkeyid(PKCS12_SAFEBAG *bag, uint8_t *name, int namelen);
-int PKCS12_add_friendlyname_asc(PKCS12_SAFEBAG *bag, const char *name,
-                                int namelen);
-int PKCS12_add_CSPName_asc(PKCS12_SAFEBAG *bag, const char *name, int namelen);
-int PKCS12_add_friendlyname_uni(PKCS12_SAFEBAG *bag, const uint8_t *name,
-                                int namelen);
-int PKCS8_add_keyusage(PKCS8_PRIV_KEY_INFO *p8, int usage);
-ASN1_TYPE *PKCS12_get_attr_gen(STACK_OF(X509_ATTRIBUTE) *attrs, int attr_nid);
-char *PKCS12_get_friendlyname(PKCS12_SAFEBAG *bag);
-uint8_t *PKCS12_pbe_crypt(X509_ALGOR *algor, const char *pass, int passlen,
-                          uint8_t *in, int inlen, uint8_t **data, int *datalen,
-                          int en_de);
-void *PKCS12_item_decrypt_d2i(X509_ALGOR *algor, const ASN1_ITEM *it,
-                              const char *pass, int passlen,
-                              ASN1_OCTET_STRING *oct, int zbuf);
-ASN1_OCTET_STRING *PKCS12_item_i2d_encrypt(X509_ALGOR *algor,
-                                           const ASN1_ITEM *it,
-                                           const char *pass, int passlen,
-                                           void *obj, int zbuf);
-PKCS12 *PKCS12_init(int mode);
-int PKCS12_key_gen_asc(const char *pass, int passlen, uint8_t *salt,
-                       int saltlen, int id, int iter, int n, uint8_t *out,
-                       const EVP_MD *md_type);
-int PKCS12_key_gen_uni(uint8_t *pass, int passlen, uint8_t *salt, int saltlen,
-                       int id, int iter, int n, uint8_t *out,
-                       const EVP_MD *md_type);
-int PKCS12_PBE_keyivgen(EVP_CIPHER_CTX *ctx, const char *pass, int passlen,
-                        ASN1_TYPE *param, const EVP_CIPHER *cipher,
-                        const EVP_MD *md_type, int en_de);
-int PKCS12_gen_mac(PKCS12 *p12, const char *pass, int passlen, uint8_t *mac,
-                   unsigned int *maclen);
-int PKCS12_verify_mac(PKCS12 *p12, const char *pass, int passlen);
-int PKCS12_set_mac(PKCS12 *p12, const char *pass, int passlen, uint8_t *salt,
-                   int saltlen, int iter, const EVP_MD *md_type);
-int PKCS12_setup_mac(PKCS12 *p12, int iter, uint8_t *salt, int saltlen,
-                     const EVP_MD *md_type);
-uint8_t *OPENSSL_asc2uni(const char *asc, int asclen, uint8_t **uni,
-                         int *unilen);
-char *OPENSSL_uni2asc(uint8_t *uni, int unilen);
+VIGORTLS_EXPORT int PKCS12_add_localkeyid(PKCS12_SAFEBAG *bag, uint8_t *name,
+                                          int namelen);
+VIGORTLS_EXPORT int PKCS12_add_friendlyname_asc(PKCS12_SAFEBAG *bag,
+                                                const char *name, int namelen);
+VIGORTLS_EXPORT int PKCS12_add_CSPName_asc(PKCS12_SAFEBAG *bag,
+                                           const char *name, int namelen);
+VIGORTLS_EXPORT int PKCS12_add_friendlyname_uni(PKCS12_SAFEBAG *bag,
+                                                const uint8_t *name,
+                                                int namelen);
+VIGORTLS_EXPORT int PKCS8_add_keyusage(PKCS8_PRIV_KEY_INFO *p8, int usage);
+VIGORTLS_EXPORT ASN1_TYPE *PKCS12_get_attr_gen(STACK_OF(X509_ATTRIBUTE) *attrs,
+                                               int attr_nid);
+VIGORTLS_EXPORT char *PKCS12_get_friendlyname(PKCS12_SAFEBAG *bag);
+VIGORTLS_EXPORT uint8_t *PKCS12_pbe_crypt(X509_ALGOR *algor, const char *pass,
+                                          int passlen, uint8_t *in, int inlen,
+                                          uint8_t **data, int *datalen,
+                                          int en_de);
+VIGORTLS_EXPORT void *PKCS12_item_decrypt_d2i(X509_ALGOR *algor,
+                                              const ASN1_ITEM *it,
+                                              const char *pass, int passlen,
+                                              ASN1_OCTET_STRING *oct, int zbuf);
+VIGORTLS_EXPORT ASN1_OCTET_STRING *
+PKCS12_item_i2d_encrypt(X509_ALGOR *algor, const ASN1_ITEM *it,
+                        const char *pass, int passlen, void *obj, int zbuf);
+VIGORTLS_EXPORT PKCS12 *PKCS12_init(int mode);
+VIGORTLS_EXPORT int PKCS12_key_gen_asc(const char *pass, int passlen,
+                                       uint8_t *salt, int saltlen, int id,
+                                       int iter, int n, uint8_t *out,
+                                       const EVP_MD *md_type);
+VIGORTLS_EXPORT int PKCS12_key_gen_uni(uint8_t *pass, int passlen,
+                                       uint8_t *salt, int saltlen, int id,
+                                       int iter, int n, uint8_t *out,
+                                       const EVP_MD *md_type);
+VIGORTLS_EXPORT int PKCS12_PBE_keyivgen(EVP_CIPHER_CTX *ctx, const char *pass,
+                                        int passlen, ASN1_TYPE *param,
+                                        const EVP_CIPHER *cipher,
+                                        const EVP_MD *md_type, int en_de);
+VIGORTLS_EXPORT int PKCS12_gen_mac(PKCS12 *p12, const char *pass, int passlen,
+                                   uint8_t *mac, unsigned int *maclen);
+VIGORTLS_EXPORT int PKCS12_verify_mac(PKCS12 *p12, const char *pass,
+                                      int passlen);
+VIGORTLS_EXPORT int PKCS12_set_mac(PKCS12 *p12, const char *pass, int passlen,
+                                   uint8_t *salt, int saltlen, int iter,
+                                   const EVP_MD *md_type);
+VIGORTLS_EXPORT int PKCS12_setup_mac(PKCS12 *p12, int iter, uint8_t *salt,
+                                     int saltlen, const EVP_MD *md_type);
+VIGORTLS_EXPORT uint8_t *OPENSSL_asc2uni(const char *asc, int asclen,
+                                         uint8_t **uni, int *unilen);
+VIGORTLS_EXPORT char *OPENSSL_uni2asc(uint8_t *uni, int unilen);
 
 DECLARE_ASN1_FUNCTIONS(PKCS12)
 DECLARE_ASN1_FUNCTIONS(PKCS12_MAC_DATA)
@@ -193,33 +207,37 @@ DECLARE_ASN1_FUNCTIONS(PKCS12_BAGS)
 DECLARE_ASN1_ITEM(PKCS12_SAFEBAGS)
 DECLARE_ASN1_ITEM(PKCS12_AUTHSAFES)
 
-void PKCS12_PBE_add(void);
-int PKCS12_parse(PKCS12 *p12, const char *pass, EVP_PKEY **pkey, X509 **cert,
-                 STACK_OF(X509) **ca);
-PKCS12 *PKCS12_create(char *pass, char *name, EVP_PKEY *pkey, X509 *cert,
-                      STACK_OF(X509) *ca, int nid_key, int nid_cert, int iter,
-                      int mac_iter, int keytype);
+VIGORTLS_EXPORT void PKCS12_PBE_add(void);
+VIGORTLS_EXPORT int PKCS12_parse(PKCS12 *p12, const char *pass, EVP_PKEY **pkey,
+                                 X509 **cert, STACK_OF(X509) * *ca);
+VIGORTLS_EXPORT PKCS12 *PKCS12_create(char *pass, char *name, EVP_PKEY *pkey,
+                                      X509 *cert, STACK_OF(X509) * ca,
+                                      int nid_key, int nid_cert, int iter,
+                                      int mac_iter, int keytype);
 
-PKCS12_SAFEBAG *PKCS12_add_cert(STACK_OF(PKCS12_SAFEBAG) **pbags, X509 *cert);
-PKCS12_SAFEBAG *PKCS12_add_key(STACK_OF(PKCS12_SAFEBAG) **pbags, EVP_PKEY *key,
-                               int key_usage, int iter, int key_nid,
-                               char *pass);
-int PKCS12_add_safe(STACK_OF(PKCS7) **psafes, STACK_OF(PKCS12_SAFEBAG) *bags,
-                    int safe_nid, int iter, char *pass);
-PKCS12 *PKCS12_add_safes(STACK_OF(PKCS7) *safes, int p7_nid);
+VIGORTLS_EXPORT PKCS12_SAFEBAG *
+PKCS12_add_cert(STACK_OF(PKCS12_SAFEBAG) * *pbags, X509 *cert);
+VIGORTLS_EXPORT PKCS12_SAFEBAG *
+PKCS12_add_key(STACK_OF(PKCS12_SAFEBAG) * *pbags, EVP_PKEY *key, int key_usage,
+               int iter, int key_nid, char *pass);
+VIGORTLS_EXPORT int PKCS12_add_safe(STACK_OF(PKCS7) * *psafes,
+                                    STACK_OF(PKCS12_SAFEBAG) * bags,
+                                    int safe_nid, int iter, char *pass);
+VIGORTLS_EXPORT PKCS12 *PKCS12_add_safes(STACK_OF(PKCS7) * safes, int p7_nid);
 
-int i2d_PKCS12_bio(BIO *bp, PKCS12 *p12);
-int i2d_PKCS12_fp(FILE *fp, PKCS12 *p12);
-PKCS12 *d2i_PKCS12_bio(BIO *bp, PKCS12 **p12);
-PKCS12 *d2i_PKCS12_fp(FILE *fp, PKCS12 **p12);
-int PKCS12_newpass(PKCS12 *p12, const char *oldpass, const char *newpass);
+VIGORTLS_EXPORT int i2d_PKCS12_bio(BIO *bp, PKCS12 *p12);
+VIGORTLS_EXPORT int i2d_PKCS12_fp(FILE *fp, PKCS12 *p12);
+VIGORTLS_EXPORT PKCS12 *d2i_PKCS12_bio(BIO *bp, PKCS12 **p12);
+VIGORTLS_EXPORT PKCS12 *d2i_PKCS12_fp(FILE *fp, PKCS12 **p12);
+VIGORTLS_EXPORT int PKCS12_newpass(PKCS12 *p12, const char *oldpass,
+                                   const char *newpass);
 
 /* BEGIN ERROR CODES */
 /*
  * The following lines are auto generated by the script mkerr.pl. Any changes
  * made after this point may be overwritten when the script is next run.
  */
-void ERR_load_PKCS12_strings(void);
+VIGORTLS_EXPORT void ERR_load_PKCS12_strings(void);
 
 /* Error codes for the PKCS12 functions. */
 

@@ -10,12 +10,11 @@
 #ifndef HEADER_BIO_H
 #define HEADER_BIO_H
 
-#include <openssl/opensslconf.h>
-
 #include <stdarg.h>
 #include <stdint.h>
 #include <stdio.h>
 
+#include <openssl/base.h>
 #include <openssl/crypto.h>
 #include <openssl/threads.h>
 
@@ -28,145 +27,129 @@ extern "C" {
 #endif
 
 /* These are the 'types' of BIOs */
-#define BIO_TYPE_NONE 0
-#define BIO_TYPE_MEM (1 | 0x0400)
-#define BIO_TYPE_FILE (2 | 0x0400)
+#define BIO_TYPE_NONE         0
+#define BIO_TYPE_MEM          (1 | 0x0400)
+#define BIO_TYPE_FILE         (2 | 0x0400)
 
-#define BIO_TYPE_FD (4 | 0x0400 | 0x0100)
-#define BIO_TYPE_SOCKET (5 | 0x0400 | 0x0100)
-#define BIO_TYPE_NULL (6 | 0x0400)
-#define BIO_TYPE_SSL (7 | 0x0200)
-#define BIO_TYPE_MD (8 | 0x0200)                /* passive filter */
-#define BIO_TYPE_BUFFER (9 | 0x0200)            /* filter */
-#define BIO_TYPE_CIPHER (10 | 0x0200)           /* filter */
-#define BIO_TYPE_BASE64 (11 | 0x0200)           /* filter */
-#define BIO_TYPE_CONNECT (12 | 0x0400 | 0x0100) /* socket - connect */
-#define BIO_TYPE_ACCEPT (13 | 0x0400 | 0x0100)  /* socket for accept */
-#define BIO_TYPE_PROXY_CLIENT (14 | 0x0200)     /* client proxy BIO */
-#define BIO_TYPE_PROXY_SERVER (15 | 0x0200)     /* server proxy BIO */
-#define BIO_TYPE_NBIO_TEST (16 | 0x0200)        /* server proxy BIO */
-#define BIO_TYPE_NULL_FILTER (17 | 0x0200)
-#define BIO_TYPE_BER (18 | 0x0200)        /* BER -> bin filter */
-#define BIO_TYPE_BIO (19 | 0x0400)        /* (half a) BIO pair */
-#define BIO_TYPE_LINEBUFFER (20 | 0x0200) /* filter */
-#define BIO_TYPE_DGRAM (21 | 0x0400 | 0x0100)
-#define BIO_TYPE_ASN1 (22 | 0x0200) /* filter */
-#define BIO_TYPE_COMP (23 | 0x0200) /* filter */
+#define BIO_TYPE_FD           (4 | 0x0400 | 0x0100)
+#define BIO_TYPE_SOCKET       (5 | 0x0400 | 0x0100)
+#define BIO_TYPE_NULL         (6 | 0x0400)
+#define BIO_TYPE_SSL          (7 | 0x0200)
+#define BIO_TYPE_MD           (8 | 0x0200) /* passive filter */
+#define BIO_TYPE_BUFFER       (9 | 0x0200) /* filter */
+#define BIO_TYPE_CIPHER       (10 | 0x0200) /* filter */
+#define BIO_TYPE_BASE64       (11 | 0x0200) /* filter */
+#define BIO_TYPE_CONNECT      (12 | 0x0400 | 0x0100) /* socket - connect */
+#define BIO_TYPE_ACCEPT       (13 | 0x0400 | 0x0100) /* socket for accept */
+#define BIO_TYPE_PROXY_CLIENT (14 | 0x0200) /* client proxy BIO */
+#define BIO_TYPE_PROXY_SERVER (15 | 0x0200) /* server proxy BIO */
+#define BIO_TYPE_NBIO_TEST    (16 | 0x0200) /* server proxy BIO */
+#define BIO_TYPE_NULL_FILTER  (17 | 0x0200)
+#define BIO_TYPE_BER          (18 | 0x0200) /* BER -> bin filter */
+#define BIO_TYPE_BIO          (19 | 0x0400) /* (half a) BIO pair */
+#define BIO_TYPE_LINEBUFFER   (20 | 0x0200) /* filter */
+#define BIO_TYPE_DGRAM        (21 | 0x0400 | 0x0100)
+#define BIO_TYPE_ASN1         (22 | 0x0200) /* filter */
+#define BIO_TYPE_COMP         (23 | 0x0200) /* filter */
 
-#define BIO_TYPE_DESCRIPTOR 0x0100 /* socket, fd, connect or accept */
-#define BIO_TYPE_FILTER 0x0200
+#define BIO_TYPE_DESCRIPTOR  0x0100 /* socket, fd, connect or accept */
+#define BIO_TYPE_FILTER      0x0200
 #define BIO_TYPE_SOURCE_SINK 0x0400
 
 /* BIO_FILENAME_READ|BIO_CLOSE to open or close on free.
  * BIO_set_fp(in,stdin,BIO_NOCLOSE); */
 #define BIO_NOCLOSE 0x00
-#define BIO_CLOSE 0x01
+#define BIO_CLOSE   0x01
 
 /* These are used in the following macros and are passed to
  * BIO_ctrl() */
-#define BIO_CTRL_RESET 1     /* opt - rewind/zero etc */
-#define BIO_CTRL_EOF 2       /* opt - are we at the eof */
-#define BIO_CTRL_INFO 3      /* opt - extra tit-bits */
-#define BIO_CTRL_SET 4       /* man - set the 'IO' type */
-#define BIO_CTRL_GET 5       /* man - get the 'IO' type */
-#define BIO_CTRL_PUSH 6      /* opt - internal, used to signify change */
-#define BIO_CTRL_POP 7       /* opt - internal, used to signify change */
-#define BIO_CTRL_GET_CLOSE 8 /* man - set the 'close' on free */
-#define BIO_CTRL_SET_CLOSE 9 /* man - set the 'close' on free */
-#define BIO_CTRL_PENDING 10  /* opt - is their more data buffered */
-#define BIO_CTRL_FLUSH 11    /* opt - 'flush' buffered output */
-#define BIO_CTRL_DUP 12      /* man - extra stuff for 'duped' BIO */
-#define BIO_CTRL_WPENDING 13 /* opt - number of bytes still to write */
-/* callback is int cb(BIO *bio,state,ret); */
+#define BIO_CTRL_RESET        1  /* opt - rewind/zero etc */
+#define BIO_CTRL_EOF          2  /* opt - are we at the eof */
+#define BIO_CTRL_INFO         3  /* opt - extra tit-bits */
+#define BIO_CTRL_SET          4  /* man - set the 'IO' type */
+#define BIO_CTRL_GET          5  /* man - get the 'IO' type */
+#define BIO_CTRL_PUSH         6  /* opt - internal, used to signify change */
+#define BIO_CTRL_POP          7  /* opt - internal, used to signify change */
+#define BIO_CTRL_GET_CLOSE    8  /* man - set the 'close' on free */
+#define BIO_CTRL_SET_CLOSE    9  /* man - set the 'close' on free */
+#define BIO_CTRL_PENDING      10 /* opt - is their more data buffered */
+#define BIO_CTRL_FLUSH        11 /* opt - 'flush' buffered output */
+#define BIO_CTRL_DUP          12 /* man - extra stuff for 'duped' BIO */
+#define BIO_CTRL_WPENDING     13 /* opt - number of bytes still to write */
+/* callback is int cb(BIO *bio, state, ret); */
 #define BIO_CTRL_SET_CALLBACK 14 /* opt - set callback function */
 #define BIO_CTRL_GET_CALLBACK 15 /* opt - set callback function */
 
 #define BIO_CTRL_SET_FILENAME 30 /* BIO_s_file special */
 
 /* dgram BIO stuff */
-#define BIO_CTRL_DGRAM_CONNECT 31 /* BIO dgram special */
-#define BIO_CTRL_DGRAM_SET_CONNECTED                                  \
-    32                                     /* allow for an externally \
-                        * connected socket to be          \
-                        * passed in */
-#define BIO_CTRL_DGRAM_SET_RECV_TIMEOUT 33 /* setsockopt, essentially */
-#define BIO_CTRL_DGRAM_GET_RECV_TIMEOUT 34 /* getsockopt, essentially */
-#define BIO_CTRL_DGRAM_SET_SEND_TIMEOUT 35 /* setsockopt, essentially */
-#define BIO_CTRL_DGRAM_GET_SEND_TIMEOUT 36 /* getsockopt, essentially */
+#define BIO_CTRL_DGRAM_CONNECT            31 /* BIO dgram special */
+#define BIO_CTRL_DGRAM_SET_CONNECTED      32 /* allow for an externally connected
+                                              * socket to be passed in */
+#define BIO_CTRL_DGRAM_SET_RECV_TIMEOUT   33 /* setsockopt, essentially */
+#define BIO_CTRL_DGRAM_GET_RECV_TIMEOUT   34 /* getsockopt, essentially */
+#define BIO_CTRL_DGRAM_SET_SEND_TIMEOUT   35 /* setsockopt, essentially */
+#define BIO_CTRL_DGRAM_GET_SEND_TIMEOUT   36 /* getsockopt, essentially */
 
 #define BIO_CTRL_DGRAM_GET_RECV_TIMER_EXP 37 /* flag whether the last */
 #define BIO_CTRL_DGRAM_GET_SEND_TIMER_EXP 38 /* I/O operation tiemd out */
 
 /* #ifdef IP_MTU_DISCOVER */
-#define BIO_CTRL_DGRAM_MTU_DISCOVER 39 /* set DF bit on egress packets */
+#define BIO_CTRL_DGRAM_MTU_DISCOVER       39 /* set DF bit on egress packets */
 /* #endif */
 
-#define BIO_CTRL_DGRAM_QUERY_MTU 40 /* as kernel for current MTU */
-#define BIO_CTRL_DGRAM_GET_FALLBACK_MTU 47
-#define BIO_CTRL_DGRAM_GET_MTU 41 /* get cached value for MTU */
-#define BIO_CTRL_DGRAM_SET_MTU \
-    42 /* set cached value for \
-* MTU. want to use this        \
-* if asking the kernel         \
-* fails */
+#define BIO_CTRL_DGRAM_QUERY_MTU          40 /* as kernel for current MTU */
+#define BIO_CTRL_DGRAM_GET_FALLBACK_MTU   47
+#define BIO_CTRL_DGRAM_GET_MTU            41 /* get cached value for MTU */
+#define BIO_CTRL_DGRAM_SET_MTU            42 /* set cached value for MTU. want
+                                              * to use this if asking the kernel
+                                              * fails */
 
-#define BIO_CTRL_DGRAM_MTU_EXCEEDED \
-    43 /* check whether the MTU     \
-* was exceed in the                 \
-* previous write                    \
-* operation */
+#define BIO_CTRL_DGRAM_MTU_EXCEEDED       43 /* check whether the MTU was
+                                                exceeded in the previous write
+                                                operation */
 
-#define BIO_CTRL_DGRAM_GET_PEER 46
-#define BIO_CTRL_DGRAM_SET_PEER 44 /* Destination for the data */
+#define BIO_CTRL_DGRAM_GET_PEER           46
+#define BIO_CTRL_DGRAM_SET_PEER           44 /* Destination for the data */
 
-#define BIO_CTRL_DGRAM_SET_NEXT_TIMEOUT  \
-    45 /* Next DTLS handshake timeout to \
-        * adjust socket timeouts */
-#define BIO_CTRL_DGRAM_GET_MTU_OVERHEAD 49
+#define BIO_CTRL_DGRAM_SET_NEXT_TIMEOUT   45 /* Next DTLS handshake timeout to
+                                              * adjust socket timeouts */
+#define BIO_CTRL_DGRAM_GET_MTU_OVERHEAD   49
 
 /* modifiers */
-#define BIO_FP_READ 0x02
-#define BIO_FP_WRITE 0x04
-#define BIO_FP_APPEND 0x08
-#define BIO_FP_TEXT 0x10
+#define BIO_FP_READ            0x02
+#define BIO_FP_WRITE           0x04
+#define BIO_FP_APPEND          0x08
+#define BIO_FP_TEXT            0x10
 
-#define BIO_FLAGS_READ 0x01
-#define BIO_FLAGS_WRITE 0x02
-#define BIO_FLAGS_IO_SPECIAL 0x04
-#define BIO_FLAGS_RWS (BIO_FLAGS_READ | BIO_FLAGS_WRITE | BIO_FLAGS_IO_SPECIAL)
+#define BIO_FLAGS_READ         0x01
+#define BIO_FLAGS_WRITE        0x02
+#define BIO_FLAGS_IO_SPECIAL   0x04
+#define BIO_FLAGS_RWS          (BIO_FLAGS_READ | BIO_FLAGS_WRITE | \
+                                BIO_FLAGS_IO_SPECIAL)
 #define BIO_FLAGS_SHOULD_RETRY 0x08
-#ifndef BIO_FLAGS_UPLINK
-/* "UPLINK" flag denotes file descriptors provided by application.
-   It defaults to 0, as most platforms don't require UPLINK interface. */
 #define BIO_FLAGS_UPLINK 0
-#endif
 
 /* Used in BIO_gethostbyname() */
-#define BIO_GHBN_CTRL_HITS 1
-#define BIO_GHBN_CTRL_MISSES 2
-#define BIO_GHBN_CTRL_CACHE_SIZE 3
-#define BIO_GHBN_CTRL_GET_ENTRY 4
-#define BIO_GHBN_CTRL_FLUSH 5
+#define BIO_GHBN_CTRL_HITS        1
+#define BIO_GHBN_CTRL_MISSES      2
+#define BIO_GHBN_CTRL_CACHE_SIZE  3
+#define BIO_GHBN_CTRL_GET_ENTRY   4
+#define BIO_GHBN_CTRL_FLUSH       5
 
-/* Mostly used in the SSL BIO */
-/* Not used anymore
- * #define BIO_FLAGS_PROTOCOL_DELAYED_READ 0x10
- * #define BIO_FLAGS_PROTOCOL_DELAYED_WRITE 0x20
- * #define BIO_FLAGS_PROTOCOL_STARTUP    0x40
- */
+#define BIO_FLAGS_BASE64_NO_NL    0x100
 
-#define BIO_FLAGS_BASE64_NO_NL 0x100
-
-/* This is used with memory BIOs: it means we shouldn't free up or change the
+/*
+ * This is used with memory BIOs: it means we shouldn't free up or change the
  * data in any way.
  */
-#define BIO_FLAGS_MEM_RDONLY 0x200
+#define BIO_FLAGS_MEM_RDONLY      0x200
 
 typedef struct bio_st BIO;
 
-void BIO_set_flags(BIO *b, int flags);
-int BIO_test_flags(const BIO *b, int flags);
-void BIO_clear_flags(BIO *b, int flags);
+VIGORTLS_EXPORT void BIO_set_flags(BIO *b, int flags);
+VIGORTLS_EXPORT int BIO_test_flags(const BIO *b, int flags);
+VIGORTLS_EXPORT void BIO_clear_flags(BIO *b, int flags);
 
 #define BIO_get_flags(b) BIO_test_flags(b, ~(0x0))
 #define BIO_set_retry_special(b) \
@@ -197,34 +180,36 @@ void BIO_clear_flags(BIO *b, int flags);
 /* Returned from the SSL bio when the certificate retrieval code had an error */
 #define BIO_RR_SSL_X509_LOOKUP 0x01
 /* Returned from the connect BIO when a connect would have blocked */
-#define BIO_RR_CONNECT 0x02
+#define BIO_RR_CONNECT         0x02
 /* Returned from the accept BIO when an accept would have blocked */
-#define BIO_RR_ACCEPT 0x03
+#define BIO_RR_ACCEPT          0x03
 
 /* These are passed by the BIO callback */
-#define BIO_CB_FREE 0x01
-#define BIO_CB_READ 0x02
-#define BIO_CB_WRITE 0x03
-#define BIO_CB_PUTS 0x04
-#define BIO_CB_GETS 0x05
-#define BIO_CB_CTRL 0x06
+#define BIO_CB_FREE    0x01
+#define BIO_CB_READ    0x02
+#define BIO_CB_WRITE   0x03
+#define BIO_CB_PUTS    0x04
+#define BIO_CB_GETS    0x05
+#define BIO_CB_CTRL    0x06
 
 /* The callback is called before and after the underling operation,
  * The BIO_CB_RETURN flag indicates if it is after the call */
-#define BIO_CB_RETURN 0x80
-#define BIO_CB_return (a) ((a)|BIO_CB_RETURN))
-#define BIO_cb_pre(a) (!((a)&BIO_CB_RETURN))
-#define BIO_cb_post(a) ((a)&BIO_CB_RETURN)
+#define BIO_CB_RETURN  0x80
+#define BIO_CB_return  (a) ((a) | BIO_CB_RETURN))
+#define BIO_cb_pre(a)  (!((a) & BIO_CB_RETURN))
+#define BIO_cb_post(a) ((a) & BIO_CB_RETURN)
 
-long (*BIO_get_callback(const BIO *b))(struct bio_st *, int, const char *, int,
-                                       long, long);
-void BIO_set_callback(BIO *b, long (*callback)(struct bio_st *, int,
-                                               const char *, int, long, long));
-char *BIO_get_callback_arg(const BIO *b);
-void BIO_set_callback_arg(BIO *b, char *arg);
+VIGORTLS_EXPORT long (*BIO_get_callback(const BIO *b))(struct bio_st *, int,
+                                                       const char *, int, long,
+                                                       long);
+VIGORTLS_EXPORT void
+BIO_set_callback(BIO *b, long (*callback)(struct bio_st *, int, const char *,
+                                          int, long, long));
+VIGORTLS_EXPORT char *BIO_get_callback_arg(const BIO *b);
+VIGORTLS_EXPORT void BIO_set_callback_arg(BIO *b, char *arg);
 
-const char *BIO_method_name(const BIO *b);
-int BIO_method_type(const BIO *b);
+VIGORTLS_EXPORT const char *BIO_method_name(const BIO *b);
+VIGORTLS_EXPORT int BIO_method_type(const BIO *b);
 
 typedef void bio_info_cb(struct bio_st *, int, const char *, int, long, long);
 
@@ -292,8 +277,8 @@ typedef struct bio_f_buffer_ctx_struct {
 typedef int asn1_ps_func(BIO *b, uint8_t **pbuf, int *plen, void *parg);
 
 /* connect BIO stuff */
-#define BIO_CONN_S_BEFORE 1
-#define BIO_CONN_S_GET_IP 2
+#define BIO_CONN_S_BEFORE        1
+#define BIO_CONN_S_GET_IP          2
 #define BIO_CONN_S_GET_PORT 3
 #define BIO_CONN_S_CREATE_SOCKET 4
 #define BIO_CONN_S_CONNECT 5
@@ -302,64 +287,64 @@ typedef int asn1_ps_func(BIO *b, uint8_t **pbuf, int *plen, void *parg);
 #define BIO_CONN_S_NBIO 8
 /*#define BIO_CONN_get_param_hostname    BIO_ctrl */
 
-#define BIO_C_SET_CONNECT 100
-#define BIO_C_DO_STATE_MACHINE 101
-#define BIO_C_SET_NBIO 102
-#define BIO_C_SET_PROXY_PARAM 103
-#define BIO_C_SET_FD 104
-#define BIO_C_GET_FD 105
-#define BIO_C_SET_FILE_PTR 106
-#define BIO_C_GET_FILE_PTR 107
-#define BIO_C_SET_FILENAME 108
-#define BIO_C_SET_SSL 109
-#define BIO_C_GET_SSL 110
-#define BIO_C_SET_MD 111
-#define BIO_C_GET_MD 112
-#define BIO_C_GET_CIPHER_STATUS 113
-#define BIO_C_SET_BUF_MEM 114
-#define BIO_C_GET_BUF_MEM_PTR 115
-#define BIO_C_GET_BUFF_NUM_LINES 116
-#define BIO_C_SET_BUFF_SIZE 117
-#define BIO_C_SET_ACCEPT 118
-#define BIO_C_SSL_MODE 119
-#define BIO_C_GET_MD_CTX 120
-#define BIO_C_GET_PROXY_PARAM 121
-#define BIO_C_SET_BUFF_READ_DATA 122 /* data to read first */
-#define BIO_C_GET_CONNECT 123
-#define BIO_C_GET_ACCEPT 124
-#define BIO_C_SET_SSL_RENEGOTIATE_BYTES 125
-#define BIO_C_GET_SSL_NUM_RENEGOTIATES 126
-#define BIO_C_SET_SSL_RENEGOTIATE_TIMEOUT 127
-#define BIO_C_FILE_SEEK 128
-#define BIO_C_GET_CIPHER_CTX 129
-#define BIO_C_SET_BUF_MEM_EOF_RETURN 130 /*return end of input value*/
-#define BIO_C_SET_BIND_MODE 131
-#define BIO_C_GET_BIND_MODE 132
-#define BIO_C_FILE_TELL 133
-#define BIO_C_GET_SOCKS 134
-#define BIO_C_SET_SOCKS 135
+#define BIO_C_SET_CONNECT                    100
+#define BIO_C_DO_STATE_MACHINE               101
+#define BIO_C_SET_NBIO                       102
+#define BIO_C_SET_PROXY_PARAM                103
+#define BIO_C_SET_FD                         104
+#define BIO_C_GET_FD                         105
+#define BIO_C_SET_FILE_PTR                   106
+#define BIO_C_GET_FILE_PTR                   107
+#define BIO_C_SET_FILENAME                   108
+#define BIO_C_SET_SSL                        109
+#define BIO_C_GET_SSL                        110
+#define BIO_C_SET_MD                         111
+#define BIO_C_GET_MD                         112
+#define BIO_C_GET_CIPHER_STATUS              113
+#define BIO_C_SET_BUF_MEM                    114
+#define BIO_C_GET_BUF_MEM_PTR                115
+#define BIO_C_GET_BUFF_NUM_LINES             116
+#define BIO_C_SET_BUFF_SIZE                  117
+#define BIO_C_SET_ACCEPT                     118
+#define BIO_C_SSL_MODE                       119
+#define BIO_C_GET_MD_CTX                     120
+#define BIO_C_GET_PROXY_PARAM                121
+#define BIO_C_SET_BUFF_READ_DATA             122 /* data to read first */
+#define BIO_C_GET_CONNECT                    123
+#define BIO_C_GET_ACCEPT                     124
+#define BIO_C_SET_SSL_RENEGOTIATE_BYTES      125
+#define BIO_C_GET_SSL_NUM_RENEGOTIATES       126
+#define BIO_C_SET_SSL_RENEGOTIATE_TIMEOUT    127
+#define BIO_C_FILE_SEEK                      128
+#define BIO_C_GET_CIPHER_CTX                 129
+#define BIO_C_SET_BUF_MEM_EOF_RETURN         130 /*return end of input value*/
+#define BIO_C_SET_BIND_MODE                  131
+#define BIO_C_GET_BIND_MODE                  132
+#define BIO_C_FILE_TELL                      133
+#define BIO_C_GET_SOCKS                      134
+#define BIO_C_SET_SOCKS                      135
 
-#define BIO_C_SET_WRITE_BUF_SIZE 136 /* for BIO_s_bio */
-#define BIO_C_GET_WRITE_BUF_SIZE 137
-#define BIO_C_MAKE_BIO_PAIR 138
-#define BIO_C_DESTROY_BIO_PAIR 139
-#define BIO_C_GET_WRITE_GUARANTEE 140
-#define BIO_C_GET_READ_REQUEST 141
-#define BIO_C_SHUTDOWN_WR 142
-#define BIO_C_NREAD0 143
-#define BIO_C_NREAD 144
-#define BIO_C_NWRITE0 145
-#define BIO_C_NWRITE 146
-#define BIO_C_RESET_READ_REQUEST 147
-#define BIO_C_SET_MD_CTX 148
+#define BIO_C_SET_WRITE_BUF_SIZE             136 /* for BIO_s_bio */
+#define BIO_C_GET_WRITE_BUF_SIZE             137
+#define BIO_C_MAKE_BIO_PAIR                  138
+#define BIO_C_DESTROY_BIO_PAIR               139
+#define BIO_C_GET_WRITE_GUARANTEE            140
+#define BIO_C_GET_READ_REQUEST               141
+#define BIO_C_SHUTDOWN_WR                    142
+#define BIO_C_NREAD0                         143
+#define BIO_C_NREAD                          144
+#define BIO_C_NWRITE0                        145
+#define BIO_C_NWRITE                         146
+#define BIO_C_RESET_READ_REQUEST             147
+#define BIO_C_SET_MD_CTX                     148
 
-#define BIO_C_SET_PREFIX 149
-#define BIO_C_GET_PREFIX 150
-#define BIO_C_SET_SUFFIX 151
-#define BIO_C_GET_SUFFIX 152
+#define BIO_C_SET_PREFIX                     149
+#define BIO_C_GET_PREFIX                     150
+#define BIO_C_SET_SUFFIX                     151
+#define BIO_C_GET_SUFFIX                     152
 
-#define BIO_C_SET_EX_ARG 153
-#define BIO_C_GET_EX_ARG 154
+#define BIO_C_SET_EX_ARG                     153
+#define BIO_C_GET_EX_ARG                     154
 
 #define BIO_set_app_data(s, arg) BIO_set_ex_data(s, 0, arg)
 #define BIO_get_app_data(s) BIO_get_ex_data(s, 0)
@@ -383,15 +368,15 @@ typedef int asn1_ps_func(BIO *b, uint8_t **pbuf, int *plen, void *parg);
 #define BIO_set_accept_port(b, name) \
     BIO_ctrl(b, BIO_C_SET_ACCEPT, 0, (char *)name)
 #define BIO_get_accept_port(b) BIO_ptr_ctrl(b, BIO_C_GET_ACCEPT, 0)
-/* #define BIO_set_nbio(b,n)    BIO_ctrl(b,BIO_C_SET_NBIO,(n),NULL) */
+/* #define BIO_set_nbio(b, n)    BIO_ctrl(b, BIO_C_SET_NBIO, (n), NULL) */
 #define BIO_set_nbio_accept(b, n) \
     BIO_ctrl(b, BIO_C_SET_ACCEPT, 1, (n) ? (void *)"a" : NULL)
 #define BIO_set_accept_bios(b, bio) \
     BIO_ctrl(b, BIO_C_SET_ACCEPT, 2, (char *)bio)
 
-#define BIO_BIND_NORMAL 0
+#define BIO_BIND_NORMAL              0
 #define BIO_BIND_REUSEADDR_IF_UNUSED 1
-#define BIO_BIND_REUSEADDR 2
+#define BIO_BIND_REUSEADDR           2
 #define BIO_set_bind_mode(b, mode) BIO_ctrl(b, BIO_C_SET_BIND_MODE, mode, NULL)
 #define BIO_get_bind_mode(b, mode) BIO_ctrl(b, BIO_C_GET_BIND_MODE, 0, NULL)
 
@@ -487,8 +472,8 @@ typedef int asn1_ps_func(BIO *b, uint8_t **pbuf, int *plen, void *parg);
 #define BIO_pending(b) (int)BIO_ctrl(b, BIO_CTRL_PENDING, 0, NULL)
 #define BIO_wpending(b) (int)BIO_ctrl(b, BIO_CTRL_WPENDING, 0, NULL)
 /* ...pending macros have inappropriate return type */
-size_t BIO_ctrl_pending(BIO *b);
-size_t BIO_ctrl_wpending(BIO *b);
+VIGORTLS_EXPORT size_t BIO_ctrl_pending(BIO *b);
+VIGORTLS_EXPORT size_t BIO_ctrl_wpending(BIO *b);
 #define BIO_flush(b) (int)BIO_ctrl(b, BIO_CTRL_FLUSH, 0, NULL)
 #define BIO_get_info_callback(b, cbp) \
     (int)BIO_ctrl(b, BIO_CTRL_GET_CALLBACK, 0, cbp)
@@ -512,9 +497,9 @@ size_t BIO_ctrl_wpending(BIO *b);
     (int)BIO_ctrl(b, BIO_C_GET_WRITE_GUARANTEE, 0, NULL)
 #define BIO_get_read_request(b) \
     (int)BIO_ctrl(b, BIO_C_GET_READ_REQUEST, 0, NULL)
-size_t BIO_ctrl_get_write_guarantee(BIO *b);
-size_t BIO_ctrl_get_read_request(BIO *b);
-int BIO_ctrl_reset_read_request(BIO *b);
+VIGORTLS_EXPORT size_t BIO_ctrl_get_write_guarantee(BIO *b);
+VIGORTLS_EXPORT size_t BIO_ctrl_get_read_request(BIO *b);
+VIGORTLS_EXPORT int BIO_ctrl_reset_read_request(BIO *b);
 
 /* ctrl macros for dgram */
 #define BIO_ctrl_dgram_connect(b, peer) \
@@ -534,94 +519,101 @@ int BIO_ctrl_reset_read_request(BIO *b);
 
 /* These two aren't currently implemented */
 /* int BIO_get_ex_num(BIO *bio); */
-/* void BIO_set_ex_free_func(BIO *bio,int idx,void (*cb)()); */
-int BIO_set_ex_data(BIO *bio, int idx, void *data);
-void *BIO_get_ex_data(BIO *bio, int idx);
-int BIO_get_ex_new_index(long argl, void *argp, CRYPTO_EX_new *new_func,
-                         CRYPTO_EX_dup *dup_func, CRYPTO_EX_free *free_func);
-unsigned long BIO_number_read(BIO *bio);
-unsigned long BIO_number_written(BIO *bio);
+/* void BIO_set_ex_free_func(BIO *bio, int idx, void (*cb)()); */
+VIGORTLS_EXPORT int BIO_set_ex_data(BIO *bio, int idx, void *data);
+VIGORTLS_EXPORT void *BIO_get_ex_data(BIO *bio, int idx);
+VIGORTLS_EXPORT int BIO_get_ex_new_index(long argl, void *argp,
+                                         CRYPTO_EX_new *new_func,
+                                         CRYPTO_EX_dup *dup_func,
+                                         CRYPTO_EX_free *free_func);
+VIGORTLS_EXPORT unsigned long BIO_number_read(BIO *bio);
+VIGORTLS_EXPORT unsigned long BIO_number_written(BIO *bio);
 
 /* For BIO_f_asn1() */
-int BIO_asn1_set_prefix(BIO *b, asn1_ps_func *prefix,
-                        asn1_ps_func *prefix_free);
-int BIO_asn1_get_prefix(BIO *b, asn1_ps_func **pprefix,
-                        asn1_ps_func **pprefix_free);
-int BIO_asn1_set_suffix(BIO *b, asn1_ps_func *suffix,
-                        asn1_ps_func *suffix_free);
-int BIO_asn1_get_suffix(BIO *b, asn1_ps_func **psuffix,
-                        asn1_ps_func **psuffix_free);
+VIGORTLS_EXPORT int BIO_asn1_set_prefix(BIO *b, asn1_ps_func *prefix,
+                                        asn1_ps_func *prefix_free);
+VIGORTLS_EXPORT int BIO_asn1_get_prefix(BIO *b, asn1_ps_func **pprefix,
+                                        asn1_ps_func **pprefix_free);
+VIGORTLS_EXPORT int BIO_asn1_set_suffix(BIO *b, asn1_ps_func *suffix,
+                                        asn1_ps_func *suffix_free);
+VIGORTLS_EXPORT int BIO_asn1_get_suffix(BIO *b, asn1_ps_func **psuffix,
+                                        asn1_ps_func **psuffix_free);
 
-BIO_METHOD *BIO_s_file(void);
-BIO *BIO_new_file(const char *filename, const char *mode);
-BIO *BIO_new_fp(FILE *stream, int close_flag);
+VIGORTLS_EXPORT BIO_METHOD *BIO_s_file(void);
+VIGORTLS_EXPORT BIO *BIO_new_file(const char *filename, const char *mode);
+VIGORTLS_EXPORT BIO *BIO_new_fp(FILE *stream, int close_flag);
 #define BIO_s_file_internal BIO_s_file
-BIO *BIO_new(BIO_METHOD *type);
-int BIO_set(BIO *a, BIO_METHOD *type);
-int BIO_free(BIO *a);
-void BIO_vfree(BIO *a);
-int BIO_up_ref(BIO *a);
-int BIO_read(BIO *b, void *data, int len);
-int BIO_gets(BIO *bp, char *buf, int size);
-int BIO_write(BIO *b, const void *data, int len);
-int BIO_puts(BIO *bp, const char *buf);
-int BIO_indent(BIO *b, int indent, int max);
-long BIO_ctrl(BIO *bp, int cmd, long larg, void *parg);
-long BIO_callback_ctrl(BIO *b, int cmd,
-                       void (*fp)(struct bio_st *, int, const char *, int, long,
-                                  long));
-char *BIO_ptr_ctrl(BIO *bp, int cmd, long larg);
-long BIO_int_ctrl(BIO *bp, int cmd, long larg, int iarg);
-BIO *BIO_push(BIO *b, BIO *append);
-BIO *BIO_pop(BIO *b);
-void BIO_free_all(BIO *a);
-BIO *BIO_find_type(BIO *b, int bio_type);
-BIO *BIO_next(BIO *b);
-BIO *BIO_get_retry_BIO(BIO *bio, int *reason);
-int BIO_get_retry_reason(BIO *bio);
-BIO *BIO_dup_chain(BIO *in);
+VIGORTLS_EXPORT BIO *BIO_new(BIO_METHOD *type);
+VIGORTLS_EXPORT int BIO_set(BIO *a, BIO_METHOD *type);
+VIGORTLS_EXPORT int BIO_free(BIO *a);
+VIGORTLS_EXPORT void BIO_vfree(BIO *a);
+VIGORTLS_EXPORT int BIO_up_ref(BIO *a);
+VIGORTLS_EXPORT int BIO_read(BIO *b, void *data, int len);
+VIGORTLS_EXPORT int BIO_gets(BIO *bp, char *buf, int size);
+VIGORTLS_EXPORT int BIO_write(BIO *b, const void *data, int len);
+VIGORTLS_EXPORT int BIO_puts(BIO *bp, const char *buf);
+VIGORTLS_EXPORT int BIO_indent(BIO *b, int indent, int max);
+VIGORTLS_EXPORT long BIO_ctrl(BIO *bp, int cmd, long larg, void *parg);
+VIGORTLS_EXPORT long
+BIO_callback_ctrl(BIO *b, int cmd, void (*fp)(struct bio_st *, int,
+                                              const char *, int, long, long));
+VIGORTLS_EXPORT char *BIO_ptr_ctrl(BIO *bp, int cmd, long larg);
+VIGORTLS_EXPORT long BIO_int_ctrl(BIO *bp, int cmd, long larg, int iarg);
+VIGORTLS_EXPORT BIO *BIO_push(BIO *b, BIO *append);
+VIGORTLS_EXPORT BIO *BIO_pop(BIO *b);
+VIGORTLS_EXPORT void BIO_free_all(BIO *a);
+VIGORTLS_EXPORT BIO *BIO_find_type(BIO *b, int bio_type);
+VIGORTLS_EXPORT BIO *BIO_next(BIO *b);
+VIGORTLS_EXPORT BIO *BIO_get_retry_BIO(BIO *bio, int *reason);
+VIGORTLS_EXPORT int BIO_get_retry_reason(BIO *bio);
+VIGORTLS_EXPORT BIO *BIO_dup_chain(BIO *in);
 
-int BIO_nread0(BIO *bio, char **buf);
-int BIO_nread(BIO *bio, char **buf, int num);
-int BIO_nwrite0(BIO *bio, char **buf);
-int BIO_nwrite(BIO *bio, char **buf, int num);
+VIGORTLS_EXPORT int BIO_nread0(BIO *bio, char **buf);
+VIGORTLS_EXPORT int BIO_nread(BIO *bio, char **buf, int num);
+VIGORTLS_EXPORT int BIO_nwrite0(BIO *bio, char **buf);
+VIGORTLS_EXPORT int BIO_nwrite(BIO *bio, char **buf, int num);
 
-long BIO_debug_callback(BIO *bio, int cmd, const char *argp, int argi,
-                        long argl, long ret);
+VIGORTLS_EXPORT long BIO_debug_callback(BIO *bio, int cmd, const char *argp,
+                                        int argi, long argl, long ret);
 
-BIO_METHOD *BIO_s_mem(void);
-BIO *BIO_new_mem_buf(const void *buf, int len);
-BIO_METHOD *BIO_s_socket(void);
-BIO_METHOD *BIO_s_connect(void);
-BIO_METHOD *BIO_s_accept(void);
-BIO_METHOD *BIO_s_fd(void);
-BIO_METHOD *BIO_s_log(void);
-BIO_METHOD *BIO_s_bio(void);
-BIO_METHOD *BIO_s_null(void);
-BIO_METHOD *BIO_f_null(void);
-BIO_METHOD *BIO_f_buffer(void);
+VIGORTLS_EXPORT BIO_METHOD *BIO_s_mem(void);
+VIGORTLS_EXPORT BIO *BIO_new_mem_buf(const void *buf, int len);
+VIGORTLS_EXPORT BIO_METHOD *BIO_s_socket(void);
+VIGORTLS_EXPORT BIO_METHOD *BIO_s_connect(void);
+VIGORTLS_EXPORT BIO_METHOD *BIO_s_accept(void);
+VIGORTLS_EXPORT BIO_METHOD *BIO_s_fd(void);
+VIGORTLS_EXPORT BIO_METHOD *BIO_s_log(void);
+VIGORTLS_EXPORT BIO_METHOD *BIO_s_bio(void);
+VIGORTLS_EXPORT BIO_METHOD *BIO_s_null(void);
+VIGORTLS_EXPORT BIO_METHOD *BIO_f_null(void);
+VIGORTLS_EXPORT BIO_METHOD *BIO_f_buffer(void);
 #ifndef OPENSSL_NO_DGRAM
-BIO_METHOD *BIO_s_datagram(void);
+VIGORTLS_EXPORT BIO_METHOD *BIO_s_datagram(void);
 #endif
 
 /* BIO_METHOD *BIO_f_ber(void); */
 
-int BIO_sock_should_retry(int i);
-int BIO_sock_non_fatal_error(int error);
-int BIO_dgram_non_fatal_error(int error);
+VIGORTLS_EXPORT int BIO_sock_should_retry(int i);
+VIGORTLS_EXPORT int BIO_sock_non_fatal_error(int error);
+VIGORTLS_EXPORT int BIO_dgram_non_fatal_error(int error);
 
-int BIO_fd_should_retry(int i);
-int BIO_fd_non_fatal_error(int error);
-int BIO_dump_cb(int (*cb)(const void *data, size_t len, void *u), void *u,
-                const char *s, int len);
-int BIO_dump_indent_cb(int (*cb)(const void *data, size_t len, void *u),
-                       void *u, const char *s, int len, int indent);
-int BIO_dump(BIO *b, const char *bytes, int len);
-int BIO_dump_indent(BIO *b, const char *bytes, int len, int indent);
-int BIO_dump_fp(FILE *fp, const char *s, int len);
-int BIO_dump_indent_fp(FILE *fp, const char *s, int len, int indent);
-int BIO_hex_string(BIO *out, int indent, int width, uint8_t *data, int datalen);
-struct hostent *BIO_gethostbyname(const char *name);
+VIGORTLS_EXPORT int BIO_fd_should_retry(int i);
+VIGORTLS_EXPORT int BIO_fd_non_fatal_error(int error);
+VIGORTLS_EXPORT int BIO_dump_cb(int (*cb)(const void *data, size_t len,
+                                          void *u),
+                                void *u, const char *s, int len);
+VIGORTLS_EXPORT int
+BIO_dump_indent_cb(int (*cb)(const void *data, size_t len, void *u), void *u,
+                   const char *s, int len, int indent);
+VIGORTLS_EXPORT int BIO_dump(BIO *b, const char *bytes, int len);
+VIGORTLS_EXPORT int BIO_dump_indent(BIO *b, const char *bytes, int len,
+                                    int indent);
+VIGORTLS_EXPORT int BIO_dump_fp(FILE *fp, const char *s, int len);
+VIGORTLS_EXPORT int BIO_dump_indent_fp(FILE *fp, const char *s, int len,
+                                       int indent);
+VIGORTLS_EXPORT int BIO_hex_string(BIO *out, int indent, int width,
+                                   uint8_t *data, int datalen);
+VIGORTLS_EXPORT struct hostent *BIO_gethostbyname(const char *name);
 /* We might want a thread-safe interface too:
  * struct hostent *BIO_gethostbyname_r(const char *name,
  *     struct hostent *result, void *buffer, size_t buflen);
@@ -630,44 +622,44 @@ struct hostent *BIO_gethostbyname(const char *name);
  * substructures; if the buffer does not suffice, NULL is returned
  * and an appropriate error code is set).
  */
-int BIO_sock_error(int sock);
-int BIO_socket_ioctl(int fd, long type, void *arg);
-int BIO_socket_nbio(int fd, int mode);
-int BIO_get_port(const char *str, unsigned short *port_ptr);
-int BIO_get_host_ip(const char *str, uint8_t *ip);
-int BIO_get_accept_socket(char *host_port, int mode);
-int BIO_accept(int sock, char **ip_port);
-int BIO_sock_init(void);
-void BIO_sock_cleanup(void);
-int BIO_set_tcp_ndelay(int sock, int turn_on);
+VIGORTLS_EXPORT int BIO_sock_error(int sock);
+VIGORTLS_EXPORT int BIO_socket_ioctl(int fd, long type, void *arg);
+VIGORTLS_EXPORT int BIO_socket_nbio(int fd, int mode);
+VIGORTLS_EXPORT int BIO_get_port(const char *str, unsigned short *port_ptr);
+VIGORTLS_EXPORT int BIO_get_host_ip(const char *str, uint8_t *ip);
+VIGORTLS_EXPORT int BIO_get_accept_socket(char *host_port, int mode);
+VIGORTLS_EXPORT int BIO_accept(int sock, char **ip_port);
+VIGORTLS_EXPORT int BIO_sock_init(void);
+VIGORTLS_EXPORT void BIO_sock_cleanup(void);
+VIGORTLS_EXPORT int BIO_set_tcp_ndelay(int sock, int turn_on);
 
-BIO *BIO_new_socket(int sock, int close_flag);
-BIO *BIO_new_dgram(int fd, int close_flag);
-BIO *BIO_new_fd(int fd, int close_flag);
-BIO *BIO_new_connect(const char *host_port);
-BIO *BIO_new_accept(const char *host_port);
+VIGORTLS_EXPORT BIO *BIO_new_socket(int sock, int close_flag);
+VIGORTLS_EXPORT BIO *BIO_new_dgram(int fd, int close_flag);
+VIGORTLS_EXPORT BIO *BIO_new_fd(int fd, int close_flag);
+VIGORTLS_EXPORT BIO *BIO_new_connect(const char *host_port);
+VIGORTLS_EXPORT BIO *BIO_new_accept(const char *host_port);
 
-int BIO_new_bio_pair(BIO **bio1, size_t writebuf1, BIO **bio2,
-                     size_t writebuf2);
+VIGORTLS_EXPORT int BIO_new_bio_pair(BIO **bio1, size_t writebuf1, BIO **bio2,
+                                     size_t writebuf2);
 /* If successful, returns 1 and in *bio1, *bio2 two BIO pair endpoints.
  * Otherwise returns 0 and sets *bio1 and *bio2 to NULL.
  * Size 0 uses default value.
  */
 
-void BIO_copy_next_retry(BIO *b);
+VIGORTLS_EXPORT void BIO_copy_next_retry(BIO *b);
 
 /*long BIO_ghbn_ctrl(int cmd,int iarg,char *parg);*/
 
 #ifdef _MSC_VER
 #define __attribute__(x)
 #endif
-int BIO_printf(BIO *bio, const char *format, ...)
+VIGORTLS_EXPORT int BIO_printf(BIO *bio, const char *format, ...)
     __attribute__((__format__(__printf__, 2, 3)));
-int BIO_vprintf(BIO *bio, const char *format, va_list args)
+VIGORTLS_EXPORT int BIO_vprintf(BIO *bio, const char *format, va_list args)
     __attribute__((__format__(__printf__, 2, 0)));
-int BIO_snprintf(char *buf, size_t n, const char *format, ...)
+VIGORTLS_EXPORT int BIO_snprintf(char *buf, size_t n, const char *format, ...)
     __attribute__((__deprecated__, __format__(__printf__, 3, 4)));
-int BIO_vsnprintf(char *buf, size_t n, const char *format, va_list args)
+VIGORTLS_EXPORT int BIO_vsnprintf(char *buf, size_t n, const char *format, va_list args)
     __attribute__((__format__(__printf__, 3, 0)));
 
 /* BEGIN ERROR CODES */
@@ -675,7 +667,7 @@ int BIO_vsnprintf(char *buf, size_t n, const char *format, va_list args)
  * The following lines are auto generated by the script mkerr.pl. Any changes
  * made after this point may be overwritten when the script is next run.
  */
-void ERR_load_BIO_strings(void);
+VIGORTLS_EXPORT void ERR_load_BIO_strings(void);
 
 /* Error codes for the BIO functions. */
 

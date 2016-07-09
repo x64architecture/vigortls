@@ -39,12 +39,12 @@ ASN1_SEQUENCE_cb(DHparams, dh_cb) = {
 DH *d2i_DHparams(DH **a, const uint8_t **in, long len)
 {
     return (DH *)ASN1_item_d2i((ASN1_VALUE **)a, in, len,
-                               &DHparams_it);
+                               ASN1_ITEM_rptr(DHparams));
 }
 
 int i2d_DHparams(const DH *a, uint8_t **out)
 {
-    return ASN1_item_i2d((ASN1_VALUE *)a, out, &DHparams_it);
+    return ASN1_item_i2d((ASN1_VALUE *)a, out, ASN1_ITEM_rptr(DHparams));
 }
 
 /*

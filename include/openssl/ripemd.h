@@ -10,7 +10,7 @@
 #ifndef HEADER_RIPEMD_H
 #define HEADER_RIPEMD_H
 
-#include <openssl/opensslconf.h>
+#include <openssl/base.h>
 #include <stddef.h>
 #include <stdint.h>
 
@@ -35,11 +35,12 @@ typedef struct RIPEMD160state_st {
     unsigned int num;
 } RIPEMD160_CTX;
 
-int RIPEMD160_Init(RIPEMD160_CTX *c);
-int RIPEMD160_Update(RIPEMD160_CTX *c, const void *data, size_t len);
-int RIPEMD160_Final(uint8_t *md, RIPEMD160_CTX *c);
-uint8_t *RIPEMD160(const uint8_t *d, size_t n, uint8_t *md);
-void RIPEMD160_Transform(RIPEMD160_CTX *c, const uint8_t *b);
+VIGORTLS_EXPORT int RIPEMD160_Init(RIPEMD160_CTX *c);
+VIGORTLS_EXPORT int RIPEMD160_Update(RIPEMD160_CTX *c, const void *data,
+                                     size_t len);
+VIGORTLS_EXPORT int RIPEMD160_Final(uint8_t *md, RIPEMD160_CTX *c);
+VIGORTLS_EXPORT uint8_t *RIPEMD160(const uint8_t *d, size_t n, uint8_t *md);
+VIGORTLS_EXPORT void RIPEMD160_Transform(RIPEMD160_CTX *c, const uint8_t *b);
 
 #ifdef __cplusplus
 }

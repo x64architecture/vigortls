@@ -421,7 +421,7 @@ foreach $lib (keys %csrc)
 EOF
 	if($static) {
 		print OUT <<"EOF";
-${staticloader}void ERR_load_${lib}_strings(void);
+${staticloader}VIGORTLS_EXPORT void ERR_load_${lib}_strings(void);
 
 EOF
 	} else {

@@ -10,13 +10,11 @@
 #ifndef HEADER_CONF_H
 #define HEADER_CONF_H
 
+#include <openssl/base.h>
 #include <openssl/bio.h>
 #include <openssl/lhash.h>
-#include <openssl/opensslconf.h>
 #include <openssl/safestack.h>
 #include <openssl/stack.h>
-
-#include <openssl/ossl_typ.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -60,33 +58,33 @@ DECLARE_STACK_OF(CONF_IMODULE)
 typedef int conf_init_func(CONF_IMODULE *md, const CONF *cnf);
 typedef void conf_finish_func(CONF_IMODULE *md);
 
-#define CONF_MFLAGS_IGNORE_ERRORS 0x1
-#define CONF_MFLAGS_IGNORE_RETURN_CODES 0x2
-#define CONF_MFLAGS_SILENT 0x4
-#define CONF_MFLAGS_NO_DSO 0x8
-#define CONF_MFLAGS_IGNORE_MISSING_FILE 0x10
-#define CONF_MFLAGS_DEFAULT_SECTION 0x20
+#define CONF_MFLAGS_IGNORE_ERRORS           0x1
+#define CONF_MFLAGS_IGNORE_RETURN_CODES     0x2
+#define CONF_MFLAGS_SILENT                  0x4
+#define CONF_MFLAGS_NO_DSO                  0x8
+#define CONF_MFLAGS_IGNORE_MISSING_FILE     0x10
+#define CONF_MFLAGS_DEFAULT_SECTION         0x20
 
-int CONF_set_default_method(CONF_METHOD *meth);
-void CONF_set_nconf(CONF *conf, LHASH_OF(CONF_VALUE) *hash);
-LHASH_OF(CONF_VALUE) *
-    CONF_load(LHASH_OF(CONF_VALUE) *conf, const char *file, long *eline);
-LHASH_OF(CONF_VALUE) *
-    CONF_load_fp(LHASH_OF(CONF_VALUE) *conf, FILE *fp, long *eline);
-LHASH_OF(CONF_VALUE) *
-    CONF_load_bio(LHASH_OF(CONF_VALUE) *conf, BIO *bp, long *eline);
-STACK_OF(CONF_VALUE) *
-    CONF_get_section(LHASH_OF(CONF_VALUE) *conf, const char *section);
-char *CONF_get_string(LHASH_OF(CONF_VALUE) *conf, const char *group,
-                      const char *name);
-long CONF_get_number(LHASH_OF(CONF_VALUE) *conf, const char *group,
-                     const char *name);
-void CONF_free(LHASH_OF(CONF_VALUE) *conf);
-int CONF_dump_fp(LHASH_OF(CONF_VALUE) *conf, FILE *out);
-int CONF_dump_bio(LHASH_OF(CONF_VALUE) *conf, BIO *out);
+VIGORTLS_EXPORT int CONF_set_default_method(CONF_METHOD *meth);
+VIGORTLS_EXPORT void CONF_set_nconf(CONF *conf, LHASH_OF(CONF_VALUE) * hash);
+VIGORTLS_EXPORT LHASH_OF(CONF_VALUE) *
+    CONF_load(LHASH_OF(CONF_VALUE) * conf, const char *file, long *eline);
+VIGORTLS_EXPORT LHASH_OF(CONF_VALUE) *
+    CONF_load_fp(LHASH_OF(CONF_VALUE) * conf, FILE *fp, long *eline);
+VIGORTLS_EXPORT LHASH_OF(CONF_VALUE) *
+    CONF_load_bio(LHASH_OF(CONF_VALUE) * conf, BIO *bp, long *eline);
+VIGORTLS_EXPORT STACK_OF(CONF_VALUE) *
+    CONF_get_section(LHASH_OF(CONF_VALUE) * conf, const char *section);
+VIGORTLS_EXPORT char *CONF_get_string(LHASH_OF(CONF_VALUE) * conf,
+                                      const char *group, const char *name);
+VIGORTLS_EXPORT long CONF_get_number(LHASH_OF(CONF_VALUE) * conf,
+                                     const char *group, const char *name);
+VIGORTLS_EXPORT void CONF_free(LHASH_OF(CONF_VALUE) * conf);
+VIGORTLS_EXPORT int CONF_dump_fp(LHASH_OF(CONF_VALUE) * conf, FILE *out);
+VIGORTLS_EXPORT int CONF_dump_bio(LHASH_OF(CONF_VALUE) * conf, BIO *out);
 
-void OPENSSL_config(const char *config_name);
-void OPENSSL_no_config(void);
+VIGORTLS_EXPORT void OPENSSL_config(const char *config_name);
+VIGORTLS_EXPORT void OPENSSL_no_config(void);
 
 /* New conf code.  The semantics are different from the functions above.
    If that wasn't the case, the above functions would have been replaced */
@@ -97,60 +95,67 @@ struct conf_st {
     LHASH_OF(CONF_VALUE) *data;
 };
 
-CONF_METHOD *NCONF_WIN32(void);
-CONF *NCONF_new(CONF_METHOD *meth);
-CONF_METHOD *NCONF_default(void);
-void NCONF_free(CONF *conf);
-void NCONF_free_data(CONF *conf);
+VIGORTLS_EXPORT CONF_METHOD *NCONF_WIN32(void);
+VIGORTLS_EXPORT CONF *NCONF_new(CONF_METHOD *meth);
+VIGORTLS_EXPORT CONF_METHOD *NCONF_default(void);
+VIGORTLS_EXPORT void NCONF_free(CONF *conf);
+VIGORTLS_EXPORT void NCONF_free_data(CONF *conf);
 
-int NCONF_load(CONF *conf, const char *file, long *eline);
-int NCONF_load_fp(CONF *conf, FILE *fp, long *eline);
-int NCONF_load_bio(CONF *conf, BIO *bp, long *eline);
-STACK_OF(CONF_VALUE) *NCONF_get_section(const CONF *conf, const char *section);
-char *NCONF_get_string(const CONF *conf, const char *group, const char *name);
-int NCONF_get_number_e(const CONF *conf, const char *group, const char *name,
-                       long *result);
-int NCONF_dump_fp(const CONF *conf, FILE *out);
-int NCONF_dump_bio(const CONF *conf, BIO *out);
+VIGORTLS_EXPORT int NCONF_load(CONF *conf, const char *file, long *eline);
+VIGORTLS_EXPORT int NCONF_load_fp(CONF *conf, FILE *fp, long *eline);
+VIGORTLS_EXPORT int NCONF_load_bio(CONF *conf, BIO *bp, long *eline);
+VIGORTLS_EXPORT STACK_OF(CONF_VALUE) *
+    NCONF_get_section(const CONF *conf, const char *section);
+VIGORTLS_EXPORT char *NCONF_get_string(const CONF *conf, const char *group,
+                                       const char *name);
+VIGORTLS_EXPORT int NCONF_get_number_e(const CONF *conf, const char *group,
+                                       const char *name, long *result);
+VIGORTLS_EXPORT int NCONF_dump_fp(const CONF *conf, FILE *out);
+VIGORTLS_EXPORT int NCONF_dump_bio(const CONF *conf, BIO *out);
 
 #define NCONF_get_number(c, g, n, r) NCONF_get_number_e(c, g, n, r)
 
 /* Module functions */
 
-int CONF_modules_load(const CONF *cnf, const char *appname,
-                      unsigned long flags);
-int CONF_modules_load_file(const char *filename, const char *appname,
-                           unsigned long flags);
-void CONF_modules_unload(int all);
-void CONF_modules_finish(void);
-void CONF_modules_free(void);
-int CONF_module_add(const char *name, conf_init_func *ifunc,
-                    conf_finish_func *ffunc);
+VIGORTLS_EXPORT int CONF_modules_load(const CONF *cnf, const char *appname,
+                                      unsigned long flags);
+VIGORTLS_EXPORT int CONF_modules_load_file(const char *filename,
+                                           const char *appname,
+                                           unsigned long flags);
+VIGORTLS_EXPORT void CONF_modules_unload(int all);
+VIGORTLS_EXPORT void CONF_modules_finish(void);
+VIGORTLS_EXPORT void CONF_modules_free(void);
+VIGORTLS_EXPORT int CONF_module_add(const char *name, conf_init_func *ifunc,
+                                    conf_finish_func *ffunc);
 
-const char *CONF_imodule_get_name(const CONF_IMODULE *md);
-const char *CONF_imodule_get_value(const CONF_IMODULE *md);
-void *CONF_imodule_get_usr_data(const CONF_IMODULE *md);
-void CONF_imodule_set_usr_data(CONF_IMODULE *md, void *usr_data);
-CONF_MODULE *CONF_imodule_get_module(const CONF_IMODULE *md);
-unsigned long CONF_imodule_get_flags(const CONF_IMODULE *md);
-void CONF_imodule_set_flags(CONF_IMODULE *md, unsigned long flags);
-void *CONF_module_get_usr_data(CONF_MODULE *pmod);
-void CONF_module_set_usr_data(CONF_MODULE *pmod, void *usr_data);
+VIGORTLS_EXPORT const char *CONF_imodule_get_name(const CONF_IMODULE *md);
+VIGORTLS_EXPORT const char *CONF_imodule_get_value(const CONF_IMODULE *md);
+VIGORTLS_EXPORT void *CONF_imodule_get_usr_data(const CONF_IMODULE *md);
+VIGORTLS_EXPORT void CONF_imodule_set_usr_data(CONF_IMODULE *md,
+                                               void *usr_data);
+VIGORTLS_EXPORT CONF_MODULE *CONF_imodule_get_module(const CONF_IMODULE *md);
+VIGORTLS_EXPORT unsigned long CONF_imodule_get_flags(const CONF_IMODULE *md);
+VIGORTLS_EXPORT void CONF_imodule_set_flags(CONF_IMODULE *md,
+                                            unsigned long flags);
+VIGORTLS_EXPORT void *CONF_module_get_usr_data(CONF_MODULE *pmod);
+VIGORTLS_EXPORT void CONF_module_set_usr_data(CONF_MODULE *pmod,
+                                              void *usr_data);
 
-char *CONF_get1_default_config_file(void);
+VIGORTLS_EXPORT char *CONF_get1_default_config_file(void);
 
-int CONF_parse_list(const char *list, int sep, int nospc,
-                    int (*list_cb)(const char *elem, int len, void *usr),
-                    void *arg);
+VIGORTLS_EXPORT int CONF_parse_list(const char *list, int sep, int nospc,
+                                    int (*list_cb)(const char *elem, int len,
+                                                   void *usr),
+                                    void *arg);
 
-void OPENSSL_load_builtin_modules(void);
+VIGORTLS_EXPORT void OPENSSL_load_builtin_modules(void);
 
 /* BEGIN ERROR CODES */
 /*
  * The following lines are auto generated by the script mkerr.pl. Any changes
  * made after this point may be overwritten when the script is next run.
  */
-void ERR_load_CONF_strings(void);
+VIGORTLS_EXPORT void ERR_load_CONF_strings(void);
 
 /* Error codes for the CONF functions. */
 

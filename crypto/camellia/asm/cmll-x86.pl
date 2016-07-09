@@ -179,11 +179,11 @@ my $t0=@T[($j)%4],$t1=@T[($j+1)%4],$t2=@T[($j+2)%4],$t3=@T[($j+3)%4];
 &function_end_B("Camellia_EncryptBlock");
 
 if ($OPENSSL) {
-# void Camellia_encrypt(
+# void asm_Camellia_encrypt(
 #		const unsigned char *in,
 #		unsigned char *out,
 #		const CAMELLIA_KEY *key)
-&function_begin("Camellia_encrypt");
+&function_begin("asm_Camellia_encrypt");
 	&mov	($idx,&wparam(0));	# load plaintext pointer
 	&mov	($key,&wparam(2));	# load key schedule pointer
 
@@ -232,7 +232,7 @@ if ($OPENSSL) {
 	&mov	(&DWP(4,$idx),@T[1]);
 	&mov	(&DWP(8,$idx),@T[2]);
 	&mov	(&DWP(12,$idx),@T[3]);
-&function_end("Camellia_encrypt");
+&function_end("asm_Camellia_encrypt");
 }
 
 &function_begin_B("_x86_Camellia_encrypt");
@@ -354,11 +354,11 @@ if ($OPENSSL) {
 &function_end_B("Camellia_DecryptBlock");
 
 if ($OPENSSL) {
-# void Camellia_decrypt(
+# void asm_Camellia_decrypt(
 #		const unsigned char *in,
 #		unsigned char *out,
 #		const CAMELLIA_KEY *key)
-&function_begin("Camellia_decrypt");
+&function_begin("asm_Camellia_decrypt");
 	&mov	($idx,&wparam(0));	# load ciphertext pointer
 	&mov	($key,&wparam(2));	# load key schedule pointer
 
@@ -407,7 +407,7 @@ if ($OPENSSL) {
 	&mov	(&DWP(4,$idx),@T[1]);
 	&mov	(&DWP(8,$idx),@T[2]);
 	&mov	(&DWP(12,$idx),@T[3]);
-&function_end("Camellia_decrypt");
+&function_end("asm_Camellia_decrypt");
 }
 
 &function_begin_B("_x86_Camellia_decrypt");
@@ -723,11 +723,11 @@ my $bias=int(@T[0])?shift(@T):0;
 &function_end("Camellia_Ekeygen");
 
 if ($OPENSSL) {
-# int Camellia_set_key (
+# int asm_Camellia_set_key (
 #		const unsigned char *userKey,
 #		int bits,
 #		CAMELLIA_KEY *key)
-&function_begin_B("Camellia_set_key");
+&function_begin_B("asm_Camellia_set_key");
 	&push	("ebx");
 	&mov	("ecx",&wparam(0));	# pull arguments
 	&mov	("ebx",&wparam(1));
@@ -760,7 +760,7 @@ if ($OPENSSL) {
 &set_label("done",4);
 	&pop	("ebx");
 	&ret	();
-&function_end_B("Camellia_set_key");
+&function_end_B("asm_Camellia_set_key");
 }
 
 @SBOX=(
@@ -818,7 +818,7 @@ my $ivec=&DWP(44,"esp");	#ivec[16]
 my $_tmp=&DWP(44,"esp");	#volatile variable [yes, aliases with ivec]
 my ($s0,$s1,$s2,$s3) = @T;
 
-&function_begin("Camellia_cbc_encrypt");
+&function_begin("asm_Camellia_cbc_encrypt");
 	&mov	($s2 eq "ecx"? $s2 : "",&wparam(2));	# load len
 	&cmp	($s2,0);
 	&je	(&label("enc_out"));
@@ -1130,7 +1130,7 @@ my ($s0,$s1,$s2,$s3) = @T;
     &set_label("dec_out",4);
     &mov	("esp",$_esp);
     &popf	();
-&function_end("Camellia_cbc_encrypt");
+&function_end("asm_Camellia_cbc_encrypt");
 }
 
 &asciz("Camellia for x86 by <appro\@openssl.org>");

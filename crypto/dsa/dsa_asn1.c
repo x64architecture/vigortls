@@ -41,12 +41,12 @@ ASN1_SEQUENCE_cb(DSA_SIG, sig_cb) = {
 DSA_SIG *d2i_DSA_SIG(DSA_SIG **a, const uint8_t **in, long len)
 {
     return (DSA_SIG *)ASN1_item_d2i((ASN1_VALUE **)a, in, len,
-                                    &DSA_SIG_it);
+                                    ASN1_ITEM_rptr(DSA_SIG));
 }
 
 int i2d_DSA_SIG(const DSA_SIG *a, uint8_t **out)
 {
-    return ASN1_item_i2d((ASN1_VALUE *)a, out, &DSA_SIG_it);
+    return ASN1_item_i2d((ASN1_VALUE *)a, out, ASN1_ITEM_rptr(DSA_SIG));
 }
 
 /* Override the default free and new methods */
@@ -76,12 +76,12 @@ ASN1_SEQUENCE_cb(DSAPrivateKey, dsa_cb) = {
 
 DSA *d2i_DSAPrivateKey(DSA **a, const uint8_t **in, long len)
 {
-    return (DSA *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, &DSAPrivateKey_it);
+    return (DSA *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, ASN1_ITEM_rptr(DSAPrivateKey));
 }
 
 int i2d_DSAPrivateKey(const DSA *a, uint8_t **out)
 {
-    return ASN1_item_i2d((ASN1_VALUE *)a, out, &DSAPrivateKey_it);
+    return ASN1_item_i2d((ASN1_VALUE *)a, out, ASN1_ITEM_rptr(DSAPrivateKey));
 }
 
 ASN1_SEQUENCE_cb(DSAparams, dsa_cb) = {
@@ -92,12 +92,12 @@ ASN1_SEQUENCE_cb(DSAparams, dsa_cb) = {
 
 DSA *d2i_DSAparams(DSA **a, const uint8_t **in, long len)
 {
-    return (DSA *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, &DSAparams_it);
+    return (DSA *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, ASN1_ITEM_rptr(DSAparams));
 }
 
 int i2d_DSAparams(const DSA *a, uint8_t **out)
 {
-    return ASN1_item_i2d((ASN1_VALUE *)a, out, &DSAparams_it);
+    return ASN1_item_i2d((ASN1_VALUE *)a, out, ASN1_ITEM_rptr(DSAparams));
 }
 
 /* DSA public key is a bit trickier... its effectively a CHOICE type
@@ -115,12 +115,12 @@ ASN1_SEQUENCE_cb(DSAPublicKey, dsa_cb) = {
 
 DSA *d2i_DSAPublicKey(DSA **a, const uint8_t **in, long len)
 {
-    return (DSA *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, &DSAPublicKey_it);
+    return (DSA *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, ASN1_ITEM_rptr(DSAPublicKey));
 }
 
 int i2d_DSAPublicKey(const DSA *a, uint8_t **out)
 {
-    return ASN1_item_i2d((ASN1_VALUE *)a, out, &DSAPublicKey_it);
+    return ASN1_item_i2d((ASN1_VALUE *)a, out, ASN1_ITEM_rptr(DSAPublicKey));
 }
 
 DSA *DSAparams_dup(DSA * dsa)

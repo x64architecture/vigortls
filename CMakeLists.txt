@@ -44,7 +44,7 @@ else()
     message(FATAL_ERROR "Unsupported processor:" ${CMAKE_SYSTEM_PROCESSOR})
 endif()
 
-add_definitions(-DVIGORTLS_INTERNAL)
+add_definitions(-DVIGORTLS_IMPLEMENTATION)
 
 if(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
     add_definitions(-D_GNU_SOURCE)
@@ -97,6 +97,9 @@ option(OPENSSL_NO_MULTIBLOCK
 option(OPENSSL_NO_SSL_TRACE
     "Build without TLS record tracing support" TRUE)
 
+if (BUILD_SHARED_LIBS)
+    list(APPEND VIGORTLS_OPTIONS "VIGORTLS_SHARED_LIBRARY")
+endif()
 if (OPENSSL_THREADS)
     list(APPEND VIGORTLS_OPTIONS "OPENSSL_THREADS")
 endif()

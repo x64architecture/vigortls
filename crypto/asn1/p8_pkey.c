@@ -35,22 +35,22 @@ ASN1_SEQUENCE_cb(PKCS8_PRIV_KEY_INFO, pkey_cb) = {
 
 PKCS8_PRIV_KEY_INFO *d2i_PKCS8_PRIV_KEY_INFO(PKCS8_PRIV_KEY_INFO **a, const uint8_t **in, long len)
 {
-    return (PKCS8_PRIV_KEY_INFO *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, &PKCS8_PRIV_KEY_INFO_it);
+    return (PKCS8_PRIV_KEY_INFO *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, ASN1_ITEM_rptr(PKCS8_PRIV_KEY_INFO));
 }
 
 int i2d_PKCS8_PRIV_KEY_INFO(PKCS8_PRIV_KEY_INFO *a, uint8_t **out)
 {
-    return ASN1_item_i2d((ASN1_VALUE *)a, out, &PKCS8_PRIV_KEY_INFO_it);
+    return ASN1_item_i2d((ASN1_VALUE *)a, out, ASN1_ITEM_rptr(PKCS8_PRIV_KEY_INFO));
 }
 
 PKCS8_PRIV_KEY_INFO *PKCS8_PRIV_KEY_INFO_new(void)
 {
-    return (PKCS8_PRIV_KEY_INFO *)ASN1_item_new(&PKCS8_PRIV_KEY_INFO_it);
+    return (PKCS8_PRIV_KEY_INFO *)ASN1_item_new(ASN1_ITEM_rptr(PKCS8_PRIV_KEY_INFO));
 }
 
 void PKCS8_PRIV_KEY_INFO_free(PKCS8_PRIV_KEY_INFO *a)
 {
-    ASN1_item_free((ASN1_VALUE *)a, &PKCS8_PRIV_KEY_INFO_it);
+    ASN1_item_free((ASN1_VALUE *)a, ASN1_ITEM_rptr(PKCS8_PRIV_KEY_INFO));
 }
 
 int PKCS8_pkey_set0(PKCS8_PRIV_KEY_INFO *priv, ASN1_OBJECT *aobj,

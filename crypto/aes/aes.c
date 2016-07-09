@@ -37,6 +37,10 @@
 #include <stdlib.h>
 #include <openssl/aes.h>
 
+#if defined(OPENSSL_NO_ASM) || \
+    (!defined(VIGORTLS_X86) && !defined(VIGORTLS_X86_64) && \
+    !defined(VIGORTLS_ARM))
+
 #if defined(_MSC_VER) && \
     (defined(VIGORTLS_X86) || defined(VIGORTLS_X86_64))
 #define SWAP(x) (_lrotl(x, 8) & 0x00ff00ff | _lrotr(x, 8) & 0xff00ff00)
@@ -857,3 +861,31 @@ void AES_decrypt(const uint8_t *in, uint8_t *out, const AES_KEY *key)
         rk[3];
     PUTU32(out + 12, s3);
 }
+
+#else /* !OPENSSL_NO_ASM */
+
+void asm_AES_encrypt(const uint8_t *in, uint8_t *out, const AES_KEY *key);
+void AES_encrypt(const uint8_t *in, uint8_t *out, const AES_KEY *key)
+{
+    asm_AES_encrypt(in, out, key);
+}
+
+void asm_AES_decrypt(const uint8_t *in, uint8_t *out, const AES_KEY *key);
+void AES_decrypt(const uint8_t *in, uint8_t *out, const AES_KEY *key)
+{
+    asm_AES_decrypt(in, out, key);
+}
+
+int asm_AES_set_encrypt_key(const uint8_t *userKey, const int bits, AES_KEY *key);
+int AES_set_encrypt_key(const uint8_t *userKey, const int bits, AES_KEY *key)
+{
+    return asm_AES_set_encrypt_key(userKey, bits, key);
+}
+
+int asm_AES_set_decrypt_key(const uint8_t *userKey, const int bits, AES_KEY *key);
+int AES_set_decrypt_key(const uint8_t *userKey, const int bits, AES_KEY *key)
+{
+    return asm_AES_set_decrypt_key(userKey, bits, key);
+}
+
+#endif

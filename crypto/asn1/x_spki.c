@@ -18,22 +18,22 @@ ASN1_SEQUENCE(NETSCAPE_SPKAC) = {
 
 NETSCAPE_SPKAC *d2i_NETSCAPE_SPKAC(NETSCAPE_SPKAC **a, const uint8_t **in, long len)
 {
-    return (NETSCAPE_SPKAC *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, &NETSCAPE_SPKAC_it);
+    return (NETSCAPE_SPKAC *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, ASN1_ITEM_rptr(NETSCAPE_SPKAC));
 }
 
 int i2d_NETSCAPE_SPKAC(NETSCAPE_SPKAC *a, uint8_t **out)
 {
-    return ASN1_item_i2d((ASN1_VALUE *)a, out, &NETSCAPE_SPKAC_it);
+    return ASN1_item_i2d((ASN1_VALUE *)a, out, ASN1_ITEM_rptr(NETSCAPE_SPKAC));
 }
 
 NETSCAPE_SPKAC *NETSCAPE_SPKAC_new(void)
 {
-    return (NETSCAPE_SPKAC *)ASN1_item_new(&NETSCAPE_SPKAC_it);
+    return (NETSCAPE_SPKAC *)ASN1_item_new(ASN1_ITEM_rptr(NETSCAPE_SPKAC));
 }
 
 void NETSCAPE_SPKAC_free(NETSCAPE_SPKAC *a)
 {
-    ASN1_item_free((ASN1_VALUE *)a, &NETSCAPE_SPKAC_it);
+    ASN1_item_free((ASN1_VALUE *)a, ASN1_ITEM_rptr(NETSCAPE_SPKAC));
 }
 
 ASN1_SEQUENCE(NETSCAPE_SPKI) = {
@@ -44,20 +44,20 @@ ASN1_SEQUENCE(NETSCAPE_SPKI) = {
 
 NETSCAPE_SPKI *d2i_NETSCAPE_SPKI(NETSCAPE_SPKI **a, const uint8_t **in, long len)
 {
-    return (NETSCAPE_SPKI *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, &NETSCAPE_SPKI_it);
+    return (NETSCAPE_SPKI *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, ASN1_ITEM_rptr(NETSCAPE_SPKI));
 }
 
 int i2d_NETSCAPE_SPKI(NETSCAPE_SPKI *a, uint8_t **out)
 {
-    return ASN1_item_i2d((ASN1_VALUE *)a, out, &NETSCAPE_SPKI_it);
+    return ASN1_item_i2d((ASN1_VALUE *)a, out, ASN1_ITEM_rptr(NETSCAPE_SPKI));
 }
 
 NETSCAPE_SPKI *NETSCAPE_SPKI_new(void)
 {
-    return (NETSCAPE_SPKI *)ASN1_item_new(&NETSCAPE_SPKI_it);
+    return (NETSCAPE_SPKI *)ASN1_item_new(ASN1_ITEM_rptr(NETSCAPE_SPKI));
 }
 
 void NETSCAPE_SPKI_free(NETSCAPE_SPKI *a)
 {
-    ASN1_item_free((ASN1_VALUE *)a, &NETSCAPE_SPKI_it);
+    ASN1_item_free((ASN1_VALUE *)a, ASN1_ITEM_rptr(NETSCAPE_SPKI));
 }

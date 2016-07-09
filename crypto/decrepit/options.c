@@ -16,7 +16,13 @@
 
 #include <stdio.h>
 
+
+#include <openssl/aes.h>
+#include <openssl/blowfish.h>
 #include <openssl/bn.h>
+#include <openssl/des.h>
+#include <openssl/idea.h>
+#include <openssl/rc4.h>
 
 const char *AES_options(void)
 {

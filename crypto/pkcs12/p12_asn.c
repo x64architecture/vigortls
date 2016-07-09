@@ -21,22 +21,22 @@ ASN1_SEQUENCE(PKCS12) = {
 
 PKCS12 *d2i_PKCS12(PKCS12 **a, const uint8_t **in, long len)
 {
-    return (PKCS12 *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, &PKCS12_it);
+    return (PKCS12 *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, ASN1_ITEM_rptr(PKCS12));
 }
 
 int i2d_PKCS12(PKCS12 *a, uint8_t **out)
 {
-    return ASN1_item_i2d((ASN1_VALUE *)a, out, &PKCS12_it);
+    return ASN1_item_i2d((ASN1_VALUE *)a, out, ASN1_ITEM_rptr(PKCS12));
 }
 
 PKCS12 *PKCS12_new(void)
 {
-    return (PKCS12 *)ASN1_item_new(&PKCS12_it);
+    return (PKCS12 *)ASN1_item_new(ASN1_ITEM_rptr(PKCS12));
 }
 
 void PKCS12_free(PKCS12 *a)
 {
-    ASN1_item_free((ASN1_VALUE *)a, &PKCS12_it);
+    ASN1_item_free((ASN1_VALUE *)a, ASN1_ITEM_rptr(PKCS12));
 }
 
 ASN1_SEQUENCE(PKCS12_MAC_DATA) = {
@@ -47,22 +47,22 @@ ASN1_SEQUENCE(PKCS12_MAC_DATA) = {
 
 PKCS12_MAC_DATA *d2i_PKCS12_MAC_DATA(PKCS12_MAC_DATA **a, const uint8_t **in, long len)
 {
-    return (PKCS12_MAC_DATA *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, &PKCS12_MAC_DATA_it);
+    return (PKCS12_MAC_DATA *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, ASN1_ITEM_rptr(PKCS12_MAC_DATA));
 }
 
 int i2d_PKCS12_MAC_DATA(PKCS12_MAC_DATA *a, uint8_t **out)
 {
-    return ASN1_item_i2d((ASN1_VALUE *)a, out, &PKCS12_MAC_DATA_it);
+    return ASN1_item_i2d((ASN1_VALUE *)a, out, ASN1_ITEM_rptr(PKCS12_MAC_DATA));
 }
 
 PKCS12_MAC_DATA *PKCS12_MAC_DATA_new(void)
 {
-    return (PKCS12_MAC_DATA *)ASN1_item_new(&PKCS12_MAC_DATA_it);
+    return (PKCS12_MAC_DATA *)ASN1_item_new(ASN1_ITEM_rptr(PKCS12_MAC_DATA));
 }
 
 void PKCS12_MAC_DATA_free(PKCS12_MAC_DATA *a)
 {
-    ASN1_item_free((ASN1_VALUE *)a, &PKCS12_MAC_DATA_it);
+    ASN1_item_free((ASN1_VALUE *)a, ASN1_ITEM_rptr(PKCS12_MAC_DATA));
 }
 
 ASN1_ADB_TEMPLATE(bag_default) = ASN1_EXP(PKCS12_BAGS, value.other, ASN1_ANY, 0);
@@ -80,22 +80,22 @@ ASN1_SEQUENCE(PKCS12_BAGS) = {
 
 PKCS12_BAGS *d2i_PKCS12_BAGS(PKCS12_BAGS **a, const uint8_t **in, long len)
 {
-    return (PKCS12_BAGS *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, &PKCS12_BAGS_it);
+    return (PKCS12_BAGS *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, ASN1_ITEM_rptr(PKCS12_BAGS));
 }
 
 int i2d_PKCS12_BAGS(PKCS12_BAGS *a, uint8_t **out)
 {
-    return ASN1_item_i2d((ASN1_VALUE *)a, out, &PKCS12_BAGS_it);
+    return ASN1_item_i2d((ASN1_VALUE *)a, out, ASN1_ITEM_rptr(PKCS12_BAGS));
 }
 
 PKCS12_BAGS *PKCS12_BAGS_new(void)
 {
-    return (PKCS12_BAGS *)ASN1_item_new(&PKCS12_BAGS_it);
+    return (PKCS12_BAGS *)ASN1_item_new(ASN1_ITEM_rptr(PKCS12_BAGS));
 }
 
 void PKCS12_BAGS_free(PKCS12_BAGS *a)
 {
-    ASN1_item_free((ASN1_VALUE *)a, &PKCS12_BAGS_it);
+    ASN1_item_free((ASN1_VALUE *)a, ASN1_ITEM_rptr(PKCS12_BAGS));
 }
 
 ASN1_ADB_TEMPLATE(safebag_default) = ASN1_EXP(PKCS12_SAFEBAG, value.other, ASN1_ANY, 0);
@@ -117,22 +117,22 @@ ASN1_SEQUENCE(PKCS12_SAFEBAG) = {
 
 PKCS12_SAFEBAG *d2i_PKCS12_SAFEBAG(PKCS12_SAFEBAG **a, const uint8_t **in, long len)
 {
-    return (PKCS12_SAFEBAG *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, &PKCS12_SAFEBAG_it);
+    return (PKCS12_SAFEBAG *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, ASN1_ITEM_rptr(PKCS12_SAFEBAG));
 }
 
 int i2d_PKCS12_SAFEBAG(PKCS12_SAFEBAG *a, uint8_t **out)
 {
-    return ASN1_item_i2d((ASN1_VALUE *)a, out, &PKCS12_SAFEBAG_it);
+    return ASN1_item_i2d((ASN1_VALUE *)a, out, ASN1_ITEM_rptr(PKCS12_SAFEBAG));
 }
 
 PKCS12_SAFEBAG *PKCS12_SAFEBAG_new(void)
 {
-    return (PKCS12_SAFEBAG *)ASN1_item_new(&PKCS12_SAFEBAG_it);
+    return (PKCS12_SAFEBAG *)ASN1_item_new(ASN1_ITEM_rptr(PKCS12_SAFEBAG));
 }
 
 void PKCS12_SAFEBAG_free(PKCS12_SAFEBAG *a)
 {
-    ASN1_item_free((ASN1_VALUE *)a, &PKCS12_SAFEBAG_it);
+    ASN1_item_free((ASN1_VALUE *)a, ASN1_ITEM_rptr(PKCS12_SAFEBAG));
 }
 
     /* SEQUENCE OF SafeBag */

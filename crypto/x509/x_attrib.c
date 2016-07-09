@@ -30,27 +30,27 @@ ASN1_SEQUENCE(X509_ATTRIBUTE) = {
 
 X509_ATTRIBUTE *d2i_X509_ATTRIBUTE(X509_ATTRIBUTE **a, const uint8_t **in, long len)
 {
-    return (X509_ATTRIBUTE *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, &X509_ATTRIBUTE_it);
+    return (X509_ATTRIBUTE *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, ASN1_ITEM_rptr(X509_ATTRIBUTE));
 }
 
 int i2d_X509_ATTRIBUTE(X509_ATTRIBUTE *a, uint8_t **out)
 {
-    return ASN1_item_i2d((ASN1_VALUE *)a, out, &X509_ATTRIBUTE_it);
+    return ASN1_item_i2d((ASN1_VALUE *)a, out, ASN1_ITEM_rptr(X509_ATTRIBUTE));
 }
 
 X509_ATTRIBUTE *X509_ATTRIBUTE_new(void)
 {
-    return (X509_ATTRIBUTE *)ASN1_item_new(&X509_ATTRIBUTE_it);
+    return (X509_ATTRIBUTE *)ASN1_item_new(ASN1_ITEM_rptr(X509_ATTRIBUTE));
 }
 
 void X509_ATTRIBUTE_free(X509_ATTRIBUTE *a)
 {
-    ASN1_item_free((ASN1_VALUE *)a, &X509_ATTRIBUTE_it);
+    ASN1_item_free((ASN1_VALUE *)a, ASN1_ITEM_rptr(X509_ATTRIBUTE));
 }
 
 X509_ATTRIBUTE *X509_ATTRIBUTE_dup(X509_ATTRIBUTE *x)
 {
-    return ASN1_item_dup(&X509_ATTRIBUTE_it, x);
+    return ASN1_item_dup(ASN1_ITEM_rptr(X509_ATTRIBUTE), x);
 }
 
 X509_ATTRIBUTE *X509_ATTRIBUTE_create(int nid, int atrtype, void *value)

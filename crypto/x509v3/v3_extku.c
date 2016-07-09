@@ -46,22 +46,22 @@ ASN1_ITEM_TEMPLATE_END(EXTENDED_KEY_USAGE)
 
 EXTENDED_KEY_USAGE *d2i_EXTENDED_KEY_USAGE(EXTENDED_KEY_USAGE **a, const uint8_t **in, long len)
 {
-    return (EXTENDED_KEY_USAGE *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, &EXTENDED_KEY_USAGE_it);
+    return (EXTENDED_KEY_USAGE *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, ASN1_ITEM_rptr(EXTENDED_KEY_USAGE));
 }
 
 int i2d_EXTENDED_KEY_USAGE(EXTENDED_KEY_USAGE *a, uint8_t **out)
 {
-    return ASN1_item_i2d((ASN1_VALUE *)a, out, &EXTENDED_KEY_USAGE_it);
+    return ASN1_item_i2d((ASN1_VALUE *)a, out, ASN1_ITEM_rptr(EXTENDED_KEY_USAGE));
 }
 
 EXTENDED_KEY_USAGE *EXTENDED_KEY_USAGE_new(void)
 {
-    return (EXTENDED_KEY_USAGE *)ASN1_item_new(&EXTENDED_KEY_USAGE_it);
+    return (EXTENDED_KEY_USAGE *)ASN1_item_new(ASN1_ITEM_rptr(EXTENDED_KEY_USAGE));
 }
 
 void EXTENDED_KEY_USAGE_free(EXTENDED_KEY_USAGE *a)
 {
-    ASN1_item_free((ASN1_VALUE *)a, &EXTENDED_KEY_USAGE_it);
+    ASN1_item_free((ASN1_VALUE *)a, ASN1_ITEM_rptr(EXTENDED_KEY_USAGE));
 }
 
 static STACK_OF(CONF_VALUE) *i2v_EXTENDED_KEY_USAGE(const X509V3_EXT_METHOD *method, void *a,

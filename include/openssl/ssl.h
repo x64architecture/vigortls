@@ -15,7 +15,7 @@
 #ifndef HEADER_SSL_H
 #define HEADER_SSL_H
 
-#include <openssl/opensslconf.h>
+#include <openssl/base.h>
 
 #include <openssl/bio.h>
 #ifndef OPENSSL_NO_DEPRECATED
@@ -83,93 +83,93 @@ extern "C" {
 
 /* These are used to specify which ciphers to use and not to use */
 
-#define SSL_TXT_LOW "LOW"
-#define SSL_TXT_MEDIUM "MEDIUM"
-#define SSL_TXT_HIGH "HIGH"
+#define SSL_TXT_LOW         "LOW"
+#define SSL_TXT_MEDIUM      "MEDIUM"
+#define SSL_TXT_HIGH        "HIGH"
 
-#define SSL_TXT_kFZA "kFZA" /* unused! */
-#define SSL_TXT_aFZA "aFZA" /* unused! */
-#define SSL_TXT_eFZA "eFZA" /* unused! */
-#define SSL_TXT_FZA "FZA"   /* unused! */
+#define SSL_TXT_kFZA        "kFZA" /* unused! */
+#define SSL_TXT_aFZA        "aFZA" /* unused! */
+#define SSL_TXT_eFZA        "eFZA" /* unused! */
+#define SSL_TXT_FZA         "FZA"   /* unused! */
 
-#define SSL_TXT_aNULL "aNULL"
-#define SSL_TXT_eNULL "eNULL"
-#define SSL_TXT_NULL "NULL"
+#define SSL_TXT_aNULL       "aNULL"
+#define SSL_TXT_eNULL       "eNULL"
+#define SSL_TXT_NULL        "NULL"
 
-#define SSL_TXT_kRSA "kRSA"
-#define SSL_TXT_kDHr "kDHr" /* no such ciphersuites supported! */
-#define SSL_TXT_kDHd "kDHd" /* no such ciphersuites supported! */
-#define SSL_TXT_kDH "kDH"   /* no such ciphersuites supported! */
-#define SSL_TXT_kEDH "kEDH"
-#define SSL_TXT_kKRB5 "kKRB5"
-#define SSL_TXT_kECDHr "kECDHr"
-#define SSL_TXT_kECDHe "kECDHe"
-#define SSL_TXT_kECDH "kECDH"
-#define SSL_TXT_kEECDH "kEECDH"
-#define SSL_TXT_kPSK "kPSK"
-#define SSL_TXT_kGOST "kGOST"
-#define SSL_TXT_kSRP "kSRP"
+#define SSL_TXT_kRSA        "kRSA"
+#define SSL_TXT_kDHr        "kDHr"  /* no such ciphersuites supported! */
+#define SSL_TXT_kDHd        "kDHd"  /* no such ciphersuites supported! */
+#define SSL_TXT_kDH         "kDH"   /* no such ciphersuites supported! */
+#define SSL_TXT_kEDH        "kEDH"
+#define SSL_TXT_kKRB5       "kKRB5"
+#define SSL_TXT_kECDHr      "kECDHr"
+#define SSL_TXT_kECDHe      "kECDHe"
+#define SSL_TXT_kECDH       "kECDH"
+#define SSL_TXT_kEECDH      "kEECDH"
+#define SSL_TXT_kPSK        "kPSK"  /* no such ciphersuites supported! */
+#define SSL_TXT_kGOST       "kGOST"
+#define SSL_TXT_kSRP        "kSRP"  /* no such ciphersuites supported! */
 
-#define SSL_TXT_aRSA "aRSA"
-#define SSL_TXT_aDSS "aDSS"
-#define SSL_TXT_aDH "aDH" /* no such ciphersuites supported! */
-#define SSL_TXT_aECDH "aECDH"
-#define SSL_TXT_aKRB5 "aKRB5"
-#define SSL_TXT_aECDSA "aECDSA"
-#define SSL_TXT_aPSK "aPSK"
-#define SSL_TXT_aGOST94 "aGOST94"
-#define SSL_TXT_aGOST01 "aGOST01"
-#define SSL_TXT_aGOST "aGOST"
+#define SSL_TXT_aRSA        "aRSA"
+#define SSL_TXT_aDSS        "aDSS"
+#define SSL_TXT_aDH         "aDH" /* no such ciphersuites supported! */
+#define SSL_TXT_aECDH       "aECDH"
+#define SSL_TXT_aKRB5       "aKRB5"
+#define SSL_TXT_aECDSA      "aECDSA"
+#define SSL_TXT_aPSK        "aPSK"
+#define SSL_TXT_aGOST94     "aGOST94"
+#define SSL_TXT_aGOST01     "aGOST01"
+#define SSL_TXT_aGOST       "aGOST"
 
-#define SSL_TXT_DSS "DSS"
-#define SSL_TXT_DH "DH"
-#define SSL_TXT_EDH "EDH" /* same as "kEDH:-ADH" */
-#define SSL_TXT_ADH "ADH"
-#define SSL_TXT_RSA "RSA"
-#define SSL_TXT_ECDH "ECDH"
-#define SSL_TXT_EECDH "EECDH" /* same as "kEECDH:-AECDH" */
-#define SSL_TXT_AECDH "AECDH"
-#define SSL_TXT_ECDSA "ECDSA"
-#define SSL_TXT_KRB5 "KRB5"
-#define SSL_TXT_PSK "PSK"
-#define SSL_TXT_SRP "SRP"
+#define SSL_TXT_DSS         "DSS"
+#define SSL_TXT_DH          "DH"
+#define SSL_TXT_EDH         "EDH" /* same as "kEDH:-ADH" */
+#define SSL_TXT_ADH         "ADH"
+#define SSL_TXT_RSA         "RSA"
+#define SSL_TXT_ECDH        "ECDH"
+#define SSL_TXT_EECDH       "EECDH" /* same as "kEECDH:-AECDH" */
+#define SSL_TXT_AECDH       "AECDH"
+#define SSL_TXT_ECDSA       "ECDSA"
+#define SSL_TXT_KRB5        "KRB5"
+#define SSL_TXT_PSK         "PSK"
+#define SSL_TXT_SRP         "SRP"
 
-#define SSL_TXT_DES "DES"
-#define SSL_TXT_3DES "3DES"
-#define SSL_TXT_RC4 "RC4"
-#define SSL_TXT_RC2 "RC2"
-#define SSL_TXT_IDEA "IDEA"
-#define SSL_TXT_SEED "SEED"
-#define SSL_TXT_AES128 "AES128"
-#define SSL_TXT_AES256 "AES256"
-#define SSL_TXT_AES "AES"
-#define SSL_TXT_AES_GCM "AESGCM"
+#define SSL_TXT_DES         "DES"
+#define SSL_TXT_3DES        "3DES"
+#define SSL_TXT_RC4         "RC4"
+#define SSL_TXT_RC2         "RC2"
+#define SSL_TXT_IDEA        "IDEA"
+#define SSL_TXT_SEED        "SEED"
+#define SSL_TXT_AES128      "AES128"
+#define SSL_TXT_AES256      "AES256"
+#define SSL_TXT_AES         "AES"
+#define SSL_TXT_AES_GCM     "AESGCM"
 #define SSL_TXT_CAMELLIA128 "CAMELLIA128"
 #define SSL_TXT_CAMELLIA256 "CAMELLIA256"
-#define SSL_TXT_CAMELLIA "CAMELLIA"
-#define SSL_TXT_CHACHA20 "CHACHA20"
+#define SSL_TXT_CAMELLIA    "CAMELLIA"
+#define SSL_TXT_CHACHA20    "CHACHA20"
 
-#define SSL_TXT_MD5 "MD5"
-#define SSL_TXT_SHA1 "SHA1"
-#define SSL_TXT_SHA "SHA" /* same as "SHA1" */
-#define SSL_TXT_GOST94 "GOST94"
-#define SSL_TXT_GOST89MAC "GOST89MAC"
-#define SSL_TXT_SHA256 "SHA256"
-#define SSL_TXT_SHA384 "SHA384"
+#define SSL_TXT_MD5         "MD5"
+#define SSL_TXT_SHA1        "SHA1"
+#define SSL_TXT_SHA         "SHA" /* same as "SHA1" */
+#define SSL_TXT_GOST94      "GOST94"
+#define SSL_TXT_GOST89MAC   "GOST89MAC"
+#define SSL_TXT_SHA256      "SHA256"
+#define SSL_TXT_SHA384      "SHA384"
 
-#define SSL_TXT_SSLV2 "SSLv2"
-#define SSL_TXT_SSLV3 "SSLv3"
-#define SSL_TXT_TLSV1 "TLSv1"
-#define SSL_TXT_TLSV1_1 "TLSv1.1"
-#define SSL_TXT_TLSV1_2 "TLSv1.2"
-#define SSL_TXT_DTLS1 "DTLSv1"
-#define SSL_TXT_DTLS1_BAD "DTLSv1-bad"
-#define SSL_TXT_DTLS1_2 "DTLSv1.2"
+#define SSL_TXT_SSLV2       "SSLv2"
+#define SSL_TXT_SSLV3       "SSLv3"
+#define SSL_TXT_TLSV1       "TLSv1"
+#define SSL_TXT_TLSV1_1     "TLSv1.1"
+#define SSL_TXT_TLSV1_2     "TLSv1.2"
+#define SSL_TXT_DTLS1       "DTLSv1"
+#define SSL_TXT_DTLS1_BAD   "DTLSv1-bad"
+#define SSL_TXT_DTLS1_2     "DTLSv1.2"
 
-#define SSL_TXT_EXP "EXP"
-#define SSL_TXT_EXPORT "EXPORT"
+#define SSL_TXT_EXP     "EXP"
+#define SSL_TXT_EXPORT  "EXPORT"
 
-#define SSL_TXT_ALL "ALL"
+#define SSL_TXT_ALL     "ALL"
 
 /*
  * COMPLEMENTOF* definitions. These identifiers are used to (de-select)
@@ -207,9 +207,11 @@ extern "C" {
 #define SSL_FILETYPE_ASN1 X509_FILETYPE_ASN1
 #define SSL_FILETYPE_PEM X509_FILETYPE_PEM
 
-/* This is needed to stop compilers complaining about the
+/*
+ * This is needed to stop compilers complaining about the
  * 'struct ssl_st *' function parameters used to prototype callbacks
- * in SSL_CTX. */
+ * in SSL_CTX.
+ */
 typedef struct ssl_st *ssl_crock_st;
 typedef struct tls_session_ticket_ext_st TLS_SESSION_TICKET_EXT;
 typedef struct ssl_method_st SSL_METHOD;
@@ -396,9 +398,9 @@ struct ssl_session_st {
 #endif
 
 /* Allow initial connection to servers that don't support RI */
-#define SSL_OP_LEGACY_SERVER_CONNECT 0x00000004L
-#define SSL_OP_TLSEXT_PADDING 0x00000010L
-#define SSL_OP_MICROSOFT_BIG_SSLV3_BUFFER 0x00000020L
+#define SSL_OP_LEGACY_SERVER_CONNECT        0x00000004L
+#define SSL_OP_TLSEXT_PADDING               0x00000010L
+#define SSL_OP_MICROSOFT_BIG_SSLV3_BUFFER   0x00000020L
 
 
 /*
@@ -408,44 +410,44 @@ struct ssl_session_st {
  * implementations cannot handle it at all, which is why we include it in
  * SSL_OP_ALL.
  */
-#define SSL_OP_DONT_INSERT_EMPTY_FRAGMENTS 0x00000800L
+#define SSL_OP_DONT_INSERT_EMPTY_FRAGMENTS  0x00000800L
 
 /* DTLS options */
-#define SSL_OP_NO_QUERY_MTU 0x00001000L
+#define SSL_OP_NO_QUERY_MTU                 0x00001000L
 /* Turn on Cookie Exchange (on relevant for servers) */
-#define SSL_OP_COOKIE_EXCHANGE 0x00002000L
+#define SSL_OP_COOKIE_EXCHANGE              0x00002000L
 /* Don't use RFC4507 ticket extension */
-#define SSL_OP_NO_TICKET 0x00004000L
+#define SSL_OP_NO_TICKET                    0x00004000L
 
 /* As server, disallow session resumption on renegotiation */
 #define SSL_OP_NO_SESSION_RESUMPTION_ON_RENEGOTIATION 0x00010000L
 /* Don't use compression even if supported */
-#define SSL_OP_NO_COMPRESSION 0x00020000L
+#define SSL_OP_NO_COMPRESSION               0x00020000L
 
 /* If set, always create a new key when using tmp_ecdh parameters */
-#define SSL_OP_SINGLE_ECDH_USE 0x00080000L
+#define SSL_OP_SINGLE_ECDH_USE              0x00080000L
 /* Set on servers to choose the cipher according to the server's
  * preferences */
-#define SSL_OP_CIPHER_SERVER_PREFERENCE 0x00400000L
+#define SSL_OP_CIPHER_SERVER_PREFERENCE     0x00400000L
 /* If set, a server will allow a client to issue a SSLv3.0 version number
  * as latest version supported in the premaster secret, even when TLSv1.0
  * (version 3.1) was announced in the client hello. Normally this is
  * forbidden to prevent version rollback attacks. */
-#define SSL_OP_TLS_ROLLBACK_BUG 0x00800000L
+#define SSL_OP_TLS_ROLLBACK_BUG             0x00800000L
 
-#define SSL_OP_NO_SSLv2 0x01000000L
-#define SSL_OP_NO_SSLv3 0x02000000L
-#define SSL_OP_NO_TLSv1 0x04000000L
-#define SSL_OP_NO_TLSv1_2 0x08000000L
-#define SSL_OP_NO_TLSv1_1 0x10000000L
+#define SSL_OP_NO_SSLv2                     0x01000000L
+#define SSL_OP_NO_SSLv3                     0x02000000L
+#define SSL_OP_NO_TLSv1                     0x04000000L
+#define SSL_OP_NO_TLSv1_2                   0x08000000L
+#define SSL_OP_NO_TLSv1_1                   0x10000000L
 
-#define SSL_OP_NO_DTLSv1 0x04000000L
-#define SSL_OP_NO_DTLSv1_2 0x08000000L
+#define SSL_OP_NO_DTLSv1                    0x04000000L
+#define SSL_OP_NO_DTLSv1_2                  0x08000000L
 
 #define SSL_OP_NO_SSL_MASK (SSL_OP_NO_SSLv2 | SSL_OP_NO_SSLv3| \
     SSL_OP_NO_TLSv1 | SSL_OP_NO_TLSv1_1 | SSL_OP_NO_TLSv1_2)
 
-#define SSL_OP_CRYPTOPRO_TLSEXT_BUG 0x80000000L
+#define SSL_OP_CRYPTOPRO_TLSEXT_BUG         0x80000000L
 
 /* SSL_OP_ALL: various bug workarounds that should be rather harmless. */
 #define SSL_OP_ALL                                          \
@@ -453,68 +455,68 @@ struct ssl_session_st {
      SSL_OP_MICROSOFT_BIG_SSLV3_BUFFER | SSL_OP_CRYPTOPRO_TLSEXT_BUG)
 
 /* Obsolete flags kept for compatibility. */
-#define SSL_OP_ALLOW_UNSAFE_LEGACY_RENEGOTIATION 0x0
-#define SSL_OP_EPHEMERAL_RSA 0x0
-#define SSL_OP_MICROSOFT_SESS_ID_BUG 0x0
-#define SSL_OP_MSIE_SSLV2_RSA_PADDING 0x0
-#define SSL_OP_NETSCAPE_CA_DN_BUG 0x0
-#define SSL_OP_NETSCAPE_CHALLENGE_BUG 0x0
-#define SSL_OP_NETSCAPE_DEMO_CIPHER_CHANGE_BUG 0x0
-#define SSL_OP_NETSCAPE_REUSE_CIPHER_CHANGE_BUG 0x0
-#define SSL_OP_PKCS1_CHECK_1 0x0
-#define SSL_OP_PKCS1_CHECK_2 0x0
-#define SSL_OP_SINGLE_DH_USE 0x0
-#define SSL_OP_SSLEAY_080_CLIENT_DH_BUG 0x0
-#define SSL_OP_SSLREF2_REUSE_CERT_TYPE_BUG 0x0
-#define SSL_OP_TLS_BLOCK_PADDING_BUG 0x0
-#define SSL_OP_TLS_D5_BUG 0x0
-#define SSL_OP_SAFARI_ECDHE_ECDSA_BUG 0x0
+#define SSL_OP_ALLOW_UNSAFE_LEGACY_RENEGOTIATION    0x0
+#define SSL_OP_EPHEMERAL_RSA                        0x0
+#define SSL_OP_MICROSOFT_SESS_ID_BUG                0x0
+#define SSL_OP_MSIE_SSLV2_RSA_PADDING               0x0
+#define SSL_OP_NETSCAPE_CA_DN_BUG                   0x0
+#define SSL_OP_NETSCAPE_CHALLENGE_BUG               0x0
+#define SSL_OP_NETSCAPE_DEMO_CIPHER_CHANGE_BUG      0x0
+#define SSL_OP_NETSCAPE_REUSE_CIPHER_CHANGE_BUG     0x0
+#define SSL_OP_PKCS1_CHECK_1                        0x0
+#define SSL_OP_PKCS1_CHECK_2                        0x0
+#define SSL_OP_SINGLE_DH_USE                        0x0
+#define SSL_OP_SSLEAY_080_CLIENT_DH_BUG             0x0
+#define SSL_OP_SSLREF2_REUSE_CERT_TYPE_BUG          0x0
+#define SSL_OP_TLS_BLOCK_PADDING_BUG                0x0
+#define SSL_OP_TLS_D5_BUG                           0x0
+#define SSL_OP_SAFARI_ECDHE_ECDSA_BUG               0x0
 
 /*
  * Allow SSL_write(..., n) to return r with 0 < r < n (i.e. report success
  * when just a single record has been written):
  */
-#define SSL_MODE_ENABLE_PARTIAL_WRITE 0x00000001L
+#define SSL_MODE_ENABLE_PARTIAL_WRITE           0x00000001L
 /*
  * Make it possible to retry SSL_write() with changed buffer location (buffer
  * contents must stay the same!); this is not the default to avoid the
  * misconception that non-blocking SSL_write() behaves like non-blocking
  * write():
  */
-#define SSL_MODE_ACCEPT_MOVING_WRITE_BUFFER 0x00000002L
+#define SSL_MODE_ACCEPT_MOVING_WRITE_BUFFER     0x00000002L
 /*
  * Never bother the application with retries if the transport is blocking:
  */
-#define SSL_MODE_AUTO_RETRY 0x00000004L
+#define SSL_MODE_AUTO_RETRY                     0x00000004L
 /* Don't attempt to automatically build certificate chain */
-#define SSL_MODE_NO_AUTO_CHAIN 0x00000008L
+#define SSL_MODE_NO_AUTO_CHAIN                  0x00000008L
 /*
  * Save RAM by releasing read and write buffers when they're empty. (SSL3 and
  * TLS only.) "Released" buffers are put onto a free-list in the context or
  * just freed (depending on the context's setting for freelist_max_len).
  */
-#define SSL_MODE_RELEASE_BUFFERS 0x00000010L
+#define SSL_MODE_RELEASE_BUFFERS                0x00000010L
 /*
  * Send the current time in the Random fields of the ClientHello and
  * ServerHello records for compatibility with hypothetical implementations
  * that require it.
  */
-#define SSL_MODE_SEND_CLIENTHELLO_TIME 0x00000020L
-#define SSL_MODE_SEND_SERVERHELLO_TIME 0x00000040L
+#define SSL_MODE_SEND_CLIENTHELLO_TIME          0x00000020L
+#define SSL_MODE_SEND_SERVERHELLO_TIME          0x00000040L
 
 /* Cert related flags */
 /*
  * Many implementations ignore some aspects of the TLS standards such as
  * enforcing certificate chain algorithms. When this is set we enforce them.
  */
-#define SSL_CERT_FLAG_TLS_STRICT 0x00000001L
+#define SSL_CERT_FLAG_TLS_STRICT                0x00000001L
 
 /* Suite B modes, takes same values as certificate verify flags */
-#define SSL_CERT_FLAG_SUITEB_128_LOS_ONLY 0x10000
+#define SSL_CERT_FLAG_SUITEB_128_LOS_ONLY   0x10000
 /* Suite B 192 bit only mode */
-#define SSL_CERT_FLAG_SUITEB_192_LOS 0x20000
+#define SSL_CERT_FLAG_SUITEB_192_LOS        0x20000
 /* Suite B 128 bit mode allowing 192 bit algorithms */
-#define SSL_CERT_FLAG_SUITEB_128_LOS 0x30000
+#define SSL_CERT_FLAG_SUITEB_128_LOS        0x30000
 
 /* Flags for building certificate chains */
 /* Treat any existing certificates as untrusted CAs */
@@ -530,25 +532,25 @@ struct ssl_session_st {
 
 /* Flags returned by SSL_check_chain */
 /* Certificate can be used with this session */
-#define CERT_PKEY_VALID 0x1
+#define CERT_PKEY_VALID             0x1
 /* Certificate can also be used for signing */
-#define CERT_PKEY_SIGN 0x2
+#define CERT_PKEY_SIGN              0x2
 /* EE certificate signing algorithm OK */
-#define CERT_PKEY_EE_SIGNATURE 0x10
+#define CERT_PKEY_EE_SIGNATURE      0x10
 /* CA signature algorithms OK */
-#define CERT_PKEY_CA_SIGNATURE 0x20
+#define CERT_PKEY_CA_SIGNATURE      0x20
 /* EE certificate parameters OK */
-#define CERT_PKEY_EE_PARAM 0x40
+#define CERT_PKEY_EE_PARAM          0x40
 /* CA certificate parameters OK */
-#define CERT_PKEY_CA_PARAM 0x80
+#define CERT_PKEY_CA_PARAM          0x80
 /* Signing explicitly allowed as opposed to SHA1 fallback */
-#define CERT_PKEY_EXPLICIT_SIGN 0x100
+#define CERT_PKEY_EXPLICIT_SIGN     0x100
 /* Client CA issuer names match (always set for server cert) */
-#define CERT_PKEY_ISSUER_NAME 0x200
+#define CERT_PKEY_ISSUER_NAME       0x200
 /* Cert type matches client types (always set for server cert) */
-#define CERT_PKEY_CERT_TYPE 0x400
+#define CERT_PKEY_CERT_TYPE         0x400
 /* Cert chain suitable to Suite B */
-#define CERT_PKEY_SUITEB 0x800
+#define CERT_PKEY_SUITEB            0x800
 
 #define SSL_CONF_FLAG_CMDLINE       0x1
 #define SSL_CONF_FLAG_FILE          0x2
@@ -614,14 +616,12 @@ struct ssl_session_st {
 #define SSL_clear_cert_flags(s, op) \
     SSL_ctrl((s), SSL_CTRL_CLEAR_CERT_FLAGS, (op), NULL)
 
-void SSL_CTX_set_msg_callback(SSL_CTX *ctx,
-                              void (*cb)(int write_p, int version,
-                                         int content_type, const void *buf,
-                                         size_t len, SSL *ssl, void *arg));
-void SSL_set_msg_callback(SSL *ssl,
-                          void (*cb)(int write_p, int version, int content_type,
-                                     const void *buf, size_t len, SSL *ssl,
-                                     void *arg));
+VIGORTLS_EXPORT void SSL_CTX_set_msg_callback(
+    SSL_CTX *ctx, void (*cb)(int write_p, int version, int content_type,
+                             const void *buf, size_t len, SSL *ssl, void *arg));
+VIGORTLS_EXPORT void SSL_set_msg_callback(
+    SSL *ssl, void (*cb)(int write_p, int version, int content_type,
+                         const void *buf, size_t len, SSL *ssl, void *arg));
 #define SSL_CTX_set_msg_callback_arg(ctx, arg) \
     SSL_CTX_ctrl((ctx), SSL_CTRL_SET_MSG_CALLBACK_ARG, 0, (arg))
 #define SSL_set_msg_callback_arg(ssl, arg) \
@@ -875,14 +875,14 @@ struct ssl_ctx_st {
 
 #endif
 
-#define SSL_SESS_CACHE_OFF 0x0000
-#define SSL_SESS_CACHE_CLIENT 0x0001
-#define SSL_SESS_CACHE_SERVER 0x0002
-#define SSL_SESS_CACHE_BOTH (SSL_SESS_CACHE_CLIENT | SSL_SESS_CACHE_SERVER)
-#define SSL_SESS_CACHE_NO_AUTO_CLEAR 0x0080
+#define SSL_SESS_CACHE_OFF                  0x0000
+#define SSL_SESS_CACHE_CLIENT               0x0001
+#define SSL_SESS_CACHE_SERVER               0x0002
+#define SSL_SESS_CACHE_BOTH                 (SSL_SESS_CACHE_CLIENT | SSL_SESS_CACHE_SERVER)
+#define SSL_SESS_CACHE_NO_AUTO_CLEAR        0x0080
 /* enough comments already ... see SSL_CTX_set_session_cache_mode(3) */
-#define SSL_SESS_CACHE_NO_INTERNAL_LOOKUP 0x0100
-#define SSL_SESS_CACHE_NO_INTERNAL_STORE 0x0200
+#define SSL_SESS_CACHE_NO_INTERNAL_LOOKUP   0x0100
+#define SSL_SESS_CACHE_NO_INTERNAL_STORE    0x0200
 #define SSL_SESS_CACHE_NO_INTERNAL \
     (SSL_SESS_CACHE_NO_INTERNAL_LOOKUP | SSL_SESS_CACHE_NO_INTERNAL_STORE)
 
@@ -911,101 +911,102 @@ LHASH_OF(SSL_SESSION) *SSL_CTX_sessions(SSL_CTX *ctx);
 #define SSL_CTX_sess_cache_full(ctx) \
     SSL_CTX_ctrl(ctx, SSL_CTRL_SESS_CACHE_FULL, 0, NULL)
 
-void SSL_CTX_sess_set_new_cb(SSL_CTX *ctx,
-                             int (*new_session_cb)(struct ssl_st *ssl,
-                                                   SSL_SESSION *sess));
-int (*SSL_CTX_sess_get_new_cb(SSL_CTX *ctx))(struct ssl_st *ssl,
-                                             SSL_SESSION *sess);
-void SSL_CTX_sess_set_remove_cb(SSL_CTX *ctx,
+VIGORTLS_EXPORT void SSL_CTX_sess_set_new_cb(
+    SSL_CTX *ctx, int (*new_session_cb)(struct ssl_st *ssl, SSL_SESSION *sess));
+VIGORTLS_EXPORT int (*SSL_CTX_sess_get_new_cb(SSL_CTX *ctx))(struct ssl_st *ssl,
+                                                             SSL_SESSION *sess);
+VIGORTLS_EXPORT void SSL_CTX_sess_set_remove_cb(
+    SSL_CTX *ctx,
     void (*remove_session_cb)(struct ssl_ctx_st *ctx, SSL_SESSION *sess));
-void (*SSL_CTX_sess_get_remove_cb(SSL_CTX *ctx))(struct ssl_ctx_st *ctx,
-                                                 SSL_SESSION *sess);
-void SSL_CTX_sess_set_get_cb(SSL_CTX *ctx,
-                             SSL_SESSION *(*get_session_cb)(struct ssl_st *ssl,
-                                                            uint8_t *data,
-                                                            int len,
-                                                            int *copy));
-SSL_SESSION *(*SSL_CTX_sess_get_get_cb(SSL_CTX *ctx))(struct ssl_st *ssl,
-                                                      uint8_t *Data, int len,
-                                                      int *copy);
-void SSL_CTX_set_info_callback(SSL_CTX *ctx,
-                               void (*cb)(const SSL *ssl, int type, int val));
-void (*SSL_CTX_get_info_callback(SSL_CTX *ctx))(const SSL *ssl, int type,
-                                                int val);
-void SSL_CTX_set_client_cert_cb(SSL_CTX *ctx,
-                                int (*client_cert_cb)(SSL *ssl, X509 **x509,
-                                                      EVP_PKEY **pkey));
-int (*SSL_CTX_get_client_cert_cb(SSL_CTX *ctx))(SSL *ssl, X509 **x509,
-                                                EVP_PKEY **pkey);
+VIGORTLS_EXPORT void (*SSL_CTX_sess_get_remove_cb(SSL_CTX *ctx))(
+    struct ssl_ctx_st *ctx, SSL_SESSION *sess);
+VIGORTLS_EXPORT void SSL_CTX_sess_set_get_cb(
+    SSL_CTX *ctx,
+    SSL_SESSION *(*get_session_cb)(struct ssl_st *ssl, uint8_t *data, int len,
+                                   int *copy));
+VIGORTLS_EXPORT SSL_SESSION *(*SSL_CTX_sess_get_get_cb(SSL_CTX *ctx))(
+    struct ssl_st *ssl, uint8_t *Data, int len, int *copy);
+VIGORTLS_EXPORT void SSL_CTX_set_info_callback(SSL_CTX *ctx,
+                                               void (*cb)(const SSL *ssl,
+                                                          int type, int val));
+VIGORTLS_EXPORT void (*SSL_CTX_get_info_callback(SSL_CTX *ctx))(const SSL *ssl,
+                                                                int type,
+                                                                int val);
+VIGORTLS_EXPORT void SSL_CTX_set_client_cert_cb(
+    SSL_CTX *ctx,
+    int (*client_cert_cb)(SSL *ssl, X509 **x509, EVP_PKEY **pkey));
+VIGORTLS_EXPORT int (*SSL_CTX_get_client_cert_cb(SSL_CTX *ctx))(
+    SSL *ssl, X509 **x509, EVP_PKEY **pkey);
 #ifndef OPENSSL_NO_ENGINE
-int SSL_CTX_set_client_cert_engine(SSL_CTX *ctx, ENGINE *e);
+VIGORTLS_EXPORT int SSL_CTX_set_client_cert_engine(SSL_CTX *ctx, ENGINE *e);
 #endif
-void SSL_CTX_set_cookie_generate_cb(
+VIGORTLS_EXPORT void SSL_CTX_set_cookie_generate_cb(
     SSL_CTX *ctx, int (*app_gen_cookie_cb)(SSL *ssl, uint8_t *cookie,
                                            unsigned int *cookie_len));
-void SSL_CTX_set_cookie_verify_cb(
+VIGORTLS_EXPORT void SSL_CTX_set_cookie_verify_cb(
     SSL_CTX *ctx, int (*app_verify_cookie_cb)(SSL *ssl, uint8_t *cookie,
                                               unsigned int cookie_len));
-void SSL_CTX_set_next_protos_advertised_cb(
+VIGORTLS_EXPORT void SSL_CTX_set_next_protos_advertised_cb(
     SSL_CTX *s,
     int (*cb)(SSL *ssl, const uint8_t **out, unsigned int *outlen, void *arg),
     void *arg);
-void SSL_CTX_set_next_proto_select_cb(
+VIGORTLS_EXPORT void SSL_CTX_set_next_proto_select_cb(
     SSL_CTX *s, int (*cb)(SSL *ssl, uint8_t **out, uint8_t *outlen,
                           const uint8_t *in, unsigned int inlen, void *arg),
     void *arg);
 
-int SSL_select_next_proto(uint8_t **out, uint8_t *outlen, const uint8_t *in,
-                          unsigned int inlen, const uint8_t *client,
-                          unsigned int client_len);
-void SSL_get0_next_proto_negotiated(const SSL *s, const uint8_t **data,
-                                    unsigned int *len);
+VIGORTLS_EXPORT int SSL_select_next_proto(uint8_t **out, uint8_t *outlen,
+                                          const uint8_t *in, unsigned int inlen,
+                                          const uint8_t *client,
+                                          unsigned int client_len);
+VIGORTLS_EXPORT void SSL_get0_next_proto_negotiated(const SSL *s,
+                                                    const uint8_t **data,
+                                                    unsigned int *len);
 
 #define OPENSSL_NPN_UNSUPPORTED 0
-#define OPENSSL_NPN_NEGOTIATED 1
-#define OPENSSL_NPN_NO_OVERLAP 2
+#define OPENSSL_NPN_NEGOTIATED  1
+#define OPENSSL_NPN_NO_OVERLAP  2
 
-int SSL_CTX_set_alpn_protos(SSL_CTX *ctx, const uint8_t *protos,
-                            unsigned int protos_len);
-int SSL_set_alpn_protos(SSL *ssl, const uint8_t *protos,
-                        unsigned int protos_len);
-void SSL_CTX_set_alpn_select_cb(SSL_CTX *ctx,
-                                int (*cb)(SSL *ssl, const uint8_t **out,
-                                          uint8_t *outlen, const uint8_t *in,
-                                          unsigned int inlen, void *arg),
-                                void *arg);
-void SSL_get0_alpn_selected(const SSL *ssl, const uint8_t **data,
-                            unsigned int *len);
+VIGORTLS_EXPORT int SSL_CTX_set_alpn_protos(SSL_CTX *ctx, const uint8_t *protos,
+                                            unsigned int protos_len);
+VIGORTLS_EXPORT int SSL_set_alpn_protos(SSL *ssl, const uint8_t *protos,
+                                        unsigned int protos_len);
+VIGORTLS_EXPORT void SSL_CTX_set_alpn_select_cb(
+    SSL_CTX *ctx, int (*cb)(SSL *ssl, const uint8_t **out, uint8_t *outlen,
+                            const uint8_t *in, unsigned int inlen, void *arg),
+    void *arg);
+VIGORTLS_EXPORT void
+SSL_get0_alpn_selected(const SSL *ssl, const uint8_t **data, unsigned int *len);
 
 /* Register callbacks to handle custom TLS Extensions for client or server. */
 
-int SSL_CTX_add_client_custom_ext(SSL_CTX *ctx, unsigned int ext_type,
-                                  custom_ext_add_cb add_cb,
-                                  custom_ext_free_cb free_cb, void *add_arg,
-                                  custom_ext_parse_cb parse_cb,
-                                  void *parse_arg);
+VIGORTLS_EXPORT int
+SSL_CTX_add_client_custom_ext(SSL_CTX *ctx, unsigned int ext_type,
+                              custom_ext_add_cb add_cb,
+                              custom_ext_free_cb free_cb, void *add_arg,
+                              custom_ext_parse_cb parse_cb, void *parse_arg);
 
-int SSL_CTX_add_server_custom_ext(SSL_CTX *ctx, unsigned int ext_type,
-                                  custom_ext_add_cb add_cb,
-                                  custom_ext_free_cb free_cb, void *add_arg,
-                                  custom_ext_parse_cb parse_cb,
-                                  void *parse_arg);
+VIGORTLS_EXPORT int
+SSL_CTX_add_server_custom_ext(SSL_CTX *ctx, unsigned int ext_type,
+                              custom_ext_add_cb add_cb,
+                              custom_ext_free_cb free_cb, void *add_arg,
+                              custom_ext_parse_cb parse_cb, void *parse_arg);
 
-int SSL_extension_supported(unsigned int ext_type);
+VIGORTLS_EXPORT int SSL_extension_supported(unsigned int ext_type);
 
-#define SSL_NOTHING 1
-#define SSL_WRITING 2
-#define SSL_READING 3
+#define SSL_NOTHING     1
+#define SSL_WRITING     2
+#define SSL_READING     3
 #define SSL_X509_LOOKUP 4
 
 /* These will only be used when doing non-blocking IO */
-#define SSL_want_nothing(s) (SSL_want(s) == SSL_NOTHING)
-#define SSL_want_read(s) (SSL_want(s) == SSL_READING)
-#define SSL_want_write(s) (SSL_want(s) == SSL_WRITING)
+#define SSL_want_nothing(s)     (SSL_want(s) == SSL_NOTHING)
+#define SSL_want_read(s)        (SSL_want(s) == SSL_READING)
+#define SSL_want_write(s)       (SSL_want(s) == SSL_WRITING)
 #define SSL_want_x509_lookup(s) (SSL_want(s) == SSL_X509_LOOKUP)
 
-#define SSL_MAC_FLAG_READ_MAC_STREAM 1
-#define SSL_MAC_FLAG_WRITE_MAC_STREAM 2
+#define SSL_MAC_FLAG_READ_MAC_STREAM    1
+#define SSL_MAC_FLAG_WRITE_MAC_STREAM   2
 
 #ifndef OPENSSL_NO_SSL_INTERN
 
@@ -1286,7 +1287,7 @@ struct ssl_st {
 #include <openssl/ssl2.h>
 #include <openssl/ssl23.h>
 #include <openssl/ssl3.h>
-#include <openssl/tls1.h> /* This is mostly sslv3 with a few tweaks */
+#include <openssl/tls1.h>  /* This is mostly sslv3 with a few tweaks */
 #include <openssl/dtls1.h> /* Datagram TLS */
 #include <openssl/srtp.h>  /* Support for the use_srtp extension */
 
@@ -1312,44 +1313,44 @@ extern "C" {
  * out where you were when the connection failed
  */
 
-#define SSL_ST_CONNECT 0x1000
-#define SSL_ST_ACCEPT 0x2000
-#define SSL_ST_MASK 0x0FFF
-#define SSL_ST_INIT (SSL_ST_CONNECT | SSL_ST_ACCEPT)
-#define SSL_ST_BEFORE 0x4000
-#define SSL_ST_OK 0x03
-#define SSL_ST_RENEGOTIATE (0x04 | SSL_ST_INIT)
-#define SSL_ST_ERR 0x05
+#define SSL_ST_CONNECT      0x1000
+#define SSL_ST_ACCEPT       0x2000
+#define SSL_ST_MASK         0x0FFF
+#define SSL_ST_INIT         (SSL_ST_CONNECT | SSL_ST_ACCEPT)
+#define SSL_ST_BEFORE       0x4000
+#define SSL_ST_OK           0x03
+#define SSL_ST_RENEGOTIATE  (0x04 | SSL_ST_INIT)
+#define SSL_ST_ERR          0x05
 
-#define SSL_CB_LOOP 0x01
-#define SSL_CB_EXIT 0x02
-#define SSL_CB_READ 0x04
-#define SSL_CB_WRITE 0x08
-#define SSL_CB_ALERT 0x4000 /* used in callback */
-#define SSL_CB_READ_ALERT (SSL_CB_ALERT | SSL_CB_READ)
-#define SSL_CB_WRITE_ALERT (SSL_CB_ALERT | SSL_CB_WRITE)
-#define SSL_CB_ACCEPT_LOOP (SSL_ST_ACCEPT | SSL_CB_LOOP)
-#define SSL_CB_ACCEPT_EXIT (SSL_ST_ACCEPT | SSL_CB_EXIT)
-#define SSL_CB_CONNECT_LOOP (SSL_ST_CONNECT | SSL_CB_LOOP)
-#define SSL_CB_CONNECT_EXIT (SSL_ST_CONNECT | SSL_CB_EXIT)
-#define SSL_CB_HANDSHAKE_START 0x10
-#define SSL_CB_HANDSHAKE_DONE 0x20
+#define SSL_CB_LOOP             0x01
+#define SSL_CB_EXIT             0x02
+#define SSL_CB_READ             0x04
+#define SSL_CB_WRITE            0x08
+#define SSL_CB_ALERT            0x4000 /* used in callback */
+#define SSL_CB_READ_ALERT       (SSL_CB_ALERT | SSL_CB_READ)
+#define SSL_CB_WRITE_ALERT      (SSL_CB_ALERT | SSL_CB_WRITE)
+#define SSL_CB_ACCEPT_LOOP      (SSL_ST_ACCEPT | SSL_CB_LOOP)
+#define SSL_CB_ACCEPT_EXIT      (SSL_ST_ACCEPT | SSL_CB_EXIT)
+#define SSL_CB_CONNECT_LOOP     (SSL_ST_CONNECT | SSL_CB_LOOP)
+#define SSL_CB_CONNECT_EXIT     (SSL_ST_CONNECT | SSL_CB_EXIT)
+#define SSL_CB_HANDSHAKE_START  0x10
+#define SSL_CB_HANDSHAKE_DONE   0x20
 
 /* Is the SSL_connection established? */
-#define SSL_get_state(a) SSL_state(a)
+#define SSL_get_state(a)        SSL_state(a)
 #define SSL_is_init_finished(a) (SSL_state(a) == SSL_ST_OK)
-#define SSL_in_init(a) (SSL_state(a) & SSL_ST_INIT)
-#define SSL_in_before(a) (SSL_state(a) & SSL_ST_BEFORE)
-#define SSL_in_connect_init(a) (SSL_state(a) & SSL_ST_CONNECT)
-#define SSL_in_accept_init(a) (SSL_state(a) & SSL_ST_ACCEPT)
+#define SSL_in_init(a)          (SSL_state(a) & SSL_ST_INIT)
+#define SSL_in_before(a)        (SSL_state(a) & SSL_ST_BEFORE)
+#define SSL_in_connect_init(a)  (SSL_state(a) & SSL_ST_CONNECT)
+#define SSL_in_accept_init(a)   (SSL_state(a) & SSL_ST_ACCEPT)
 
 /*
  * The following 2 states are kept in ssl->rstate when reads fail, you should
  * not need these
  */
-#define SSL_ST_READ_HEADER 0xF0
-#define SSL_ST_READ_BODY 0xF1
-#define SSL_ST_READ_DONE 0xF2
+#define SSL_ST_READ_HEADER  0xF0
+#define SSL_ST_READ_BODY    0xF1
+#define SSL_ST_READ_DONE    0xF2
 
 /*
  * Obtain latest Finished message
@@ -1362,10 +1363,10 @@ size_t SSL_get_peer_finished(const SSL *s, void *buf, size_t count);
 
 /* use either SSL_VERIFY_NONE or SSL_VERIFY_PEER, the last 2 options
  * are 'ored' with SSL_VERIFY_PEER if they are desired */
-#define SSL_VERIFY_NONE 0x00
-#define SSL_VERIFY_PEER 0x01
+#define SSL_VERIFY_NONE                 0x00
+#define SSL_VERIFY_PEER                 0x01
 #define SSL_VERIFY_FAIL_IF_NO_PEER_CERT 0x02
-#define SSL_VERIFY_CLIENT_ONCE 0x04
+#define SSL_VERIFY_CLIENT_ONCE          0x04
 
 #define OpenSSL_add_ssl_algorithms() SSL_library_init()
 #define SSLeay_add_ssl_algorithms() SSL_library_init()
@@ -1389,8 +1390,8 @@ size_t SSL_get_peer_finished(const SSL *s, void *buf, size_t count);
 
 DECLARE_PEM_rw(SSL_SESSION, SSL_SESSION)
 
-#define SSL_AD_REASON_OFFSET \
-    1000 /* offset to get SSL_R_... value from SSL_AD_... */
+/* offset to get SSL_R_... value from SSL_AD_... */
+#define SSL_AD_REASON_OFFSET 1000
 
 /* These alert types are for SSLv3 and TLSv1 */
 #define SSL_AD_CLOSE_NOTIFY SSL3_AD_CLOSE_NOTIFY
@@ -1427,137 +1428,137 @@ DECLARE_PEM_rw(SSL_SESSION, SSL_SESSION)
 #define SSL_AD_INAPPROPRIATE_FALLBACK TLS1_AD_INAPPROPRIATE_FALLBACK /* fatal \
                                                                         */
 
-#define SSL_ERROR_NONE 0
-#define SSL_ERROR_SSL 1
-#define SSL_ERROR_WANT_READ 2
-#define SSL_ERROR_WANT_WRITE 3
-#define SSL_ERROR_WANT_X509_LOOKUP 4
-#define SSL_ERROR_SYSCALL 5 /* look at error stack/return value/errno */
-#define SSL_ERROR_ZERO_RETURN 6
-#define SSL_ERROR_WANT_CONNECT 7
-#define SSL_ERROR_WANT_ACCEPT 8
+#define SSL_ERROR_NONE              0
+#define SSL_ERROR_SSL               1
+#define SSL_ERROR_WANT_READ         2
+#define SSL_ERROR_WANT_WRITE        3
+#define SSL_ERROR_WANT_X509_LOOKUP  4
+#define SSL_ERROR_SYSCALL           5 /* look at error stack/return value/errno */
+#define SSL_ERROR_ZERO_RETURN       6
+#define SSL_ERROR_WANT_CONNECT      7
+#define SSL_ERROR_WANT_ACCEPT       8
 
-#define SSL_CTRL_NEED_TMP_RSA 1
-#define SSL_CTRL_SET_TMP_RSA 2
-#define SSL_CTRL_SET_TMP_DH 3
-#define SSL_CTRL_SET_TMP_ECDH 4
-#define SSL_CTRL_SET_TMP_RSA_CB 5
-#define SSL_CTRL_SET_TMP_DH_CB 6
-#define SSL_CTRL_SET_TMP_ECDH_CB 7
+#define SSL_CTRL_NEED_TMP_RSA                       1
+#define SSL_CTRL_SET_TMP_RSA                        2
+#define SSL_CTRL_SET_TMP_DH                         3
+#define SSL_CTRL_SET_TMP_ECDH                       4
+#define SSL_CTRL_SET_TMP_RSA_CB                     5
+#define SSL_CTRL_SET_TMP_DH_CB                      6
+#define SSL_CTRL_SET_TMP_ECDH_CB                    7
 
-#define SSL_CTRL_GET_SESSION_REUSED 8
-#define SSL_CTRL_GET_CLIENT_CERT_REQUEST 9
-#define SSL_CTRL_GET_NUM_RENEGOTIATIONS 10
-#define SSL_CTRL_CLEAR_NUM_RENEGOTIATIONS 11
-#define SSL_CTRL_GET_TOTAL_RENEGOTIATIONS 12
-#define SSL_CTRL_GET_FLAGS 13
-#define SSL_CTRL_EXTRA_CHAIN_CERT 14
+#define SSL_CTRL_GET_SESSION_REUSED                 8
+#define SSL_CTRL_GET_CLIENT_CERT_REQUEST            9
+#define SSL_CTRL_GET_NUM_RENEGOTIATIONS             10
+#define SSL_CTRL_CLEAR_NUM_RENEGOTIATIONS           11
+#define SSL_CTRL_GET_TOTAL_RENEGOTIATIONS           12
+#define SSL_CTRL_GET_FLAGS                          13
+#define SSL_CTRL_EXTRA_CHAIN_CERT                   14
 
-#define SSL_CTRL_SET_MSG_CALLBACK 15
-#define SSL_CTRL_SET_MSG_CALLBACK_ARG 16
+#define SSL_CTRL_SET_MSG_CALLBACK                   15
+#define SSL_CTRL_SET_MSG_CALLBACK_ARG               16
 
 /* only applies to datagram connections */
-#define SSL_CTRL_SET_MTU 17
+#define SSL_CTRL_SET_MTU                            17
 /* Stats */
-#define SSL_CTRL_SESS_NUMBER 20
-#define SSL_CTRL_SESS_CONNECT 21
-#define SSL_CTRL_SESS_CONNECT_GOOD 22
-#define SSL_CTRL_SESS_CONNECT_RENEGOTIATE 23
-#define SSL_CTRL_SESS_ACCEPT 24
-#define SSL_CTRL_SESS_ACCEPT_GOOD 25
-#define SSL_CTRL_SESS_ACCEPT_RENEGOTIATE 26
-#define SSL_CTRL_SESS_HIT 27
-#define SSL_CTRL_SESS_CB_HIT 28
-#define SSL_CTRL_SESS_MISSES 29
-#define SSL_CTRL_SESS_TIMEOUTS 30
-#define SSL_CTRL_SESS_CACHE_FULL 31
-#define SSL_CTRL_OPTIONS 32
-#define SSL_CTRL_MODE 33
+#define SSL_CTRL_SESS_NUMBER                        20
+#define SSL_CTRL_SESS_CONNECT                       21
+#define SSL_CTRL_SESS_CONNECT_GOOD                  22
+#define SSL_CTRL_SESS_CONNECT_RENEGOTIATE           23
+#define SSL_CTRL_SESS_ACCEPT                        24
+#define SSL_CTRL_SESS_ACCEPT_GOOD                   25
+#define SSL_CTRL_SESS_ACCEPT_RENEGOTIATE            26
+#define SSL_CTRL_SESS_HIT                           27
+#define SSL_CTRL_SESS_CB_HIT                        28
+#define SSL_CTRL_SESS_MISSES                        29
+#define SSL_CTRL_SESS_TIMEOUTS                      30
+#define SSL_CTRL_SESS_CACHE_FULL                    31
+#define SSL_CTRL_OPTIONS                            32
+#define SSL_CTRL_MODE                               33
 
-#define SSL_CTRL_GET_READ_AHEAD 40
-#define SSL_CTRL_SET_READ_AHEAD 41
-#define SSL_CTRL_SET_SESS_CACHE_SIZE 42
-#define SSL_CTRL_GET_SESS_CACHE_SIZE 43
-#define SSL_CTRL_SET_SESS_CACHE_MODE 44
-#define SSL_CTRL_GET_SESS_CACHE_MODE 45
+#define SSL_CTRL_GET_READ_AHEAD                     40
+#define SSL_CTRL_SET_READ_AHEAD                     41
+#define SSL_CTRL_SET_SESS_CACHE_SIZE                42
+#define SSL_CTRL_GET_SESS_CACHE_SIZE                43
+#define SSL_CTRL_SET_SESS_CACHE_MODE                44
+#define SSL_CTRL_GET_SESS_CACHE_MODE                45
 
-#define SSL_CTRL_GET_MAX_CERT_LIST 50
-#define SSL_CTRL_SET_MAX_CERT_LIST 51
+#define SSL_CTRL_GET_MAX_CERT_LIST                  50
+#define SSL_CTRL_SET_MAX_CERT_LIST                  51
 
-#define SSL_CTRL_SET_MAX_SEND_FRAGMENT 52
+#define SSL_CTRL_SET_MAX_SEND_FRAGMENT              52
 
 /* see tls1.h for macros based on these */
-#define SSL_CTRL_SET_TLSEXT_SERVERNAME_CB 53
-#define SSL_CTRL_SET_TLSEXT_SERVERNAME_ARG 54
-#define SSL_CTRL_SET_TLSEXT_HOSTNAME 55
-#define SSL_CTRL_SET_TLSEXT_DEBUG_CB 56
-#define SSL_CTRL_SET_TLSEXT_DEBUG_ARG 57
-#define SSL_CTRL_GET_TLSEXT_TICKET_KEYS 58
-#define SSL_CTRL_SET_TLSEXT_TICKET_KEYS 59
-#define SSL_CTRL_SET_TLSEXT_STATUS_REQ_CB 63
-#define SSL_CTRL_SET_TLSEXT_STATUS_REQ_CB_ARG 64
-#define SSL_CTRL_SET_TLSEXT_STATUS_REQ_TYPE 65
-#define SSL_CTRL_GET_TLSEXT_STATUS_REQ_EXTS 66
-#define SSL_CTRL_SET_TLSEXT_STATUS_REQ_EXTS 67
-#define SSL_CTRL_GET_TLSEXT_STATUS_REQ_IDS 68
-#define SSL_CTRL_SET_TLSEXT_STATUS_REQ_IDS 69
-#define SSL_CTRL_GET_TLSEXT_STATUS_REQ_OCSP_RESP 70
-#define SSL_CTRL_SET_TLSEXT_STATUS_REQ_OCSP_RESP 71
+#define SSL_CTRL_SET_TLSEXT_SERVERNAME_CB           53
+#define SSL_CTRL_SET_TLSEXT_SERVERNAME_ARG          54
+#define SSL_CTRL_SET_TLSEXT_HOSTNAME                55
+#define SSL_CTRL_SET_TLSEXT_DEBUG_CB                56
+#define SSL_CTRL_SET_TLSEXT_DEBUG_ARG               57
+#define SSL_CTRL_GET_TLSEXT_TICKET_KEYS             58
+#define SSL_CTRL_SET_TLSEXT_TICKET_KEYS             59
+#define SSL_CTRL_SET_TLSEXT_STATUS_REQ_CB           63
+#define SSL_CTRL_SET_TLSEXT_STATUS_REQ_CB_ARG       64
+#define SSL_CTRL_SET_TLSEXT_STATUS_REQ_TYPE         65
+#define SSL_CTRL_GET_TLSEXT_STATUS_REQ_EXTS         66
+#define SSL_CTRL_SET_TLSEXT_STATUS_REQ_EXTS         67
+#define SSL_CTRL_GET_TLSEXT_STATUS_REQ_IDS          68
+#define SSL_CTRL_SET_TLSEXT_STATUS_REQ_IDS          69
+#define SSL_CTRL_GET_TLSEXT_STATUS_REQ_OCSP_RESP    70
+#define SSL_CTRL_SET_TLSEXT_STATUS_REQ_OCSP_RESP    71
 
-#define SSL_CTRL_SET_TLSEXT_TICKET_KEY_CB 72
+#define SSL_CTRL_SET_TLSEXT_TICKET_KEY_CB           72
 
-#define SSL_CTRL_SET_TLS_EXT_SRP_USERNAME_CB 75
-#define SSL_CTRL_SET_SRP_VERIFY_PARAM_CB 76
-#define SSL_CTRL_SET_SRP_GIVE_CLIENT_PWD_CB 77
+#define SSL_CTRL_SET_TLS_EXT_SRP_USERNAME_CB        75
+#define SSL_CTRL_SET_SRP_VERIFY_PARAM_CB            76
+#define SSL_CTRL_SET_SRP_GIVE_CLIENT_PWD_CB         77
 
-#define SSL_CTRL_SET_SRP_ARG 78
-#define SSL_CTRL_SET_TLS_EXT_SRP_USERNAME 79
-#define SSL_CTRL_SET_TLS_EXT_SRP_STRENGTH 80
-#define SSL_CTRL_SET_TLS_EXT_SRP_PASSWORD 81
+#define SSL_CTRL_SET_SRP_ARG                        78
+#define SSL_CTRL_SET_TLS_EXT_SRP_USERNAME           79
+#define SSL_CTRL_SET_TLS_EXT_SRP_STRENGTH           80
+#define SSL_CTRL_SET_TLS_EXT_SRP_PASSWORD           81
 
-#define DTLS_CTRL_GET_TIMEOUT 73
-#define DTLS_CTRL_HANDLE_TIMEOUT 74
-#define DTLS_CTRL_LISTEN 75
+#define DTLS_CTRL_GET_TIMEOUT                       73
+#define DTLS_CTRL_HANDLE_TIMEOUT                    74
+#define DTLS_CTRL_LISTEN                            75
 
-#define SSL_CTRL_GET_RI_SUPPORT 76
-#define SSL_CTRL_CLEAR_OPTIONS 77
-#define SSL_CTRL_CLEAR_MODE 78
+#define SSL_CTRL_GET_RI_SUPPORT                     76
+#define SSL_CTRL_CLEAR_OPTIONS                      77
+#define SSL_CTRL_CLEAR_MODE                         78
 
-#define SSL_CTRL_GET_EXTRA_CHAIN_CERTS 82
-#define SSL_CTRL_CLEAR_EXTRA_CHAIN_CERTS 83
+#define SSL_CTRL_GET_EXTRA_CHAIN_CERTS              82
+#define SSL_CTRL_CLEAR_EXTRA_CHAIN_CERTS            83
 
-#define SSL_CTRL_CHAIN 88
-#define SSL_CTRL_CHAIN_CERT 89
-#define SSL_CTRL_GET_CURVES 90
-#define SSL_CTRL_SET_CURVES 91
-#define SSL_CTRL_SET_CURVES_LIST 92
-#define SSL_CTRL_GET_SHARED_CURVE 93
+#define SSL_CTRL_CHAIN                              88
+#define SSL_CTRL_CHAIN_CERT                         89
+#define SSL_CTRL_GET_CURVES                         90
+#define SSL_CTRL_SET_CURVES                         91
+#define SSL_CTRL_SET_CURVES_LIST                    92
+#define SSL_CTRL_GET_SHARED_CURVE                   93
 
-#define SSL_CTRL_CHECK_PROTO_VERSION 119
-#define DTLS_CTRL_SET_LINK_MTU 120
-#define DTLS_CTRL_GET_LINK_MIN_MTU 121
+#define SSL_CTRL_SET_ECDH_AUTO                      94
+#define SSL_CTRL_SET_SIGALGS                        97
+#define SSL_CTRL_SET_SIGALGS_LIST                   98
+#define SSL_CTRL_CERT_FLAGS                         99
+#define SSL_CTRL_CLEAR_CERT_FLAGS                   100
+#define SSL_CTRL_SET_CLIENT_SIGALGS                 101
+#define SSL_CTRL_SET_CLIENT_SIGALGS_LIST            102
+#define SSL_CTRL_GET_CLIENT_CERT_TYPES              103
+#define SSL_CTRL_SET_CLIENT_CERT_TYPES              104
+#define SSL_CTRL_BUILD_CERT_CHAIN                   105
+#define SSL_CTRL_SET_VERIFY_CERT_STORE              106
+#define SSL_CTRL_SET_CHAIN_CERT_STORE               107
+#define SSL_CTRL_GET_PEER_SIGNATURE_NID             108
+#define SSL_CTRL_GET_SERVER_TMP_KEY                 109
+#define SSL_CTRL_GET_RAW_CIPHERLIST                 110
+#define SSL_CTRL_GET_EC_POINT_FORMATS               111
 
-#define SSL_CTRL_SET_DH_AUTO 118
-#define SSL_CTRL_SET_ECDH_AUTO 94
-#define SSL_CTRL_SET_SIGALGS 97
-#define SSL_CTRL_SET_SIGALGS_LIST 98
-#define SSL_CTRL_CERT_FLAGS 99
-#define SSL_CTRL_CLEAR_CERT_FLAGS 100
-#define SSL_CTRL_SET_CLIENT_SIGALGS 101
-#define SSL_CTRL_SET_CLIENT_SIGALGS_LIST 102
-#define SSL_CTRL_GET_CLIENT_CERT_TYPES 103
-#define SSL_CTRL_SET_CLIENT_CERT_TYPES 104
-#define SSL_CTRL_BUILD_CERT_CHAIN 105
-#define SSL_CTRL_SET_VERIFY_CERT_STORE 106
-#define SSL_CTRL_SET_CHAIN_CERT_STORE 107
-#define SSL_CTRL_GET_PEER_SIGNATURE_NID 108
-#define SSL_CTRL_GET_SERVER_TMP_KEY 109
-#define SSL_CTRL_GET_RAW_CIPHERLIST 110
-#define SSL_CTRL_GET_EC_POINT_FORMATS 111
+#define SSL_CTRL_GET_CHAIN_CERTS                    112
+#define SSL_CTRL_SELECT_CURRENT_CERT                113
+#define SSL_CTRL_SET_CURRENT_CERT                   114
 
-#define SSL_CTRL_GET_CHAIN_CERTS          112
-#define SSL_CTRL_SELECT_CURRENT_CERT      113
-#define SSL_CTRL_SET_CURRENT_CERT         114
+#define SSL_CTRL_SET_DH_AUTO                        118
+#define SSL_CTRL_CHECK_PROTO_VERSION                119
+#define DTLS_CTRL_SET_LINK_MTU                      120
+#define DTLS_CTRL_GET_LINK_MIN_MTU                  121
     
 #define SSL_CERT_SET_FIRST                1
 #define SSL_CERT_SET_NEXT                 2
@@ -1717,297 +1718,332 @@ DECLARE_PEM_rw(SSL_SESSION, SSL_SESSION)
 #define SSL_get_shared_curve(s, n) \
     SSL_ctrl(s, SSL_CTRL_GET_SHARED_CURVE, n, NULL)
 
-BIO_METHOD *BIO_f_ssl(void);
-BIO *BIO_new_ssl(SSL_CTX *ctx, int client);
-BIO *BIO_new_ssl_connect(SSL_CTX *ctx);
-BIO *BIO_new_buffer_ssl_connect(SSL_CTX *ctx);
-int BIO_ssl_copy_session_id(BIO *to, BIO *from);
-void BIO_ssl_shutdown(BIO *ssl_bio);
+VIGORTLS_EXPORT BIO_METHOD *BIO_f_ssl(void);
+VIGORTLS_EXPORT BIO *BIO_new_ssl(SSL_CTX *ctx, int client);
+VIGORTLS_EXPORT BIO *BIO_new_ssl_connect(SSL_CTX *ctx);
+VIGORTLS_EXPORT BIO *BIO_new_buffer_ssl_connect(SSL_CTX *ctx);
+VIGORTLS_EXPORT int BIO_ssl_copy_session_id(BIO *to, BIO *from);
+VIGORTLS_EXPORT void BIO_ssl_shutdown(BIO *ssl_bio);
 
-int SSL_CTX_set_cipher_list(SSL_CTX *, const char *str);
-SSL_CTX *SSL_CTX_new(const SSL_METHOD *meth);
-void SSL_CTX_up_ref(SSL_CTX *ctx);
-void SSL_CTX_free(SSL_CTX *);
-long SSL_CTX_set_timeout(SSL_CTX *ctx, long t);
-long SSL_CTX_get_timeout(const SSL_CTX *ctx);
-X509_STORE *SSL_CTX_get_cert_store(const SSL_CTX *);
-void SSL_CTX_set_cert_store(SSL_CTX *, X509_STORE *);
-int SSL_want(const SSL *s);
-int SSL_clear(SSL *s);
+VIGORTLS_EXPORT int SSL_CTX_set_cipher_list(SSL_CTX *, const char *str);
+VIGORTLS_EXPORT SSL_CTX *SSL_CTX_new(const SSL_METHOD *meth);
+VIGORTLS_EXPORT void SSL_CTX_up_ref(SSL_CTX *ctx);
+VIGORTLS_EXPORT void SSL_CTX_free(SSL_CTX *);
+VIGORTLS_EXPORT long SSL_CTX_set_timeout(SSL_CTX *ctx, long t);
+VIGORTLS_EXPORT long SSL_CTX_get_timeout(const SSL_CTX *ctx);
+VIGORTLS_EXPORT X509_STORE *SSL_CTX_get_cert_store(const SSL_CTX *);
+VIGORTLS_EXPORT void SSL_CTX_set_cert_store(SSL_CTX *, X509_STORE *);
+VIGORTLS_EXPORT int SSL_want(const SSL *s);
+VIGORTLS_EXPORT int SSL_clear(SSL *s);
 
-void SSL_CTX_flush_sessions(SSL_CTX *ctx, long tm);
+VIGORTLS_EXPORT void SSL_CTX_flush_sessions(SSL_CTX *ctx, long tm);
 
-const SSL_CIPHER *SSL_get_current_cipher(const SSL *s);
-int SSL_CIPHER_get_bits(const SSL_CIPHER *c, int *alg_bits);
-char *SSL_CIPHER_get_version(const SSL_CIPHER *c);
-const char *SSL_CIPHER_get_name(const SSL_CIPHER *c);
-unsigned long SSL_CIPHER_get_id(const SSL_CIPHER *c);
+VIGORTLS_EXPORT const SSL_CIPHER *SSL_get_current_cipher(const SSL *s);
+VIGORTLS_EXPORT int SSL_CIPHER_get_bits(const SSL_CIPHER *c, int *alg_bits);
+VIGORTLS_EXPORT char *SSL_CIPHER_get_version(const SSL_CIPHER *c);
+VIGORTLS_EXPORT const char *SSL_CIPHER_get_name(const SSL_CIPHER *c);
+VIGORTLS_EXPORT unsigned long SSL_CIPHER_get_id(const SSL_CIPHER *c);
 
-int SSL_get_fd(const SSL *s);
-int SSL_get_rfd(const SSL *s);
-int SSL_get_wfd(const SSL *s);
-const char *SSL_get_cipher_list(const SSL *s, int n);
-char *SSL_get_shared_ciphers(const SSL *s, char *buf, int len);
-int SSL_get_read_ahead(const SSL *s);
-int SSL_pending(const SSL *s);
-int SSL_set_fd(SSL *s, int fd);
-int SSL_set_rfd(SSL *s, int fd);
-int SSL_set_wfd(SSL *s, int fd);
-void SSL_set_bio(SSL *s, BIO *rbio, BIO *wbio);
-BIO *SSL_get_rbio(const SSL *s);
-BIO *SSL_get_wbio(const SSL *s);
-int SSL_set_cipher_list(SSL *s, const char *str);
-void SSL_set_read_ahead(SSL *s, int yes);
-int SSL_get_verify_mode(const SSL *s);
-int SSL_get_verify_depth(const SSL *s);
-int (*SSL_get_verify_callback(const SSL *s))(int, X509_STORE_CTX *);
-void SSL_set_verify(SSL *s, int mode,
-                    int (*callback)(int ok, X509_STORE_CTX *ctx));
-void SSL_set_verify_depth(SSL *s, int depth);
-void SSL_set_cert_cb(SSL *s, int (*cb)(SSL *ssl, void *arg), void *arg);
-int SSL_use_RSAPrivateKey(SSL *ssl, RSA *rsa);
-int SSL_use_RSAPrivateKey_ASN1(SSL *ssl, uint8_t *d, long len);
-int SSL_use_PrivateKey(SSL *ssl, EVP_PKEY *pkey);
-int SSL_use_PrivateKey_ASN1(int pk, SSL *ssl, const uint8_t *d, long len);
-int SSL_use_certificate(SSL *ssl, X509 *x);
-int SSL_use_certificate_ASN1(SSL *ssl, const uint8_t *d, int len);
+VIGORTLS_EXPORT int SSL_get_fd(const SSL *s);
+VIGORTLS_EXPORT int SSL_get_rfd(const SSL *s);
+VIGORTLS_EXPORT int SSL_get_wfd(const SSL *s);
+VIGORTLS_EXPORT const char *SSL_get_cipher_list(const SSL *s, int n);
+VIGORTLS_EXPORT char *SSL_get_shared_ciphers(const SSL *s, char *buf, int len);
+VIGORTLS_EXPORT int SSL_get_read_ahead(const SSL *s);
+VIGORTLS_EXPORT int SSL_pending(const SSL *s);
+VIGORTLS_EXPORT int SSL_set_fd(SSL *s, int fd);
+VIGORTLS_EXPORT int SSL_set_rfd(SSL *s, int fd);
+VIGORTLS_EXPORT int SSL_set_wfd(SSL *s, int fd);
+VIGORTLS_EXPORT void SSL_set_bio(SSL *s, BIO *rbio, BIO *wbio);
+VIGORTLS_EXPORT BIO *SSL_get_rbio(const SSL *s);
+VIGORTLS_EXPORT BIO *SSL_get_wbio(const SSL *s);
+VIGORTLS_EXPORT int SSL_set_cipher_list(SSL *s, const char *str);
+VIGORTLS_EXPORT void SSL_set_read_ahead(SSL *s, int yes);
+VIGORTLS_EXPORT int SSL_get_verify_mode(const SSL *s);
+VIGORTLS_EXPORT int SSL_get_verify_depth(const SSL *s);
+VIGORTLS_EXPORT int (*SSL_get_verify_callback(const SSL *s))(int,
+                                                             X509_STORE_CTX *);
+VIGORTLS_EXPORT void
+SSL_set_verify(SSL *s, int mode, int (*callback)(int ok, X509_STORE_CTX *ctx));
+VIGORTLS_EXPORT void SSL_set_verify_depth(SSL *s, int depth);
+VIGORTLS_EXPORT void SSL_set_cert_cb(SSL *s, int (*cb)(SSL *ssl, void *arg),
+                                     void *arg);
+VIGORTLS_EXPORT int SSL_use_RSAPrivateKey(SSL *ssl, RSA *rsa);
+VIGORTLS_EXPORT int SSL_use_RSAPrivateKey_ASN1(SSL *ssl, uint8_t *d, long len);
+VIGORTLS_EXPORT int SSL_use_PrivateKey(SSL *ssl, EVP_PKEY *pkey);
+VIGORTLS_EXPORT int SSL_use_PrivateKey_ASN1(int pk, SSL *ssl, const uint8_t *d,
+                                            long len);
+VIGORTLS_EXPORT int SSL_use_certificate(SSL *ssl, X509 *x);
+VIGORTLS_EXPORT int SSL_use_certificate_ASN1(SSL *ssl, const uint8_t *d,
+                                             int len);
 
 /* Set serverinfo data for the current active cert. */
-int SSL_CTX_use_serverinfo(SSL_CTX *ctx, const uint8_t *serverinfo,
-                           size_t serverinfo_length);
-int SSL_CTX_use_serverinfo_file(SSL_CTX *ctx, const char *file);
+VIGORTLS_EXPORT int SSL_CTX_use_serverinfo(SSL_CTX *ctx,
+                                           const uint8_t *serverinfo,
+                                           size_t serverinfo_length);
+VIGORTLS_EXPORT int SSL_CTX_use_serverinfo_file(SSL_CTX *ctx, const char *file);
 
-int SSL_use_RSAPrivateKey_file(SSL *ssl, const char *file, int type);
-int SSL_use_PrivateKey_file(SSL *ssl, const char *file, int type);
-int SSL_use_certificate_file(SSL *ssl, const char *file, int type);
-int SSL_CTX_use_RSAPrivateKey_file(SSL_CTX *ctx, const char *file, int type);
-int SSL_CTX_use_PrivateKey_file(SSL_CTX *ctx, const char *file, int type);
-int SSL_CTX_use_certificate_file(SSL_CTX *ctx, const char *file, int type);
-int SSL_CTX_use_certificate_chain_file(SSL_CTX *ctx,
-                                       const char *file); /* PEM type */
-STACK_OF(X509_NAME) *SSL_load_client_CA_file(const char *file);
-int SSL_add_file_cert_subjects_to_stack(STACK_OF(X509_NAME) *stackCAs,
-                                        const char *file);
-int SSL_add_dir_cert_subjects_to_stack(STACK_OF(X509_NAME) *stackCAs,
-                                       const char *dir);
+VIGORTLS_EXPORT int SSL_use_RSAPrivateKey_file(SSL *ssl, const char *file,
+                                               int type);
+VIGORTLS_EXPORT int SSL_use_PrivateKey_file(SSL *ssl, const char *file,
+                                            int type);
+VIGORTLS_EXPORT int SSL_use_certificate_file(SSL *ssl, const char *file,
+                                             int type);
+VIGORTLS_EXPORT int SSL_CTX_use_RSAPrivateKey_file(SSL_CTX *ctx,
+                                                   const char *file, int type);
+VIGORTLS_EXPORT int SSL_CTX_use_PrivateKey_file(SSL_CTX *ctx, const char *file,
+                                                int type);
+VIGORTLS_EXPORT int SSL_CTX_use_certificate_file(SSL_CTX *ctx, const char *file,
+                                                 int type);
+VIGORTLS_EXPORT int
+SSL_CTX_use_certificate_chain_file(SSL_CTX *ctx,
+                                   const char *file); /* PEM type */
+VIGORTLS_EXPORT STACK_OF(X509_NAME) * SSL_load_client_CA_file(const char *file);
+VIGORTLS_EXPORT int SSL_add_file_cert_subjects_to_stack(STACK_OF(X509_NAME) *
+                                                            stackCAs,
+                                                        const char *file);
+VIGORTLS_EXPORT int SSL_add_dir_cert_subjects_to_stack(STACK_OF(X509_NAME) *
+                                                           stackCAs,
+                                                       const char *dir);
 
-void SSL_load_error_strings(void);
-const char *SSL_state_string(const SSL *s);
-const char *SSL_rstate_string(const SSL *s);
-const char *SSL_state_string_long(const SSL *s);
-const char *SSL_rstate_string_long(const SSL *s);
-long SSL_SESSION_get_time(const SSL_SESSION *s);
-long SSL_SESSION_set_time(SSL_SESSION *s, long t);
-long SSL_SESSION_get_timeout(const SSL_SESSION *s);
-long SSL_SESSION_set_timeout(SSL_SESSION *s, long t);
-void SSL_copy_session_id(SSL *to, const SSL *from);
-X509 *SSL_SESSION_get0_peer(SSL_SESSION *s);
-int SSL_SESSION_set1_id_context(SSL_SESSION *s, const uint8_t *sid_ctx,
-                                unsigned int sid_ctx_len);
+VIGORTLS_EXPORT void SSL_load_error_strings(void);
+VIGORTLS_EXPORT const char *SSL_state_string(const SSL *s);
+VIGORTLS_EXPORT const char *SSL_rstate_string(const SSL *s);
+VIGORTLS_EXPORT const char *SSL_state_string_long(const SSL *s);
+VIGORTLS_EXPORT const char *SSL_rstate_string_long(const SSL *s);
+VIGORTLS_EXPORT long SSL_SESSION_get_time(const SSL_SESSION *s);
+VIGORTLS_EXPORT long SSL_SESSION_set_time(SSL_SESSION *s, long t);
+VIGORTLS_EXPORT long SSL_SESSION_get_timeout(const SSL_SESSION *s);
+VIGORTLS_EXPORT long SSL_SESSION_set_timeout(SSL_SESSION *s, long t);
+VIGORTLS_EXPORT void SSL_copy_session_id(SSL *to, const SSL *from);
+VIGORTLS_EXPORT X509 *SSL_SESSION_get0_peer(SSL_SESSION *s);
+VIGORTLS_EXPORT int SSL_SESSION_set1_id_context(SSL_SESSION *s,
+                                                const uint8_t *sid_ctx,
+                                                unsigned int sid_ctx_len);
 
-SSL_SESSION *SSL_SESSION_new(void);
-const uint8_t *SSL_SESSION_get_id(const SSL_SESSION *s, unsigned int *len);
-unsigned int SSL_SESSION_get_compress_id(const SSL_SESSION *s);
-int SSL_SESSION_print_fp(FILE *fp, const SSL_SESSION *ses);
-int SSL_SESSION_print(BIO *fp, const SSL_SESSION *ses);
-int SSL_SESSION_up_ref(SSL_SESSION *ses);
-void SSL_SESSION_free(SSL_SESSION *ses);
-int i2d_SSL_SESSION(SSL_SESSION *in, uint8_t **pp);
-int SSL_set_session(SSL *to, SSL_SESSION *session);
-int SSL_CTX_add_session(SSL_CTX *s, SSL_SESSION *c);
-int SSL_CTX_remove_session(SSL_CTX *, SSL_SESSION *c);
-int SSL_CTX_set_generate_session_id(SSL_CTX *, GEN_SESSION_CB);
-int SSL_set_generate_session_id(SSL *, GEN_SESSION_CB);
-int SSL_has_matching_session_id(const SSL *ssl, const uint8_t *id,
-                                unsigned int id_len);
-SSL_SESSION *d2i_SSL_SESSION(SSL_SESSION **a, const uint8_t **pp, long length);
+VIGORTLS_EXPORT SSL_SESSION *SSL_SESSION_new(void);
+VIGORTLS_EXPORT const uint8_t *SSL_SESSION_get_id(const SSL_SESSION *s,
+                                                  unsigned int *len);
+VIGORTLS_EXPORT unsigned int SSL_SESSION_get_compress_id(const SSL_SESSION *s);
+VIGORTLS_EXPORT int SSL_SESSION_print_fp(FILE *fp, const SSL_SESSION *ses);
+VIGORTLS_EXPORT int SSL_SESSION_print(BIO *fp, const SSL_SESSION *ses);
+VIGORTLS_EXPORT int SSL_SESSION_up_ref(SSL_SESSION *ses);
+VIGORTLS_EXPORT void SSL_SESSION_free(SSL_SESSION *ses);
+VIGORTLS_EXPORT int i2d_SSL_SESSION(SSL_SESSION *in, uint8_t **pp);
+VIGORTLS_EXPORT int SSL_set_session(SSL *to, SSL_SESSION *session);
+VIGORTLS_EXPORT int SSL_CTX_add_session(SSL_CTX *s, SSL_SESSION *c);
+VIGORTLS_EXPORT int SSL_CTX_remove_session(SSL_CTX *, SSL_SESSION *c);
+VIGORTLS_EXPORT int SSL_CTX_set_generate_session_id(SSL_CTX *, GEN_SESSION_CB);
+VIGORTLS_EXPORT int SSL_set_generate_session_id(SSL *, GEN_SESSION_CB);
+VIGORTLS_EXPORT int SSL_has_matching_session_id(const SSL *ssl,
+                                                const uint8_t *id,
+                                                unsigned int id_len);
+VIGORTLS_EXPORT SSL_SESSION *d2i_SSL_SESSION(SSL_SESSION **a,
+                                             const uint8_t **pp, long length);
 
 #ifdef HEADER_X509_H
-X509 *SSL_get_peer_certificate(const SSL *s);
+VIGORTLS_EXPORT X509 *SSL_get_peer_certificate(const SSL *s);
 #endif
 
-STACK_OF(X509) *SSL_get_peer_cert_chain(const SSL *s);
+VIGORTLS_EXPORT STACK_OF(X509) * SSL_get_peer_cert_chain(const SSL *s);
 
-int SSL_CTX_get_verify_mode(const SSL_CTX *ctx);
-int SSL_CTX_get_verify_depth(const SSL_CTX *ctx);
-int (*SSL_CTX_get_verify_callback(const SSL_CTX *ctx))(int, X509_STORE_CTX *);
-void SSL_CTX_set_verify(SSL_CTX *ctx, int mode,
-                        int (*callback)(int, X509_STORE_CTX *));
-void SSL_CTX_set_verify_depth(SSL_CTX *ctx, int depth);
-void SSL_CTX_set_cert_verify_callback(SSL_CTX *ctx,
-                                      int (*cb)(X509_STORE_CTX *, void *),
-                                      void *arg);
-void SSL_CTX_set_cert_cb(SSL_CTX *c, int (*cb)(SSL *ssl, void *arg), void *arg);
-int SSL_CTX_use_RSAPrivateKey(SSL_CTX *ctx, RSA *rsa);
-int SSL_CTX_use_RSAPrivateKey_ASN1(SSL_CTX *ctx, const uint8_t *d, long len);
-int SSL_CTX_use_PrivateKey(SSL_CTX *ctx, EVP_PKEY *pkey);
-int SSL_CTX_use_PrivateKey_ASN1(int pk, SSL_CTX *ctx, const uint8_t *d,
-                                long len);
-int SSL_CTX_use_certificate(SSL_CTX *ctx, X509 *x);
-int SSL_CTX_use_certificate_ASN1(SSL_CTX *ctx, int len, const uint8_t *d);
+VIGORTLS_EXPORT int SSL_CTX_get_verify_mode(const SSL_CTX *ctx);
+VIGORTLS_EXPORT int SSL_CTX_get_verify_depth(const SSL_CTX *ctx);
+VIGORTLS_EXPORT int (*SSL_CTX_get_verify_callback(const SSL_CTX *ctx))(
+    int, X509_STORE_CTX *);
+VIGORTLS_EXPORT void SSL_CTX_set_verify(SSL_CTX *ctx, int mode,
+                                        int (*callback)(int, X509_STORE_CTX *));
+VIGORTLS_EXPORT void SSL_CTX_set_verify_depth(SSL_CTX *ctx, int depth);
+VIGORTLS_EXPORT void SSL_CTX_set_cert_verify_callback(
+    SSL_CTX *ctx, int (*cb)(X509_STORE_CTX *, void *), void *arg);
+VIGORTLS_EXPORT void
+SSL_CTX_set_cert_cb(SSL_CTX *c, int (*cb)(SSL *ssl, void *arg), void *arg);
+VIGORTLS_EXPORT int SSL_CTX_use_RSAPrivateKey(SSL_CTX *ctx, RSA *rsa);
+VIGORTLS_EXPORT int SSL_CTX_use_RSAPrivateKey_ASN1(SSL_CTX *ctx,
+                                                   const uint8_t *d, long len);
+VIGORTLS_EXPORT int SSL_CTX_use_PrivateKey(SSL_CTX *ctx, EVP_PKEY *pkey);
+VIGORTLS_EXPORT int SSL_CTX_use_PrivateKey_ASN1(int pk, SSL_CTX *ctx,
+                                                const uint8_t *d, long len);
+VIGORTLS_EXPORT int SSL_CTX_use_certificate(SSL_CTX *ctx, X509 *x);
+VIGORTLS_EXPORT int SSL_CTX_use_certificate_ASN1(SSL_CTX *ctx, int len,
+                                                 const uint8_t *d);
 
-void SSL_CTX_set_default_passwd_cb(SSL_CTX *ctx, pem_password_cb *cb);
-void SSL_CTX_set_default_passwd_cb_userdata(SSL_CTX *ctx, void *u);
+VIGORTLS_EXPORT void SSL_CTX_set_default_passwd_cb(SSL_CTX *ctx,
+                                                   pem_password_cb *cb);
+VIGORTLS_EXPORT void SSL_CTX_set_default_passwd_cb_userdata(SSL_CTX *ctx,
+                                                            void *u);
 
-int SSL_CTX_check_private_key(const SSL_CTX *ctx);
-int SSL_check_private_key(const SSL *ctx);
+VIGORTLS_EXPORT int SSL_CTX_check_private_key(const SSL_CTX *ctx);
+VIGORTLS_EXPORT int SSL_check_private_key(const SSL *ctx);
 
-int SSL_CTX_set_session_id_context(SSL_CTX *ctx, const uint8_t *sid_ctx,
-                                   unsigned int sid_ctx_len);
+VIGORTLS_EXPORT int SSL_CTX_set_session_id_context(SSL_CTX *ctx,
+                                                   const uint8_t *sid_ctx,
+                                                   unsigned int sid_ctx_len);
 
-SSL *SSL_new(SSL_CTX *ctx);
-int SSL_set_session_id_context(SSL *ssl, const uint8_t *sid_ctx,
-                               unsigned int sid_ctx_len);
+VIGORTLS_EXPORT SSL *SSL_new(SSL_CTX *ctx);
+VIGORTLS_EXPORT int SSL_set_session_id_context(SSL *ssl, const uint8_t *sid_ctx,
+                                               unsigned int sid_ctx_len);
 
-int SSL_CTX_set_purpose(SSL_CTX *s, int purpose);
-int SSL_set_purpose(SSL *s, int purpose);
-int SSL_CTX_set_trust(SSL_CTX *s, int trust);
-int SSL_set_trust(SSL *s, int trust);
+VIGORTLS_EXPORT int SSL_CTX_set_purpose(SSL_CTX *s, int purpose);
+VIGORTLS_EXPORT int SSL_set_purpose(SSL *s, int purpose);
+VIGORTLS_EXPORT int SSL_CTX_set_trust(SSL_CTX *s, int trust);
+VIGORTLS_EXPORT int SSL_set_trust(SSL *s, int trust);
 
-int SSL_CTX_set1_param(SSL_CTX *ctx, X509_VERIFY_PARAM *vpm);
-int SSL_set1_param(SSL *ssl, X509_VERIFY_PARAM *vpm);
+VIGORTLS_EXPORT int SSL_CTX_set1_param(SSL_CTX *ctx, X509_VERIFY_PARAM *vpm);
+VIGORTLS_EXPORT int SSL_set1_param(SSL *ssl, X509_VERIFY_PARAM *vpm);
 
-X509_VERIFY_PARAM *SSL_CTX_get0_param(SSL_CTX *ctx);
-X509_VERIFY_PARAM *SSL_get0_param(SSL *ssl);
+VIGORTLS_EXPORT X509_VERIFY_PARAM *SSL_CTX_get0_param(SSL_CTX *ctx);
+VIGORTLS_EXPORT X509_VERIFY_PARAM *SSL_get0_param(SSL *ssl);
 
-void SSL_certs_clear(SSL *s);
-void SSL_free(SSL *ssl);
-int SSL_accept(SSL *ssl);
-int SSL_connect(SSL *ssl);
-int SSL_read(SSL *ssl, void *buf, int num);
-int SSL_peek(SSL *ssl, void *buf, int num);
-int SSL_write(SSL *ssl, const void *buf, int num);
-long SSL_ctrl(SSL *ssl, int cmd, long larg, void *parg);
-long SSL_callback_ctrl(SSL *, int, void (*)(void));
-long SSL_CTX_ctrl(SSL_CTX *ctx, int cmd, long larg, void *parg);
-long SSL_CTX_callback_ctrl(SSL_CTX *, int, void (*)(void));
+VIGORTLS_EXPORT void SSL_certs_clear(SSL *s);
+VIGORTLS_EXPORT void SSL_free(SSL *ssl);
+VIGORTLS_EXPORT int SSL_accept(SSL *ssl);
+VIGORTLS_EXPORT int SSL_connect(SSL *ssl);
+VIGORTLS_EXPORT int SSL_read(SSL *ssl, void *buf, int num);
+VIGORTLS_EXPORT int SSL_peek(SSL *ssl, void *buf, int num);
+VIGORTLS_EXPORT int SSL_write(SSL *ssl, const void *buf, int num);
+VIGORTLS_EXPORT long SSL_ctrl(SSL *ssl, int cmd, long larg, void *parg);
+VIGORTLS_EXPORT long SSL_callback_ctrl(SSL *, int, void (*)(void));
+VIGORTLS_EXPORT long SSL_CTX_ctrl(SSL_CTX *ctx, int cmd, long larg, void *parg);
+VIGORTLS_EXPORT long SSL_CTX_callback_ctrl(SSL_CTX *, int, void (*)(void));
 
-int SSL_get_error(const SSL *s, int ret_code);
-const char *SSL_get_version(const SSL *s);
+VIGORTLS_EXPORT int SSL_get_error(const SSL *s, int ret_code);
+VIGORTLS_EXPORT const char *SSL_get_version(const SSL *s);
 
 /* This sets the 'default' SSL version that SSL_new() will create */
-int SSL_CTX_set_ssl_version(SSL_CTX *ctx, const SSL_METHOD *meth);
+VIGORTLS_EXPORT int SSL_CTX_set_ssl_version(SSL_CTX *ctx, const SSL_METHOD *meth);
 
-const SSL_METHOD *SSLv3_method(void);        /* SSLv3 */
-const SSL_METHOD *SSLv3_server_method(void); /* SSLv3 */
-const SSL_METHOD *SSLv3_client_method(void); /* SSLv3 */
+VIGORTLS_EXPORT const SSL_METHOD *SSLv3_method(void);        /* SSLv3 */
+VIGORTLS_EXPORT const SSL_METHOD *SSLv3_server_method(void); /* SSLv3 */
+VIGORTLS_EXPORT const SSL_METHOD *SSLv3_client_method(void); /* SSLv3 */
 
-const SSL_METHOD *SSLv23_method(void);        /* SSLv3 or TLSv1.* */
-const SSL_METHOD *SSLv23_server_method(void); /* SSLv3 or TLSv1.* */
-const SSL_METHOD *SSLv23_client_method(void); /* SSLv3 or TLSv1.* */
+VIGORTLS_EXPORT const SSL_METHOD *SSLv23_method(void);        /* SSLv3 or TLSv1.* */
+VIGORTLS_EXPORT const SSL_METHOD *SSLv23_server_method(void); /* SSLv3 or TLSv1.* */
+VIGORTLS_EXPORT const SSL_METHOD *SSLv23_client_method(void); /* SSLv3 or TLSv1.* */
 
-const SSL_METHOD *TLSv1_method(void);        /* TLSv1.0 */
-const SSL_METHOD *TLSv1_server_method(void); /* TLSv1.0 */
-const SSL_METHOD *TLSv1_client_method(void); /* TLSv1.0 */
+VIGORTLS_EXPORT const SSL_METHOD *TLSv1_method(void);        /* TLSv1.0 */
+VIGORTLS_EXPORT const SSL_METHOD *TLSv1_server_method(void); /* TLSv1.0 */
+VIGORTLS_EXPORT const SSL_METHOD *TLSv1_client_method(void); /* TLSv1.0 */
 
-const SSL_METHOD *TLSv1_1_method(void);        /* TLSv1.1 */
-const SSL_METHOD *TLSv1_1_server_method(void); /* TLSv1.1 */
-const SSL_METHOD *TLSv1_1_client_method(void); /* TLSv1.1 */
+VIGORTLS_EXPORT const SSL_METHOD *TLSv1_1_method(void);        /* TLSv1.1 */
+VIGORTLS_EXPORT const SSL_METHOD *TLSv1_1_server_method(void); /* TLSv1.1 */
+VIGORTLS_EXPORT const SSL_METHOD *TLSv1_1_client_method(void); /* TLSv1.1 */
 
-const SSL_METHOD *TLSv1_2_method(void);        /* TLSv1.2 */
-const SSL_METHOD *TLSv1_2_server_method(void); /* TLSv1.2 */
-const SSL_METHOD *TLSv1_2_client_method(void); /* TLSv1.2 */
+VIGORTLS_EXPORT const SSL_METHOD *TLSv1_2_method(void);        /* TLSv1.2 */
+VIGORTLS_EXPORT const SSL_METHOD *TLSv1_2_server_method(void); /* TLSv1.2 */
+VIGORTLS_EXPORT const SSL_METHOD *TLSv1_2_client_method(void); /* TLSv1.2 */
 
-const SSL_METHOD *TLS_method(void);        /* TLSv1.0+ */
-const SSL_METHOD *TLS_server_method(void); /* TLSv1.0+ */
-const SSL_METHOD *TLS_client_method(void); /* TLSv1.0+ */
+VIGORTLS_EXPORT const SSL_METHOD *TLS_method(void);        /* TLSv1.0+ */
+VIGORTLS_EXPORT const SSL_METHOD *TLS_server_method(void); /* TLSv1.0+ */
+VIGORTLS_EXPORT const SSL_METHOD *TLS_client_method(void); /* TLSv1.0+ */
 
-const SSL_METHOD *DTLSv1_method(void);        /* DTLSv1.0 */
-const SSL_METHOD *DTLSv1_server_method(void); /* DTLSv1.0 */
-const SSL_METHOD *DTLSv1_client_method(void); /* DTLSv1.0 */
+VIGORTLS_EXPORT const SSL_METHOD *DTLSv1_method(void);        /* DTLSv1.0 */
+VIGORTLS_EXPORT const SSL_METHOD *DTLSv1_server_method(void); /* DTLSv1.0 */
+VIGORTLS_EXPORT const SSL_METHOD *DTLSv1_client_method(void); /* DTLSv1.0 */
 
-const SSL_METHOD *DTLSv1_2_method(void);        /* DTLSv1.2 */
-const SSL_METHOD *DTLSv1_2_server_method(void); /* DTLSv1.2 */
-const SSL_METHOD *DTLSv1_2_client_method(void); /* DTLSv1.2 */
+VIGORTLS_EXPORT const SSL_METHOD *DTLSv1_2_method(void);        /* DTLSv1.2 */
+VIGORTLS_EXPORT const SSL_METHOD *DTLSv1_2_server_method(void); /* DTLSv1.2 */
+VIGORTLS_EXPORT const SSL_METHOD *DTLSv1_2_client_method(void); /* DTLSv1.2 */
 
-const SSL_METHOD *DTLS_method(void);        /* DTLS 1.0 and 1.2 */
-const SSL_METHOD *DTLS_server_method(void); /* DTLS 1.0 and 1.2 */
-const SSL_METHOD *DTLS_client_method(void); /* DTLS 1.0 and 1.2 */
+VIGORTLS_EXPORT const SSL_METHOD *DTLS_method(void);        /* DTLS 1.0 and 1.2 */
+VIGORTLS_EXPORT const SSL_METHOD *DTLS_server_method(void); /* DTLS 1.0 and 1.2 */
+VIGORTLS_EXPORT const SSL_METHOD *DTLS_client_method(void); /* DTLS 1.0 and 1.2 */
 
-STACK_OF(SSL_CIPHER) *SSL_get_ciphers(const SSL *s);
+VIGORTLS_EXPORT STACK_OF(SSL_CIPHER) *SSL_get_ciphers(const SSL *s);
 
-int SSL_do_handshake(SSL *s);
-int SSL_renegotiate(SSL *s);
-int SSL_renegotiate_abbreviated(SSL *s);
-int SSL_renegotiate_pending(SSL *s);
-int SSL_shutdown(SSL *s);
+VIGORTLS_EXPORT int SSL_do_handshake(SSL *s);
+VIGORTLS_EXPORT int SSL_renegotiate(SSL *s);
+VIGORTLS_EXPORT int SSL_renegotiate_abbreviated(SSL *s);
+VIGORTLS_EXPORT int SSL_renegotiate_pending(SSL *s);
+VIGORTLS_EXPORT int SSL_shutdown(SSL *s);
 
-const SSL_METHOD *SSL_CTX_get_ssl_method(SSL_CTX *ctx);
-const SSL_METHOD *SSL_get_ssl_method(SSL *s);
-int SSL_set_ssl_method(SSL *s, const SSL_METHOD *method);
-const char *SSL_alert_type_string_long(int value);
-const char *SSL_alert_type_string(int value);
-const char *SSL_alert_desc_string_long(int value);
-const char *SSL_alert_desc_string(int value);
+VIGORTLS_EXPORT const SSL_METHOD *SSL_CTX_get_ssl_method(SSL_CTX *ctx);
+VIGORTLS_EXPORT const SSL_METHOD *SSL_get_ssl_method(SSL *s);
+VIGORTLS_EXPORT int SSL_set_ssl_method(SSL *s, const SSL_METHOD *method);
+VIGORTLS_EXPORT const char *SSL_alert_type_string_long(int value);
+VIGORTLS_EXPORT const char *SSL_alert_type_string(int value);
+VIGORTLS_EXPORT const char *SSL_alert_desc_string_long(int value);
+VIGORTLS_EXPORT const char *SSL_alert_desc_string(int value);
 
-void SSL_set_client_CA_list(SSL *s, STACK_OF(X509_NAME) *name_list);
-void SSL_CTX_set_client_CA_list(SSL_CTX *ctx, STACK_OF(X509_NAME) *name_list);
-STACK_OF(X509_NAME) *SSL_get_client_CA_list(const SSL *s);
-STACK_OF(X509_NAME) *SSL_CTX_get_client_CA_list(const SSL_CTX *s);
-int SSL_add_client_CA(SSL *ssl, X509 *x);
-int SSL_CTX_add_client_CA(SSL_CTX *ctx, X509 *x);
+VIGORTLS_EXPORT void SSL_set_client_CA_list(SSL *s,
+                                            STACK_OF(X509_NAME) *name_list);
+VIGORTLS_EXPORT void
+SSL_CTX_set_client_CA_list(SSL_CTX *ctx, STACK_OF(X509_NAME) *name_list);
+VIGORTLS_EXPORT STACK_OF(X509_NAME) *SSL_get_client_CA_list(const SSL *s);
+VIGORTLS_EXPORT STACK_OF(X509_NAME) *
+    SSL_CTX_get_client_CA_list(const SSL_CTX *s);
+VIGORTLS_EXPORT int SSL_add_client_CA(SSL *ssl, X509 *x);
+VIGORTLS_EXPORT int SSL_CTX_add_client_CA(SSL_CTX *ctx, X509 *x);
 
-void SSL_set_connect_state(SSL *s);
-void SSL_set_accept_state(SSL *s);
+VIGORTLS_EXPORT void SSL_set_connect_state(SSL *s);
+VIGORTLS_EXPORT void SSL_set_accept_state(SSL *s);
 
-long SSL_get_default_timeout(const SSL *s);
+VIGORTLS_EXPORT long SSL_get_default_timeout(const SSL *s);
 
-int SSL_library_init(void);
+VIGORTLS_EXPORT int SSL_library_init(void);
 
-char *SSL_CIPHER_description(const SSL_CIPHER *, char *buf, int size);
-STACK_OF(X509_NAME) *SSL_dup_CA_list(STACK_OF(X509_NAME) *sk);
+VIGORTLS_EXPORT char *SSL_CIPHER_description(const SSL_CIPHER *, char *buf,
+                                             int size);
+VIGORTLS_EXPORT STACK_OF(X509_NAME) *SSL_dup_CA_list(STACK_OF(X509_NAME) *sk);
 
-SSL *SSL_dup(SSL *ssl);
+VIGORTLS_EXPORT SSL *SSL_dup(SSL *ssl);
 
-X509 *SSL_get_certificate(const SSL *ssl);
+VIGORTLS_EXPORT X509 *SSL_get_certificate(const SSL *ssl);
 /* EVP_PKEY */ struct evp_pkey_st *SSL_get_privatekey(const SSL *ssl);
 
-X509 *SSL_CTX_get0_certificate(const SSL_CTX *ctx);
-EVP_PKEY *SSL_CTX_get0_privatekey(const SSL_CTX *ctx);
+VIGORTLS_EXPORT X509 *SSL_CTX_get0_certificate(const SSL_CTX *ctx);
+VIGORTLS_EXPORT EVP_PKEY *SSL_CTX_get0_privatekey(const SSL_CTX *ctx);
 
-void SSL_CTX_set_quiet_shutdown(SSL_CTX *ctx, int mode);
-int SSL_CTX_get_quiet_shutdown(const SSL_CTX *ctx);
-void SSL_set_quiet_shutdown(SSL *ssl, int mode);
-int SSL_get_quiet_shutdown(const SSL *ssl);
-void SSL_set_shutdown(SSL *ssl, int mode);
-int SSL_get_shutdown(const SSL *ssl);
-int SSL_version(const SSL *ssl);
-int SSL_CTX_set_default_verify_paths(SSL_CTX *ctx);
-int SSL_CTX_load_verify_locations(SSL_CTX *ctx, const char *CAfile,
-                                  const char *CApath);
+VIGORTLS_EXPORT void SSL_CTX_set_quiet_shutdown(SSL_CTX *ctx, int mode);
+VIGORTLS_EXPORT int SSL_CTX_get_quiet_shutdown(const SSL_CTX *ctx);
+VIGORTLS_EXPORT void SSL_set_quiet_shutdown(SSL *ssl, int mode);
+VIGORTLS_EXPORT int SSL_get_quiet_shutdown(const SSL *ssl);
+VIGORTLS_EXPORT void SSL_set_shutdown(SSL *ssl, int mode);
+VIGORTLS_EXPORT int SSL_get_shutdown(const SSL *ssl);
+VIGORTLS_EXPORT int SSL_version(const SSL *ssl);
+VIGORTLS_EXPORT int SSL_CTX_set_default_verify_paths(SSL_CTX *ctx);
+VIGORTLS_EXPORT int SSL_CTX_load_verify_locations(SSL_CTX *ctx,
+                                                  const char *CAfile,
+                                                  const char *CApath);
 #define SSL_get0_session SSL_get_session /* just peek at pointer */
-SSL_SESSION *SSL_get_session(const SSL *ssl);
-SSL_SESSION *SSL_get1_session(SSL *ssl); /* obtain a reference count */
-SSL_CTX *SSL_get_SSL_CTX(const SSL *ssl);
-SSL_CTX *SSL_set_SSL_CTX(SSL *ssl, SSL_CTX *ctx);
-void SSL_set_info_callback(SSL *ssl,
-                           void (*cb)(const SSL *ssl, int type, int val));
-void (*SSL_get_info_callback(const SSL *ssl))(const SSL *ssl, int type,
-                                              int val);
-int SSL_state(const SSL *ssl);
-void SSL_set_state(SSL *ssl, int state);
+VIGORTLS_EXPORT SSL_SESSION *SSL_get_session(const SSL *ssl);
+VIGORTLS_EXPORT SSL_SESSION *SSL_get1_session(SSL *ssl); /* obtain a ref count */
+VIGORTLS_EXPORT SSL_CTX *SSL_get_SSL_CTX(const SSL *ssl);
+VIGORTLS_EXPORT SSL_CTX *SSL_set_SSL_CTX(SSL *ssl, SSL_CTX *ctx);
+VIGORTLS_EXPORT void
+SSL_set_info_callback(SSL *ssl, void (*cb)(const SSL *ssl, int type, int val));
+VIGORTLS_EXPORT void (*SSL_get_info_callback(const SSL *ssl))(const SSL *ssl,
+                                                              int type,
+                                                              int val);
+VIGORTLS_EXPORT int SSL_state(const SSL *ssl);
+VIGORTLS_EXPORT void SSL_set_state(SSL *ssl, int state);
 
-void SSL_set_verify_result(SSL *ssl, long v);
-long SSL_get_verify_result(const SSL *ssl);
+VIGORTLS_EXPORT void SSL_set_verify_result(SSL *ssl, long v);
+VIGORTLS_EXPORT long SSL_get_verify_result(const SSL *ssl);
 
-int SSL_set_ex_data(SSL *ssl, int idx, void *data);
-void *SSL_get_ex_data(const SSL *ssl, int idx);
-int SSL_get_ex_new_index(long argl, void *argp, CRYPTO_EX_new *new_func,
-                         CRYPTO_EX_dup *dup_func, CRYPTO_EX_free *free_func);
+VIGORTLS_EXPORT int SSL_set_ex_data(SSL *ssl, int idx, void *data);
+VIGORTLS_EXPORT void *SSL_get_ex_data(const SSL *ssl, int idx);
+VIGORTLS_EXPORT int SSL_get_ex_new_index(long argl, void *argp,
+                                         CRYPTO_EX_new *new_func,
+                                         CRYPTO_EX_dup *dup_func,
+                                         CRYPTO_EX_free *free_func);
 
-int SSL_SESSION_set_ex_data(SSL_SESSION *ss, int idx, void *data);
-void *SSL_SESSION_get_ex_data(const SSL_SESSION *ss, int idx);
-int SSL_SESSION_get_ex_new_index(long argl, void *argp, CRYPTO_EX_new *new_func,
-                                 CRYPTO_EX_dup *dup_func,
-                                 CRYPTO_EX_free *free_func);
+VIGORTLS_EXPORT int SSL_SESSION_set_ex_data(SSL_SESSION *ss, int idx,
+                                            void *data);
+VIGORTLS_EXPORT void *SSL_SESSION_get_ex_data(const SSL_SESSION *ss, int idx);
+VIGORTLS_EXPORT int SSL_SESSION_get_ex_new_index(long argl, void *argp,
+                                                 CRYPTO_EX_new *new_func,
+                                                 CRYPTO_EX_dup *dup_func,
+                                                 CRYPTO_EX_free *free_func);
 
-int SSL_CTX_set_ex_data(SSL_CTX *ssl, int idx, void *data);
-void *SSL_CTX_get_ex_data(const SSL_CTX *ssl, int idx);
-int SSL_CTX_get_ex_new_index(long argl, void *argp, CRYPTO_EX_new *new_func,
-                             CRYPTO_EX_dup *dup_func,
-                             CRYPTO_EX_free *free_func);
+VIGORTLS_EXPORT int SSL_CTX_set_ex_data(SSL_CTX *ssl, int idx, void *data);
+VIGORTLS_EXPORT void *SSL_CTX_get_ex_data(const SSL_CTX *ssl, int idx);
+VIGORTLS_EXPORT int SSL_CTX_get_ex_new_index(long argl, void *argp,
+                                             CRYPTO_EX_new *new_func,
+                                             CRYPTO_EX_dup *dup_func,
+                                             CRYPTO_EX_free *free_func);
 
-int SSL_get_ex_data_X509_STORE_CTX_idx(void);
+VIGORTLS_EXPORT int SSL_get_ex_data_X509_STORE_CTX_idx(void);
 
 #define SSL_CTX_sess_set_cache_size(ctx, t) \
     SSL_CTX_ctrl(ctx, SSL_CTRL_SET_SESS_CACHE_SIZE, t, NULL)
@@ -2039,76 +2075,84 @@ int SSL_get_ex_data_X509_STORE_CTX_idx(void);
     SSL_ctrl(ssl, SSL_CTRL_SET_MAX_SEND_FRAGMENT, m, NULL)
 
 /* NB: the keylength is only applicable when is_export is true */
-void SSL_CTX_set_tmp_rsa_callback(SSL_CTX *ctx,
-                                  RSA *(*cb)(SSL *ssl, int is_export,
-                                             int keylength));
+VIGORTLS_EXPORT void SSL_CTX_set_tmp_rsa_callback(
+    SSL_CTX *ctx, RSA *(*cb)(SSL *ssl, int is_export, int keylength));
 
-void SSL_set_tmp_rsa_callback(SSL *ssl, RSA *(*cb)(SSL *ssl, int is_export,
-                                                   int keylength));
-void SSL_CTX_set_tmp_dh_callback(SSL_CTX *ctx,
-                                 DH *(*dh)(SSL *ssl, int is_export,
-                                           int keylength));
-void SSL_set_tmp_dh_callback(SSL *ssl,
-                             DH *(*dh)(SSL *ssl, int is_export, int keylength));
-void SSL_CTX_set_tmp_ecdh_callback(SSL_CTX *ctx,
-                                   EC_KEY *(*ecdh)(SSL *ssl, int is_export,
-                                                   int keylength));
-void SSL_set_tmp_ecdh_callback(SSL *ssl,
-                               EC_KEY *(*ecdh)(SSL *ssl, int is_export,
-                                               int keylength));
+VIGORTLS_EXPORT void
+SSL_set_tmp_rsa_callback(SSL *ssl,
+                         RSA *(*cb)(SSL *ssl, int is_export, int keylength));
+VIGORTLS_EXPORT void
+SSL_CTX_set_tmp_dh_callback(SSL_CTX *ctx,
+                            DH *(*dh)(SSL *ssl, int is_export, int keylength));
+VIGORTLS_EXPORT void SSL_set_tmp_dh_callback(SSL *ssl,
+                                             DH *(*dh)(SSL *ssl, int is_export,
+                                                       int keylength));
+VIGORTLS_EXPORT void SSL_CTX_set_tmp_ecdh_callback(
+    SSL_CTX *ctx, EC_KEY *(*ecdh)(SSL *ssl, int is_export, int keylength));
+VIGORTLS_EXPORT void SSL_set_tmp_ecdh_callback(
+    SSL *ssl, EC_KEY *(*ecdh)(SSL *ssl, int is_export, int keylength));
 
-const void *SSL_get_current_compression(SSL *s);
-const void *SSL_get_current_expansion(SSL *s);
+VIGORTLS_EXPORT const void *SSL_get_current_compression(SSL *s);
+VIGORTLS_EXPORT const void *SSL_get_current_expansion(SSL *s);
 
-const char *SSL_COMP_get_name(const void *comp);
-void *SSL_COMP_get_compression_methods(void);
-STACK_OF(SSL_COMP) *SSL_COMP_set0_compression_methods(STACK_OF(SSL_COMP) *meths);
-void SSL_COMP_free_compression_methods(void);
-int SSL_COMP_add_compression_method(int id, void *cm);
+VIGORTLS_EXPORT const char *SSL_COMP_get_name(const void *comp);
+VIGORTLS_EXPORT void *SSL_COMP_get_compression_methods(void);
+VIGORTLS_EXPORT STACK_OF(SSL_COMP) *
+    SSL_COMP_set0_compression_methods(STACK_OF(SSL_COMP) *meths);
+VIGORTLS_EXPORT void SSL_COMP_free_compression_methods(void);
+VIGORTLS_EXPORT int SSL_COMP_add_compression_method(int id, void *cm);
 
-const SSL_CIPHER *SSL_CIPHER_find(SSL *ssl, const uint8_t *ptr);
+VIGORTLS_EXPORT const SSL_CIPHER *SSL_CIPHER_find(SSL *ssl, const uint8_t *ptr);
 
 /* TLS extensions functions */
-int SSL_set_session_ticket_ext(SSL *s, void *ext_data, int ext_len);
+VIGORTLS_EXPORT int SSL_set_session_ticket_ext(SSL *s, void *ext_data,
+                                               int ext_len);
 
-int SSL_set_session_ticket_ext_cb(SSL *s, tls_session_ticket_ext_cb_fn cb,
-                                  void *arg);
-
-/* Pre-shared secret session resumption functions */
-int SSL_set_session_secret_cb(SSL *s,
-                              tls_session_secret_cb_fn tls_session_secret_cb,
+VIGORTLS_EXPORT int
+SSL_set_session_ticket_ext_cb(SSL *s, tls_session_ticket_ext_cb_fn cb,
                               void *arg);
 
-void SSL_set_debug(SSL *s, int debug);
-int SSL_cache_hit(SSL *s);
-int SSL_is_server(SSL *s);
+/* Pre-shared secret session resumption functions */
+VIGORTLS_EXPORT int SSL_set_session_secret_cb(
+    SSL *s, tls_session_secret_cb_fn tls_session_secret_cb, void *arg);
+
+VIGORTLS_EXPORT void SSL_set_debug(SSL *s, int debug);
+VIGORTLS_EXPORT int SSL_cache_hit(SSL *s);
+VIGORTLS_EXPORT int SSL_is_server(SSL *s);
 
 #ifndef OPENSSL_NO_SSL_TRACE
-void SSL_trace(int write_p, int version, int content_type, const void *buf,
-               size_t len, SSL *ssl, void *arg);
-const char *SSL_CIPHER_standard_name(const SSL_CIPHER *c);
+VIGORTLS_EXPORT void SSL_trace(int write_p, int version, int content_type,
+                               const void *buf, size_t len, SSL *ssl,
+                               void *arg);
+VIGORTLS_EXPORT const char *SSL_CIPHER_standard_name(const SSL_CIPHER *c);
 #endif
 
-SSL_CONF_CTX *SSL_CONF_CTX_new(void);
-int SSL_CONF_CTX_finish(SSL_CONF_CTX *cctx);
-void SSL_CONF_CTX_free(SSL_CONF_CTX *cctx);
-unsigned int SSL_CONF_CTX_set_flags(SSL_CONF_CTX *cctx, unsigned int flags);
-unsigned int SSL_CONF_CTX_clear_flags(SSL_CONF_CTX *cctx, unsigned int flags);
-int SSL_CONF_CTX_set1_prefix(SSL_CONF_CTX *cctx, const char *pre);
+VIGORTLS_EXPORT SSL_CONF_CTX *SSL_CONF_CTX_new(void);
+VIGORTLS_EXPORT int SSL_CONF_CTX_finish(SSL_CONF_CTX *cctx);
+VIGORTLS_EXPORT void SSL_CONF_CTX_free(SSL_CONF_CTX *cctx);
+VIGORTLS_EXPORT unsigned int SSL_CONF_CTX_set_flags(SSL_CONF_CTX *cctx,
+                                                    unsigned int flags);
+VIGORTLS_EXPORT unsigned int SSL_CONF_CTX_clear_flags(SSL_CONF_CTX *cctx,
+                                                      unsigned int flags);
+VIGORTLS_EXPORT int SSL_CONF_CTX_set1_prefix(SSL_CONF_CTX *cctx,
+                                             const char *pre);
 
-void SSL_CONF_CTX_set_ssl(SSL_CONF_CTX *cctx, SSL *ssl);
-void SSL_CONF_CTX_set_ssl_ctx(SSL_CONF_CTX *cctx, SSL_CTX *ctx);
+VIGORTLS_EXPORT void SSL_CONF_CTX_set_ssl(SSL_CONF_CTX *cctx, SSL *ssl);
+VIGORTLS_EXPORT void SSL_CONF_CTX_set_ssl_ctx(SSL_CONF_CTX *cctx, SSL_CTX *ctx);
 
-int SSL_CONF_cmd(SSL_CONF_CTX *cctx, const char *cmd, const char *value);
-int SSL_CONF_cmd_argv(SSL_CONF_CTX *cctx, int *pargc, char ***pargv);
-int SSL_CONF_cmd_value_type(SSL_CONF_CTX *cctx, const char *cmd);
+VIGORTLS_EXPORT int SSL_CONF_cmd(SSL_CONF_CTX *cctx, const char *cmd,
+                                 const char *value);
+VIGORTLS_EXPORT int SSL_CONF_cmd_argv(SSL_CONF_CTX *cctx, int *pargc,
+                                      char ***pargv);
+VIGORTLS_EXPORT int SSL_CONF_cmd_value_type(SSL_CONF_CTX *cctx,
+                                            const char *cmd);
 
 /* BEGIN ERROR CODES */
 /*
  * The following lines are auto generated by the script mkerr.pl. Any changes
  * made after this point may be overwritten when the script is next run.
  */
-void ERR_load_SSL_strings(void);
+VIGORTLS_EXPORT void ERR_load_SSL_strings(void);
 
 /* Error codes for the SSL functions. */
 

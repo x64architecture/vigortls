@@ -1,7 +1,7 @@
 #ifndef HEADER_WHRLPOOL_H
 #define HEADER_WHRLPOOL_H
 
-#include <openssl/opensslconf.h>
+#include <openssl/base.h>
 #include <stddef.h>
 #include <stdint.h>
 
@@ -24,11 +24,13 @@ typedef struct {
     size_t bitlen[WHIRLPOOL_COUNTER / sizeof(size_t)];
 } WHIRLPOOL_CTX;
 
-int WHIRLPOOL_Init(WHIRLPOOL_CTX *c);
-int WHIRLPOOL_Update(WHIRLPOOL_CTX *c, const void *inp, size_t bytes);
-void WHIRLPOOL_BitUpdate(WHIRLPOOL_CTX *c, const void *inp, size_t bits);
-int WHIRLPOOL_Final(uint8_t *md, WHIRLPOOL_CTX *c);
-uint8_t *WHIRLPOOL(const void *inp, size_t bytes, uint8_t *md);
+VIGORTLS_EXPORT int WHIRLPOOL_Init(WHIRLPOOL_CTX *c);
+VIGORTLS_EXPORT int WHIRLPOOL_Update(WHIRLPOOL_CTX *c, const void *inp,
+                                     size_t bytes);
+VIGORTLS_EXPORT void WHIRLPOOL_BitUpdate(WHIRLPOOL_CTX *c, const void *inp,
+                                         size_t bits);
+VIGORTLS_EXPORT int WHIRLPOOL_Final(uint8_t *md, WHIRLPOOL_CTX *c);
+VIGORTLS_EXPORT uint8_t *WHIRLPOOL(const void *inp, size_t bytes, uint8_t *md);
 
 #ifdef __cplusplus
 }

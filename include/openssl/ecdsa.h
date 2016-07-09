@@ -10,10 +10,8 @@
 #ifndef HEADER_ECDSA_H
 #define HEADER_ECDSA_H
 
-#include <openssl/opensslconf.h>
-
+#include <openssl/base.h>
 #include <openssl/ec.h>
-#include <openssl/ossl_typ.h>
 #ifndef OPENSSL_NO_DEPRECATED
 #include <openssl/bn.h>
 #endif
@@ -30,12 +28,12 @@ typedef struct ECDSA_SIG_st {
 /** Allocates and initialize a ECDSA_SIG structure
  *  \return pointer to a ECDSA_SIG structure or NULL if an error occurred
  */
-ECDSA_SIG *ECDSA_SIG_new(void);
+VIGORTLS_EXPORT ECDSA_SIG *ECDSA_SIG_new(void);
 
 /** frees a ECDSA_SIG structure
  *  \param  sig  pointer to the ECDSA_SIG structure
  */
-void ECDSA_SIG_free(ECDSA_SIG *sig);
+VIGORTLS_EXPORT void ECDSA_SIG_free(ECDSA_SIG *sig);
 
 /** DER encode content of ECDSA_SIG object (note: this function modifies *pp
  *  (*pp += length of the DER encoded signature)).
@@ -43,7 +41,7 @@ void ECDSA_SIG_free(ECDSA_SIG *sig);
  *  \param  pp   pointer to a uint8_t pointer for the output or NULL
  *  \return the length of the DER encoded ECDSA_SIG object or 0
  */
-int i2d_ECDSA_SIG(const ECDSA_SIG *sig, uint8_t **pp);
+VIGORTLS_EXPORT int i2d_ECDSA_SIG(const ECDSA_SIG *sig, uint8_t **pp);
 
 /** Decodes a DER encoded ECDSA signature (note: this function changes *pp
  *  (*pp += len)).
@@ -52,7 +50,8 @@ int i2d_ECDSA_SIG(const ECDSA_SIG *sig, uint8_t **pp);
  *  \param  len  length of the buffer
  *  \return pointer to the decoded ECDSA_SIG structure (or NULL)
  */
-ECDSA_SIG *d2i_ECDSA_SIG(ECDSA_SIG **sig, const uint8_t **pp, long len);
+VIGORTLS_EXPORT ECDSA_SIG *d2i_ECDSA_SIG(ECDSA_SIG **sig, const uint8_t **pp,
+                                         long len);
 
 /** Computes the ECDSA signature of the given hash value using
  *  the supplied private key and returns the created signature.
@@ -61,7 +60,8 @@ ECDSA_SIG *d2i_ECDSA_SIG(ECDSA_SIG **sig, const uint8_t **pp, long len);
  *  \param  eckey     EC_KEY object containing a private EC key
  *  \return pointer to a ECDSA_SIG structure or NULL if an error occurred
  */
-ECDSA_SIG *ECDSA_do_sign(const uint8_t *dgst, int dgst_len, EC_KEY *eckey);
+VIGORTLS_EXPORT ECDSA_SIG *ECDSA_do_sign(const uint8_t *dgst, int dgst_len,
+                                         EC_KEY *eckey);
 
 /** Computes ECDSA signature of a given hash value using the supplied
  *  private key (note: sig must point to ECDSA_size(eckey) bytes of memory).
@@ -73,9 +73,9 @@ ECDSA_SIG *ECDSA_do_sign(const uint8_t *dgst, int dgst_len, EC_KEY *eckey);
  *  \param  eckey    EC_KEY object containing a private EC key
  *  \return pointer to a ECDSA_SIG structure or NULL if an error occurred
  */
-ECDSA_SIG *ECDSA_do_sign_ex(const uint8_t *dgst, int dgstlen,
-                            const BIGNUM *kinv, const BIGNUM *rp,
-                            EC_KEY *eckey);
+VIGORTLS_EXPORT ECDSA_SIG *ECDSA_do_sign_ex(const uint8_t *dgst, int dgstlen,
+                                            const BIGNUM *kinv,
+                                            const BIGNUM *rp, EC_KEY *eckey);
 
 /** Verifies that the supplied signature is a valid ECDSA
  *  signature of the supplied hash value using the supplied public key.
@@ -86,33 +86,33 @@ ECDSA_SIG *ECDSA_do_sign_ex(const uint8_t *dgst, int dgstlen,
  *  \return 1 if the signature is valid, 0 if the signature is invalid
  *          and -1 on error
  */
-int ECDSA_do_verify(const uint8_t *dgst, int dgst_len, const ECDSA_SIG *sig,
-                    EC_KEY *eckey);
+VIGORTLS_EXPORT int ECDSA_do_verify(const uint8_t *dgst, int dgst_len,
+                                    const ECDSA_SIG *sig, EC_KEY *eckey);
 
-const ECDSA_METHOD *ECDSA_OpenSSL(void);
+VIGORTLS_EXPORT const ECDSA_METHOD *ECDSA_OpenSSL(void);
 
 /** Sets the default ECDSA method
  *  \param  meth  new default ECDSA_METHOD
  */
-void ECDSA_set_default_method(const ECDSA_METHOD *meth);
+VIGORTLS_EXPORT void ECDSA_set_default_method(const ECDSA_METHOD *meth);
 
 /** Returns the default ECDSA method
  *  \return pointer to ECDSA_METHOD structure containing the default method
  */
-const ECDSA_METHOD *ECDSA_get_default_method(void);
+VIGORTLS_EXPORT const ECDSA_METHOD *ECDSA_get_default_method(void);
 
 /** Sets method to be used for the ECDSA operations
  *  \param  eckey  EC_KEY object
  *  \param  meth   new method
  *  \return 1 on success and 0 otherwise
  */
-int ECDSA_set_method(EC_KEY *eckey, const ECDSA_METHOD *meth);
+VIGORTLS_EXPORT int ECDSA_set_method(EC_KEY *eckey, const ECDSA_METHOD *meth);
 
 /** Returns the maximum length of the DER encoded signature
  *  \param  eckey  EC_KEY object
  *  \return numbers of bytes required for the DER encoded signature
  */
-int ECDSA_size(const EC_KEY *eckey);
+VIGORTLS_EXPORT int ECDSA_size(const EC_KEY *eckey);
 
 /** Precompute parts of the signing operation
  *  \param  eckey  EC_KEY object containing a private EC key
@@ -121,7 +121,8 @@ int ECDSA_size(const EC_KEY *eckey);
  *  \param  rp     BIGNUM pointer for x coordinate of k * generator
  *  \return 1 on success and 0 otherwise
  */
-int ECDSA_sign_setup(EC_KEY *eckey, BN_CTX *ctx, BIGNUM **kinv, BIGNUM **rp);
+VIGORTLS_EXPORT int ECDSA_sign_setup(EC_KEY *eckey, BN_CTX *ctx, BIGNUM **kinv,
+                                     BIGNUM **rp);
 
 /** Computes ECDSA signature of a given hash value using the supplied
  *  private key (note: sig must point to ECDSA_size(eckey) bytes of memory).
@@ -133,8 +134,9 @@ int ECDSA_sign_setup(EC_KEY *eckey, BN_CTX *ctx, BIGNUM **kinv, BIGNUM **rp);
  *  \param  eckey    EC_KEY object containing a private EC key
  *  \return 1 on success and 0 otherwise
  */
-int ECDSA_sign(int type, const uint8_t *dgst, int dgstlen, uint8_t *sig,
-               unsigned int *siglen, EC_KEY *eckey);
+VIGORTLS_EXPORT int ECDSA_sign(int type, const uint8_t *dgst, int dgstlen,
+                               uint8_t *sig, unsigned int *siglen,
+                               EC_KEY *eckey);
 
 /** Computes ECDSA signature of a given hash value using the supplied
  *  private key (note: sig must point to ECDSA_size(eckey) bytes of memory).
@@ -149,9 +151,10 @@ int ECDSA_sign(int type, const uint8_t *dgst, int dgstlen, uint8_t *sig,
  *  \param  eckey    EC_KEY object containing a private EC key
  *  \return 1 on success and 0 otherwise
  */
-int ECDSA_sign_ex(int type, const uint8_t *dgst, int dgstlen, uint8_t *sig,
-                  unsigned int *siglen, const BIGNUM *kinv, const BIGNUM *rp,
-                  EC_KEY *eckey);
+VIGORTLS_EXPORT int ECDSA_sign_ex(int type, const uint8_t *dgst, int dgstlen,
+                                  uint8_t *sig, unsigned int *siglen,
+                                  const BIGNUM *kinv, const BIGNUM *rp,
+                                  EC_KEY *eckey);
 
 /** Verifies that the given signature is valid ECDSA signature
  *  of the supplied hash value using the specified public key.
@@ -164,78 +167,86 @@ int ECDSA_sign_ex(int type, const uint8_t *dgst, int dgstlen, uint8_t *sig,
  *  \return 1 if the signature is valid, 0 if the signature is invalid
  *          and -1 on error
  */
-int ECDSA_verify(int type, const uint8_t *dgst, int dgstlen, const uint8_t *sig,
-                 int siglen, EC_KEY *eckey);
+VIGORTLS_EXPORT int ECDSA_verify(int type, const uint8_t *dgst, int dgstlen,
+                                 const uint8_t *sig, int siglen, EC_KEY *eckey);
 
 /* the standard ex_data functions */
-int ECDSA_get_ex_new_index(long argl, void *argp, CRYPTO_EX_new *new_func,
-                           CRYPTO_EX_dup *dup_func, CRYPTO_EX_free *free_func);
-int ECDSA_set_ex_data(EC_KEY *d, int idx, void *arg);
-void *ECDSA_get_ex_data(EC_KEY *d, int idx);
+VIGORTLS_EXPORT int ECDSA_get_ex_new_index(long argl, void *argp,
+                                           CRYPTO_EX_new *new_func,
+                                           CRYPTO_EX_dup *dup_func,
+                                           CRYPTO_EX_free *free_func);
+VIGORTLS_EXPORT int ECDSA_set_ex_data(EC_KEY *d, int idx, void *arg);
+VIGORTLS_EXPORT void *ECDSA_get_ex_data(EC_KEY *d, int idx);
 
 /** Allocates and initialize a ECDSA_METHOD structure
  *  \param ecdsa_method pointer to ECDSA_METHOD to copy.  (May be NULL)
  *  \return pointer to a ECDSA_METHOD structure or NULL if an error occurred
  */
 
-ECDSA_METHOD *ECDSA_METHOD_new(const ECDSA_METHOD *ecdsa_method);
+VIGORTLS_EXPORT ECDSA_METHOD *
+ECDSA_METHOD_new(const ECDSA_METHOD *ecdsa_method);
 
 /** frees a ECDSA_METHOD structure
  *  \param  ecdsa_method  pointer to the ECDSA_METHOD structure
  */
-void ECDSA_METHOD_free(ECDSA_METHOD *ecdsa_method);
+VIGORTLS_EXPORT void ECDSA_METHOD_free(ECDSA_METHOD *ecdsa_method);
 
 /**  Sets application specific data in the ECDSA_METHOD
  *   \param  ecdsa_method pointer to existing ECDSA_METHOD
  *   \param  app application specific data to set
  */
 
-void ECDSA_METHOD_set_app_data(ECDSA_METHOD *ecdsa_method, void *app);
+VIGORTLS_EXPORT void ECDSA_METHOD_set_app_data(ECDSA_METHOD *ecdsa_method,
+                                               void *app);
 
 /** Returns application specific data from a ECDSA_METHOD structure
  *  \param ecdsa_method pointer to ECDSA_METHOD structure
  *  \return pointer to application specific data.
  */
 
-
-void *ECDSA_METHOD_get_app_data(ECDSA_METHOD *ecdsa_method);
+VIGORTLS_EXPORT void *ECDSA_METHOD_get_app_data(ECDSA_METHOD *ecdsa_method);
 
 /**  Set the ECDSA_do_sign function in the ECDSA_METHOD
  *   \param  ecdsa_method  pointer to existing ECDSA_METHOD
  *   \param  ecdsa_do_sign a funtion of type ECDSA_do_sign
  */
 
-void ECDSA_METHOD_set_sign(ECDSA_METHOD *ecdsa_method,
-                           ECDSA_SIG *(*ecdsa_do_sign)(const uint8_t *dgst,
-                           int dgst_len, const BIGNUM *inv, const BIGNUM *rp,
-                           EC_KEY *eckey));
+VIGORTLS_EXPORT void ECDSA_METHOD_set_sign(
+    ECDSA_METHOD *ecdsa_method,
+    ECDSA_SIG *(*ecdsa_do_sign)(const uint8_t *dgst, int dgst_len,
+                                const BIGNUM *inv, const BIGNUM *rp,
+                                EC_KEY *eckey));
 
 /**  Set the  ECDSA_sign_setup function in the ECDSA_METHOD
  *   \param  ecdsa_method  pointer to existing ECDSA_METHOD
  *   \param  ecdsa_sign_setup a funtion of type ECDSA_sign_setup
  */
 
-void ECDSA_METHOD_set_sign_setup(ECDSA_METHOD *ecdsa_method,
-                                 int (*ecdsa_sign_setup)(EC_KEY *eckey,
-                                 BN_CTX *ctx, BIGNUM **kinv, BIGNUM **r));
+VIGORTLS_EXPORT void
+ECDSA_METHOD_set_sign_setup(ECDSA_METHOD *ecdsa_method,
+                            int (*ecdsa_sign_setup)(EC_KEY *eckey, BN_CTX *ctx,
+                                                    BIGNUM **kinv, BIGNUM **r));
 
 /**  Set the ECDSA_do_verify function in the ECDSA_METHOD
  *   \param  ecdsa_method  pointer to existing ECDSA_METHOD
  *   \param  ecdsa_do_verify a funtion of type ECDSA_do_verify
  */
 
-void ECDSA_METHOD_set_verify(ECDSA_METHOD *ecdsa_method,
-                             int (*ecdsa_do_verify)(const uint8_t *dgst, int dgst_len,
-                             const ECDSA_SIG *sig, EC_KEY *eckey));
+VIGORTLS_EXPORT void ECDSA_METHOD_set_verify(
+    ECDSA_METHOD *ecdsa_method,
+    int (*ecdsa_do_verify)(const uint8_t *dgst, int dgst_len,
+                           const ECDSA_SIG *sig, EC_KEY *eckey));
 
-void ECDSA_METHOD_set_flags(ECDSA_METHOD *ecdsa_method, int flags);
+VIGORTLS_EXPORT void ECDSA_METHOD_set_flags(ECDSA_METHOD *ecdsa_method,
+                                            int flags);
 
 /**  Set the flags field in the ECDSA_METHOD
  *   \param  ecdsa_method  pointer to existing ECDSA_METHOD
  *   \param  flags flags value to set
  */
 
-void ECDSA_METHOD_set_name(ECDSA_METHOD *ecdsa_method, char *name);
+VIGORTLS_EXPORT void ECDSA_METHOD_set_name(ECDSA_METHOD *ecdsa_method,
+                                           char *name);
 
 /**  Set the name field in the ECDSA_METHOD
  *   \param  ecdsa_method  pointer to existing ECDSA_METHOD
@@ -247,7 +258,7 @@ void ECDSA_METHOD_set_name(ECDSA_METHOD *ecdsa_method, char *name);
  * The following lines are auto generated by the script mkerr.pl. Any changes
  * made after this point may be overwritten when the script is next run.
  */
-void ERR_load_ECDSA_strings(void);
+VIGORTLS_EXPORT void ERR_load_ECDSA_strings(void);
 
 /* Error codes for the ECDSA functions. */
 

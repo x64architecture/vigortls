@@ -286,72 +286,72 @@ ASN1_SEQUENCE_ref(X509_CRL, crl_cb) = {
 
 X509_REVOKED *d2i_X509_REVOKED(X509_REVOKED **a, const uint8_t **in, long len)
 {
-    return (X509_REVOKED *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, &X509_REVOKED_it);
+    return (X509_REVOKED *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, ASN1_ITEM_rptr(X509_REVOKED));
 }
 
 int i2d_X509_REVOKED(X509_REVOKED *a, uint8_t **out)
 {
-    return ASN1_item_i2d((ASN1_VALUE *)a, out, &X509_REVOKED_it);
+    return ASN1_item_i2d((ASN1_VALUE *)a, out, ASN1_ITEM_rptr(X509_REVOKED));
 }
 
 X509_REVOKED *X509_REVOKED_new(void)
 {
-    return (X509_REVOKED *)ASN1_item_new(&X509_REVOKED_it);
+    return (X509_REVOKED *)ASN1_item_new(ASN1_ITEM_rptr(X509_REVOKED));
 }
 
 void X509_REVOKED_free(X509_REVOKED *a)
 {
-    ASN1_item_free((ASN1_VALUE *)a, &X509_REVOKED_it);
+    ASN1_item_free((ASN1_VALUE *)a, ASN1_ITEM_rptr(X509_REVOKED));
 }
 
 X509_CRL_INFO *d2i_X509_CRL_INFO(X509_CRL_INFO **a, const uint8_t **in, long len)
 {
-    return (X509_CRL_INFO *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, &X509_CRL_INFO_it);
+    return (X509_CRL_INFO *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, ASN1_ITEM_rptr(X509_CRL_INFO));
 }
 
 int i2d_X509_CRL_INFO(X509_CRL_INFO *a, uint8_t **out)
 {
-    return ASN1_item_i2d((ASN1_VALUE *)a, out, &X509_CRL_INFO_it);
+    return ASN1_item_i2d((ASN1_VALUE *)a, out, ASN1_ITEM_rptr(X509_CRL_INFO));
 }
 
 X509_CRL_INFO *X509_CRL_INFO_new(void)
 {
-    return (X509_CRL_INFO *)ASN1_item_new(&X509_CRL_INFO_it);
+    return (X509_CRL_INFO *)ASN1_item_new(ASN1_ITEM_rptr(X509_CRL_INFO));
 }
 
 void X509_CRL_INFO_free(X509_CRL_INFO *a)
 {
-    ASN1_item_free((ASN1_VALUE *)a, &X509_CRL_INFO_it);
+    ASN1_item_free((ASN1_VALUE *)a, ASN1_ITEM_rptr(X509_CRL_INFO));
 }
 
 X509_CRL *d2i_X509_CRL(X509_CRL **a, const uint8_t **in, long len)
 {
-    return (X509_CRL *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, &X509_CRL_it);
+    return (X509_CRL *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, ASN1_ITEM_rptr(X509_CRL));
 }
 
 int i2d_X509_CRL(X509_CRL *a, uint8_t **out)
 {
-    return ASN1_item_i2d((ASN1_VALUE *)a, out, &X509_CRL_it);
+    return ASN1_item_i2d((ASN1_VALUE *)a, out, ASN1_ITEM_rptr(X509_CRL));
 }
 
 X509_CRL *X509_CRL_new(void)
 {
-    return (X509_CRL *)ASN1_item_new(&X509_CRL_it);
+    return (X509_CRL *)ASN1_item_new(ASN1_ITEM_rptr(X509_CRL));
 }
 
 void X509_CRL_free(X509_CRL *a)
 {
-    ASN1_item_free((ASN1_VALUE *)a, &X509_CRL_it);
+    ASN1_item_free((ASN1_VALUE *)a, ASN1_ITEM_rptr(X509_CRL));
 }
 
 X509_CRL *X509_CRL_dup(X509_CRL *x)
 {
-    return ASN1_item_dup(&X509_CRL_it, x);
+    return ASN1_item_dup(ASN1_ITEM_rptr(X509_CRL), x);
 }
 
 X509_REVOKED *X509_REVOKED_dup(X509_REVOKED *rev)
 {
-    return ASN1_item_dup(&X509_REVOKED_it, rev);
+    return ASN1_item_dup(ASN1_ITEM_rptr(X509_REVOKED), rev);
 }
 
 static int X509_REVOKED_cmp(const X509_REVOKED *const *a, const X509_REVOKED *const *b)

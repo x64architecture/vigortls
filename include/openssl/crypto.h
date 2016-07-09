@@ -16,12 +16,10 @@
 #define HEADER_CRYPTO_H
 
 #include <stdlib.h>
-
-#include <openssl/opensslconf.h>
 #include <stdio.h>
 
+#include <openssl/base.h>
 #include <openssl/opensslv.h>
-#include <openssl/ossl_typ.h>
 #include <openssl/safestack.h>
 #include <openssl/stack.h>
 
@@ -32,13 +30,12 @@ extern "C" {
 /* Backward compatibility to SSLeay */
 /* This is more to be used to check the correct DLL is being used
  * in the MS world. */
-#define SSLEAY_VERSION_NUMBER OPENSSL_VERSION_NUMBER
-#define SSLEAY_VERSION 0
-/* #define SSLEAY_OPTIONS    1 no longer supported */
-#define SSLEAY_CFLAGS 2
-#define SSLEAY_BUILT_ON 3
-#define SSLEAY_PLATFORM 4
-#define SSLEAY_DIR 5
+#define SSLEAY_VERSION_NUMBER   OPENSSL_VERSION_NUMBER
+#define SSLEAY_VERSION          0
+#define SSLEAY_CFLAGS           2
+#define SSLEAY_BUILT_ON         3
+#define SSLEAY_PLATFORM         4
+#define SSLEAY_DIR              5
 
 /* A generic structure to pass assorted data in a expandable way */
 typedef struct openssl_item_st {
@@ -59,20 +56,20 @@ typedef struct {
 /* The following can be used to detect memory leaks in the SSLeay library.
  * It used, it turns on malloc checking */
 
-#define CRYPTO_MEM_CHECK_OFF 0x0     /* an enume */
-#define CRYPTO_MEM_CHECK_ON 0x1      /* a bit */
-#define CRYPTO_MEM_CHECK_ENABLE 0x2  /* a bit */
-#define CRYPTO_MEM_CHECK_DISABLE 0x3 /* an enume */
+#define CRYPTO_MEM_CHECK_OFF        0x0 /* an enume */
+#define CRYPTO_MEM_CHECK_ON         0x1 /* a bit */
+#define CRYPTO_MEM_CHECK_ENABLE     0x2 /* a bit */
+#define CRYPTO_MEM_CHECK_DISABLE    0x3 /* an enum */
 
 /* The following are bit values to turn on or off options connected to the
  * malloc checking functionality */
 
 /* Adds time to the memory checking information */
-#define V_CRYPTO_MDEBUG_TIME 0x1 /* a bit */
+#define V_CRYPTO_MDEBUG_TIME    0x1 /* a bit */
 /* Adds thread number to the memory checking information */
-#define V_CRYPTO_MDEBUG_THREAD 0x2 /* a bit */
+#define V_CRYPTO_MDEBUG_THREAD  0x2 /* a bit */
 
-#define V_CRYPTO_MDEBUG_ALL (V_CRYPTO_MDEBUG_TIME | V_CRYPTO_MDEBUG_THREAD)
+#define V_CRYPTO_MDEBUG_ALL     (V_CRYPTO_MDEBUG_TIME | V_CRYPTO_MDEBUG_THREAD)
 
 /* predec of the BIO type */
 typedef struct bio_st BIO_dummy;
@@ -86,24 +83,24 @@ DECLARE_STACK_OF(void)
  * entry.
  */
 
-#define CRYPTO_EX_INDEX_BIO 0
-#define CRYPTO_EX_INDEX_SSL 1
-#define CRYPTO_EX_INDEX_SSL_CTX 2
-#define CRYPTO_EX_INDEX_SSL_SESSION 3
-#define CRYPTO_EX_INDEX_X509_STORE 4
-#define CRYPTO_EX_INDEX_X509_STORE_CTX 5
-#define CRYPTO_EX_INDEX_RSA 6
-#define CRYPTO_EX_INDEX_DSA 7
-#define CRYPTO_EX_INDEX_DH 8
-#define CRYPTO_EX_INDEX_ENGINE 9
-#define CRYPTO_EX_INDEX_X509 10
-#define CRYPTO_EX_INDEX_UI 11
-#define CRYPTO_EX_INDEX_ECDSA 12
-#define CRYPTO_EX_INDEX_ECDH 13
-#define CRYPTO_EX_INDEX_COMP 14
-#define CRYPTO_EX_INDEX_STORE 15
-#define CRYPTO_EX_INDEX_APP 16
-#define CRYPTO_EX_INDEX__COUNT 17
+#define CRYPTO_EX_INDEX_BIO             0
+#define CRYPTO_EX_INDEX_SSL             1
+#define CRYPTO_EX_INDEX_SSL_CTX         2
+#define CRYPTO_EX_INDEX_SSL_SESSION     3
+#define CRYPTO_EX_INDEX_X509_STORE      4
+#define CRYPTO_EX_INDEX_X509_STORE_CTX  5
+#define CRYPTO_EX_INDEX_RSA             6
+#define CRYPTO_EX_INDEX_DSA             7
+#define CRYPTO_EX_INDEX_DH              8
+#define CRYPTO_EX_INDEX_ENGINE          9
+#define CRYPTO_EX_INDEX_X509            10
+#define CRYPTO_EX_INDEX_UI              11
+#define CRYPTO_EX_INDEX_ECDSA           12
+#define CRYPTO_EX_INDEX_ECDH            13
+#define CRYPTO_EX_INDEX_COMP            14
+#define CRYPTO_EX_INDEX_STORE           15
+#define CRYPTO_EX_INDEX_APP             16
+#define CRYPTO_EX_INDEX__COUNT          17
 
 /* This is the default callbacks, but we can have others as well:
  * this is needed in Win32 where the application malloc and the
@@ -127,8 +124,8 @@ DECLARE_STACK_OF(void)
             CRYPTO_dbg_set_options, CRYPTO_dbg_get_options);        \
     } while (0)
 
-int CRYPTO_mem_ctrl(int mode);
-int CRYPTO_is_mem_check_on(void);
+VIGORTLS_EXPORT int CRYPTO_mem_ctrl(int mode);
+VIGORTLS_EXPORT int CRYPTO_is_mem_check_on(void);
 
 /* for applications */
 #define MemCheck_start() CRYPTO_mem_ctrl(CRYPTO_MEM_CHECK_ON)
@@ -154,28 +151,28 @@ int CRYPTO_is_mem_check_on(void);
     CRYPTO_malloc_locked((int)num, __FILE__, __LINE__)
 #define OPENSSL_free_locked(addr) CRYPTO_free_locked(addr)
 
-const char *SSLeay_version(int type);
-unsigned long SSLeay(void);
+VIGORTLS_EXPORT const char *SSLeay_version(int type);
+VIGORTLS_EXPORT unsigned long SSLeay(void);
 
-int OPENSSL_issetugid(void);
+VIGORTLS_EXPORT int OPENSSL_issetugid(void);
 
 /* Within a given class, get/register a new index */
-int CRYPTO_get_ex_new_index(int class_index, long argl, void *argp,
+VIGORTLS_EXPORT int CRYPTO_get_ex_new_index(int class_index, long argl, void *argp,
                             CRYPTO_EX_new *new_func, CRYPTO_EX_dup *dup_func,
                             CRYPTO_EX_free *free_func);
 /* Initialise/duplicate/free CRYPTO_EX_DATA variables corresponding to a given
  * class (invokes whatever per-class callbacks are applicable) */
-int CRYPTO_new_ex_data(int class_index, void *obj, CRYPTO_EX_DATA *ad);
-int CRYPTO_dup_ex_data(int class_index, CRYPTO_EX_DATA *to,
+VIGORTLS_EXPORT int CRYPTO_new_ex_data(int class_index, void *obj, CRYPTO_EX_DATA *ad);
+VIGORTLS_EXPORT int CRYPTO_dup_ex_data(int class_index, CRYPTO_EX_DATA *to,
                        CRYPTO_EX_DATA *from);
-void CRYPTO_free_ex_data(int class_index, void *obj, CRYPTO_EX_DATA *ad);
+VIGORTLS_EXPORT void CRYPTO_free_ex_data(int class_index, void *obj, CRYPTO_EX_DATA *ad);
 /* Get/set data in a CRYPTO_EX_DATA variable corresponding to a particular index
  * (relative to the class type involved) */
-int CRYPTO_set_ex_data(CRYPTO_EX_DATA *ad, int idx, void *val);
-void *CRYPTO_get_ex_data(const CRYPTO_EX_DATA *ad, int idx);
+VIGORTLS_EXPORT int CRYPTO_set_ex_data(CRYPTO_EX_DATA *ad, int idx, void *val);
+VIGORTLS_EXPORT void *CRYPTO_get_ex_data(const CRYPTO_EX_DATA *ad, int idx);
 /* This function cleans up all "ex_data" state. It mustn't be called under
  * potential race-conditions. */
-void CRYPTO_cleanup_all_ex_data(void);
+VIGORTLS_EXPORT void CRYPTO_cleanup_all_ex_data(void);
 
 /*
  * These are the functions for the old threading API. These are all now no-ops
@@ -228,54 +225,65 @@ typedef struct crypto_threadid_st {
 
 /* CRYPTO_set_mem_functions includes CRYPTO_set_locked_mem_functions --
  * call the latter last if you need different functions */
-int CRYPTO_set_mem_functions(void *(*m)(size_t), void *(*r)(void *, size_t),
-                             void (*f)(void *));
-int CRYPTO_set_locked_mem_functions(void *(*m)(size_t),
-                                    void (*free_func)(void *));
-int CRYPTO_set_mem_ex_functions(void *(*m)(size_t, const char *, int),
-                                void *(*r)(void *, size_t, const char *, int),
-                                void (*f)(void *));
-int CRYPTO_set_locked_mem_ex_functions(void *(*m)(size_t, const char *, int),
-                                       void (*free_func)(void *));
-int CRYPTO_set_mem_debug_functions(
+VIGORTLS_EXPORT int CRYPTO_set_mem_functions(void *(*m)(size_t),
+                                             void *(*r)(void *, size_t),
+                                             void (*f)(void *));
+VIGORTLS_EXPORT int CRYPTO_set_locked_mem_functions(void *(*m)(size_t),
+                                                    void (*free_func)(void *));
+VIGORTLS_EXPORT int
+CRYPTO_set_mem_ex_functions(void *(*m)(size_t, const char *, int),
+                            void *(*r)(void *, size_t, const char *, int),
+                            void (*f)(void *));
+VIGORTLS_EXPORT int
+CRYPTO_set_locked_mem_ex_functions(void *(*m)(size_t, const char *, int),
+                                   void (*free_func)(void *));
+VIGORTLS_EXPORT int CRYPTO_set_mem_debug_functions(
     void (*m)(void *, int, const char *, int, int),
     void (*r)(void *, void *, int, const char *, int, int),
     void (*f)(void *, int), void (*so)(long), long (*go)(void));
-void CRYPTO_get_mem_functions(void *(**m)(size_t), void *(**r)(void *, size_t),
-                              void (**f)(void *));
-void CRYPTO_get_locked_mem_functions(void *(**m)(size_t), void (**f)(void *));
-void CRYPTO_get_mem_ex_functions(void *(**m)(size_t, const char *, int),
-                                 void *(**r)(void *, size_t, const char *, int),
-                                 void (**f)(void *));
-void CRYPTO_get_locked_mem_ex_functions(void *(**m)(size_t, const char *, int),
-                                        void (**f)(void *));
-void CRYPTO_get_mem_debug_functions(
+VIGORTLS_EXPORT void CRYPTO_get_mem_functions(void *(**m)(size_t),
+                                              void *(**r)(void *, size_t),
+                                              void (**f)(void *));
+VIGORTLS_EXPORT void CRYPTO_get_locked_mem_functions(void *(**m)(size_t),
+                                                     void (**f)(void *));
+VIGORTLS_EXPORT void
+CRYPTO_get_mem_ex_functions(void *(**m)(size_t, const char *, int),
+                            void *(**r)(void *, size_t, const char *, int),
+                            void (**f)(void *));
+VIGORTLS_EXPORT void
+CRYPTO_get_locked_mem_ex_functions(void *(**m)(size_t, const char *, int),
+                                   void (**f)(void *));
+VIGORTLS_EXPORT void CRYPTO_get_mem_debug_functions(
     void (**m)(void *, int, const char *, int, int),
     void (**r)(void *, void *, int, const char *, int, int),
     void (**f)(void *, int), void (**so)(long), long (**go)(void));
 
-#ifndef VIGORTLS_INTERNAL
-void *CRYPTO_malloc_locked(int num, const char *file, int line);
-void CRYPTO_free_locked(void *ptr);
-void *CRYPTO_malloc(int num, const char *file, int line);
-char *CRYPTO_strdup(const char *str, const char *file, int line);
-void CRYPTO_free(void *ptr);
-void *CRYPTO_realloc(void *addr, int num, const char *file, int line);
+#ifndef VIGORTLS_IMPLEMENTATION
+VIGORTLS_EXPORT void *CRYPTO_malloc_locked(int num, const char *file, int line);
+VIGORTLS_EXPORT void CRYPTO_free_locked(void *ptr);
+VIGORTLS_EXPORT void *CRYPTO_malloc(int num, const char *file, int line);
+VIGORTLS_EXPORT char *CRYPTO_strdup(const char *str, const char *file,
+                                    int line);
+VIGORTLS_EXPORT void CRYPTO_free(void *ptr);
+VIGORTLS_EXPORT void *CRYPTO_realloc(void *addr, int num, const char *file,
+                                     int line);
 #endif
-void *CRYPTO_realloc_clean(void *addr, int old_num, int num, const char *file,
-                           int line);
-void *CRYPTO_remalloc(void *addr, int num, const char *file, int line);
+VIGORTLS_EXPORT void *CRYPTO_realloc_clean(void *addr, int old_num, int num,
+                                           const char *file, int line);
+VIGORTLS_EXPORT void *CRYPTO_remalloc(void *addr, int num, const char *file,
+                                      int line);
 
-void vigortls_zeroize(void *ptr, size_t len);
-void OPENSSL_cleanse(void *ptr, size_t len);
+VIGORTLS_EXPORT void vigortls_zeroize(void *ptr, size_t len);
+VIGORTLS_EXPORT void OPENSSL_cleanse(void *ptr, size_t len);
 
-void CRYPTO_set_mem_debug_options(long bits);
-long CRYPTO_get_mem_debug_options(void);
+VIGORTLS_EXPORT void CRYPTO_set_mem_debug_options(long bits);
+VIGORTLS_EXPORT long CRYPTO_get_mem_debug_options(void);
 
 #define CRYPTO_push_info(info) CRYPTO_push_info_(info, __FILE__, __LINE__);
-int CRYPTO_push_info_(const char *info, const char *file, int line);
-int CRYPTO_pop_info(void);
-int CRYPTO_remove_all_info(void);
+VIGORTLS_EXPORT int CRYPTO_push_info_(const char *info, const char *file,
+                                      int line);
+VIGORTLS_EXPORT int CRYPTO_pop_info(void);
+VIGORTLS_EXPORT int CRYPTO_remove_all_info(void);
 
 /* Default debugging functions (enabled by CRYPTO_malloc_debug_init() macro;
  * used as default in CRYPTO_MDEBUG compilations): */
@@ -284,11 +292,12 @@ int CRYPTO_remove_all_info(void);
  * 0:    called before the actual memory allocation has taken place
  * 1:    called after the actual memory allocation has taken place
  */
-void CRYPTO_dbg_malloc(void *addr, int num, const char *file, int line,
-                       int before_p);
-void CRYPTO_dbg_realloc(void *addr1, void *addr2, int num, const char *file,
-                        int line, int before_p);
-void CRYPTO_dbg_free(void *addr, int before_p);
+VIGORTLS_EXPORT void CRYPTO_dbg_malloc(void *addr, int num, const char *file,
+                                       int line, int before_p);
+VIGORTLS_EXPORT void CRYPTO_dbg_realloc(void *addr1, void *addr2, int num,
+                                        const char *file, int line,
+                                        int before_p);
+VIGORTLS_EXPORT void CRYPTO_dbg_free(void *addr, int before_p);
 /* Tell the debugging code about options.  By default, the following values
  * apply:
  *
@@ -297,17 +306,18 @@ void CRYPTO_dbg_free(void *addr, int before_p);
  * V_CRYPTO_MDEBUG_THREAD (2):  Set the "Show Thread Number" option.
  * V_CRYPTO_MDEBUG_ALL (3):     1 + 2
  */
-void CRYPTO_dbg_set_options(long bits);
-long CRYPTO_dbg_get_options(void);
+VIGORTLS_EXPORT void CRYPTO_dbg_set_options(long bits);
+VIGORTLS_EXPORT long CRYPTO_dbg_get_options(void);
 
-void CRYPTO_mem_leaks_fp(FILE *);
-void CRYPTO_mem_leaks(struct bio_st *bio);
+VIGORTLS_EXPORT void CRYPTO_mem_leaks_fp(FILE *);
+VIGORTLS_EXPORT void CRYPTO_mem_leaks(struct bio_st *bio);
 /* unsigned long order, char *file, int line, int num_bytes, char *addr */
 typedef void *CRYPTO_MEM_LEAK_CB(unsigned long, const char *, int, int, void *);
-void CRYPTO_mem_leaks_cb(CRYPTO_MEM_LEAK_CB *cb);
+VIGORTLS_EXPORT void CRYPTO_mem_leaks_cb(CRYPTO_MEM_LEAK_CB *cb);
 
 /* die if we have to */
-void OpenSSLDie(const char *file, int line, const char *assertion);
+VIGORTLS_EXPORT void OpenSSLDie(const char *file, int line,
+                                const char *assertion);
 #define OPENSSL_assert(e) \
     (void)((e) ? 0 : (OpenSSLDie(__FILE__, __LINE__, #e), 1))
 
@@ -319,15 +329,16 @@ void OpenSSLDie(const char *file, int line, const char *assertion);
  * defined order as the return value when in_a != in_b is undefined, other than
  * to be non-zero.
  */
-int CRYPTO_memcmp(const volatile void *volatile in_a,
-                  const volatile void *volatile in_b, size_t len);
+VIGORTLS_EXPORT int CRYPTO_memcmp(const volatile void *volatile in_a,
+                                  const volatile void *volatile in_b,
+                                  size_t len);
 
 /* BEGIN ERROR CODES */
 /*
  * The following lines are auto generated by the script mkerr.pl. Any changes
  * made after this point may be overwritten when the script is next run.
  */
-void ERR_load_CRYPTO_strings(void);
+VIGORTLS_EXPORT void ERR_load_CRYPTO_strings(void);
 
 /* Error codes for the CRYPTO functions. */
 

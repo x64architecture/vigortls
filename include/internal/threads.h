@@ -44,23 +44,28 @@ typedef pthread_once_t CRYPTO_ONCE;
 
 #endif
 
-CRYPTO_MUTEX *CRYPTO_thread_new(void);
-void CRYPTO_thread_cleanup(CRYPTO_MUTEX *lock);
+VIGORTLS_EXPORT CRYPTO_MUTEX *CRYPTO_thread_new(void);
+VIGORTLS_EXPORT void CRYPTO_thread_cleanup(CRYPTO_MUTEX *lock);
 
-int CRYPTO_thread_read_lock(CRYPTO_MUTEX *lock);
-int CRYPTO_thread_write_lock(CRYPTO_MUTEX *lock);
-int CRYPTO_thread_unlock(CRYPTO_MUTEX *lock);
+VIGORTLS_EXPORT int CRYPTO_thread_read_lock(CRYPTO_MUTEX *lock);
+VIGORTLS_EXPORT int CRYPTO_thread_write_lock(CRYPTO_MUTEX *lock);
+VIGORTLS_EXPORT int CRYPTO_thread_unlock(CRYPTO_MUTEX *lock);
 
-int CRYPTO_thread_run_once(CRYPTO_ONCE *once, void(*init)(void));
+VIGORTLS_EXPORT int CRYPTO_thread_run_once(CRYPTO_ONCE *once,
+                                           void (*init)(void));
 
-int CRYPTO_thread_init_local(CRYPTO_THREAD_LOCAL *key, void(*cleanup)(void *));
-void *CRYPTO_thread_get_local(CRYPTO_THREAD_LOCAL *key);
-int CRYPTO_thread_set_local(CRYPTO_THREAD_LOCAL *key, void *val);
-int CRYPTO_thread_cleanup_local(CRYPTO_THREAD_LOCAL *key);
+VIGORTLS_EXPORT int CRYPTO_thread_init_local(CRYPTO_THREAD_LOCAL *key,
+                                             void (*cleanup)(void *));
+VIGORTLS_EXPORT void *CRYPTO_thread_get_local(CRYPTO_THREAD_LOCAL *key);
+VIGORTLS_EXPORT int CRYPTO_thread_set_local(CRYPTO_THREAD_LOCAL *key,
+                                            void *val);
+VIGORTLS_EXPORT int CRYPTO_thread_cleanup_local(CRYPTO_THREAD_LOCAL *key);
 
-CRYPTO_THREAD_ID CRYPTO_thread_get_current_id(void);
-int CRYPTO_thread_compare_id(CRYPTO_THREAD_ID a, CRYPTO_THREAD_ID b);
+VIGORTLS_EXPORT CRYPTO_THREAD_ID CRYPTO_thread_get_current_id(void);
+VIGORTLS_EXPORT int CRYPTO_thread_compare_id(CRYPTO_THREAD_ID a,
+                                             CRYPTO_THREAD_ID b);
 
-int CRYPTO_atomic_add(int *val, int amount, int *ret, CRYPTO_MUTEX *lock);
+VIGORTLS_EXPORT int CRYPTO_atomic_add(int *val, int amount, int *ret,
+                                      CRYPTO_MUTEX *lock);
 
 #endif

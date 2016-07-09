@@ -26,12 +26,6 @@ elseif (${ARCH} STREQUAL "arm")
 
         aes-armv4.${ASM_EXT}
     )
-else()
-    set(
-        AES_ARCH_SOURCES
-
-        aes.c
-    )
 endif()
 
 add_library(
@@ -39,6 +33,7 @@ add_library(
 
     OBJECT
 
+    aes.c
     aes_modes.c
     aes_ige.c
 

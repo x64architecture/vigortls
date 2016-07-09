@@ -54,22 +54,22 @@ ASN1_SEQUENCE_enc(X509_REQ_INFO, enc, rinf_cb) = {
 
 X509_REQ_INFO *d2i_X509_REQ_INFO(X509_REQ_INFO **a, const uint8_t **in, long len)
 {
-    return (X509_REQ_INFO *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, &X509_REQ_INFO_it);
+    return (X509_REQ_INFO *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, ASN1_ITEM_rptr(X509_REQ_INFO));
 }
 
 int i2d_X509_REQ_INFO(X509_REQ_INFO *a, uint8_t **out)
 {
-    return ASN1_item_i2d((ASN1_VALUE *)a, out, &X509_REQ_INFO_it);
+    return ASN1_item_i2d((ASN1_VALUE *)a, out, ASN1_ITEM_rptr(X509_REQ_INFO));
 }
 
 X509_REQ_INFO *X509_REQ_INFO_new(void)
 {
-    return (X509_REQ_INFO *)ASN1_item_new(&X509_REQ_INFO_it);
+    return (X509_REQ_INFO *)ASN1_item_new(ASN1_ITEM_rptr(X509_REQ_INFO));
 }
 
 void X509_REQ_INFO_free(X509_REQ_INFO *a)
 {
-    ASN1_item_free((ASN1_VALUE *)a, &X509_REQ_INFO_it);
+    ASN1_item_free((ASN1_VALUE *)a, ASN1_ITEM_rptr(X509_REQ_INFO));
 }
 
 ASN1_SEQUENCE_ref(X509_REQ, 0) = {
@@ -80,25 +80,25 @@ ASN1_SEQUENCE_ref(X509_REQ, 0) = {
 
 X509_REQ *d2i_X509_REQ(X509_REQ **a, const uint8_t **in, long len)
 {
-    return (X509_REQ *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, &X509_REQ_it);
+    return (X509_REQ *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, ASN1_ITEM_rptr(X509_REQ));
 }
 
 int i2d_X509_REQ(X509_REQ *a, uint8_t **out)
 {
-    return ASN1_item_i2d((ASN1_VALUE *)a, out, &X509_REQ_it);
+    return ASN1_item_i2d((ASN1_VALUE *)a, out, ASN1_ITEM_rptr(X509_REQ));
 }
 
 X509_REQ *X509_REQ_new(void)
 {
-    return (X509_REQ *)ASN1_item_new(&X509_REQ_it);
+    return (X509_REQ *)ASN1_item_new(ASN1_ITEM_rptr(X509_REQ));
 }
 
 void X509_REQ_free(X509_REQ *a)
 {
-    ASN1_item_free((ASN1_VALUE *)a, &X509_REQ_it);
+    ASN1_item_free((ASN1_VALUE *)a, ASN1_ITEM_rptr(X509_REQ));
 }
 
 X509_REQ *X509_REQ_dup(X509_REQ *x)
 {
-    return ASN1_item_dup(&X509_REQ_it, x);
+    return ASN1_item_dup(ASN1_ITEM_rptr(X509_REQ), x);
 }

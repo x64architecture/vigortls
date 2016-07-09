@@ -21,37 +21,37 @@ ASN1_ITEM_TEMPLATE_END(X509_ALGORS)
 
 X509_ALGOR *d2i_X509_ALGOR(X509_ALGOR **a, const uint8_t **in, long len)
 {
-    return (X509_ALGOR *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, &X509_ALGOR_it);
+    return (X509_ALGOR *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, ASN1_ITEM_rptr(X509_ALGOR));
 }
 
 int i2d_X509_ALGOR(X509_ALGOR *a, uint8_t **out)
 {
-    return ASN1_item_i2d((ASN1_VALUE *)a, out, &X509_ALGOR_it);
+    return ASN1_item_i2d((ASN1_VALUE *)a, out, ASN1_ITEM_rptr(X509_ALGOR));
 }
 
 X509_ALGOR *X509_ALGOR_new(void)
 {
-    return (X509_ALGOR *)ASN1_item_new(&X509_ALGOR_it);
+    return (X509_ALGOR *)ASN1_item_new(ASN1_ITEM_rptr(X509_ALGOR));
 }
 
 void X509_ALGOR_free(X509_ALGOR *a)
 {
-    ASN1_item_free((ASN1_VALUE *)a, &X509_ALGOR_it);
+    ASN1_item_free((ASN1_VALUE *)a, ASN1_ITEM_rptr(X509_ALGOR));
 }
 
 X509_ALGORS *d2i_X509_ALGORS(X509_ALGORS **a, const uint8_t **in, long len)
 {
-    return (X509_ALGORS *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, &X509_ALGORS_it);
+    return (X509_ALGORS *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, ASN1_ITEM_rptr(X509_ALGORS));
 }
 
 int i2d_X509_ALGORS(X509_ALGORS *a, uint8_t **out)
 {
-    return ASN1_item_i2d((ASN1_VALUE *)a, out, &X509_ALGORS_it);
+    return ASN1_item_i2d((ASN1_VALUE *)a, out, ASN1_ITEM_rptr(X509_ALGORS));
 }
 
 X509_ALGOR *X509_ALGOR_dup(X509_ALGOR *x)
 {
-    return ASN1_item_dup(&X509_ALGOR_it, x);
+    return ASN1_item_dup(ASN1_ITEM_rptr(X509_ALGORS), x);
 }
 
 int X509_ALGOR_set0(X509_ALGOR * alg, ASN1_OBJECT * aobj, int ptype, void *pval)

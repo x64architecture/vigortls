@@ -17,6 +17,7 @@
 #ifndef OPENSSL_HEADER_BYTESTRING_H
 #define OPENSSL_HEADER_BYTESTRING_H
 
+#include <openssl/base.h>
 #include <sys/types.h>
 #include <stdint.h>
 
@@ -45,29 +46,29 @@ typedef struct cbs_st {
  * CBS_init sets |cbs| to point to |data|. It does not take ownership of
  * |data|.
  */
-void CBS_init(CBS *cbs, const uint8_t *data, size_t len);
+VIGORTLS_EXPORT void CBS_init(CBS *cbs, const uint8_t *data, size_t len);
 
 /*
  * CBS_dup sets |out| to point to cbs's |data| and |len|.  It results in two
  * CBS structs that point to the same buffer.
  */
-void CBS_dup(const CBS *cbs, CBS *out);
+VIGORTLS_EXPORT void CBS_dup(const CBS *cbs, CBS *out);
 
 /*
  * CBS_skip advances |cbs| by |len| bytes. It returns one on success and zero
  * otherwise.
  */
-int CBS_skip(CBS *cbs, size_t len);
+VIGORTLS_EXPORT int CBS_skip(CBS *cbs, size_t len);
 
 /*
  * CBS_data returns a pointer to the contents of |cbs|.
  */
-const uint8_t *CBS_data(const CBS *cbs);
+VIGORTLS_EXPORT const uint8_t *CBS_data(const CBS *cbs);
 
 /*
  * CBS_len returns the number of bytes remaining in |cbs|.
  */
-size_t CBS_len(const CBS *cbs);
+VIGORTLS_EXPORT size_t CBS_len(const CBS *cbs);
 
 /*
  * CBS_stow copies the current contents of |cbs| into |*out_ptr| and
@@ -76,7 +77,8 @@ size_t CBS_len(const CBS *cbs);
  * success, |*out_ptr| should be freed with free. If |cbs| is empty,
  * |*out_ptr| will be NULL.
  */
-int CBS_stow(const CBS *cbs, uint8_t **out_ptr, size_t *out_len);
+VIGORTLS_EXPORT int CBS_stow(const CBS *cbs, uint8_t **out_ptr,
+                             size_t *out_len);
 
 /*
  * CBS_strdup copies the current contents of |cbs| into |*out_ptr| as a
@@ -87,79 +89,80 @@ int CBS_stow(const CBS *cbs, uint8_t **out_ptr, size_t *out_len);
  * NOTE: If |cbs| contains NUL bytes, the string will be truncated. Call
  * |CBS_contains_zero_byte(cbs)| to check for NUL bytes.
  */
-int CBS_strdup(const CBS *cbs, char **out_ptr);
+VIGORTLS_EXPORT int CBS_strdup(const CBS *cbs, char **out_ptr);
 
 /*
  * CBS_write_bytes writes all of the remaining data from |cbs| into |dest|
  * if it is at most |dest_len| bytes.  If |copied| is not NULL, it will be set
  * to the amount copied. It returns one on success and zero otherwise.
  */
-int CBS_write_bytes(const CBS *cbs, uint8_t *dest, size_t dest_len,
-                    size_t *copied);
+VIGORTLS_EXPORT int CBS_write_bytes(const CBS *cbs, uint8_t *dest,
+                                    size_t dest_len, size_t *copied);
 
 /*
  * CBS_contains_zero_byte returns one if the current contents of |cbs| contains
  * a NUL byte and zero otherwise.
  */
-int CBS_contains_zero_byte(const CBS *cbs);
+VIGORTLS_EXPORT int CBS_contains_zero_byte(const CBS *cbs);
 
 /*
  * CBS_mem_equal compares the current contents of |cbs| with the |len| bytes
  * starting at |data|. If they're equal, it returns one, otherwise zero. If the
  * lengths match, it uses a constant-time comparison.
  */
-int CBS_mem_equal(const CBS *cbs, const uint8_t *data, size_t len);
+VIGORTLS_EXPORT int CBS_mem_equal(const CBS *cbs, const uint8_t *data,
+                                  size_t len);
 
 /*
  * CBS_get_u8 sets |*out| to the next uint8_t from |cbs| and advances |cbs|. It
  * returns one on success and zero on error.
  */
-int CBS_get_u8(CBS *cbs, uint8_t *out);
+VIGORTLS_EXPORT int CBS_get_u8(CBS *cbs, uint8_t *out);
 
 /*
  * CBS_get_u16 sets |*out| to the next, big-endian uint16_t from |cbs| and
  * advances |cbs|. It returns one on success and zero on error.
  */
-int CBS_get_u16(CBS *cbs, uint16_t *out);
+VIGORTLS_EXPORT int CBS_get_u16(CBS *cbs, uint16_t *out);
 
 /*
  * CBS_get_u24 sets |*out| to the next, big-endian 24-bit value from |cbs| and
  * advances |cbs|. It returns one on success and zero on error.
  */
-int CBS_get_u24(CBS *cbs, uint32_t *out);
+VIGORTLS_EXPORT int CBS_get_u24(CBS *cbs, uint32_t *out);
 
 /*
  * CBS_get_u32 sets |*out| to the next, big-endian uint32_t value from |cbs|
  * and advances |cbs|. It returns one on success and zero on error.
  */
-int CBS_get_u32(CBS *cbs, uint32_t *out);
+VIGORTLS_EXPORT int CBS_get_u32(CBS *cbs, uint32_t *out);
 
 /*
  * CBS_get_bytes sets |*out| to the next |len| bytes from |cbs| and advances
  * |cbs|. It returns one on success and zero on error.
  */
-int CBS_get_bytes(CBS *cbs, CBS *out, size_t len);
+VIGORTLS_EXPORT int CBS_get_bytes(CBS *cbs, CBS *out, size_t len);
 
 /*
  * CBS_get_u8_length_prefixed sets |*out| to the contents of an 8-bit,
  * length-prefixed value from |cbs| and advances |cbs| over it. It returns one
  * on success and zero on error.
  */
-int CBS_get_u8_length_prefixed(CBS *cbs, CBS *out);
+VIGORTLS_EXPORT int CBS_get_u8_length_prefixed(CBS *cbs, CBS *out);
 
 /*
  * CBS_get_u16_length_prefixed sets |*out| to the contents of a 16-bit,
  * big-endian, length-prefixed value from |cbs| and advances |cbs| over it. It
  * returns one on success and zero on error.
  */
-int CBS_get_u16_length_prefixed(CBS *cbs, CBS *out);
+VIGORTLS_EXPORT int CBS_get_u16_length_prefixed(CBS *cbs, CBS *out);
 
 /*
  * CBS_get_u24_length_prefixed sets |*out| to the contents of a 24-bit,
  * big-endian, length-prefixed value from |cbs| and advances |cbs| over it. It
  * returns one on success and zero on error.
  */
-int CBS_get_u24_length_prefixed(CBS *cbs, CBS *out);
+VIGORTLS_EXPORT int CBS_get_u24_length_prefixed(CBS *cbs, CBS *out);
 
 /* Parsing ASN.1 */
 
@@ -170,14 +173,14 @@ int CBS_get_u24_length_prefixed(CBS *cbs, CBS *out);
  */
 
 /* Bits 8 and 7: class tag type: See X.690 section 8.1.2.2. */
-#define CBS_ASN1_UNIVERSAL 0x00
-#define CBS_ASN1_APPLICATION 0x40
-#define CBS_ASN1_CONTEXT_SPECIFIC 0x80
-#define CBS_ASN1_PRIVATE 0xc0
+#define CBS_ASN1_UNIVERSAL          0x00
+#define CBS_ASN1_APPLICATION        0x40
+#define CBS_ASN1_CONTEXT_SPECIFIC   0x80
+#define CBS_ASN1_PRIVATE            0xc0
 
 /* Bit 6: Primitive or constructed: See X.690 section 8.1.2.3. */
-#define CBS_ASN1_PRIMITIVE 0x00
-#define CBS_ASN1_CONSTRUCTED 0x20
+#define CBS_ASN1_PRIMITIVE          0x00
+#define CBS_ASN1_CONSTRUCTED        0x20
 
 /*
  * Bits 5 to 1 are the tag number.  See X.680 section 8.6 for tag numbers of
@@ -214,13 +217,14 @@ int CBS_get_u24_length_prefixed(CBS *cbs, CBS *out);
  *
  * Tag numbers greater than 30 are not supported (i.e. short form only).
  */
-int CBS_get_asn1(CBS *cbs, CBS *out, unsigned tag_value);
+VIGORTLS_EXPORT int CBS_get_asn1(CBS *cbs, CBS *out, unsigned tag_value);
 
 /*
  * CBS_get_asn1_element acts like |CBS_get_asn1| but |out| will include the
  * ASN.1 header bytes too.
  */
-int CBS_get_asn1_element(CBS *cbs, CBS *out, unsigned tag_value);
+VIGORTLS_EXPORT int CBS_get_asn1_element(CBS *cbs, CBS *out,
+                                         unsigned tag_value);
 
 /*
  * CBS_peek_asn1_tag looks ahead at the next ASN.1 tag and returns one
@@ -229,7 +233,7 @@ int CBS_get_asn1_element(CBS *cbs, CBS *out, unsigned tag_value);
  * it returns one, CBS_get_asn1 may still fail if the rest of the
  * element is malformed.
  */
-int CBS_peek_asn1_tag(const CBS *cbs, unsigned tag_value);
+VIGORTLS_EXPORT int CBS_peek_asn1_tag(const CBS *cbs, unsigned tag_value);
 
 /*
  * CBS_get_any_asn1_element sets |*out| to contain the next ASN.1 element from
@@ -240,8 +244,9 @@ int CBS_peek_asn1_tag(const CBS *cbs, unsigned tag_value);
  *
  * Tag numbers greater than 30 are not supported (i.e. short form only).
  */
-int CBS_get_any_asn1_element(CBS *cbs, CBS *out, unsigned *out_tag,
-                             size_t *out_header_len);
+VIGORTLS_EXPORT int CBS_get_any_asn1_element(CBS *cbs, CBS *out,
+                                             unsigned *out_tag,
+                                             size_t *out_header_len);
 
 /*
  * CBS_get_asn1_uint64 gets an ASN.1 INTEGER from |cbs| using |CBS_get_asn1|
@@ -249,7 +254,7 @@ int CBS_get_any_asn1_element(CBS *cbs, CBS *out, unsigned *out_tag,
  * where error includes the integer being negative, or too large to represent
  * in 64 bits.
  */
-int CBS_get_asn1_uint64(CBS *cbs, uint64_t *out);
+VIGORTLS_EXPORT int CBS_get_asn1_uint64(CBS *cbs, uint64_t *out);
 
 /*
  * CBS_get_optional_asn1 gets an optional explicitly-tagged element
@@ -258,7 +263,8 @@ int CBS_get_asn1_uint64(CBS *cbs, uint64_t *out);
  * one on success, whether or not the element was present, and zero on
  * decode failure.
  */
-int CBS_get_optional_asn1(CBS *cbs, CBS *out, int *out_present, unsigned tag);
+VIGORTLS_EXPORT int CBS_get_optional_asn1(CBS *cbs, CBS *out, int *out_present,
+                                          unsigned tag);
 
 /*
  * CBS_get_optional_asn1_octet_string gets an optional
@@ -268,8 +274,9 @@ int CBS_get_optional_asn1(CBS *cbs, CBS *out, int *out_present, unsigned tag);
  * NULL. It returns one on success, whether or not the element was
  * present, and zero on decode failure.
  */
-int CBS_get_optional_asn1_octet_string(CBS *cbs, CBS *out, int *out_present,
-                                       unsigned tag);
+VIGORTLS_EXPORT int CBS_get_optional_asn1_octet_string(CBS *cbs, CBS *out,
+                                                       int *out_present,
+                                                       unsigned tag);
 
 /*
  * CBS_get_optional_asn1_uint64 gets an optional explicitly-tagged
@@ -278,8 +285,9 @@ int CBS_get_optional_asn1_octet_string(CBS *cbs, CBS *out, int *out_present,
  * on success, whether or not the element was present, and zero on
  * decode failure.
  */
-int CBS_get_optional_asn1_uint64(CBS *cbs, uint64_t *out, unsigned tag,
-                                 uint64_t default_value);
+VIGORTLS_EXPORT int CBS_get_optional_asn1_uint64(CBS *cbs, uint64_t *out,
+                                                 unsigned tag,
+                                                 uint64_t default_value);
 
 /*
  * CBS_get_optional_asn1_bool gets an optional, explicitly-tagged BOOLEAN from
@@ -288,8 +296,8 @@ int CBS_get_optional_asn1_uint64(CBS *cbs, uint64_t *out, unsigned tag,
  * success, whether or not the element was present, and zero on decode
  * failure.
  */
-int CBS_get_optional_asn1_bool(CBS *cbs, int *out, unsigned tag,
-                               int default_value);
+VIGORTLS_EXPORT int CBS_get_optional_asn1_bool(CBS *cbs, int *out, unsigned tag,
+                                               int default_value);
 
 /*
  * CRYPTO ByteBuilder.
@@ -355,21 +363,21 @@ typedef struct cbb_st {
  * needed, the |initial_capacity| is just a hint. It returns one on success or
  * zero on error.
  */
-int CBB_init(CBB *cbb, size_t initial_capacity);
+VIGORTLS_EXPORT int CBB_init(CBB *cbb, size_t initial_capacity);
 
 /*
  * CBB_init_fixed initialises |cbb| to write to |len| bytes at |buf|. Since
  * |buf| cannot grow, trying to write more than |len| bytes will cause CBB
  * functions to fail. It returns one on success or zero on error.
  */
-int CBB_init_fixed(CBB *cbb, uint8_t *buf, size_t len);
+VIGORTLS_EXPORT int CBB_init_fixed(CBB *cbb, uint8_t *buf, size_t len);
 
 /*
  * CBB_cleanup frees all resources owned by |cbb| and other |CBB| objects
  * writing to the same buffer. This should be used in an error case where a
  * serialisation is abandoned.
  */
-void CBB_cleanup(CBB *cbb);
+VIGORTLS_EXPORT void CBB_cleanup(CBB *cbb);
 
 /*
  * CBB_finish completes any pending length prefix and sets |*out_data| to a
@@ -381,35 +389,35 @@ void CBB_cleanup(CBB *cbb);
  * |CBB_init| or |CBB_init_fixed|. It returns one on success and zero on
  * error.
  */
-int CBB_finish(CBB *cbb, uint8_t **out_data, size_t *out_len);
+VIGORTLS_EXPORT int CBB_finish(CBB *cbb, uint8_t **out_data, size_t *out_len);
 
 /*
  * CBB_flush causes any pending length prefixes to be written out and any child
  * |CBB| objects of |cbb| to be invalidated. It returns one on success or zero
  * on error.
  */
-int CBB_flush(CBB *cbb);
+VIGORTLS_EXPORT int CBB_flush(CBB *cbb);
 
 /*
  * CBB_add_u8_length_prefixed sets |*out_contents| to a new child of |cbb|. The
  * data written to |*out_contents| will be prefixed in |cbb| with an 8-bit
  * length. It returns one on success or zero on error.
  */
-int CBB_add_u8_length_prefixed(CBB *cbb, CBB *out_contents);
+VIGORTLS_EXPORT int CBB_add_u8_length_prefixed(CBB *cbb, CBB *out_contents);
 
 /*
  * CBB_add_u16_length_prefixed sets |*out_contents| to a new child of |cbb|.
  * The data written to |*out_contents| will be prefixed in |cbb| with a 16-bit,
  * big-endian length. It returns one on success or zero on error.
  */
-int CBB_add_u16_length_prefixed(CBB *cbb, CBB *out_contents);
+VIGORTLS_EXPORT int CBB_add_u16_length_prefixed(CBB *cbb, CBB *out_contents);
 
 /*
  * CBB_add_u24_length_prefixed sets |*out_contents| to a new child of |cbb|.
  * The data written to |*out_contents| will be prefixed in |cbb| with a 24-bit,
  * big-endian length. It returns one on success or zero on error.
  */
-int CBB_add_u24_length_prefixed(CBB *cbb, CBB *out_contents);
+VIGORTLS_EXPORT int CBB_add_u24_length_prefixed(CBB *cbb, CBB *out_contents);
 
 /*
  * CBB_add_asn sets |*out_contents| to a |CBB| into which the contents of an
@@ -418,13 +426,13 @@ int CBB_add_u24_length_prefixed(CBB *cbb, CBB *out_contents);
  * single octet identifiers are supported. It returns one on success or zero
  * on error.
  */
-int CBB_add_asn1(CBB *cbb, CBB *out_contents, uint8_t tag);
+VIGORTLS_EXPORT int CBB_add_asn1(CBB *cbb, CBB *out_contents, uint8_t tag);
 
 /*
  * CBB_add_bytes appends |len| bytes from |data| to |cbb|. It returns one on
  * success and zero otherwise.
  */
-int CBB_add_bytes(CBB *cbb, const uint8_t *data, size_t len);
+VIGORTLS_EXPORT int CBB_add_bytes(CBB *cbb, const uint8_t *data, size_t len);
 
 /*
  * CBB_add_space appends |len| bytes to |cbb| and sets |*out_data| to point to
@@ -432,34 +440,34 @@ int CBB_add_bytes(CBB *cbb, const uint8_t *data, size_t len);
  * actual contents to |*out_data|. It returns one on success and zero
  * otherwise.
  */
-int CBB_add_space(CBB *cbb, uint8_t **out_data, size_t len);
+VIGORTLS_EXPORT int CBB_add_space(CBB *cbb, uint8_t **out_data, size_t len);
 
 /*
  * CBB_add_u8 appends an 8-bit number from |value| to |cbb|. It returns one on
  * success and zero otherwise.
  */
-int CBB_add_u8(CBB *cbb, uint8_t value);
+VIGORTLS_EXPORT int CBB_add_u8(CBB *cbb, uint8_t value);
 
 /*
  * CBB_add_u8 appends a 16-bit, big-endian number from |value| to |cbb|. It
  * returns one on success and zero otherwise.
  */
-int CBB_add_u16(CBB *cbb, uint16_t value);
+VIGORTLS_EXPORT int CBB_add_u16(CBB *cbb, uint16_t value);
 
 /*
  * CBB_add_u24 appends a 24-bit, big-endian number from |value| to |cbb|. It
  * returns one on success and zero otherwise.
  */
-int CBB_add_u24(CBB *cbb, uint32_t value);
+VIGORTLS_EXPORT int CBB_add_u24(CBB *cbb, uint32_t value);
 
 /*
  * CBB_add_asn1_uint64 writes an ASN.1 INTEGER into |cbb| using |CBB_add_asn1|
  * and writes |value| in its contents. It returns one on success and zero on
  * error.
  */
-int CBB_add_asn1_uint64(CBB *cbb, uint64_t value);
+VIGORTLS_EXPORT int CBB_add_asn1_uint64(CBB *cbb, uint64_t value);
 
-#ifdef VIGORTLS_INTERNAL
+#ifdef VIGORTLS_IMPLEMENTATION
 /*
  * CBS_asn1_indefinite_to_definite reads an ASN.1 structure from |in|. If it
  * finds indefinite-length elements that otherwise appear to be valid DER, it
@@ -477,7 +485,7 @@ int CBB_add_asn1_uint64(CBB *cbb, uint64_t value);
  *
  * It returns one on success and zero otherwise.
  */
-int CBS_asn1_indefinite_to_definite(CBS *in, uint8_t **out, size_t *out_len);
+VIGORTLS_EXPORT int CBS_asn1_indefinite_to_definite(CBS *in, uint8_t **out, size_t *out_len);
 #endif
 
 #if defined(__cplusplus)

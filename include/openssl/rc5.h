@@ -12,7 +12,7 @@
 
 #include <stdint.h>
 
-#include <openssl/opensslconf.h>
+#include <openssl/base.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -44,18 +44,21 @@ typedef struct rc5_key_st {
     uint32_t data[2 * (RC5_16_ROUNDS + 1)];
 } RC5_32_KEY;
 
-void RC5_32_set_key(RC5_32_KEY *key, int len, const uint8_t *data, int rounds);
-void RC5_32_ecb_encrypt(const uint8_t *in, uint8_t *out, RC5_32_KEY *key,
-                        int enc);
-void RC5_32_encrypt(unsigned long *data, RC5_32_KEY *key);
-void RC5_32_decrypt(unsigned long *data, RC5_32_KEY *key);
-void RC5_32_cbc_encrypt(const uint8_t *in, uint8_t *out, long length,
-                        RC5_32_KEY *ks, uint8_t *iv, int enc);
-void RC5_32_cfb64_encrypt(const uint8_t *in, uint8_t *out, long length,
-                          RC5_32_KEY *schedule, uint8_t *ivec, int *num,
-                          int enc);
-void RC5_32_ofb64_encrypt(const uint8_t *in, uint8_t *out, long length,
-                          RC5_32_KEY *schedule, uint8_t *ivec, int *num);
+VIGORTLS_EXPORT void RC5_32_set_key(RC5_32_KEY *key, int len,
+                                    const uint8_t *data, int rounds);
+VIGORTLS_EXPORT void RC5_32_ecb_encrypt(const uint8_t *in, uint8_t *out,
+                                        RC5_32_KEY *key, int enc);
+VIGORTLS_EXPORT void RC5_32_encrypt(unsigned long *data, RC5_32_KEY *key);
+VIGORTLS_EXPORT void RC5_32_decrypt(unsigned long *data, RC5_32_KEY *key);
+VIGORTLS_EXPORT void RC5_32_cbc_encrypt(const uint8_t *in, uint8_t *out,
+                                        long length, RC5_32_KEY *ks,
+                                        uint8_t *iv, int enc);
+VIGORTLS_EXPORT void RC5_32_cfb64_encrypt(const uint8_t *in, uint8_t *out,
+                                          long length, RC5_32_KEY *schedule,
+                                          uint8_t *ivec, int *num, int enc);
+VIGORTLS_EXPORT void RC5_32_ofb64_encrypt(const uint8_t *in, uint8_t *out,
+                                          long length, RC5_32_KEY *schedule,
+                                          uint8_t *ivec, int *num);
 
 #ifdef __cplusplus
 }

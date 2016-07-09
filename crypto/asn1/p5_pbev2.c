@@ -24,22 +24,22 @@ ASN1_SEQUENCE(PBE2PARAM) = {
 
 PBE2PARAM *d2i_PBE2PARAM(PBE2PARAM **a, const uint8_t **in, long len)
 {
-    return (PBE2PARAM *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, &PBE2PARAM_it);
+    return (PBE2PARAM *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, ASN1_ITEM_rptr(PBE2PARAM));
 }
 
 int i2d_PBE2PARAM(PBE2PARAM *a, uint8_t **out)
 {
-    return ASN1_item_i2d((ASN1_VALUE *)a, out, &PBE2PARAM_it);
+    return ASN1_item_i2d((ASN1_VALUE *)a, out, ASN1_ITEM_rptr(PBE2PARAM));
 }
 
 PBE2PARAM *PBE2PARAM_new(void)
 {
-    return (PBE2PARAM *)ASN1_item_new(&PBE2PARAM_it);
+    return (PBE2PARAM *)ASN1_item_new(ASN1_ITEM_rptr(PBE2PARAM));
 }
 
 void PBE2PARAM_free(PBE2PARAM *a)
 {
-    ASN1_item_free((ASN1_VALUE *)a, &PBE2PARAM_it);
+    ASN1_item_free((ASN1_VALUE *)a, ASN1_ITEM_rptr(PBE2PARAM));
 }
 
 ASN1_SEQUENCE(PBKDF2PARAM) = {
@@ -51,22 +51,22 @@ ASN1_SEQUENCE(PBKDF2PARAM) = {
 
 PBKDF2PARAM *d2i_PBKDF2PARAM(PBKDF2PARAM **a, const uint8_t **in, long len)
 {
-    return (PBKDF2PARAM *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, &PBKDF2PARAM_it);
+    return (PBKDF2PARAM *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, ASN1_ITEM_rptr(PBKDF2PARAM));
 }
 
 int i2d_PBKDF2PARAM(PBKDF2PARAM *a, uint8_t **out)
 {
-    return ASN1_item_i2d((ASN1_VALUE *)a, out, &PBKDF2PARAM_it);
+    return ASN1_item_i2d((ASN1_VALUE *)a, out, ASN1_ITEM_rptr(PBKDF2PARAM));
 }
 
 PBKDF2PARAM *PBKDF2PARAM_new(void)
 {
-    return (PBKDF2PARAM *)ASN1_item_new(&PBKDF2PARAM_it);
+    return (PBKDF2PARAM *)ASN1_item_new(ASN1_ITEM_rptr(PBKDF2PARAM));
 }
 
 void PBKDF2PARAM_free(PBKDF2PARAM *a)
 {
-    ASN1_item_free((ASN1_VALUE *)a, &PBKDF2PARAM_it);
+    ASN1_item_free((ASN1_VALUE *)a, ASN1_ITEM_rptr(PBKDF2PARAM));
 }
 
 /* Return an algorithm identifier for a PKCS#5 v2.0 PBE algorithm:

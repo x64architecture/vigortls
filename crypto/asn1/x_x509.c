@@ -28,22 +28,22 @@ ASN1_SEQUENCE_enc(X509_CINF, enc, 0) = {
 
 X509_CINF *d2i_X509_CINF(X509_CINF **a, const uint8_t **in, long len)
 {
-    return (X509_CINF *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, &X509_CINF_it);
+    return (X509_CINF *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, ASN1_ITEM_rptr(X509_CINF));
 }
 
 int i2d_X509_CINF(X509_CINF *a, uint8_t **out)
 {
-    return ASN1_item_i2d((ASN1_VALUE *)a, out, &X509_CINF_it);
+    return ASN1_item_i2d((ASN1_VALUE *)a, out, ASN1_ITEM_rptr(X509_CINF));
 }
 
 X509_CINF *X509_CINF_new(void)
 {
-    return (X509_CINF *)ASN1_item_new(&X509_CINF_it);
+    return (X509_CINF *)ASN1_item_new(ASN1_ITEM_rptr(X509_CINF));
 }
 
 void X509_CINF_free(X509_CINF *a)
 {
-    ASN1_item_free((ASN1_VALUE *)a, &X509_CINF_it);
+    ASN1_item_free((ASN1_VALUE *)a, ASN1_ITEM_rptr(X509_CINF));
 }
 
 /* X509 top level structure needs a bit of customisation */
@@ -98,27 +98,27 @@ ASN1_SEQUENCE_ref(X509, x509_cb) = {
 
 X509 *d2i_X509(X509 **a, const uint8_t **in, long len)
 {
-    return (X509 *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, &X509_it);
+    return (X509 *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, ASN1_ITEM_rptr(X509));
 }
 
 int i2d_X509(X509 *a, uint8_t **out)
 {
-    return ASN1_item_i2d((ASN1_VALUE *)a, out, &X509_it);
+    return ASN1_item_i2d((ASN1_VALUE *)a, out, ASN1_ITEM_rptr(X509));
 }
 
 X509 *X509_new(void)
 {
-    return (X509 *)ASN1_item_new(&X509_it);
+    return (X509 *)ASN1_item_new(ASN1_ITEM_rptr(X509));
 }
 
 void X509_free(X509 *a)
 {
-    ASN1_item_free((ASN1_VALUE *)a, &X509_it);
+    ASN1_item_free((ASN1_VALUE *)a, ASN1_ITEM_rptr(X509));
 }
 
 X509 *X509_dup(X509 *x)
 {
-    return ASN1_item_dup(&X509_it, x);
+    return ASN1_item_dup(ASN1_ITEM_rptr(X509), x);
 }
 
 int X509_get_ex_new_index(long argl, void *argp, CRYPTO_EX_new *new_func,

@@ -36,14 +36,21 @@ static ASN1_PRIMITIVE_FUNCS long_pf = {
 };
 
 ASN1_ITEM_start(LONG)
-    ASN1_ITYPE_PRIMITIVE,
-    V_ASN1_INTEGER, NULL, 0, &long_pf, ASN1_LONG_UNDEF, "LONG" ASN1_ITEM_end(LONG)
+    .itype = ASN1_ITYPE_PRIMITIVE,
+    .utype = V_ASN1_INTEGER,
+    .funcs = &long_pf,
+    .size = ASN1_LONG_UNDEF,
+    .sname = "LONG"
+ASN1_ITEM_end(LONG)
 
-                                                            ASN1_ITEM_start(ZLONG)
-                                                                ASN1_ITYPE_PRIMITIVE,
-    V_ASN1_INTEGER, NULL, 0, &long_pf, 0, "ZLONG" ASN1_ITEM_end(ZLONG)
+ASN1_ITEM_start(ZLONG)
+    .itype = ASN1_ITYPE_PRIMITIVE,
+    .utype = V_ASN1_INTEGER,
+    .funcs = &long_pf,
+    .sname = "ZLONG"
+ASN1_ITEM_end(ZLONG)
 
-                                              static int long_new(ASN1_VALUE **pval, const ASN1_ITEM *it)
+static int long_new(ASN1_VALUE **pval, const ASN1_ITEM *it)
 {
     *(long *)pval = it->size;
     return 1;

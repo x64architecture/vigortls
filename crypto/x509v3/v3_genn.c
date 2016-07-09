@@ -19,22 +19,22 @@ ASN1_SEQUENCE(OTHERNAME) = {
 
 OTHERNAME *d2i_OTHERNAME(OTHERNAME **a, const uint8_t **in, long len)
 {
-    return (OTHERNAME *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, &OTHERNAME_it);
+    return (OTHERNAME *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, ASN1_ITEM_rptr(OTHERNAME));
 }
 
 int i2d_OTHERNAME(OTHERNAME *a, uint8_t **out)
 {
-    return ASN1_item_i2d((ASN1_VALUE *)a, out, &OTHERNAME_it);
+    return ASN1_item_i2d((ASN1_VALUE *)a, out, ASN1_ITEM_rptr(OTHERNAME));
 }
 
 OTHERNAME *OTHERNAME_new(void)
 {
-    return (OTHERNAME *)ASN1_item_new(&OTHERNAME_it);
+    return (OTHERNAME *)ASN1_item_new(ASN1_ITEM_rptr(OTHERNAME));
 }
 
 void OTHERNAME_free(OTHERNAME *a)
 {
-    ASN1_item_free((ASN1_VALUE *)a, &OTHERNAME_it);
+    ASN1_item_free((ASN1_VALUE *)a, ASN1_ITEM_rptr(OTHERNAME));
 }
 
 ASN1_SEQUENCE(EDIPARTYNAME) = {
@@ -44,22 +44,22 @@ ASN1_SEQUENCE(EDIPARTYNAME) = {
 
 EDIPARTYNAME *d2i_EDIPARTYNAME(EDIPARTYNAME **a, const uint8_t **in, long len)
 {
-    return (EDIPARTYNAME *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, &EDIPARTYNAME_it);
+    return (EDIPARTYNAME *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, ASN1_ITEM_rptr(EDIPARTYNAME));
 }
 
 int i2d_EDIPARTYNAME(EDIPARTYNAME *a, uint8_t **out)
 {
-    return ASN1_item_i2d((ASN1_VALUE *)a, out, &EDIPARTYNAME_it);
+    return ASN1_item_i2d((ASN1_VALUE *)a, out, ASN1_ITEM_rptr(EDIPARTYNAME));
 }
 
 EDIPARTYNAME *EDIPARTYNAME_new(void)
 {
-    return (EDIPARTYNAME *)ASN1_item_new(&EDIPARTYNAME_it);
+    return (EDIPARTYNAME *)ASN1_item_new(ASN1_ITEM_rptr(EDIPARTYNAME));
 }
 
 void EDIPARTYNAME_free(EDIPARTYNAME *a)
 {
-    ASN1_item_free((ASN1_VALUE *)a, &EDIPARTYNAME_it);
+    ASN1_item_free((ASN1_VALUE *)a, ASN1_ITEM_rptr(EDIPARTYNAME));
 }
 
 ASN1_CHOICE(GENERAL_NAME) = {
@@ -78,22 +78,22 @@ ASN1_CHOICE(GENERAL_NAME) = {
 
 GENERAL_NAME *d2i_GENERAL_NAME(GENERAL_NAME **a, const uint8_t **in, long len)
 {
-    return (GENERAL_NAME *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, &GENERAL_NAME_it);
+    return (GENERAL_NAME *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, ASN1_ITEM_rptr(GENERAL_NAME));
 }
 
 int i2d_GENERAL_NAME(GENERAL_NAME *a, uint8_t **out)
 {
-    return ASN1_item_i2d((ASN1_VALUE *)a, out, &GENERAL_NAME_it);
+    return ASN1_item_i2d((ASN1_VALUE *)a, out, ASN1_ITEM_rptr(GENERAL_NAME));
 }
 
 GENERAL_NAME *GENERAL_NAME_new(void)
 {
-    return (GENERAL_NAME *)ASN1_item_new(&GENERAL_NAME_it);
+    return (GENERAL_NAME *)ASN1_item_new(ASN1_ITEM_rptr(GENERAL_NAME));
 }
 
 void GENERAL_NAME_free(GENERAL_NAME *a)
 {
-    ASN1_item_free((ASN1_VALUE *)a, &GENERAL_NAME_it);
+    ASN1_item_free((ASN1_VALUE *)a, ASN1_ITEM_rptr(GENERAL_NAME));
 }
 
 ASN1_ITEM_TEMPLATE(GENERAL_NAMES) = ASN1_EX_TEMPLATE_TYPE(ASN1_TFLG_SEQUENCE_OF, 0, GeneralNames, GENERAL_NAME)
@@ -101,22 +101,22 @@ ASN1_ITEM_TEMPLATE_END(GENERAL_NAMES)
 
 GENERAL_NAMES *d2i_GENERAL_NAMES(GENERAL_NAMES **a, const uint8_t **in, long len)
 {
-    return (GENERAL_NAMES *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, &GENERAL_NAMES_it);
+    return (GENERAL_NAMES *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, ASN1_ITEM_rptr(GENERAL_NAMES));
 }
 
 int i2d_GENERAL_NAMES(GENERAL_NAMES *a, uint8_t **out)
 {
-    return ASN1_item_i2d((ASN1_VALUE *)a, out, &GENERAL_NAMES_it);
+    return ASN1_item_i2d((ASN1_VALUE *)a, out, ASN1_ITEM_rptr(GENERAL_NAMES));
 }
 
 GENERAL_NAMES *GENERAL_NAMES_new(void)
 {
-    return (GENERAL_NAMES *)ASN1_item_new(&GENERAL_NAMES_it);
+    return (GENERAL_NAMES *)ASN1_item_new(ASN1_ITEM_rptr(GENERAL_NAMES));
 }
 
 void GENERAL_NAMES_free(GENERAL_NAMES *a)
 {
-    ASN1_item_free((ASN1_VALUE *)a, &GENERAL_NAMES_it);
+    ASN1_item_free((ASN1_VALUE *)a, ASN1_ITEM_rptr(GENERAL_NAMES));
 }
 
 GENERAL_NAME *GENERAL_NAME_dup(GENERAL_NAME * a)

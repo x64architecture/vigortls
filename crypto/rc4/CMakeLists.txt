@@ -12,12 +12,6 @@ elseif (${ARCH} STREQUAL "x86")
 
         rc4-586.${ASM_EXT}
     )
-else()
-set(
-    RC4_ARCH_SOURCES
-
-    rc4.c
-) 
 endif()
 
 add_library(
@@ -25,6 +19,7 @@ add_library(
 
     OBJECT
 
+    rc4.c
     ${RC4_ARCH_SOURCES}
 )
 

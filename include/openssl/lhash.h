@@ -10,10 +10,8 @@
 #ifndef HEADER_LHASH_H
 #define HEADER_LHASH_H
 
-#include <openssl/opensslconf.h>
-#include <stdio.h>
-
 #include <openssl/bio.h>
+#include <openssl/base.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -30,12 +28,14 @@ typedef unsigned long (*LHASH_HASH_FN_TYPE)(const void *);
 typedef void (*LHASH_DOALL_FN_TYPE)(void *);
 typedef void (*LHASH_DOALL_ARG_FN_TYPE)(void *, void *);
 
-/* Macros for declaring and implementing type-safe wrappers for LHASH callbacks.
+/*
+ * Macros for declaring and implementing type-safe wrappers for LHASH callbacks.
  * This way, callbacks can be provided to LHASH structures without function
  * pointer casting and the macro-defined callbacks provide per-variable casting
  * before deferring to the underlying type-specific callbacks. NB: It is
  * possible to place a "static" in front of both the DECLARE and IMPLEMENT
- * macros if the functions are strictly internal. */
+ * macros if the functions are strictly internal.
+ */
 
 /* First: "hash" functions */
 #define DECLARE_LHASH_HASH_FN(name, o_type) \
@@ -118,23 +118,24 @@ typedef struct lhash_st {
  * in lh_insert(). */
 #define lh_error(lh) ((lh)->error)
 
-_LHASH *lh_new(LHASH_HASH_FN_TYPE h, LHASH_COMP_FN_TYPE c);
-void lh_free(_LHASH *lh);
-void *lh_insert(_LHASH *lh, void *data);
-void *lh_delete(_LHASH *lh, const void *data);
-void *lh_retrieve(_LHASH *lh, const void *data);
-void lh_doall(_LHASH *lh, LHASH_DOALL_FN_TYPE func);
-void lh_doall_arg(_LHASH *lh, LHASH_DOALL_ARG_FN_TYPE func, void *arg);
-unsigned long lh_strhash(const char *c);
-unsigned long lh_num_items(const _LHASH *lh);
+VIGORTLS_EXPORT _LHASH *lh_new(LHASH_HASH_FN_TYPE h, LHASH_COMP_FN_TYPE c);
+VIGORTLS_EXPORT void lh_free(_LHASH *lh);
+VIGORTLS_EXPORT void *lh_insert(_LHASH *lh, void *data);
+VIGORTLS_EXPORT void *lh_delete(_LHASH *lh, const void *data);
+VIGORTLS_EXPORT void *lh_retrieve(_LHASH *lh, const void *data);
+VIGORTLS_EXPORT void lh_doall(_LHASH *lh, LHASH_DOALL_FN_TYPE func);
+VIGORTLS_EXPORT void lh_doall_arg(_LHASH *lh, LHASH_DOALL_ARG_FN_TYPE func,
+                                  void *arg);
+VIGORTLS_EXPORT unsigned long lh_strhash(const char *c);
+VIGORTLS_EXPORT unsigned long lh_num_items(const _LHASH *lh);
 
-void lh_stats(const _LHASH *lh, FILE *out);
-void lh_node_stats(const _LHASH *lh, FILE *out);
-void lh_node_usage_stats(const _LHASH *lh, FILE *out);
+VIGORTLS_EXPORT void lh_stats(const _LHASH *lh, FILE *out);
+VIGORTLS_EXPORT void lh_node_stats(const _LHASH *lh, FILE *out);
+VIGORTLS_EXPORT void lh_node_usage_stats(const _LHASH *lh, FILE *out);
 
-void lh_stats_bio(const _LHASH *lh, BIO *out);
-void lh_node_stats_bio(const _LHASH *lh, BIO *out);
-void lh_node_usage_stats_bio(const _LHASH *lh, BIO *out);
+VIGORTLS_EXPORT void lh_stats_bio(const _LHASH *lh, BIO *out);
+VIGORTLS_EXPORT void lh_node_stats_bio(const _LHASH *lh, BIO *out);
+VIGORTLS_EXPORT void lh_node_usage_stats_bio(const _LHASH *lh, BIO *out);
 
 /* Type checking... */
 

@@ -10,18 +10,17 @@
 #ifndef HEADER_DSO_H
 #define HEADER_DSO_H
 
+#include <openssl/base.h>
 #include <openssl/crypto.h>
-
-#include <openssl/threads.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 /* These values are used as commands to DSO_ctrl() */
-#define DSO_CTRL_GET_FLAGS 1
-#define DSO_CTRL_SET_FLAGS 2
-#define DSO_CTRL_OR_FLAGS 3
+#define DSO_CTRL_GET_FLAGS  1
+#define DSO_CTRL_SET_FLAGS  2
+#define DSO_CTRL_OR_FLAGS   3
 
 /* By default, DSO_load() will translate the provided filename into a form
  * typical for the platform (more specifically the DSO_METHOD) using the
@@ -34,26 +33,26 @@ extern "C" {
  * DSO to prevent *any* native name-translation at all - eg. if the caller has
  * prompted the user for a path to a driver library so the filename should be
  * interpreted as-is. */
-#define DSO_FLAG_NO_NAME_TRANSLATION 0x01
+#define DSO_FLAG_NO_NAME_TRANSLATION        0x01
 /* An extra flag to give if only the extension should be added as
  * translation.  This is obviously only of importance on Unix and
  * other operating systems where the translation also may prefix
  * the name with something, like 'lib', and ignored everywhere else.
  * This flag is also ignored if DSO_FLAG_NO_NAME_TRANSLATION is used
  * at the same time. */
-#define DSO_FLAG_NAME_TRANSLATION_EXT_ONLY 0x02
+#define DSO_FLAG_NAME_TRANSLATION_EXT_ONLY  0x02
 
 /* The following flag controls the translation of symbol names to upper
  * case.  This is currently only being implemented for OpenVMS.
  */
-#define DSO_FLAG_UPCASE_SYMBOL 0x10
+#define DSO_FLAG_UPCASE_SYMBOL              0x10
 
 /* This flag loads the library with public symbols.
  * Meaning: The exported symbols of this library are public
  * to all libraries loaded after this library.
  * At the moment only implemented in unix.
  */
-#define DSO_FLAG_GLOBAL_SYMBOLS 0x20
+#define DSO_FLAG_GLOBAL_SYMBOLS             0x20
 
 typedef void (*DSO_FUNC_TYPE)(void);
 
@@ -163,23 +162,23 @@ struct dso_st {
     CRYPTO_MUTEX *lock;
 };
 
-DSO *DSO_new(void);
-DSO *DSO_new_method(DSO_METHOD *method);
-int DSO_free(DSO *dso);
-int DSO_flags(DSO *dso);
-int DSO_up_ref(DSO *dso);
-long DSO_ctrl(DSO *dso, int cmd, long larg, void *parg);
+VIGORTLS_EXPORT DSO *DSO_new(void);
+VIGORTLS_EXPORT DSO *DSO_new_method(DSO_METHOD *method);
+VIGORTLS_EXPORT int DSO_free(DSO *dso);
+VIGORTLS_EXPORT int DSO_flags(DSO *dso);
+VIGORTLS_EXPORT int DSO_up_ref(DSO *dso);
+VIGORTLS_EXPORT long DSO_ctrl(DSO *dso, int cmd, long larg, void *parg);
 
 /* This function sets the DSO's name_converter callback. If it is non-NULL,
  * then it will be used instead of the associated DSO_METHOD's function. If
  * oldcb is non-NULL then it is set to the function pointer value being
  * replaced. Return value is non-zero for success. */
-int DSO_set_name_converter(DSO *dso, DSO_NAME_CONVERTER_FUNC cb,
-                           DSO_NAME_CONVERTER_FUNC *oldcb);
+VIGORTLS_EXPORT int DSO_set_name_converter(DSO *dso, DSO_NAME_CONVERTER_FUNC cb,
+                                           DSO_NAME_CONVERTER_FUNC *oldcb);
 /* These functions can be used to get/set the platform-independant filename
  * used for a DSO. NB: set will fail if the DSO is already loaded. */
-const char *DSO_get_filename(DSO *dso);
-int DSO_set_filename(DSO *dso, const char *filename);
+VIGORTLS_EXPORT const char *DSO_get_filename(DSO *dso);
+VIGORTLS_EXPORT int DSO_set_filename(DSO *dso, const char *filename);
 /* This function will invoke the DSO's name_converter callback to translate a
  * filename, or if the callback isn't set it will instead use the DSO_METHOD's
  * converter. If "filename" is NULL, the "filename" in the DSO itself will be
@@ -188,12 +187,13 @@ int DSO_set_filename(DSO *dso, const char *filename);
  * DSO_METHOD during the processing of a DSO_load() call, and is exposed so that
  * caller-created DSO_METHODs can do the same thing. A non-NULL return value
  * will need to be free()'d. */
-char *DSO_convert_filename(DSO *dso, const char *filename);
+VIGORTLS_EXPORT char *DSO_convert_filename(DSO *dso, const char *filename);
 /* This function will invoke the DSO's merger callback to merge two file
  * specifications, or if the callback isn't set it will instead use the
  * DSO_METHOD's merger.  A non-NULL return value will need to be
  * free()'d. */
-char *DSO_merge(DSO *dso, const char *filespec1, const char *filespec2);
+VIGORTLS_EXPORT char *DSO_merge(DSO *dso, const char *filespec1,
+                                const char *filespec2);
 /* If the DSO is currently loaded, this returns the filename that it was loaded
  * under, otherwise it returns NULL. So it is also useful as a test as to
  * whether the DSO is currently loaded. NB: This will not necessarily return
@@ -201,47 +201,48 @@ char *DSO_merge(DSO *dso, const char *filespec1, const char *filespec2);
  * DSO_METHOD's load function may have tried a variety of filenames (with
  * and/or without the aid of the converters) before settling on the one it
  * actually loaded. */
-const char *DSO_get_loaded_filename(DSO *dso);
+VIGORTLS_EXPORT const char *DSO_get_loaded_filename(DSO *dso);
 
-void DSO_set_default_method(DSO_METHOD *meth);
-DSO_METHOD *DSO_get_default_method(void);
-DSO_METHOD *DSO_get_method(DSO *dso);
-DSO_METHOD *DSO_set_method(DSO *dso, DSO_METHOD *meth);
+VIGORTLS_EXPORT void DSO_set_default_method(DSO_METHOD *meth);
+VIGORTLS_EXPORT DSO_METHOD *DSO_get_default_method(void);
+VIGORTLS_EXPORT DSO_METHOD *DSO_get_method(DSO *dso);
+VIGORTLS_EXPORT DSO_METHOD *DSO_set_method(DSO *dso, DSO_METHOD *meth);
 
 /* The all-singing all-dancing load function, you normally pass NULL
  * for the first and third parameters. Use DSO_up and DSO_free for
  * subsequent reference count handling. Any flags passed in will be set
  * in the constructed DSO after its init() function but before the
  * load operation. If 'dso' is non-NULL, 'flags' is ignored. */
-DSO *DSO_load(DSO *dso, const char *filename, DSO_METHOD *meth, int flags);
+VIGORTLS_EXPORT DSO *DSO_load(DSO *dso, const char *filename, DSO_METHOD *meth,
+                              int flags);
 
 /* This function binds to a variable inside a shared library. */
-void *DSO_bind_var(DSO *dso, const char *symname);
+VIGORTLS_EXPORT void *DSO_bind_var(DSO *dso, const char *symname);
 
 /* This function binds to a function inside a shared library. */
-DSO_FUNC_TYPE DSO_bind_func(DSO *dso, const char *symname);
+VIGORTLS_EXPORT DSO_FUNC_TYPE DSO_bind_func(DSO *dso, const char *symname);
 
 /* This method is the default, but will beg, borrow, or steal whatever
  * method should be the default on any particular platform (including
  * DSO_METH_null() if necessary). */
-DSO_METHOD *DSO_METHOD_openssl(void);
+VIGORTLS_EXPORT DSO_METHOD *DSO_METHOD_openssl(void);
 
 /* This method is defined for all platforms - if a platform has no
  * DSO support then this will be the only method! */
-DSO_METHOD *DSO_METHOD_null(void);
+VIGORTLS_EXPORT DSO_METHOD *DSO_METHOD_null(void);
 
 /* If DSO_DLFCN is defined, the standard dlfcn.h-style functions
  * (dlopen, dlclose, dlsym, etc) will be used and incorporated into
  * this method. If not, this method will return NULL. */
-DSO_METHOD *DSO_METHOD_dlfcn(void);
+VIGORTLS_EXPORT DSO_METHOD *DSO_METHOD_dlfcn(void);
 
 /* If DSO_DL is defined, the standard dl.h-style functions (shl_load,
  * shl_unload, shl_findsym, etc) will be used and incorporated into
  * this method. If not, this method will return NULL. */
-DSO_METHOD *DSO_METHOD_dl(void);
+VIGORTLS_EXPORT DSO_METHOD *DSO_METHOD_dl(void);
 
 /* If WIN32 is defined, use DLLs. If not, return NULL. */
-DSO_METHOD *DSO_METHOD_win32(void);
+VIGORTLS_EXPORT DSO_METHOD *DSO_METHOD_win32(void);
 
 /* This function writes null-terminated pathname of DSO module
  * containing 'addr' into 'sz' large caller-provided 'path' and
@@ -252,7 +253,7 @@ DSO_METHOD *DSO_METHOD_win32(void);
  * pathname of cryptolib itself is returned. Negative or zero
  * return value denotes error.
  */
-int DSO_pathbyaddr(void *addr, char *path, int sz);
+VIGORTLS_EXPORT int DSO_pathbyaddr(void *addr, char *path, int sz);
 
 /* This function should be used with caution! It looks up symbols in
  * *all* loaded modules and if module gets unloaded by somebody else
@@ -262,14 +263,14 @@ int DSO_pathbyaddr(void *addr, char *path, int sz);
  * at run-time without bothering about OS-specific details such as
  * libc.so.versioning or where does it actually reside: in libc
  * itself or libsocket. */
-void *DSO_global_lookup(const char *name);
+VIGORTLS_EXPORT void *DSO_global_lookup(const char *name);
 
 /* BEGIN ERROR CODES */
 /*
  * The following lines are auto generated by the script mkerr.pl. Any changes
  * made after this point may be overwritten when the script is next run.
  */
-void ERR_load_DSO_strings(void);
+VIGORTLS_EXPORT void ERR_load_DSO_strings(void);
 
 /* Error codes for the DSO functions. */
 

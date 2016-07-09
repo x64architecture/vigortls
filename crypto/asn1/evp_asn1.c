@@ -54,12 +54,12 @@ typedef struct {
     ASN1_OCTET_STRING *oct;
 } asn1_int_oct;
 
+DECLARE_ASN1_ITEM(asn1_int_oct)
+
 ASN1_SEQUENCE(asn1_int_oct) = {
     ASN1_SIMPLE(asn1_int_oct, num, LONG),
     ASN1_SIMPLE(asn1_int_oct, oct, ASN1_OCTET_STRING)
 } ASN1_SEQUENCE_END(asn1_int_oct)
-
-DECLARE_ASN1_ITEM(asn1_int_oct)
 
 int ASN1_TYPE_set_int_octetstring(ASN1_TYPE *a, long num, uint8_t *data,
                                   int len)

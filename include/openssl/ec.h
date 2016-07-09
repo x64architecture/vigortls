@@ -23,8 +23,7 @@
 #ifndef HEADER_EC_H
 #define HEADER_EC_H
 
-#include <openssl/opensslconf.h>
-
+#include <openssl/base.h>
 #include <openssl/asn1.h>
 #ifndef OPENSSL_NO_DEPRECATED
 #include <openssl/bn.h>
@@ -75,33 +74,33 @@ typedef struct ec_point_st EC_POINT;
  *  optimized methods.
  *  \return  EC_METHOD object
  */
-const EC_METHOD *EC_GFp_simple_method(void);
+VIGORTLS_EXPORT const EC_METHOD *EC_GFp_simple_method(void);
 
 /** Returns GFp methods using montgomery multiplication.
  *  \return  EC_METHOD object
  */
-const EC_METHOD *EC_GFp_mont_method(void);
+VIGORTLS_EXPORT const EC_METHOD *EC_GFp_mont_method(void);
 
 /** Returns GFp methods using optimized methods for NIST recommended curves
  *  \return  EC_METHOD object
  */
-const EC_METHOD *EC_GFp_nist_method(void);
+VIGORTLS_EXPORT const EC_METHOD *EC_GFp_nist_method(void);
 
 #ifndef OPENSSL_NO_EC_NISTP_64_GCC_128
 /** Returns 64-bit optimized methods for nistp224
  *  \return  EC_METHOD object
  */
-const EC_METHOD *EC_GFp_nistp224_method(void);
+VIGORTLS_EXPORT const EC_METHOD *EC_GFp_nistp224_method(void);
 
 /** Returns 64-bit optimized methods for nistp256
  *  \return  EC_METHOD object
  */
-const EC_METHOD *EC_GFp_nistp256_method(void);
+VIGORTLS_EXPORT const EC_METHOD *EC_GFp_nistp256_method(void);
 
 /** Returns 64-bit optimized methods for nistp521
  *  \return  EC_METHOD object
  */
-const EC_METHOD *EC_GFp_nistp521_method(void);
+VIGORTLS_EXPORT const EC_METHOD *EC_GFp_nistp521_method(void);
 #endif
 
 #ifndef OPENSSL_NO_EC2M
@@ -112,7 +111,7 @@ const EC_METHOD *EC_GFp_nistp521_method(void);
 /** Returns the basic GF2m ec method
  *  \return  EC_METHOD object
  */
-const EC_METHOD *EC_GF2m_simple_method(void);
+VIGORTLS_EXPORT const EC_METHOD *EC_GF2m_simple_method(void);
 
 #endif
 
@@ -124,43 +123,43 @@ const EC_METHOD *EC_GF2m_simple_method(void);
  *  \param   meth  EC_METHOD to use
  *  \return  newly created EC_GROUP object or NULL in case of an error.
  */
-EC_GROUP *EC_GROUP_new(const EC_METHOD *meth);
+VIGORTLS_EXPORT EC_GROUP *EC_GROUP_new(const EC_METHOD *meth);
 
 /** Frees a EC_GROUP object
  *  \param  group  EC_GROUP object to be freed.
  */
-void EC_GROUP_free(EC_GROUP *group);
+VIGORTLS_EXPORT void EC_GROUP_free(EC_GROUP *group);
 
 /** Clears and frees a EC_GROUP object
  *  \param  group  EC_GROUP object to be cleared and freed.
  */
-void EC_GROUP_clear_free(EC_GROUP *group);
+VIGORTLS_EXPORT void EC_GROUP_clear_free(EC_GROUP *group);
 
 /** Copies EC_GROUP objects. Note: both EC_GROUPs must use the same EC_METHOD.
  *  \param  dst  destination EC_GROUP object
  *  \param  src  source EC_GROUP object
  *  \return 1 on success and 0 if an error occurred.
  */
-int EC_GROUP_copy(EC_GROUP *dst, const EC_GROUP *src);
+VIGORTLS_EXPORT int EC_GROUP_copy(EC_GROUP *dst, const EC_GROUP *src);
 
 /** Creates a new EC_GROUP object and copies the copies the content
  *  form src to the newly created EC_KEY object
  *  \param  src  source EC_GROUP object
  *  \return newly created EC_GROUP object or NULL in case of an error.
  */
-EC_GROUP *EC_GROUP_dup(const EC_GROUP *src);
+VIGORTLS_EXPORT EC_GROUP *EC_GROUP_dup(const EC_GROUP *src);
 
 /** Returns the EC_METHOD of the EC_GROUP object.
  *  \param  group  EC_GROUP object
  *  \return EC_METHOD used in this EC_GROUP object.
  */
-const EC_METHOD *EC_GROUP_method_of(const EC_GROUP *group);
+VIGORTLS_EXPORT const EC_METHOD *EC_GROUP_method_of(const EC_GROUP *group);
 
 /** Returns the field type of the EC_METHOD.
  *  \param  meth  EC_METHOD object
  *  \return NID of the underlying field type OID.
  */
-int EC_METHOD_get_field_type(const EC_METHOD *meth);
+VIGORTLS_EXPORT int EC_METHOD_get_field_type(const EC_METHOD *meth);
 
 /** Sets the generator and it's order/cofactor of a EC_GROUP object.
  *  \param  group      EC_GROUP object
@@ -170,20 +169,22 @@ int EC_METHOD_get_field_type(const EC_METHOD *meth);
  *                     in the group of all points on the elliptic curve.
  *  \return 1 on success and 0 if an error occured
  */
-int EC_GROUP_set_generator(EC_GROUP *group, const EC_POINT *generator,
-                           const BIGNUM *order, const BIGNUM *cofactor);
+VIGORTLS_EXPORT int EC_GROUP_set_generator(EC_GROUP *group,
+                                           const EC_POINT *generator,
+                                           const BIGNUM *order,
+                                           const BIGNUM *cofactor);
 
 /** Returns the generator of a EC_GROUP object.
  *  \param  group  EC_GROUP object
  *  \return the currently used generator (possibly NULL).
  */
-const EC_POINT *EC_GROUP_get0_generator(const EC_GROUP *group);
+VIGORTLS_EXPORT const EC_POINT *EC_GROUP_get0_generator(const EC_GROUP *group);
 
 /** Returns the montgomery data for order(Generator)
  * \param group EC_GROUP object
  * \return the currently used generator (possibly NULL).
 */
-BN_MONT_CTX *EC_GROUP_get_mont_data(const EC_GROUP *group);
+VIGORTLS_EXPORT BN_MONT_CTX *EC_GROUP_get_mont_data(const EC_GROUP *group);
 
 /** Gets the order of a EC_GROUP
  *  \param  group  EC_GROUP object
@@ -191,7 +192,8 @@ BN_MONT_CTX *EC_GROUP_get_mont_data(const EC_GROUP *group);
  *  \param  ctx    BN_CTX object (optional)
  *  \return 1 on success and 0 if an error occured
  */
-int EC_GROUP_get_order(const EC_GROUP *group, BIGNUM *order, BN_CTX *ctx);
+VIGORTLS_EXPORT int EC_GROUP_get_order(const EC_GROUP *group, BIGNUM *order,
+                                       BN_CTX *ctx);
 
 /** Gets the cofactor of a EC_GROUP
  *  \param  group     EC_GROUP object
@@ -199,30 +201,34 @@ int EC_GROUP_get_order(const EC_GROUP *group, BIGNUM *order, BN_CTX *ctx);
  *  \param  ctx       BN_CTX object (optional)
  *  \return 1 on success and 0 if an error occured
  */
-int EC_GROUP_get_cofactor(const EC_GROUP *group, BIGNUM *cofactor, BN_CTX *ctx);
+VIGORTLS_EXPORT int EC_GROUP_get_cofactor(const EC_GROUP *group,
+                                          BIGNUM *cofactor, BN_CTX *ctx);
 
 /** Sets the name of a EC_GROUP object
  *  \param  group  EC_GROUP object
  *  \param  nid    NID of the curve name OID
  */
-void EC_GROUP_set_curve_name(EC_GROUP *group, int nid);
+VIGORTLS_EXPORT void EC_GROUP_set_curve_name(EC_GROUP *group, int nid);
 
 /** Returns the curve name of a EC_GROUP object
  *  \param  group  EC_GROUP object
  *  \return NID of the curve name OID or 0 if not set.
  */
-int EC_GROUP_get_curve_name(const EC_GROUP *group);
+VIGORTLS_EXPORT int EC_GROUP_get_curve_name(const EC_GROUP *group);
 
-void EC_GROUP_set_asn1_flag(EC_GROUP *group, int flag);
-int EC_GROUP_get_asn1_flag(const EC_GROUP *group);
+VIGORTLS_EXPORT void EC_GROUP_set_asn1_flag(EC_GROUP *group, int flag);
+VIGORTLS_EXPORT int EC_GROUP_get_asn1_flag(const EC_GROUP *group);
 
-void EC_GROUP_set_point_conversion_form(EC_GROUP *group,
-                                        point_conversion_form_t form);
-point_conversion_form_t EC_GROUP_get_point_conversion_form(const EC_GROUP *);
+VIGORTLS_EXPORT void
+EC_GROUP_set_point_conversion_form(EC_GROUP *group,
+                                   point_conversion_form_t form);
+VIGORTLS_EXPORT point_conversion_form_t
+EC_GROUP_get_point_conversion_form(const EC_GROUP *);
 
-uint8_t *EC_GROUP_get0_seed(const EC_GROUP *x);
-size_t EC_GROUP_get_seed_len(const EC_GROUP *);
-size_t EC_GROUP_set_seed(EC_GROUP *, const uint8_t *, size_t len);
+VIGORTLS_EXPORT uint8_t *EC_GROUP_get0_seed(const EC_GROUP *x);
+VIGORTLS_EXPORT size_t EC_GROUP_get_seed_len(const EC_GROUP *);
+VIGORTLS_EXPORT size_t EC_GROUP_set_seed(EC_GROUP *, const uint8_t *,
+                                         size_t len);
 
 /** Sets the parameter of a ec over GFp defined by y^2 = x^3 + a*x + b
  *  \param  group  EC_GROUP object
@@ -232,8 +238,9 @@ size_t EC_GROUP_set_seed(EC_GROUP *, const uint8_t *, size_t len);
  *  \param  ctx    BN_CTX object (optional)
  *  \return 1 on success and 0 if an error occured
  */
-int EC_GROUP_set_curve_GFp(EC_GROUP *group, const BIGNUM *p, const BIGNUM *a,
-                           const BIGNUM *b, BN_CTX *ctx);
+VIGORTLS_EXPORT int EC_GROUP_set_curve_GFp(EC_GROUP *group, const BIGNUM *p,
+                                           const BIGNUM *a, const BIGNUM *b,
+                                           BN_CTX *ctx);
 
 /** Gets the parameter of the ec over GFp defined by y^2 = x^3 + a*x + b
  *  \param  group  EC_GROUP object
@@ -243,8 +250,8 @@ int EC_GROUP_set_curve_GFp(EC_GROUP *group, const BIGNUM *p, const BIGNUM *a,
  *  \param  ctx    BN_CTX object (optional)
  *  \return 1 on success and 0 if an error occured
  */
-int EC_GROUP_get_curve_GFp(const EC_GROUP *group, BIGNUM *p, BIGNUM *a,
-                           BIGNUM *b, BN_CTX *ctx);
+VIGORTLS_EXPORT int EC_GROUP_get_curve_GFp(const EC_GROUP *group, BIGNUM *p,
+                                           BIGNUM *a, BIGNUM *b, BN_CTX *ctx);
 
 #ifndef OPENSSL_NO_EC2M
 /** Sets the parameter of a ec over GF2m defined by y^2 + x*y = x^3 + a*x^2 + b
@@ -255,8 +262,9 @@ int EC_GROUP_get_curve_GFp(const EC_GROUP *group, BIGNUM *p, BIGNUM *a,
  *  \param  ctx    BN_CTX object (optional)
  *  \return 1 on success and 0 if an error occured
  */
-int EC_GROUP_set_curve_GF2m(EC_GROUP *group, const BIGNUM *p, const BIGNUM *a,
-                            const BIGNUM *b, BN_CTX *ctx);
+VIGORTLS_EXPORT int EC_GROUP_set_curve_GF2m(EC_GROUP *group, const BIGNUM *p,
+                                            const BIGNUM *a, const BIGNUM *b,
+                                            BN_CTX *ctx);
 
 /** Gets the parameter of the ec over GF2m defined by y^2 + x*y = x^3 + a*x^2 +
  * b
@@ -267,28 +275,29 @@ int EC_GROUP_set_curve_GF2m(EC_GROUP *group, const BIGNUM *p, const BIGNUM *a,
  *  \param  ctx    BN_CTX object (optional)
  *  \return 1 on success and 0 if an error occured
  */
-int EC_GROUP_get_curve_GF2m(const EC_GROUP *group, BIGNUM *p, BIGNUM *a,
-                            BIGNUM *b, BN_CTX *ctx);
+VIGORTLS_EXPORT int EC_GROUP_get_curve_GF2m(const EC_GROUP *group, BIGNUM *p,
+                                            BIGNUM *a, BIGNUM *b, BN_CTX *ctx);
 #endif
 /** Returns the number of bits needed to represent a field element
  *  \param  group  EC_GROUP object
  *  \return number of bits needed to represent a field element
  */
-int EC_GROUP_get_degree(const EC_GROUP *group);
+VIGORTLS_EXPORT int EC_GROUP_get_degree(const EC_GROUP *group);
 
 /** Checks whether the parameter in the EC_GROUP define a valid ec group
  *  \param  group  EC_GROUP object
  *  \param  ctx    BN_CTX object (optional)
  *  \return 1 if group is a valid ec group and 0 otherwise
  */
-int EC_GROUP_check(const EC_GROUP *group, BN_CTX *ctx);
+VIGORTLS_EXPORT int EC_GROUP_check(const EC_GROUP *group, BN_CTX *ctx);
 
 /** Checks whether the discriminant of the elliptic curve is zero or not
  *  \param  group  EC_GROUP object
  *  \param  ctx    BN_CTX object (optional)
  *  \return 1 if the discriminant is not zero and 0 otherwise
  */
-int EC_GROUP_check_discriminant(const EC_GROUP *group, BN_CTX *ctx);
+VIGORTLS_EXPORT int EC_GROUP_check_discriminant(const EC_GROUP *group,
+                                                BN_CTX *ctx);
 
 /** Compares two EC_GROUP objects
  *  \param  a    first EC_GROUP object
@@ -296,7 +305,8 @@ int EC_GROUP_check_discriminant(const EC_GROUP *group, BN_CTX *ctx);
  *  \param  ctx  BN_CTX object (optional)
  *  \return 0 if both groups are equal and 1 otherwise
  */
-int EC_GROUP_cmp(const EC_GROUP *a, const EC_GROUP *b, BN_CTX *ctx);
+VIGORTLS_EXPORT int EC_GROUP_cmp(const EC_GROUP *a, const EC_GROUP *b,
+                                 BN_CTX *ctx);
 
 /* EC_GROUP_new_GF*() calls EC_GROUP_new() and EC_GROUP_set_GF*()
  * after choosing an appropriate EC_METHOD */
@@ -309,8 +319,9 @@ int EC_GROUP_cmp(const EC_GROUP *a, const EC_GROUP *b, BN_CTX *ctx);
  *  \param  ctx  BN_CTX object (optional)
  *  \return newly created EC_GROUP object with the specified parameters
  */
-EC_GROUP *EC_GROUP_new_curve_GFp(const BIGNUM *p, const BIGNUM *a,
-                                 const BIGNUM *b, BN_CTX *ctx);
+VIGORTLS_EXPORT EC_GROUP *EC_GROUP_new_curve_GFp(const BIGNUM *p,
+                                                 const BIGNUM *a,
+                                                 const BIGNUM *b, BN_CTX *ctx);
 #ifndef OPENSSL_NO_EC2M
 /** Creates a new EC_GROUP object with the specified parameters defined
  *  over GF2m (defined by the equation y^2 + x*y = x^3 + a*x^2 + b)
@@ -320,15 +331,16 @@ EC_GROUP *EC_GROUP_new_curve_GFp(const BIGNUM *p, const BIGNUM *a,
  *  \param  ctx  BN_CTX object (optional)
  *  \return newly created EC_GROUP object with the specified parameters
  */
-EC_GROUP *EC_GROUP_new_curve_GF2m(const BIGNUM *p, const BIGNUM *a,
-                                  const BIGNUM *b, BN_CTX *ctx);
+VIGORTLS_EXPORT EC_GROUP *EC_GROUP_new_curve_GF2m(const BIGNUM *p,
+                                                  const BIGNUM *a,
+                                                  const BIGNUM *b, BN_CTX *ctx);
 #endif
 /** Creates a EC_GROUP object with a curve specified by a NID
  *  \param  nid  NID of the OID of the curve name
  *  \return newly created EC_GROUP object with specified curve or NULL
  *          if an error occurred
  */
-EC_GROUP *EC_GROUP_new_by_curve_name(int nid);
+VIGORTLS_EXPORT EC_GROUP *EC_GROUP_new_by_curve_name(int nid);
 
 /********************************************************************/
 /*               handling of internal curves                        */
@@ -343,10 +355,11 @@ typedef struct {
  * of all available curves or zero if a error occurred.
  * In case r ist not zero nitems EC_builtin_curve structures
  * are filled with the data of the first nitems internal groups */
-size_t EC_get_builtin_curves(EC_builtin_curve *r, size_t nitems);
+VIGORTLS_EXPORT size_t EC_get_builtin_curves(EC_builtin_curve *r,
+                                             size_t nitems);
 
-const char *EC_curve_nid2nist(int nid);
-int EC_curve_nist2nid(const char *name);
+VIGORTLS_EXPORT const char *EC_curve_nid2nist(int nid);
+VIGORTLS_EXPORT int EC_curve_nist2nid(const char *name);
 
 /********************************************************************/
 /*                    EC_POINT functions                            */
@@ -356,24 +369,24 @@ int EC_curve_nist2nid(const char *name);
  *  \param  group  EC_GROUP the underlying EC_GROUP object
  *  \return newly created EC_POINT object or NULL if an error occurred
  */
-EC_POINT *EC_POINT_new(const EC_GROUP *group);
+VIGORTLS_EXPORT EC_POINT *EC_POINT_new(const EC_GROUP *group);
 
 /** Frees a EC_POINT object
  *  \param  point  EC_POINT object to be freed
  */
-void EC_POINT_free(EC_POINT *point);
+VIGORTLS_EXPORT void EC_POINT_free(EC_POINT *point);
 
 /** Clears and frees a EC_POINT object
  *  \param  point  EC_POINT object to be cleared and freed
  */
-void EC_POINT_clear_free(EC_POINT *point);
+VIGORTLS_EXPORT void EC_POINT_clear_free(EC_POINT *point);
 
 /** Copies EC_POINT object
  *  \param  dst  destination EC_POINT object
  *  \param  src  source EC_POINT object
  *  \return 1 on success and 0 if an error occured
  */
-int EC_POINT_copy(EC_POINT *dst, const EC_POINT *src);
+VIGORTLS_EXPORT int EC_POINT_copy(EC_POINT *dst, const EC_POINT *src);
 
 /** Creates a new EC_POINT object and copies the content of the supplied
  *  EC_POINT
@@ -381,20 +394,22 @@ int EC_POINT_copy(EC_POINT *dst, const EC_POINT *src);
  *  \param  group  underlying the EC_GROUP object
  *  \return newly created EC_POINT object or NULL if an error occurred
  */
-EC_POINT *EC_POINT_dup(const EC_POINT *src, const EC_GROUP *group);
+VIGORTLS_EXPORT EC_POINT *EC_POINT_dup(const EC_POINT *src,
+                                       const EC_GROUP *group);
 
 /** Returns the EC_METHOD used in EC_POINT object
  *  \param  point  EC_POINT object
  *  \return the EC_METHOD used
  */
-const EC_METHOD *EC_POINT_method_of(const EC_POINT *point);
+VIGORTLS_EXPORT const EC_METHOD *EC_POINT_method_of(const EC_POINT *point);
 
 /** Sets a point to infinity (neutral element)
  *  \param  group  underlying EC_GROUP object
  *  \param  point  EC_POINT to set to infinity
  *  \return 1 on success and 0 if an error occured
  */
-int EC_POINT_set_to_infinity(const EC_GROUP *group, EC_POINT *point);
+VIGORTLS_EXPORT int EC_POINT_set_to_infinity(const EC_GROUP *group,
+                                             EC_POINT *point);
 
 /** Sets the jacobian projective coordinates of a EC_POINT over GFp
  *  \param  group  underlying EC_GROUP object
@@ -405,9 +420,10 @@ int EC_POINT_set_to_infinity(const EC_GROUP *group, EC_POINT *point);
  *  \param  ctx    BN_CTX object (optional)
  *  \return 1 on success and 0 if an error occured
  */
-int EC_POINT_set_Jprojective_coordinates_GFp(const EC_GROUP *group, EC_POINT *p,
-                                             const BIGNUM *x, const BIGNUM *y,
-                                             const BIGNUM *z, BN_CTX *ctx);
+VIGORTLS_EXPORT int
+EC_POINT_set_Jprojective_coordinates_GFp(const EC_GROUP *group, EC_POINT *p,
+                                         const BIGNUM *x, const BIGNUM *y,
+                                         const BIGNUM *z, BN_CTX *ctx);
 
 /** Gets the jacobian projective coordinates of a EC_POINT over GFp
  *  \param  group  underlying EC_GROUP object
@@ -418,9 +434,10 @@ int EC_POINT_set_Jprojective_coordinates_GFp(const EC_GROUP *group, EC_POINT *p,
  *  \param  ctx    BN_CTX object (optional)
  *  \return 1 on success and 0 if an error occured
  */
-int EC_POINT_get_Jprojective_coordinates_GFp(const EC_GROUP *group,
-                                             const EC_POINT *p, BIGNUM *x,
-                                             BIGNUM *y, BIGNUM *z, BN_CTX *ctx);
+VIGORTLS_EXPORT int
+EC_POINT_get_Jprojective_coordinates_GFp(const EC_GROUP *group,
+                                         const EC_POINT *p, BIGNUM *x,
+                                         BIGNUM *y, BIGNUM *z, BN_CTX *ctx);
 
 /** Sets the affine coordinates of a EC_POINT over GFp
  *  \param  group  underlying EC_GROUP object
@@ -430,9 +447,11 @@ int EC_POINT_get_Jprojective_coordinates_GFp(const EC_GROUP *group,
  *  \param  ctx    BN_CTX object (optional)
  *  \return 1 on success and 0 if an error occured
  */
-int EC_POINT_set_affine_coordinates_GFp(const EC_GROUP *group, EC_POINT *p,
-                                        const BIGNUM *x, const BIGNUM *y,
-                                        BN_CTX *ctx);
+VIGORTLS_EXPORT int EC_POINT_set_affine_coordinates_GFp(const EC_GROUP *group,
+                                                        EC_POINT *p,
+                                                        const BIGNUM *x,
+                                                        const BIGNUM *y,
+                                                        BN_CTX *ctx);
 
 /** Gets the affine coordinates of a EC_POINT over GFp
  *  \param  group  underlying EC_GROUP object
@@ -442,9 +461,10 @@ int EC_POINT_set_affine_coordinates_GFp(const EC_GROUP *group, EC_POINT *p,
  *  \param  ctx    BN_CTX object (optional)
  *  \return 1 on success and 0 if an error occured
  */
-int EC_POINT_get_affine_coordinates_GFp(const EC_GROUP *group,
-                                        const EC_POINT *p, BIGNUM *x, BIGNUM *y,
-                                        BN_CTX *ctx);
+VIGORTLS_EXPORT int EC_POINT_get_affine_coordinates_GFp(const EC_GROUP *group,
+                                                        const EC_POINT *p,
+                                                        BIGNUM *x, BIGNUM *y,
+                                                        BN_CTX *ctx);
 
 /** Sets the x9.62 compressed coordinates of a EC_POINT over GFp
  *  \param  group  underlying EC_GROUP object
@@ -454,9 +474,10 @@ int EC_POINT_get_affine_coordinates_GFp(const EC_GROUP *group,
  *  \param  ctx    BN_CTX object (optional)
  *  \return 1 on success and 0 if an error occured
  */
-int EC_POINT_set_compressed_coordinates_GFp(const EC_GROUP *group, EC_POINT *p,
-                                            const BIGNUM *x, int y_bit,
-                                            BN_CTX *ctx);
+VIGORTLS_EXPORT int
+EC_POINT_set_compressed_coordinates_GFp(const EC_GROUP *group, EC_POINT *p,
+                                        const BIGNUM *x, int y_bit,
+                                        BN_CTX *ctx);
 #ifndef OPENSSL_NO_EC2M
 /** Sets the affine coordinates of a EC_POINT over GF2m
  *  \param  group  underlying EC_GROUP object
@@ -466,9 +487,11 @@ int EC_POINT_set_compressed_coordinates_GFp(const EC_GROUP *group, EC_POINT *p,
  *  \param  ctx    BN_CTX object (optional)
  *  \return 1 on success and 0 if an error occured
  */
-int EC_POINT_set_affine_coordinates_GF2m(const EC_GROUP *group, EC_POINT *p,
-                                         const BIGNUM *x, const BIGNUM *y,
-                                         BN_CTX *ctx);
+VIGORTLS_EXPORT int EC_POINT_set_affine_coordinates_GF2m(const EC_GROUP *group,
+                                                         EC_POINT *p,
+                                                         const BIGNUM *x,
+                                                         const BIGNUM *y,
+                                                         BN_CTX *ctx);
 
 /** Gets the affine coordinates of a EC_POINT over GF2m
  *  \param  group  underlying EC_GROUP object
@@ -478,9 +501,10 @@ int EC_POINT_set_affine_coordinates_GF2m(const EC_GROUP *group, EC_POINT *p,
  *  \param  ctx    BN_CTX object (optional)
  *  \return 1 on success and 0 if an error occured
  */
-int EC_POINT_get_affine_coordinates_GF2m(const EC_GROUP *group,
-                                         const EC_POINT *p, BIGNUM *x,
-                                         BIGNUM *y, BN_CTX *ctx);
+VIGORTLS_EXPORT int EC_POINT_get_affine_coordinates_GF2m(const EC_GROUP *group,
+                                                         const EC_POINT *p,
+                                                         BIGNUM *x, BIGNUM *y,
+                                                         BN_CTX *ctx);
 
 /** Sets the x9.62 compressed coordinates of a EC_POINT over GF2m
  *  \param  group  underlying EC_GROUP object
@@ -490,9 +514,10 @@ int EC_POINT_get_affine_coordinates_GF2m(const EC_GROUP *group,
  *  \param  ctx    BN_CTX object (optional)
  *  \return 1 on success and 0 if an error occured
  */
-int EC_POINT_set_compressed_coordinates_GF2m(const EC_GROUP *group, EC_POINT *p,
-                                             const BIGNUM *x, int y_bit,
-                                             BN_CTX *ctx);
+VIGORTLS_EXPORT int
+EC_POINT_set_compressed_coordinates_GF2m(const EC_GROUP *group, EC_POINT *p,
+                                         const BIGNUM *x, int y_bit,
+                                         BN_CTX *ctx);
 #endif
 /** Encodes a EC_POINT object to a octet string
  *  \param  group  underlying EC_GROUP object
@@ -504,9 +529,11 @@ int EC_POINT_set_compressed_coordinates_GF2m(const EC_GROUP *group, EC_POINT *p,
  *  \param  ctx    BN_CTX object (optional)
  *  \return the length of the encoded octet string or 0 if an error occurred
  */
-size_t EC_POINT_point2oct(const EC_GROUP *group, const EC_POINT *p,
-                          point_conversion_form_t form, uint8_t *buf,
-                          size_t len, BN_CTX *ctx);
+VIGORTLS_EXPORT size_t EC_POINT_point2oct(const EC_GROUP *group,
+                                          const EC_POINT *p,
+                                          point_conversion_form_t form,
+                                          uint8_t *buf, size_t len,
+                                          BN_CTX *ctx);
 
 /** Decodes a EC_POINT from a octet string
  *  \param  group  underlying EC_GROUP object
@@ -516,18 +543,21 @@ size_t EC_POINT_point2oct(const EC_GROUP *group, const EC_POINT *p,
  *  \param  ctx    BN_CTX object (optional)
  *  \return 1 on success and 0 if an error occured
  */
-int EC_POINT_oct2point(const EC_GROUP *group, EC_POINT *p, const uint8_t *buf,
-                       size_t len, BN_CTX *ctx);
+VIGORTLS_EXPORT int EC_POINT_oct2point(const EC_GROUP *group, EC_POINT *p,
+                                       const uint8_t *buf, size_t len,
+                                       BN_CTX *ctx);
 
 /* other interfaces to point2oct/oct2point: */
-BIGNUM *EC_POINT_point2bn(const EC_GROUP *, const EC_POINT *,
-                          point_conversion_form_t form, BIGNUM *, BN_CTX *);
-EC_POINT *EC_POINT_bn2point(const EC_GROUP *, const BIGNUM *, EC_POINT *,
-                            BN_CTX *);
-char *EC_POINT_point2hex(const EC_GROUP *, const EC_POINT *,
-                         point_conversion_form_t form, BN_CTX *);
-EC_POINT *EC_POINT_hex2point(const EC_GROUP *, const char *, EC_POINT *,
-                             BN_CTX *);
+VIGORTLS_EXPORT BIGNUM *EC_POINT_point2bn(const EC_GROUP *, const EC_POINT *,
+                                          point_conversion_form_t form,
+                                          BIGNUM *, BN_CTX *);
+VIGORTLS_EXPORT EC_POINT *EC_POINT_bn2point(const EC_GROUP *, const BIGNUM *,
+                                            EC_POINT *, BN_CTX *);
+VIGORTLS_EXPORT char *EC_POINT_point2hex(const EC_GROUP *, const EC_POINT *,
+                                         point_conversion_form_t form,
+                                         BN_CTX *);
+VIGORTLS_EXPORT EC_POINT *EC_POINT_hex2point(const EC_GROUP *, const char *,
+                                             EC_POINT *, BN_CTX *);
 
 /********************************************************************/
 /*         functions for doing EC_POINT arithmetic                  */
@@ -541,8 +571,9 @@ EC_POINT *EC_POINT_hex2point(const EC_GROUP *, const char *, EC_POINT *,
  *  \param  ctx    BN_CTX object (optional)
  *  \return 1 on success and 0 if an error occured
  */
-int EC_POINT_add(const EC_GROUP *group, EC_POINT *r, const EC_POINT *a,
-                 const EC_POINT *b, BN_CTX *ctx);
+VIGORTLS_EXPORT int EC_POINT_add(const EC_GROUP *group, EC_POINT *r,
+                                 const EC_POINT *a, const EC_POINT *b,
+                                 BN_CTX *ctx);
 
 /** Computes the double of a EC_POINT
  *  \param  group  underlying EC_GROUP object
@@ -551,8 +582,8 @@ int EC_POINT_add(const EC_GROUP *group, EC_POINT *r, const EC_POINT *a,
  *  \param  ctx    BN_CTX object (optional)
  *  \return 1 on success and 0 if an error occured
  */
-int EC_POINT_dbl(const EC_GROUP *group, EC_POINT *r, const EC_POINT *a,
-                 BN_CTX *ctx);
+VIGORTLS_EXPORT int EC_POINT_dbl(const EC_GROUP *group, EC_POINT *r,
+                                 const EC_POINT *a, BN_CTX *ctx);
 
 /** Computes the inverse of a EC_POINT
  *  \param  group  underlying EC_GROUP object
@@ -561,14 +592,16 @@ int EC_POINT_dbl(const EC_GROUP *group, EC_POINT *r, const EC_POINT *a,
  *  \param  ctx    BN_CTX object (optional)
  *  \return 1 on success and 0 if an error occured
  */
-int EC_POINT_invert(const EC_GROUP *group, EC_POINT *a, BN_CTX *ctx);
+VIGORTLS_EXPORT int EC_POINT_invert(const EC_GROUP *group, EC_POINT *a,
+                                    BN_CTX *ctx);
 
 /** Checks whether the point is the neutral element of the group
  *  \param  group  the underlying EC_GROUP object
  *  \param  p      EC_POINT object
  *  \return 1 if the point is the neutral element and 0 otherwise
  */
-int EC_POINT_is_at_infinity(const EC_GROUP *group, const EC_POINT *p);
+VIGORTLS_EXPORT int EC_POINT_is_at_infinity(const EC_GROUP *group,
+                                            const EC_POINT *p);
 
 /**
  * @brief Check whether an EC_POINT is on the curve or not.
@@ -579,8 +612,8 @@ int EC_POINT_is_at_infinity(const EC_GROUP *group, const EC_POINT *p);
  *  0: If the point is *not on* the curve
  * -1: An error occurred
  */
-int EC_POINT_is_on_curve(const EC_GROUP *group, const EC_POINT *point,
-                         BN_CTX *ctx);
+VIGORTLS_EXPORT int EC_POINT_is_on_curve(const EC_GROUP *group,
+                                         const EC_POINT *point, BN_CTX *ctx);
 
 /** Compares two EC_POINTs
  *  \param  group  underlying EC_GROUP object
@@ -589,12 +622,13 @@ int EC_POINT_is_on_curve(const EC_GROUP *group, const EC_POINT *point,
  *  \param  ctx    BN_CTX object (optional)
  *  \return 0 if both points are equal and a value != 0 otherwise
  */
-int EC_POINT_cmp(const EC_GROUP *group, const EC_POINT *a, const EC_POINT *b,
-                 BN_CTX *ctx);
+VIGORTLS_EXPORT int EC_POINT_cmp(const EC_GROUP *group, const EC_POINT *a,
+                                 const EC_POINT *b, BN_CTX *ctx);
 
-int EC_POINT_make_affine(const EC_GROUP *group, EC_POINT *point, BN_CTX *ctx);
-int EC_POINTs_make_affine(const EC_GROUP *group, size_t num, EC_POINT *points[],
-                          BN_CTX *ctx);
+VIGORTLS_EXPORT int EC_POINT_make_affine(const EC_GROUP *group, EC_POINT *point,
+                                         BN_CTX *ctx);
+VIGORTLS_EXPORT int EC_POINTs_make_affine(const EC_GROUP *group, size_t num,
+                                          EC_POINT *points[], BN_CTX *ctx);
 
 /** Computes r = generator * n sum_{i=0}^{num-1} p[i] * m[i]
  *  \param  group  underlying EC_GROUP object
@@ -606,9 +640,10 @@ int EC_POINTs_make_affine(const EC_GROUP *group, size_t num, EC_POINT *points[],
  *  \param  ctx    BN_CTX object (optional)
  *  \return 1 on success and 0 if an error occured
  */
-int EC_POINTs_mul(const EC_GROUP *group, EC_POINT *r, const BIGNUM *n,
-                  size_t num, const EC_POINT *p[], const BIGNUM *m[],
-                  BN_CTX *ctx);
+VIGORTLS_EXPORT int EC_POINTs_mul(const EC_GROUP *group, EC_POINT *r,
+                                  const BIGNUM *n, size_t num,
+                                  const EC_POINT *p[], const BIGNUM *m[],
+                                  BN_CTX *ctx);
 
 /** Computes r = generator * n + q * m
  *  \param  group  underlying EC_GROUP object
@@ -619,21 +654,22 @@ int EC_POINTs_mul(const EC_GROUP *group, EC_POINT *r, const BIGNUM *n,
  *  \param  ctx    BN_CTX object (optional)
  *  \return 1 on success and 0 if an error occured
  */
-int EC_POINT_mul(const EC_GROUP *group, EC_POINT *r, const BIGNUM *n,
-                 const EC_POINT *q, const BIGNUM *m, BN_CTX *ctx);
+VIGORTLS_EXPORT int EC_POINT_mul(const EC_GROUP *group, EC_POINT *r,
+                                 const BIGNUM *n, const EC_POINT *q,
+                                 const BIGNUM *m, BN_CTX *ctx);
 
 /** Stores multiples of generator for faster point multiplication
  *  \param  group  EC_GROUP object
  *  \param  ctx    BN_CTX object (optional)
  *  \return 1 on success and 0 if an error occured
  */
-int EC_GROUP_precompute_mult(EC_GROUP *group, BN_CTX *ctx);
+VIGORTLS_EXPORT int EC_GROUP_precompute_mult(EC_GROUP *group, BN_CTX *ctx);
 
 /** Reports whether a precomputation has been done
  *  \param  group  EC_GROUP object
  *  \return 1 if a pre-computation has been done and 0 otherwise
  */
-int EC_GROUP_have_precompute_mult(const EC_GROUP *group);
+VIGORTLS_EXPORT int EC_GROUP_have_precompute_mult(const EC_GROUP *group);
 
 /********************************************************************/
 /*                       ASN1 stuff                                 */
@@ -641,19 +677,23 @@ int EC_GROUP_have_precompute_mult(const EC_GROUP *group);
 
 /* EC_GROUP_get_basis_type() returns the NID of the basis type
  * used to represent the field elements */
-int EC_GROUP_get_basis_type(const EC_GROUP *);
+VIGORTLS_EXPORT int EC_GROUP_get_basis_type(const EC_GROUP *);
 #ifndef OPENSSL_NO_EC2M
-int EC_GROUP_get_trinomial_basis(const EC_GROUP *, unsigned int *k);
-int EC_GROUP_get_pentanomial_basis(const EC_GROUP *, unsigned int *k1,
-                                   unsigned int *k2, unsigned int *k3);
+VIGORTLS_EXPORT int EC_GROUP_get_trinomial_basis(const EC_GROUP *,
+                                                 unsigned int *k);
+VIGORTLS_EXPORT int EC_GROUP_get_pentanomial_basis(const EC_GROUP *,
+                                                   unsigned int *k1,
+                                                   unsigned int *k2,
+                                                   unsigned int *k3);
 #endif
 
 #define OPENSSL_EC_NAMED_CURVE 0x001
 
 typedef struct ecpk_parameters_st ECPKPARAMETERS;
 
-EC_GROUP *d2i_ECPKParameters(EC_GROUP **, const uint8_t **in, long len);
-int i2d_ECPKParameters(const EC_GROUP *, uint8_t **out);
+VIGORTLS_EXPORT EC_GROUP *d2i_ECPKParameters(EC_GROUP **, const uint8_t **in,
+                                             long len);
+VIGORTLS_EXPORT int i2d_ECPKParameters(const EC_GROUP *, uint8_t **out);
 
 #define d2i_ECPKParameters_bio(bp, x) \
     ASN1_d2i_bio_of(EC_GROUP, NULL, d2i_ECPKParameters, bp, x)
@@ -665,8 +705,9 @@ int i2d_ECPKParameters(const EC_GROUP *, uint8_t **out);
 #define i2d_ECPKParameters_fp(fp, x) \
     ASN1_i2d_fp(i2d_ECPKParameters, (fp), (uint8_t *)(x))
 
-int ECPKParameters_print(BIO *bp, const EC_GROUP *x, int off);
-int ECPKParameters_print_fp(FILE *fp, const EC_GROUP *x, int off);
+VIGORTLS_EXPORT int ECPKParameters_print(BIO *bp, const EC_GROUP *x, int off);
+VIGORTLS_EXPORT int ECPKParameters_print_fp(FILE *fp, const EC_GROUP *x,
+                                            int off);
 
 /********************************************************************/
 /*                      EC_KEY functions                            */
@@ -675,56 +716,56 @@ int ECPKParameters_print_fp(FILE *fp, const EC_GROUP *x, int off);
 typedef struct ec_key_st EC_KEY;
 
 /* some values for the encoding_flag */
-#define EC_PKEY_NO_PARAMETERS 0x001
-#define EC_PKEY_NO_PUBKEY 0x002
+#define EC_PKEY_NO_PARAMETERS   0x001
+#define EC_PKEY_NO_PUBKEY       0x002
 
 /** Creates a new EC_KEY object.
  *  \return EC_KEY object or NULL if an error occurred.
  */
-EC_KEY *EC_KEY_new(void);
+VIGORTLS_EXPORT EC_KEY *EC_KEY_new(void);
 
-int EC_KEY_get_flags(const EC_KEY *key);
+VIGORTLS_EXPORT int EC_KEY_get_flags(const EC_KEY *key);
 
-void EC_KEY_set_flags(EC_KEY *key, int flags);
+VIGORTLS_EXPORT void EC_KEY_set_flags(EC_KEY *key, int flags);
 
-void EC_KEY_clear_flags(EC_KEY *key, int flags);
+VIGORTLS_EXPORT void EC_KEY_clear_flags(EC_KEY *key, int flags);
 
 /** Creates a new EC_KEY object using a named curve as underlying
  *  EC_GROUP object.
  *  \param  nid  NID of the named curve.
  *  \return EC_KEY object or NULL if an error occurred.
  */
-EC_KEY *EC_KEY_new_by_curve_name(int nid);
+VIGORTLS_EXPORT EC_KEY *EC_KEY_new_by_curve_name(int nid);
 
 /** Frees a EC_KEY object.
  *  \param  key  EC_KEY object to be freed.
  */
-void EC_KEY_free(EC_KEY *key);
+VIGORTLS_EXPORT void EC_KEY_free(EC_KEY *key);
 
 /** Copies a EC_KEY object.
  *  \param  dst  destination EC_KEY object
  *  \param  src  src EC_KEY object
  *  \return dst or NULL if an error occurred.
  */
-EC_KEY *EC_KEY_copy(EC_KEY *dst, const EC_KEY *src);
+VIGORTLS_EXPORT EC_KEY *EC_KEY_copy(EC_KEY *dst, const EC_KEY *src);
 
 /** Creates a new EC_KEY object and copies the content from src to it.
  *  \param  src  the source EC_KEY object
  *  \return newly created EC_KEY object or NULL if an error occurred.
  */
-EC_KEY *EC_KEY_dup(const EC_KEY *src);
+VIGORTLS_EXPORT EC_KEY *EC_KEY_dup(const EC_KEY *src);
 
 /** Increases the internal reference count of a EC_KEY object.
  *  \param  key  EC_KEY object
  *  \return 1 on success and 0 if an error occurred.
  */
-int EC_KEY_up_ref(EC_KEY *key);
+VIGORTLS_EXPORT int EC_KEY_up_ref(EC_KEY *key);
 
 /** Returns the EC_GROUP object of a EC_KEY object
  *  \param  key  EC_KEY object
  *  \return the EC_GROUP object (possibly NULL).
  */
-const EC_GROUP *EC_KEY_get0_group(const EC_KEY *key);
+VIGORTLS_EXPORT const EC_GROUP *EC_KEY_get0_group(const EC_KEY *key);
 
 /** Sets the EC_GROUP of a EC_KEY object.
  *  \param  key    EC_KEY object
@@ -732,13 +773,13 @@ const EC_GROUP *EC_KEY_get0_group(const EC_KEY *key);
  *                 object will use an own copy of the EC_GROUP).
  *  \return 1 on success and 0 if an error occurred.
  */
-int EC_KEY_set_group(EC_KEY *key, const EC_GROUP *group);
+VIGORTLS_EXPORT int EC_KEY_set_group(EC_KEY *key, const EC_GROUP *group);
 
 /** Returns the private key of a EC_KEY object.
  *  \param  key  EC_KEY object
  *  \return a BIGNUM with the private key (possibly NULL).
  */
-const BIGNUM *EC_KEY_get0_private_key(const EC_KEY *key);
+VIGORTLS_EXPORT const BIGNUM *EC_KEY_get0_private_key(const EC_KEY *key);
 
 /** Sets the private key of a EC_KEY object.
  *  \param  key  EC_KEY object
@@ -746,13 +787,13 @@ const BIGNUM *EC_KEY_get0_private_key(const EC_KEY *key);
  *               will use an own copy of the BIGNUM).
  *  \return 1 on success and 0 if an error occurred.
  */
-int EC_KEY_set_private_key(EC_KEY *key, const BIGNUM *prv);
+VIGORTLS_EXPORT int EC_KEY_set_private_key(EC_KEY *key, const BIGNUM *prv);
 
 /** Returns the public key of a EC_KEY object.
  *  \param  key  the EC_KEY object
  *  \return a EC_POINT object with the public key (possibly NULL)
  */
-const EC_POINT *EC_KEY_get0_public_key(const EC_KEY *key);
+VIGORTLS_EXPORT const EC_POINT *EC_KEY_get0_public_key(const EC_KEY *key);
 
 /** Sets the public key of a EC_KEY object.
  *  \param  key  EC_KEY object
@@ -760,16 +801,18 @@ const EC_POINT *EC_KEY_get0_public_key(const EC_KEY *key);
  *               will use an own copy of the EC_POINT object).
  *  \return 1 on success and 0 if an error occurred.
  */
-int EC_KEY_set_public_key(EC_KEY *key, const EC_POINT *pub);
+VIGORTLS_EXPORT int EC_KEY_set_public_key(EC_KEY *key, const EC_POINT *pub);
 
-unsigned EC_KEY_get_enc_flags(const EC_KEY *key);
-void EC_KEY_set_enc_flags(EC_KEY *eckey, unsigned int flags);
-point_conversion_form_t EC_KEY_get_conv_form(const EC_KEY *key);
-void EC_KEY_set_conv_form(EC_KEY *eckey, point_conversion_form_t cform);
+VIGORTLS_EXPORT unsigned EC_KEY_get_enc_flags(const EC_KEY *key);
+VIGORTLS_EXPORT void EC_KEY_set_enc_flags(EC_KEY *eckey, unsigned int flags);
+VIGORTLS_EXPORT point_conversion_form_t EC_KEY_get_conv_form(const EC_KEY *key);
+VIGORTLS_EXPORT void EC_KEY_set_conv_form(EC_KEY *eckey,
+                                          point_conversion_form_t cform);
 /* functions to set/get method specific data  */
-void *EC_KEY_get_key_method_data(EC_KEY *key, void *(*dup_func)(void *),
-                                 void (*free_func)(void *),
-                                 void (*clear_free_func)(void *));
+VIGORTLS_EXPORT void *
+EC_KEY_get_key_method_data(EC_KEY *key, void *(*dup_func)(void *),
+                           void (*free_func)(void *),
+                           void (*clear_free_func)(void *));
 /** Sets the key method data of an EC_KEY object, if none has yet been set.
  *  \param  key              EC_KEY object
  *  \param  data             opaque data to install.
@@ -778,12 +821,11 @@ void *EC_KEY_get_key_method_data(EC_KEY *key, void *(*dup_func)(void *),
  *  \param  clear_free_func  a function that wipes and frees |data|.
  *  \return the previously set data pointer, or NULL if |data| was inserted.
  */
-void *EC_KEY_insert_key_method_data(EC_KEY *key, void *data,
-                                    void *(*dup_func)(void *),
-                                    void (*free_func)(void *),
-                                    void (*clear_free_func)(void *));
+VIGORTLS_EXPORT void *EC_KEY_insert_key_method_data(
+    EC_KEY *key, void *data, void *(*dup_func)(void *),
+    void (*free_func)(void *), void (*clear_free_func)(void *));
 /* wrapper functions for the underlying EC_GROUP object */
-void EC_KEY_set_asn1_flag(EC_KEY *eckey, int asn1_flag);
+VIGORTLS_EXPORT void EC_KEY_set_asn1_flag(EC_KEY *eckey, int asn1_flag);
 
 /** Creates a table of pre-computed multiples of the generator to
  *  accelerate further EC_KEY operations.
@@ -791,19 +833,19 @@ void EC_KEY_set_asn1_flag(EC_KEY *eckey, int asn1_flag);
  *  \param  ctx  BN_CTX object (optional)
  *  \return 1 on success and 0 if an error occurred.
  */
-int EC_KEY_precompute_mult(EC_KEY *key, BN_CTX *ctx);
+VIGORTLS_EXPORT int EC_KEY_precompute_mult(EC_KEY *key, BN_CTX *ctx);
 
 /** Creates a new ec private (and optional a new public) key.
  *  \param  key  EC_KEY object
  *  \return 1 on success and 0 if an error occurred.
  */
-int EC_KEY_generate_key(EC_KEY *key);
+VIGORTLS_EXPORT int EC_KEY_generate_key(EC_KEY *key);
 
 /** Verifies that a private and/or public key is valid.
  *  \param  key  the EC_KEY object
  *  \return 1 on success and 0 otherwise.
  */
-int EC_KEY_check_key(const EC_KEY *key);
+VIGORTLS_EXPORT int EC_KEY_check_key(const EC_KEY *key);
 
 /** Sets a public key from affine coordindates performing
  *  neccessary NIST PKV tests.
@@ -812,7 +854,8 @@ int EC_KEY_check_key(const EC_KEY *key);
  *  \param  y    public key y coordinate
  *  \return 1 on success and 0 otherwise.
  */
-int EC_KEY_set_public_key_affine_coordinates(EC_KEY *key, BIGNUM *x, BIGNUM *y);
+VIGORTLS_EXPORT int
+EC_KEY_set_public_key_affine_coordinates(EC_KEY *key, BIGNUM *x, BIGNUM *y);
 
 /********************************************************************/
 /*        de- and encoding functions for SEC1 ECPrivateKey          */
@@ -824,7 +867,8 @@ int EC_KEY_set_public_key_affine_coordinates(EC_KEY *key, BIGNUM *x, BIGNUM *y);
  *  \param  len  length of the DER encoded private key
  *  \return the decoded private key or NULL if an error occurred.
  */
-EC_KEY *d2i_ECPrivateKey(EC_KEY **key, const uint8_t **in, long len);
+VIGORTLS_EXPORT EC_KEY *d2i_ECPrivateKey(EC_KEY **key, const uint8_t **in,
+                                         long len);
 
 /** Encodes a private key object and stores the result in a buffer.
  *  \param  key  the EC_KEY object to encode
@@ -832,7 +876,7 @@ EC_KEY *d2i_ECPrivateKey(EC_KEY **key, const uint8_t **in, long len);
  *               of bytes needed).
  *  \return 1 on success and 0 if an error occurred.
  */
-int i2d_ECPrivateKey(EC_KEY *key, uint8_t **out);
+VIGORTLS_EXPORT int i2d_ECPrivateKey(EC_KEY *key, uint8_t **out);
 
 /********************************************************************/
 /*        de- and encoding functions for EC parameters              */
@@ -845,7 +889,8 @@ int i2d_ECPrivateKey(EC_KEY *key, uint8_t **out);
  *  \return a EC_KEY object with the decoded parameters or NULL if an error
  *          occurred.
  */
-EC_KEY *d2i_ECParameters(EC_KEY **key, const uint8_t **in, long len);
+VIGORTLS_EXPORT EC_KEY *d2i_ECParameters(EC_KEY **key, const uint8_t **in,
+                                         long len);
 
 /** Encodes ec parameter and stores the result in a buffer.
  *  \param  key  the EC_KEY object with ec paramters to encode
@@ -853,7 +898,7 @@ EC_KEY *d2i_ECParameters(EC_KEY **key, const uint8_t **in, long len);
  *               of bytes needed).
  *  \return 1 on success and 0 if an error occurred.
  */
-int i2d_ECParameters(EC_KEY *key, uint8_t **out);
+VIGORTLS_EXPORT int i2d_ECParameters(EC_KEY *key, uint8_t **out);
 
 /********************************************************************/
 /*         de- and encoding functions for EC public key             */
@@ -867,7 +912,8 @@ int i2d_ECParameters(EC_KEY *key, uint8_t **out);
  *  \return EC_KEY object with decoded public key or NULL if an error
  *          occurred.
  */
-EC_KEY *o2i_ECPublicKey(EC_KEY **key, const uint8_t **in, long len);
+VIGORTLS_EXPORT EC_KEY *o2i_ECPublicKey(EC_KEY **key, const uint8_t **in,
+                                        long len);
 
 /** Encodes a ec public key in an octet string.
  *  \param  key  the EC_KEY object with the public key
@@ -875,14 +921,14 @@ EC_KEY *o2i_ECPublicKey(EC_KEY **key, const uint8_t **in, long len);
  *               of bytes needed).
  *  \return 1 on success and 0 if an error occurred
  */
-int i2o_ECPublicKey(EC_KEY *key, uint8_t **out);
+VIGORTLS_EXPORT int i2o_ECPublicKey(EC_KEY *key, uint8_t **out);
 
 /** Prints out the ec parameters on human readable form.
  *  \param  bp   BIO object to which the information is printed
  *  \param  key  EC_KEY object
  *  \return 1 on success and 0 if an error occurred
  */
-int ECParameters_print(BIO *bp, const EC_KEY *key);
+VIGORTLS_EXPORT int ECParameters_print(BIO *bp, const EC_KEY *key);
 
 /** Prints out the contents of a EC_KEY object
  *  \param  bp   BIO object to which the information is printed
@@ -890,14 +936,14 @@ int ECParameters_print(BIO *bp, const EC_KEY *key);
  *  \param  off  line offset
  *  \return 1 on success and 0 if an error occurred
  */
-int EC_KEY_print(BIO *bp, const EC_KEY *key, int off);
+VIGORTLS_EXPORT int EC_KEY_print(BIO *bp, const EC_KEY *key, int off);
 
 /** Prints out the ec parameters on human readable form.
  *  \param  fp   file descriptor to which the information is printed
  *  \param  key  EC_KEY object
  *  \return 1 on success and 0 if an error occurred
  */
-int ECParameters_print_fp(FILE *fp, const EC_KEY *key);
+VIGORTLS_EXPORT int ECParameters_print_fp(FILE *fp, const EC_KEY *key);
 
 /** Prints out the contents of a EC_KEY object
  *  \param  fp   file descriptor to which the information is printed
@@ -905,7 +951,7 @@ int ECParameters_print_fp(FILE *fp, const EC_KEY *key);
  *  \param  off  line offset
  *  \return 1 on success and 0 if an error occurred
  */
-int EC_KEY_print_fp(FILE *fp, const EC_KEY *key, int off);
+VIGORTLS_EXPORT int EC_KEY_print_fp(FILE *fp, const EC_KEY *key, int off);
 
 #define ECParameters_dup(x) \
     ASN1_dup_of(EC_KEY, i2d_ECParameters, d2i_ECParameters, x)
@@ -961,17 +1007,17 @@ int EC_KEY_print_fp(FILE *fp, const EC_KEY *key, int off);
                       EVP_PKEY_CTRL_GET_EC_KDF_UKM, 0, (void *)p)
 
 #define EVP_PKEY_CTRL_EC_PARAMGEN_CURVE_NID (EVP_PKEY_ALG_CTRL + 1)
-#define EVP_PKEY_CTRL_EC_PARAM_ENC (EVP_PKEY_ALG_CTRL + 2)
-#define EVP_PKEY_CTRL_EC_ECDH_COFACTOR (EVP_PKEY_ALG_CTRL + 3)
-#define EVP_PKEY_CTRL_EC_KDF_TYPE (EVP_PKEY_ALG_CTRL + 4)
-#define EVP_PKEY_CTRL_EC_KDF_MD (EVP_PKEY_ALG_CTRL + 5)
-#define EVP_PKEY_CTRL_GET_EC_KDF_MD (EVP_PKEY_ALG_CTRL + 6)
-#define EVP_PKEY_CTRL_EC_KDF_OUTLEN (EVP_PKEY_ALG_CTRL + 7)
-#define EVP_PKEY_CTRL_GET_EC_KDF_OUTLEN (EVP_PKEY_ALG_CTRL + 8)
-#define EVP_PKEY_CTRL_EC_KDF_UKM (EVP_PKEY_ALG_CTRL + 9)
-#define EVP_PKEY_CTRL_GET_EC_KDF_UKM (EVP_PKEY_ALG_CTRL + 10)
+#define EVP_PKEY_CTRL_EC_PARAM_ENC          (EVP_PKEY_ALG_CTRL + 2)
+#define EVP_PKEY_CTRL_EC_ECDH_COFACTOR      (EVP_PKEY_ALG_CTRL + 3)
+#define EVP_PKEY_CTRL_EC_KDF_TYPE           (EVP_PKEY_ALG_CTRL + 4)
+#define EVP_PKEY_CTRL_EC_KDF_MD             (EVP_PKEY_ALG_CTRL + 5)
+#define EVP_PKEY_CTRL_GET_EC_KDF_MD         (EVP_PKEY_ALG_CTRL + 6)
+#define EVP_PKEY_CTRL_EC_KDF_OUTLEN         (EVP_PKEY_ALG_CTRL + 7)
+#define EVP_PKEY_CTRL_GET_EC_KDF_OUTLEN     (EVP_PKEY_ALG_CTRL + 8)
+#define EVP_PKEY_CTRL_EC_KDF_UKM            (EVP_PKEY_ALG_CTRL + 9)
+#define EVP_PKEY_CTRL_GET_EC_KDF_UKM        (EVP_PKEY_ALG_CTRL + 10)
 /* KDF types */
-#define EVP_PKEY_ECDH_KDF_NONE 1
+#define EVP_PKEY_ECDH_KDF_NONE  1
 #define EVP_PKEY_ECDH_KDF_X9_62 2
 
 /* BEGIN ERROR CODES */
@@ -979,7 +1025,7 @@ int EC_KEY_print_fp(FILE *fp, const EC_KEY *key, int off);
  * The following lines are auto generated by the script mkerr.pl. Any changes
  * made after this point may be overwritten when the script is next run.
  */
-void ERR_load_EC_strings(void);
+VIGORTLS_EXPORT void ERR_load_EC_strings(void);
 
 /* Error codes for the EC functions. */
 

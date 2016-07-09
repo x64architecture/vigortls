@@ -18,27 +18,27 @@ ASN1_SEQUENCE(TS_MSG_IMPRINT) = {
 
 TS_MSG_IMPRINT *d2i_TS_MSG_IMPRINT(TS_MSG_IMPRINT **a, const uint8_t **in, long len)
 {
-    return (TS_MSG_IMPRINT *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, &TS_MSG_IMPRINT_it);
+    return (TS_MSG_IMPRINT *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, ASN1_ITEM_rptr(TS_MSG_IMPRINT));
 }
 
 int i2d_TS_MSG_IMPRINT(const TS_MSG_IMPRINT *a, uint8_t **out)
 {
-    return ASN1_item_i2d((ASN1_VALUE *)a, out, &TS_MSG_IMPRINT_it);
+    return ASN1_item_i2d((ASN1_VALUE *)a, out, ASN1_ITEM_rptr(TS_MSG_IMPRINT));
 }
 
 TS_MSG_IMPRINT *TS_MSG_IMPRINT_new(void)
 {
-    return (TS_MSG_IMPRINT *)ASN1_item_new(&TS_MSG_IMPRINT_it);
+    return (TS_MSG_IMPRINT *)ASN1_item_new(ASN1_ITEM_rptr(TS_MSG_IMPRINT));
 }
 
 void TS_MSG_IMPRINT_free(TS_MSG_IMPRINT *a)
 {
-    ASN1_item_free((ASN1_VALUE *)a, &TS_MSG_IMPRINT_it);
+    ASN1_item_free((ASN1_VALUE *)a, ASN1_ITEM_rptr(TS_MSG_IMPRINT));
 }
 
 TS_MSG_IMPRINT *TS_MSG_IMPRINT_dup(TS_MSG_IMPRINT *x)
 {
-    return ASN1_item_dup(&TS_MSG_IMPRINT_it, x);
+    return ASN1_item_dup(ASN1_ITEM_rptr(TS_MSG_IMPRINT), x);
 }
 TS_MSG_IMPRINT *d2i_TS_MSG_IMPRINT_bio(BIO *bp, TS_MSG_IMPRINT **a)
 {
@@ -70,27 +70,27 @@ ASN1_SEQUENCE(TS_REQ) = {
 
 TS_REQ *d2i_TS_REQ(TS_REQ **a, const uint8_t **in, long len)
 {
-    return (TS_REQ *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, &TS_REQ_it);
+    return (TS_REQ *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, ASN1_ITEM_rptr(TS_REQ));
 }
 
 int i2d_TS_REQ(const TS_REQ *a, uint8_t **out)
 {
-    return ASN1_item_i2d((ASN1_VALUE *)a, out, &TS_REQ_it);
+    return ASN1_item_i2d((ASN1_VALUE *)a, out, ASN1_ITEM_rptr(TS_REQ));
 }
 
 TS_REQ *TS_REQ_new(void)
 {
-    return (TS_REQ *)ASN1_item_new(&TS_REQ_it);
+    return (TS_REQ *)ASN1_item_new(ASN1_ITEM_rptr(TS_REQ));
 }
 
 void TS_REQ_free(TS_REQ *a)
 {
-    ASN1_item_free((ASN1_VALUE *)a, &TS_REQ_it);
+    ASN1_item_free((ASN1_VALUE *)a, ASN1_ITEM_rptr(TS_REQ));
 }
 
 TS_REQ *TS_REQ_dup(TS_REQ *x)
 {
-    return ASN1_item_dup(&TS_REQ_it, x);
+    return ASN1_item_dup(ASN1_ITEM_rptr(TS_REQ), x);
 }
 TS_REQ * d2i_TS_REQ_bio(BIO *bp, TS_REQ **a)
 {
@@ -119,27 +119,27 @@ ASN1_SEQUENCE(TS_ACCURACY) = {
 
 TS_ACCURACY *d2i_TS_ACCURACY(TS_ACCURACY **a, const uint8_t **in, long len)
 {
-    return (TS_ACCURACY *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, &TS_ACCURACY_it);
+    return (TS_ACCURACY *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, ASN1_ITEM_rptr(TS_ACCURACY));
 }
 
 int i2d_TS_ACCURACY(const TS_ACCURACY *a, uint8_t **out)
 {
-    return ASN1_item_i2d((ASN1_VALUE *)a, out, &TS_ACCURACY_it);
+    return ASN1_item_i2d((ASN1_VALUE *)a, out, ASN1_ITEM_rptr(TS_ACCURACY));
 }
 
 TS_ACCURACY *TS_ACCURACY_new(void)
 {
-    return (TS_ACCURACY *)ASN1_item_new(&TS_ACCURACY_it);
+    return (TS_ACCURACY *)ASN1_item_new(ASN1_ITEM_rptr(TS_ACCURACY));
 }
 
 void TS_ACCURACY_free(TS_ACCURACY *a)
 {
-    ASN1_item_free((ASN1_VALUE *)a, &TS_ACCURACY_it);
+    ASN1_item_free((ASN1_VALUE *)a, ASN1_ITEM_rptr(TS_ACCURACY));
 }
 
 TS_ACCURACY *TS_ACCURACY_dup(TS_ACCURACY *x)
 {
-    return ASN1_item_dup(&TS_ACCURACY_it, x);
+    return ASN1_item_dup(ASN1_ITEM_rptr(TS_ACCURACY), x);
 }
 
 ASN1_SEQUENCE(TS_TST_INFO) = {
@@ -157,27 +157,27 @@ ASN1_SEQUENCE(TS_TST_INFO) = {
 
 TS_TST_INFO *d2i_TS_TST_INFO(TS_TST_INFO **a, const uint8_t **in, long len)
 {
-    return (TS_TST_INFO *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, &TS_TST_INFO_it);
+    return (TS_TST_INFO *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, ASN1_ITEM_rptr(TS_TST_INFO));
 }
 
 int i2d_TS_TST_INFO(const TS_TST_INFO *a, uint8_t **out)
 {
-    return ASN1_item_i2d((ASN1_VALUE *)a, out, &TS_TST_INFO_it);
+    return ASN1_item_i2d((ASN1_VALUE *)a, out, ASN1_ITEM_rptr(TS_TST_INFO));
 }
 
 TS_TST_INFO *TS_TST_INFO_new(void)
 {
-    return (TS_TST_INFO *)ASN1_item_new(&TS_TST_INFO_it);
+    return (TS_TST_INFO *)ASN1_item_new(ASN1_ITEM_rptr(TS_TST_INFO));
 }
 
 void TS_TST_INFO_free(TS_TST_INFO *a)
 {
-    ASN1_item_free((ASN1_VALUE *)a, &TS_TST_INFO_it);
+    ASN1_item_free((ASN1_VALUE *)a, ASN1_ITEM_rptr(TS_TST_INFO));
 }
 
 TS_TST_INFO *TS_TST_INFO_dup(TS_TST_INFO *x)
 {
-    return ASN1_item_dup(&TS_TST_INFO_it, x);
+    return ASN1_item_dup(ASN1_ITEM_rptr(TS_TST_INFO), x);
 }
 TS_TST_INFO *d2i_TS_TST_INFO_bio(BIO *bp, TS_TST_INFO **a)
 {
@@ -206,27 +206,27 @@ ASN1_SEQUENCE(TS_STATUS_INFO) = {
 
 TS_STATUS_INFO *d2i_TS_STATUS_INFO(TS_STATUS_INFO **a, const uint8_t **in, long len)
 {
-    return (TS_STATUS_INFO *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, &TS_STATUS_INFO_it);
+    return (TS_STATUS_INFO *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, ASN1_ITEM_rptr(TS_STATUS_INFO));
 }
 
 int i2d_TS_STATUS_INFO(const TS_STATUS_INFO *a, uint8_t **out)
 {
-    return ASN1_item_i2d((ASN1_VALUE *)a, out, &TS_STATUS_INFO_it);
+    return ASN1_item_i2d((ASN1_VALUE *)a, out, ASN1_ITEM_rptr(TS_STATUS_INFO));
 }
 
 TS_STATUS_INFO *TS_STATUS_INFO_new(void)
 {
-    return (TS_STATUS_INFO *)ASN1_item_new(&TS_STATUS_INFO_it);
+    return (TS_STATUS_INFO *)ASN1_item_new(ASN1_ITEM_rptr(TS_STATUS_INFO));
 }
 
 void TS_STATUS_INFO_free(TS_STATUS_INFO *a)
 {
-    ASN1_item_free((ASN1_VALUE *)a, &TS_STATUS_INFO_it);
+    ASN1_item_free((ASN1_VALUE *)a, ASN1_ITEM_rptr(TS_STATUS_INFO));
 }
 
 TS_STATUS_INFO *TS_STATUS_INFO_dup(TS_STATUS_INFO *x)
 {
-    return ASN1_item_dup(&TS_STATUS_INFO_it, x);
+    return ASN1_item_dup(ASN1_ITEM_rptr(TS_STATUS_INFO), x);
 }
 
 static int ts_resp_set_tst_info(TS_RESP *a)
@@ -278,27 +278,27 @@ ASN1_SEQUENCE_cb(TS_RESP, ts_resp_cb) = {
 
 TS_RESP *d2i_TS_RESP(TS_RESP **a, const uint8_t **in, long len)
 {
-    return (TS_RESP *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, &TS_RESP_it);
+    return (TS_RESP *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, ASN1_ITEM_rptr(TS_RESP));
 }
 
 int i2d_TS_RESP(const TS_RESP *a, uint8_t **out)
 {
-    return ASN1_item_i2d((ASN1_VALUE *)a, out, &TS_RESP_it);
+    return ASN1_item_i2d((ASN1_VALUE *)a, out, ASN1_ITEM_rptr(TS_RESP));
 }
 
 TS_RESP *TS_RESP_new(void)
 {
-    return (TS_RESP *)ASN1_item_new(&TS_RESP_it);
+    return (TS_RESP *)ASN1_item_new(ASN1_ITEM_rptr(TS_RESP));
 }
 
 void TS_RESP_free(TS_RESP *a)
 {
-    ASN1_item_free((ASN1_VALUE *)a, &TS_RESP_it);
+    ASN1_item_free((ASN1_VALUE *)a, ASN1_ITEM_rptr(TS_RESP));
 }
 
 TS_RESP *TS_RESP_dup(TS_RESP *x)
 {
-    return ASN1_item_dup(&TS_RESP_it, x);
+    return ASN1_item_dup(ASN1_ITEM_rptr(TS_RESP), x);
 }
 TS_RESP *d2i_TS_RESP_bio(BIO *bp, TS_RESP **a)
 {
@@ -326,27 +326,27 @@ ASN1_SEQUENCE(ESS_ISSUER_SERIAL) = {
 
 ESS_ISSUER_SERIAL *d2i_ESS_ISSUER_SERIAL(ESS_ISSUER_SERIAL **a, const uint8_t **in, long len)
 {
-    return (ESS_ISSUER_SERIAL *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, &ESS_ISSUER_SERIAL_it);
+    return (ESS_ISSUER_SERIAL *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, ASN1_ITEM_rptr(ESS_ISSUER_SERIAL));
 }
 
 int i2d_ESS_ISSUER_SERIAL(const ESS_ISSUER_SERIAL *a, uint8_t **out)
 {
-    return ASN1_item_i2d((ASN1_VALUE *)a, out, &ESS_ISSUER_SERIAL_it);
+    return ASN1_item_i2d((ASN1_VALUE *)a, out, ASN1_ITEM_rptr(ESS_ISSUER_SERIAL));
 }
 
 ESS_ISSUER_SERIAL *ESS_ISSUER_SERIAL_new(void)
 {
-    return (ESS_ISSUER_SERIAL *)ASN1_item_new(&ESS_ISSUER_SERIAL_it);
+    return (ESS_ISSUER_SERIAL *)ASN1_item_new(ASN1_ITEM_rptr(ESS_ISSUER_SERIAL));
 }
 
 void ESS_ISSUER_SERIAL_free(ESS_ISSUER_SERIAL *a)
 {
-    ASN1_item_free((ASN1_VALUE *)a, &ESS_ISSUER_SERIAL_it);
+    ASN1_item_free((ASN1_VALUE *)a, ASN1_ITEM_rptr(ESS_ISSUER_SERIAL));
 }
 
 ESS_ISSUER_SERIAL *ESS_ISSUER_SERIAL_dup(ESS_ISSUER_SERIAL *x)
 {
-    return ASN1_item_dup(&ESS_ISSUER_SERIAL_it, x);
+    return ASN1_item_dup(ASN1_ITEM_rptr(ESS_ISSUER_SERIAL), x);
 }
 
 ASN1_SEQUENCE(ESS_CERT_ID) = {
@@ -356,27 +356,27 @@ ASN1_SEQUENCE(ESS_CERT_ID) = {
 
 ESS_CERT_ID *d2i_ESS_CERT_ID(ESS_CERT_ID **a, const uint8_t **in, long len)
 {
-    return (ESS_CERT_ID *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, &ESS_CERT_ID_it);
+    return (ESS_CERT_ID *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, ASN1_ITEM_rptr(ESS_CERT_ID));
 }
 
 int i2d_ESS_CERT_ID(const ESS_CERT_ID *a, uint8_t **out)
 {
-    return ASN1_item_i2d((ASN1_VALUE *)a, out, &ESS_CERT_ID_it);
+    return ASN1_item_i2d((ASN1_VALUE *)a, out, ASN1_ITEM_rptr(ESS_CERT_ID));
 }
 
 ESS_CERT_ID *ESS_CERT_ID_new(void)
 {
-    return (ESS_CERT_ID *)ASN1_item_new(&ESS_CERT_ID_it);
+    return (ESS_CERT_ID *)ASN1_item_new(ASN1_ITEM_rptr(ESS_CERT_ID));
 }
 
 void ESS_CERT_ID_free(ESS_CERT_ID *a)
 {
-    ASN1_item_free((ASN1_VALUE *)a, &ESS_CERT_ID_it);
+    ASN1_item_free((ASN1_VALUE *)a, ASN1_ITEM_rptr(ESS_CERT_ID));
 }
 
 ESS_CERT_ID *ESS_CERT_ID_dup(ESS_CERT_ID *x)
 {
-    return ASN1_item_dup(&ESS_CERT_ID_it, x);
+    return ASN1_item_dup(ASN1_ITEM_rptr(ESS_CERT_ID), x);
 }
 
 ASN1_SEQUENCE(ESS_SIGNING_CERT) = {
@@ -386,27 +386,27 @@ ASN1_SEQUENCE(ESS_SIGNING_CERT) = {
 
 ESS_SIGNING_CERT *d2i_ESS_SIGNING_CERT(ESS_SIGNING_CERT **a, const uint8_t **in, long len)
 {
-    return (ESS_SIGNING_CERT *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, &ESS_SIGNING_CERT_it);
+    return (ESS_SIGNING_CERT *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, ASN1_ITEM_rptr(ESS_SIGNING_CERT));
 }
 
 int i2d_ESS_SIGNING_CERT(const ESS_SIGNING_CERT *a, uint8_t **out)
 {
-    return ASN1_item_i2d((ASN1_VALUE *)a, out, &ESS_SIGNING_CERT_it);
+    return ASN1_item_i2d((ASN1_VALUE *)a, out, ASN1_ITEM_rptr(ESS_SIGNING_CERT));
 }
 
 ESS_SIGNING_CERT *ESS_SIGNING_CERT_new(void)
 {
-    return (ESS_SIGNING_CERT *)ASN1_item_new(&ESS_SIGNING_CERT_it);
+    return (ESS_SIGNING_CERT *)ASN1_item_new(ASN1_ITEM_rptr(ESS_SIGNING_CERT));
 }
 
 void ESS_SIGNING_CERT_free(ESS_SIGNING_CERT *a)
 {
-    ASN1_item_free((ASN1_VALUE *)a, &ESS_SIGNING_CERT_it);
+    ASN1_item_free((ASN1_VALUE *)a, ASN1_ITEM_rptr(ESS_SIGNING_CERT));
 }
 
 ESS_SIGNING_CERT *ESS_SIGNING_CERT_dup(ESS_SIGNING_CERT *x)
 {
-    return ASN1_item_dup(&ESS_SIGNING_CERT_it, x);
+    return ASN1_item_dup(ASN1_ITEM_rptr(ESS_SIGNING_CERT), x);
 }
 
 /* Getting encapsulated TS_TST_INFO object from PKCS7. */

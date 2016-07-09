@@ -9,15 +9,16 @@
 
 /*
  * This header only exists to break a circular dependency between pem and err
- * Ben 30 Jan 1999.
  */
+
+ #include <openssl/base.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 #ifndef HEADER_PEM_H
-void ERR_load_PEM_strings(void);
+VIGORTLS_EXPORT void ERR_load_PEM_strings(void);
 #endif
 
 #ifdef __cplusplus

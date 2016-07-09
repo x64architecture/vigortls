@@ -25,15 +25,25 @@
 #if defined(OPENSSL_NO_ASM) || \
     (!defined(VIGORTLS_X86_64) && !defined(VIGORTLS_X86))
 
-void Camellia_cbc_encrypt(const uint8_t *in, uint8_t *out,
-                          size_t len, const CAMELLIA_KEY *key,
-                          uint8_t *ivec, const int enc)
+void Camellia_cbc_encrypt(const uint8_t *in, uint8_t *out, size_t len,
+                          const CAMELLIA_KEY *key, uint8_t *ivec, const int enc)
 {
 
     if (enc == CAMELLIA_ENCRYPT)
         CRYPTO_cbc128_encrypt(in, out, len, key, ivec, (block128_f)Camellia_encrypt);
     else /* enc == CAMELLIA_DECRYPT */
         CRYPTO_cbc128_decrypt(in, out, len, key, ivec, (block128_f)Camellia_decrypt);
+}
+
+#else
+
+void asm_Camellia_cbc_encrypt(const uint8_t *in, uint8_t *out, size_t len,
+                              const CAMELLIA_KEY *key, uint8_t *ivec,
+                              const int enc);
+void Camellia_cbc_encrypt(const uint8_t *in, uint8_t *out, size_t len,
+                          const CAMELLIA_KEY *key, uint8_t *ivec, const int enc)
+{
+    asm_Camellia_cbc_encrypt(in, out, len, key, ivec, enc);
 }
 
 #endif /* OPENSSL_NO_ASM || (!VIGORTLS_X86_64 && !VIGORTLS_X86) */

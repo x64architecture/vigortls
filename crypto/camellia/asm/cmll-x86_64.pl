@@ -626,10 +626,10 @@ $_ivp="40(%rsp)";
 $_rsp="48(%rsp)";
 
 $code.=<<___;
-.globl	Camellia_cbc_encrypt
-.type	Camellia_cbc_encrypt,\@function,6
+.globl	asm_Camellia_cbc_encrypt
+.type	asm_Camellia_cbc_encrypt,\@function,6
 .align	16
-Camellia_cbc_encrypt:
+asm_Camellia_cbc_encrypt:
 	cmp	\$0,%rdx
 	je	.Lcbc_abort
 	push	%rbx
@@ -858,7 +858,7 @@ Camellia_cbc_encrypt:
 	lea	48(%rcx),%rsp
 .Lcbc_abort:
 	ret
-.size	Camellia_cbc_encrypt,.-Camellia_cbc_encrypt
+.size	asm_Camellia_cbc_encrypt,.-asm_Camellia_cbc_encrypt
 
 .asciz	"Camellia for x86_64 by <appro\@openssl.org>"
 ___
@@ -1052,9 +1052,9 @@ cbc_se_handler:
 	.rva	.LSEH_end_Camellia_Ekeygen
 	.rva	.LSEH_info_Camellia_Ekeygen
 
-	.rva	.LSEH_begin_Camellia_cbc_encrypt
-	.rva	.LSEH_end_Camellia_cbc_encrypt
-	.rva	.LSEH_info_Camellia_cbc_encrypt
+	.rva	.LSEH_begin_asm_Camellia_cbc_encrypt
+	.rva	.LSEH_end_asm_Camellia_cbc_encrypt
+	.rva	.LSEH_info_asm_Camellia_cbc_encrypt
 
 .section	.xdata
 .align	8
@@ -1070,7 +1070,7 @@ cbc_se_handler:
 	.byte	9,0,0,0
 	.rva	common_se_handler
 	.rva	.Lkey_prologue,.Lkey_epilogue	# HandlerData[]
-.LSEH_info_Camellia_cbc_encrypt:
+.LSEH_info_asm_Camellia_cbc_encrypt:
 	.byte	9,0,0,0
 	.rva	cbc_se_handler
 ___

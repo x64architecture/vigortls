@@ -19,56 +19,59 @@
 #include <sys/time.h>
 #endif
 
+#include <openssl/base.h>
 #include <openssl/buffer.h>
 
-/* Fixes conflicts on win32 */
-#ifdef _WIN32
+/* Fixes conflicts with wincrypt.h */
+#if defined(_WIN32) && defined(__WINCRYPT_H__)
 #undef X509_NAME
+#undef X509_CERT_PAIR
 #undef X509_EXTENSIONS
 #undef OCSP_REQUEST
 #undef OCSP_RESPONSE
+#undef PKCS7_ISSUER_AND_SERIAL
 #endif
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-#define DTLS1_VERSION 0xFEFF
+#define DTLS1_VERSION       0xFEFF
 #define DTLS1_VERSION_MAJOR 0xFE
-#define DTLS1_2_VERSION 0xFEFD
-#define DTLS_MAX_VERSION DTLS1_2_VERSION
+#define DTLS1_2_VERSION     0xFEFD
+#define DTLS_MAX_VERSION    DTLS1_2_VERSION
 /* Special value for method supporting multiple versions */
-#define DTLS_ANY_VERSION 0x1FFFF
+#define DTLS_ANY_VERSION    0x1FFFF
 
 /* lengths of messages */
-#define DTLS1_COOKIE_LENGTH 256
+#define DTLS1_COOKIE_LENGTH     256
 
-#define DTLS1_RT_HEADER_LENGTH 13
+#define DTLS1_RT_HEADER_LENGTH  13
 
-#define DTLS1_HM_HEADER_LENGTH 12
+#define DTLS1_HM_HEADER_LENGTH  12
 
-#define DTLS1_HM_BAD_FRAGMENT -2
+#define DTLS1_HM_BAD_FRAGMENT   -2
 #define DTLS1_HM_FRAGMENT_RETRY -3
 
 #define DTLS1_CCS_HEADER_LENGTH 1
 
 #ifdef DTLS1_AD_MISSING_HANDSHAKE_MESSAGE
-#define DTLS1_AL_HEADER_LENGTH 7
+#define DTLS1_AL_HEADER_LENGTH  7
 #else
-#define DTLS1_AL_HEADER_LENGTH 2
+#define DTLS1_AL_HEADER_LENGTH  2
 #endif
 
 #ifndef OPENSSL_NO_SSL_INTERN
 
 /* Max MTU overhead we know about so far is 40 for IPv6 + 8 for UDP */
-#define DTLS1_MAX_MTU_OVERHEAD 48
+#define DTLS1_MAX_MTU_OVERHEAD  48
 
 typedef struct dtls1_bitmap_st {
     unsigned long map;      /* track 32 packets on 32-bit systems
-                 and 64 - on 64-bit systems */
+                             * and 64 - on 64-bit systems */
     uint8_t max_seq_num[8]; /* max record number seen so far,
-                       64-bit value in big-endian
-                       encoding */
+                             * 64-bit value in big-endian
+                             * encoding */
 } DTLS1_BITMAP;
 
 struct dtls1_retransmit_state {
@@ -207,10 +210,10 @@ typedef struct dtls1_record_data_st {
 #endif
 
 /* Timeout multipliers (timeout slice is defined in apps/timeouts.h */
-#define DTLS1_TMO_READ_COUNT 2
-#define DTLS1_TMO_WRITE_COUNT 2
+#define DTLS1_TMO_READ_COUNT    2
+#define DTLS1_TMO_WRITE_COUNT   2
 
-#define DTLS1_TMO_ALERT_COUNT 12
+#define DTLS1_TMO_ALERT_COUNT   12
 
 #ifdef __cplusplus
 }

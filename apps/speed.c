@@ -2139,6 +2139,8 @@ static int do_multi(int multi)
     return 1;
 }
 
+#endif
+
 #ifndef OPENSSL_NO_MULTIBLOCK
 
 static void multiblock_speed(const EVP_CIPHER *evp_cipher)
@@ -2248,6 +2250,4 @@ err:
     free(inp);
     free(out);
 }
-#endif
-
 #endif

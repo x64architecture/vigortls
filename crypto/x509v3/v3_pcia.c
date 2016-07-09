@@ -41,22 +41,22 @@ ASN1_SEQUENCE(PROXY_POLICY) = {
 
 PROXY_POLICY *d2i_PROXY_POLICY(PROXY_POLICY **a, const uint8_t **in, long len)
 {
-    return (PROXY_POLICY *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, &PROXY_POLICY_it);
+    return (PROXY_POLICY *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, ASN1_ITEM_rptr(PROXY_POLICY));
 }
 
 int i2d_PROXY_POLICY(PROXY_POLICY *a, uint8_t **out)
 {
-    return ASN1_item_i2d((ASN1_VALUE *)a, out, &PROXY_POLICY_it);
+    return ASN1_item_i2d((ASN1_VALUE *)a, out, ASN1_ITEM_rptr(PROXY_POLICY));
 }
 
 PROXY_POLICY *PROXY_POLICY_new(void)
 {
-    return (PROXY_POLICY *)ASN1_item_new(&PROXY_POLICY_it);
+    return (PROXY_POLICY *)ASN1_item_new(ASN1_ITEM_rptr(PROXY_POLICY));
 }
 
 void PROXY_POLICY_free(PROXY_POLICY *a)
 {
-    ASN1_item_free((ASN1_VALUE *)a, &PROXY_POLICY_it);
+    ASN1_item_free((ASN1_VALUE *)a, ASN1_ITEM_rptr(PROXY_POLICY));
 }
 
 ASN1_SEQUENCE(PROXY_CERT_INFO_EXTENSION) = {
@@ -66,20 +66,20 @@ ASN1_SEQUENCE(PROXY_CERT_INFO_EXTENSION) = {
 
 PROXY_CERT_INFO_EXTENSION *d2i_PROXY_CERT_INFO_EXTENSION(PROXY_CERT_INFO_EXTENSION **a, const uint8_t **in, long len)
 {
-    return (PROXY_CERT_INFO_EXTENSION *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, &PROXY_CERT_INFO_EXTENSION_it);
+    return (PROXY_CERT_INFO_EXTENSION *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, ASN1_ITEM_rptr(PROXY_CERT_INFO_EXTENSION));
 }
 
 int i2d_PROXY_CERT_INFO_EXTENSION(PROXY_CERT_INFO_EXTENSION *a, uint8_t **out)
 {
-    return ASN1_item_i2d((ASN1_VALUE *)a, out, &PROXY_CERT_INFO_EXTENSION_it);
+    return ASN1_item_i2d((ASN1_VALUE *)a, out, ASN1_ITEM_rptr(PROXY_CERT_INFO_EXTENSION));
 }
 
 PROXY_CERT_INFO_EXTENSION *PROXY_CERT_INFO_EXTENSION_new(void)
 {
-    return (PROXY_CERT_INFO_EXTENSION *)ASN1_item_new(&PROXY_CERT_INFO_EXTENSION_it);
+    return (PROXY_CERT_INFO_EXTENSION *)ASN1_item_new(ASN1_ITEM_rptr(PROXY_CERT_INFO_EXTENSION));
 }
 
 void PROXY_CERT_INFO_EXTENSION_free(PROXY_CERT_INFO_EXTENSION *a)
 {
-    ASN1_item_free((ASN1_VALUE *)a, &PROXY_CERT_INFO_EXTENSION_it);
+    ASN1_item_free((ASN1_VALUE *)a, ASN1_ITEM_rptr(PROXY_CERT_INFO_EXTENSION));
 }

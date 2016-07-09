@@ -10,11 +10,10 @@
 #ifndef HEADER_RSA_H
 #define HEADER_RSA_H
 
+#include <openssl/base.h>
 #include <openssl/asn1.h>
-
 #include <openssl/bio.h>
 #include <openssl/crypto.h>
-#include <openssl/ossl_typ.h>
 #ifndef OPENSSL_NO_DEPRECATED
 #include <openssl/bn.h>
 #endif
@@ -24,10 +23,6 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-/* Declared already in ossl_typ.h */
-/* typedef struct rsa_st RSA; */
-/* typedef struct rsa_meth_st RSA_METHOD; */
 
 struct rsa_meth_st {
     const char *name;
@@ -48,23 +43,25 @@ struct rsa_meth_st {
     int (*finish)(RSA *rsa);               /* called at free */
     int flags;                             /* RSA_METHOD_FLAG_* things */
     char *app_data;                        /* may be needed! */
-    /* New sign and verify functions: some libraries don't allow arbitrary data
-* to be signed/verified: this allows them to be used. Note: for this to work
-* the RSA_public_decrypt() and RSA_private_encrypt() should *NOT* be used
-* RSA_sign(), RSA_verify() should be used instead. Note: for backwards
-* compatibility this functionality is only enabled if the RSA_FLAG_SIGN_VER
-* option is set in 'flags'.
-*/
+    /*
+     * New sign and verify functions: some libraries don't allow arbitrary data
+     * to be signed/verified: this allows them to be used. Note: for this to
+     * work the RSA_public_decrypt() and RSA_private_encrypt() should *NOT* be
+     * used RSA_sign(), RSA_verify() should be used instead. Note: for backwards
+     * compatibility this functionality is only enabled if the RSA_FLAG_SIGN_VER
+     * option is set in 'flags'.
+     */
     int (*rsa_sign)(int type, const uint8_t *m, unsigned int m_length,
                     uint8_t *sigret, unsigned int *siglen, const RSA *rsa);
     int (*rsa_verify)(int dtype, const uint8_t *m, unsigned int m_length,
                       const uint8_t *sigbuf, unsigned int siglen,
                       const RSA *rsa);
-    /* If this callback is NULL, the builtin software RSA key-gen will be used.
- * This
- * is for behavioural compatibility whilst the code gets rewired, but one day
- * it would be nice to assume there are no such things as "builtin software"
- * implementations. */
+    /*
+     * If this callback is NULL, the builtin software RSA key-gen will be used.
+     * This is for behavioural compatibility whilst the code gets rewired, but
+     * one day it would be nice to assume there are no such things as
+     * "builtin software" implementations.
+     */
     int (*rsa_keygen)(RSA *rsa, int bits, BIGNUM *e, BN_GENCB *cb);
 };
 
@@ -109,8 +106,8 @@ struct rsa_st {
 #define OPENSSL_RSA_SMALL_MODULUS_BITS 3072
 #endif
 #ifndef OPENSSL_RSA_MAX_PUBEXP_BITS
-#define OPENSSL_RSA_MAX_PUBEXP_BITS \
-    64 /* exponent limit enforced for "large" modulus only */
+#define OPENSSL_RSA_MAX_PUBEXP_BITS 64 /* exponent limit enforced for "large"
+                                        * modulus only */
 #endif
 
 #define RSA_3 0x3L
@@ -118,38 +115,36 @@ struct rsa_st {
 
 #define RSA_METHOD_FLAG_NO_CHECK 0x0001 /* don't check pub/private match */
 
-#define RSA_FLAG_CACHE_PUBLIC 0x0002
-#define RSA_FLAG_CACHE_PRIVATE 0x0004
-#define RSA_FLAG_BLINDING 0x0008
-#define RSA_FLAG_THREAD_SAFE 0x0010
-/* This flag means the private key operations will be handled by rsa_mod_exp
+#define RSA_FLAG_CACHE_PUBLIC   0x0002
+#define RSA_FLAG_CACHE_PRIVATE  0x0004
+#define RSA_FLAG_BLINDING       0x0008
+#define RSA_FLAG_THREAD_SAFE    0x0010
+/*
+ * This flag means the private key operations will be handled by rsa_mod_exp
  * and that they do not depend on the private key components being present:
  * for example a key stored in external hardware. Without this flag bn_mod_exp
  * gets called when private key components are absent.
  */
-#define RSA_FLAG_EXT_PKEY 0x0020
+#define RSA_FLAG_EXT_PKEY       0x0020
 
-/* This flag in the RSA_METHOD enables the new rsa_sign, rsa_verify functions.
+/*
+ * This flag in the RSA_METHOD enables the new rsa_sign, rsa_verify functions.
  */
-#define RSA_FLAG_SIGN_VER 0x0040
+#define RSA_FLAG_SIGN_VER       0x0040
 
-#define RSA_FLAG_NO_BLINDING                              \
-    0x0080 /* new with 0.9.6j and 0.9.7b; the built-in    \
-                * RSA implementation now uses blinding by \
-                * default (ignoring RSA_FLAG_BLINDING),   \
-                * but other engines might not need it     \
-                */
-#define RSA_FLAG_NO_CONSTTIME                              \
-    0x0100 /* new with 0.9.8f; the built-in RSA            \
-* implementation now uses constant time                    \
-* operations by default in private key operations,         \
-* e.g., constant time modular exponentiation,              \
-               * modular inverse without leaking branches, \
-               * division without leaking branches. This   \
-               * flag disables these constant time         \
-               * operations and results in faster RSA      \
-               * private key operations.                   \
-               */
+/*
+ * new with 0.9.6j and 0.9.7b; the built-in RSA implementation now uses blinding
+ * by default (ignoring RSA_FLAG_BLINDING), but other engines might not need it
+ */
+#define RSA_FLAG_NO_BLINDING    0x0080
+
+/* new with 0.9.8f; the built-in RSA implementation now uses constant time
+ * operations by default in private key operations, e.g., constant time modular
+ * exponentiation, modular inverse without leaking branches, division without
+ * leaking branches. This flag disables these constant time operations and
+ * results in faster RSA private key operations.
+ */
+#define RSA_FLAG_NO_CONSTTIME   0x0100
 
 #define EVP_PKEY_CTX_set_rsa_padding(ctx, pad)                               \
     EVP_PKEY_CTX_ctrl(ctx, EVP_PKEY_RSA, -1, EVP_PKEY_CTRL_RSA_PADDING, pad, \
@@ -220,62 +215,64 @@ struct rsa_st {
 #define EVP_PKEY_CTRL_GET_RSA_OAEP_MD (EVP_PKEY_ALG_CTRL + 11)
 #define EVP_PKEY_CTRL_GET_RSA_OAEP_LABEL (EVP_PKEY_ALG_CTRL + 12)
 
-#define RSA_PKCS1_PADDING 1
-#define RSA_SSLV23_PADDING 2
-#define RSA_NO_PADDING 3
-#define RSA_PKCS1_OAEP_PADDING 4
-#define RSA_X931_PADDING 5
+#define RSA_PKCS1_PADDING       1
+#define RSA_SSLV23_PADDING      2
+#define RSA_NO_PADDING          3
+#define RSA_PKCS1_OAEP_PADDING  4
+#define RSA_X931_PADDING        5
 /* EVP_PKEY_ only */
-#define RSA_PKCS1_PSS_PADDING 6
+#define RSA_PKCS1_PSS_PADDING   6
 
-#define RSA_PKCS1_PADDING_SIZE 11
+#define RSA_PKCS1_PADDING_SIZE  11
 
 #define RSA_set_app_data(s, arg) RSA_set_ex_data(s, 0, arg)
 #define RSA_get_app_data(s) RSA_get_ex_data(s, 0)
 
-RSA *RSA_new(void);
-RSA *RSA_new_method(ENGINE *engine);
-int RSA_size(const RSA *rsa);
+VIGORTLS_EXPORT RSA *RSA_new(void);
+VIGORTLS_EXPORT RSA *RSA_new_method(ENGINE *engine);
+VIGORTLS_EXPORT int RSA_size(const RSA *rsa);
 
 /* Deprecated version */
 #ifndef OPENSSL_NO_DEPRECATED
-RSA *RSA_generate_key(int bits, unsigned long e,
-                      void (*callback)(int, int, void *), void *cb_arg);
+VIGORTLS_EXPORT RSA *RSA_generate_key(int bits, unsigned long e,
+                                      void (*callback)(int, int, void *),
+                                      void *cb_arg);
 #endif /* !defined(OPENSSL_NO_DEPRECATED) */
 
 /* New version */
-int RSA_generate_key_ex(RSA *rsa, int bits, BIGNUM *e, BN_GENCB *cb);
+VIGORTLS_EXPORT int RSA_generate_key_ex(RSA *rsa, int bits, BIGNUM *e,
+                                        BN_GENCB *cb);
 
-int RSA_check_key(const RSA *);
+VIGORTLS_EXPORT int RSA_check_key(const RSA *);
 /* next 4 return -1 on error */
-int RSA_public_encrypt(int flen, const uint8_t *from, uint8_t *to, RSA *rsa,
-                       int padding);
-int RSA_private_encrypt(int flen, const uint8_t *from, uint8_t *to, RSA *rsa,
-                        int padding);
-int RSA_public_decrypt(int flen, const uint8_t *from, uint8_t *to, RSA *rsa,
-                       int padding);
-int RSA_private_decrypt(int flen, const uint8_t *from, uint8_t *to, RSA *rsa,
-                        int padding);
-void RSA_free(RSA *r);
+VIGORTLS_EXPORT int RSA_public_encrypt(int flen, const uint8_t *from,
+                                       uint8_t *to, RSA *rsa, int padding);
+VIGORTLS_EXPORT int RSA_private_encrypt(int flen, const uint8_t *from,
+                                        uint8_t *to, RSA *rsa, int padding);
+VIGORTLS_EXPORT int RSA_public_decrypt(int flen, const uint8_t *from,
+                                       uint8_t *to, RSA *rsa, int padding);
+VIGORTLS_EXPORT int RSA_private_decrypt(int flen, const uint8_t *from,
+                                        uint8_t *to, RSA *rsa, int padding);
+VIGORTLS_EXPORT void RSA_free(RSA *r);
 /* "up" the RSA object's reference count */
-int RSA_up_ref(RSA *r);
+VIGORTLS_EXPORT int RSA_up_ref(RSA *r);
 
-int RSA_flags(const RSA *r);
+VIGORTLS_EXPORT int RSA_flags(const RSA *r);
 
-void RSA_set_default_method(const RSA_METHOD *meth);
-const RSA_METHOD *RSA_get_default_method(void);
-const RSA_METHOD *RSA_get_method(const RSA *rsa);
-int RSA_set_method(RSA *rsa, const RSA_METHOD *meth);
+VIGORTLS_EXPORT void RSA_set_default_method(const RSA_METHOD *meth);
+VIGORTLS_EXPORT const RSA_METHOD *RSA_get_default_method(void);
+VIGORTLS_EXPORT const RSA_METHOD *RSA_get_method(const RSA *rsa);
+VIGORTLS_EXPORT int RSA_set_method(RSA *rsa, const RSA_METHOD *meth);
 
 /* these are the actual SSLeay RSA functions */
-const RSA_METHOD *RSA_PKCS1_SSLeay(void);
+VIGORTLS_EXPORT const RSA_METHOD *RSA_PKCS1_SSLeay(void);
 
-const RSA_METHOD *RSA_null_method(void);
+VIGORTLS_EXPORT const RSA_METHOD *RSA_null_method(void);
 
 DECLARE_ASN1_ENCODE_FUNCTIONS_const(RSA, RSAPublicKey)
-    DECLARE_ASN1_ENCODE_FUNCTIONS_const(RSA, RSAPrivateKey)
+DECLARE_ASN1_ENCODE_FUNCTIONS_const(RSA, RSAPrivateKey)
 
-        typedef struct rsa_pss_params_st {
+typedef struct rsa_pss_params_st {
     X509_ALGOR *hashAlgorithm;
     X509_ALGOR *maskGenAlgorithm;
     ASN1_INTEGER *saltLength;
@@ -292,96 +289,123 @@ typedef struct rsa_oaep_params_st {
     
 DECLARE_ASN1_FUNCTIONS(RSA_OAEP_PARAMS)
 
-int RSA_print_fp(FILE *fp, const RSA *r, int offset);
+VIGORTLS_EXPORT int RSA_print_fp(FILE *fp, const RSA *r, int offset);
 
-int RSA_print(BIO *bp, const RSA *r, int offset);
+VIGORTLS_EXPORT int RSA_print(BIO *bp, const RSA *r, int offset);
 
-int i2d_RSA_NET(const RSA *a, uint8_t **pp,
-                int (*cb)(char *buf, int len, const char *prompt, int verify),
-                int sgckey);
-RSA *d2i_RSA_NET(RSA **a, const uint8_t **pp, long length,
-                 int (*cb)(char *buf, int len, const char *prompt, int verify),
-                 int sgckey);
+VIGORTLS_EXPORT int i2d_RSA_NET(const RSA *a, uint8_t **pp,
+                                int (*cb)(char *buf, int len,
+                                          const char *prompt, int verify),
+                                int sgckey);
+VIGORTLS_EXPORT RSA *d2i_RSA_NET(RSA **a, const uint8_t **pp, long length,
+                                 int (*cb)(char *buf, int len,
+                                           const char *prompt, int verify),
+                                 int sgckey);
 
-int i2d_Netscape_RSA(const RSA *a, uint8_t **pp,
-                     int (*cb)(char *buf, int len, const char *prompt,
-                               int verify));
-RSA *d2i_Netscape_RSA(RSA **a, const uint8_t **pp, long length,
-                      int (*cb)(char *buf, int len, const char *prompt,
-                                int verify));
+VIGORTLS_EXPORT int i2d_Netscape_RSA(const RSA *a, uint8_t **pp,
+                                     int (*cb)(char *buf, int len,
+                                               const char *prompt, int verify));
+VIGORTLS_EXPORT RSA *
+d2i_Netscape_RSA(RSA **a, const uint8_t **pp, long length,
+                 int (*cb)(char *buf, int len, const char *prompt, int verify));
 
-/* The following 2 functions sign and verify a X509_SIG ASN1 object
- * inside PKCS#1 padded RSA encryption */
-int RSA_sign(int type, const uint8_t *m, unsigned int m_length, uint8_t *sigret,
-             unsigned int *siglen, RSA *rsa);
-int RSA_verify(int type, const uint8_t *m, unsigned int m_length,
-               const uint8_t *sigbuf, unsigned int siglen, RSA *rsa);
+/*
+ * The following 2 functions sign and verify a X509_SIG ASN1 object
+ * inside PKCS#1 padded RSA encryption
+ */
+VIGORTLS_EXPORT int RSA_sign(int type, const uint8_t *m, unsigned int m_length,
+                             uint8_t *sigret, unsigned int *siglen, RSA *rsa);
+VIGORTLS_EXPORT int RSA_verify(int type, const uint8_t *m,
+                               unsigned int m_length, const uint8_t *sigbuf,
+                               unsigned int siglen, RSA *rsa);
 
-/* The following 2 function sign and verify a ASN1_OCTET_STRING
- * object inside PKCS#1 padded RSA encryption */
-int RSA_sign_ASN1_OCTET_STRING(int type, const uint8_t *m,
-                               unsigned int m_length, uint8_t *sigret,
-                               unsigned int *siglen, RSA *rsa);
-int RSA_verify_ASN1_OCTET_STRING(int type, const uint8_t *m,
-                                 unsigned int m_length, uint8_t *sigbuf,
-                                 unsigned int siglen, RSA *rsa);
+/*
+ * The following 2 function sign and verify a ASN1_OCTET_STRING
+ * object inside PKCS#1 padded RSA encryption
+ */
+VIGORTLS_EXPORT int RSA_sign_ASN1_OCTET_STRING(int type, const uint8_t *m,
+                                               unsigned int m_length,
+                                               uint8_t *sigret,
+                                               unsigned int *siglen, RSA *rsa);
+VIGORTLS_EXPORT int RSA_verify_ASN1_OCTET_STRING(int type, const uint8_t *m,
+                                                 unsigned int m_length,
+                                                 uint8_t *sigbuf,
+                                                 unsigned int siglen, RSA *rsa);
 
-int RSA_blinding_on(RSA *rsa, BN_CTX *ctx);
-void RSA_blinding_off(RSA *rsa);
-BN_BLINDING *RSA_setup_blinding(RSA *rsa, BN_CTX *ctx);
+VIGORTLS_EXPORT int RSA_blinding_on(RSA *rsa, BN_CTX *ctx);
+VIGORTLS_EXPORT void RSA_blinding_off(RSA *rsa);
+VIGORTLS_EXPORT BN_BLINDING *RSA_setup_blinding(RSA *rsa, BN_CTX *ctx);
 
-int RSA_padding_add_PKCS1_type_1(uint8_t *to, int tlen, const uint8_t *f,
-                                 int fl);
-int RSA_padding_check_PKCS1_type_1(uint8_t *to, int tlen, const uint8_t *f,
-                                   int fl, int rsa_len);
-int RSA_padding_add_PKCS1_type_2(uint8_t *to, int tlen, const uint8_t *f,
-                                 int fl);
-int RSA_padding_check_PKCS1_type_2(uint8_t *to, int tlen, const uint8_t *f,
-                                   int fl, int rsa_len);
-int PKCS1_MGF1(uint8_t *mask, long len, const uint8_t *seed, long seedlen,
-               const EVP_MD *dgst);
-int RSA_padding_add_PKCS1_OAEP(uint8_t *to, int tlen, const uint8_t *f, int fl,
-                               const uint8_t *p, int pl);
-int RSA_padding_check_PKCS1_OAEP(uint8_t *to, int tlen, const uint8_t *f,
-                                 int fl, int rsa_len, const uint8_t *p, int pl);
-int RSA_padding_add_PKCS1_OAEP_mgf1(uint8_t *to, int tlen, const uint8_t *from,
-                                    int flen, const uint8_t *param, int plen,
-                                    const EVP_MD *md, const EVP_MD *mgf1md);
-int RSA_padding_check_PKCS1_OAEP_mgf1(uint8_t *to, int tlen,
-                                      const uint8_t *from, int flen, int num,
-                                      const uint8_t *param, int plen,
-                                      const EVP_MD *md, const EVP_MD *mgf1md);
-int RSA_padding_add_SSLv23(uint8_t *to, int tlen, const uint8_t *f, int fl);
-int RSA_padding_check_SSLv23(uint8_t *to, int tlen, const uint8_t *f, int fl,
-                             int rsa_len);
-int RSA_padding_add_none(uint8_t *to, int tlen, const uint8_t *f, int fl);
-int RSA_padding_check_none(uint8_t *to, int tlen, const uint8_t *f, int fl,
-                           int rsa_len);
-int RSA_padding_add_X931(uint8_t *to, int tlen, const uint8_t *f, int fl);
-int RSA_padding_check_X931(uint8_t *to, int tlen, const uint8_t *f, int fl,
-                           int rsa_len);
-int RSA_X931_hash_id(int nid);
+VIGORTLS_EXPORT int RSA_padding_add_PKCS1_type_1(uint8_t *to, int tlen,
+                                                 const uint8_t *f, int fl);
+VIGORTLS_EXPORT int RSA_padding_check_PKCS1_type_1(uint8_t *to, int tlen,
+                                                   const uint8_t *f, int fl,
+                                                   int rsa_len);
+VIGORTLS_EXPORT int RSA_padding_add_PKCS1_type_2(uint8_t *to, int tlen,
+                                                 const uint8_t *f, int fl);
+VIGORTLS_EXPORT int RSA_padding_check_PKCS1_type_2(uint8_t *to, int tlen,
+                                                   const uint8_t *f, int fl,
+                                                   int rsa_len);
+VIGORTLS_EXPORT int PKCS1_MGF1(uint8_t *mask, long len, const uint8_t *seed,
+                               long seedlen, const EVP_MD *dgst);
+VIGORTLS_EXPORT int RSA_padding_add_PKCS1_OAEP(uint8_t *to, int tlen,
+                                               const uint8_t *f, int fl,
+                                               const uint8_t *p, int pl);
+VIGORTLS_EXPORT int RSA_padding_check_PKCS1_OAEP(uint8_t *to, int tlen,
+                                                 const uint8_t *f, int fl,
+                                                 int rsa_len, const uint8_t *p,
+                                                 int pl);
+VIGORTLS_EXPORT int
+RSA_padding_add_PKCS1_OAEP_mgf1(uint8_t *to, int tlen, const uint8_t *from,
+                                int flen, const uint8_t *param, int plen,
+                                const EVP_MD *md, const EVP_MD *mgf1md);
+VIGORTLS_EXPORT int RSA_padding_check_PKCS1_OAEP_mgf1(
+    uint8_t *to, int tlen, const uint8_t *from, int flen, int num,
+    const uint8_t *param, int plen, const EVP_MD *md, const EVP_MD *mgf1md);
+VIGORTLS_EXPORT int RSA_padding_add_SSLv23(uint8_t *to, int tlen,
+                                           const uint8_t *f, int fl);
+VIGORTLS_EXPORT int RSA_padding_check_SSLv23(uint8_t *to, int tlen,
+                                             const uint8_t *f, int fl,
+                                             int rsa_len);
+VIGORTLS_EXPORT int RSA_padding_add_none(uint8_t *to, int tlen,
+                                         const uint8_t *f, int fl);
+VIGORTLS_EXPORT int RSA_padding_check_none(uint8_t *to, int tlen,
+                                           const uint8_t *f, int fl,
+                                           int rsa_len);
+VIGORTLS_EXPORT int RSA_padding_add_X931(uint8_t *to, int tlen,
+                                         const uint8_t *f, int fl);
+VIGORTLS_EXPORT int RSA_padding_check_X931(uint8_t *to, int tlen,
+                                           const uint8_t *f, int fl,
+                                           int rsa_len);
+VIGORTLS_EXPORT int RSA_X931_hash_id(int nid);
 
-int RSA_verify_PKCS1_PSS(RSA *rsa, const uint8_t *mHash, const EVP_MD *Hash,
-                         const uint8_t *EM, int sLen);
-int RSA_padding_add_PKCS1_PSS(RSA *rsa, uint8_t *EM, const uint8_t *mHash,
-                              const EVP_MD *Hash, int sLen);
+VIGORTLS_EXPORT int RSA_verify_PKCS1_PSS(RSA *rsa, const uint8_t *mHash,
+                                         const EVP_MD *Hash, const uint8_t *EM,
+                                         int sLen);
+VIGORTLS_EXPORT int RSA_padding_add_PKCS1_PSS(RSA *rsa, uint8_t *EM,
+                                              const uint8_t *mHash,
+                                              const EVP_MD *Hash, int sLen);
 
-int RSA_verify_PKCS1_PSS_mgf1(RSA *rsa, const uint8_t *mHash,
-                              const EVP_MD *Hash, const EVP_MD *mgf1Hash,
-                              const uint8_t *EM, int sLen);
+VIGORTLS_EXPORT int RSA_verify_PKCS1_PSS_mgf1(RSA *rsa, const uint8_t *mHash,
+                                              const EVP_MD *Hash,
+                                              const EVP_MD *mgf1Hash,
+                                              const uint8_t *EM, int sLen);
 
-int RSA_padding_add_PKCS1_PSS_mgf1(RSA *rsa, uint8_t *EM, const uint8_t *mHash,
-                                   const EVP_MD *Hash, const EVP_MD *mgf1Hash,
-                                   int sLen);
+VIGORTLS_EXPORT int RSA_padding_add_PKCS1_PSS_mgf1(RSA *rsa, uint8_t *EM,
+                                                   const uint8_t *mHash,
+                                                   const EVP_MD *Hash,
+                                                   const EVP_MD *mgf1Hash,
+                                                   int sLen);
 
-int RSA_get_ex_new_index(long argl, void *argp, CRYPTO_EX_new *new_func,
-                         CRYPTO_EX_dup *dup_func, CRYPTO_EX_free *free_func);
-int RSA_set_ex_data(RSA *r, int idx, void *arg);
-void *RSA_get_ex_data(const RSA *r, int idx);
+VIGORTLS_EXPORT int RSA_get_ex_new_index(long argl, void *argp,
+                                         CRYPTO_EX_new *new_func,
+                                         CRYPTO_EX_dup *dup_func,
+                                         CRYPTO_EX_free *free_func);
+VIGORTLS_EXPORT int RSA_set_ex_data(RSA *r, int idx, void *arg);
+VIGORTLS_EXPORT void *RSA_get_ex_data(const RSA *r, int idx);
 
-RSA *RSAPublicKey_dup(RSA *rsa);
-RSA *RSAPrivateKey_dup(RSA *rsa);
+VIGORTLS_EXPORT RSA *RSAPublicKey_dup(RSA *rsa);
+VIGORTLS_EXPORT RSA *RSAPrivateKey_dup(RSA *rsa);
 
 /* Application has decided PRNG is good enough to generate a key: don't
  * check.
@@ -393,7 +417,7 @@ RSA *RSAPrivateKey_dup(RSA *rsa);
  * The following lines are auto generated by the script mkerr.pl. Any changes
  * made after this point may be overwritten when the script is next run.
  */
-void ERR_load_RSA_strings(void);
+VIGORTLS_EXPORT void ERR_load_RSA_strings(void);
 
 /* Error codes for the RSA functions. */
 

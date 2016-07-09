@@ -529,33 +529,52 @@ void Camellia_DecryptBlock(int keyBitLength, const uint8_t plaintext[],
 
 #else /* OPENSSL_NO_ASM || (!VIGORTLS_X86_64 && !VIGORTLS_X86) */
 
+/* TODO(kurtcancemi): Why are these implemented in ASM on X86? */
+#if (defined(VIGORTLS_X86) && !defined(OPENSSL_NO_ASM))
+
+void asm_Camellia_encrypt(const uint8_t *in, uint8_t *out,
+                          const CAMELLIA_KEY *key);
+void Camellia_encrypt(const uint8_t *in, uint8_t *out, const CAMELLIA_KEY *key)
+{
+    asm_Camellia_encrypt(in, out, key);
+}
+
+void asm_Camellia_decrypt(const uint8_t *in, uint8_t *out,
+                          const CAMELLIA_KEY *key);
+void Camellia_decrypt(const uint8_t *in, uint8_t *out, const CAMELLIA_KEY *key)
+{
+    asm_Camellia_decrypt(in, out, key);
+}
+
+int asm_Camellia_set_key(const uint8_t *userKey, const int bits,
+                         CAMELLIA_KEY *key);
+int Camellia_set_key(const uint8_t *userKey, const int bits, CAMELLIA_KEY *key)
+{
+    return asm_Camellia_set_key(userKey, bits, key);
+}
+
+#else
+
 void Camellia_EncryptBlock_Rounds(int grandRounds, const uint8_t plaintext[],
-                                  const KEY_TABLE_TYPE keyTable, uint8_t ciphertext[]);
+                                  const KEY_TABLE_TYPE keyTable,
+                                  uint8_t ciphertext[]);
 void Camellia_DecryptBlock_Rounds(int grandRounds, const uint8_t ciphertext[],
-                                  const KEY_TABLE_TYPE keyTable, uint8_t plaintext[]);
+                                  const KEY_TABLE_TYPE keyTable,
+                                  uint8_t plaintext[]);
 
-#endif /* OPENSSL_NO_ASM || (!VIGORTLS_X86_64 && !VIGORTLS_X86) */
-
-/* TODO: Why is this implemented in ASM on X86? */
-#if (!defined(VIGORTLS_X86) && !defined(OPENSSL_NO_ASM)) || \
-        (defined(OPENSSL_NO_ASM))
-
-void Camellia_encrypt(const uint8_t *in, uint8_t *out,
-                      const CAMELLIA_KEY *key)
+void Camellia_encrypt(const uint8_t *in, uint8_t *out, const CAMELLIA_KEY *key)
 {
     Camellia_EncryptBlock_Rounds(key->grand_rounds, in, key->u.rd_key, out);
 }
 
-void Camellia_decrypt(const uint8_t *in, uint8_t *out,
-                      const CAMELLIA_KEY *key)
+void Camellia_decrypt(const uint8_t *in, uint8_t *out, const CAMELLIA_KEY *key)
 {
     Camellia_DecryptBlock_Rounds(key->grand_rounds, in, key->u.rd_key, out);
 }
 
 int Camellia_Ekeygen(int keyBitLength, const uint8_t *rawKey,
                      KEY_TABLE_TYPE keyTable);
-int Camellia_set_key(const uint8_t *userKey, const int bits,
-                     CAMELLIA_KEY *key)
+int Camellia_set_key(const uint8_t *userKey, const int bits, CAMELLIA_KEY *key)
 {
     if (userKey == NULL || key == NULL)
         return -1;
@@ -564,4 +583,7 @@ int Camellia_set_key(const uint8_t *userKey, const int bits,
     key->grand_rounds = Camellia_Ekeygen(bits, userKey, key->u.rd_key);
     return 0;
 }
+
 #endif
+
+#endif /* OPENSSL_NO_ASM || (!VIGORTLS_X86_64 && !VIGORTLS_X86) */

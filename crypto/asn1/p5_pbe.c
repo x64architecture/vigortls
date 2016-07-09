@@ -24,22 +24,22 @@ ASN1_SEQUENCE(PBEPARAM) = {
 
 PBEPARAM *d2i_PBEPARAM(PBEPARAM **a, const uint8_t **in, long len)
 {
-    return (PBEPARAM *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, &PBEPARAM_it);
+    return (PBEPARAM *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, ASN1_ITEM_rptr(PBEPARAM));
 }
 
 int i2d_PBEPARAM(PBEPARAM *a, uint8_t **out)
 {
-    return ASN1_item_i2d((ASN1_VALUE *)a, out, &PBEPARAM_it);
+    return ASN1_item_i2d((ASN1_VALUE *)a, out, ASN1_ITEM_rptr(PBEPARAM));
 }
 
 PBEPARAM *PBEPARAM_new(void)
 {
-    return (PBEPARAM *)ASN1_item_new(&PBEPARAM_it);
+    return (PBEPARAM *)ASN1_item_new(ASN1_ITEM_rptr(PBEPARAM));
 }
 
 void PBEPARAM_free(PBEPARAM *a)
 {
-    ASN1_item_free((ASN1_VALUE *)a, &PBEPARAM_it);
+    ASN1_item_free((ASN1_VALUE *)a, ASN1_ITEM_rptr(PBEPARAM));
 }
 
 /* Set an algorithm identifier for a PKCS#5 PBE algorithm */

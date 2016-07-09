@@ -46,22 +46,22 @@ ASN1_SEQUENCE(SXNETID) = {
 
 SXNETID *d2i_SXNETID(SXNETID **a, const uint8_t **in, long len)
 {
-    return (SXNETID *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, &SXNETID_it);
+    return (SXNETID *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, ASN1_ITEM_rptr(SXNETID));
 }
 
 int i2d_SXNETID(SXNETID *a, uint8_t **out)
 {
-    return ASN1_item_i2d((ASN1_VALUE *)a, out, &SXNETID_it);
+    return ASN1_item_i2d((ASN1_VALUE *)a, out, ASN1_ITEM_rptr(SXNETID));
 }
 
 SXNETID *SXNETID_new(void)
 {
-    return (SXNETID *)ASN1_item_new(&SXNETID_it);
+    return (SXNETID *)ASN1_item_new(ASN1_ITEM_rptr(SXNETID));
 }
 
 void SXNETID_free(SXNETID *a)
 {
-    ASN1_item_free((ASN1_VALUE *)a, &SXNETID_it);
+    ASN1_item_free((ASN1_VALUE *)a, ASN1_ITEM_rptr(SXNETID));
 }
 
 ASN1_SEQUENCE(SXNET) = {
@@ -71,22 +71,22 @@ ASN1_SEQUENCE(SXNET) = {
 
 SXNET *d2i_SXNET(SXNET **a, const uint8_t **in, long len)
 {
-    return (SXNET *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, &SXNET_it);
+    return (SXNET *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, ASN1_ITEM_rptr(SXNET));
 }
 
 int i2d_SXNET(SXNET *a, uint8_t **out)
 {
-    return ASN1_item_i2d((ASN1_VALUE *)a, out, &SXNET_it);
+    return ASN1_item_i2d((ASN1_VALUE *)a, out, ASN1_ITEM_rptr(SXNET));
 }
 
 SXNET *SXNET_new(void)
 {
-    return (SXNET *)ASN1_item_new(&SXNET_it);
+    return (SXNET *)ASN1_item_new(ASN1_ITEM_rptr(SXNET));
 }
 
 void SXNET_free(SXNET *a)
 {
-    ASN1_item_free((ASN1_VALUE *)a, &SXNET_it);
+    ASN1_item_free((ASN1_VALUE *)a, ASN1_ITEM_rptr(SXNET));
 }
 
 static int sxnet_i2r(X509V3_EXT_METHOD * method, SXNET * sx, BIO * out, int indent)

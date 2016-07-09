@@ -10,23 +10,19 @@
 #ifndef HEADER_DH_H
 #define HEADER_DH_H
 
-#include <openssl/opensslconf.h>
-
+#include <openssl/base.h>
 #include <openssl/bio.h>
-#include <openssl/ossl_typ.h>
 #ifndef OPENSSL_NO_DEPRECATED
 #include <openssl/bn.h>
 #endif
-
-#include <openssl/threads.h>
 
 #ifndef OPENSSL_DH_MAX_MODULUS_BITS
 #define OPENSSL_DH_MAX_MODULUS_BITS 10000
 #endif
 
-#define DH_FLAG_CACHE_MONT_P     0x01
-#define DH_FLAG_NO_EXP_CONSTTIME 0x02
-#define DH_CHECK_PUBKEY_INVALID  0x04
+#define DH_FLAG_CACHE_MONT_P        0x01
+#define DH_FLAG_NO_EXP_CONSTTIME    0x02
+#define DH_CHECK_PUBKEY_INVALID     0x04
 
 #ifdef __cplusplus
 extern "C" {
@@ -80,18 +76,18 @@ struct dh_st {
     CRYPTO_MUTEX *lock;
 };
 
-#define DH_GENERATOR_2 2
+#define DH_GENERATOR_2  2
 /* #define DH_GENERATOR_3    3 */
-#define DH_GENERATOR_5 5
+#define DH_GENERATOR_5  5
 
 /* DH_check error codes */
-#define DH_CHECK_P_NOT_PRIME 0x01
-#define DH_CHECK_P_NOT_SAFE_PRIME 0x02
-#define DH_UNABLE_TO_CHECK_GENERATOR 0x04
-#define DH_NOT_SUITABLE_GENERATOR 0x08
-#define DH_CHECK_Q_NOT_PRIME 0x10
-#define DH_CHECK_INVALID_Q_VALUE 0x20
-#define DH_CHECK_INVALID_J_VALUE 0x40
+#define DH_CHECK_P_NOT_PRIME            0x01
+#define DH_CHECK_P_NOT_SAFE_PRIME       0x02
+#define DH_UNABLE_TO_CHECK_GENERATOR    0x04
+#define DH_NOT_SUITABLE_GENERATOR       0x08
+#define DH_CHECK_Q_NOT_PRIME            0x10
+#define DH_CHECK_INVALID_Q_VALUE        0x20
+#define DH_CHECK_INVALID_J_VALUE        0x40
 
 /* DH_check_pub_key error codes */
 #define DH_CHECK_PUBKEY_TOO_SMALL 0x01
@@ -108,60 +104,66 @@ struct dh_st {
 #define d2i_DHparams_bio(bp, x) ASN1_d2i_bio_of(DH, DH_new, d2i_DHparams, bp, x)
 #define i2d_DHparams_bio(bp, x) ASN1_i2d_bio_of_const(DH, i2d_DHparams, bp, x)
 
-DH *DHparams_dup(DH *);
+VIGORTLS_EXPORT DH *DHparams_dup(DH *);
 
-const DH_METHOD *DH_OpenSSL(void);
+VIGORTLS_EXPORT const DH_METHOD *DH_OpenSSL(void);
 
-void DH_set_default_method(const DH_METHOD *meth);
-const DH_METHOD *DH_get_default_method(void);
-int DH_set_method(DH *dh, const DH_METHOD *meth);
-DH *DH_new_method(ENGINE *engine);
+VIGORTLS_EXPORT void DH_set_default_method(const DH_METHOD *meth);
+VIGORTLS_EXPORT const DH_METHOD *DH_get_default_method(void);
+VIGORTLS_EXPORT int DH_set_method(DH *dh, const DH_METHOD *meth);
+VIGORTLS_EXPORT DH *DH_new_method(ENGINE *engine);
 
-DH *DH_new(void);
-void DH_free(DH *dh);
-int DH_up_ref(DH *dh);
-int DH_size(const DH *dh);
+VIGORTLS_EXPORT DH *DH_new(void);
+VIGORTLS_EXPORT void DH_free(DH *dh);
+VIGORTLS_EXPORT int DH_up_ref(DH *dh);
+VIGORTLS_EXPORT int DH_size(const DH *dh);
 
 /* DH_num_bits returns the minimum number of bits needed to represent the
  * absolute value of the DH group's prime. */
-unsigned int DH_num_bits(const DH *dh);
-int DH_get_ex_new_index(long argl, void *argp, CRYPTO_EX_new *new_func,
-                        CRYPTO_EX_dup *dup_func, CRYPTO_EX_free *free_func);
-int DH_set_ex_data(DH *d, int idx, void *arg);
-void *DH_get_ex_data(DH *d, int idx);
+VIGORTLS_EXPORT unsigned int DH_num_bits(const DH *dh);
+VIGORTLS_EXPORT int DH_get_ex_new_index(long argl, void *argp,
+                                        CRYPTO_EX_new *new_func,
+                                        CRYPTO_EX_dup *dup_func,
+                                        CRYPTO_EX_free *free_func);
+VIGORTLS_EXPORT int DH_set_ex_data(DH *d, int idx, void *arg);
+VIGORTLS_EXPORT void *DH_get_ex_data(DH *d, int idx);
 
 /* Deprecated version */
 #ifndef OPENSSL_NO_DEPRECATED
-DH *DH_generate_parameters(int prime_len, int generator,
-                           void (*callback)(int, int, void *), void *cb_arg);
+VIGORTLS_EXPORT DH *DH_generate_parameters(int prime_len, int generator,
+                                           void (*callback)(int, int, void *),
+                                           void *cb_arg);
 #endif /* !defined(OPENSSL_NO_DEPRECATED) */
 
 /* New version */
-int DH_generate_parameters_ex(DH *dh, int prime_len, int generator,
-                              BN_GENCB *cb);
+VIGORTLS_EXPORT int DH_generate_parameters_ex(DH *dh, int prime_len,
+                                              int generator, BN_GENCB *cb);
 
-int DH_check(const DH *dh, int *codes);
-int DH_check_pub_key(const DH *dh, const BIGNUM *pub_key, int *codes);
-int DH_generate_key(DH *dh);
-int DH_compute_key(uint8_t *key, const BIGNUM *pub_key, DH *dh);
-int DH_compute_key_padded(uint8_t *key, const BIGNUM *pub_key, DH *dh);
-DH *d2i_DHparams(DH **a, const uint8_t **pp, long length);
-int i2d_DHparams(const DH *a, uint8_t **pp);
-DH *d2i_DHxparams(DH **a, const uint8_t **pp, long length);
-int i2d_DHxparams(const DH *a, uint8_t **pp);
-int DHparams_print_fp(FILE *fp, const DH *x);
-int DHparams_print(BIO *bp, const DH *x);
+VIGORTLS_EXPORT int DH_check(const DH *dh, int *codes);
+VIGORTLS_EXPORT int DH_check_pub_key(const DH *dh, const BIGNUM *pub_key,
+                                     int *codes);
+VIGORTLS_EXPORT int DH_generate_key(DH *dh);
+VIGORTLS_EXPORT int DH_compute_key(uint8_t *key, const BIGNUM *pub_key, DH *dh);
+VIGORTLS_EXPORT int DH_compute_key_padded(uint8_t *key, const BIGNUM *pub_key,
+                                          DH *dh);
+VIGORTLS_EXPORT DH *d2i_DHparams(DH **a, const uint8_t **pp, long length);
+VIGORTLS_EXPORT int i2d_DHparams(const DH *a, uint8_t **pp);
+VIGORTLS_EXPORT DH *d2i_DHxparams(DH **a, const uint8_t **pp, long length);
+VIGORTLS_EXPORT int i2d_DHxparams(const DH *a, uint8_t **pp);
+VIGORTLS_EXPORT int DHparams_print_fp(FILE *fp, const DH *x);
+VIGORTLS_EXPORT int DHparams_print(BIO *bp, const DH *x);
 
 /* RFC 5114 parameters */
-DH *DH_get_1024_160(void);
-DH *DH_get_2048_224(void);
-DH *DH_get_2048_256(void);
+VIGORTLS_EXPORT DH *DH_get_1024_160(void);
+VIGORTLS_EXPORT DH *DH_get_2048_224(void);
+VIGORTLS_EXPORT DH *DH_get_2048_256(void);
 
 #ifndef OPENSSL_NO_CMS
 /* RFC2631 KDF */
-int DH_KDF_X9_42(uint8_t *out, size_t outlen, const uint8_t *Z, size_t Zlen,
-                 ASN1_OBJECT *key_oid, const uint8_t *ukm, size_t ukmlen,
-                 const EVP_MD *md);
+VIGORTLS_EXPORT int DH_KDF_X9_42(uint8_t *out, size_t outlen, const uint8_t *Z,
+                                 size_t Zlen, ASN1_OBJECT *key_oid,
+                                 const uint8_t *ukm, size_t ukmlen,
+                                 const EVP_MD *md);
 #endif
 
 #define EVP_PKEY_CTX_set_dh_paramgen_prime_len(ctx, len)      \
@@ -252,7 +254,7 @@ int DH_KDF_X9_42(uint8_t *out, size_t outlen, const uint8_t *Z, size_t Zlen,
  * The following lines are auto generated by the script mkerr.pl. Any changes
  * made after this point may be overwritten when the script is next run.
  */
-void ERR_load_DH_strings(void);
+VIGORTLS_EXPORT void ERR_load_DH_strings(void);
 
 /* Error codes for the DH functions. */
 

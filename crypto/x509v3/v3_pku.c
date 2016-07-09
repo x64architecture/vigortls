@@ -30,22 +30,22 @@ ASN1_SEQUENCE(PKEY_USAGE_PERIOD) = {
 
 PKEY_USAGE_PERIOD *d2i_PKEY_USAGE_PERIOD(PKEY_USAGE_PERIOD **a, const uint8_t **in, long len)
 {
-    return (PKEY_USAGE_PERIOD *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, &PKEY_USAGE_PERIOD_it);
+    return (PKEY_USAGE_PERIOD *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, ASN1_ITEM_rptr(PKEY_USAGE_PERIOD));
 }
 
 int i2d_PKEY_USAGE_PERIOD(PKEY_USAGE_PERIOD *a, uint8_t **out)
 {
-    return ASN1_item_i2d((ASN1_VALUE *)a, out, &PKEY_USAGE_PERIOD_it);
+    return ASN1_item_i2d((ASN1_VALUE *)a, out, ASN1_ITEM_rptr(PKEY_USAGE_PERIOD));
 }
 
 PKEY_USAGE_PERIOD *PKEY_USAGE_PERIOD_new(void)
 {
-    return (PKEY_USAGE_PERIOD *)ASN1_item_new(&PKEY_USAGE_PERIOD_it);
+    return (PKEY_USAGE_PERIOD *)ASN1_item_new(ASN1_ITEM_rptr(PKEY_USAGE_PERIOD));
 }
 
 void PKEY_USAGE_PERIOD_free(PKEY_USAGE_PERIOD *a)
 {
-    ASN1_item_free((ASN1_VALUE *)a, &PKEY_USAGE_PERIOD_it);
+    ASN1_item_free((ASN1_VALUE *)a, ASN1_ITEM_rptr(PKEY_USAGE_PERIOD));
 }
 
 static int i2r_PKEY_USAGE_PERIOD(X509V3_EXT_METHOD *method,

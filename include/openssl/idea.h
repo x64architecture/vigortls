@@ -10,7 +10,7 @@
 #ifndef HEADER_IDEA_H
 #define HEADER_IDEA_H
 
-#include <openssl/opensslconf.h>
+#include <openssl/base.h>
 #include <stdint.h>
 
 #ifdef OPENSSL_NO_IDEA
@@ -31,17 +31,23 @@ typedef struct idea_key_st {
     uint32_t data[9][6];
 } IDEA_KEY_SCHEDULE;
 
-const char *idea_options(void);
-void idea_ecb_encrypt(const uint8_t *in, uint8_t *out, IDEA_KEY_SCHEDULE *ks);
-void idea_set_encrypt_key(const uint8_t *key, IDEA_KEY_SCHEDULE *ks);
-void idea_set_decrypt_key(IDEA_KEY_SCHEDULE *ek, IDEA_KEY_SCHEDULE *dk);
-void idea_cbc_encrypt(const uint8_t *in, uint8_t *out, long length,
-                      IDEA_KEY_SCHEDULE *ks, uint8_t *iv, int enc);
-void idea_cfb64_encrypt(const uint8_t *in, uint8_t *out, long length,
-                        IDEA_KEY_SCHEDULE *ks, uint8_t *iv, int *num, int enc);
-void idea_ofb64_encrypt(const uint8_t *in, uint8_t *out, long length,
-                        IDEA_KEY_SCHEDULE *ks, uint8_t *iv, int *num);
-void idea_encrypt(uint32_t *in, IDEA_KEY_SCHEDULE *ks);
+VIGORTLS_EXPORT const char *idea_options(void);
+VIGORTLS_EXPORT void idea_ecb_encrypt(const uint8_t *in, uint8_t *out,
+                                      IDEA_KEY_SCHEDULE *ks);
+VIGORTLS_EXPORT void idea_set_encrypt_key(const uint8_t *key,
+                                          IDEA_KEY_SCHEDULE *ks);
+VIGORTLS_EXPORT void idea_set_decrypt_key(IDEA_KEY_SCHEDULE *ek,
+                                          IDEA_KEY_SCHEDULE *dk);
+VIGORTLS_EXPORT void idea_cbc_encrypt(const uint8_t *in, uint8_t *out,
+                                      long length, IDEA_KEY_SCHEDULE *ks,
+                                      uint8_t *iv, int enc);
+VIGORTLS_EXPORT void idea_cfb64_encrypt(const uint8_t *in, uint8_t *out,
+                                        long length, IDEA_KEY_SCHEDULE *ks,
+                                        uint8_t *iv, int *num, int enc);
+VIGORTLS_EXPORT void idea_ofb64_encrypt(const uint8_t *in, uint8_t *out,
+                                        long length, IDEA_KEY_SCHEDULE *ks,
+                                        uint8_t *iv, int *num);
+VIGORTLS_EXPORT void idea_encrypt(uint32_t *in, IDEA_KEY_SCHEDULE *ks);
 #ifdef __cplusplus
 }
 #endif

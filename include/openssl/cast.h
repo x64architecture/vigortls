@@ -10,13 +10,13 @@
 #ifndef HEADER_CAST_H
 #define HEADER_CAST_H
 
+#include <stdint.h>
+
+#include <openssl/base.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-#include <stdint.h>
-
-#include <openssl/opensslconf.h>
 
 #ifdef OPENSSL_NO_CAST
 #error CAST is disabled.
@@ -35,18 +35,20 @@ typedef struct cast_key_st {
     int short_key; /* Use reduced rounds for short key */
 } CAST_KEY;
 
-void CAST_set_key(CAST_KEY *key, int len, const uint8_t *data);
-void CAST_ecb_encrypt(const uint8_t *in, uint8_t *out, const CAST_KEY *key,
-                      int enc);
-void CAST_encrypt(uint32_t *data, const CAST_KEY *key);
-void CAST_decrypt(uint32_t *data, const CAST_KEY *key);
-void CAST_cbc_encrypt(const uint8_t *in, uint8_t *out, long length,
-                      const CAST_KEY *ks, uint8_t *iv, int enc);
-void CAST_cfb64_encrypt(const uint8_t *in, uint8_t *out, long length,
-                        const CAST_KEY *schedule, uint8_t *ivec, int *num,
-                        int enc);
-void CAST_ofb64_encrypt(const uint8_t *in, uint8_t *out, long length,
-                        const CAST_KEY *schedule, uint8_t *ivec, int *num);
+VIGORTLS_EXPORT void CAST_set_key(CAST_KEY *key, int len, const uint8_t *data);
+VIGORTLS_EXPORT void CAST_ecb_encrypt(const uint8_t *in, uint8_t *out,
+                                      const CAST_KEY *key, int enc);
+VIGORTLS_EXPORT void CAST_encrypt(uint32_t *data, const CAST_KEY *key);
+VIGORTLS_EXPORT void CAST_decrypt(uint32_t *data, const CAST_KEY *key);
+VIGORTLS_EXPORT void CAST_cbc_encrypt(const uint8_t *in, uint8_t *out,
+                                      long length, const CAST_KEY *ks,
+                                      uint8_t *iv, int enc);
+VIGORTLS_EXPORT void CAST_cfb64_encrypt(const uint8_t *in, uint8_t *out,
+                                        long length, const CAST_KEY *schedule,
+                                        uint8_t *ivec, int *num, int enc);
+VIGORTLS_EXPORT void CAST_ofb64_encrypt(const uint8_t *in, uint8_t *out,
+                                        long length, const CAST_KEY *schedule,
+                                        uint8_t *ivec, int *num);
 
 #ifdef __cplusplus
 }

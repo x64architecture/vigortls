@@ -33,23 +33,23 @@
 #include <winbase.h>
 #include <wchar.h>
 
-struct dirent
-{
+#include <openssl/base.h>
+
+struct dirent {
     unsigned int d_ino;
     char d_name[_MAX_PATH];
 };
 
-typedef struct
-{
+typedef struct {
     HANDLE h;
     WIN32_FIND_DATAA *fd;
     BOOL has_next;
     struct dirent entry;
 } DIR;
 
-DIR *opendir(const char *name);
-struct dirent *readdir(DIR *dir);
-int closedir(DIR *dir);
+VIGORTLS_EXPORT DIR *opendir(const char *name);
+VIGORTLS_EXPORT struct dirent *readdir(DIR *dir);
+VIGORTLS_EXPORT int closedir(DIR *dir);
 
 #endif
 #endif

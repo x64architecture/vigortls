@@ -10,7 +10,7 @@
 #ifndef HEADER_UI_COMPAT_H
 #define HEADER_UI_COMPAT_H
 
-#include <openssl/opensslconf.h>
+#include <openssl/base.h>
 #include <openssl/ui.h>
 
 #ifdef __cplusplus
@@ -25,10 +25,11 @@ extern "C" {
 #define des_read_pw(b, bf, s, p, v) \
     _ossl_old_des_read_pw((b), (bf), (s), (p), (v))
 
-int _ossl_old_des_read_pw_string(char *buf, int length, const char *prompt,
-                                 int verify);
-int _ossl_old_des_read_pw(char *buf, char *buff, int size, const char *prompt,
-                          int verify);
+VIGORTLS_EXPORT int _ossl_old_des_read_pw_string(char *buf, int length,
+                                                 const char *prompt,
+                                                 int verify);
+VIGORTLS_EXPORT int _ossl_old_des_read_pw(char *buf, char *buff, int size,
+                                          const char *prompt, int verify);
 
 #ifdef __cplusplus
 }

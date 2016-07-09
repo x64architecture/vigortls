@@ -15,6 +15,7 @@
  */
 
 #include <errno.h>
+#include <stdcompat.h>
 #include <stdint.h>
 #include <stdlib.h>
 

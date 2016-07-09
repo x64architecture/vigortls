@@ -14,6 +14,7 @@
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
+#include <stdcompat.h>
 #include <string.h>
 
 size_t strlcpy(char *dest, const char *src, size_t size)

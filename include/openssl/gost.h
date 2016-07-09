@@ -11,7 +11,7 @@
 #ifndef HEADER_GOST_H
 #define HEADER_GOST_H
 
-#include <openssl/opensslconf.h>
+#include <openssl/base.h>
 
 #ifdef OPENSSL_NO_GOST
 #error GOST is disabled.
@@ -31,17 +31,22 @@ typedef struct gost2814789_key_st {
     unsigned key_meshing : 1;
 } GOST2814789_KEY;
 
-int Gost2814789_set_sbox(GOST2814789_KEY *key, int nid);
-int Gost2814789_set_key(GOST2814789_KEY *key, const uint8_t *userKey,
-                        const int bits);
-void Gost2814789_ecb_encrypt(const uint8_t *in, uint8_t *out,
-                             GOST2814789_KEY *key, const int enc);
-void Gost2814789_cfb64_encrypt(const uint8_t *in, uint8_t *out, size_t length,
-                               GOST2814789_KEY *key, uint8_t *ivec, int *num,
-                               const int enc);
-void Gost2814789_cnt_encrypt(const uint8_t *in, uint8_t *out, size_t length,
-                             GOST2814789_KEY *key, uint8_t *ivec,
-                             uint8_t *cnt_buf, int *num);
+VIGORTLS_EXPORT int Gost2814789_set_sbox(GOST2814789_KEY *key, int nid);
+VIGORTLS_EXPORT int Gost2814789_set_key(GOST2814789_KEY *key,
+                                        const uint8_t *userKey, const int bits);
+VIGORTLS_EXPORT void Gost2814789_ecb_encrypt(const uint8_t *in, uint8_t *out,
+                                             GOST2814789_KEY *key,
+                                             const int enc);
+VIGORTLS_EXPORT void Gost2814789_cfb64_encrypt(const uint8_t *in, uint8_t *out,
+                                               size_t length,
+                                               GOST2814789_KEY *key,
+                                               uint8_t *ivec, int *num,
+                                               const int enc);
+VIGORTLS_EXPORT void Gost2814789_cnt_encrypt(const uint8_t *in, uint8_t *out,
+                                             size_t length,
+                                             GOST2814789_KEY *key,
+                                             uint8_t *ivec, uint8_t *cnt_buf,
+                                             int *num);
 
 typedef struct {
     ASN1_OCTET_STRING *iv;
@@ -64,13 +69,15 @@ typedef struct GOST2814789IMITstate_st {
 } GOST2814789IMIT_CTX;
 
 /* Note, also removed second parameter and removed dctx->cipher setting */
-int GOST2814789IMIT_Init(GOST2814789IMIT_CTX *c, int nid);
-int GOST2814789IMIT_Update(GOST2814789IMIT_CTX *c, const void *data,
-                           size_t len);
-int GOST2814789IMIT_Final(uint8_t *md, GOST2814789IMIT_CTX *c);
-void GOST2814789IMIT_Transform(GOST2814789IMIT_CTX *c, const uint8_t *data);
-uint8_t *GOST2814789IMIT(const uint8_t *d, size_t n, uint8_t *md, int nid,
-                         const uint8_t *key, const uint8_t *iv);
+VIGORTLS_EXPORT int GOST2814789IMIT_Init(GOST2814789IMIT_CTX *c, int nid);
+VIGORTLS_EXPORT int GOST2814789IMIT_Update(GOST2814789IMIT_CTX *c,
+                                           const void *data, size_t len);
+VIGORTLS_EXPORT int GOST2814789IMIT_Final(uint8_t *md, GOST2814789IMIT_CTX *c);
+VIGORTLS_EXPORT void GOST2814789IMIT_Transform(GOST2814789IMIT_CTX *c,
+                                               const uint8_t *data);
+VIGORTLS_EXPORT uint8_t *GOST2814789IMIT(const uint8_t *d, size_t n,
+                                         uint8_t *md, int nid,
+                                         const uint8_t *key, const uint8_t *iv);
 
 #define GOSTR341194_LONG unsigned int
 
@@ -89,11 +96,14 @@ typedef struct GOSTR341194state_st {
 } GOSTR341194_CTX;
 
 /* Note, also removed second parameter and removed dctx->cipher setting */
-int GOSTR341194_Init(GOSTR341194_CTX *c, int nid);
-int GOSTR341194_Update(GOSTR341194_CTX *c, const void *data, size_t len);
-int GOSTR341194_Final(uint8_t *md, GOSTR341194_CTX *c);
-void GOSTR341194_Transform(GOSTR341194_CTX *c, const uint8_t *data);
-uint8_t *GOSTR341194(const uint8_t *d, size_t n, uint8_t *md, int nid);
+VIGORTLS_EXPORT int GOSTR341194_Init(GOSTR341194_CTX *c, int nid);
+VIGORTLS_EXPORT int GOSTR341194_Update(GOSTR341194_CTX *c, const void *data,
+                                       size_t len);
+VIGORTLS_EXPORT int GOSTR341194_Final(uint8_t *md, GOSTR341194_CTX *c);
+VIGORTLS_EXPORT void GOSTR341194_Transform(GOSTR341194_CTX *c,
+                                           const uint8_t *data);
+VIGORTLS_EXPORT uint8_t *GOSTR341194(const uint8_t *d, size_t n, uint8_t *md,
+                                     int nid);
 
 #undef U64 /* Fix conflict with SHA header */
 #if defined(_LP64)
@@ -118,37 +128,43 @@ typedef struct STREEBOGstate_st {
     STREEBOG_LONG64 Sigma[STREEBOG_LBLOCK];
 } STREEBOG_CTX;
 
-int STREEBOG256_Init(STREEBOG_CTX *c);
-int STREEBOG256_Update(STREEBOG_CTX *c, const void *data, size_t len);
-int STREEBOG256_Final(uint8_t *md, STREEBOG_CTX *c);
-void STREEBOG256_Transform(STREEBOG_CTX *c, const uint8_t *data);
-uint8_t *STREEBOG256(const uint8_t *d, size_t n, uint8_t *md);
+VIGORTLS_EXPORT int STREEBOG256_Init(STREEBOG_CTX *c);
+VIGORTLS_EXPORT int STREEBOG256_Update(STREEBOG_CTX *c, const void *data,
+                                       size_t len);
+VIGORTLS_EXPORT int STREEBOG256_Final(uint8_t *md, STREEBOG_CTX *c);
+VIGORTLS_EXPORT void STREEBOG256_Transform(STREEBOG_CTX *c,
+                                           const uint8_t *data);
+VIGORTLS_EXPORT uint8_t *STREEBOG256(const uint8_t *d, size_t n, uint8_t *md);
 
-int STREEBOG512_Init(STREEBOG_CTX *c);
-int STREEBOG512_Update(STREEBOG_CTX *c, const void *data, size_t len);
-int STREEBOG512_Final(uint8_t *md, STREEBOG_CTX *c);
-void STREEBOG512_Transform(STREEBOG_CTX *c, const uint8_t *data);
-uint8_t *STREEBOG512(const uint8_t *d, size_t n, uint8_t *md);
+VIGORTLS_EXPORT int STREEBOG512_Init(STREEBOG_CTX *c);
+VIGORTLS_EXPORT int STREEBOG512_Update(STREEBOG_CTX *c, const void *data,
+                                       size_t len);
+VIGORTLS_EXPORT int STREEBOG512_Final(uint8_t *md, STREEBOG_CTX *c);
+VIGORTLS_EXPORT void STREEBOG512_Transform(STREEBOG_CTX *c,
+                                           const uint8_t *data);
+VIGORTLS_EXPORT uint8_t *STREEBOG512(const uint8_t *d, size_t n, uint8_t *md);
 
 typedef struct gost_key_st GOST_KEY;
-GOST_KEY *GOST_KEY_new(void);
-void GOST_KEY_free(GOST_KEY *r);
-int GOST_KEY_check_key(const GOST_KEY *eckey);
-int GOST_KEY_set_public_key_affine_coordinates(GOST_KEY *key, BIGNUM *x,
-                                               BIGNUM *y);
-const EC_GROUP *GOST_KEY_get0_group(const GOST_KEY *key);
-int GOST_KEY_set_group(GOST_KEY *key, const EC_GROUP *group);
-int GOST_KEY_get_digest(const GOST_KEY *key);
-int GOST_KEY_set_digest(GOST_KEY *key, int digest_nid);
-const BIGNUM *GOST_KEY_get0_private_key(const GOST_KEY *key);
-int GOST_KEY_set_private_key(GOST_KEY *key, const BIGNUM *priv_key);
-const EC_POINT *GOST_KEY_get0_public_key(const GOST_KEY *key);
-int GOST_KEY_set_public_key(GOST_KEY *key, const EC_POINT *pub_key);
-size_t GOST_KEY_get_size(const GOST_KEY *r);
+VIGORTLS_EXPORT GOST_KEY *GOST_KEY_new(void);
+VIGORTLS_EXPORT void GOST_KEY_free(GOST_KEY *r);
+VIGORTLS_EXPORT int GOST_KEY_check_key(const GOST_KEY *eckey);
+VIGORTLS_EXPORT int
+GOST_KEY_set_public_key_affine_coordinates(GOST_KEY *key, BIGNUM *x, BIGNUM *y);
+VIGORTLS_EXPORT const EC_GROUP *GOST_KEY_get0_group(const GOST_KEY *key);
+VIGORTLS_EXPORT int GOST_KEY_set_group(GOST_KEY *key, const EC_GROUP *group);
+VIGORTLS_EXPORT int GOST_KEY_get_digest(const GOST_KEY *key);
+VIGORTLS_EXPORT int GOST_KEY_set_digest(GOST_KEY *key, int digest_nid);
+VIGORTLS_EXPORT const BIGNUM *GOST_KEY_get0_private_key(const GOST_KEY *key);
+VIGORTLS_EXPORT int GOST_KEY_set_private_key(GOST_KEY *key,
+                                             const BIGNUM *priv_key);
+VIGORTLS_EXPORT const EC_POINT *GOST_KEY_get0_public_key(const GOST_KEY *key);
+VIGORTLS_EXPORT int GOST_KEY_set_public_key(GOST_KEY *key,
+                                            const EC_POINT *pub_key);
+VIGORTLS_EXPORT size_t GOST_KEY_get_size(const GOST_KEY *r);
 
 /* Gost-specific pmeth control-function parameters */
 /* For GOST R34.10 parameters */
-#define EVP_PKEY_CTRL_GOST_PARAMSET (EVP_PKEY_ALG_CTRL + 1)
+#define EVP_PKEY_CTRL_GOST_PARAMSET   (EVP_PKEY_ALG_CTRL + 1)
 #define EVP_PKEY_CTRL_GOST_SIG_FORMAT (EVP_PKEY_ALG_CTRL + 2)
 #define EVP_PKEY_CTRL_GOST_SET_DIGEST (EVP_PKEY_ALG_CTRL + 3)
 #define EVP_PKEY_CTRL_GOST_GET_DIGEST (EVP_PKEY_ALG_CTRL + 4)
@@ -161,7 +177,7 @@ size_t GOST_KEY_get_size(const GOST_KEY *r);
  * The following lines are auto generated by the script mkerr.pl. Any changes
  * made after this point may be overwritten when the script is next run.
  */
-void ERR_load_GOST_strings(void);
+VIGORTLS_EXPORT void ERR_load_GOST_strings(void);
 
 /* Error codes for the GOST functions. */
 

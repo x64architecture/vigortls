@@ -10,9 +10,9 @@
 #ifndef HEADER_PEM_H
 #define HEADER_PEM_H
 
+#include <openssl/base.h>
 #include <openssl/bio.h>
 #include <openssl/evp.h>
-#include <openssl/opensslconf.h>
 #include <openssl/pem2.h>
 #include <openssl/stack.h>
 #include <openssl/x509.h>
@@ -23,32 +23,32 @@ extern "C" {
 
 #define PEM_BUFSIZE 1024
 
-#define PEM_OBJ_UNDEF 0
-#define PEM_OBJ_X509 1
-#define PEM_OBJ_X509_REQ 2
-#define PEM_OBJ_CRL 3
-#define PEM_OBJ_SSL_SESSION 4
-#define PEM_OBJ_PRIV_KEY 10
-#define PEM_OBJ_PRIV_RSA 11
-#define PEM_OBJ_PRIV_DSA 12
-#define PEM_OBJ_PRIV_DH 13
-#define PEM_OBJ_PUB_RSA 14
-#define PEM_OBJ_PUB_DSA 15
-#define PEM_OBJ_PUB_DH 16
-#define PEM_OBJ_DHPARAMS 17
-#define PEM_OBJ_DSAPARAMS 18
+#define PEM_OBJ_UNDEF           0
+#define PEM_OBJ_X509            1
+#define PEM_OBJ_X509_REQ        2
+#define PEM_OBJ_CRL             3
+#define PEM_OBJ_SSL_SESSION     4
+#define PEM_OBJ_PRIV_KEY        10
+#define PEM_OBJ_PRIV_RSA        11
+#define PEM_OBJ_PRIV_DSA        12
+#define PEM_OBJ_PRIV_DH         13
+#define PEM_OBJ_PUB_RSA         14
+#define PEM_OBJ_PUB_DSA         15
+#define PEM_OBJ_PUB_DH          16
+#define PEM_OBJ_DHPARAMS        17
+#define PEM_OBJ_DSAPARAMS       18
 #define PEM_OBJ_PRIV_RSA_PUBLIC 19
-#define PEM_OBJ_PRIV_ECDSA 20
-#define PEM_OBJ_PUB_ECDSA 21
-#define PEM_OBJ_ECPARAMETERS 22
+#define PEM_OBJ_PRIV_ECDSA      20
+#define PEM_OBJ_PUB_ECDSA       21
+#define PEM_OBJ_ECPARAMETERS    22
 
-#define PEM_ERROR 30
-#define PEM_DEK_DES_CBC 40
-#define PEM_DEK_IDEA_CBC 45
-#define PEM_DEK_DES_EDE 50
-#define PEM_DEK_DES_ECB 60
-#define PEM_DEK_RSA 70
-#define PEM_DEK_RSA_MD5 90
+#define PEM_ERROR               30
+#define PEM_DEK_DES_CBC         40
+#define PEM_DEK_IDEA_CBC        45
+#define PEM_DEK_DES_EDE         50
+#define PEM_DEK_DES_ECB         60
+#define PEM_DEK_RSA             70
+#define PEM_DEK_RSA_MD5         90
 
 #define PEM_MD_MD5 NID_md5
 #define PEM_MD_SHA NID_sha
@@ -81,8 +81,10 @@ extern "C" {
 #define PEM_STRING_PARAMETERS "PARAMETERS"
 #define PEM_STRING_CMS "CMS"
 
-/* Note that this structure is initialised by PEM_SealInit and cleaned up
-     by PEM_SealFinal (at least for now) */
+/*
+ * Note that this structure is initialised by PEM_SealInit and cleaned up
+ * by PEM_SealFinal (at least for now)
+ */
 typedef struct PEM_Encode_Seal_st {
     EVP_ENCODE_CTX encode;
     EVP_MD_CTX md;
@@ -90,10 +92,10 @@ typedef struct PEM_Encode_Seal_st {
 } PEM_ENCODE_SEAL_CTX;
 
 /* enc_type is one off */
-#define PEM_TYPE_ENCRYPTED 10
-#define PEM_TYPE_MIC_ONLY 20
-#define PEM_TYPE_MIC_CLEAR 30
-#define PEM_TYPE_CLEAR 40
+#define PEM_TYPE_ENCRYPTED  10
+#define PEM_TYPE_MIC_ONLY   20
+#define PEM_TYPE_MIC_CLEAR  30
+#define PEM_TYPE_CLEAR      40
 
 typedef struct pem_recip_st {
     char *name;
@@ -101,7 +103,6 @@ typedef struct pem_recip_st {
 
     int cipher;
     int key_enc;
-    /*    char iv[8]; unused and wrong size */
 } PEM_USER;
 
 typedef struct pem_ctx_st {
@@ -116,8 +117,6 @@ typedef struct pem_ctx_st {
 
     struct {
         int cipher;
-        /* unused, and wrong size
-       uint8_t iv[8]; */
     } DEK_info;
 
     PEM_USER *originator;
@@ -125,8 +124,6 @@ typedef struct pem_ctx_st {
     int num_recipient;
     PEM_USER **recipient;
 
-    /* XXX(ben): don#t think this is used!
-        STACK *x509_chain;    / * certificate chain */
     EVP_MD *md; /* signature type */
 
     int md_enc;    /* is the md encrypted or not? */
@@ -136,158 +133,161 @@ typedef struct pem_ctx_st {
     EVP_CIPHER *dec; /* date encryption cipher */
     int key_len;     /* key length */
     uint8_t *key;    /* key */
-                     /* unused, and wrong size
-                        uint8_t iv[8]; */
 
     int data_enc; /* is the data encrypted */
     int data_len;
     uint8_t *data;
 } PEM_CTX;
 
-/* These macros make the PEM_read/PEM_write functions easier to maintain and
+/*
+ * These macros make the PEM_read/PEM_write functions easier to maintain and
  * write. Now they are all implemented with either:
  * IMPLEMENT_PEM_rw(...) or IMPLEMENT_PEM_rw_cb(...)
  */
 
 #define IMPLEMENT_PEM_read_fp(name, type, str, asn1)                         \
-    type *PEM_read_##name(FILE *fp, type **x, pem_password_cb *cb, void *u)  \
+    VIGORTLS_EXPORT type *PEM_read_##name(FILE *fp, type **x,                \
+                                          pem_password_cb *cb, void *u)      \
     {                                                                        \
         return PEM_ASN1_read((d2i_of_void *)d2i_##asn1, str, fp, (void **)x, \
                              cb, u);                                         \
     }
 
 #define IMPLEMENT_PEM_write_fp(name, type, str, asn1)                      \
-    int PEM_write_##name(FILE *fp, type *x)                                \
+    VIGORTLS_EXPORT int PEM_write_##name(FILE *fp, type *x)                \
     {                                                                      \
         return PEM_ASN1_write((i2d_of_void *)i2d_##asn1, str, fp, x, NULL, \
                               NULL, 0, NULL, NULL);                        \
     }
 
 #define IMPLEMENT_PEM_write_fp_const(name, type, str, asn1)                  \
-    int PEM_write_##name(FILE *fp, const type *x)                            \
+    VIGORTLS_EXPORT int PEM_write_##name(FILE *fp, const type *x)            \
     {                                                                        \
         return PEM_ASN1_write((i2d_of_void *)i2d_##asn1, str, fp, (void *)x, \
                               NULL, NULL, 0, NULL, NULL);                    \
     }
 
-#define IMPLEMENT_PEM_write_cb_fp(name, type, str, asn1)                  \
-    int PEM_write_##name(FILE *fp, type *x, const EVP_CIPHER *enc,        \
-                         uint8_t *kstr, int klen, pem_password_cb *cb,    \
-                         void *u)                                         \
-    {                                                                     \
-        return PEM_ASN1_write((i2d_of_void *)i2d_##asn1, str, fp, x, enc, \
-                              kstr, klen, cb, u);                         \
+#define IMPLEMENT_PEM_write_cb_fp(name, type, str, asn1)                   \
+    VIGORTLS_EXPORT int PEM_write_##name(                                  \
+        FILE *fp, type *x, const EVP_CIPHER *enc, uint8_t *kstr, int klen, \
+        pem_password_cb *cb, void *u)                                      \
+    {                                                                      \
+        return PEM_ASN1_write((i2d_of_void *)i2d_##asn1, str, fp, x, enc,  \
+                              kstr, klen, cb, u);                          \
     }
 
-#define IMPLEMENT_PEM_write_cb_fp_const(name, type, str, asn1)            \
-    int PEM_write_##name(FILE *fp, type *x, const EVP_CIPHER *enc,        \
-                         uint8_t *kstr, int klen, pem_password_cb *cb,    \
-                         void *u)                                         \
-    {                                                                     \
-        return PEM_ASN1_write((i2d_of_void *)i2d_##asn1, str, fp, x, enc, \
-                              kstr, klen, cb, u);                         \
+#define IMPLEMENT_PEM_write_cb_fp_const(name, type, str, asn1)             \
+    VIGORTLS_EXPORT int PEM_write_##name(                                  \
+        FILE *fp, type *x, const EVP_CIPHER *enc, uint8_t *kstr, int klen, \
+        pem_password_cb *cb, void *u)                                      \
+    {                                                                      \
+        return PEM_ASN1_write((i2d_of_void *)i2d_##asn1, str, fp, x, enc,  \
+                              kstr, klen, cb, u);                          \
     }
 
-#define IMPLEMENT_PEM_read_bio(name, type, str, asn1)                          \
-    type *PEM_read_bio_##name(BIO *bp, type **x, pem_password_cb *cb, void *u) \
-    {                                                                          \
-        return PEM_ASN1_read_bio((d2i_of_void *)d2i_##asn1, str, bp,           \
-                                 (void **)x, cb, u);                           \
+#define IMPLEMENT_PEM_read_bio(name, type, str, asn1)                       \
+    VIGORTLS_EXPORT type *PEM_read_bio_##name(BIO *bp, type **x,            \
+                                              pem_password_cb *cb, void *u) \
+    {                                                                       \
+        return PEM_ASN1_read_bio((d2i_of_void *)d2i_##asn1, str, bp,        \
+                                 (void **)x, cb, u);                        \
     }
 
 #define IMPLEMENT_PEM_write_bio(name, type, str, asn1)                         \
-    int PEM_write_bio_##name(BIO *bp, type *x)                                 \
+    VIGORTLS_EXPORT int PEM_write_bio_##name(BIO *bp, type *x)                 \
     {                                                                          \
         return PEM_ASN1_write_bio((i2d_of_void *)i2d_##asn1, str, bp, x, NULL, \
                                   NULL, 0, NULL, NULL);                        \
     }
 
 #define IMPLEMENT_PEM_write_bio_const(name, type, str, asn1)             \
-    int PEM_write_bio_##name(BIO *bp, const type *x)                     \
+    VIGORTLS_EXPORT int PEM_write_bio_##name(BIO *bp, const type *x)     \
     {                                                                    \
         return PEM_ASN1_write_bio((i2d_of_void *)i2d_##asn1, str, bp,    \
                                   (void *)x, NULL, NULL, 0, NULL, NULL); \
     }
 
 #define IMPLEMENT_PEM_write_cb_bio(name, type, str, asn1)                     \
-    int PEM_write_bio_##name(BIO *bp, type *x, const EVP_CIPHER *enc,         \
-                             uint8_t *kstr, int klen, pem_password_cb *cb,    \
-                             void *u)                                         \
+    VIGORTLS_EXPORT int PEM_write_bio_##name(                                 \
+        BIO *bp, type *x, const EVP_CIPHER *enc, uint8_t *kstr, int klen,     \
+        pem_password_cb *cb, void *u)                                         \
     {                                                                         \
         return PEM_ASN1_write_bio((i2d_of_void *)i2d_##asn1, str, bp, x, enc, \
                                   kstr, klen, cb, u);                         \
     }
 
-#define IMPLEMENT_PEM_write_cb_bio_const(name, type, str, asn1)            \
-    int PEM_write_bio_##name(BIO *bp, type *x, const EVP_CIPHER *enc,      \
-                             uint8_t *kstr, int klen, pem_password_cb *cb, \
-                             void *u)                                      \
-    {                                                                      \
-        return PEM_ASN1_write_bio((i2d_of_void *)i2d_##asn1, str, bp,      \
-                                  (void *)x, enc, kstr, klen, cb, u);      \
+#define IMPLEMENT_PEM_write_cb_bio_const(name, type, str, asn1)           \
+    VIGORTLS_EXPORT int PEM_write_bio_##name(                             \
+        BIO *bp, type *x, const EVP_CIPHER *enc, uint8_t *kstr, int klen, \
+        pem_password_cb *cb, void *u)                                     \
+    {                                                                     \
+        return PEM_ASN1_write_bio((i2d_of_void *)i2d_##asn1, str, bp,     \
+                                  (void *)x, enc, kstr, klen, cb, u);     \
     }
 
-#define IMPLEMENT_PEM_write(name, type, str, asn1) \
-    IMPLEMENT_PEM_write_bio(name, type, str, asn1) \
+#define IMPLEMENT_PEM_write(name, type, str, asn1)     \
+        IMPLEMENT_PEM_write_bio(name, type, str, asn1) \
         IMPLEMENT_PEM_write_fp(name, type, str, asn1)
 
-#define IMPLEMENT_PEM_write_const(name, type, str, asn1) \
-    IMPLEMENT_PEM_write_bio_const(name, type, str, asn1) \
+#define IMPLEMENT_PEM_write_const(name, type, str, asn1)     \
+        IMPLEMENT_PEM_write_bio_const(name, type, str, asn1) \
         IMPLEMENT_PEM_write_fp_const(name, type, str, asn1)
 
-#define IMPLEMENT_PEM_write_cb(name, type, str, asn1) \
-    IMPLEMENT_PEM_write_cb_bio(name, type, str, asn1) \
+#define IMPLEMENT_PEM_write_cb(name, type, str, asn1)     \
+        IMPLEMENT_PEM_write_cb_bio(name, type, str, asn1) \
         IMPLEMENT_PEM_write_cb_fp(name, type, str, asn1)
 
-#define IMPLEMENT_PEM_write_cb_const(name, type, str, asn1) \
-    IMPLEMENT_PEM_write_cb_bio_const(name, type, str, asn1) \
+#define IMPLEMENT_PEM_write_cb_const(name, type, str, asn1)     \
+        IMPLEMENT_PEM_write_cb_bio_const(name, type, str, asn1) \
         IMPLEMENT_PEM_write_cb_fp_const(name, type, str, asn1)
 
-#define IMPLEMENT_PEM_read(name, type, str, asn1) \
-    IMPLEMENT_PEM_read_bio(name, type, str, asn1) \
+#define IMPLEMENT_PEM_read(name, type, str, asn1)     \
+        IMPLEMENT_PEM_read_bio(name, type, str, asn1) \
         IMPLEMENT_PEM_read_fp(name, type, str, asn1)
 
-#define IMPLEMENT_PEM_rw(name, type, str, asn1) \
-    IMPLEMENT_PEM_read(name, type, str, asn1)   \
+#define IMPLEMENT_PEM_rw(name, type, str, asn1)   \
+        IMPLEMENT_PEM_read(name, type, str, asn1) \
         IMPLEMENT_PEM_write(name, type, str, asn1)
 
 #define IMPLEMENT_PEM_rw_const(name, type, str, asn1) \
-    IMPLEMENT_PEM_read(name, type, str, asn1)         \
+        IMPLEMENT_PEM_read(name, type, str, asn1)     \
         IMPLEMENT_PEM_write_const(name, type, str, asn1)
 
 #define IMPLEMENT_PEM_rw_cb(name, type, str, asn1) \
-    IMPLEMENT_PEM_read(name, type, str, asn1)      \
+        IMPLEMENT_PEM_read(name, type, str, asn1)  \
         IMPLEMENT_PEM_write_cb(name, type, str, asn1)
 
 /* These are the same except they are for the declarations */
 
-#define DECLARE_PEM_read_fp(name, type) \
-    type *PEM_read_##name(FILE *fp, type **x, pem_password_cb *cb, void *u);
+#define DECLARE_PEM_read_fp(name, type)                       \
+    VIGORTLS_EXPORT type *PEM_read_##name(FILE *fp, type **x, \
+                                          pem_password_cb *cb, void *u);
 
 #define DECLARE_PEM_write_fp(name, type) \
-    int PEM_write_##name(FILE *fp, type *x);
+    VIGORTLS_EXPORT int PEM_write_##name(FILE *fp, type *x);
 
 #define DECLARE_PEM_write_fp_const(name, type) \
-    int PEM_write_##name(FILE *fp, const type *x);
+    VIGORTLS_EXPORT int PEM_write_##name(FILE *fp, const type *x);
 
-#define DECLARE_PEM_write_cb_fp(name, type)                            \
-    int PEM_write_##name(FILE *fp, type *x, const EVP_CIPHER *enc,     \
-                         uint8_t *kstr, int klen, pem_password_cb *cb, \
-                         void *u);
+#define DECLARE_PEM_write_cb_fp(name, type)                                \
+    VIGORTLS_EXPORT int PEM_write_##name(                                  \
+        FILE *fp, type *x, const EVP_CIPHER *enc, uint8_t *kstr, int klen, \
+        pem_password_cb *cb, void *u);
 
-#define DECLARE_PEM_read_bio(name, type) \
-    type *PEM_read_bio_##name(BIO *bp, type **x, pem_password_cb *cb, void *u);
+#define DECLARE_PEM_read_bio(name, type)                         \
+    VIGORTLS_EXPORT type *PEM_read_bio_##name(BIO *bp, type **x, \
+                                              pem_password_cb *cb, void *u);
 
 #define DECLARE_PEM_write_bio(name, type) \
-    int PEM_write_bio_##name(BIO *bp, type *x);
+    VIGORTLS_EXPORT int PEM_write_bio_##name(BIO *bp, type *x);
 
 #define DECLARE_PEM_write_bio_const(name, type) \
-    int PEM_write_bio_##name(BIO *bp, const type *x);
+    VIGORTLS_EXPORT int PEM_write_bio_##name(BIO *bp, const type *x);
 
-#define DECLARE_PEM_write_cb_bio(name, type)                               \
-    int PEM_write_bio_##name(BIO *bp, type *x, const EVP_CIPHER *enc,      \
-                             uint8_t *kstr, int klen, pem_password_cb *cb, \
-                             void *u);
+#define DECLARE_PEM_write_cb_bio(name, type)                              \
+    VIGORTLS_EXPORT int PEM_write_bio_##name(                             \
+        BIO *bp, type *x, const EVP_CIPHER *enc, uint8_t *kstr, int klen, \
+        pem_password_cb *cb, void *u);
 
 #define DECLARE_PEM_write(name, type) \
     DECLARE_PEM_write_bio(name, type) DECLARE_PEM_write_fp(name, type)
@@ -311,63 +311,71 @@ typedef struct pem_ctx_st {
 #define DECLARE_PEM_rw_cb(name, type) \
     DECLARE_PEM_read(name, type) DECLARE_PEM_write_cb(name, type)
 
-#if 1
-/* "userdata": new with OpenSSL 0.9.4 */
 typedef int pem_password_cb(char *buf, int size, int rwflag, void *userdata);
-#else
-/* OpenSSL 0.9.3, 0.9.3a */
-typedef int pem_password_cb(char *buf, int size, int rwflag);
-#endif
 
-int PEM_get_EVP_CIPHER_INFO(char *header, EVP_CIPHER_INFO *cipher);
-int PEM_do_header(EVP_CIPHER_INFO *cipher, uint8_t *data, long *len,
-                  pem_password_cb *callback, void *u);
+VIGORTLS_EXPORT int PEM_get_EVP_CIPHER_INFO(char *header,
+                                            EVP_CIPHER_INFO *cipher);
+VIGORTLS_EXPORT int PEM_do_header(EVP_CIPHER_INFO *cipher, uint8_t *data,
+                                  long *len, pem_password_cb *callback,
+                                  void *u);
 
-int PEM_read_bio(BIO *bp, char **name, char **header, uint8_t **data,
-                 long *len);
-int PEM_write_bio(BIO *bp, const char *name, const char *hdr,
-                  const uint8_t *data, long len);
-int PEM_bytes_read_bio(uint8_t **pdata, long *plen, char **pnm,
-                       const char *name, BIO *bp, pem_password_cb *cb, void *u);
-void *PEM_ASN1_read_bio(d2i_of_void *d2i, const char *name, BIO *bp, void **x,
-                        pem_password_cb *cb, void *u);
-int PEM_ASN1_write_bio(i2d_of_void *i2d, const char *name, BIO *bp, void *x,
-                       const EVP_CIPHER *enc, uint8_t *kstr, int klen,
-                       pem_password_cb *cb, void *u);
+VIGORTLS_EXPORT int PEM_read_bio(BIO *bp, char **name, char **header,
+                                 uint8_t **data, long *len);
+VIGORTLS_EXPORT int PEM_write_bio(BIO *bp, const char *name, const char *hdr,
+                                  const uint8_t *data, long len);
+VIGORTLS_EXPORT int PEM_bytes_read_bio(uint8_t **pdata, long *plen, char **pnm,
+                                       const char *name, BIO *bp,
+                                       pem_password_cb *cb, void *u);
+VIGORTLS_EXPORT void *PEM_ASN1_read_bio(d2i_of_void *d2i, const char *name,
+                                        BIO *bp, void **x, pem_password_cb *cb,
+                                        void *u);
+VIGORTLS_EXPORT int PEM_ASN1_write_bio(i2d_of_void *i2d, const char *name,
+                                       BIO *bp, void *x, const EVP_CIPHER *enc,
+                                       uint8_t *kstr, int klen,
+                                       pem_password_cb *cb, void *u);
 
-STACK_OF(X509_INFO) *PEM_X509_INFO_read_bio(BIO *bp, STACK_OF(X509_INFO) *sk,
-                                             pem_password_cb *cb, void *u);
-int PEM_X509_INFO_write_bio(BIO *bp, X509_INFO *xi, EVP_CIPHER *enc,
-                            uint8_t *kstr, int klen, pem_password_cb *cd,
-                            void *u);
+VIGORTLS_EXPORT STACK_OF(X509_INFO) *
+    PEM_X509_INFO_read_bio(BIO *bp, STACK_OF(X509_INFO) *sk,
+                           pem_password_cb *cb, void *u);
+VIGORTLS_EXPORT int PEM_X509_INFO_write_bio(BIO *bp, X509_INFO *xi,
+                                            EVP_CIPHER *enc, uint8_t *kstr,
+                                            int klen, pem_password_cb *cd,
+                                            void *u);
 
-int PEM_read(FILE *fp, char **name, char **header, uint8_t **data, long *len);
-int PEM_write(FILE *fp, const char *name, const char *hdr, const uint8_t *data,
-              long len);
-void *PEM_ASN1_read(d2i_of_void *d2i, const char *name, FILE *fp, void **x,
-                    pem_password_cb *cb, void *u);
-int PEM_ASN1_write(i2d_of_void *i2d, const char *name, FILE *fp, void *x,
-                   const EVP_CIPHER *enc, uint8_t *kstr, int klen,
-                   pem_password_cb *callback, void *u);
-STACK_OF(X509_INFO) *PEM_X509_INFO_read(FILE *fp, STACK_OF(X509_INFO) *sk,
-                                         pem_password_cb *cb, void *u);
+VIGORTLS_EXPORT int PEM_read(FILE *fp, char **name, char **header,
+                             uint8_t **data, long *len);
+VIGORTLS_EXPORT int PEM_write(FILE *fp, const char *name, const char *hdr,
+                              const uint8_t *data, long len);
+VIGORTLS_EXPORT void *PEM_ASN1_read(d2i_of_void *d2i, const char *name,
+                                    FILE *fp, void **x, pem_password_cb *cb,
+                                    void *u);
+VIGORTLS_EXPORT int PEM_ASN1_write(i2d_of_void *i2d, const char *name, FILE *fp,
+                                   void *x, const EVP_CIPHER *enc,
+                                   uint8_t *kstr, int klen,
+                                   pem_password_cb *callback, void *u);
+VIGORTLS_EXPORT STACK_OF(X509_INFO) *
+    PEM_X509_INFO_read(FILE *fp, STACK_OF(X509_INFO) *sk, pem_password_cb *cb,
+                       void *u);
 
-int PEM_SealInit(PEM_ENCODE_SEAL_CTX *ctx, EVP_CIPHER *type, EVP_MD *md_type,
-                 uint8_t **ek, int *ekl, uint8_t *iv, EVP_PKEY **pubk,
-                 int npubk);
-void PEM_SealUpdate(PEM_ENCODE_SEAL_CTX *ctx, uint8_t *out, int *outl,
-                    uint8_t *in, int inl);
-int PEM_SealFinal(PEM_ENCODE_SEAL_CTX *ctx, uint8_t *sig, int *sigl,
-                  uint8_t *out, int *outl, EVP_PKEY *priv);
+VIGORTLS_EXPORT int PEM_SealInit(PEM_ENCODE_SEAL_CTX *ctx, EVP_CIPHER *type,
+                                 EVP_MD *md_type, uint8_t **ek, int *ekl,
+                                 uint8_t *iv, EVP_PKEY **pubk, int npubk);
+VIGORTLS_EXPORT void PEM_SealUpdate(PEM_ENCODE_SEAL_CTX *ctx, uint8_t *out,
+                                    int *outl, uint8_t *in, int inl);
+VIGORTLS_EXPORT int PEM_SealFinal(PEM_ENCODE_SEAL_CTX *ctx, uint8_t *sig,
+                                  int *sigl, uint8_t *out, int *outl,
+                                  EVP_PKEY *priv);
 
-void PEM_SignInit(EVP_MD_CTX *ctx, EVP_MD *type);
-void PEM_SignUpdate(EVP_MD_CTX *ctx, uint8_t *d, unsigned int cnt);
-int PEM_SignFinal(EVP_MD_CTX *ctx, uint8_t *sigret, unsigned int *siglen,
-                  EVP_PKEY *pkey);
+VIGORTLS_EXPORT void PEM_SignInit(EVP_MD_CTX *ctx, EVP_MD *type);
+VIGORTLS_EXPORT void PEM_SignUpdate(EVP_MD_CTX *ctx, uint8_t *d,
+                                    unsigned int cnt);
+VIGORTLS_EXPORT int PEM_SignFinal(EVP_MD_CTX *ctx, uint8_t *sigret,
+                                  unsigned int *siglen, EVP_PKEY *pkey);
 
-int PEM_def_callback(char *buf, int num, int w, void *key);
-void PEM_proc_type(char *buf, int type);
-void PEM_dek_info(char *buf, const char *type, int len, char *str);
+VIGORTLS_EXPORT int PEM_def_callback(char *buf, int num, int w, void *key);
+VIGORTLS_EXPORT void PEM_proc_type(char *buf, int type);
+VIGORTLS_EXPORT void PEM_dek_info(char *buf, const char *type, int len,
+                                  char *str);
 
 DECLARE_PEM_rw(X509, X509) DECLARE_PEM_rw(X509_AUX, X509)
 DECLARE_PEM_rw(X509_REQ, X509_REQ)
@@ -396,51 +404,61 @@ DECLARE_PEM_write_const(DHxparams, DH)
 DECLARE_PEM_rw_cb(PrivateKey, EVP_PKEY)
 DECLARE_PEM_rw(PUBKEY, EVP_PKEY)
 
-int PEM_write_bio_PKCS8PrivateKey_nid(BIO *bp, EVP_PKEY *x, int nid,
-                                      char *kstr, int klen,
-                                      pem_password_cb *cb, void *u);
-int PEM_write_bio_PKCS8PrivateKey(BIO *, EVP_PKEY *, const EVP_CIPHER *, char *,
-                                  int, pem_password_cb *, void *);
-int i2d_PKCS8PrivateKey_bio(BIO *bp, EVP_PKEY *x, const EVP_CIPHER *enc,
-                            char *kstr, int klen, pem_password_cb *cb, void *u);
-int i2d_PKCS8PrivateKey_nid_bio(BIO *bp, EVP_PKEY *x, int nid, char *kstr,
-                                int klen, pem_password_cb *cb, void *u);
-EVP_PKEY *d2i_PKCS8PrivateKey_bio(BIO *bp, EVP_PKEY **x, pem_password_cb *cb,
-                                  void *u);
-
-int i2d_PKCS8PrivateKey_fp(FILE *fp, EVP_PKEY *x, const EVP_CIPHER *enc,
-                           char *kstr, int klen, pem_password_cb *cb, void *u);
-int i2d_PKCS8PrivateKey_nid_fp(FILE *fp, EVP_PKEY *x, int nid, char *kstr,
-                               int klen, pem_password_cb *cb, void *u);
-int PEM_write_PKCS8PrivateKey_nid(FILE *fp, EVP_PKEY *x, int nid, char *kstr,
+VIGORTLS_EXPORT int
+PEM_write_bio_PKCS8PrivateKey_nid(BIO *bp, EVP_PKEY *x, int nid, char *kstr,
                                   int klen, pem_password_cb *cb, void *u);
+VIGORTLS_EXPORT int PEM_write_bio_PKCS8PrivateKey(BIO *, EVP_PKEY *,
+                                                  const EVP_CIPHER *, char *,
+                                                  int, pem_password_cb *,
+                                                  void *);
+VIGORTLS_EXPORT int i2d_PKCS8PrivateKey_bio(BIO *bp, EVP_PKEY *x,
+                                            const EVP_CIPHER *enc, char *kstr,
+                                            int klen, pem_password_cb *cb,
+                                            void *u);
+VIGORTLS_EXPORT int i2d_PKCS8PrivateKey_nid_bio(BIO *bp, EVP_PKEY *x, int nid,
+                                                char *kstr, int klen,
+                                                pem_password_cb *cb, void *u);
+VIGORTLS_EXPORT EVP_PKEY *d2i_PKCS8PrivateKey_bio(BIO *bp, EVP_PKEY **x,
+                                                  pem_password_cb *cb, void *u);
 
-EVP_PKEY *d2i_PKCS8PrivateKey_fp(FILE *fp, EVP_PKEY **x, pem_password_cb *cb,
-                                 void *u);
+VIGORTLS_EXPORT int i2d_PKCS8PrivateKey_fp(FILE *fp, EVP_PKEY *x,
+                                           const EVP_CIPHER *enc, char *kstr,
+                                           int klen, pem_password_cb *cb,
+                                           void *u);
+VIGORTLS_EXPORT int i2d_PKCS8PrivateKey_nid_fp(FILE *fp, EVP_PKEY *x, int nid,
+                                               char *kstr, int klen,
+                                               pem_password_cb *cb, void *u);
+VIGORTLS_EXPORT int PEM_write_PKCS8PrivateKey_nid(FILE *fp, EVP_PKEY *x,
+                                                  int nid, char *kstr, int klen,
+                                                  pem_password_cb *cb, void *u);
 
-int PEM_write_PKCS8PrivateKey(FILE *fp, EVP_PKEY *x, const EVP_CIPHER *enc,
-                              char *kstr, int klen, pem_password_cb *cd,
-                              void *u);
+VIGORTLS_EXPORT EVP_PKEY *d2i_PKCS8PrivateKey_fp(FILE *fp, EVP_PKEY **x,
+                                                 pem_password_cb *cb, void *u);
 
-EVP_PKEY *PEM_read_bio_Parameters(BIO *bp, EVP_PKEY **x);
-int PEM_write_bio_Parameters(BIO *bp, EVP_PKEY *x);
+VIGORTLS_EXPORT int PEM_write_PKCS8PrivateKey(FILE *fp, EVP_PKEY *x,
+                                              const EVP_CIPHER *enc, char *kstr,
+                                              int klen, pem_password_cb *cd,
+                                              void *u);
 
-EVP_PKEY *b2i_PrivateKey(const uint8_t **in, long length);
-EVP_PKEY *b2i_PublicKey(const uint8_t **in, long length);
-EVP_PKEY *b2i_PrivateKey_bio(BIO *in);
-EVP_PKEY *b2i_PublicKey_bio(BIO *in);
-int i2b_PrivateKey_bio(BIO *out, EVP_PKEY *pk);
-int i2b_PublicKey_bio(BIO *out, EVP_PKEY *pk);
-EVP_PKEY *b2i_PVK_bio(BIO *in, pem_password_cb *cb, void *u);
-int i2b_PVK_bio(BIO *out, EVP_PKEY *pk, int enclevel, pem_password_cb *cb,
-                void *u);
+VIGORTLS_EXPORT EVP_PKEY *PEM_read_bio_Parameters(BIO *bp, EVP_PKEY **x);
+VIGORTLS_EXPORT int PEM_write_bio_Parameters(BIO *bp, EVP_PKEY *x);
+
+VIGORTLS_EXPORT EVP_PKEY *b2i_PrivateKey(const uint8_t **in, long length);
+VIGORTLS_EXPORT EVP_PKEY *b2i_PublicKey(const uint8_t **in, long length);
+VIGORTLS_EXPORT EVP_PKEY *b2i_PrivateKey_bio(BIO *in);
+VIGORTLS_EXPORT EVP_PKEY *b2i_PublicKey_bio(BIO *in);
+VIGORTLS_EXPORT int i2b_PrivateKey_bio(BIO *out, EVP_PKEY *pk);
+VIGORTLS_EXPORT int i2b_PublicKey_bio(BIO *out, EVP_PKEY *pk);
+VIGORTLS_EXPORT EVP_PKEY *b2i_PVK_bio(BIO *in, pem_password_cb *cb, void *u);
+VIGORTLS_EXPORT int i2b_PVK_bio(BIO *out, EVP_PKEY *pk, int enclevel,
+                                pem_password_cb *cb, void *u);
 
 /* BEGIN ERROR CODES */
 /*
  * The following lines are auto generated by the script mkerr.pl. Any changes
  * made after this point may be overwritten when the script is next run.
  */
-void ERR_load_PEM_strings(void);
+VIGORTLS_EXPORT void ERR_load_PEM_strings(void);
 
 /* Error codes for the PEM functions. */
 

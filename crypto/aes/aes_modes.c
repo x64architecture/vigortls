@@ -34,6 +34,14 @@ void AES_cbc_encrypt(const uint8_t *in, uint8_t *out, size_t len,
     else /* enc == AES_DECRYPT */
         CRYPTO_cbc128_decrypt(in, out, len, key, ivec, (block128_f)AES_decrypt);
 }
+#else
+void asm_AES_cbc_encrypt(const uint8_t *in, uint8_t *out, size_t len,
+                         const AES_KEY *key, uint8_t *ivec, const int enc);
+void AES_cbc_encrypt(const uint8_t *in, uint8_t *out, size_t len,
+                     const AES_KEY *key, uint8_t *ivec, const int enc)
+{
+    asm_AES_cbc_encrypt(in, out, len, key, ivec, enc);
+}
 #endif /* OPENSSL_NO_ASM || (!VIGORTLS_X86_64 && !VIGORTLS_X86) */
 
 /* CFB Mode */

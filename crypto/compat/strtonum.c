@@ -32,6 +32,7 @@
 
 #include <errno.h>
 #include <limits.h>
+#include <stdcompat.h>
 #include <stdlib.h>
 
 #define INVALID 1

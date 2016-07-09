@@ -12,7 +12,7 @@
 
 #include <stdint.h>
 
-#include <openssl/opensslconf.h>
+#include <openssl/base.h>
 
 #ifdef OPENSSL_NO_DES
 #error DES is disabled.
@@ -48,16 +48,19 @@ typedef struct DES_ks {
 #define DES_ede2_cbc_encrypt(i, o, l, k1, k2, iv, e) \
     DES_ede3_cbc_encrypt((i), (o), (l), (k1), (k2), (k1), (iv), (e))
 
-extern int DES_rw_mode; /* defaults to DES_PCBC_MODE */
+VIGORTLS_EXPORT extern int DES_rw_mode; /* defaults to DES_PCBC_MODE */
 
-const char *DES_options(void);
-void DES_ecb3_encrypt(const_DES_cblock *input, DES_cblock *output,
-                      DES_key_schedule *ks1, DES_key_schedule *ks2,
-                      DES_key_schedule *ks3, int enc);
-void DES_ncbc_encrypt(const uint8_t *input, uint8_t *output, long length,
-                      DES_key_schedule *schedule, DES_cblock *ivec, int enc);
-void DES_ecb_encrypt(const_DES_cblock *input, DES_cblock *output,
-                     DES_key_schedule *ks, int enc);
+VIGORTLS_EXPORT const char *DES_options(void);
+VIGORTLS_EXPORT void DES_ecb3_encrypt(const_DES_cblock *input,
+                                      DES_cblock *output, DES_key_schedule *ks1,
+                                      DES_key_schedule *ks2,
+                                      DES_key_schedule *ks3, int enc);
+VIGORTLS_EXPORT void DES_ncbc_encrypt(const uint8_t *input, uint8_t *output,
+                                      long length, DES_key_schedule *schedule,
+                                      DES_cblock *ivec, int enc);
+VIGORTLS_EXPORT void DES_ecb_encrypt(const_DES_cblock *input,
+                                     DES_cblock *output, DES_key_schedule *ks,
+                                     int enc);
 
 /* This is the DES encryption function that gets called by just about
  * every other DES routine in the library.  You should not use this
@@ -68,7 +71,8 @@ void DES_ecb_encrypt(const_DES_cblock *input, DES_cblock *output,
  * Data is a pointer to 2 unsigned long's and ks is the
  * DES_key_schedule to use.  enc, is non zero specifies encryption,
  * zero if decryption. */
-void DES_encrypt1(uint32_t *data, DES_key_schedule *ks, int enc);
+VIGORTLS_EXPORT void DES_encrypt1(uint32_t *data, DES_key_schedule *ks,
+                                  int enc);
 
 /* This functions is the same as DES_encrypt1() except that the DES
  * initial permutation (IP) and final permutation (FP) have been left
@@ -76,26 +80,33 @@ void DES_encrypt1(uint32_t *data, DES_key_schedule *ks, int enc);
  * It is used by the routines in the library that implement triple DES.
  * IP() DES_encrypt2() DES_encrypt2() DES_encrypt2() FP() is the same
  * as DES_encrypt1() DES_encrypt1() DES_encrypt1() except faster :-). */
-void DES_encrypt2(uint32_t *data, DES_key_schedule *ks, int enc);
+VIGORTLS_EXPORT void DES_encrypt2(uint32_t *data, DES_key_schedule *ks,
+                                  int enc);
 
-void DES_encrypt3(uint32_t *data, DES_key_schedule *ks1, DES_key_schedule *ks2,
-                  DES_key_schedule *ks3);
-void DES_decrypt3(uint32_t *data, DES_key_schedule *ks1, DES_key_schedule *ks2,
-                  DES_key_schedule *ks3);
-void DES_ede3_cbc_encrypt(const uint8_t *input, uint8_t *output, long length,
-                          DES_key_schedule *ks1, DES_key_schedule *ks2,
-                          DES_key_schedule *ks3, DES_cblock *ivec, int enc);
-void DES_ede3_cfb64_encrypt(const uint8_t *in, uint8_t *out, long length,
-                            DES_key_schedule *ks1, DES_key_schedule *ks2,
-                            DES_key_schedule *ks3, DES_cblock *ivec, int *num,
-                            int enc);
-void DES_ede3_cfb_encrypt(const uint8_t *in, uint8_t *out, int numbits,
-                          long length, DES_key_schedule *ks1,
-                          DES_key_schedule *ks2, DES_key_schedule *ks3,
-                          DES_cblock *ivec, int enc);
-void DES_set_odd_parity(DES_cblock *key);
-int DES_set_key(const_DES_cblock *key, DES_key_schedule *schedule);
-int DES_key_sched(const_DES_cblock *key, DES_key_schedule *schedule);
+VIGORTLS_EXPORT void DES_encrypt3(uint32_t *data, DES_key_schedule *ks1,
+                                  DES_key_schedule *ks2, DES_key_schedule *ks3);
+VIGORTLS_EXPORT void DES_decrypt3(uint32_t *data, DES_key_schedule *ks1,
+                                  DES_key_schedule *ks2, DES_key_schedule *ks3);
+VIGORTLS_EXPORT void DES_ede3_cbc_encrypt(const uint8_t *input, uint8_t *output,
+                                          long length, DES_key_schedule *ks1,
+                                          DES_key_schedule *ks2,
+                                          DES_key_schedule *ks3,
+                                          DES_cblock *ivec, int enc);
+VIGORTLS_EXPORT void DES_ede3_cfb64_encrypt(const uint8_t *in, uint8_t *out,
+                                            long length, DES_key_schedule *ks1,
+                                            DES_key_schedule *ks2,
+                                            DES_key_schedule *ks3,
+                                            DES_cblock *ivec, int *num,
+                                            int enc);
+VIGORTLS_EXPORT void
+DES_ede3_cfb_encrypt(const uint8_t *in, uint8_t *out, int numbits, long length,
+                     DES_key_schedule *ks1, DES_key_schedule *ks2,
+                     DES_key_schedule *ks3, DES_cblock *ivec, int enc);
+VIGORTLS_EXPORT void DES_set_odd_parity(DES_cblock *key);
+VIGORTLS_EXPORT int DES_set_key(const_DES_cblock *key,
+                                DES_key_schedule *schedule);
+VIGORTLS_EXPORT int DES_key_sched(const_DES_cblock *key,
+                                  DES_key_schedule *schedule);
 
 #define DES_fixup_key_parity DES_set_odd_parity
 

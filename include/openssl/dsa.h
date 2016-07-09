@@ -10,7 +10,7 @@
 #ifndef HEADER_DSA_H
 #define HEADER_DSA_H
 
-#include <openssl/opensslconf.h>
+#include <openssl/base.h>
 
 #ifdef OPENSSL_NO_DSA
 #error DSA is disabled.
@@ -18,21 +18,18 @@
 
 #include <openssl/bio.h>
 #include <openssl/crypto.h>
-#include <openssl/ossl_typ.h>
 
 #ifndef OPENSSL_NO_DEPRECATED
 #include <openssl/bn.h>
 #include <openssl/dh.h>
 #endif
 
-#include <openssl/threads.h>
-
 #ifndef OPENSSL_DSA_MAX_MODULUS_BITS
 #define OPENSSL_DSA_MAX_MODULUS_BITS 10000
 #endif
 
-#define DSA_FLAG_CACHE_MONT_P 0x01
-#define DSA_FLAG_NO_EXP_CONSTTIME 0x02
+#define DSA_FLAG_CACHE_MONT_P       0x01
+#define DSA_FLAG_NO_EXP_CONSTTIME   0x02
 
 #ifdef __cplusplus
 extern "C" {
@@ -107,63 +104,73 @@ struct dsa_st {
 #define i2d_DSAparams_bio(bp, x) \
     ASN1_i2d_bio_of_const(DSA, i2d_DSAparams, bp, x)
 
-DSA *DSAparams_dup(DSA *x);
-DSA_SIG *DSA_SIG_new(void);
-void DSA_SIG_free(DSA_SIG *a);
-int i2d_DSA_SIG(const DSA_SIG *a, uint8_t **pp);
-DSA_SIG *d2i_DSA_SIG(DSA_SIG **v, const uint8_t **pp, long length);
+VIGORTLS_EXPORT DSA *DSAparams_dup(DSA *x);
+VIGORTLS_EXPORT DSA_SIG *DSA_SIG_new(void);
+VIGORTLS_EXPORT void DSA_SIG_free(DSA_SIG *a);
+VIGORTLS_EXPORT int i2d_DSA_SIG(const DSA_SIG *a, uint8_t **pp);
+VIGORTLS_EXPORT DSA_SIG *d2i_DSA_SIG(DSA_SIG **v, const uint8_t **pp,
+                                     long length);
 
-DSA_SIG *DSA_do_sign(const uint8_t *dgst, int dlen, DSA *dsa);
-int DSA_do_verify(const uint8_t *dgst, int dgst_len, DSA_SIG *sig, DSA *dsa);
+VIGORTLS_EXPORT DSA_SIG *DSA_do_sign(const uint8_t *dgst, int dlen, DSA *dsa);
+VIGORTLS_EXPORT int DSA_do_verify(const uint8_t *dgst, int dgst_len,
+                                  DSA_SIG *sig, DSA *dsa);
 
-const DSA_METHOD *DSA_OpenSSL(void);
+VIGORTLS_EXPORT const DSA_METHOD *DSA_OpenSSL(void);
 
-void DSA_set_default_method(const DSA_METHOD *);
-const DSA_METHOD *DSA_get_default_method(void);
-int DSA_set_method(DSA *dsa, const DSA_METHOD *);
+VIGORTLS_EXPORT void DSA_set_default_method(const DSA_METHOD *);
+VIGORTLS_EXPORT const DSA_METHOD *DSA_get_default_method(void);
+VIGORTLS_EXPORT int DSA_set_method(DSA *dsa, const DSA_METHOD *);
 
-DSA *DSA_new(void);
-DSA *DSA_new_method(ENGINE *engine);
-void DSA_free(DSA *r);
+VIGORTLS_EXPORT DSA *DSA_new(void);
+VIGORTLS_EXPORT DSA *DSA_new_method(ENGINE *engine);
+VIGORTLS_EXPORT void DSA_free(DSA *r);
 /* "up" the DSA object's reference count */
-int DSA_up_ref(DSA *r);
-int DSA_size(const DSA *);
+VIGORTLS_EXPORT int DSA_up_ref(DSA *r);
+VIGORTLS_EXPORT int DSA_size(const DSA *);
 /* next 4 return -1 on error */
-int DSA_sign_setup(DSA *dsa, BN_CTX *ctx_in, BIGNUM **kinvp, BIGNUM **rp);
-int DSA_sign(int type, const uint8_t *dgst, int dlen, uint8_t *sig,
-             unsigned int *siglen, DSA *dsa);
-int DSA_verify(int type, const uint8_t *dgst, int dgst_len,
-               const uint8_t *sigbuf, int siglen, DSA *dsa);
-int DSA_get_ex_new_index(long argl, void *argp, CRYPTO_EX_new *new_func,
-                         CRYPTO_EX_dup *dup_func, CRYPTO_EX_free *free_func);
-int DSA_set_ex_data(DSA *d, int idx, void *arg);
-void *DSA_get_ex_data(DSA *d, int idx);
+VIGORTLS_EXPORT int DSA_sign_setup(DSA *dsa, BN_CTX *ctx_in, BIGNUM **kinvp,
+                                   BIGNUM **rp);
+VIGORTLS_EXPORT int DSA_sign(int type, const uint8_t *dgst, int dlen,
+                             uint8_t *sig, unsigned int *siglen, DSA *dsa);
+VIGORTLS_EXPORT int DSA_verify(int type, const uint8_t *dgst, int dgst_len,
+                               const uint8_t *sigbuf, int siglen, DSA *dsa);
+VIGORTLS_EXPORT int DSA_get_ex_new_index(long argl, void *argp,
+                                         CRYPTO_EX_new *new_func,
+                                         CRYPTO_EX_dup *dup_func,
+                                         CRYPTO_EX_free *free_func);
+VIGORTLS_EXPORT int DSA_set_ex_data(DSA *d, int idx, void *arg);
+VIGORTLS_EXPORT void *DSA_get_ex_data(DSA *d, int idx);
 
-DSA *d2i_DSAPublicKey(DSA **a, const uint8_t **pp, long length);
-DSA *d2i_DSAPrivateKey(DSA **a, const uint8_t **pp, long length);
-DSA *d2i_DSAparams(DSA **a, const uint8_t **pp, long length);
+VIGORTLS_EXPORT DSA *d2i_DSAPublicKey(DSA **a, const uint8_t **pp, long length);
+VIGORTLS_EXPORT DSA *d2i_DSAPrivateKey(DSA **a, const uint8_t **pp,
+                                       long length);
+VIGORTLS_EXPORT DSA *d2i_DSAparams(DSA **a, const uint8_t **pp, long length);
 
 /* Deprecated version */
 #ifndef OPENSSL_NO_DEPRECATED
-DSA *DSA_generate_parameters(int bits, uint8_t *seed, int seed_len,
-                             int *counter_ret, unsigned long *h_ret,
-                             void (*callback)(int, int, void *), void *cb_arg);
+VIGORTLS_EXPORT DSA *DSA_generate_parameters(int bits, uint8_t *seed,
+                                             int seed_len, int *counter_ret,
+                                             unsigned long *h_ret,
+                                             void (*callback)(int, int, void *),
+                                             void *cb_arg);
 #endif /* !defined(OPENSSL_NO_DEPRECATED) */
 
 /* New version */
-int DSA_generate_parameters_ex(DSA *dsa, int bits, const uint8_t *seed,
-                               int seed_len, int *counter_ret,
-                               unsigned long *h_ret, BN_GENCB *cb);
+VIGORTLS_EXPORT int DSA_generate_parameters_ex(DSA *dsa, int bits,
+                                               const uint8_t *seed,
+                                               int seed_len, int *counter_ret,
+                                               unsigned long *h_ret,
+                                               BN_GENCB *cb);
 
-int DSA_generate_key(DSA *a);
-int i2d_DSAPublicKey(const DSA *a, uint8_t **pp);
-int i2d_DSAPrivateKey(const DSA *a, uint8_t **pp);
-int i2d_DSAparams(const DSA *a, uint8_t **pp);
+VIGORTLS_EXPORT int DSA_generate_key(DSA *a);
+VIGORTLS_EXPORT int i2d_DSAPublicKey(const DSA *a, uint8_t **pp);
+VIGORTLS_EXPORT int i2d_DSAPrivateKey(const DSA *a, uint8_t **pp);
+VIGORTLS_EXPORT int i2d_DSAparams(const DSA *a, uint8_t **pp);
 
-int DSAparams_print(BIO *bp, const DSA *x);
-int DSA_print(BIO *bp, const DSA *x, int off);
-int DSAparams_print_fp(FILE *fp, const DSA *x);
-int DSA_print_fp(FILE *bp, const DSA *x, int off);
+VIGORTLS_EXPORT int DSAparams_print(BIO *bp, const DSA *x);
+VIGORTLS_EXPORT int DSA_print(BIO *bp, const DSA *x, int off);
+VIGORTLS_EXPORT int DSAparams_print_fp(FILE *fp, const DSA *x);
+VIGORTLS_EXPORT int DSA_print_fp(FILE *bp, const DSA *x, int off);
 
 #define DSS_prime_checks 50
 /* Primality test according to FIPS PUB 186[-1], Appendix 2.1:
@@ -173,22 +180,22 @@ int DSA_print_fp(FILE *bp, const DSA *x, int off);
 
 /* Convert DSA structure (key or just parameters) into DH structure
  * (be careful to avoid small subgroup attacks when using this!) */
-DH *DSA_dup_DH(const DSA *r);
+VIGORTLS_EXPORT DH *DSA_dup_DH(const DSA *r);
 
 #define EVP_PKEY_CTX_set_dsa_paramgen_bits(ctx, nbits)         \
     EVP_PKEY_CTX_ctrl(ctx, EVP_PKEY_DSA, EVP_PKEY_OP_PARAMGEN, \
                       EVP_PKEY_CTRL_DSA_PARAMGEN_BITS, nbits, NULL)
 
-#define EVP_PKEY_CTRL_DSA_PARAMGEN_BITS (EVP_PKEY_ALG_CTRL + 1)
-#define EVP_PKEY_CTRL_DSA_PARAMGEN_Q_BITS (EVP_PKEY_ALG_CTRL + 2)
-#define EVP_PKEY_CTRL_DSA_PARAMGEN_MD (EVP_PKEY_ALG_CTRL + 3)
+#define EVP_PKEY_CTRL_DSA_PARAMGEN_BITS     (EVP_PKEY_ALG_CTRL + 1)
+#define EVP_PKEY_CTRL_DSA_PARAMGEN_Q_BITS   (EVP_PKEY_ALG_CTRL + 2)
+#define EVP_PKEY_CTRL_DSA_PARAMGEN_MD       (EVP_PKEY_ALG_CTRL + 3)
 
 /* BEGIN ERROR CODES */
 /*
  * The following lines are auto generated by the script mkerr.pl. Any changes
  * made after this point may be overwritten when the script is next run.
  */
-void ERR_load_DSA_strings(void);
+VIGORTLS_EXPORT void ERR_load_DSA_strings(void);
 
 /* Error codes for the DSA functions. */
 

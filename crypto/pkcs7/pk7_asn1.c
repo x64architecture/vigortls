@@ -61,32 +61,32 @@ ASN1_NDEF_SEQUENCE_cb(PKCS7, pk7_cb) = {
 
 PKCS7 *d2i_PKCS7(PKCS7 **a, const uint8_t **in, long len)
 {
-    return (PKCS7 *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, &PKCS7_it);
+    return (PKCS7 *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, ASN1_ITEM_rptr(PKCS7));
 }
 
 int i2d_PKCS7(PKCS7 *a, uint8_t **out)
 {
-    return ASN1_item_i2d((ASN1_VALUE *)a, out, &PKCS7_it);
+    return ASN1_item_i2d((ASN1_VALUE *)a, out, ASN1_ITEM_rptr(PKCS7));
 }
 
 PKCS7 *PKCS7_new(void)
 {
-    return (PKCS7 *)ASN1_item_new(&PKCS7_it);
+    return (PKCS7 *)ASN1_item_new(ASN1_ITEM_rptr(PKCS7));
 }
 
 void PKCS7_free(PKCS7 *a)
 {
-    ASN1_item_free((ASN1_VALUE *)a, &PKCS7_it);
+    ASN1_item_free((ASN1_VALUE *)a, ASN1_ITEM_rptr(PKCS7));
 }
 
 int i2d_PKCS7_NDEF(PKCS7 *a, uint8_t **out)
 {
-    return ASN1_item_ndef_i2d((ASN1_VALUE *)a, out, &PKCS7_it);
+    return ASN1_item_ndef_i2d((ASN1_VALUE *)a, out, ASN1_ITEM_rptr(PKCS7));
 }
 
 PKCS7 *PKCS7_dup(PKCS7 *x)
 {
-    return ASN1_item_dup(&PKCS7_it, x);
+    return ASN1_item_dup(ASN1_ITEM_rptr(PKCS7), x);
 }
 
 ASN1_NDEF_SEQUENCE(PKCS7_SIGNED) = {
@@ -100,22 +100,22 @@ ASN1_NDEF_SEQUENCE(PKCS7_SIGNED) = {
 
 PKCS7_SIGNED *d2i_PKCS7_SIGNED(PKCS7_SIGNED **a, const uint8_t **in, long len)
 {
-    return (PKCS7_SIGNED *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, &PKCS7_SIGNED_it);
+    return (PKCS7_SIGNED *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, ASN1_ITEM_rptr(PKCS7_SIGNED));
 }
 
 int i2d_PKCS7_SIGNED(PKCS7_SIGNED *a, uint8_t **out)
 {
-    return ASN1_item_i2d((ASN1_VALUE *)a, out, &PKCS7_SIGNED_it);
+    return ASN1_item_i2d((ASN1_VALUE *)a, out, ASN1_ITEM_rptr(PKCS7_SIGNED));
 }
 
 PKCS7_SIGNED *PKCS7_SIGNED_new(void)
 {
-    return (PKCS7_SIGNED *)ASN1_item_new(&PKCS7_SIGNED_it);
+    return (PKCS7_SIGNED *)ASN1_item_new(ASN1_ITEM_rptr(PKCS7_SIGNED));
 }
 
 void PKCS7_SIGNED_free(PKCS7_SIGNED *a)
 {
-    ASN1_item_free((ASN1_VALUE *)a, &PKCS7_SIGNED_it);
+    ASN1_item_free((ASN1_VALUE *)a, ASN1_ITEM_rptr(PKCS7_SIGNED));
 }
 
 /* Minor tweak to operation: free up EVP_PKEY */
@@ -146,22 +146,22 @@ ASN1_SEQUENCE_cb(PKCS7_SIGNER_INFO, si_cb) = {
 
 PKCS7_SIGNER_INFO *d2i_PKCS7_SIGNER_INFO(PKCS7_SIGNER_INFO **a, const uint8_t **in, long len)
 {
-    return (PKCS7_SIGNER_INFO *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, &PKCS7_SIGNER_INFO_it);
+    return (PKCS7_SIGNER_INFO *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, ASN1_ITEM_rptr(PKCS7_SIGNER_INFO));
 }
 
 int i2d_PKCS7_SIGNER_INFO(PKCS7_SIGNER_INFO *a, uint8_t **out)
 {
-    return ASN1_item_i2d((ASN1_VALUE *)a, out, &PKCS7_SIGNER_INFO_it);
+    return ASN1_item_i2d((ASN1_VALUE *)a, out, ASN1_ITEM_rptr(PKCS7_SIGNER_INFO));
 }
 
 PKCS7_SIGNER_INFO *PKCS7_SIGNER_INFO_new(void)
 {
-    return (PKCS7_SIGNER_INFO *)ASN1_item_new(&PKCS7_SIGNER_INFO_it);
+    return (PKCS7_SIGNER_INFO *)ASN1_item_new(ASN1_ITEM_rptr(PKCS7_SIGNER_INFO));
 }
 
 void PKCS7_SIGNER_INFO_free(PKCS7_SIGNER_INFO *a)
 {
-    ASN1_item_free((ASN1_VALUE *)a, &PKCS7_SIGNER_INFO_it);
+    ASN1_item_free((ASN1_VALUE *)a, ASN1_ITEM_rptr(PKCS7_SIGNER_INFO));
 }
 
 ASN1_SEQUENCE(PKCS7_ISSUER_AND_SERIAL) = {
@@ -171,22 +171,22 @@ ASN1_SEQUENCE(PKCS7_ISSUER_AND_SERIAL) = {
 
 PKCS7_ISSUER_AND_SERIAL *d2i_PKCS7_ISSUER_AND_SERIAL(PKCS7_ISSUER_AND_SERIAL **a, const uint8_t **in, long len)
 {
-    return (PKCS7_ISSUER_AND_SERIAL *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, &PKCS7_ISSUER_AND_SERIAL_it);
+    return (PKCS7_ISSUER_AND_SERIAL *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, ASN1_ITEM_rptr(PKCS7_ISSUER_AND_SERIAL));
 }
 
 int i2d_PKCS7_ISSUER_AND_SERIAL(PKCS7_ISSUER_AND_SERIAL *a, uint8_t **out)
 {
-    return ASN1_item_i2d((ASN1_VALUE *)a, out, &PKCS7_ISSUER_AND_SERIAL_it);
+    return ASN1_item_i2d((ASN1_VALUE *)a, out, ASN1_ITEM_rptr(PKCS7_ISSUER_AND_SERIAL));
 }
 
 PKCS7_ISSUER_AND_SERIAL *PKCS7_ISSUER_AND_SERIAL_new(void)
 {
-    return (PKCS7_ISSUER_AND_SERIAL *)ASN1_item_new(&PKCS7_ISSUER_AND_SERIAL_it);
+    return (PKCS7_ISSUER_AND_SERIAL *)ASN1_item_new(ASN1_ITEM_rptr(PKCS7_ISSUER_AND_SERIAL));
 }
 
 void PKCS7_ISSUER_AND_SERIAL_free(PKCS7_ISSUER_AND_SERIAL *a)
 {
-    ASN1_item_free((ASN1_VALUE *)a, &PKCS7_ISSUER_AND_SERIAL_it);
+    ASN1_item_free((ASN1_VALUE *)a, ASN1_ITEM_rptr(PKCS7_ISSUER_AND_SERIAL));
 }
 
 ASN1_NDEF_SEQUENCE(PKCS7_ENVELOPE) = {
@@ -197,22 +197,22 @@ ASN1_NDEF_SEQUENCE(PKCS7_ENVELOPE) = {
 
 PKCS7_ENVELOPE *d2i_PKCS7_ENVELOPE(PKCS7_ENVELOPE **a, const uint8_t **in, long len)
 {
-    return (PKCS7_ENVELOPE *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, &PKCS7_ENVELOPE_it);
+    return (PKCS7_ENVELOPE *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, ASN1_ITEM_rptr(PKCS7_ENVELOPE));
 }
 
 int i2d_PKCS7_ENVELOPE(PKCS7_ENVELOPE *a, uint8_t **out)
 {
-    return ASN1_item_i2d((ASN1_VALUE *)a, out, &PKCS7_ENVELOPE_it);
+    return ASN1_item_i2d((ASN1_VALUE *)a, out, ASN1_ITEM_rptr(PKCS7_ENVELOPE));
 }
 
 PKCS7_ENVELOPE *PKCS7_ENVELOPE_new(void)
 {
-    return (PKCS7_ENVELOPE *)ASN1_item_new(&PKCS7_ENVELOPE_it);
+    return (PKCS7_ENVELOPE *)ASN1_item_new(ASN1_ITEM_rptr(PKCS7_ENVELOPE));
 }
 
 void PKCS7_ENVELOPE_free(PKCS7_ENVELOPE *a)
 {
-    ASN1_item_free((ASN1_VALUE *)a, &PKCS7_ENVELOPE_it);
+    ASN1_item_free((ASN1_VALUE *)a, ASN1_ITEM_rptr(PKCS7_ENVELOPE));
 }
 
 /* Minor tweak to operation: free up X509 */
@@ -235,22 +235,22 @@ ASN1_SEQUENCE_cb(PKCS7_RECIP_INFO, ri_cb) = {
 
 PKCS7_RECIP_INFO *d2i_PKCS7_RECIP_INFO(PKCS7_RECIP_INFO **a, const uint8_t **in, long len)
 {
-    return (PKCS7_RECIP_INFO *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, &PKCS7_RECIP_INFO_it);
+    return (PKCS7_RECIP_INFO *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, ASN1_ITEM_rptr(PKCS7_RECIP_INFO));
 }
 
 int i2d_PKCS7_RECIP_INFO(PKCS7_RECIP_INFO *a, uint8_t **out)
 {
-    return ASN1_item_i2d((ASN1_VALUE *)a, out, &PKCS7_RECIP_INFO_it);
+    return ASN1_item_i2d((ASN1_VALUE *)a, out, ASN1_ITEM_rptr(PKCS7_RECIP_INFO));
 }
 
 PKCS7_RECIP_INFO *PKCS7_RECIP_INFO_new(void)
 {
-    return (PKCS7_RECIP_INFO *)ASN1_item_new(&PKCS7_RECIP_INFO_it);
+    return (PKCS7_RECIP_INFO *)ASN1_item_new(ASN1_ITEM_rptr(PKCS7_RECIP_INFO));
 }
 
 void PKCS7_RECIP_INFO_free(PKCS7_RECIP_INFO *a)
 {
-    ASN1_item_free((ASN1_VALUE *)a, &PKCS7_RECIP_INFO_it);
+    ASN1_item_free((ASN1_VALUE *)a, ASN1_ITEM_rptr(PKCS7_RECIP_INFO));
 }
 
 ASN1_NDEF_SEQUENCE(PKCS7_ENC_CONTENT) = {
@@ -261,22 +261,22 @@ ASN1_NDEF_SEQUENCE(PKCS7_ENC_CONTENT) = {
 
 PKCS7_ENC_CONTENT *d2i_PKCS7_ENC_CONTENT(PKCS7_ENC_CONTENT **a, const uint8_t **in, long len)
 {
-    return (PKCS7_ENC_CONTENT *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, &PKCS7_ENC_CONTENT_it);
+    return (PKCS7_ENC_CONTENT *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, ASN1_ITEM_rptr(PKCS7_ENC_CONTENT));
 }
 
 int i2d_PKCS7_ENC_CONTENT(PKCS7_ENC_CONTENT *a, uint8_t **out)
 {
-    return ASN1_item_i2d((ASN1_VALUE *)a, out, &PKCS7_ENC_CONTENT_it);
+    return ASN1_item_i2d((ASN1_VALUE *)a, out, ASN1_ITEM_rptr(PKCS7_ENC_CONTENT));
 }
 
 PKCS7_ENC_CONTENT *PKCS7_ENC_CONTENT_new(void)
 {
-    return (PKCS7_ENC_CONTENT *)ASN1_item_new(&PKCS7_ENC_CONTENT_it);
+    return (PKCS7_ENC_CONTENT *)ASN1_item_new(ASN1_ITEM_rptr(PKCS7_ENC_CONTENT));
 }
 
 void PKCS7_ENC_CONTENT_free(PKCS7_ENC_CONTENT *a)
 {
-    ASN1_item_free((ASN1_VALUE *)a, &PKCS7_ENC_CONTENT_it);
+    ASN1_item_free((ASN1_VALUE *)a, ASN1_ITEM_rptr(PKCS7_ENC_CONTENT));
 }
 
 ASN1_NDEF_SEQUENCE(PKCS7_SIGN_ENVELOPE) = {
@@ -291,22 +291,22 @@ ASN1_NDEF_SEQUENCE(PKCS7_SIGN_ENVELOPE) = {
 
 PKCS7_SIGN_ENVELOPE *d2i_PKCS7_SIGN_ENVELOPE(PKCS7_SIGN_ENVELOPE **a, const uint8_t **in, long len)
 {
-    return (PKCS7_SIGN_ENVELOPE *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, &PKCS7_SIGN_ENVELOPE_it);
+    return (PKCS7_SIGN_ENVELOPE *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, ASN1_ITEM_rptr(PKCS7_SIGN_ENVELOPE));
 }
 
 int i2d_PKCS7_SIGN_ENVELOPE(PKCS7_SIGN_ENVELOPE *a, uint8_t **out)
 {
-    return ASN1_item_i2d((ASN1_VALUE *)a, out, &PKCS7_SIGN_ENVELOPE_it);
+    return ASN1_item_i2d((ASN1_VALUE *)a, out, ASN1_ITEM_rptr(PKCS7_SIGN_ENVELOPE));
 }
 
 PKCS7_SIGN_ENVELOPE *PKCS7_SIGN_ENVELOPE_new(void)
 {
-    return (PKCS7_SIGN_ENVELOPE *)ASN1_item_new(&PKCS7_SIGN_ENVELOPE_it);
+    return (PKCS7_SIGN_ENVELOPE *)ASN1_item_new(ASN1_ITEM_rptr(PKCS7_SIGN_ENVELOPE));
 }
 
 void PKCS7_SIGN_ENVELOPE_free(PKCS7_SIGN_ENVELOPE *a)
 {
-    ASN1_item_free((ASN1_VALUE *)a, &PKCS7_SIGN_ENVELOPE_it);
+    ASN1_item_free((ASN1_VALUE *)a, ASN1_ITEM_rptr(PKCS7_SIGN_ENVELOPE));
 }
 
 ASN1_NDEF_SEQUENCE(PKCS7_ENCRYPT) = {
@@ -316,22 +316,22 @@ ASN1_NDEF_SEQUENCE(PKCS7_ENCRYPT) = {
 
 PKCS7_ENCRYPT *d2i_PKCS7_ENCRYPT(PKCS7_ENCRYPT **a, const uint8_t **in, long len)
 {
-    return (PKCS7_ENCRYPT *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, &PKCS7_ENCRYPT_it);
+    return (PKCS7_ENCRYPT *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, ASN1_ITEM_rptr(PKCS7_ENCRYPT));
 }
 
 int i2d_PKCS7_ENCRYPT(PKCS7_ENCRYPT *a, uint8_t **out)
 {
-    return ASN1_item_i2d((ASN1_VALUE *)a, out, &PKCS7_ENCRYPT_it);
+    return ASN1_item_i2d((ASN1_VALUE *)a, out, ASN1_ITEM_rptr(PKCS7_ENCRYPT));
 }
 
 PKCS7_ENCRYPT *PKCS7_ENCRYPT_new(void)
 {
-    return (PKCS7_ENCRYPT *)ASN1_item_new(&PKCS7_ENCRYPT_it);
+    return (PKCS7_ENCRYPT *)ASN1_item_new(ASN1_ITEM_rptr(PKCS7_ENCRYPT));
 }
 
 void PKCS7_ENCRYPT_free(PKCS7_ENCRYPT *a)
 {
-    ASN1_item_free((ASN1_VALUE *)a, &PKCS7_ENCRYPT_it);
+    ASN1_item_free((ASN1_VALUE *)a, ASN1_ITEM_rptr(PKCS7_ENCRYPT));
 }
 
 ASN1_NDEF_SEQUENCE(PKCS7_DIGEST) = {
@@ -343,22 +343,22 @@ ASN1_NDEF_SEQUENCE(PKCS7_DIGEST) = {
 
 PKCS7_DIGEST *d2i_PKCS7_DIGEST(PKCS7_DIGEST **a, const uint8_t **in, long len)
 {
-    return (PKCS7_DIGEST *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, &PKCS7_DIGEST_it);
+    return (PKCS7_DIGEST *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, ASN1_ITEM_rptr(PKCS7_DIGEST));
 }
 
 int i2d_PKCS7_DIGEST(PKCS7_DIGEST *a, uint8_t **out)
 {
-    return ASN1_item_i2d((ASN1_VALUE *)a, out, &PKCS7_DIGEST_it);
+    return ASN1_item_i2d((ASN1_VALUE *)a, out, ASN1_ITEM_rptr(PKCS7_DIGEST));
 }
 
 PKCS7_DIGEST *PKCS7_DIGEST_new(void)
 {
-    return (PKCS7_DIGEST *)ASN1_item_new(&PKCS7_DIGEST_it);
+    return (PKCS7_DIGEST *)ASN1_item_new(ASN1_ITEM_rptr(PKCS7_DIGEST));
 }
 
 void PKCS7_DIGEST_free(PKCS7_DIGEST *a)
 {
-    ASN1_item_free((ASN1_VALUE *)a, &PKCS7_DIGEST_it);
+    ASN1_item_free((ASN1_VALUE *)a, ASN1_ITEM_rptr(PKCS7_DIGEST));
 }
 
 /* Specials for authenticated attributes */
@@ -380,5 +380,5 @@ ASN1_ITEM_TEMPLATE_END(PKCS7_ATTR_VERIFY)
 
 int PKCS7_print_ctx(BIO *out, PKCS7 *x, int indent, const ASN1_PCTX *pctx)
 {
-    return ASN1_item_print(out, (ASN1_VALUE *)x, indent, &PKCS7_it, pctx);
+    return ASN1_item_print(out, (ASN1_VALUE *)x, indent, ASN1_ITEM_rptr(PKCS7), pctx);
 }

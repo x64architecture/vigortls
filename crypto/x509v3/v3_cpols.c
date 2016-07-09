@@ -44,22 +44,22 @@ ASN1_ITEM_TEMPLATE(CERTIFICATEPOLICIES) = ASN1_EX_TEMPLATE_TYPE(ASN1_TFLG_SEQUEN
 
 CERTIFICATEPOLICIES *d2i_CERTIFICATEPOLICIES(CERTIFICATEPOLICIES **a, const uint8_t **in, long len)
 {
-    return (CERTIFICATEPOLICIES *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, &CERTIFICATEPOLICIES_it);
+    return (CERTIFICATEPOLICIES *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, ASN1_ITEM_rptr(CERTIFICATEPOLICIES));
 }
 
 int i2d_CERTIFICATEPOLICIES(CERTIFICATEPOLICIES *a, uint8_t **out)
 {
-    return ASN1_item_i2d((ASN1_VALUE *)a, out, &CERTIFICATEPOLICIES_it);
+    return ASN1_item_i2d((ASN1_VALUE *)a, out, ASN1_ITEM_rptr(CERTIFICATEPOLICIES));
 }
 
 CERTIFICATEPOLICIES *CERTIFICATEPOLICIES_new(void)
 {
-    return (CERTIFICATEPOLICIES *)ASN1_item_new(&CERTIFICATEPOLICIES_it);
+    return (CERTIFICATEPOLICIES *)ASN1_item_new(ASN1_ITEM_rptr(CERTIFICATEPOLICIES));
 }
 
 void CERTIFICATEPOLICIES_free(CERTIFICATEPOLICIES *a)
 {
-    ASN1_item_free((ASN1_VALUE *)a, &CERTIFICATEPOLICIES_it);
+    ASN1_item_free((ASN1_VALUE *)a, ASN1_ITEM_rptr(CERTIFICATEPOLICIES));
 }
 
 ASN1_SEQUENCE(POLICYINFO) = {
@@ -69,22 +69,22 @@ ASN1_SEQUENCE(POLICYINFO) = {
 
 POLICYINFO *d2i_POLICYINFO(POLICYINFO **a, const uint8_t **in, long len)
 {
-    return (POLICYINFO *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, &POLICYINFO_it);
+    return (POLICYINFO *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, ASN1_ITEM_rptr(POLICYINFO));
 }
 
 int i2d_POLICYINFO(POLICYINFO *a, uint8_t **out)
 {
-    return ASN1_item_i2d((ASN1_VALUE *)a, out, &POLICYINFO_it);
+    return ASN1_item_i2d((ASN1_VALUE *)a, out, ASN1_ITEM_rptr(POLICYINFO));
 }
 
 POLICYINFO *POLICYINFO_new(void)
 {
-    return (POLICYINFO *)ASN1_item_new(&POLICYINFO_it);
+    return (POLICYINFO *)ASN1_item_new(ASN1_ITEM_rptr(POLICYINFO));
 }
 
 void POLICYINFO_free(POLICYINFO *a)
 {
-    ASN1_item_free((ASN1_VALUE *)a, &POLICYINFO_it);
+    ASN1_item_free((ASN1_VALUE *)a, ASN1_ITEM_rptr(POLICYINFO));
 }
 
 ASN1_ADB_TEMPLATE(policydefault) = ASN1_SIMPLE(POLICYQUALINFO, d.other, ASN1_ANY);
@@ -101,22 +101,22 @@ ASN1_SEQUENCE(POLICYQUALINFO) = {
 
 POLICYQUALINFO *d2i_POLICYQUALINFO(POLICYQUALINFO **a, const uint8_t **in, long len)
 {
-    return (POLICYQUALINFO *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, &POLICYQUALINFO_it);
+    return (POLICYQUALINFO *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, ASN1_ITEM_rptr(POLICYQUALINFO));
 }
 
 int i2d_POLICYQUALINFO(POLICYQUALINFO *a, uint8_t **out)
 {
-    return ASN1_item_i2d((ASN1_VALUE *)a, out, &POLICYQUALINFO_it);
+    return ASN1_item_i2d((ASN1_VALUE *)a, out, ASN1_ITEM_rptr(POLICYQUALINFO));
 }
 
 POLICYQUALINFO *POLICYQUALINFO_new(void)
 {
-    return (POLICYQUALINFO *)ASN1_item_new(&POLICYQUALINFO_it);
+    return (POLICYQUALINFO *)ASN1_item_new(ASN1_ITEM_rptr(POLICYQUALINFO));
 }
 
 void POLICYQUALINFO_free(POLICYQUALINFO *a)
 {
-    ASN1_item_free((ASN1_VALUE *)a, &POLICYQUALINFO_it);
+    ASN1_item_free((ASN1_VALUE *)a, ASN1_ITEM_rptr(POLICYQUALINFO));
 }
 
 ASN1_SEQUENCE(USERNOTICE) = {
@@ -126,22 +126,22 @@ ASN1_SEQUENCE(USERNOTICE) = {
 
 USERNOTICE *d2i_USERNOTICE(USERNOTICE **a, const uint8_t **in, long len)
 {
-    return (USERNOTICE *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, &USERNOTICE_it);
+    return (USERNOTICE *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, ASN1_ITEM_rptr(USERNOTICE));
 }
 
 int i2d_USERNOTICE(USERNOTICE *a, uint8_t **out)
 {
-    return ASN1_item_i2d((ASN1_VALUE *)a, out, &USERNOTICE_it);
+    return ASN1_item_i2d((ASN1_VALUE *)a, out, ASN1_ITEM_rptr(USERNOTICE));
 }
 
 USERNOTICE *USERNOTICE_new(void)
 {
-    return (USERNOTICE *)ASN1_item_new(&USERNOTICE_it);
+    return (USERNOTICE *)ASN1_item_new(ASN1_ITEM_rptr(USERNOTICE));
 }
 
 void USERNOTICE_free(USERNOTICE *a)
 {
-    ASN1_item_free((ASN1_VALUE *)a, &USERNOTICE_it);
+    ASN1_item_free((ASN1_VALUE *)a, ASN1_ITEM_rptr(USERNOTICE));
 }
 
 ASN1_SEQUENCE(NOTICEREF) = {
@@ -151,22 +151,22 @@ ASN1_SEQUENCE(NOTICEREF) = {
 
 NOTICEREF *d2i_NOTICEREF(NOTICEREF **a, const uint8_t **in, long len)
 {
-    return (NOTICEREF *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, &NOTICEREF_it);
+    return (NOTICEREF *)ASN1_item_d2i((ASN1_VALUE **)a, in, len, ASN1_ITEM_rptr(NOTICEREF));
 }
 
 int i2d_NOTICEREF(NOTICEREF *a, uint8_t **out)
 {
-    return ASN1_item_i2d((ASN1_VALUE *)a, out, &NOTICEREF_it);
+    return ASN1_item_i2d((ASN1_VALUE *)a, out, ASN1_ITEM_rptr(NOTICEREF));
 }
 
 NOTICEREF *NOTICEREF_new(void)
 {
-    return (NOTICEREF *)ASN1_item_new(&NOTICEREF_it);
+    return (NOTICEREF *)ASN1_item_new(ASN1_ITEM_rptr(NOTICEREF));
 }
 
 void NOTICEREF_free(NOTICEREF *a)
 {
-    ASN1_item_free((ASN1_VALUE *)a, &NOTICEREF_it);
+    ASN1_item_free((ASN1_VALUE *)a, ASN1_ITEM_rptr(NOTICEREF));
 }
 
 static STACK_OF(POLICYINFO) *r2i_certpol(X509V3_EXT_METHOD * method, X509V3_CTX * ctx, char *value)
