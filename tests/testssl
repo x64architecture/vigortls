@@ -87,7 +87,7 @@ for protocol in TLSv1.2; do
 
 #############################################################################
 
-if openssl no-dh; then
+if ../apps/openssl no-dh; then
   echo skipping anonymous DH tests
 else
   echo test tls1 with 1024bit anonymous DH, multiple handshakes
@@ -139,7 +139,7 @@ $ssltest -dtls12 -server_auth -client_auth $CA $extra || exit 1
 echo "Testing DTLS ciphersuites"
 for protocol in TLSv1.2; do
   echo "Testing ciphersuites for $protocol"
-  for cipher in `openssl ciphers "RSA+$protocol" | tr ':' '\n' |
+  for cipher in `../apps/openssl ciphers "RSA+$protocol" | tr ':' '\n' |
     grep -v RC4`; do
     echo "Testing $cipher"
     $ssltest -cipher $cipher -dtls1
