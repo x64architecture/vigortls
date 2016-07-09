@@ -18,8 +18,8 @@
 #define EVP_CIPH_FLAG_TLS1_1_MULTIBLOCK 0
 #endif
 
-#if defined(OPENSSL_SMALL_FOOTPRINT) || \
-    (!defined(OPENSSL_NO_ASM) && defined(VIGORTLS_X86_64))
+#if defined(OPENSSL_NO_ASM) || defined(OPENSSL_SMALL_FOOTPRINT) || \
+    !defined(OPENSSL_NO_ASM)
 #undef EVP_CIPH_FLAG_TLS1_1_MULTIBLOCK
 #define EVP_CIPH_FLAG_TLS1_1_MULTIBLOCK 0
 #endif
@@ -488,7 +488,7 @@ int ssl3_write_bytes(SSL *s, int type, const void *buf_, int len)
      */
     if (type == SSL3_RT_APPLICATION_DATA &&
         len >= 4 * (int)(max_send_fragment = s->max_send_fragment) &&
-        s->compress == NULL && s->msg_callback == NULL &&
+        s->msg_callback == NULL &&
         SSL_USE_EXPLICIT_IV(s) &&
         EVP_CIPHER_flags(s->enc_write_ctx->cipher) &
         EVP_CIPH_FLAG_TLS1_1_MULTIBLOCK)

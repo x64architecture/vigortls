@@ -344,6 +344,8 @@ static size_t tls1_1_multi_block_encrypt(EVP_AES_HMAC_SHA1 *key, uint8_t *out,
         blocks[i].c[20] = 0x80;
         PUTU32(blocks[i].c + 60, (64 + 20) * 8);
 #endif
+        edges[i].ptr = blocks[i].c;
+        edges[i].blocks = 1;
     }
 
     /* finalize MACs */
