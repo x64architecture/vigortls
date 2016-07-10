@@ -1,3 +1,4 @@
 build/
+/Users/kurtcancemi/vigortls/include/openssl/opensslfeatures.h
 crypto/objects/obj_mac.h
 *.DS_Store
