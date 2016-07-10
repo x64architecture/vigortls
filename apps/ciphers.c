@@ -38,6 +38,8 @@ int ciphers_main(int argc, char **argv)
     char buf[512];
     BIO *STDout = NULL;
 
+    meth = TLS_server_method();
+
     if (bio_err == NULL)
         bio_err = BIO_new_fp(stderr, BIO_NOCLOSE);
     STDout = BIO_new_fp(stdout, BIO_NOCLOSE);
