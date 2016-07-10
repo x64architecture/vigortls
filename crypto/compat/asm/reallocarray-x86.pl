@@ -24,7 +24,7 @@ require "x86asm.pl";
 
 &asm_init($ARGV[0],"reallocarray-x86.pl");
 
-&function_begin_B("reallocarray_umul");
+&function_begin_B("reallocarray_umull");
     &mov    ("eax", &DWP(8, "esp"));
     &mul    (&DWP(4, "esp"));
     &mov    ("edx", &DWP(12, "esp"));
@@ -33,6 +33,7 @@ require "x86asm.pl";
     &movzx  ("eax", "al");
     &mov    (&DWP(0, "edx"), "ecx");
     &ret    ();
-&function_end_B("reallocarray_umul");
+&function_end_B("reallocarray_umull");
 
 &asm_finish();
+

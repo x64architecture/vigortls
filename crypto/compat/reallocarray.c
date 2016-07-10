@@ -25,22 +25,18 @@
   #define __has_builtin(x) 0
 #endif
 
-#if __has_builtin(__builtin_umul_overflow) || __GNUC__ >= 5
- #ifdef VIGORTLS_32_BIT
-  #define reallocarray_umul(x, y, z) __builtin_umul_overflow(x, y, z)
- #else
-  #define reallocarray_umul(x, y, z) __builtin_umull_overflow(x, y, z)
- #endif
+#if __has_builtin(__builtin_umull_overflow) || __GNUC__ >= 5
+  #define reallocarray_umull(x, y, z) __builtin_umull_overflow(x, y, z)
 #elif !defined(OPENSSL_NO_ASM) && \
     (defined(VIGORTLS_X86) || defined(VIGORTLS_X86_64))
 
-extern int reallocarray_umul(size_t newmem, size_t size, size_t *prod);
+extern int reallocarray_umull(size_t newmem, size_t size, size_t *prod);
 
 #else
 
 #define SQRT_SIZE_MAX ((size_t)1 << (sizeof(size_t) * 4))
 
-static inline int reallocarray_umul(size_t newmem, size_t size, size_t *prod)
+static inline int reallocarray_umull(size_t newmem, size_t size, size_t *prod)
 {
     if ((size | newmem) > SQRT_SIZE_MAX /* fast test */
         && size && newmem > SIZE_MAX / size)
@@ -56,7 +52,7 @@ static inline int reallocarray_umul(size_t newmem, size_t size, size_t *prod)
 void *reallocarray(void *ptr, size_t newmem, size_t size)
 {
     size_t prod;
-    if (reallocarray_umul(size, newmem, &prod)) {
+    if (reallocarray_umull(size, newmem, &prod)) {
         errno = ENOMEM;
         return NULL;
     }

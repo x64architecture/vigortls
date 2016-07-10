@@ -32,10 +32,10 @@ open OUT,"| \"$^X\" $xlate $flavour $output";
 print<<___;
 .text
 
-.globl    reallocarray_umul
-.type    reallocarray_umul,\@function
+.globl    reallocarray_umull
+.type    reallocarray_umull,\@function
 .align    16
-reallocarray_umul:
+reallocarray_umull:
     movq    %rsi, %rax
     movq    %rdx, %rcx
     mulq    %rdi
@@ -47,3 +47,4 @@ reallocarray_umul:
 ___
 
 close STDOUT;    # flush
+
