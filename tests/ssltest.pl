@@ -137,7 +137,7 @@ print("Testing DTLSv1.2 with both client and server authentication\n");
 ssltest("-dtls12 -server_auth -client_auth $CA $extra");
 
 print("Testing DTLS ciphersuites\n");
-my @protocols = ("TLSv1", "TLSv1.2");
+@protocols = ("TLSv1", "TLSv1.2");
 foreach (@protocols) {
     my $protocol = $_;
     my $protoarg;
