@@ -33,7 +33,7 @@ print<<___;
 .text
 
 .globl    reallocarray_umull
-.type    reallocarray_umull,\@function
+.type    reallocarray_umull,\@function,3
 .align    16
 reallocarray_umull:
     movq    %rsi, %rax
