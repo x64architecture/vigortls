@@ -1,16 +1,14 @@
 #!/bin/sh
 
-cmd='openssl'
+cmd="../apps/openssl"
 ocspdir="$1/data/ocsp-tests"
-stdparams="-trust_other -CApath /dev/null"
-
 # 17 December 2012 so we don't get certificate expiry errors.
 check_time="-attime 1355875200"
 
 test_ocsp () {
 
 	$cmd base64 -d -in $ocspdir/$1 | \
-		$cmd ocsp -respin - -partial_chain $check_time \
+		$cmd ocsp -respin - -partial_chain $check_time -trusted_first \
 		-CAfile $ocspdir/$2 -verify_other $ocspdir/$2 -CApath /dev/null
 	[ $? != $3 ] && exit 1
 }

@@ -747,8 +747,6 @@ done_resp:
     if (!print_ocsp_summary(out, bs, req, reqnames, ids, nsec, maxage))
         ret = 1;
 
-    ret = 0;
-
 end:
     ERR_print_errors(bio_err);
     X509_free(signer);
