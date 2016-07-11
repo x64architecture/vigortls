@@ -169,7 +169,8 @@ ssltest("-bio_pair -tls1 -serverinfo_file $serverinfo");
 ssltest("-bio_pair -tls1 -serverinfo_file $serverinfo -serverinfo_sct");
 ssltest("-bio_pair -tls1 -serverinfo_file $serverinfo -serverinfo_tack");
 ssltest("-bio_pair -tls1 -serverinfo_file $serverinfo -serverinfo_sct -serverinfo_tack");
-ssltest("-bio_pair -tls1 -custom_ext -serverinfo_file $serverinfo -serverinfo_sct -serverinfo_tack");
+ssltest("-bio_pair -tls1 -custom_ext -serverinfo_file $serverinfo".
+        " -serverinfo_sct -serverinfo_tack");
 
 # Next Protocol Negotiation tests
 
@@ -209,9 +210,12 @@ ssltest("-bio_pair -tls1 -alpn_client baz -alpn_server bar,foo");
 # ALPN + SNI
 
 print("Testing ALPN + SNI...\n");
-ssltest("-bio_pair -alpn_client foo,bar -sn_client alice -alpn_server1 foo,123 -sn_server1 alice -alpn_server2 bar,456 -sn_server2 bob -alpn_expected foo");
-ssltest("-bio_pair -alpn_client foo,bar -sn_client bob -alpn_server1 foo,123 -sn_server1 alice -alpn_server2 bar,456 -sn_server2 bob -alpn_expected bar");
-ssltest("-bio_pair -alpn_client foo,bar -sn_client bob -sn_server1 alice -alpn_server2 bar,456 -sn_server2 bob -alpn_expected bar");
+ssltest("-bio_pair -alpn_client foo,bar -sn_client alice -alpn_server1 foo,123".
+        " -sn_server1 alice -alpn_server2 bar,456 -sn_server2 bob -alpn_expected foo");
+ssltest("-bio_pair -alpn_client foo,bar -sn_client bob -alpn_server1 foo,123".
+        " -sn_server1 alice -alpn_server2 bar,456 -sn_server2 bob -alpn_expected bar");
+ssltest("-bio_pair -alpn_client foo,bar -sn_client bob -sn_server1 alice".
+        " -alpn_server2 bar,456 -sn_server2 bob -alpn_expected bar");
 
 # Multi-buffer tests
 my $arch = `uname -m`;
