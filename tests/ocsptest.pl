@@ -34,7 +34,7 @@ my $check_time = "-attime 1355875200";
 
 sub test_ocsp {
     my ($ors, $pem, $expected_ret) = @_;
-    open(my $fh, '>', $resp_file) or
+    open(my $fh, '>:raw', $resp_file) or
         die "Could not open file '$resp_file' $!";
     print $fh `$openssl base64 -d -in $ocspdir/$ors`;
     close $fh;
