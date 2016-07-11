@@ -40,7 +40,8 @@ sub test_ocsp {
     close $fh;
     my $cmd =
         "$openssl ocsp -respin \"$resp_file\" -partial_chain $check_time".
-        " -trusted_first -CAfile $ocspdir/$pem -verify_other $ocspdir/$pem";
+        " -trusted_first -CAfile $ocspdir/$pem -verify_other $ocspdir/$pem".
+        " -CApath .";
     if ((system("$cmd") >> 8) != $expected_ret) {
         unlink $resp_file;
         die "$cmd failed: $?\n";
