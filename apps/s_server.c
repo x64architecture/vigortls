@@ -2264,9 +2264,9 @@ static int add_session(SSL *ssl, SSL_SESSION *session)
     return 0;
     
 err:
-    free(sess);
     free(sess->id);
     free(sess->der);
+    free(sess);
     BIO_printf(bio_err, "Out of memory adding session to external cache\n");
     return 0;
 }
