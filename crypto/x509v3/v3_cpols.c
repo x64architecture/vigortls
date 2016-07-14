@@ -174,7 +174,7 @@ static STACK_OF(POLICYINFO) *r2i_certpol(X509V3_EXT_METHOD * method, X509V3_CTX 
     STACK_OF(POLICYINFO) *pols = NULL;
     char *pstr;
     POLICYINFO *pol;
-    ASN1_OBJECT *pobj;
+    ASN1_OBJECT *pobj = NULL;
     STACK_OF(CONF_VALUE) *vals;
     CONF_VALUE *cnf;
     int i, ia5org;
@@ -232,12 +232,11 @@ static STACK_OF(POLICYINFO) *r2i_certpol(X509V3_EXT_METHOD * method, X509V3_CTX 
             goto err;
         }
     }
-    sk_CONF_VALUE_pop_free(vals, X509V3_conf_free);
-    return pols;
 err:
     sk_CONF_VALUE_pop_free(vals, X509V3_conf_free);
     sk_POLICYINFO_pop_free(pols, POLICYINFO_free);
-    return NULL;
+    ASN1_OBJECT_free(pobj);
+    return pols;
 }
 
 static POLICYINFO *policy_section(X509V3_CTX *ctx, STACK_OF(CONF_VALUE) *polstrs, int ia5org)
