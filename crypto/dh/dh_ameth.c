@@ -435,7 +435,7 @@ static int int_dh_param_copy(DH *to, const DH *from, int is_x942)
         to->seed = malloc(from->seedlen);
         if (to->seed == NULL)
             return 0;
-        memcpy(from->seed, from->seed, from->seedlen);
+        memcpy(to->seed, from->seed, from->seedlen);
         to->seedlen = from->seedlen;
     } else
         to->length = from->length;
