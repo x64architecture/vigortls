@@ -221,8 +221,9 @@ int ssl_parse_clienthello_use_srtp_ext(SSL *s, const uint8_t *d, int len,
 
         if (!find_profile_by_num(id, &cprof))
             sk_SRTP_PROTECTION_PROFILE_push(clnt, cprof);
-        else
+        else {
             ; /* Ignore */
+        }
     }
 
     /* Extract the MKI value as a sanity check, but discard it for now. */
