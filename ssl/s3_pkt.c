@@ -619,7 +619,7 @@ int ssl3_write_bytes(SSL *s, int type, const void *buf_, int len)
             return tot;
         }
 
-    if ((unsigned)len < tot)
+    if (len < tot)
         len = tot;
     n = (len - tot);
     for (;;) {
