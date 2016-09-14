@@ -34,6 +34,7 @@ static void hexdump(FILE *f, const char *title, const uint8_t *s, int l)
 static int convert(uint8_t *s)
 {
     uint8_t *d;
+    int digits = 0;
 
     for (d = s; *s; s += 2, ++d) {
         unsigned int n;
@@ -47,8 +48,9 @@ static int convert(uint8_t *s)
             exit(4);
         }
         *d = (uint8_t)n;
+        digits++;
     }
-    return s - d;
+    return digits;
 }
 
 static char *sstrsep(char **string, const char *delim)
