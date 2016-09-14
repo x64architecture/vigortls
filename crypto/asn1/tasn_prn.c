@@ -155,7 +155,9 @@ static int asn1_item_print_ctx(BIO *out, ASN1_VALUE **fld, int indent,
     } else
         asn1_cb = 0;
 
-    if (*fld == NULL) {
+    if (((it->itype != ASN1_ITYPE_PRIMITIVE) || (it->utype != V_ASN1_BOOLEAN))
+        && *fld == NULL)
+    {
         if (pctx->flags & ASN1_PCTX_FLAGS_SHOW_ABSENT) {
             if (!nohdr && !asn1_print_fsname(out, indent, fname, sname, pctx))
                 return 0;
@@ -439,10 +441,16 @@ static int asn1_primitive_print(BIO *out, ASN1_VALUE **fld,
     if (pf && pf->prim_print)
         return pf->prim_print(out, fld, it, indent, pctx);
     str = (ASN1_STRING *)*fld;
-    if (it->itype == ASN1_ITYPE_MSTRING)
+    if (it->itype == ASN1_ITYPE_MSTRING) {
         utype = str->type & ~V_ASN1_NEG;
-    else
+        str = (ASN1_STRING *)*fld;
+    } else {
         utype = it->utype;
+        if (utype == V_ASN1_BOOLEAN)
+            str = NULL;
+        else
+            str = (ASN1_STRING *)*fld;
+    }
     if (utype == V_ASN1_ANY) {
         ASN1_TYPE *atype = (ASN1_TYPE *)*fld;
         utype = atype->type;
