@@ -1731,11 +1731,13 @@ int ssl3_get_client_key_exchange(SSL *s)
             p += 1;
             if (n != 1 + i) {
                 SSLerr(SSL_F_SSL3_GET_CLIENT_KEY_EXCHANGE, ERR_R_EC_LIB);
-                goto err;
+                al = SSL_AD_DECODE_ERROR;
+                goto f_err;
             }
             if (EC_POINT_oct2point(group, clnt_ecpoint, p, i, bn_ctx) == 0) {
                 SSLerr(SSL_F_SSL3_GET_CLIENT_KEY_EXCHANGE, ERR_R_EC_LIB);
-                goto err;
+                al = SSL_AD_HANDSHAKE_FAILURE;
+                goto f_err;
             }
             /*
              * p is pointing to somewhere in the buffer
