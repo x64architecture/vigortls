@@ -79,6 +79,7 @@ static ERR_STRING_DATA PEM_str_reasons[] = {
     { ERR_REASON(PEM_R_EXPECTING_PRIVATE_KEY_BLOB),
      "expecting private key blob" },
     { ERR_REASON(PEM_R_EXPECTING_PUBLIC_KEY_BLOB), "expecting public key blob" },
+    { ERR_REASON(PEM_R_HEADER_TOO_LONG), "header too long" },
     { ERR_REASON(PEM_R_INCONSISTENT_HEADER), "inconsistent header" },
     { ERR_REASON(PEM_R_KEYBLOB_HEADER_PARSE_ERROR),
      "keyblob header parse error" },
