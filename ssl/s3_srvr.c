@@ -1636,9 +1636,10 @@ int ssl3_get_client_key_exchange(SSL *s)
         i = DH_compute_key(p, pub, dh_srvr);
 
         if (i <= 0) {
+            al = SSL_AD_HANDSHAKE_FAILURE;
             SSLerr(SSL_F_SSL3_GET_CLIENT_KEY_EXCHANGE, ERR_R_DH_LIB);
             BN_clear_free(pub);
-            goto err;
+            goto f_err;
         }
 
         DH_free(s->s3->tmp.dh);
