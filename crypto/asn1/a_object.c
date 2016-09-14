@@ -129,8 +129,12 @@ int a2d_ASN1_OBJECT(uint8_t *out, int olen, const char *buf, int num)
                 if (!tmp)
                     goto err;
             }
-            while (blsize--)
-                tmp[i++] = (uint8_t)BN_div_word(bl, 0x80L);
+            while (blsize--) {
+                BN_ULONG t = BN_div_word(bl, 0x80L);
+                if (t == (BN_ULONG)-1)
+                    goto err;
+                tmp[i++] = (uint8_t)t;
+            }
         } else {
 
             for (;;) {
