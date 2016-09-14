@@ -41,6 +41,11 @@ char *OPENSSL_uni2asc(uint8_t *uni, int unilen)
 {
     int asclen, i;
     char *asctmp;
+
+    /* string must contain an even number of bytes */
+    if (unilen & 1)
+        return NULL;
+
     asclen = unilen / 2;
     /* If no terminating zero allow for one */
     if (!unilen || uni[unilen - 1])
