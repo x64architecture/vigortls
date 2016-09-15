@@ -776,7 +776,8 @@ int dtls1_retransmit_message(SSL *s, uint16_t seq, unsigned long frag_off,
                              int *found);
 int dtls1_get_queue_priority(uint16_t seq, int is_ccs);
 int dtls1_retransmit_buffered_messages(SSL *s);
-void dtls1_clear_record_buffer(SSL *s);
+void dtls1_clear_received_buffer(SSL *s);
+void dtls1_clear_sent_buffer(SSL *s);
 int dtls1_get_message_header(const uint8_t *data,
                              struct hm_header_st *msg_hdr);
 void dtls1_get_ccs_header(uint8_t *data, struct ccs_header_st *ccs_hdr);
