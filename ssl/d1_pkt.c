@@ -177,13 +177,25 @@ static int dtls1_retrieve_buffered_record(SSL *s, record_pqueue *queue)
 static int dtls1_process_buffered_records(SSL *s)
 {
     pitem *item;
+    SSL3_BUFFER *rb;
 
     item = pqueue_peek(s->d1->unprocessed_rcds.q);
     if (item) {
         /* Check if epoch is current. */
         if (s->d1->unprocessed_rcds.epoch != s->d1->r_epoch)
-            return (1);
-        /* Nothing to do. */
+            return 1; /* Nothing to do. */
+
+        rb = &s->s3->rbuf;
+
+        if (rb->left > 0) {
+            /*
+             * We've still got data from the current packet to read. There could
+             * be a record from the new epoch in it - so don't overwrite it with
+             * the unprocessed records yet (we'll do it when we've finished
+             * reading the current packet).
+             */
+            return 1;
+        }
 
         /* Process all the records. */
         while (pqueue_peek(s->d1->unprocessed_rcds.q)) {
@@ -358,6 +370,7 @@ int dtls1_get_record(SSL *s)
 
     rr = &(s->s3->rrec);
 
+again:
     /* The epoch may have changed.  If so, process all the
      * pending records.  This is a non-blocking operation. */
     if (dtls1_process_buffered_records(s) < 0)
@@ -369,7 +382,6 @@ int dtls1_get_record(SSL *s)
 
 /* get something from the wire */
     if (0) {
-again:
         /* dump this record on all retries */
         rr->length = 0;
         s->packet_length = 0;
@@ -1325,8 +1337,13 @@ static DTLS1_BITMAP *dtls1_get_bitmap(SSL *s, SSL3_RECORD *rr,
     if (rr->epoch == s->d1->r_epoch)
         return &s->d1->bitmap;
 
-    /* Only HM and ALERT messages can be from the next epoch */
+    /*
+     * Only HM and ALERT messages can be from the next epoch and only if we
+     * have already processed all of the unprocessed records from the last
+     * epoch
+     */
     else if (rr->epoch == (unsigned long)(s->d1->r_epoch + 1) &&
+            s->d1->unprocessed_rcds.epoch != s->d1->r_epoch &&
             (rr->type == SSL3_RT_HANDSHAKE || rr->type == SSL3_RT_ALERT))
     {
         *is_next_epoch = 1;
