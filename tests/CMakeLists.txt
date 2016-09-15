@@ -54,6 +54,14 @@ function(
 
 endfunction(build_ssl_test)
 
+add_library(
+    ssltestlib
+
+    OBJECT
+
+    ssltestlib.c
+)
+
 build_ssl_test(ssltest ssltest.c)
 build_ssl_test(evptest evptest.c)
 build_ssl_test(aeadtest aeadtest.c)
