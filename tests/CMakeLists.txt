@@ -4,11 +4,9 @@ function(
     add_test_suite
 
     testname
-
-    sources
 )
 
-    add_executable(${testname} ${sources})
+    add_executable(${testname} ${ARGN})
 
     add_test(
         NAME ${testname}
@@ -24,11 +22,9 @@ function(
     add_ssl_test_suite
 
     testname
-
-    sources
 )
 
-    add_executable(${testname} ${sources})
+    add_executable(${testname} ${ARGN})
 
     add_test(
         NAME ${testname}
@@ -44,23 +40,13 @@ function(
     build_ssl_test
 
     testname
-
-    sources
 )
 
-    add_executable(${testname} ${sources})
+    add_executable(${testname} ${ARGN})
 
     target_link_libraries(${testname} crypto ssl)
 
 endfunction(build_ssl_test)
-
-add_library(
-    ssltestlib
-
-    OBJECT
-
-    ssltestlib.c
-)
 
 build_ssl_test(ssltest ssltest.c)
 build_ssl_test(evptest evptest.c)
@@ -111,3 +97,7 @@ add_test_suite(verify_extra_test verify_extra_test.c)
 add_test_suite(v3nametest v3nametest.c)
 add_test_suite(wptest wptest.c)
 add_ssl_test_suite(clienthellotest clienthellotest.c)
+
+build_ssl_test(dtlstest dtlstest.c ssltestlib.c)
+add_test(NAME dtlstest
+         COMMAND ./dtlstest ${CMAKE_CURRENT_SOURCE_DIR}/data/server.pem ${CMAKE_CURRENT_SOURCE_DIR}/data/server.pem)

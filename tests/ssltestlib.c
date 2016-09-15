@@ -12,9 +12,9 @@
 
 #include "ssltestlib.h"
 
-#define SSL_IS_DTLS(s)  (s->method->version == DTLS_ANY_VERSION \
-    || s->method->version == DTLS1_2_VERSION \
-    || s->method->version == DTLS1_VERSION)
+#define SSL_IS_DTLS(s) (s->method->version == DTLS_ANY_VERSION || \
+                        s->method->version == DTLS1_2_VERSION ||  \
+                        s->method->version == DTLS1_VERSION)
 
 static int tls_dump_new(BIO *bi);
 static int tls_dump_free(BIO *a);
@@ -681,7 +681,7 @@ int create_ssl_connection(SSL *serverssl, SSL *clientssl)
             printf("No progress made\n");
             return 0;
         }
-    } while (retc <=0 || rets <= 0);
+    } while (retc <= 0 || rets <= 0);
 
     return 1;
 }
