@@ -148,14 +148,11 @@ $code.=<<___ if ($avx>1);
 	je	${func}_avx2
 ___
 $code.=<<___;
-	and	\$`1<<30`,%eax			# mask "Intel CPU" bit
-	and	\$`1<<28|1<<9`,%r10d		# mask AVX+SSSE3 bits
-	or	%eax,%r10d
-	cmp	\$`1<<28|1<<9|1<<30`,%r10d
-	je	${func}_avx
+	and	\$`1<<28`,%r10d			# check for AVX
+	jnz	${func}_avx
 	ud2
 ___
-}
+						}
 $code.=<<___;
 	xor	%eax,%eax
 	cmp	\$0,`$win64?"%rcx":"%rdi"`
@@ -1508,13 +1505,13 @@ ___
 
 # EXCEPTION_DISPOSITION handler (EXCEPTION_RECORD *rec,ULONG64 frame,
 #		CONTEXT *context,DISPATCHER_CONTEXT *disp)
-if ($win64) {
+if ($win64 && $avx) {
 $rec="%rcx";
 $frame="%rdx";
 $context="%r8";
 $disp="%r9";
 
-$code.=<<___ if ($avx);
+$code.=<<___;
 .extern	__imp_RtlVirtualUnwind
 .type	se_handler,\@abi-omnipotent
 .align	16
@@ -1652,7 +1649,7 @@ $code.=<<___ if ($shaext);
 	.rva	.LSEH_end_${func}_shaext
 	.rva	.LSEH_info_${func}_shaext
 ___
-$code.=<<___ if ($avx);
+$code.=<<___;
 .section	.xdata
 .align	8
 .LSEH_info_${func}_xop:
