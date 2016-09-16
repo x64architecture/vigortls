@@ -645,6 +645,8 @@ VIGORTLS_EXPORT int RAND_pseudo_bytes(uint8_t *buf, int num);
                     break;                                             \
             (a)->top = tmp_top;                                        \
         }                                                              \
+        if ((a)->top == 0)                                             \
+            (a)->neg = 0;                                              \
         bn_pollute(a);                                                 \
     }
 

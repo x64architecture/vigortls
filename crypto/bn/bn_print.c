@@ -10,6 +10,7 @@
 #include <ctype.h>
 #include <limits.h>
 #include <stdio.h>
+#include <string.h>
 
 #include <openssl/bio.h>
 #include <openssl/buffer.h>
@@ -27,11 +28,9 @@ char *BN_bn2hex(const BIGNUM *a)
     char *buf;
     char *p;
 
-    if (a->neg && BN_is_zero(a)) {
-        buf = malloc(3);
-    } else {
-        buf = malloc(a->top * BN_BYTES * 2 + 2);
-    }    
+    if (BN_is_zero(a))
+        return strdup("0");
+    buf = reallocarray(NULL, a->top, (BN_BYTES * 2) + 2);
     if (buf == NULL) {
         BNerr(BN_F_BN_BN2HEX, ERR_R_MALLOC_FAILURE);
         goto err;
@@ -193,10 +192,12 @@ int BN_hex2bn(BIGNUM **bn, const char *a)
     }
     ret->top = h;
     bn_correct_top(ret);
-    ret->neg = neg;
 
     *bn = ret;
     bn_check_top(ret);
+    /* Don't set the negative flag if it's zero. */
+    if (ret->top != 0)
+        ret->neg = neg;
     return (num);
 err:
     if (*bn == NULL)
@@ -246,7 +247,7 @@ int BN_dec2bn(BIGNUM **bn, const char *a)
     if (j == BN_DEC_NUM)
         j = 0;
     l = 0;
-    while (*a) {
+    while (--i >= 0) {
         l *= 10;
         l += *a - '0';
         a++;
@@ -257,21 +258,24 @@ int BN_dec2bn(BIGNUM **bn, const char *a)
             j = 0;
         }
     }
-    ret->neg = neg;
 
     bn_correct_top(ret);
     *bn = ret;
     bn_check_top(ret);
-    return (num);
+    /* Don't set the negative flag if it's zero. */
+    if (ret->top != 0)
+        ret->neg = neg;
+    return num;
 err:
     if (*bn == NULL)
         BN_free(ret);
-    return (0);
+    return 0;
 }
 
 int BN_asc2bn(BIGNUM **bn, const char *a)
 {
     const char *p = a;
+
     if (*p == '-')
         p++;
 
@@ -282,7 +286,8 @@ int BN_asc2bn(BIGNUM **bn, const char *a)
         if (!BN_dec2bn(bn, p))
             return 0;
     }
-    if (*a == '-')
+    /* Don't set the negative flag if it's zero. */
+    if (*a == '-' && (*bn)->top != 0)
         (*bn)->neg = 1;
     return 1;
 }
