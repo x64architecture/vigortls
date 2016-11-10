@@ -49,7 +49,6 @@ add_subdirectory(camellia)
 add_subdirectory(cast)
 add_subdirectory(chacha)
 add_subdirectory(cmac)
-add_subdirectory(cms)
 add_subdirectory(conf)
 add_subdirectory(compat)
 add_subdirectory(cpuid)
@@ -123,7 +122,6 @@ add_library(
     $<TARGET_OBJECTS:cast>
     $<TARGET_OBJECTS:chacha>
     $<TARGET_OBJECTS:cmac>
-    $<TARGET_OBJECTS:cms>
     $<TARGET_OBJECTS:conf>
     $<TARGET_OBJECTS:compat>
     $<TARGET_OBJECTS:cpuid>

@@ -11,7 +11,6 @@ add_library(
     dh_depr.c
     dh_err.c
     dh_gen.c
-    dh_kdf.c
     dh_key.c
     dh_lib.c
     dh_pmeth.c

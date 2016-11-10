@@ -60,6 +60,7 @@ endif()
 set(VIGORTLS_OPTIONS
     "OPENSSL_NO_BUF_FREELISTS"
     "OPENSSL_NO_COMP"
+    "OPENSSL_NO_CMS"
     "OPENSSL_NO_DYNAMIC_ENGINE"
     "OPENSSL_NO_GMP"
     "OPENSSL_NO_HEARTBEATS"
@@ -82,8 +83,6 @@ set(VIGORTLS_OPTIONS
 
 option(OPENSSL_NO_ASM
     "Build without assembler support" FALSE)
-option(OPENSSL_NO_CMS
-    "Build without CMS support" TRUE)
 option(OPENSSL_NO_GOST
     "Build without GOST support" TRUE)
 option(OPENSSL_NO_IDEA
@@ -105,9 +104,6 @@ if (OPENSSL_THREADS)
 endif()
 if (OPENSSL_NO_ASM)
     list(APPEND VIGORTLS_OPTIONS "OPENSSL_NO_ASM")
-endif()
-if (OPENSSL_NO_CMS)
-    list(APPEND VIGORTLS_OPTIONS "OPENSSL_NO_CMS")
 endif()
 if (OPENSSL_NO_GOST)
     list(APPEND VIGORTLS_OPTIONS "OPENSSL_NO_GOST")

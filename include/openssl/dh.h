@@ -158,14 +158,6 @@ VIGORTLS_EXPORT DH *DH_get_1024_160(void);
 VIGORTLS_EXPORT DH *DH_get_2048_224(void);
 VIGORTLS_EXPORT DH *DH_get_2048_256(void);
 
-#ifndef OPENSSL_NO_CMS
-/* RFC2631 KDF */
-VIGORTLS_EXPORT int DH_KDF_X9_42(uint8_t *out, size_t outlen, const uint8_t *Z,
-                                 size_t Zlen, ASN1_OBJECT *key_oid,
-                                 const uint8_t *ukm, size_t ukmlen,
-                                 const EVP_MD *md);
-#endif
-
 #define EVP_PKEY_CTX_set_dh_paramgen_prime_len(ctx, len)      \
     EVP_PKEY_CTX_ctrl(ctx, EVP_PKEY_DH, EVP_PKEY_OP_PARAMGEN, \
                       EVP_PKEY_CTRL_DH_PARAMGEN_PRIME_LEN, len, NULL)

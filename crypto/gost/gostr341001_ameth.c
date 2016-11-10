@@ -19,10 +19,6 @@
 #include <openssl/x509.h>
 #include <openssl/gost.h>
 
-#ifndef OPENSSL_NO_CMS
-#include <openssl/cms.h>
-#endif
-
 #include "internal/asn1_int.h"
 #include "gost_locl.h"
 #include "gost_asn1.h"
@@ -571,17 +567,6 @@ static int pkey_ctrl_gost01(EVP_PKEY *pkey, int op, long arg1, void *arg2)
             if (arg1 == 0)
                 PKCS7_RECIP_INFO_get0_alg(arg2, &alg3);
             break;
-#ifndef OPENSSL_NO_CMS
-        case ASN1_PKEY_CTRL_CMS_SIGN:
-            if (arg1 == 0)
-                CMS_SignerInfo_get0_algs(arg2, NULL, NULL, &alg1, &alg2);
-            break;
-
-        case ASN1_PKEY_CTRL_CMS_ENVELOPE:
-            if (arg1 == 0)
-                CMS_RecipientInfo_ktri_get0_algs(arg2, NULL, NULL, &alg3);
-            break;
-#endif
         case ASN1_PKEY_CTRL_DEFAULT_MD_NID:
             *(int *)arg2 = GostR3410_get_md_digest(digest);
             return 2;
