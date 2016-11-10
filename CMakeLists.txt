@@ -46,7 +46,7 @@ endif()
 
 add_definitions(-DVIGORTLS_IMPLEMENTATION)
 
-if(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
+if (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
     add_definitions(-D_GNU_SOURCE)
 endif()
 
@@ -126,7 +126,11 @@ foreach (VIGORTLS_OPTION IN LISTS VIGORTLS_OPTIONS)
     list(APPEND VIGORTLS_OPTIONS_PARSED "#define ${VIGORTLS_OPTION}")
 endforeach()
 string(REPLACE ";" "\n" VIGORTLS_OPTIONS_PARSED "${VIGORTLS_OPTIONS_PARSED}")
-file(WRITE include/openssl/opensslfeatures.h "${VIGORTLS_OPTIONS_PARSED}")
+file(READ include/openssl/opensslfeatures.h VIGORTLS_READ_OPTIONS)
+if (NOT VIGORTLS_READ_OPTIONS STREQUAL VIGORTLS_OPTIONS_PARSED)
+    message(STATUS "Regenerating config")
+    file(WRITE include/openssl/opensslfeatures.h "${VIGORTLS_OPTIONS_PARSED}")
+endif()
 
 if (OPENSSL_NO_ASM)
     set(ARCH "generic")
