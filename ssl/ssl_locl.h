@@ -718,7 +718,7 @@ int ssl3_renegotiate_check(SSL *ssl);
 int ssl3_dispatch_alert(SSL *s);
 int ssl3_read_bytes(SSL *s, int type, uint8_t *buf, int len, int peek);
 int ssl3_write_bytes(SSL *s, int type, const void *buf, int len);
-void tls1_finish_mac(SSL *s, const uint8_t *buf, int len);
+int tls1_finish_mac(SSL *s, const uint8_t *buf, int len);
 void tls1_free_digest_list(SSL *s);
 unsigned long ssl3_output_cert_chain(SSL *s, CERT_PKEY *cpk);
 SSL_CIPHER *ssl3_choose_cipher(SSL *ssl, STACK_OF(SSL_CIPHER) *clnt,
