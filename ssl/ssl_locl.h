@@ -510,10 +510,11 @@ typedef struct sess_cert_st {
 
     CERT_PKEY *peer_key; /* points to an element of peer_pkeys (never NULL!) */
     CERT_PKEY peer_pkeys[SSL_PKEY_NUM];
-    /* Obviously we don't have the private keys of these,
-   * so maybe we shouldn't even use the CERT_PKEY type here. */
+    /*
+     * Obviously we don't have the private keys of these,
+     * so maybe we shouldn't even use the CERT_PKEY type here.
+     */
 
-    RSA *peer_rsa_tmp;
     DH *peer_dh_tmp;
     EC_KEY *peer_ecdh_tmp;
 

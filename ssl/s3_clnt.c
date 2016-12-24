@@ -1089,9 +1089,6 @@ int ssl3_get_key_exchange(SSL *s)
 
     param = p = (uint8_t *)s->init_msg;
     if (s->session->sess_cert != NULL) {
-        RSA_free(s->session->sess_cert->peer_rsa_tmp);
-        s->session->sess_cert->peer_rsa_tmp = NULL;
-
         DH_free(s->session->sess_cert->peer_dh_tmp);
         s->session->sess_cert->peer_dh_tmp = NULL;
 
@@ -1106,63 +1103,7 @@ int ssl3_get_key_exchange(SSL *s)
     param_len = 0;
     alg_a = s->s3->tmp.new_cipher->algorithm_auth;
 
-    if (alg_k & SSL_kRSA) {
-        if ((rsa = RSA_new()) == NULL) {
-            SSLerr(SSL_F_SSL3_GET_KEY_EXCHANGE,
-                   ERR_R_MALLOC_FAILURE);
-            goto err;
-        }
-        if (2 > n)
-            goto truncated;
-        n2s(p, i);
-        param_len = i + 2;
-        if (param_len > n) {
-            al = SSL_AD_DECODE_ERROR;
-            SSLerr(SSL_F_SSL3_GET_KEY_EXCHANGE,
-                   SSL_R_BAD_RSA_MODULUS_LENGTH);
-            goto f_err;
-        }
-        if (!(rsa->n = BN_bin2bn(p, i, rsa->n))) {
-            SSLerr(SSL_F_SSL3_GET_KEY_EXCHANGE,
-                   ERR_R_BN_LIB);
-            goto err;
-        }
-        p += i;
-
-        if (param_len + 2 > n)
-            goto truncated;
-        n2s(p, i);
-        param_len += i + 2;
-        if (param_len > n) {
-            al = SSL_AD_DECODE_ERROR;
-            SSLerr(SSL_F_SSL3_GET_KEY_EXCHANGE,
-                   SSL_R_BAD_RSA_E_LENGTH);
-            goto f_err;
-        }
-        if (!(rsa->e = BN_bin2bn(p, i, rsa->e))) {
-            SSLerr(SSL_F_SSL3_GET_KEY_EXCHANGE,
-                   ERR_R_BN_LIB);
-            goto err;
-        }
-        p += i;
-        n -= param_len;
-
-        if (DH_num_bits(dh) < 1024) {
-            SSLerr(SSL_F_SSL3_GET_KEY_EXCHANGE, SSL_R_BAD_DH_P_LENGTH);
-            goto err;
-        }
-
-        if (alg_a & SSL_aRSA)
-            pkey = X509_get_pubkey(
-            s->session->sess_cert->peer_pkeys[SSL_PKEY_RSA_ENC].x509);
-        else {
-            SSLerr(SSL_F_SSL3_GET_KEY_EXCHANGE,
-                   ERR_R_INTERNAL_ERROR);
-            goto err;
-        }
-        s->session->sess_cert->peer_rsa_tmp = rsa;
-        rsa = NULL;
-    } else if (alg_k & SSL_kDHE) {
+    if (alg_k & SSL_kDHE) {
         if ((dh = DH_new()) == NULL) {
             SSLerr(SSL_F_SSL3_GET_KEY_EXCHANGE,
                    ERR_R_DH_LIB);
@@ -1906,19 +1847,17 @@ int ssl3_send_client_key_exchange(SSL *s)
                 goto err;
             }
 
-            if (s->session->sess_cert->peer_rsa_tmp != NULL)
-                rsa = s->session->sess_cert->peer_rsa_tmp;
-            else {
-                pkey = X509_get_pubkey(
+            pkey = X509_get_pubkey(
                 s->session->sess_cert->peer_pkeys[SSL_PKEY_RSA_ENC].x509);
-                if ((pkey == NULL) || (pkey->type != EVP_PKEY_RSA) || (pkey->pkey.rsa == NULL))
-                {
-                    SSLerr(SSL_F_SSL3_SEND_CLIENT_KEY_EXCHANGE, ERR_R_INTERNAL_ERROR);
-                    goto err;
-                }
-                rsa = pkey->pkey.rsa;
-                EVP_PKEY_free(pkey);
+            if ((pkey == NULL) || (pkey->type != EVP_PKEY_RSA) ||
+                (pkey->pkey.rsa == NULL))
+            {
+                SSLerr(SSL_F_SSL3_SEND_CLIENT_KEY_EXCHANGE,
+                       ERR_R_INTERNAL_ERROR);
+                goto err;
             }
+            rsa = pkey->pkey.rsa;
+            EVP_PKEY_free(pkey);
 
             tmp_buf[0] = s->client_version >> 8;
             tmp_buf[1] = s->client_version & 0xff;
@@ -2488,7 +2427,6 @@ int ssl3_check_cert_and_algorithm(SSL *s)
     long alg_k, alg_a;
     EVP_PKEY *pkey = NULL;
     SESS_CERT *sc;
-    RSA *rsa;
     DH *dh;
 
     alg_k = s->s3->tmp.new_cipher->algorithm_mkey;
@@ -2505,7 +2443,6 @@ int ssl3_check_cert_and_algorithm(SSL *s)
         goto err;
     }
 
-    rsa = s->session->sess_cert->peer_rsa_tmp;
     dh = s->session->sess_cert->peer_dh_tmp;
 
     /* This is the passed certificate. */
@@ -2541,7 +2478,7 @@ int ssl3_check_cert_and_algorithm(SSL *s)
                SSL_R_MISSING_DSA_SIGNING_CERT);
         goto f_err;
     }
-    if ((alg_k & SSL_kRSA) && !(has_bits(i, EVP_PK_RSA | EVP_PKT_ENC) || (rsa != NULL))) {
+    if ((alg_k & SSL_kRSA) && !has_bits(i, EVP_PK_RSA | EVP_PKT_ENC)) {
         SSLerr(SSL_F_SSL3_CHECK_CERT_AND_ALGORITHM,
                SSL_R_MISSING_RSA_ENCRYPTING_CERT);
         goto f_err;

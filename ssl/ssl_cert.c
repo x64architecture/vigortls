@@ -463,7 +463,6 @@ void ssl_sess_cert_free(SESS_CERT *sc)
     for (i = 0; i < SSL_PKEY_NUM; i++)
         X509_free(sc->peer_pkeys[i].x509);
 
-    RSA_free(sc->peer_rsa_tmp);
     DH_free(sc->peer_dh_tmp);
     EC_KEY_free(sc->peer_ecdh_tmp);
 
