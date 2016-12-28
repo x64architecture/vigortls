@@ -1045,70 +1045,51 @@ int ssl3_get_server_certificate(SSL *s)
 static int ssl3_get_server_kex_dhe(SSL *s, EVP_PKEY **pkey, uint8_t **pp,
                                    long *nn)
 {
+    CBS cbs, dhp, dhg, dhpk;
     SESS_CERT *sc;
     DH *dh;
-    int al, i, param_len;
-    uint8_t *p;
-    long alg_a, n;
+    int al;
+    long alg_a;
 
     alg_a = s->s3->tmp.new_cipher->algorithm_auth;
-    n = *nn;
-    p = *pp;
     sc = s->session->sess_cert;
+
+    if (*nn < 0)
+        goto err;
+
+    CBS_init(&cbs, *pp, *nn);
 
     dh = DH_new();
     if (dh == NULL) {
         SSLerr(SSL_F_SSL3_GET_KEY_EXCHANGE, ERR_R_DH_LIB);
         goto err;
     }
-    if (2 > n)
+    if (!CBS_get_u16_length_prefixed(&cbs, &dhp))
         goto truncated;
-    n2s(p, i);
-    param_len = i + 2;
-    if (param_len > n) {
-        al = SSL_AD_DECODE_ERROR;
-        SSLerr(SSL_F_SSL3_GET_KEY_EXCHANGE, SSL_R_BAD_DH_P_LENGTH);
-        goto f_err;
-    }
-    dh->p = BN_bin2bn(p, i, NULL);
+
+    dh->p = BN_bin2bn(CBS_data(&dhp), CBS_len(&dhp), NULL);
     if (dh->p == NULL) {
         SSLerr(SSL_F_SSL3_GET_KEY_EXCHANGE, ERR_R_BN_LIB);
         goto err;
     }
-    p += i;
 
-    if (param_len + 2 > n)
+    if (!CBS_get_u16_length_prefixed(&cbs, &dhg))
         goto truncated;
-    n2s(p, i);
-    param_len += i + 2;
-    if (param_len > n) {
-        al = SSL_AD_DECODE_ERROR;
-        SSLerr(SSL_F_SSL3_GET_KEY_EXCHANGE, SSL_R_BAD_DH_G_LENGTH);
-        goto f_err;
-    }
-    dh->g = BN_bin2bn(p, i, NULL);
+
+    dh->g = BN_bin2bn(CBS_data(&dhg), CBS_len(&dhg), NULL);
     if (dh->g == NULL) {
         SSLerr(SSL_F_SSL3_GET_KEY_EXCHANGE, ERR_R_BN_LIB);
         goto err;
     }
-    p += i;
 
-    if (param_len + 2 > n)
+    if (!CBS_get_u16_length_prefixed(&cbs, &dhpk))
         goto truncated;
-    n2s(p, i);
-    param_len += i + 2;
-    if (param_len > n) {
-        al = SSL_AD_DECODE_ERROR;
-        SSLerr(SSL_F_SSL3_GET_KEY_EXCHANGE, SSL_R_BAD_DH_PUB_KEY_LENGTH);
-        goto f_err;
-    }
-    dh->pub_key = BN_bin2bn(p, i, NULL);
+
+    dh->pub_key = BN_bin2bn(CBS_data(&dhpk), CBS_len(&dhpk), NULL);
     if (dh->pub_key == NULL) {
         SSLerr(SSL_F_SSL3_GET_KEY_EXCHANGE, ERR_R_BN_LIB);
         goto err;
     }
-    p += i;
-    n -= param_len;
 
     /*
      * Check the strength of the DH key just constructed.
@@ -1130,16 +1111,14 @@ static int ssl3_get_server_kex_dhe(SSL *s, EVP_PKEY **pkey, uint8_t **pp,
 
     sc->peer_dh_tmp = dh;
 
-    *nn = n;
-    *pp = p;
+    *nn = CBS_len(&cbs);
+    *pp = (uint8_t *)CBS_data(&cbs); /* TODO(kc): Fix const violation */
 
     return 1;
 
 truncated:
     al = SSL_AD_DECODE_ERROR;
     SSLerr(SSL_F_SSL3_GET_KEY_EXCHANGE, SSL_R_BAD_PACKET_LENGTH);
-
-f_err:
     ssl3_send_alert(s, SSL3_AL_FATAL, al);
 
 err:
