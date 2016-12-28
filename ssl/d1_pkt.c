@@ -1119,18 +1119,8 @@ static int have_handshake_fragment(SSL *s, int type, uint8_t *buf,
     return 0;
 }
 
-/* Call this to write data in records of type 'type'
- * It will return <= 0 if not all data has been sent or non-blocking IO.
- */
-int dtls1_write_bytes(SSL *s, int type, const void *buf, int len)
-{
-    OPENSSL_assert(len <= SSL3_RT_MAX_PLAIN_LENGTH);
-    s->rwstate = SSL_NOTHING;
-    return do_dtls1_write(s, type, buf, len);
-}
-
-int do_dtls1_write(SSL *s, int type, const uint8_t *buf,
-                   unsigned int len)
+static int do_dtls1_write(SSL *s, int type, const uint8_t *buf,
+                          unsigned int len)
 {
     uint8_t *p, *pseq;
     int i, mac_size, clear = 0;
@@ -1290,6 +1280,17 @@ int do_dtls1_write(SSL *s, int type, const uint8_t *buf,
     return ssl3_write_pending(s, type, buf, len);
 err:
     return -1;
+}
+
+/*
+ * Call this to write data in records of type 'type'
+ * It will return <= 0 if not all data has been sent or non-blocking IO.
+ */
+int dtls1_write_bytes(SSL *s, int type, const void *buf, int len)
+{
+    OPENSSL_assert(len <= SSL3_RT_MAX_PLAIN_LENGTH);
+    s->rwstate = SSL_NOTHING;
+    return do_dtls1_write(s, type, buf, len);
 }
 
 static int dtls1_record_replay_check(SSL *s, DTLS1_BITMAP *bitmap)

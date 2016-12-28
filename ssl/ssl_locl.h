@@ -841,8 +841,6 @@ int ssl23_write_bytes(SSL *s);
 int tls1_new(SSL *s);
 void tls1_free(SSL *s);
 void tls1_clear(SSL *s);
-long tls1_ctrl(SSL *s, int cmd, long larg, void *parg);
-long tls1_callback_ctrl(SSL *s, int cmd, void (*fp)(void));
 
 int dtls1_new(SSL *s);
 int dtls1_accept(SSL *s);
@@ -854,8 +852,6 @@ int dtls1_shutdown(SSL *s);
 
 long dtls1_get_message(SSL *s, int st1, int stn, int mt, long max, int *ok);
 int dtls1_get_record(SSL *s);
-int do_dtls1_write(SSL *s, int type, const uint8_t *buf,
-                   unsigned int len);
 int dtls1_dispatch_alert(SSL *s);
 
 void custom_ext_init(custom_ext_methods *meths);
@@ -886,8 +882,6 @@ int tls1_alert_code(int code);
 int ssl_ok(SSL *s);
 
 int ssl_check_srvr_ecc_cert_and_alg(X509 *x, SSL *s);
-
-SSL_COMP *ssl3_comp_find(STACK_OF(SSL_COMP) *sk, int n);
 
 int tls1_ec_curve_id2nid(uint16_t curve_id);
 uint16_t tls1_ec_nid2curve_id(int nid);
