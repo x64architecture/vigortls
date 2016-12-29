@@ -1745,7 +1745,7 @@ int X509_cmp_time(const ASN1_TIME *ctm, time_t *cmp_time)
 
     memset(&tm1, 0, sizeof(tm1));
 
-    if ((type = asn1_time_parse((const char *)ctm->data, ctm->length, &tm1, 0)) == -1)
+    if ((type = ASN1_time_parse((const char *)ctm->data, ctm->length, &tm1, 0)) == -1)
         goto out; /* invalid time */
 
     /* RFC 5280 section 4.1.2.5 */
@@ -1765,7 +1765,7 @@ int X509_cmp_time(const ASN1_TIME *ctm, time_t *cmp_time)
     if (gmtime_r(&time2, &tm2) == NULL)
         goto out;
 
-    ret = asn1_tm_cmp(&tm1, &tm2);
+    ret = ASN1_time_tm_cmp(&tm1, &tm2);
     if (ret == 0)
         ret = -1; /* 0 is used for error, so map same to less than */
 out:

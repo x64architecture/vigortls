@@ -1141,6 +1141,9 @@ VIGORTLS_EXPORT void ERR_load_ASN1_strings(void);
 # define ASN1_R_WRONG_TAG                                 168
 # define ASN1_R_WRONG_TYPE                                169
 
+int ASN1_time_parse(const char *bytes, size_t len, struct tm *tm, int mode);
+int ASN1_time_tm_cmp(struct tm *tm1, struct tm *tm2);
+
 #ifdef  __cplusplus
 }
 #endif
