@@ -13,7 +13,7 @@
 
 static const SSL_METHOD *dtls1_get_method(int ver);
 
-const SSL_METHOD DTLSv1_method_data = {
+static const SSL_METHOD DTLSv1_method_data = {
     .version = DTLS1_VERSION,
     .ssl_new = dtls1_new,
     .ssl_clear = dtls1_clear,
@@ -50,7 +50,7 @@ const SSL_METHOD *DTLSv1_method(void)
     return &DTLSv1_method_data;
 }
 
-const SSL_METHOD DTLSv1_2_method_data = {
+static const SSL_METHOD DTLSv1_2_method_data = {
     .version = DTLS1_2_VERSION,
     .ssl_new = dtls1_new,
     .ssl_clear = dtls1_clear,
@@ -87,7 +87,7 @@ const SSL_METHOD *DTLSv1_2_method(void)
     return &DTLSv1_2_method_data;
 }
 
-const SSL_METHOD DTLS_method_data = {
+static const SSL_METHOD DTLS_method_data = {
     .version = DTLS_ANY_VERSION,
     .ssl_new = dtls1_new,
     .ssl_clear = dtls1_clear,

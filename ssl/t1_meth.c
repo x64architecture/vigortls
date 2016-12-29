@@ -13,7 +13,7 @@
 
 static const SSL_METHOD *tls1_get_method(int ver);
 
-const SSL_METHOD TLS_method_data = {
+static const SSL_METHOD TLS_method_data = {
     .version = TLS1_2_VERSION,
     .ssl_new = tls1_new,
     .ssl_clear = tls1_clear,
@@ -45,7 +45,7 @@ const SSL_METHOD TLS_method_data = {
     .ssl_ctx_callback_ctrl = ssl3_ctx_callback_ctrl,
 };
 
-const SSL_METHOD TLSv1_method_data = {
+static const SSL_METHOD TLSv1_method_data = {
     .version = TLS1_VERSION,
     .ssl_new = tls1_new,
     .ssl_clear = tls1_clear,
@@ -77,7 +77,7 @@ const SSL_METHOD TLSv1_method_data = {
     .ssl_ctx_callback_ctrl = ssl3_ctx_callback_ctrl,
 };
 
-const SSL_METHOD TLSv1_1_method_data = {
+static const SSL_METHOD TLSv1_1_method_data = {
     .version = TLS1_1_VERSION,
     .ssl_new = tls1_new,
     .ssl_clear = tls1_clear,
@@ -109,7 +109,7 @@ const SSL_METHOD TLSv1_1_method_data = {
     .ssl_ctx_callback_ctrl = ssl3_ctx_callback_ctrl,
 };
 
-const SSL_METHOD TLSv1_2_method_data = {
+static const SSL_METHOD TLSv1_2_method_data = {
     .version = TLS1_2_VERSION,
     .ssl_new = tls1_new,
     .ssl_clear = tls1_clear,

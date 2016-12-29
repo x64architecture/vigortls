@@ -21,7 +21,7 @@
 static const SSL_METHOD *dtls1_get_server_method(int ver);
 static int dtls1_send_hello_verify_request(SSL *s);
 
-const SSL_METHOD DTLSv1_server_method_data = {
+static const SSL_METHOD DTLSv1_server_method_data = {
     .version = DTLS1_VERSION,
     .ssl_new = dtls1_new,
     .ssl_clear = dtls1_clear,
@@ -58,7 +58,7 @@ const SSL_METHOD *DTLSv1_server_method(void)
     return &DTLSv1_server_method_data;
 }
 
-const SSL_METHOD DTLSv1_2_server_method_data = {
+static const SSL_METHOD DTLSv1_2_server_method_data = {
     .version = DTLS1_2_VERSION,
     .ssl_new = dtls1_new,
     .ssl_clear = dtls1_clear,
@@ -95,7 +95,7 @@ const SSL_METHOD *DTLSv1_2_server_method(void)
     return &DTLSv1_2_server_method_data;
 }
 
-const SSL_METHOD DTLS_server_method_data = {
+static const SSL_METHOD DTLS_server_method_data = {
     .version = DTLS_ANY_VERSION,
     .ssl_new = dtls1_new,
     .ssl_clear = dtls1_clear,
