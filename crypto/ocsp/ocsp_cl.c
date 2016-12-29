@@ -270,22 +270,42 @@ int OCSP_check_validity(ASN1_GENERALIZEDTIME *thisupd, ASN1_GENERALIZEDTIME *nex
 {
     int ret = 1;
     time_t t_now, t_tmp;
+    struct tm tm_this, tm_next, tm_tmp;
+
     time(&t_now);
+
+    /*
+     * Times must explicitly be a GENERALIZEDTIME as per section
+     * 4.2.2.1 of RFC 6960 - It is invalid to accept other times
+     * (such as UTCTIME permitted/required by RFC 5280 for certificates)
+     */
+
     /* Check thisUpdate is valid and not more than nsec in the future */
-    if (!ASN1_GENERALIZEDTIME_check(thisupd)) {
+    if (ASN1_time_parse((char *)thisupd->data, thisupd->length, &tm_this,
+        V_ASN1_GENERALIZEDTIME) != V_ASN1_GENERALIZEDTIME)
+    {
         OCSPerr(OCSP_F_OCSP_CHECK_VALIDITY, OCSP_R_ERROR_IN_THISUPDATE_FIELD);
         ret = 0;
     } else {
         t_tmp = t_now + nsec;
-        if (X509_cmp_time(thisupd, &t_tmp) > 0) {
+        if (gmtime_r(&t_tmp, &tm_tmp) == NULL)
+            return 0;
+        if (ASN1_time_tm_cmp(&tm_this, &tm_tmp) > 0) {
             OCSPerr(OCSP_F_OCSP_CHECK_VALIDITY, OCSP_R_STATUS_NOT_YET_VALID);
             ret = 0;
         }
 
-        /* If maxsec specified check thisUpdate is not more than maxsec in the past */
+        /*
+         * If maxsec specified check thisUpdate is not more than maxsec
+         * in the past
+         */
         if (maxsec >= 0) {
             t_tmp = t_now - maxsec;
-            if (X509_cmp_time(thisupd, &t_tmp) < 0) {
+            if (gmtime_r(&t_tmp, &tm_tmp) == NULL)
+                return 0;
+            if (gmtime_r(&t_tmp, &tm_tmp) == NULL)
+                return 0;
+            if (ASN1_time_tm_cmp(&tm_this, &tm_tmp) < 0) {
                 OCSPerr(OCSP_F_OCSP_CHECK_VALIDITY, OCSP_R_STATUS_TOO_OLD);
                 ret = 0;
             }
@@ -296,12 +316,16 @@ int OCSP_check_validity(ASN1_GENERALIZEDTIME *thisupd, ASN1_GENERALIZEDTIME *nex
         return ret;
 
     /* Check nextUpdate is valid and not more than nsec in the past */
-    if (!ASN1_GENERALIZEDTIME_check(nextupd)) {
+    if (ASN1_time_parse((char *)nextupd->data, nextupd->length, &tm_next,
+        V_ASN1_GENERALIZEDTIME) != V_ASN1_GENERALIZEDTIME)
+    {
         OCSPerr(OCSP_F_OCSP_CHECK_VALIDITY, OCSP_R_ERROR_IN_NEXTUPDATE_FIELD);
         ret = 0;
     } else {
         t_tmp = t_now - nsec;
-        if (X509_cmp_time(nextupd, &t_tmp) < 0) {
+        if (gmtime_r(&t_tmp, &tm_tmp) == NULL)
+            return 0;
+        if (ASN1_time_tm_cmp(&tm_next, &tm_tmp) < 0) {
             OCSPerr(OCSP_F_OCSP_CHECK_VALIDITY, OCSP_R_STATUS_EXPIRED);
             ret = 0;
         }
