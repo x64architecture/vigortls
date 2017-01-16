@@ -106,24 +106,6 @@ SSL_CIPHER ssl3_ciphers[] = {
       .alg_bits = 128,
     },
 
-/* Cipher 07 */
-#ifndef OPENSSL_NO_IDEA
-    {
-      .valid = 1,
-      .name = SSL3_TXT_RSA_IDEA_128_SHA,
-      .id = SSL3_CK_RSA_IDEA_128_SHA,
-      .algorithm_mkey = SSL_kRSA,
-      .algorithm_auth = SSL_aRSA,
-      .algorithm_enc = SSL_IDEA,
-      .algorithm_mac = SSL_SHA1,
-      .algorithm_ssl = SSL_SSLV3,
-      .algo_strength = SSL_MEDIUM,
-      .algorithm2 = SSL_HANDSHAKE_MAC_DEFAULT | TLS1_PRF,
-      .strength_bits = 128,
-      .alg_bits = 128,
-    },
-#endif
-
     /* Cipher 09 */
     {
       .valid = 1,

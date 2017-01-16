@@ -18,18 +18,16 @@ int SSL_library_init(void)
     EVP_add_cipher(EVP_des_cbc());
     EVP_add_cipher(EVP_des_ede3_cbc());
 #endif
-#ifndef OPENSSL_NO_IDEA
-    EVP_add_cipher(EVP_idea_cbc());
-#endif
     EVP_add_cipher(EVP_rc4());
 #if !defined(OPENSSL_NO_MD5) && defined(VIGORTLS_X86_64)
     EVP_add_cipher(EVP_rc4_hmac_md5());
 #endif
 #ifndef OPENSSL_NO_RC2
     EVP_add_cipher(EVP_rc2_cbc());
-    /* Not actually used for SSL/TLS but this makes PKCS#12 work
-   * if an application only calls SSL_library_init().
-   */
+    /*
+     * Not actually used for SSL/TLS but this makes PKCS#12 work
+     * if an application only calls SSL_library_init().
+     */
     EVP_add_cipher(EVP_rc2_40_cbc());
 #endif
     EVP_add_cipher(EVP_aes_128_cbc());

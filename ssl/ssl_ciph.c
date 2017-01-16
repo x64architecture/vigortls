@@ -325,11 +325,7 @@ void ssl_load_ciphers(void)
     ssl_cipher_methods[SSL_ENC_DES_IDX] = EVP_get_cipherbyname(SN_des_cbc);
     ssl_cipher_methods[SSL_ENC_3DES_IDX] = EVP_get_cipherbyname(SN_des_ede3_cbc);
     ssl_cipher_methods[SSL_ENC_RC4_IDX] = EVP_get_cipherbyname(SN_rc4);
-#ifndef OPENSSL_NO_IDEA
-    ssl_cipher_methods[SSL_ENC_IDEA_IDX] = EVP_get_cipherbyname(SN_idea_cbc);
-#else
     ssl_cipher_methods[SSL_ENC_IDEA_IDX] = NULL;
-#endif
     ssl_cipher_methods[SSL_ENC_AES128_IDX] = EVP_get_cipherbyname(SN_aes_128_cbc);
     ssl_cipher_methods[SSL_ENC_AES256_IDX] = EVP_get_cipherbyname(SN_aes_256_cbc);
     ssl_cipher_methods[SSL_ENC_CAMELLIA128_IDX] = EVP_get_cipherbyname(SN_camellia_128_cbc);
