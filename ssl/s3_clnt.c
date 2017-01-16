@@ -1968,47 +1968,27 @@ err:
     return ret;
 }
 
-static int ssl3_send_client_kex_ecdh(SSL *s, SESS_CERT *sess_cert, uint8_t *p,
+static int ssl3_send_client_kex_ecdhe(SSL *s, SESS_CERT *sess_cert, uint8_t *p,
                                 int *outlen)
 {
     EC_KEY *clnt_ecdh = NULL;
     const EC_GROUP *srvr_group = NULL;
     const EC_POINT *srvr_ecpoint = NULL;
-    EVP_PKEY *srvr_pub_pkey = NULL;
     BN_CTX *bn_ctx = NULL;
     uint8_t *encodedPoint = NULL;
-    unsigned long alg_k;
     int encoded_pt_len = 0;
     int field_size = 0;
-    EC_KEY *tkey;
     int ret = -1;
     int n;
 
-    alg_k = s->s3->tmp.new_cipher->algorithm_mkey;
-
-    /* Ensure that we have an ephemeral key for ECDHE. */
-    if ((alg_k & SSL_kECDHE) && sess_cert->peer_ecdh_tmp == NULL) {
+    if (sess_cert->peer_ecdh_tmp == NULL) {
         ssl3_send_alert(s, SSL3_AL_FATAL, SSL_AD_HANDSHAKE_FAILURE);
         SSLerr(SSL_F_SSL3_SEND_CLIENT_KEY_EXCHANGE, ERR_R_INTERNAL_ERROR);
         goto err;
     }
-    tkey = sess_cert->peer_ecdh_tmp;
 
-    if (alg_k & SSL_kECDHE) {
-        /* Get the Server Public Key from Cert */
-        srvr_pub_pkey =
-            X509_get_pubkey(sess_cert->peer_pkeys[SSL_PKEY_ECC].x509);
-        if (srvr_pub_pkey != NULL && srvr_pub_pkey->type == EVP_PKEY_EC)
-            tkey = srvr_pub_pkey->pkey.ec;
-    }
-
-    if (tkey == NULL) {
-        SSLerr(SSL_F_SSL3_SEND_CLIENT_KEY_EXCHANGE, ERR_R_INTERNAL_ERROR);
-        goto err;
-    }
-
-    srvr_group = EC_KEY_get0_group(tkey);
-    srvr_ecpoint = EC_KEY_get0_public_key(tkey);
+    srvr_group = EC_KEY_get0_group(sess_cert->peer_ecdh_tmp);
+    srvr_ecpoint = EC_KEY_get0_public_key(sess_cert->peer_ecdh_tmp);
 
     if (srvr_group == NULL || srvr_ecpoint == NULL) {
         SSLerr(SSL_F_SSL3_SEND_CLIENT_KEY_EXCHANGE, ERR_R_INTERNAL_ERROR);
@@ -2091,7 +2071,6 @@ err:
     BN_CTX_free(bn_ctx);
     free(encodedPoint);
     EC_KEY_free(clnt_ecdh);
-    EVP_PKEY_free(srvr_pub_pkey);
 
     return ret;
 }
@@ -2234,7 +2213,7 @@ int ssl3_send_client_key_exchange(SSL *s)
             if (ssl3_send_client_kex_dhe(s, sess_cert, p, &n) != 1)
                 goto err;
         } else if (alg_k & SSL_kECDHE) {
-            if (ssl3_send_client_kex_ecdh(s, sess_cert, p, &n) != 1)
+            if (ssl3_send_client_kex_ecdhe(s, sess_cert, p, &n) != 1)
                 goto err;
         } else if (alg_k & SSL_kGOST) {
             if (ssl3_send_client_kex_gost(s, sess_cert, p, &n) != 1)
