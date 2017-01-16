@@ -165,7 +165,7 @@ int ssl3_connect(SSL *s)
 
             case SSL3_ST_CR_KEY_EXCH_A:
             case SSL3_ST_CR_KEY_EXCH_B:
-                ret = ssl3_get_key_exchange(s);
+                ret = ssl3_get_server_key_exchange(s);
                 if (ret <= 0)
                     goto end;
                 s->state = SSL3_ST_CR_CERT_REQ_A;
@@ -1265,7 +1265,7 @@ err:
     return -1;
 }
 
-int ssl3_get_key_exchange(SSL *s)
+int ssl3_get_server_key_exchange(SSL *s)
 {
     uint8_t *q, md_buf[EVP_MAX_MD_SIZE * 2];
     EVP_MD_CTX md_ctx;
