@@ -357,22 +357,11 @@ static void tls1_get_curvelist(SSL *s, int client_curves, const uint16_t **pcurv
 }
 
 /* Check that a curve is one of our preferences. */
-int tls1_check_curve(SSL *s, const uint8_t *p, size_t len)
+int tls1_check_curve(SSL *s, uint16_t curve_id)
 {
-    CBS cbs;
-    uint8_t type;
     const uint16_t *curves;
-    uint16_t curve_id;
     size_t curves_len, i;
     unsigned int suiteb_flags = tls1_suiteb(s);
-
-    CBS_init(&cbs, p, len);
-
-    /* Only named curves are supported. */
-    if (CBS_len(&cbs) != 3 || !CBS_get_u8(&cbs, &type) ||
-        type != NAMED_CURVE_TYPE ||
-        !CBS_get_u16(&cbs, &curve_id))
-        return 0;
 
     /* Check curve matches Suite B preferences */
     if (suiteb_flags) {

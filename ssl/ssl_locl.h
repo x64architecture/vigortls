@@ -889,7 +889,7 @@ int tls1_shared_curve(SSL *s, int nmatch);
 int tls1_set_curves(uint16_t **pext, size_t *pextlen, int *curves,
                     size_t ncurves);
 int tls1_set_curves_list(uint16_t **pext, size_t *pextlen, const char *str);
-int tls1_check_curve(SSL *s, const uint8_t *p, size_t len);
+int tls1_check_curve(SSL *s, uint16_t curve_id);
 
 uint8_t *ssl_add_clienthello_tlsext(SSL *s, uint8_t *p, uint8_t *limit,
                                     int *al);
