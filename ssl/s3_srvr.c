@@ -1650,59 +1650,51 @@ err:
 
 static int ssl3_get_client_kex_dhe(SSL *s, uint8_t *p, long n)
 {
-    BIGNUM *pub = NULL;
-    DH *dh_srvr;
-    int i, al;
+    BIGNUM *bn = NULL;
+    int key_size, al;
+    CBS cbs, dh_Yc;
+    DH *dh;
 
-    if (2 > n)
-        goto truncated;
-    n2s(p, i);
-    if (n != i + 2) {
-        SSLerr(SSL_F_SSL3_GET_CLIENT_KEY_EXCHANGE,
-               SSL_R_DH_PUBLIC_VALUE_LENGTH_IS_WRONG);
+    if (n < 0)
         goto err;
-    }
 
-    if (n == 0L) {
-        /* the parameters are in the cert */
+    CBS_init(&cbs, p, n);
+
+    if (!CBS_get_u16_length_prefixed(&cbs, &dh_Yc))
+        goto truncated;
+
+    if (CBS_len(&cbs) != 0)
+        goto truncated;
+
+    if (s->s3->tmp.dh == NULL) {
         al = SSL_AD_HANDSHAKE_FAILURE;
-        SSLerr(SSL_F_SSL3_GET_CLIENT_KEY_EXCHANGE,
-               SSL_R_UNABLE_TO_DECODE_DH_CERTS);
+        SSLerr(SSL_F_SSL3_GET_CLIENT_KEY_EXCHANGE, SSL_R_MISSING_TMP_DH_KEY);
         goto f_err;
-    } else {
-        if (s->s3->tmp.dh == NULL) {
-            al = SSL_AD_HANDSHAKE_FAILURE;
-            SSLerr(SSL_F_SSL3_GET_CLIENT_KEY_EXCHANGE,
-                   SSL_R_MISSING_TMP_DH_KEY);
-            goto f_err;
-        } else
-            dh_srvr = s->s3->tmp.dh;
     }
+    dh = s->s3->tmp.dh;
 
-    pub = BN_bin2bn(p, i, NULL);
-    if (pub == NULL) {
+    bn = BN_bin2bn(CBS_data(&dh_Yc), CBS_len(&dh_Yc), NULL);
+    if (bn == NULL) {
         SSLerr(SSL_F_SSL3_GET_CLIENT_KEY_EXCHANGE, SSL_R_BN_LIB);
         goto err;
     }
 
-    i = DH_compute_key(p, pub, dh_srvr);
-
-    if (i <= 0) {
+    key_size = DH_compute_key(p, bn, dh);
+    if (key_size <= 0) {
         SSLerr(SSL_F_SSL3_GET_CLIENT_KEY_EXCHANGE, ERR_R_DH_LIB);
-        BN_clear_free(pub);
+        BN_clear_free(bn);
         goto err;
     }
+
+    s->session->master_key_length = s->method->ssl3_enc->generate_master_secret(
+        s, s->session->master_key, p, key_size);
+ 
+    vigortls_zeroize(p, key_size);
 
     DH_free(s->s3->tmp.dh);
     s->s3->tmp.dh = NULL;
 
-    BN_clear_free(pub);
-    pub = NULL;
-
-    s->session->master_key_length = s->method->ssl3_enc->generate_master_secret(
-        s, s->session->master_key, p, i);
-
-    vigortls_zeroize(p, i);
+    BN_clear_free(bn);
 
     return 1;
 
@@ -1712,7 +1704,7 @@ truncated:
 f_err:
     ssl3_send_alert(s, SSL3_AL_FATAL, al);
 err:
-    return (-1);
+    return -1;
 }
 
 static int ssl3_get_client_kex_ecdhe(SSL *s, uint8_t *p, long n)
