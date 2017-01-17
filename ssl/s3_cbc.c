@@ -305,7 +305,6 @@ static void tls1_sha1_final_raw(void *ctx, uint8_t *md_out)
     l2n(sha1->h3, md_out);
     l2n(sha1->h4, md_out);
 }
-#define LARGEST_DIGEST_CTX SHA_CTX
 
 static void tls1_sha256_final_raw(void *ctx, uint8_t *md_out)
 {
@@ -316,8 +315,6 @@ static void tls1_sha256_final_raw(void *ctx, uint8_t *md_out)
         l2n(sha256->h[i], md_out);
     }
 }
-#undef LARGEST_DIGEST_CTX
-#define LARGEST_DIGEST_CTX SHA256_CTX
 
 static void tls1_sha512_final_raw(void *ctx, uint8_t *md_out)
 {
@@ -328,8 +325,12 @@ static void tls1_sha512_final_raw(void *ctx, uint8_t *md_out)
         l2n8(sha512->h[i], md_out);
     }
 }
-#undef LARGEST_DIGEST_CTX
+
+/* Largest hash context ever used by the functions above. */
 #define LARGEST_DIGEST_CTX SHA512_CTX
+
+/* Type giving the alignment needed by the above */
+#define LARGEST_DIGEST_CTX_ALIGNMENT uint64_t
 
 /* ssl3_cbc_record_digest_supported returns 1 iff |ctx| uses a hash function
  * which ssl3_cbc_digest_record supports. */
@@ -375,7 +376,12 @@ void ssl3_cbc_digest_record(const EVP_MD_CTX *ctx, uint8_t *md_out,
                             unsigned mac_secret_length)
 {
     union {
-        double align;
+        /*
+         * Alignment here is to allow this to be cast as SHA512_CTX
+         * without losing alignment required by the 64-bit SHA_LONG64
+         * integer it contains.
+         */
+        LARGEST_DIGEST_CTX_ALIGNMENT align;
         uint8_t c[sizeof(LARGEST_DIGEST_CTX)];
     } md_state;
     void (*md_final_raw)(void *ctx, uint8_t *md_out);
