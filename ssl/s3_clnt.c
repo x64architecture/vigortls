@@ -1137,7 +1137,7 @@ static int ssl3_get_server_kex_ecdhe(SSL *s, EVP_PKEY **pkey, uint8_t **pp,
     EC_KEY *ecdh = NULL;
     BN_CTX *bn_ctx = NULL;
     const EC_GROUP *group;
-    EC_GROUP *ngroup;
+    EC_GROUP *ngroup = NULL;
     SESS_CERT *sc;
     int curve_nid;
     long alg_a;
@@ -1193,7 +1193,6 @@ static int ssl3_get_server_kex_ecdhe(SSL *s, EVP_PKEY **pkey, uint8_t **pp,
         SSLerr(SSL_F_SSL3_GET_KEY_EXCHANGE, ERR_R_EC_LIB);
         goto err;
     }
-    EC_GROUP_free(ngroup);
 
     group = EC_KEY_get0_group(ecdh);
 
@@ -1232,6 +1231,7 @@ static int ssl3_get_server_kex_ecdhe(SSL *s, EVP_PKEY **pkey, uint8_t **pp,
     sc->peer_ecdh_tmp = ecdh;
 
     BN_CTX_free(bn_ctx);
+    EC_GROUP_free(ngroup);
     EC_POINT_free(srvr_ecpoint);
 
     *nn = CBS_len(&cbs);
@@ -1248,6 +1248,7 @@ f_err:
 
 err:
     BN_CTX_free(bn_ctx);
+    EC_GROUP_free(ngroup);
     EC_POINT_free(srvr_ecpoint);
     EC_KEY_free(ecdh);
 
