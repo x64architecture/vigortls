@@ -1724,13 +1724,9 @@ int ssl3_get_client_key_exchange(SSL *s)
 
         if (n == 0L) {
             /* Client Publickey was in Client Certificate */
-
-            if (alg_k & SSL_kECDHE) {
-                al = SSL_AD_HANDSHAKE_FAILURE;
-                SSLerr(SSL_F_SSL3_GET_CLIENT_KEY_EXCHANGE, SSL_R_MISSING_TMP_ECDH_KEY);
-                goto f_err;
-            }
-            if (((clnt_pub_pkey = X509_get_pubkey(s->session->peer)) == NULL) || (clnt_pub_pkey->type != EVP_PKEY_EC)) {
+            clnt_pub_pkey = X509_get_pubkey(s->session->peer);
+            if (clnt_pub_pkey == NULL || (clnt_pub_pkey->type != EVP_PKEY_EC))
+            {
                 /*
                  * XXX: For now, we do not support client
                  * authentication using ECDH certificates
