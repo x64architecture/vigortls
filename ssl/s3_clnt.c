@@ -1134,7 +1134,7 @@ static int ssl3_get_server_kex_ecdhe(SSL *s, EVP_PKEY **pkey, uint8_t **pp,
     uint8_t curve_type;
     uint16_t curve_id;
     EC_POINT *srvr_ecpoint = NULL;
-    EC_KEY *ecdh;
+    EC_KEY *ecdh = NULL;
     BN_CTX *bn_ctx = NULL;
     const EC_GROUP *group;
     EC_GROUP *ngroup;
