@@ -959,6 +959,6 @@ void ssl3_cbc_digest_record(const EVP_MD_CTX *ctx, uint8_t *md_out,
                             size_t data_plus_mac_size,
                             size_t data_plus_mac_plus_padding_size,
                             const uint8_t *mac_secret,
-                            unsigned mac_secret_length, char is_sslv3);
+                            unsigned mac_secret_length);
 
 #endif

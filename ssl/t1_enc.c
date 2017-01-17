@@ -1048,7 +1048,7 @@ int tls1_mac(SSL *ssl, uint8_t *md, int send)
         ssl3_cbc_digest_record(mac_ctx, md, &md_size, header, rec->input,
                                rec->length + md_size, orig_len,
                                ssl->s3->read_mac_secret,
-                               ssl->s3->read_mac_secret_size, 0 /* not SSLv3 */);
+                               ssl->s3->read_mac_secret_size);
     } else {
         EVP_DigestSignUpdate(mac_ctx, header, sizeof(header));
         EVP_DigestSignUpdate(mac_ctx, rec->input, rec->length);
