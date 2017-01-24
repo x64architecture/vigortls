@@ -42,6 +42,7 @@ VIGORTLS_EXPORT void ECDH_set_default_method(const ECDH_METHOD *);
 VIGORTLS_EXPORT const ECDH_METHOD *ECDH_get_default_method(void);
 VIGORTLS_EXPORT int ECDH_set_method(EC_KEY *, const ECDH_METHOD *);
 
+int ECDH_size(const EC_KEY *ecdh);
 VIGORTLS_EXPORT int ECDH_compute_key(void *out, size_t outlen,
                                      const EC_POINT *pub_key, EC_KEY *ecdh,
                                      void *(*KDF)(const void *in, size_t inlen,

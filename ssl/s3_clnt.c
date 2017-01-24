@@ -1970,7 +1970,7 @@ static int ssl3_send_client_kex_ecdhe(SSL *s, SESS_CERT *sess_cert, uint8_t *p,
     BN_CTX *bn_ctx = NULL;
     uint8_t *encodedPoint = NULL;
     int encoded_pt_len = 0;
-    int field_size = 0;
+    int key_size = 0;
     int ret = -1;
     int n;
 
@@ -2009,13 +2009,12 @@ static int ssl3_send_client_kex_ecdhe(SSL *s, SESS_CERT *sess_cert, uint8_t *p,
      * Use the 'p' output buffer for the ECDH key, but make sure to clear
      * it out afterwards.
      */
-    field_size = EC_GROUP_get_degree(srvr_group);
-    if (field_size <= 0) {
+    key_size = ECDH_size(clnt_ecdh);
+    if (key_size <= 0) {
         SSLerr(SSL_F_SSL3_SEND_CLIENT_KEY_EXCHANGE, ERR_R_ECDH_LIB);
         goto err;
     }
-    n = ECDH_compute_key(p, (field_size + 7) / 8, srvr_ecpoint, clnt_ecdh,
-                         NULL);
+    n = ECDH_compute_key(p, key_size, srvr_ecpoint, clnt_ecdh, NULL);
     if (n <= 0) {
         SSLerr(SSL_F_SSL3_SEND_CLIENT_KEY_EXCHANGE, ERR_R_ECDH_LIB);
         goto err;

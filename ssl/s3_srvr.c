@@ -1732,7 +1732,7 @@ static int ssl3_get_client_kex_ecdhe(SSL *s, uint8_t *p, long n)
     BN_CTX *bn_ctx = NULL;
     int i, al;
     int ret = 1;
-    int field_size;
+    int key_size;
     const EC_KEY *tkey;
     const EC_GROUP *group;
     const BIGNUM *priv_key;
@@ -1822,12 +1822,12 @@ static int ssl3_get_client_kex_ecdhe(SSL *s, uint8_t *p, long n)
     }
 
     /* Compute the shared pre-master secret */
-    field_size = EC_GROUP_get_degree(group);
-    if (field_size <= 0) {
+    key_size = ECDH_size(tkey);
+    if (key_size <= 0) {
         SSLerr(SSL_F_SSL3_GET_CLIENT_KEY_EXCHANGE, ERR_R_ECDH_LIB);
         goto err;
     }
-    i = ECDH_compute_key(p, (field_size + 7) / 8, clnt_ecpoint, srvr_ecdh, NULL);
+    i = ECDH_compute_key(p, key_size, clnt_ecpoint, srvr_ecdh, NULL);
     if (i <= 0) {
         SSLerr(SSL_F_SSL3_GET_CLIENT_KEY_EXCHANGE, ERR_R_ECDH_LIB);
         goto err;

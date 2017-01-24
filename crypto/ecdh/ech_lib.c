@@ -160,7 +160,7 @@ int ECDH_set_ex_data(EC_KEY *d, int idx, void *arg)
     ecdh = ecdh_check(d);
     if (ecdh == NULL)
         return 0;
-    return (CRYPTO_set_ex_data(&ecdh->ex_data, idx, arg));
+    return CRYPTO_set_ex_data(&ecdh->ex_data, idx, arg);
 }
 
 void *ECDH_get_ex_data(EC_KEY *d, int idx)
@@ -169,5 +169,12 @@ void *ECDH_get_ex_data(EC_KEY *d, int idx)
     ecdh = ecdh_check(d);
     if (ecdh == NULL)
         return NULL;
-    return (CRYPTO_get_ex_data(&ecdh->ex_data, idx));
+    return CRYPTO_get_ex_data(&ecdh->ex_data, idx);
+}
+
+int ECDH_size(const EC_KEY *key)
+{
+    int degree = EC_GROUP_get_degree(EC_KEY_get0_group(key));
+
+    return (degree + 7) / 8;
 }

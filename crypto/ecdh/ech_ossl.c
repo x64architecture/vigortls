@@ -106,7 +106,7 @@ static int ecdh_compute_key(void *out, size_t outlen, const EC_POINT *pub_key,
     }
 #endif
 
-    buflen = (EC_GROUP_get_degree(group) + 7) / 8;
+    buflen = ECDH_size(ecdh);
     len = BN_num_bytes(x);
     if (len > buflen) {
         ECDHerr(ECDH_F_ECDH_COMPUTE_KEY, ERR_R_INTERNAL_ERROR);
