@@ -154,11 +154,11 @@ static int ssl23_client_hello(SSL *s)
 {
     uint8_t *buf;
     uint8_t *p, *d;
-    int i;
     unsigned long l;
     int version = 0, version_major, version_minor;
     int ret, al;
     unsigned long mask, options = s->options;
+    size_t outlen;
 
     /*
      * SSL_OP_NO_X disables all protocols above X *if* there are
@@ -233,8 +233,11 @@ static int ssl23_client_hello(SSL *s)
         *(p++) = 0;
 
         /* Ciphers supported (using SSL 3.0/TLS 1.0 format) */
-        i = ssl_cipher_list_to_bytes(s, SSL_get_ciphers(s), &p[2]);
-        if (i == 0) {
+        if (!ssl_cipher_list_to_bytes(s, SSL_get_ciphers(s), &p[2],
+                                      buf - &p[2] + SSL3_RT_MAX_PLAIN_LENGTH,
+                                      &outlen))
+            return -1;
+        if (outlen == 0) {
             SSLerr(SSL_F_SSL23_CLIENT_HELLO, SSL_R_NO_CIPHERS_AVAILABLE);
             return -1;
         }
@@ -247,8 +250,8 @@ static int ssl23_client_hello(SSL *s)
         if (TLS1_get_version(s) >= TLS1_2_VERSION && i > OPENSSL_MAX_TLS1_2_CIPHER_LENGTH)
             i = OPENSSL_MAX_TLS1_2_CIPHER_LENGTH & ~1;
 #endif
-        s2n(i, p);
-        p += i;
+        s2n(outlen, p);
+        p += outlen;
 
         /* add in (no) COMPRESSION */
         *(p++) = 1;

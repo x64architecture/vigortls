@@ -438,10 +438,10 @@ end:
 
 int ssl3_client_hello(SSL *s)
 {
-    uint8_t *buf;
-    uint8_t *p, *d;
+    uint8_t *buf, *p, *d;
     int i, al;
     unsigned long l;
+    size_t outlen;
 
     buf = (uint8_t *)s->init_buf->data;
     if (s->state == SSL3_ST_CW_CLNT_HELLO_A) {
@@ -571,8 +571,11 @@ int ssl3_client_hello(SSL *s)
         }
 
         /* Ciphers supported */
-        i = ssl_cipher_list_to_bytes(s, SSL_get_ciphers(s), &p[2]);
-        if (i == 0) {
+        if (!ssl_cipher_list_to_bytes(s, SSL_get_ciphers(s), &p[2],
+                                      buf + SSL3_RT_MAX_PLAIN_LENGTH - &p[2],
+                                      &outlen))
+            goto err;
+        if (outlen == 0) {
             SSLerr(SSL_F_SSL3_CLIENT_HELLO,
                    SSL_R_NO_CIPHERS_AVAILABLE);
             goto err;
@@ -584,10 +587,10 @@ int ssl3_client_hello(SSL *s)
          * to keep it well below this if we use TLS v1.2
          */
         if (TLS1_get_version(s) >= TLS1_2_VERSION && i > OPENSSL_MAX_TLS1_2_CIPHER_LENGTH)
-            i = OPENSSL_MAX_TLS1_2_CIPHER_LENGTH & ~1;
+            outlen = OPENSSL_MAX_TLS1_2_CIPHER_LENGTH & ~1;
 #endif
-        s2n(i, p);
-        p += i;
+        s2n(outlen, p);
+        p += outlen;
 
         /* add in (no) COMPRESSION */
         *(p++) = 1;

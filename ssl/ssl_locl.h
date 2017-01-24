@@ -651,8 +651,8 @@ int ssl_cipher_ptr_id_cmp(const SSL_CIPHER *const *ap,
                           const SSL_CIPHER *const *bp);
 STACK_OF(SSL_CIPHER) *ssl_bytes_to_cipher_list(SSL *s, const uint8_t *p,
                                                int num);
-int ssl_cipher_list_to_bytes(SSL *s, STACK_OF(SSL_CIPHER) *sk,
-                             uint8_t *p);
+int ssl_cipher_list_to_bytes(SSL *s, STACK_OF(SSL_CIPHER) *sk, uint8_t *p,
+                             size_t maxlen, size_t *outlen);
 STACK_OF(SSL_CIPHER) *ssl_create_cipher_list(const SSL_METHOD *meth,
                                              STACK_OF(SSL_CIPHER) **pref,
                                              STACK_OF(SSL_CIPHER) **sorted,

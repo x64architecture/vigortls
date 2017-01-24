@@ -1227,42 +1227,55 @@ char *SSL_get_shared_ciphers(const SSL *s, char *buf, int len)
     return (buf);
 }
 
-int ssl_cipher_list_to_bytes(SSL *s, STACK_OF(SSL_CIPHER) *sk,
-                             uint8_t *p)
+int ssl_cipher_list_to_bytes(SSL *s, STACK_OF(SSL_CIPHER) *sk, uint8_t *p,
+                             size_t maxlen, size_t *outlen)
 {
-    int i;
-    SSL_CIPHER *c;
-    CERT *ct = s->cert;
-    uint8_t *q;
+    SSL_CIPHER *cipher;
+    int ciphers = 0;
+    CBB cbb;
+    CERT *cert = s->cert;
+
+    *outlen = 0;
 
     /* Set disabled masks for this session */
     ssl_set_client_disabled(s);
 
     if (sk == NULL)
-        return (0);
-    q = p;
+        return 0;
 
-    for (i = 0; i < sk_SSL_CIPHER_num(sk); i++) {
-        c = sk_SSL_CIPHER_value(sk, i);
+    if (!CBB_init_fixed(&cbb, p, maxlen))
+        goto err;
+
+    for (int i = 0; i < sk_SSL_CIPHER_num(sk); i++) {
+        cipher = sk_SSL_CIPHER_value(sk, i);
 
         /* Skip disabled ciphers */
-        if (c->algorithm_ssl & ct->mask_ssl ||
-            c->algorithm_mkey & ct->mask_k ||
-            c->algorithm_auth & ct->mask_a)
+        if (cipher->algorithm_ssl & cert->mask_ssl ||
+            cipher->algorithm_mkey & cert->mask_k ||
+            cipher->algorithm_auth & cert->mask_a)
             continue;
-        s2n(ssl3_cipher_get_value(c), p);
+
+        if (!CBB_add_u16(&cbb, ssl3_cipher_get_value(cipher)))
+            goto err;
+
+        ciphers++;
     }
 
-    /* If p == q, no ciphers; caller indicates an error.
-     * Otherwise, add applicable SCSVs. */
-    if (p != q) {
-        if (!s->renegotiate) {
-            static SSL_CIPHER scsv = { .id = SSL3_CK_SCSV };
-            s2n(ssl3_cipher_get_value(&scsv), p);
-        }
+    /* Add SCSV if there are other ciphers and we're not renegotiating. */
+    if (ciphers > 0 && !s->renegotiate) {
+        if (!CBB_add_u16(&cbb, SSL3_CK_SCSV & SSL3_CK_VALUE_MASK))
+            goto err;
     }
 
-    return (p - q);
+    if (!CBB_finish(&cbb, NULL, outlen))
+        goto err;
+
+    return 1;
+
+err:
+    CBB_cleanup(&cbb);
+
+    return 0;
 }
 
 STACK_OF(SSL_CIPHER) *ssl_bytes_to_cipher_list(SSL *s, const uint8_t *p, int num)
