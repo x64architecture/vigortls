@@ -1000,10 +1000,14 @@ err:
 
 int ssl3_send_server_hello(SSL *s)
 {
-    uint8_t *buf;
+    uint8_t *buf, *bufend;
     uint8_t *p, *d;
     unsigned long l;
+    CBB cbb = { 0 }, session_id;
+    size_t outlen;
     int sl, al;
+
+    bufend = (uint8_t *)s->init_buf->data + SSL3_RT_MAX_PLAIN_LENGTH;
 
     if (s->state == SSL3_ST_SW_SRVR_HELLO_A) {
         buf = (uint8_t *)s->init_buf->data;
@@ -1015,12 +1019,14 @@ int ssl3_send_server_hello(SSL *s)
         /* Do the message type and length last */
         d = p = ssl_handshake_start(s);
 
-        *(p++) = s->version >> 8;
-        *(p++) = s->version & 0xff;
+        if (!CBB_init_fixed(&cbb, p, bufend - p))
+            goto err;
 
-        /* Random stuff */
-        memcpy(p, s->s3->server_random, SSL3_RANDOM_SIZE);
-        p += SSL3_RANDOM_SIZE;
+        if (!CBB_add_u16(&cbb, s->version))
+            goto err;
+        if (!CBB_add_bytes(&cbb, s->s3->server_random,
+                           sizeof(s->s3->server_random)))
+            goto err;
 
         /*
          * There are several cases for the session ID to send
@@ -1047,29 +1053,35 @@ int ssl3_send_server_hello(SSL *s)
         if (sl > (int)sizeof(s->session->session_id)) {
             SSLerr(SSL_F_SSL3_SEND_SERVER_HELLO, ERR_R_INTERNAL_ERROR);
             s->state = SSL_ST_ERR;
-            return -1;
+            goto err;
         }
-        *(p++) = sl;
-        memcpy(p, s->session->session_id, sl);
-        p += sl;
+        if (!CBB_add_u8_length_prefixed(&cbb, &session_id))
+            goto err;
+        if (!CBB_add_bytes(&session_id, s->session->session_id, sl))
+            goto err;
 
-        /* put the cipher */
-        s2n(ssl3_cipher_get_value(s->s3->tmp.new_cipher), p);
+        /* Cipher suite. */
+        if (!CBB_add_u16(&cbb, ssl3_cipher_get_value(s->s3->tmp.new_cipher)))
+            goto err;
 
-        /* put the compression method */
-        *(p++) = 0;
+        /* Compression method. */
+        if (!CBB_add_u8(&cbb, 0))
+            goto err;
+
+        if (!CBB_finish(&cbb, NULL, &outlen))
+            goto err;
+
         if (ssl_prepare_serverhello_tlsext(s) <= 0) {
             SSLerr(SSL_F_SSL3_SEND_SERVER_HELLO, SSL_R_SERVERHELLO_TLSEXT);
             s->state = SSL_ST_ERR;
             return -1;
         }
-        p = ssl_add_serverhello_tlsext(s, p, buf + SSL3_RT_MAX_PLAIN_LENGTH,
-                                       &al);
+        p = ssl_add_serverhello_tlsext(s, p + outlen, bufend, &al);
         if (p == NULL) {
             ssl3_send_alert(s, SSL3_AL_FATAL, al);
             SSLerr(SSL_F_SSL3_SEND_SERVER_HELLO, ERR_R_INTERNAL_ERROR);
             s->state = SSL_ST_ERR;
-            return -1;
+            goto err;
         }
         /* do the header */
         l = p - d;
@@ -1079,6 +1091,11 @@ int ssl3_send_server_hello(SSL *s)
 
     /* SSL3_ST_SW_SRVR_HELLO_B */
     return ssl_do_write(s);
+
+err:
+    CBB_cleanup(&cbb);
+
+    return -1;
 }
 
 int ssl3_send_server_done(SSL *s)
