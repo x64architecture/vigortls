@@ -163,6 +163,8 @@ static int compute_key(uint8_t *key, const BIGNUM *pub_key, DH *dh)
         goto err;
     BN_CTX_start(ctx);
     tmp = BN_CTX_get(ctx);
+    if (tmp == NULL)
+        goto err;
 
     if (dh->priv_key == NULL) {
         DHerr(DH_F_COMPUTE_KEY, DH_R_NO_PRIVATE_VALUE);
@@ -196,7 +198,7 @@ err:
         BN_CTX_end(ctx);
         BN_CTX_free(ctx);
     }
-    return (ret);
+    return ret;
 }
 
 static int dh_bn_mod_exp(const DH *dh, BIGNUM *r,
