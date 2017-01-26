@@ -256,8 +256,10 @@ int ssl3_accept(SSL *s)
                  *   s3_clnt.c accepts this for SSL 3).
                  */
                 if (!(s->verify_mode & SSL_VERIFY_PEER) 
-                    || ((s->session->peer != NULL) && (s->verify_mode & SSL_VERIFY_CLIENT_ONCE)) 
-                    || ((s->s3->tmp.new_cipher->algorithm_auth & SSL_aNULL) && !(s->verify_mode & SSL_VERIFY_FAIL_IF_NO_PEER_CERT))) {
+                    || (s->s3->tmp.finish_md_len != 0 &&
+                       (s->verify_mode & SSL_VERIFY_CLIENT_ONCE))
+                    || ((s->s3->tmp.new_cipher->algorithm_auth & SSL_aNULL) &&
+                       !(s->verify_mode & SSL_VERIFY_FAIL_IF_NO_PEER_CERT))) {
                     /* No cert request */
                     skip = 1;
                     s->s3->tmp.cert_request = 0;
